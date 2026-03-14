@@ -29,7 +29,7 @@
     .settings { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .input-group { display: flex; align-items: center; gap: 6px; background: var(--bg); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); }
     .input-group label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .input-group input { border: none; background: transparent; outline: none; font-size: 12px; width: 90px; color: var(--ink); }
+    .input-group input, .input-group select { border: none; background: transparent; outline: none; font-size: 12px; color: var(--ink); }
     
     .btn { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
     .btn-primary { background: var(--accent); color: var(--white); box-shadow: 0 4px 12px rgba(173,205,234, 0.5); }
@@ -60,26 +60,30 @@
     <header>
       <div class="brand">🎨 <span>墨墨的私人设计室</span></div>
       <div class="settings">
-        <!-- 接口、模型、Key 都在这里了 -->
+        <!-- 接口 -->
         <div class="input-group" title="中转站API地址">
           <label>接口</label>
-          <input id="apiUrl" placeholder="https://api..." value="https://api.openai.com/v1/chat/completions" />
+          <input id="apiUrl" placeholder="https://api..." value="https://api.openai.com/v1/chat/completions" style="width: 110px;" />
         </div>
-        <div class="input-group" title="想用哪个模型就填哪个">
-          <label>模型</label>
-          <input id="apiModel" placeholder="gpt-4o-mini" value="gpt-4o-mini" style="width: 80px;" />
-        </div>
+        <!-- AI Key -->
         <div class="input-group">
           <label>AI Key</label>
-          <input id="apiKey" type="password" placeholder="sk-..." style="width: 80px;" />
+          <input id="apiKey" type="password" placeholder="sk-..." style="width: 70px;" />
         </div>
+        <!-- 自动拉取模型的下拉框 -->
+        <div class="input-group" title="点击 🔄 拉取中转站的所有模型">
+          <label>模型</label>
+          <select id="apiModel" style="width: 80px;"></select>
+          <button id="btnFetchModels" style="background:none; border:none; cursor:pointer; padding:0 4px; font-size:14px;" title="拉取所有模型">🔄</button>
+        </div>
+        <!-- GitHub Token & 仓库 -->
         <div class="input-group">
           <label>GH Token</label>
-          <input id="ghToken" type="password" placeholder="pat_..." style="width: 80px;" />
+          <input id="ghToken" type="password" placeholder="pat_..." style="width: 70px;" />
         </div>
         <div class="input-group">
           <label>仓库</label>
-          <input id="ghRepo" placeholder="wemo188/momo-ui" style="width: 100px;" />
+          <input id="ghRepo" placeholder="wemo188/momo-ui" style="width: 90px;" />
         </div>
         <button class="btn btn-outline" id="btnPull">拉取线上画板</button>
         <button class="btn btn-primary" id="btnPublish">发布到画板(app.html)</button>
@@ -90,7 +94,7 @@
       <div class="panel">
         <div class="panel-header">跟你的私人设计师沟通</div>
         <div class="chat-box" id="chatBox">
-          <div class="msg ai">大小姐，模型切换功能已就绪。今天想让我用哪个模型来为你服务？</div>
+          <div class="msg ai">大小姐，菜单获取功能已经装好了。先填好接口和 Key，然后点上面的 🔄，我就去帮你把模型全拿过来。</div>
         </div>
         <div class="input-area">
           <textarea id="chatInput" placeholder="比如：帮我画一个蓝白风格的登录界面，要有圆角输入框..."></textarea>
@@ -115,17 +119,23 @@
     const $ = id => document.getElementById(id);
     const els = {
       apiUrl: $('apiUrl'), apiModel: $('apiModel'), apiKey: $('apiKey'), ghToken: $('ghToken'), ghRepo: $('ghRepo'),
-      chatBox: $('chatBox'), chatInput: $('chatInput'), btnSend: $('btnSend'),
+      chatBox: $('chatBox'), chatInput: $('chatInput'), btnSend: $('btnSend'), btnFetchModels: $('btnFetchModels'),
       codeEditor: $('codeEditor'), previewFrame: $('previewFrame'),
       btnApply: $('btnApply'), btnPublish: $('btnPublish'), btnPull: $('btnPull')
     };
 
-    // 读取本地保存的配置
-    ['apiUrl', 'apiModel', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
+    // 读取本地保存的基础配置
+    ['apiUrl', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
       const saved = localStorage.getItem('momo_' + id);
       if(saved) els[id].value = saved;
       els[id].addEventListener('input', e => localStorage.setItem('momo_' + id, e.target.value));
     });
+
+    // 初始化模型下拉框
+    const savedModel = localStorage.getItem('momo_apiModel') || 'gpt-4o-mini';
+    els.apiModel.innerHTML = `<option value="${savedModel}">${savedModel}</option>`;
+    els.apiModel.addEventListener('change', e => localStorage.setItem('momo_apiModel', e.target.value));
+
     els.codeEditor.value = localStorage.getItem('momo_local_code') || '';
     els.codeEditor.addEventListener('input', e => localStorage.setItem('momo_local_code', e.target.value));
 
@@ -141,10 +151,64 @@
     els.btnApply.onclick = updatePreview;
     if(els.codeEditor.value) updatePreview();
 
+    // 🌟 新功能：一键拉取模型菜单
+    els.btnFetchModels.onclick = async () => {
+      const url = els.apiUrl.value.trim();
+      const key = els.apiKey.value.trim();
+      if(!url || !key) {
+        addMsg('ai', "大小姐，请先填好「接口」和「AI Key」，我才能去中转站帮你拿菜单呀。");
+        return;
+      }
+
+      els.btnFetchModels.textContent = '⏳';
+      try {
+        // 自动把 /chat/completions 替换成 /models 以获取模型列表
+        let modelsUrl = url;
+        if(modelsUrl.endsWith('/chat/completions')) {
+          modelsUrl = modelsUrl.replace('/chat/completions', '/models');
+        } else if (!modelsUrl.endsWith('/models')) {
+          modelsUrl = modelsUrl.replace(/\/$/, '') + '/models';
+        }
+
+        const res = await fetch(modelsUrl, {
+          headers: { "Authorization": `Bearer ${key}` }
+        });
+        
+        if(!res.ok) throw new Error(`拉取失败 (状态码: ${res.status})。可能是这个中转站不支持自动获取模型列表。`);
+        
+        const data = await res.json();
+        if(data && data.data && Array.isArray(data.data)) {
+          els.apiModel.innerHTML = ''; // 清空旧列表
+          data.data.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = m.id;
+            els.apiModel.appendChild(opt);
+          });
+          
+          // 如果拉取回来的列表里有之前保存的模型，就选中它
+          if(data.data.find(m => m.id === savedModel)) {
+            els.apiModel.value = savedModel;
+          } else {
+            // 否则默认选中第一个，并保存
+            els.apiModel.value = data.data[0].id;
+            localStorage.setItem('momo_apiModel', data.data[0].id);
+          }
+          addMsg('ai', `菜单拿回来了！一共发现 ${data.data.length} 个模型，已经放进下拉框里了，慢慢挑吧。`);
+        } else {
+          throw new Error("中转站返回的数据格式不对，我没法解析。");
+        }
+      } catch(e) {
+        addMsg('ai', e.message);
+      } finally {
+        els.btnFetchModels.textContent = '🔄';
+      }
+    };
+
     async function callAI(userText) {
       const key = els.apiKey.value.trim();
       const url = els.apiUrl.value.trim();
-      const modelName = els.apiModel.value.trim() || "gpt-4o-mini"; // 读取你填的模型名
+      const modelName = els.apiModel.value.trim() || "gpt-4o-mini";
       
       if(!key) throw new Error("请先填写 AI Key 呀，墨墨");
 
@@ -159,7 +223,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
         body: JSON.stringify({
-          model: modelName, // 动态使用你指定的模型
+          model: modelName,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: `需求：${userText}\n\n当前画板源码：\n${els.codeEditor.value}` }
@@ -209,7 +273,7 @@
     async function githubAPI(method, path, body = null) {
       const token = els.ghToken.value.trim();
       const repo = els.ghRepo.value.trim();
-      if(!token || !repo) throw new Error("请先填写 GitHub Token 和 仓库名");
+      if(!token || !repo) throw new Error("请先填写 GH Token 和 仓库名");
 
       const url = `https://api.github.com/repos/${repo}/contents/${path}`;
       const options = {
