@@ -2,222 +2,420 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>小手机 · BYOK Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>角色卡生成</title>
+
+  <!-- Open-source fonts (Google Fonts). You can switch in floating ball. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link id="gf"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap"
+        rel="stylesheet">
+
   <style>
     :root{
-      --accent:#adcdea;
-      --bg:#ffffff;
-      --ink:#0f172a;
-      --muted:#475569;
-      --line:rgba(15,23,42,.12);
-      --shadow: 0 18px 48px rgba(15,23,42,.14);
-      --radius: 16px;
-      --radius2: 12px;
-      --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC","Hiragino Sans GB","Microsoft YaHei", Arial, "Noto Sans CJK SC", sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --accent: #adcdea;
+      --bg: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15,23,42,.12);
+      --shadow: 0 18px 50px rgba(15,23,42,.16);
+      --radius: 22px;
+      --radius2: 14px;
+
+      --font: "Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family:var(--sans);
-      color:var(--ink);
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      overflow:hidden;
+    }
+
+    /* Background: allow user uploaded image */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
       background:
-        radial-gradient(1200px 900px at 15% 10%, rgba(173,205,234,.75), transparent 60%),
-        linear-gradient(180deg, var(--bg), rgba(173,205,234,.12));
+        radial-gradient(1100px 900px at 20% 15%, color-mix(in oklab, var(--accent) 70%, transparent), transparent 62%),
+        radial-gradient(900px 700px at 80% 10%, color-mix(in oklab, var(--accent) 35%, transparent), transparent 60%),
+        linear-gradient(180deg, #fff, color-mix(in oklab, var(--accent) 18%, #fff));
+      pointer-events:none;
+      z-index:-2;
+    }
+    #bgImageLayer{
+      position:fixed; inset:0;
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      filter: saturate(1.02);
+      z-index:-3;
     }
 
-    /* Layout */
-    .app{
+    /* Phone frame */
+    .stage{
       height:100%;
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 14px 14px 90px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    }
+    .phone{
+      width:min(420px, 100%);
+      height:min(860px, 100%);
+      border-radius: 36px;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .safe{
+      height:100%;
+      padding: 18px 16px 18px;
       display:flex;
       flex-direction:column;
-      gap:12px;
-    }
-    header{
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.9);
-      box-shadow: var(--shadow);
-      padding: 12px 14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      min-width: 240px;
-    }
-    .brand .dot{
-      width:14px;height:14px;border-radius:50%;
-      background: var(--accent);
-      box-shadow: 0 10px 20px rgba(15,23,42,.10);
-    }
-    .brand h1{margin:0;font-size:14px;letter-spacing:.2px}
-    .brand small{display:block;margin-top:2px;color:var(--muted);font-size:12px}
-    .status{
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.9);
-      padding:8px 10px;
-      border-radius: 999px;
-      max-width: 52%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+      gap:14px;
     }
 
-    /* Chat */
-    .panel{
+    /* Home screen */
+    .homescreen{
       flex:1;
-      min-height:0;
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.9);
-      box-shadow: var(--shadow);
-      overflow:hidden;
       display:flex;
       flex-direction:column;
+      justify-content:flex-start;
+      padding-top: 28px;
+      gap: 18px;
     }
-    .panel-head{
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
+    .home-title{
+      font-size:13px;
+      color: var(--muted);
+      letter-spacing:.3px;
+    }
+    .icon-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .app-icon{
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
       align-items:center;
-      gap:10px;
+      gap:8px;
+      user-select:none;
+      cursor:pointer;
     }
-    .panel-head .title{
-      font-weight:700;
-      font-size:13px;
-    }
-    .panel-head .hint{
-      color:var(--muted);
-      font-size:12px;
+    .app-icon .tile{
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(135deg,
+        color-mix(in oklab, var(--accent) 62%, #fff),
+        #fff 70%);
+      box-shadow: 0 12px 28px rgba(15,23,42,.12);
+      display:grid;
+      place-items:center;
+      position:relative;
       overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
     }
-    .messages{
+    .app-icon .tile::after{
+      content:"";
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      border: 2px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.68);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .app-icon .name{
+      font-size:12px;
+      color: var(--ink);
+      text-align:center;
+      line-height:1.2;
+    }
+
+    /* App container */
+    .app{
       flex:1;
+      display:none;
+      flex-direction:column;
       min-height:0;
-      overflow:auto;
-      padding:14px;
+      gap:12px;
+    }
+    .app.show{ display:flex; }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+    }
+    .nav .t{
+      font-weight:700;
+      font-size:14px;
+    }
+    .nav .sub{
+      font-size:12px;
+      color: var(--muted);
+    }
+    .nav .left{
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:2px;
+      min-width: 0;
     }
-    .msg{
-      max-width: 92%;
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.98);
-      line-height:1.6;
-      font-size:13px;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-    .msg.user{
-      margin-left:auto;
-      background: linear-gradient(135deg, rgba(173,205,234,.38), rgba(255,255,255,.98));
-    }
-    .msg.ai{
-      margin-right:auto;
-      border-left: 3px solid rgba(173,205,234,.9);
-    }
-    .composer{
-      padding:12px;
-      border-top:1px solid var(--line);
+    .nav .right{
       display:flex;
-      gap:10px;
-      align-items:flex-end;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
-    textarea{
-      width:100%;
-      resize:none;
-      border:1px solid var(--line);
-      border-radius: 14px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.98);
-      outline:none;
-      font-family: var(--sans);
-      font-size:13px;
-      line-height:1.5;
-      max-height: 180px;
-    }
+
     .btn{
-      height:40px;
-      padding: 0 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
       border-radius: 14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.98);
+      padding: 10px 12px;
+      font-size:13px;
       cursor:pointer;
-      color:var(--ink);
       user-select:none;
       transition: transform .04s ease, background .15s ease;
       white-space:nowrap;
+    }
+    .btn:hover{ background:#fff; }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(135deg,
+        color-mix(in oklab, var(--accent) 75%, #fff),
+        #fff);
+      border-color: rgba(15,23,42,.10);
+      font-weight:600;
+    }
+    .btn.danger{
+      background: rgba(255,255,255,.92);
+      border-color: rgba(239,68,68,.25);
+      color: #b91c1c;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px rgba(15,23,42,.08);
+      overflow:hidden;
+      min-height:0;
+    }
+    .card-head{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card-head .title{
+      font-weight:700;
       font-size:13px;
     }
-    .btn:hover{background:#fff}
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(173,205,234,.95), rgba(255,255,255,.98));
-      border-color: rgba(15,23,42,.10);
+    .card-body{
+      padding:12px 14px;
+    }
+    .hint{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.55;
     }
 
-    /* Floating ball */
-    .ball{
-      position: fixed;
-      right: 16px;
-      bottom: 20px;
-      width: 56px;
-      height: 56px;
+    /* Screens */
+    .screen{ display:none; min-height:0; }
+    .screen.show{ display:block; }
+
+    /* Screen 1: Create/Manage */
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .manage{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+    .role-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .role-tile{
+      border:1px solid rgba(15,23,42,.10);
+      border-radius: 18px;
+      background: rgba(255,255,255,.92);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .avatar{
+      width: 64px;
+      height: 64px;
+      margin: 0 auto;
       border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(173,205,234,.9));
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: 0 16px 40px rgba(15,23,42,.18);
+      border: 1px solid rgba(15,23,42,.12);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), color-mix(in oklab, var(--accent) 60%, #fff));
       display:grid;
       place-items:center;
-      z-index: 50;
-      touch-action: none;
-      cursor: pointer;
+      overflow:hidden;
+      position:relative;
     }
-    .ball::after{
-      content:"";
-      width: 18px; height: 18px;
-      border-radius: 6px;
-      border: 2px solid rgba(15,23,42,.18);
-      background: rgba(255,255,255,.65);
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .avatar .plus{
+      width: 26px; height: 26px;
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,.18);
+      background: rgba(255,255,255,.68);
+      display:grid; place-items:center;
+      font-weight:700;
+      color: rgba(15,23,42,.55);
+    }
+    .role-name{
+      font-size:12px;
+      text-align:center;
+      font-weight:700;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
-    /* Overlay panel */
-    .overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,.30);
-      backdrop-filter: blur(6px);
-      z-index: 60;
-      display:none;
+    /* Forms */
+    .form{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .overlay.show{display:block;}
-    .sheet{
+    .field label{
+      display:block;
+      font-size:12px;
+      color: var(--muted);
+      margin-bottom:6px;
+    }
+    .field input, .field textarea{
+      width:100%;
+      border: 1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.94);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+      font-size: 13px;
+      font-family: var(--font);
+    }
+    .field textarea{
+      min-height: 130px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:8px 10px;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 70%, #fff), #fff);
+      border-color: rgba(15,23,42,.10);
+      font-weight:700;
+    }
+
+    /* slider (horizontal scroll) */
+    .hscroll{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width:none;
+    }
+    .hscroll::-webkit-scrollbar{ display:none; }
+    .pill{
+      flex:0 0 auto;
+      padding:9px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.92);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .pill.active{
+      background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 70%, #fff), #fff);
+      border-color: rgba(15,23,42,.10);
+      font-weight:700;
+    }
+
+    .footer-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px 14px;
+      border-top:1px solid var(--line);
+      background: rgba(255,255,255,.72);
+    }
+
+    /* details modal */
+    .overlay{
       position:absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-      max-width: 920px;
-      margin: 0 auto;
+      inset:0;
+      background: rgba(15,23,42,.28);
+      backdrop-filter: blur(6px);
+      display:none;
+      align-items:flex-end;
+      padding: 12px;
+    }
+    .overlay.show{ display:flex; }
+    .sheet{
+      width:100%;
       border-radius: 18px;
+      border:1px solid rgba(15,23,42,.12);
       background: rgba(255,255,255,.96);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
       overflow:hidden;
+      box-shadow: var(--shadow);
+      max-height: 76%;
+      display:flex;
+      flex-direction:column;
     }
     .sheet-head{
       padding:12px 12px;
@@ -227,835 +425,1405 @@
       justify-content:space-between;
       gap:10px;
     }
-    .tabs{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-    .tab{
-      padding:8px 10px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.98);
+    .sheet-head .title{ font-weight:800; font-size:13px; }
+    .sheet-body{ padding:12px; overflow:auto; }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
       font-size:12px;
-      cursor:pointer;
-    }
-    .tab.active{
-      background: linear-gradient(135deg, rgba(173,205,234,.70), rgba(255,255,255,.98));
-      border-color: rgba(15,23,42,.10);
-      font-weight:700;
-    }
-    .sheet-close{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.98);
-      border-radius: 12px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-size:12px;
-    }
-    .sheet-body{
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height:1.6;
       padding:12px;
-      max-height: 72vh;
-      overflow:auto;
+      border-radius: 14px;
+      border:1px solid rgba(15,23,42,.10);
+      background:#fff;
     }
 
-    .grid{
+    /* Floating ball (iOS-like transparent) */
+    .ball{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.22);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.35);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,.18),
+        inset 0 1px 0 rgba(255,255,255,.55);
+      z-index: 999;
+      display:grid;
+      place-items:center;
+      touch-action: none;
+      user-select:none;
+    }
+    .ball::after{
+      content:"";
+      width: 20px;
+      height: 20px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    /* Floating panel */
+    .ball-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.30);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display:none;
+      padding: 12px;
+      align-items:flex-end;
+    }
+    .ball-overlay.show{ display:flex; }
+
+    .panel{
+      width:min(520px, 100%);
+      margin: 0 auto;
+      border-radius: 18px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-head{
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .panel-head .title{
+      font-weight:900;
+      font-size:13px;
+    }
+    .panel-tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.80);
+    }
+    .panel-body{
+      padding: 12px;
+      max-height: 68vh;
+      overflow:auto;
+    }
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .kv{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
     }
-    .field{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.98);
+    .kv .field input, .kv .field textarea{
+      font-family: var(--font);
     }
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-    .field input, .field select{
-      width:100%;
-      border:1px solid rgba(15,23,42,.10);
-      border-radius: 12px;
-      padding:10px 10px;
-      outline:none;
-      background:#fff;
-      font-size:13px;
-    }
-    .field .row{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
-    .field .row > *{flex:1}
-    .hint2{font-size:12px;color:var(--muted);line-height:1.55}
-    .mono{font-family: var(--mono); font-size:12px}
 
-    /* Notebook */
-    .nb{
+    .theme-row{
       display:grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap:10px;
-      min-height: 320px;
-    }
-    .card{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255,255,255,.98);
-      overflow:hidden;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-    }
-    .card-head{
-      padding:10px 10px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-    .card-head .t{font-weight:700;font-size:12px}
-    .list{min-height:0; overflow:auto; padding:6px;}
-    .note-item{
+
+    .preset-list{
       display:flex;
       gap:8px;
-      align-items:flex-start;
-      padding:10px 10px;
-      border-radius: 12px;
-      border:1px solid rgba(15,23,42,.08);
-      margin: 6px 0;
+      overflow:auto;
+      padding-bottom:4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width:none;
+    }
+    .preset-list::-webkit-scrollbar{ display:none; }
+    .preset{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(15,23,42,.12);
       background:#fff;
       cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      white-space:nowrap;
     }
-    .note-item.active{
-      outline: 2px solid rgba(173,205,234,.75);
-      border-color: rgba(173,205,234,.35);
+    .swatch{
+      width:12px; height:12px; border-radius:4px;
+      border:1px solid rgba(15,23,42,.12);
+      background: var(--accent);
     }
-    .note-item .meta{flex:1; min-width:0;}
-    .note-item .meta .name{font-weight:700;font-size:12px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .note-item .meta .sub{font-size:12px;color:var(--muted); overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .note-item input{margin-top:2px}
-    .editor-wrap{padding:10px; display:flex; flex-direction:column; gap:8px; min-height:0;}
-    .editor-wrap input{
-      width:100%;
-      padding:10px 10px;
-      border-radius: 12px;
-      border:1px solid rgba(15,23,42,.10);
-      outline:none;
-      font-size:13px;
-      background:#fff;
-    }
-    .editor-wrap textarea{
-      flex:1;
-      min-height: 180px;
-      border-radius: 12px;
-      border:1px solid rgba(15,23,42,.10);
-    }
-    .row-actions{display:flex; gap:10px; flex-wrap:wrap;}
 
-    @media (max-width: 760px){
-      .nb{grid-template-columns: 1fr; }
+    /* tiny toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 12px 24px rgba(15,23,42,.14);
+      font-size: 12px;
+      color: var(--ink);
+      display:none;
+      z-index: 2000;
+      max-width: 88vw;
+      text-overflow: ellipsis;
+      overflow:hidden;
+      white-space:nowrap;
     }
+    .toast.show{ display:block; }
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="dot" aria-hidden="true"></div>
-        <div>
-          <h1>小手机 · BYOK Chat</h1>
-          <small>蓝白主题 · 悬浮球设置 · 笔记本上下文</small>
-        </div>
-      </div>
-      <div class="status" id="status">未配置 API（点右下悬浮球）</div>
-    </header>
+  <div id="bgImageLayer" aria-hidden="true"></div>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div class="title">对话</div>
-        <div class="hint" id="ctxHint">上下文：未启用笔记</div>
-      </div>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="safe">
 
-      <div class="messages" id="messages"></div>
+        <!-- Home Screen -->
+        <section class="homescreen" id="home">
+          <div class="home-title">桌面</div>
 
-      <div class="composer">
-        <textarea id="input" rows="2" placeholder="输入消息…（⌘/Ctrl + Enter 发送）"></textarea>
-        <button class="btn primary" id="send">发送</button>
+          <div class="icon-grid">
+            <div class="app-icon" id="openApp">
+              <div class="tile" aria-hidden="true"></div>
+              <div class="name">角色卡生成</div>
+            </div>
+          </div>
+
+          <div class="hint" style="margin-top:10px;">
+            点图标进入 App。右下悬浮球可配置 API / 模型 / 主题 / 字体 / 背景。
+          </div>
+        </section>
+
+        <!-- App -->
+        <section class="app" id="app">
+          <div class="nav">
+            <div class="left">
+              <div class="t" id="navTitle">角色卡生成</div>
+              <div class="sub" id="navSub">创建与管理</div>
+            </div>
+            <div class="right">
+              <button class="btn" id="backHome">回桌面</button>
+            </div>
+          </div>
+
+          <!-- Screen 1 -->
+          <div class="card screen show" id="screen1">
+            <div class="card-head">
+              <div class="title">第一页</div>
+              <div class="hint" id="screen1Hint">管理角色：当前 0 个</div>
+            </div>
+            <div class="card-body manage">
+              <div class="actions">
+                <button class="btn primary" id="goCreate">创建角色</button>
+                <button class="btn" id="btnManage">管理角色</button>
+                <button class="btn danger" id="btnExit">退出</button>
+              </div>
+
+              <div class="hint">
+                说明：管理区默认空白；创建后会出现「角色1/角色2…」卡片。点击角色名查看资料，可一键复制。
+              </div>
+
+              <div class="role-grid" id="roleGrid" style="margin-top:8px;"></div>
+            </div>
+          </div>
+
+          <!-- Screen 2 -->
+          <div class="card screen" id="screen2">
+            <div class="card-head">
+              <div class="title">第二页 · 基础信息</div>
+              <div class="hint">手动填写</div>
+            </div>
+            <div class="card-body">
+              <div class="form">
+                <div class="field">
+                  <label>名称</label>
+                  <input id="name" placeholder="例如：林微墨" />
+                </div>
+
+                <div class="row">
+                  <div class="field">
+                    <label>年龄</label>
+                    <input id="age" inputmode="numeric" placeholder="例如：25" />
+                  </div>
+                  <div class="field">
+                    <label>身高（cm）</label>
+                    <input id="height" inputmode="numeric" placeholder="例如：165" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>性别</label>
+                  <div class="seg">
+                    <div class="chip" data-gender="女" id="gF">女</div>
+                    <div class="chip" data-gender="男" id="gM">男</div>
+                  </div>
+                  <div class="hint" style="margin-top:8px;">
+                    提示：如果选择“女”，第三页会按女性向默认细节生成（肤色白、鼻子小巧玲珑等）。
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="footer-actions">
+              <button class="btn" id="s2prev">上一步</button>
+              <button class="btn primary" id="s2next">下一步</button>
+            </div>
+          </div>
+
+          <!-- Screen 3 -->
+          <div class="card screen" id="screen3">
+            <div class="card-head">
+              <div class="title">第三页 · 创建形象</div>
+              <div class="hint">可选项 + 详细说明</div>
+            </div>
+
+            <div class="card-body" style="display:flex; flex-direction:column; gap:10px; min-height:0;">
+              <div class="field">
+                <label>形象资料输入框（你可手动编辑；也可点“完成”让 AI/随机生成内容填入）</label>
+                <textarea id="profile" placeholder="在这里写形象资料..."></textarea>
+              </div>
+
+              <div class="field">
+                <label>眼型（横向滑动选择）</label>
+                <div class="hscroll" id="eyes"></div>
+                <div class="hint" id="eyeDesc" style="margin-top:8px;">请选择一个眼型查看魅力表现。</div>
+              </div>
+
+              <div class="field">
+                <label>头发长度（横向滑动选择）</label>
+                <div class="hscroll" id="hair"></div>
+                <div class="hint" id="hairDesc" style="margin-top:8px;">请选择头发长度查看气质倾向。</div>
+              </div>
+
+              <div class="field">
+                <label>胸部丰满程度（横向滑动选择）</label>
+                <div class="hscroll" id="bust"></div>
+                <div class="hint" id="bustDesc" style="margin-top:8px;">请选择程度查看魅力表达。</div>
+              </div>
+
+              <div class="field">
+                <label>体香（横向滑动选择）</label>
+                <div class="hscroll" id="scent"></div>
+                <div class="hint" id="scentDesc" style="margin-top:8px;">请选择体香查看印象描述。</div>
+              </div>
+
+              <div class="row">
+                <div class="field">
+                  <label>AI 生成形象字数（用于控制输出长度）</label>
+                  <input id="words" inputmode="numeric" placeholder="例如：400" />
+                </div>
+                <div class="field">
+                  <label>生成方式</label>
+                  <div class="seg">
+                    <div class="chip active" data-gen="random" id="genRandom">随机生成（本地）</div>
+                    <div class="chip" data-gen="ai" id="genAI">AI 生成（需要 API）</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hint">
+                默认细节（女向时会自动补全）：肤色白、鼻子小巧玲珑、唇形柔软润泽、下巴肩颈锁骨线条优美、腰部腿部纤细、玉足。
+              </div>
+            </div>
+
+            <div class="footer-actions">
+              <button class="btn" id="s3prev">上一步</button>
+              <button class="btn primary" id="finalConfirm">最终确认</button>
+            </div>
+          </div>
+
+          <!-- Role detail overlay -->
+          <div class="overlay" id="roleOverlay">
+            <div class="sheet">
+              <div class="sheet-head">
+                <div class="title" id="detailTitle">角色资料</div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn" id="copyRole">一键复制</button>
+                  <button class="btn" id="closeRole">关闭</button>
+                </div>
+              </div>
+              <div class="sheet-body">
+                <div class="mono" id="detailText"></div>
+                <div class="hint" style="margin-top:10px;">
+                  头像：点管理页角色圆框中间“+”可上传。
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
       </div>
-    </section>
+    </div>
   </div>
 
-  <!-- Floating ball -->
-  <div class="ball" id="ball" aria-label="打开设置"></div>
+  <!-- Floating Ball -->
+  <div class="ball" id="ball" aria-label="打开悬浮球面板"></div>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true">
-    <div class="sheet">
-      <div class="sheet-head">
-        <div class="tabs">
-          <button class="tab active" data-tab="settings">设置</button>
-          <button class="tab" data-tab="notebook">笔记本</button>
-          <button class="tab" data-tab="data">数据</button>
-        </div>
-        <button class="sheet-close" id="close">关闭</button>
+  <!-- Floating Panel -->
+  <div class="ball-overlay" id="ballOverlay">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="title">悬浮球</div>
+        <button class="btn" id="closePanel">关闭</button>
       </div>
 
-      <div class="sheet-body">
-        <!-- Settings -->
-        <div class="tabpane" id="tab-settings">
-          <div class="grid">
+      <div class="panel-tabs">
+        <button class="chip active" data-tab="api">API</button>
+        <button class="chip" data-tab="model">模型</button>
+        <button class="chip" data-tab="theme">配色</button>
+        <button class="chip" data-tab="font">字体</button>
+        <button class="chip" data-tab="bg">背景</button>
+      </div>
+
+      <div class="panel-body">
+        <!-- API -->
+        <div class="tabpane" id="tab-api">
+          <div class="kv">
             <div class="field">
               <label>API Base URL（不含末尾 / ）</label>
-              <input id="apiBase" placeholder="https://your-proxy.example.com" />
-              <div class="hint2" style="margin-top:8px;">
-                默认请求：<span class="mono">POST {BaseURL}/v1/chat/completions</span>
+              <input id="apiBase" placeholder="https://你的中转站域名" />
+              <div class="mini" style="margin-top:6px;">
+                默认请求：<b>POST</b> <span style="font-family:ui-monospace">BaseURL/v1/chat/completions</span>
               </div>
             </div>
 
             <div class="field">
-              <label>API Key（仅保存在你的浏览器本地）</label>
+              <label>API Key（仅保存在本机浏览器）</label>
               <input id="apiKey" placeholder="sk-..." autocomplete="off" />
-              <div class="hint2" style="margin-top:8px;">
-                提示：公开分享页面时不要预填。每个使用者自己填写自己的 Key。
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="row">
-                <div>
-                  <label>Model</label>
-                  <input id="model" placeholder="gpt-4o-mini / gpt-4.1-mini / 你的中转站模型名" />
-                </div>
-                <div>
-                  <label>Temperature</label>
-                  <input id="temp" type="number" min="0" max="2" step="0.1" />
-                </div>
+              <div class="mini" style="margin-top:6px;">
+                公开分享时不要预填；每个使用者自己填写自己的 Key。
               </div>
             </div>
 
             <div class="field">
               <label>System Prompt（可选）</label>
-              <textarea id="sys" rows="4" placeholder="例如：你是一个温柔且高效的助手…"></textarea>
+              <textarea id="sys" rows="4" placeholder="例如：你是角色卡生成助手，输出中文，结构清晰..."></textarea>
             </div>
 
-            <div class="field">
-              <div class="row-actions">
-                <button class="btn" id="test">测试连接</button>
-                <button class="btn" id="save">保存设置</button>
-                <button class="btn" id="wipeKey">清除 Key</button>
-              </div>
-              <div class="hint2" style="margin-top:8px;" id="testResult">未测试</div>
+            <div class="actions">
+              <button class="btn" id="testApi">测试连接</button>
+              <button class="btn primary" id="saveApi">保存</button>
+              <button class="btn" id="wipeKey">清除 Key</button>
+            </div>
+            <div class="mini" id="apiTip" style="margin-top:8px;">未测试</div>
+          </div>
+        </div>
+
+        <!-- Model -->
+        <div class="tabpane" id="tab-model" style="display:none;">
+          <div class="field">
+            <label>滑动选择模型（点击即选中）</label>
+            <div class="hscroll" id="modelChips"></div>
+            <div class="mini" style="margin-top:8px;">
+              当前模型：<b id="curModelText">未选择</b>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Temperature</label>
+            <input id="temp" type="number" min="0" max="2" step="0.1" />
+          </div>
+
+          <div class="field">
+            <label>自定义模型名（可选，不想填就用上面滑动选择）</label>
+            <input id="customModel" placeholder="例如：gpt-4o-mini" />
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn" id="applyCustomModel">使用自定义模型</button>
+              <button class="btn primary" id="saveModel">保存</button>
             </div>
           </div>
         </div>
 
-        <!-- Notebook -->
-        <div class="tabpane" id="tab-notebook" style="display:none;">
-          <div class="nb">
-            <div class="card">
-              <div class="card-head">
-                <div class="t">笔记列表（勾选=作为上下文）</div>
-                <button class="btn" id="addNote" style="height:32px;">新增</button>
+        <!-- Theme -->
+        <div class="tabpane" id="tab-theme" style="display:none;">
+          <div class="field">
+            <label>手动输入色号调试（支持 #RRGGBB）</label>
+            <div class="theme-row">
+              <div>
+                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">强调色 Accent</label>
+                <input id="accent" placeholder="#adcdea" />
               </div>
-              <div class="list" id="noteList"></div>
+              <div>
+                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">背景色 Background</label>
+                <input id="bg" placeholder="#ffffff" />
+              </div>
             </div>
 
-            <div class="card">
-              <div class="card-head">
-                <div class="t">编辑</div>
-                <div style="display:flex; gap:8px;">
-                  <button class="btn" id="delNote" style="height:32px;">删除</button>
-                  <button class="btn primary" id="saveNote" style="height:32px;">保存</button>
-                </div>
-              </div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn" id="applyTheme">应用</button>
+              <button class="btn primary" id="saveThemePreset">保存主题</button>
+            </div>
 
-              <div class="editor-wrap">
-                <input id="noteTitle" placeholder="标题" />
-                <textarea id="noteBody" placeholder="在这里写你的笔记/代码片段…（会被作为上下文喂给 AI）"></textarea>
-                <div class="hint2">
-                  说明：这不是“让 AI 改功能代码”。只是把你写的内容作为对话上下文，让它读得到。
-                </div>
-              </div>
+            <div class="mini" style="margin-top:10px;">已保存的主题（点击切换）：</div>
+            <div class="preset-list" id="presetList" style="margin-top:8px;"></div>
+          </div>
+        </div>
+
+        <!-- Font -->
+        <div class="tabpane" id="tab-font" style="display:none;">
+          <div class="field">
+            <label>开源免费字体（点击切换）</label>
+            <div class="hscroll" id="fontChips"></div>
+            <div class="mini" style="margin-top:8px;">
+              当前字体：<b id="curFontText">默认</b>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>上传字体（TTF/OTF）并应用到本页面</label>
+            <input id="fontFile" type="file" accept=".ttf,.otf,font/ttf,font/otf" />
+            <div class="mini" style="margin-top:8px;">
+              你问的那个问题：<b>可以直接应用</b>。实现方式是前端读取字体文件并用 <span style="font-family:ui-monospace">@font-face</span> 注入。
+              但注意：这是“本机/本浏览器生效”，分享给别人除非你把字体文件也托管到站点里，否则别人不会自动拥有该字体。
             </div>
           </div>
         </div>
 
-        <!-- Data -->
-        <div class="tabpane" id="tab-data" style="display:none;">
-          <div class="grid">
-            <div class="field">
-              <label>导出（设置 + 笔记 + 聊天记录）</label>
-              <button class="btn" id="export">导出 JSON</button>
-              <div class="hint2" style="margin-top:8px;">
-                导出的 JSON 不包含你的 Key（除非你选择包含；本页面默认不导出 Key）。
-              </div>
+        <!-- Background -->
+        <div class="tabpane" id="tab-bg" style="display:none;">
+          <div class="field">
+            <label>上传图片作为背景</label>
+            <input id="bgFile" type="file" accept="image/*" />
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn" id="clearBg">清除背景图</button>
             </div>
-
-            <div class="field">
-              <label>导入 JSON</label>
-              <input id="importFile" type="file" accept="application/json" />
-              <div class="hint2" style="margin-top:8px;">
-                导入会覆盖本机当前数据。
-              </div>
-            </div>
-
-            <div class="field">
-              <label>清空</label>
-              <div class="row-actions">
-                <button class="btn" id="clearChat">清空聊天</button>
-                <button class="btn" id="clearNotes">清空笔记</button>
-                <button class="btn" id="clearAll">清空全部（含设置）</button>
-              </div>
+            <div class="mini" style="margin-top:8px;">
+              背景图默认仅保存在本机（localStorage）。如果你想“分享出去别人也看到同一张背景”，需要把图片放到仓库里并用 URL 引用。
             </div>
           </div>
         </div>
 
-      </div><!-- sheet-body -->
-    </div><!-- sheet -->
-  </div><!-- overlay -->
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
+    /***********************
+     * Storage
+     ***********************/
+    const S = {
+      settings: "rcg_settings_v1",
+      themePresets: "rcg_theme_presets_v1",
+      bg: "rcg_bg_image_v1",
+      ball: "rcg_ball_pos_v1",
+      roles: "rcg_roles_v1",
+      font: "rcg_font_v1"
+    };
     const $ = (s)=>document.querySelector(s);
 
-    const STORAGE = {
-      settings: "mini_phone_settings_v1",
-      notes: "mini_phone_notes_v1",
-      chat: "mini_phone_chat_v1",
-      ball: "mini_phone_ball_v1",
-    };
-
-    const els = {
-      status: $("#status"),
-      ctxHint: $("#ctxHint"),
-      messages: $("#messages"),
-      input: $("#input"),
-      send: $("#send"),
-
-      ball: $("#ball"),
-      overlay: $("#overlay"),
-      close: $("#close"),
-      tabs: document.querySelectorAll(".tab"),
-      panes: {
-        settings: $("#tab-settings"),
-        notebook: $("#tab-notebook"),
-        data: $("#tab-data"),
-      },
-
-      apiBase: $("#apiBase"),
-      apiKey: $("#apiKey"),
-      model: $("#model"),
-      temp: $("#temp"),
-      sys: $("#sys"),
-      test: $("#test"),
-      save: $("#save"),
-      wipeKey: $("#wipeKey"),
-      testResult: $("#testResult"),
-
-      noteList: $("#noteList"),
-      addNote: $("#addNote"),
-      delNote: $("#delNote"),
-      saveNote: $("#saveNote"),
-      noteTitle: $("#noteTitle"),
-      noteBody: $("#noteBody"),
-
-      export: $("#export"),
-      importFile: $("#importFile"),
-      clearChat: $("#clearChat"),
-      clearNotes: $("#clearNotes"),
-      clearAll: $("#clearAll"),
-    };
-
-    function nowId(){
-      return "n_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
-    }
-
-    function loadJSON(key, fallback){
+    function load(key, fallback){
       try{
         const t = localStorage.getItem(key);
         if(!t) return fallback;
         return JSON.parse(t);
       }catch(e){ return fallback; }
     }
-    function saveJSON(key, val){
+    function save(key, val){
       localStorage.setItem(key, JSON.stringify(val));
     }
+    function toast(msg){
+      const el = $("#toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=> el.classList.remove("show"), 1800);
+    }
+
+    /***********************
+     * Settings (BYOK)
+     ***********************/
+    const defaultSettings = {
+      apiBase: "",
+      apiKey: "",
+      system: "",
+      model: "gpt-4o-mini",
+      temperature: 0.2
+    };
 
     function getSettings(){
-      return loadJSON(STORAGE.settings, {
-        apiBase: "",
-        apiKey: "",
-        model: "",
-        temperature: 0.2,
-        system: "",
-      });
+      return { ...defaultSettings, ...load(S.settings, {}) };
     }
     function setSettings(patch){
-      const s = getSettings();
-      const next = { ...s, ...patch };
-      saveJSON(STORAGE.settings, next);
+      const next = { ...getSettings(), ...patch };
+      save(S.settings, next);
       return next;
     }
 
-    function getNotes(){
-      return loadJSON(STORAGE.notes, {
-        activeId: null,
-        items: []
-      });
-    }
-    function setNotes(next){
-      saveJSON(STORAGE.notes, next);
-      return next;
-    }
+    /***********************
+     * Fetch patches (your "3 patches")
+     ***********************/
+    // Patch 1: timeout + abortable
+    let inFlightController = null;
 
-    function getChat(){
-      return loadJSON(STORAGE.chat, []);
-    }
-    function setChat(list){
-      saveJSON(STORAGE.chat, list);
-      return list;
-    }
-
-    function addMsg(role, content){
-      const chat = getChat();
-      chat.push({ role, content, ts: Date.now() });
-      setChat(chat);
-      renderChat();
-    }
-
-    function renderChat(){
-      const chat = getChat();
-      els.messages.innerHTML = "";
-      for(const m of chat){
-        const div = document.createElement("div");
-        div.className = "msg " + (m.role === "user" ? "user" : "ai");
-        div.textContent = m.content;
-        els.messages.appendChild(div);
-      }
-      els.messages.scrollTop = els.messages.scrollHeight;
-    }
-
-    function selectedNotesText(){
-      const nb = getNotes();
-      const selected = nb.items.filter(x => x.enabled);
-      if(!selected.length) return "";
-      // Keep simple & deterministic
-      return selected.map((n, idx) =>
-        `[#${idx+1} ${n.title || "未命名"}]\n${n.body || ""}`
-      ).join("\n\n");
-    }
-
-    function renderCtxHint(){
-      const nb = getNotes();
-      const count = nb.items.filter(x=>x.enabled).length;
-      els.ctxHint.textContent = count ? `上下文：已启用 ${count} 条笔记` : "上下文：未启用笔记";
-    }
-
-    function renderStatus(){
-      const s = getSettings();
-      const ok = !!(s.apiBase && s.apiKey && s.model);
-      if(ok){
-        els.status.textContent = `已配置：${s.apiBase} · ${s.model}`;
-      }else{
-        els.status.textContent = "未配置 API（点右下悬浮球）";
-      }
-    }
-
-    function renderSettingsForm(){
-      const s = getSettings();
-      els.apiBase.value = s.apiBase || "";
-      els.apiKey.value = s.apiKey || "";
-      els.model.value = s.model || "";
-      els.temp.value = String(s.temperature ?? 0.2);
-      els.sys.value = s.system || "";
-    }
-
-    function renderNotes(){
-      const nb = getNotes();
-      els.noteList.innerHTML = "";
-
-      for(const n of nb.items){
-        const item = document.createElement("div");
-        item.className = "note-item" + (n.id === nb.activeId ? " active":"");
-        item.innerHTML = `
-          <input type="checkbox" ${n.enabled ? "checked":""} aria-label="作为上下文"/>
-          <div class="meta">
-            <div class="name"></div>
-            <div class="sub"></div>
-          </div>
-        `;
-        item.querySelector(".name").textContent = n.title || "未命名";
-        item.querySelector(".sub").textContent = (n.body || "").slice(0, 50).replace(/\s+/g," ").trim() || "（空）";
-
-        const cb = item.querySelector("input");
-        cb.addEventListener("click", (e)=>{
-          e.stopPropagation();
-          const next = getNotes();
-          const it = next.items.find(x=>x.id===n.id);
-          if(it) it.enabled = cb.checked;
-          setNotes(next);
-          renderCtxHint();
-        });
-
-        item.addEventListener("click", ()=>{
-          const next = getNotes();
-          next.activeId = n.id;
-          setNotes(next);
-          loadActiveNoteIntoEditor();
-          renderNotes();
-        });
-
-        els.noteList.appendChild(item);
-      }
-
-      renderCtxHint();
-    }
-
-    function loadActiveNoteIntoEditor(){
-      const nb = getNotes();
-      const cur = nb.items.find(x=>x.id===nb.activeId);
-      els.noteTitle.value = cur?.title || "";
-      els.noteBody.value = cur?.body || "";
-    }
-
-    function ensureActiveNote(){
-      const nb = getNotes();
-      if(nb.activeId && nb.items.some(x=>x.id===nb.activeId)) return nb;
-      if(nb.items.length){
-        nb.activeId = nb.items[0].id;
-        setNotes(nb);
-        return nb;
-      }
-      // create one
-      const id = nowId();
-      nb.items.unshift({ id, title:"第一条笔记", body:"", enabled:true, updated: Date.now() });
-      nb.activeId = id;
-      setNotes(nb);
-      return nb;
-    }
-
-    /* API call: OpenAI-compatible chat/completions */
-    async function callChatCompletions({ apiBase, apiKey, model, temperature, system, messages }){
+    async function callChatCompletions({ apiBase, apiKey, model, temperature, system, messages, max_tokens }){
       const url = apiBase.replace(/\/+$/,"") + "/v1/chat/completions";
+
+      // Abort previous
+      if (inFlightController) inFlightController.abort();
+      const controller = new AbortController();
+      inFlightController = controller;
+
+      const timeoutMs = 90000;
+      const timer = setTimeout(() => controller.abort(new Error("timeout")), timeoutMs);
+
       const payload = {
         model,
         temperature,
-        messages
+        messages,
+        max_tokens
       };
 
-      const r = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + apiKey
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if(!r.ok){
-        const t = await r.text().catch(()=> "");
-        throw new Error(`API 请求失败：${r.status} ${t}`);
-      }
-      const data = await r.json();
-      const text = data?.choices?.[0]?.message?.content;
-      if(typeof text !== "string") throw new Error("响应解析失败（未拿到 content）");
-      return text;
-    }
-
-    function buildMessagesForApi(userText){
-      const s = getSettings();
-      const ctx = selectedNotesText();
-
-      let sys = (s.system || "").trim();
-      if(ctx){
-        sys = (sys ? sys + "\n\n" : "") + "以下是用户提供的笔记（作为上下文参考）：\n\n" + ctx;
-      }
-
-      const chat = getChat();
-      const history = chat.map(m => ({ role: m.role === "ai" ? "assistant" : "user", content: m.content }));
-
-      const msgs = [];
-      if(sys) msgs.push({ role:"system", content: sys });
-      msgs.push(...history);
-      msgs.push({ role:"user", content: userText });
-      return msgs;
-    }
-
-    async function onSend(){
-      const text = els.input.value.trim();
-      if(!text) return;
-
-      const s = getSettings();
-      if(!(s.apiBase && s.apiKey && s.model)){
-        addMsg("ai", "先在悬浮球里把 API Base URL / Key / Model 配好。");
-        return;
-      }
-
-      els.input.value = "";
-      addMsg("user", text);
-
-      els.send.disabled = true;
-      els.send.textContent = "发送中…";
       try{
-        const messages = buildMessagesForApi(text);
-        const reply = await callChatCompletions({
-          apiBase: s.apiBase,
-          apiKey: s.apiKey,
-          model: s.model,
-          temperature: Number(s.temperature ?? 0.2),
-          system: s.system || "",
-          messages
+        const r = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + apiKey
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal
         });
-        addMsg("ai", reply);
+
+        if(!r.ok){
+          const t = await r.text().catch(()=> "");
+          throw new Error(`API 请求失败：${r.status} ${t}`);
+        }
+
+        const data = await r.json();
+        const text = data?.choices?.[0]?.message?.content;
+        if(typeof text !== "string") throw new Error("响应解析失败（未拿到 content）");
+        return text;
       }catch(e){
-        addMsg("ai", "错误：" + (e?.message || String(e)));
+        if (String(e?.name).includes("Abort") || String(e).includes("timeout")) {
+          throw new Error("请求超时/被中断：建议降低字数或稍后再试");
+        }
+        throw e;
       }finally{
-        els.send.disabled = false;
-        els.send.textContent = "发送";
+        clearTimeout(timer);
+        if (inFlightController === controller) inFlightController = null;
       }
     }
 
-    /* Overlay / Tabs */
-    function openOverlay(){ els.overlay.classList.add("show"); }
-    function closeOverlay(){ els.overlay.classList.remove("show"); }
+    // Patch 2: leave page => abort
+    window.addEventListener("pagehide", () => {
+      try { inFlightController?.abort(); } catch(e){}
+    });
 
-    function setTab(name){
-      els.tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === name));
-      Object.entries(els.panes).forEach(([k, el]) => {
-        el.style.display = (k === name) ? "block" : "none";
-      });
-      if(name === "notebook"){
-        ensureActiveNote();
-        renderNotes();
-        loadActiveNoteIntoEditor();
-      }
-    }
+    // Patch 3: bfcache restore => reload
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) location.reload();
+    });
 
-    /* Floating ball drag */
-    function loadBallPos(){
-      return loadJSON(STORAGE.ball, null);
-    }
-    function saveBallPos(pos){
-      saveJSON(STORAGE.ball, pos);
-    }
+    /***********************
+     * Floating ball (drag + snap)
+     ***********************/
+    const ball = $("#ball");
+    const ballOverlay = $("#ballOverlay");
+
     function applyBallPos(x,y){
-      els.ball.style.left = x + "px";
-      els.ball.style.top = y + "px";
-      els.ball.style.right = "auto";
-      els.ball.style.bottom = "auto";
+      ball.style.left = x + "px";
+      ball.style.top = y + "px";
+      ball.style.right = "auto";
+      ball.style.bottom = "auto";
     }
-
-    function snapToEdge(){
-      const rect = els.ball.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const margin = 10;
-      const x = (rect.left + rect.width/2 < vw/2) ? margin : (vw - rect.width - margin);
-      const y = Math.min(Math.max(rect.top, margin), window.innerHeight - rect.height - margin);
-      applyBallPos(x, y);
-      saveBallPos({ x, y });
+    function snapBall(){
+      const r = ball.getBoundingClientRect();
+      const vw = innerWidth, vh = innerHeight;
+      const m = 10;
+      const x = (r.left + r.width/2 < vw/2) ? m : (vw - r.width - m);
+      const y = Math.min(Math.max(r.top, m), vh - r.height - m);
+      applyBallPos(x,y);
+      save(S.ball, {x,y});
     }
+    (function initBall(){
+      const pos = load(S.ball, null);
+      if(pos?.x != null && pos?.y != null){
+        applyBallPos(pos.x, pos.y);
+        snapBall();
+      }
+    })();
 
-    let drag = { on:false, dx:0, dy:0, moved:false };
-    els.ball.addEventListener("pointerdown", (e)=>{
-      drag.on = true;
-      drag.moved = false;
-      els.ball.setPointerCapture(e.pointerId);
-      const r = els.ball.getBoundingClientRect();
+    let drag = {on:false, dx:0, dy:0, moved:false};
+    ball.addEventListener("pointerdown", (e)=>{
+      drag.on = true; drag.moved = false;
+      ball.setPointerCapture(e.pointerId);
+      const r = ball.getBoundingClientRect();
       drag.dx = e.clientX - r.left;
       drag.dy = e.clientY - r.top;
     });
-    els.ball.addEventListener("pointermove", (e)=>{
+    ball.addEventListener("pointermove", (e)=>{
       if(!drag.on) return;
       drag.moved = true;
-      const margin = 6;
-      const x = Math.min(Math.max(e.clientX - drag.dx, margin), window.innerWidth - 56 - margin);
-      const y = Math.min(Math.max(e.clientY - drag.dy, margin), window.innerHeight - 56 - margin);
-      applyBallPos(x, y);
+      const m = 6;
+      const x = Math.min(Math.max(e.clientX - drag.dx, m), innerWidth - 56 - m);
+      const y = Math.min(Math.max(e.clientY - drag.dy, m), innerHeight - 56 - m);
+      applyBallPos(x,y);
     });
-    els.ball.addEventListener("pointerup", ()=>{
-      if(drag.on){
-        drag.on = false;
-        snapToEdge();
-      }
+    ball.addEventListener("pointerup", ()=>{
+      if(!drag.on) return;
+      drag.on = false;
+      snapBall();
     });
-    els.ball.addEventListener("click", ()=>{
-      // click after drag shouldn't open
+    ball.addEventListener("click", ()=>{
       if(drag.moved) return;
-      openOverlay();
+      ballOverlay.classList.add("show");
     });
 
-    window.addEventListener("resize", ()=>{
-      // keep in safe area
-      const pos = loadBallPos();
-      if(pos) snapToEdge();
+    $("#closePanel").addEventListener("click", ()=> ballOverlay.classList.remove("show"));
+    ballOverlay.addEventListener("click", (e)=>{
+      if(e.target === ballOverlay) ballOverlay.classList.remove("show");
     });
 
-    /* Settings actions */
-    els.save.addEventListener("click", ()=>{
-      setSettings({
-        apiBase: els.apiBase.value.trim(),
-        apiKey: els.apiKey.value.trim(),
-        model: els.model.value.trim(),
-        temperature: Number(els.temp.value || 0.2),
-        system: els.sys.value
-      });
-      renderStatus();
-      els.testResult.textContent = "已保存。";
-    });
+    /***********************
+     * Panel tabs
+     ***********************/
+    const tabBtns = document.querySelectorAll(".panel-tabs .chip");
+    const panes = {
+      api: $("#tab-api"),
+      model: $("#tab-model"),
+      theme: $("#tab-theme"),
+      font: $("#tab-font"),
+      bg: $("#tab-bg")
+    };
+    function setPanelTab(name){
+      tabBtns.forEach(b=> b.classList.toggle("active", b.dataset.tab === name));
+      Object.entries(panes).forEach(([k, el]) => el.style.display = (k===name) ? "block" : "none");
+    }
+    tabBtns.forEach(b=> b.addEventListener("click", ()=> setPanelTab(b.dataset.tab)));
 
-    els.wipeKey.addEventListener("click", ()=>{
-      setSettings({ apiKey: "" });
-      renderSettingsForm();
-      renderStatus();
-      els.testResult.textContent = "已清除 Key（仅本机）。";
-    });
+    /***********************
+     * Theme editor + presets
+     ***********************/
+    function isHex(s){ return /^#([0-9a-fA-F]{6})$/.test((s||"").trim()); }
 
-    els.test.addEventListener("click", async ()=>{
-      const apiBase = els.apiBase.value.trim();
-      const apiKey = els.apiKey.value.trim();
-      const model = els.model.value.trim();
-      const temperature = Number(els.temp.value || 0.2);
-      const system = els.sys.value || "";
+    function applyThemeVars(accent, bg){
+      if(isHex(accent)) document.documentElement.style.setProperty("--accent", accent.trim());
+      if(isHex(bg)) document.documentElement.style.setProperty("--bg", bg.trim());
+    }
 
-      if(!(apiBase && apiKey && model)){
-        els.testResult.textContent = "请先填写 Base URL / Key / Model。";
-        return;
-      }
-      els.test.disabled = true;
-      els.test.textContent = "测试中…";
-      els.testResult.textContent = "请求中…";
-      try{
-        const reply = await callChatCompletions({
-          apiBase, apiKey, model, temperature,
-          system,
-          messages: [
-            ...(system.trim()? [{ role:"system", content: system.trim() }] : []),
-            { role:"user", content:"回复一个 OK（测试连接）" }
-          ]
+    function renderPresets(){
+      const list = $("#presetList");
+      const presets = load(S.themePresets, []);
+      list.innerHTML = "";
+      presets.forEach((p, idx)=>{
+        const el = document.createElement("div");
+        el.className = "preset";
+        el.innerHTML = `<span class="swatch" style="background:${p.accent}"></span>${p.name || ("主题"+(idx+1))}`;
+        el.addEventListener("click", ()=>{
+          $("#accent").value = p.accent;
+          $("#bg").value = p.bg;
+          applyThemeVars(p.accent, p.bg);
+          toast("已切换主题");
         });
-        els.testResult.textContent = "成功：" + reply.slice(0,80).replace(/\s+/g," ").trim();
-      }catch(e){
-        els.testResult.textContent = "失败：" + (e?.message || String(e));
-      }finally{
-        els.test.disabled = false;
-        els.test.textContent = "测试连接";
+        list.appendChild(el);
+      });
+      if(!presets.length){
+        const tip = document.createElement("div");
+        tip.className = "mini";
+        tip.textContent = "暂无保存主题";
+        list.appendChild(tip);
       }
+    }
+
+    $("#applyTheme").addEventListener("click", ()=>{
+      const a = $("#accent").value.trim();
+      const b = $("#bg").value.trim();
+      if(!isHex(a) || !isHex(b)) return toast("色号格式需为 #RRGGBB");
+      applyThemeVars(a,b);
+      toast("已应用");
     });
 
-    /* Notes actions */
-    els.addNote.addEventListener("click", ()=>{
-      const nb = getNotes();
-      const id = nowId();
-      nb.items.unshift({ id, title:"新笔记", body:"", enabled:true, updated: Date.now() });
-      nb.activeId = id;
-      setNotes(nb);
-      renderNotes();
-      loadActiveNoteIntoEditor();
+    $("#saveThemePreset").addEventListener("click", ()=>{
+      const a = $("#accent").value.trim();
+      const b = $("#bg").value.trim();
+      if(!isHex(a) || !isHex(b)) return toast("色号格式需为 #RRGGBB");
+      const presets = load(S.themePresets, []);
+      const name = prompt("给这个主题取名（可选）") || "";
+      presets.unshift({ name, accent:a, bg:b, ts: Date.now() });
+      // keep last 12
+      save(S.themePresets, presets.slice(0,12));
+      renderPresets();
+      toast("主题已保存");
     });
 
-    els.saveNote.addEventListener("click", ()=>{
-      const nb = ensureActiveNote();
-      const cur = nb.items.find(x=>x.id===nb.activeId);
-      if(!cur) return;
-      cur.title = els.noteTitle.value.trim();
-      cur.body = els.noteBody.value;
-      cur.updated = Date.now();
-      setNotes(nb);
-      renderNotes();
-    });
+    /***********************
+     * Fonts: built-in + upload ttf
+     ***********************/
+    const fontOptions = [
+      { name:"默认（Noto Sans SC）", css:`"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
+      { name:"Inter", css:`"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
+      { name:"ZCOOL KuaiLe（站酷快乐体）", css:`"ZCOOL KuaiLe", "Noto Sans SC", sans-serif` },
+      { name:"Ma Shan Zheng（马善政毛笔）", css:`"Ma Shan Zheng", "Noto Sans SC", sans-serif` }
+    ];
 
-    els.delNote.addEventListener("click", ()=>{
-      const nb = getNotes();
-      if(!nb.activeId) return;
-      const idx = nb.items.findIndex(x=>x.id===nb.activeId);
-      if(idx < 0) return;
-      nb.items.splice(idx, 1);
-      nb.activeId = nb.items[0]?.id || null;
-      setNotes(nb);
-      ensureActiveNote();
-      renderNotes();
-      loadActiveNoteIntoEditor();
-    });
+    function setFontCss(css, label){
+      document.documentElement.style.setProperty("--font", css);
+      save(S.font, { type:"builtin", css, label });
+      $("#curFontText").textContent = label || "已设置";
+      toast("字体已切换");
+    }
 
-    /* Data actions */
-    els.export.addEventListener("click", ()=>{
-      const settings = getSettings();
-      // 默认不导出 Key
-      const safeSettings = { ...settings, apiKey: "" };
+    function renderFontChips(){
+      const box = $("#fontChips");
+      box.innerHTML = "";
+      const cur = load(S.font, null);
+      fontOptions.forEach(opt=>{
+        const el = document.createElement("div");
+        el.className = "pill" + ((cur?.css===opt.css) ? " active" : "");
+        el.textContent = opt.name;
+        el.addEventListener("click", ()=>{
+          document.querySelectorAll("#fontChips .pill").forEach(x=>x.classList.remove("active"));
+          el.classList.add("active");
+          setFontCss(opt.css, opt.name);
+        });
+        box.appendChild(el);
+      });
+    }
 
-      const payload = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        settings: safeSettings,
-        notes: getNotes(),
-        chat: getChat(),
-      };
+    // Upload font: inject @font-face with blob url (session). We also try to persist base64 (may exceed localStorage).
+    let uploadedFontUrl = null;
+    function applyUploadedFont(familyName, blobUrl){
+      // remove old style
+      const old = document.querySelector("#uploadedFontStyle");
+      if(old) old.remove();
+      const style = document.createElement("style");
+      style.id = "uploadedFontStyle";
+      style.textContent = `
+@font-face {
+  font-family: "${familyName}";
+  src: url("${blobUrl}");
+  font-display: swap;
+}`;
+      document.head.appendChild(style);
+      document.documentElement.style.setProperty("--font", `"${familyName}", "Noto Sans SC", system-ui, sans-serif`);
+      $("#curFontText").textContent = "已上传字体";
+      toast("已应用上传字体");
+    }
 
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "mini-phone-export.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
-
-    els.importFile.addEventListener("change", async (e)=>{
+    $("#fontFile").addEventListener("change", async (e)=>{
       const file = e.target.files?.[0];
       if(!file) return;
-      const text = await file.text();
-      const data = JSON.parse(text);
 
-      if(data?.settings) saveJSON(STORAGE.settings, { ...getSettings(), ...data.settings, apiKey: getSettings().apiKey || "" });
-      if(data?.notes) saveJSON(STORAGE.notes, data.notes);
-      if(data?.chat) saveJSON(STORAGE.chat, data.chat);
+      // revoke previous
+      if(uploadedFontUrl) URL.revokeObjectURL(uploadedFontUrl);
+      uploadedFontUrl = URL.createObjectURL(file);
 
-      renderSettingsForm();
-      renderStatus();
-      renderNotes();
-      renderChat();
-      e.target.value = "";
-    });
+      const family = "UserUploadedFont";
+      applyUploadedFont(family, uploadedFontUrl);
 
-    els.clearChat.addEventListener("click", ()=>{ setChat([]); renderChat(); });
-    els.clearNotes.addEventListener("click", ()=>{ setNotes({ activeId:null, items:[] }); ensureActiveNote(); renderNotes(); loadActiveNoteIntoEditor(); });
-    els.clearAll.addEventListener("click", ()=>{
-      localStorage.removeItem(STORAGE.settings);
-      localStorage.removeItem(STORAGE.notes);
-      localStorage.removeItem(STORAGE.chat);
-      localStorage.removeItem(STORAGE.ball);
-      location.reload();
-    });
-
-    /* UI */
-    els.send.addEventListener("click", onSend);
-    els.input.addEventListener("keydown", (e)=>{
-      if((e.ctrlKey || e.metaKey) && e.key === "Enter") onSend();
-    });
-
-    els.close.addEventListener("click", closeOverlay);
-    els.overlay.addEventListener("click", (e)=>{
-      if(e.target === els.overlay) closeOverlay();
-    });
-
-    els.tabs.forEach(btn => btn.addEventListener("click", ()=> setTab(btn.dataset.tab)));
-
-    // Init
-    (function init(){
-      renderChat();
-
-      renderSettingsForm();
-      renderStatus();
-
-      ensureActiveNote();
-      renderNotes();
-      loadActiveNoteIntoEditor();
-
-      const pos = loadBallPos();
-      if(pos && typeof pos.x === "number" && typeof pos.y === "number"){
-        applyBallPos(pos.x, pos.y);
-        snapToEdge();
-      }else{
-        // default right-bottom-ish; keep fixed layout until first drag
-        // (no-op)
+      // Try persist (best-effort)
+      try{
+        const buf = await file.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let bin = "";
+        for(const b of bytes) bin += String.fromCharCode(b);
+        const b64 = btoa(bin);
+        // Warning: localStorage ~5MB, big fonts may fail.
+        save(S.font, { type:"uploaded", family, name:file.name, mime:file.type || "font/ttf", b64 });
+      }catch(err){
+        // ignore persistence failure
       }
+    });
+
+    function restoreFont(){
+      const f = load(S.font, null);
+      if(!f) { $("#curFontText").textContent = "默认"; return; }
+
+      if(f.type === "builtin"){
+        document.documentElement.style.setProperty("--font", f.css);
+        $("#curFontText").textContent = f.label || "已设置";
+        return;
+      }
+      if(f.type === "uploaded" && f.b64){
+        try{
+          const bin = atob(f.b64);
+          const bytes = new Uint8Array(bin.length);
+          for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+          const blob = new Blob([bytes], { type: f.mime || "font/ttf" });
+          uploadedFontUrl = URL.createObjectURL(blob);
+          applyUploadedFont(f.family || "UserUploadedFont", uploadedFontUrl);
+        }catch(e){
+          // fallback
+        }
+      }
+    }
+
+    /***********************
+     * Model slider selection
+     ***********************/
+    const modelPreset = [
+      "gpt-4o-mini",
+      "gpt-4.1-mini",
+      "gpt-4o",
+      "claude-3-5-sonnet",
+      "deepseek-chat",
+      "qwen2.5-72b-instruct",
+      "glm-4"
+    ];
+
+    function renderModelChips(){
+      const box = $("#modelChips");
+      const s = getSettings();
+      box.innerHTML = "";
+      modelPreset.forEach(m=>{
+        const el = document.createElement("div");
+        el.className = "pill" + (s.model === m ? " active" : "");
+        el.textContent = m;
+        el.addEventListener("click", ()=>{
+          document.querySelectorAll("#modelChips .pill").forEach(x=>x.classList.remove("active"));
+          el.classList.add("active");
+          setSettings({ model: m });
+          $("#curModelText").textContent = m;
+          toast("已选择模型");
+        });
+        box.appendChild(el);
+      });
+      $("#curModelText").textContent = s.model || "未选择";
+      $("#temp").value = String(s.temperature ?? 0.2);
+      $("#customModel").value = "";
+    }
+
+    $("#applyCustomModel").addEventListener("click", ()=>{
+      const m = $("#customModel").value.trim();
+      if(!m) return toast("请输入模型名");
+      setSettings({ model: m });
+      renderModelChips();
+      toast("已使用自定义模型");
+    });
+
+    $("#saveModel").addEventListener("click", ()=>{
+      const t = Number($("#temp").value || 0.2);
+      setSettings({ temperature: isFinite(t) ? t : 0.2 });
+      toast("模型设置已保存");
+    });
+
+    /***********************
+     * Background image upload
+     ***********************/
+    function setBgImage(dataUrl){
+      const layer = $("#bgImageLayer");
+      if(dataUrl){
+        layer.style.backgroundImage = `url("${dataUrl}")`;
+        save(S.bg, { dataUrl });
+      }else{
+        layer.style.backgroundImage = "";
+        localStorage.removeItem(S.bg);
+      }
+    }
+    $("#bgFile").addEventListener("change", async (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=> {
+        setBgImage(reader.result);
+        toast("背景图已应用");
+      };
+      reader.readAsDataURL(file);
+    });
+    $("#clearBg").addEventListener("click", ()=>{
+      setBgImage(null);
+      toast("背景图已清除");
+    });
+
+    /***********************
+     * API panel actions
+     ***********************/
+    function fillApiForm(){
+      const s = getSettings();
+      $("#apiBase").value = s.apiBase || "";
+      $("#apiKey").value = s.apiKey || "";
+      $("#sys").value = s.system || "";
+    }
+
+    $("#saveApi").addEventListener("click", ()=>{
+      setSettings({
+        apiBase: $("#apiBase").value.trim(),
+        apiKey: $("#apiKey").value.trim(),
+        system: $("#sys").value || ""
+      });
+      toast("已保存");
+    });
+
+    $("#wipeKey").addEventListener("click", ()=>{
+      setSettings({ apiKey: "" });
+      $("#apiKey").value = "";
+      toast("Key 已清除");
+    });
+
+    $("#testApi").addEventListener("click", async ()=>{
+      const s = getSettings();
+      const apiBase = $("#apiBase").value.trim();
+      const apiKey = $("#apiKey").value.trim();
+      const model = s.model || "gpt-4o-mini";
+      const temperature = Number(s.temperature ?? 0.2);
+      const system = ($("#sys").value || "").trim();
+
+      if(!apiBase || !apiKey || !model){
+        $("#apiTip").textContent = "请先填写 Base URL / Key，并选择模型。";
+        return;
+      }
+
+      $("#apiTip").textContent = "测试中…";
+      try{
+        const reply = await callChatCompletions({
+          apiBase, apiKey, model, temperature, system,
+          messages: [
+            ...(system ? [{ role:"system", content: system }] : []),
+            { role:"user", content:"回复 OK（测试连接）" }
+          ],
+          max_tokens: 64
+        });
+        $("#apiTip").textContent = "成功：" + reply.slice(0,80).replace(/\s+/g," ").trim();
+      }catch(e){
+        $("#apiTip").textContent = "失败：" + (e?.message || String(e));
+      }
+    });
+
+    /***********************
+     * Role app
+     ***********************/
+    const home = $("#home");
+    const app = $("#app");
+
+    const screens = {
+      s1: $("#screen1"),
+      s2: $("#screen2"),
+      s3: $("#screen3"),
+    };
+    function showScreen(id){
+      Object.values(screens).forEach(x=>x.classList.remove("show"));
+      screens[id].classList.add("show");
+      if(id==="s1"){
+        $("#navTitle").textContent = "角色卡生成";
+        $("#navSub").textContent = "创建与管理";
+      }else if(id==="s2"){
+        $("#navTitle").textContent = "创建角色";
+        $("#navSub").textContent = "基础信息";
+      }else if(id==="s3"){
+        $("#navTitle").textContent = "创建角色";
+        $("#navSub").textContent = "创建形象";
+      }
+    }
+
+    $("#openApp").addEventListener("click", ()=>{
+      home.style.display = "none";
+      app.classList.add("show");
+      renderRoleGrid();
+      showScreen("s1");
+    });
+
+    $("#backHome").addEventListener("click", ()=>{
+      app.classList.remove("show");
+      home.style.display = "flex";
+    });
+
+    $("#btnExit").addEventListener("click", ()=>{
+      app.classList.remove("show");
+      home.style.display = "flex";
+      toast("已退出");
+    });
+
+    $("#btnManage").addEventListener("click", ()=>{
+      // currently screen1 already includes management
+      toast("角色管理在下方");
+    });
+
+    const roleState = {
+      gender: "女",
+      genMode: "random",
+      picks: {
+        eye: null, hair: null, bust: null, scent: null
+      }
+    };
+
+    $("#goCreate").addEventListener("click", ()=>{
+      // reset for new role
+      $("#name").value = "";
+      $("#age").value = "";
+      $("#height").value = "";
+      selectGender("女");
+      roleState.genMode = "random";
+      $("#genRandom").classList.add("active");
+      $("#genAI").classList.remove("active");
+      $("#profile").value = "";
+      $("#words").value = "400";
+      roleState.picks = { eye:null, hair:null, bust:null, scent:null };
+      setPickDesc();
+      showScreen("s2");
+    });
+
+    function selectGender(g){
+      roleState.gender = g;
+      $("#gF").classList.toggle("active", g==="女");
+      $("#gM").classList.toggle("active", g==="男");
+    }
+    $("#gF").addEventListener("click", ()=> selectGender("女"));
+    $("#gM").addEventListener("click", ()=> selectGender("男"));
+
+    $("#s2prev").addEventListener("click", ()=> showScreen("s1"));
+    $("#s2next").addEventListener("click", ()=>{
+      const name = $("#name").value.trim();
+      if(!name) return toast("请填写名称");
+      showScreen("s3");
+    });
+
+    $("#s3prev").addEventListener("click", ()=> showScreen("s2"));
+
+    $("#genRandom").addEventListener("click", ()=>{
+      roleState.genMode = "random";
+      $("#genRandom").classList.add("active");
+      $("#genAI").classList.remove("active");
+    });
+    $("#genAI").addEventListener("click", ()=>{
+      roleState.genMode = "ai";
+      $("#genAI").classList.add("active");
+      $("#genRandom").classList.remove("active");
+    });
+
+    const options = {
+      eyes: [
+        { k:"杏眼", d:"清澈柔亮，天然亲和，像把人轻轻拉近。" },
+        { k:"狐狸眼", d:"上挑锋芒与魅惑并存，目光像在轻声挑逗。" },
+        { k:"桃花眼", d:"含情脉脉，容易让人误会她在对你偏爱。" },
+        { k:"猫眼", d:"灵动又带点傲气，像不经意的挑衅。" },
+        { k:"下垂眼", d:"无辜感强，容易激发保护欲，温柔但有后劲。" }
+      ],
+      hair: [
+        { k:"短发", d:"干净利落，俏皮感与独立感更突出。" },
+        { k:"中长发", d:"日常耐看，甜感与气质兼容。" },
+        { k:"长发", d:"氛围感强，柔顺垂落时更显温软与勾人。" },
+        { k:"超长发", d:"存在感拉满，走动时像把目光都牵走。" }
+      ],
+      bust: [
+        { k:"纤细", d:"清冷与轻盈，靠线条与气质取胜。" },
+        { k:"匀称", d:"恰到好处的平衡感，耐看且更显高级。" },
+        { k:"饱满", d:"成熟丰盈，冲击力更强，魅力更直接。" },
+        { k:"丰润", d:"软糯与张力并存，极具女性向氛围。" }
+      ],
+      scent: [
+        { k:"奶香", d:"干净软甜，靠近就让人放松，像被轻轻拥住。" },
+        { k:"花香", d:"温柔而明亮，像春风里的一瞬心动。" },
+        { k:"木质香", d:"克制冷静，越靠近越上头，余韵很长。" },
+        { k:"薄荷清香", d:"清爽干净，像白衬衫与微凉的手指。" },
+        { k:"琥珀麝香", d:"暧昧粘稠，一点点就足够让人失控。" }
+      ]
+    };
+
+    function renderPills(containerId, arr, onPick){
+      const box = $(containerId);
+      box.innerHTML = "";
+      arr.forEach(item=>{
+        const el = document.createElement("div");
+        el.className = "pill";
+        el.textContent = item.k;
+        el.addEventListener("click", ()=>{
+          [...box.children].forEach(x=>x.classList.remove("active"));
+          el.classList.add("active");
+          onPick(item);
+        });
+        box.appendChild(el);
+      });
+    }
+
+    function setPickDesc(){
+      $("#eyeDesc").textContent = roleState.picks.eye ? roleState.picks.eye.d : "请选择一个眼型查看魅力表现。";
+      $("#hairDesc").textContent = roleState.picks.hair ? roleState.picks.hair.d : "请选择头发长度查看气质倾向。";
+      $("#bustDesc").textContent = roleState.picks.bust ? roleState.picks.bust.d : "请选择程度查看魅力表达。";
+      $("#scentDesc").textContent = roleState.picks.scent ? roleState.picks.scent.d : "请选择体香查看印象描述。";
+    }
+
+    renderPills("#eyes", options.eyes, (x)=>{ roleState.picks.eye=x; setPickDesc(); });
+    renderPills("#hair", options.hair, (x)=>{ roleState.picks.hair=x; setPickDesc(); });
+    renderPills("#bust", options.bust, (x)=>{ roleState.picks.bust=x; setPickDesc(); });
+    renderPills("#scent", options.scent, (x)=>{ roleState.picks.scent=x; setPickDesc(); });
+
+    function defaultFemaleDetails(){
+      return [
+        "肤色白",
+        "鼻子小巧玲珑",
+        "唇形柔软润泽",
+        "下巴、肩颈与锁骨线条优美",
+        "腰部与腿部纤细",
+        "玉足"
+      ];
+    }
+
+    function buildLocalProfile(){
+      const name = $("#name").value.trim();
+      const age = $("#age").value.trim();
+      const height = $("#height").value.trim();
+      const gender = roleState.gender;
+
+      const picks = roleState.picks;
+      const parts = [];
+
+      parts.push(`姓名：${name}`);
+      if(age) parts.push(`年龄：${age}`);
+      if(height) parts.push(`身高：${height}cm`);
+      parts.push(`性别：${gender}`);
+
+      if(gender === "女"){
+        parts.push("默认细节：" + defaultFemaleDetails().join("、"));
+      }
+
+      if(picks.eye) parts.push(`眼型：${picks.eye.k}（${picks.eye.d}）`);
+      if(picks.hair) parts.push(`头发长度：${picks.hair.k}（${picks.hair.d}）`);
+      if(picks.bust) parts.push(`胸部：${picks.bust.k}（${picks.bust.d}）`);
+      if(picks.scent) parts.push(`体香：${picks.scent.k}（${picks.scent.d}）`);
+
+      // add a "portrait paragraph"
+      const vibe = [];
+      if(picks.eye) vibe.push(picks.eye.k);
+      if(picks.hair) vibe.push(picks.hair.k);
+      if(picks.scent) vibe.push(picks.scent.k);
+      const vibeLine = vibe.length ? vibe.join(" / ") : "清爽耐看";
+
+      const portrait = [
+        `形象概述：${name}${gender==="女" ? "带着女性向氛围" : ""}，整体气质偏${vibeLine}。`,
+        gender==="女"
+          ? "她的线条与细节更强调柔软、优雅与隐约的勾人感，但不低俗。"
+          : "他的气质更强调干净、克制与存在感，不刻意用力。"
+      ].join("\n");
+
+      return parts.join("\n") + "\n\n" + portrait;
+    }
+
+    async function buildAIProfile(){
+      const s = getSettings();
+      if(!s.apiBase || !s.apiKey || !s.model){
+        throw new Error("请先在悬浮球里配置 API Base / Key / 模型");
+      }
+
+      const name = $("#name").value.trim();
+      const age = $("#age").value.trim();
+      const height = $("#height").value.trim();
+      const gender = roleState.gender;
+      const picks = roleState.picks;
+
+      const words = Math.max(120, Math.min(3000, parseInt($("#words").value || "400", 10) || 400));
+      // rough mapping: 1 token ~ 0.75 word for Chinese varies; just keep safe
+      const max_tokens = Math.max(256, Math.min(2048, Math.floor(words * 1.2)));
+
+      const baseFacts = [
+        `姓名：${name}`,
+        age ? `年龄：${age}` : "",
+        height ? `身高：${height}cm` : "",
+        `性别：${gender}`,
+        gender==="女" ? ("默认细节：" + defaultFemaleDetails().join("、")) : "",
+        picks.eye ? `眼型：${picks.eye.k}` : "",
+        picks.hair ? `头发长度：${picks.hair.k}` : "",
+        picks.bust ? `胸部：${picks.bust.k}` : "",
+        picks.scent ? `体香：${picks.scent.k}` : ""
+      ].filter(Boolean).join("\n");
+
+      const sys = (s.system || "").trim();
+      const user = [
+        "请根据以下选项，生成“角色形象资料”。要求：",
+        "1) 中文输出；2) 不要提到“我作为AI”；3) 结构清晰（分段/要点）；",
+        "4) 风格偏女性向时（性别为女）强调氛围、细节与魅力表现，但避免低俗露骨；",
+        `5) 大约 ${words} 字左右。`,
+        "",
+        "选项：",
+        baseFacts
+      ].join("\n");
+
+      const messages = [
+        ...(sys ? [{ role:"system", content: sys }] : []),
+        { role:"user", content: user }
+      ];
+
+      return await callChatCompletions({
+        apiBase: s.apiBase,
+        apiKey: s.apiKey,
+        model: s.model,
+        temperature: Number(s.temperature ?? 0.2),
+        system: sys,
+        messages,
+        max_tokens
+      });
+    }
+
+    function getRoles(){
+      return load(S.roles, []);
+    }
+    function setRoles(list){
+      save(S.roles, list);
+      return list;
+    }
+
+    function renderRoleGrid(){
+      const roles = getRoles();
+      $("#screen1Hint").textContent = `管理角色：当前 ${roles.length} 个`;
+      const grid = $("#roleGrid");
+      grid.innerHTML = "";
+
+      roles.forEach((r, idx)=>{
+        const tile = document.createElement("div");
+        tile.className = "role-tile";
+        tile.innerHTML = `
+          <div class="avatar" data-id="${r.id}">
+            ${r.avatar ? `<img alt="avatar" src="${r.avatar}">` : `<div class="plus">+</div>`}
+          </div>
+          <div class="role-name">${r.name || ("角色"+(idx+1))}</div>
+        `;
+
+        const avatar = tile.querySelector(".avatar");
+        avatar.addEventListener("click", async (e)=>{
+          e.stopPropagation();
+          // upload avatar
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/*";
+          input.onchange = async ()=>{
+            const file = input.files?.[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = ()=>{
+              const list = getRoles();
+              const it = list.find(x=>x.id===r.id);
+              if(it) it.avatar = reader.result;
+              setRoles(list);
+              renderRoleGrid();
+              toast("头像已更新");
+            };
+            reader.readAsDataURL(file);
+          };
+          input.click();
+        });
+
+        tile.querySelector(".role-name").addEventListener("click", (e)=>{
+          e.stopPropagation();
+          openRoleDetail(r.id);
+        });
+
+        grid.appendChild(tile);
+      });
+
+      // if empty, keep blank (as you asked)
+    }
+
+    function openRoleDetail(id){
+      const roles = getRoles();
+      const r = roles.find(x=>x.id===id);
+      if(!r) return;
+
+      $("#detailTitle").textContent = r.name || "角色资料";
+      $("#detailText").textContent = r.profile || "（空）";
+      $("#roleOverlay").classList.add("show");
+
+      $("#copyRole").onclick = async ()=>{
+        try{
+          await navigator.clipboard.writeText(r.profile || "");
+          toast("已复制");
+        }catch(e){
+          toast("复制失败（可长按手动复制）");
+        }
+      };
+    }
+
+    $("#closeRole").addEventListener("click", ()=> $("#roleOverlay").classList.remove("show"));
+    $("#roleOverlay").addEventListener("click", (e)=>{
+      if(e.target.id === "roleOverlay") $("#roleOverlay").classList.remove("show");
+    });
+
+    function uid(){
+      return "r_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+    }
+
+    $("#finalConfirm").addEventListener("click", async ()=>{
+      const name = $("#name").value.trim();
+      if(!name) return toast("请填写名称");
+
+      let profileText = ($("#profile").value || "").trim();
+
+      // If empty or user wants generation, we generate now and fill in
+      if(!profileText){
+        try{
+          if(roleState.genMode === "ai"){
+            toast("AI 生成中…");
+            profileText = await buildAIProfile();
+          }else{
+            profileText = buildLocalProfile();
+          }
+          $("#profile").value = profileText;
+        }catch(e){
+          return toast(e?.message || String(e));
+        }
+      }
+
+      // Save role
+      const roles = getRoles();
+      const newRole = {
+        id: uid(),
+        name,
+        gender: roleState.gender,
+        age: $("#age").value.trim(),
+        height: $("#height").value.trim(),
+        picks: roleState.picks,
+        profile: profileText,
+        avatar: "",
+        createdAt: Date.now()
+      };
+      roles.unshift(newRole);
+      setRoles(roles);
+      renderRoleGrid();
+
+      // back to screen1
+      showScreen("s1");
+      toast("已创建角色");
+    });
+
+    /***********************
+     * Init: load theme, bg, settings, fonts, models
+     ***********************/
+    (function init(){
+      // theme defaults reflect your preference: #adcdea + #ffffff
+      const presets = load(S.themePresets, []);
+      // apply last used theme if exists in settings store? (we just use CSS vars)
+      // We'll restore by reading inputs saved in presets? simplest: keep current CSS as default.
+      $("#accent").value = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#adcdea";
+      $("#bg").value = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
+
+      // bg
+      const bg = load(S.bg, null);
+      if(bg?.dataUrl) setBgImage(bg.dataUrl);
+
+      // settings
+      fillApiForm();
+      renderModelChips();
+      renderPresets();
+      renderFontChips();
+      restoreFont();
+
+      // initial gender selection
+      selectGender("女");
+      setPickDesc();
+
+      // set initial temp
+      const s = getSettings();
+      $("#temp").value = String(s.temperature ?? 0.2);
     })();
   </script>
 </body>
