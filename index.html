@@ -3,337 +3,334 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>墨墨 · 私人设计室</title>
-  <style>
-    :root {
-      --accent: #adcdea;     /* 墨墨专属蓝 */
-      --white: #ffffff;      /* 纯白 */
-      --ink: #334155;
-      --muted: #64748b;
-      --bg: #f8fafc;
-      --line: rgba(173,205,234, 0.4);
-      --shadow: 0 10px 30px rgba(173,205,234, 0.2);
-      --radius: 16px;
+  <title>墨墨的个人主页</title>
+  
+  <!-- ========================================== -->
+  <!-- 下面这个 style 是 AI 专属修改区，网页长什么样全靠它 -->
+  <!-- ========================================== -->
+  <style id="momo-user-style">
+    body {
+      margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #fdebdb 0%, #ffffff 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--bg); }
-    body { background: linear-gradient(135deg, #ffffff 0%, #e0f0ff 100%); }
-    .app { height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 14px; max-width: 1200px; margin: 0 auto; }
-    
-    header {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 12px 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    .welcome-card {
+      background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
+      padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(173, 205, 234, 0.3);
+      text-align: center; max-width: 80%; border: 1px solid rgba(255,255,255,0.5);
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--accent); }
-    .brand span { font-size: 18px; color: var(--ink); }
-    .settings { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .input-group { display: flex; align-items: center; gap: 6px; background: var(--bg); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); }
-    .input-group label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    /* 这里改回了 input，但是关联了 datalist，既能选又能填 */
-    .input-group input { border: none; background: transparent; outline: none; font-size: 12px; color: var(--ink); }
-    
-    .btn { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
-    .btn-primary { background: var(--accent); color: var(--white); box-shadow: 0 4px 12px rgba(173,205,234, 0.5); }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-outline { background: var(--white); border: 1px solid var(--accent); color: var(--accent); }
+    h1 { color: #adcdea; margin-bottom: 10px; font-size: 28px; }
+    p { color: #666; font-size: 16px; line-height: 1.6; }
+  </style>
 
-    main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
-    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  <!-- ========================================== -->
+  <!-- 下面这个 style 是悬浮球控制台的样式（绝对保护，AI 改不到这里） -->
+  <!-- ========================================== -->
+  <style id="momo-widget-style">
+    #momo-magic-widget {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999999;
+      font-family: system-ui, sans-serif;
+    }
+    #momo-fab {
+      width: 56px; height: 56px; border-radius: 28px; background: #adcdea;
+      box-shadow: 0 8px 24px rgba(173,205,234,0.6); display: flex; align-items: center; justify-content: center;
+      font-size: 24px; cursor: pointer; transition: transform 0.2s; border: none; outline: none; color: white;
+    }
+    #momo-fab:hover { transform: scale(1.05); }
+    #momo-panel {
+      position: absolute; bottom: 70px; right: 0; width: 340px; height: 500px; max-height: 80vh;
+      background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      display: none; flex-direction: column; overflow: hidden; border: 1px solid #eee;
+    }
+    #momo-panel.open { display: flex; }
+    .momo-header {
+      background: #adcdea; color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+      font-weight: bold; font-size: 14px;
+    }
+    .momo-header button { background: none; border: none; color: white; cursor: pointer; font-size: 16px; }
     
-    .panel { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; }
-    .panel-header { padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; font-weight: bold; background: rgba(173,205,234, 0.1); display: flex; justify-content: space-between; align-items: center;}
+    /* 设置面板 */
+    #momo-settings {
+      padding: 16px; background: #f8fafc; border-bottom: 1px solid #eee; display: none;
+    }
+    .momo-input-group { margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .momo-input-group label { font-size: 12px; color: #64748b; }
+    .momo-input-group input { 
+      width: 65%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; outline: none;
+    }
     
-    .chat-box { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-    .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-wrap: break-word; white-space: pre-wrap;}
-    .msg.user { align-self: flex-end; background: var(--accent); color: var(--white); border-bottom-right-radius: 4px; }
-    .msg.ai { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+    /* 聊天区 */
+    #momo-chat-box { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #fafafa; }
+    .momo-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; }
+    .momo-msg.user { align-self: flex-end; background: #adcdea; color: white; border-bottom-right-radius: 2px; }
+    .momo-msg.ai { align-self: flex-start; background: white; border: 1px solid #eee; color: #333; border-bottom-left-radius: 2px; }
+    .momo-msg.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
     
-    .input-area { padding: 12px; border-top: 1px solid var(--line); display: flex; gap: 8px; }
-    .input-area textarea { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--line); outline: none; resize: none; font-family: inherit; font-size: 14px; height: 44px; }
-    
-    .code-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-    textarea.code-editor { height: 30%; width: 100%; border: none; border-bottom: 1px solid var(--line); outline: none; padding: 12px; font-family: monospace; font-size: 12px; background: #fdfdfd; resize: none; color: #333; }
-    iframe.preview { flex: 1; width: 100%; border: none; background: var(--white); }
+    /* 输入区 */
+    .momo-input-area { padding: 10px; background: white; border-top: 1px solid #eee; display: flex; gap: 8px; flex-direction: column;}
+    .momo-input-row { display: flex; gap: 8px; }
+    #momo-chat-input {
+      flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 16px; outline: none; resize: none; font-size: 13px; height: 36px;
+    }
+    #momo-btn-send {
+      background: #adcdea; color: white; border: none; border-radius: 16px; padding: 0 16px; cursor: pointer; font-weight: bold; font-size: 13px;
+    }
+    #momo-btn-publish {
+      background: #fff; color: #adcdea; border: 1px solid #adcdea; border-radius: 16px; padding: 6px; cursor: pointer; font-size: 12px; font-weight: bold; width: 100%; margin-top: 4px;
+    }
+    @media (max-width: 400px) {
+      #momo-panel { width: calc(100vw - 40px); }
+    }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">🎨 <span>墨墨的私人设计室</span></div>
-      <div class="settings">
-        <!-- 接口 -->
-        <div class="input-group" title="填入中转站地址，如 https://www.yxaiapp.com/v1">
-          <label>接口</label>
-          <input id="apiUrl" placeholder="https://www.yxaiapp.com/v1" value="https://www.yxaiapp.com/v1" style="width: 140px;" />
-        </div>
-        <!-- AI Key -->
-        <div class="input-group">
-          <label>AI Key</label>
-          <input id="apiKey" type="password" placeholder="sk-..." style="width: 70px;" />
-        </div>
-        <!-- 自动拉取 + 可手动输入的模型框 -->
-        <div class="input-group" title="拉取不到可以自己手动打字输入！">
-          <label>模型</label>
-          <input id="apiModel" list="modelOptions" placeholder="手动填或拉取" style="width: 100px;" />
-          <datalist id="modelOptions"></datalist>
-          <button id="btnFetchModels" style="background:none; border:none; cursor:pointer; padding:0 4px; font-size:14px;" title="拉取中转站模型">🔄</button>
-        </div>
-        <!-- GitHub Token & 仓库 -->
-        <div class="input-group">
-          <label>GH Token</label>
-          <input id="ghToken" type="password" placeholder="pat_..." style="width: 70px;" />
-        </div>
-        <div class="input-group">
-          <label>仓库</label>
-          <input id="ghRepo" placeholder="wemo188/momo-ui" style="width: 90px;" />
-        </div>
-        <button class="btn btn-outline" id="btnPull">拉取线上画板</button>
-        <button class="btn btn-primary" id="btnPublish">发布到画板</button>
-      </div>
-    </header>
 
-    <main>
-      <div class="panel">
-        <div class="panel-header">跟你的私人设计师沟通</div>
-        <div class="chat-box" id="chatBox">
-          <div class="msg ai">大小姐，接口防呆系统已上线。接口框你随便填，缺的后缀我会帮你补；模型列表拉不全，你直接在框里打字硬填就行。有什么吩咐？</div>
-        </div>
-        <div class="input-area">
-          <textarea id="chatInput" placeholder="比如：帮我画一个蓝白风格的登录界面，要有圆角输入框..."></textarea>
-          <button class="btn btn-primary" id="btnSend">发送</button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <span>画板预览 (app.html)</span>
-          <button class="btn btn-outline" style="padding:2px 8px;font-size:12px;" id="btnApply">刷新预览</button>
-        </div>
-        <div class="code-box">
-          <textarea class="code-editor" id="codeEditor" spellcheck="false" placeholder="这里是画板的代码，AI 会自动修改..."></textarea>
-          <iframe class="preview" id="previewFrame"></iframe>
-        </div>
-      </div>
-    </main>
+  <!-- ========================================== -->
+  <!-- 下面这个 div 是 AI 专属修改区，页面的内容都在这里 -->
+  <!-- ========================================== -->
+  <div id="momo-user-content">
+    <div class="welcome-card">
+      <h1>✨ 墨墨的专属领地 ✨</h1>
+      <p>这是你的初始网页。<br>点击右下角的悬浮球，直接告诉我你想怎么改！</p>
+    </div>
   </div>
 
-  <script>
-    const $ = id => document.getElementById(id);
-    const els = {
-      apiUrl: $('apiUrl'), apiModel: $('apiModel'), modelOptions: $('modelOptions'), 
-      apiKey: $('apiKey'), ghToken: $('ghToken'), ghRepo: $('ghRepo'),
-      chatBox: $('chatBox'), chatInput: $('chatInput'), btnSend: $('btnSend'), btnFetchModels: $('btnFetchModels'),
-      codeEditor: $('codeEditor'), previewFrame: $('previewFrame'),
-      btnApply: $('btnApply'), btnPublish: $('btnPublish'), btnPull: $('btnPull')
-    };
-
-    // 读取本地保存的基础配置
-    ['apiUrl', 'apiModel', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
-      const saved = localStorage.getItem('momo_' + id);
-      if(saved) els[id].value = saved;
-      els[id].addEventListener('input', e => localStorage.setItem('momo_' + id, e.target.value));
-    });
-
-    els.codeEditor.value = localStorage.getItem('momo_local_code') || '';
-    els.codeEditor.addEventListener('input', e => localStorage.setItem('momo_local_code', e.target.value));
-
-    function addMsg(role, text) {
-      const div = document.createElement('div');
-      div.className = `msg ${role}`;
-      div.textContent = text;
-      els.chatBox.appendChild(div);
-      els.chatBox.scrollTop = els.chatBox.scrollHeight;
-    }
-
-    function updatePreview() { els.previewFrame.srcdoc = els.codeEditor.value; }
-    els.btnApply.onclick = updatePreview;
-    if(els.codeEditor.value) updatePreview();
-
-    // 🌟 智能修正获取模型的 URL
-    els.btnFetchModels.onclick = async () => {
-      const rawUrl = els.apiUrl.value.trim();
-      const key = els.apiKey.value.trim();
-      if(!rawUrl || !key) {
-        addMsg('ai', "大小姐，填好接口和 AI Key 我才能去干活呀。");
-        return;
-      }
-
-      els.btnFetchModels.textContent = '⏳';
-      try {
-        // 智能拼接 URL，防止 404
-        let base = rawUrl.replace(/\/+$/, ''); // 去掉末尾多余的斜杠
-        let modelsUrl = base;
-        if (base.endsWith('/chat/completions')) {
-          modelsUrl = base.replace('/chat/completions', '/models');
-        } else if (base.endsWith('/v1')) {
-          modelsUrl = base + '/models';
-        } else {
-          modelsUrl = base + '/v1/models'; // 强行兜底
-        }
-
-        const res = await fetch(modelsUrl, { headers: { "Authorization": `Bearer ${key}` } });
-        if(!res.ok) throw new Error(`拉取失败 (${res.status})。这破中转站可能屏蔽了菜单获取。不过没关系，你可以直接在模型框里手动打字输入！`);
-        
-        const data = await res.json();
-        if(data && data.data && Array.isArray(data.data)) {
-          els.modelOptions.innerHTML = ''; 
-          data.data.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m.id;
-            els.modelOptions.appendChild(opt);
-          });
-          addMsg('ai', `抓回了 ${data.data.length} 个模型。如果里面没你要的，你可以直接点击输入框自己手动打字！`);
-        } else {
-          throw new Error("返回格式不对。不用管它，直接手动打字输入模型名就行。");
-        }
-      } catch(e) {
-        addMsg('ai', e.message);
-      } finally {
-        els.btnFetchModels.textContent = '🔄';
-      }
-    };
-
-    async function callAI(userText) {
-      const key = els.apiKey.value.trim();
-      const rawUrl = els.apiUrl.value.trim();
-      const modelName = els.apiModel.value.trim() || "gpt-4o-mini";
+  <!-- ========================================== -->
+  <!-- 下面是悬浮球控制台（绝对保护，AI 看不到也改不到这里） -->
+  <!-- ========================================== -->
+  <div id="momo-magic-widget">
+    <div id="momo-panel">
+      <div class="momo-header">
+        <span>👨‍🎨 你的私人设计师</span>
+        <div>
+          <button id="momo-btn-settings" title="设置接口">⚙️</button>
+          <button id="momo-btn-close" title="收起">✖</button>
+        </div>
+      </div>
       
-      if(!key) throw new Error("请先填写 AI Key 呀，墨墨");
+      <!-- 设置区 -->
+      <div id="momo-settings">
+        <div class="momo-input-group">
+          <label>接口</label>
+          <input id="sys-apiUrl" placeholder="https://api..." />
+        </div>
+        <div class="momo-input-group">
+          <label>模型</label>
+          <input id="sys-apiModel" placeholder="比如 claude-3-opus-20240229" />
+        </div>
+        <div class="momo-input-group">
+          <label>AI Key</label>
+          <input id="sys-apiKey" type="password" placeholder="sk-..." />
+        </div>
+        <div class="momo-input-group">
+          <label>GH Token</label>
+          <input id="sys-ghToken" type="password" placeholder="pat_..." />
+        </div>
+        <div class="momo-input-group">
+          <label>仓库名</label>
+          <input id="sys-ghRepo" placeholder="wemo188/momo-ui" />
+        </div>
+      </div>
 
-      // 🌟 智能拼接发消息的 URL，防止 404
-      let base = rawUrl.replace(/\/+$/, '');
-      let chatUrl = base;
-      if (!base.endsWith('/chat/completions')) {
-        if (base.endsWith('/v1')) {
-          chatUrl = base + '/chat/completions';
-        } else {
-          chatUrl = base + '/v1/chat/completions';
-        }
-      }
+      <!-- 聊天区 -->
+      <div id="momo-chat-box">
+        <div class="momo-msg ai">大小姐，悬浮魔法已就绪。你看当前网页哪里不顺眼？直接说，我当场给你改。</div>
+      </div>
 
-      const systemPrompt = `你是一个专门为林微墨（墨墨）服务的前端 UI 设计师。
-请根据她的需求，生成或修改一个适合在手机端浏览的单文件移动端网页 UI。
-要求：
-1. 保持蓝白主题（主色 #adcdea，背景以 #ffffff 为主），风格要可爱、纯净。
-2. 必须只返回一个完整的 \`\`\`html 代码块，包含所有 HTML/CSS/JS 代码。
-3. 语气要像一个傲娇、绅士的专属私人男设计师，简短地回复她一句工作确认，然后再输出代码块。`;
+      <!-- 输入区 -->
+      <div class="momo-input-area">
+        <div class="momo-input-row">
+          <textarea id="momo-chat-input" placeholder="比如：把背景改成全黑，文字改成粉色..."></textarea>
+          <button id="momo-btn-send">发送</button>
+        </div>
+        <button id="momo-btn-publish">✨ 网页改满意了？点我一键保存发布 ✨</button>
+      </div>
+    </div>
+    <button id="momo-fab">🎨</button>
+  </div>
 
-      const res = await fetch(chatUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
-        body: JSON.stringify({
-          model: modelName,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: `需求：${userText}\n\n当前画板源码：\n${els.codeEditor.value}` }
-          ],
-          temperature: 0.3
-        })
+  <script id="momo-widget-script">
+    // --- 核心控制逻辑（完全保护） ---
+    (function(){
+      const $ = id => document.getElementById(id);
+      const els = {
+        fab: $('momo-fab'), panel: $('momo-panel'), btnClose: $('momo-btn-close'), btnSettings: $('momo-btn-settings'),
+        settings: $('momo-settings'), chatBox: $('momo-chat-box'), chatInput: $('momo-chat-input'),
+        btnSend: $('momo-btn-send'), btnPublish: $('momo-btn-publish'),
+        apiUrl: $('sys-apiUrl'), apiModel: $('sys-apiModel'), apiKey: $('sys-apiKey'),
+        ghToken: $('sys-ghToken'), ghRepo: $('sys-ghRepo'),
+        userStyle: $('momo-user-style'), userContent: $('momo-user-content')
+      };
+
+      // 界面交互
+      els.fab.onclick = () => els.panel.classList.add('open');
+      els.btnClose.onclick = () => els.panel.classList.remove('open');
+      els.btnSettings.onclick = () => {
+        els.settings.style.display = els.settings.style.display === 'block' ? 'none' : 'block';
+      };
+
+      // 读取与保存配置
+      ['apiUrl', 'apiModel', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
+        const saved = localStorage.getItem('sys_' + id);
+        if(saved) els[id].value = saved;
+        els[id].addEventListener('input', e => localStorage.setItem('sys_' + id, e.target.value));
       });
 
-      if(!res.ok) {
-        const errText = await res.text();
-        throw new Error(`API 报错：${res.status}。请检查模型名字有没有拼错。(${errText.substring(0, 50)})`);
+      function addMsg(role, text) {
+        const div = document.createElement('div');
+        div.className = `momo-msg ${role}`;
+        div.textContent = text;
+        els.chatBox.appendChild(div);
+        els.chatBox.scrollTop = els.chatBox.scrollHeight;
       }
-      const data = await res.json();
-      return data.choices[0].message.content;
-    }
 
-    els.btnSend.onclick = async () => {
-      const text = els.chatInput.value.trim();
-      if(!text) return;
-      addMsg('user', text);
-      els.chatInput.value = '';
-      els.btnSend.textContent = '设计中...';
-      els.btnSend.disabled = true;
+      // 核心：调用 AI 直接修改网页
+      els.btnSend.onclick = async () => {
+        const text = els.chatInput.value.trim();
+        if(!text) return;
+        addMsg('user', text);
+        els.chatInput.value = '';
+        els.btnSend.textContent = '施法中...';
+        els.btnSend.disabled = true;
 
-      try {
-        const reply = await callAI(text);
+        const key = els.apiKey.value.trim();
+        let rawUrl = els.apiUrl.value.trim();
+        const modelName = els.apiModel.value.trim();
         
-        const match = /```html\s*([\s\S]*?)```/.exec(reply);
-        if(match) {
-          const comment = reply.replace(/```html\s*[\s\S]*?```/, '').trim();
-          if(comment) addMsg('ai', comment);
-          else addMsg('ai', "搞定了，看右边画板。满意的话就点发布。");
-
-          els.codeEditor.value = match[1].trim();
-          localStorage.setItem('momo_local_code', els.codeEditor.value);
-          updatePreview();
-        } else {
-          addMsg('ai', reply);
+        if(!key || !rawUrl || !modelName) {
+          addMsg('error', "大小姐，请先点 ⚙️ 把【接口】、【模型】和【AI Key】填完整！");
+          els.btnSend.textContent = '发送';
+          els.btnSend.disabled = false;
+          return;
         }
-      } catch(e) {
-        addMsg('ai', e.message);
-      } finally {
-        els.btnSend.textContent = '发送';
-        els.btnSend.disabled = false;
-      }
-    };
 
-    function utf8ToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+        // 智能修正 URL
+        let base = rawUrl.replace(/\/+$/, '');
+        let chatUrl = base;
+        if (!base.endsWith('/chat/completions')) {
+          chatUrl = base.endsWith('/v1') ? base + '/chat/completions' : base + '/v1/chat/completions';
+        }
 
-    async function githubAPI(method, path, body = null) {
-      const token = els.ghToken.value.trim();
-      const repo = els.ghRepo.value.trim();
-      if(!token || !repo) throw new Error("请先填写 GH Token 和 仓库名");
+        const systemPrompt = `你是一个专门为林微墨（墨墨）服务的前端 UI 设计师。
+你现在拥有直接修改她网页外观的魔法。
+我会给你网页当前的【CSS样式】和【HTML结构】。
+请根据她的需求进行修改，并严格按以下格式返回两个代码块：
+\`\`\`css
+(这里写修改后的完整CSS)
+\`\`\`
+\`\`\`html
+(这里写修改后的完整HTML)
+\`\`\`
+注意：
+1. 保持她喜欢的可爱、纯净风格（如蓝白、粉白等）。
+2. 不要修改任何 body、html 标签，只提供内部的 css 和 html。
+3. 傲娇地回复她一句工作确认，然后输出代码。`;
 
-      const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-      const options = {
-        method,
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": `Bearer ${token}`,
-          "X-GitHub-Api-Version": "2022-11-28"
+        const userPrompt = `用户需求：${text}\n\n当前【CSS样式】:\n${els.userStyle.innerHTML}\n\n当前【HTML结构】:\n${els.userContent.innerHTML}`;
+
+        try {
+          const res = await fetch(chatUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
+            body: JSON.stringify({
+              model: modelName,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt }
+              ],
+              temperature: 0.3
+            })
+          });
+
+          if(!res.ok) {
+            const errText = await res.text();
+            throw new Error(`[接口报错 ${res.status}] ${errText.substring(0,100)}... (请检查模型名是否填对)`);
+          }
+          
+          const data = await res.json();
+          const reply = data.choices[0].message.content;
+
+          // 提取 CSS 和 HTML
+          const cssMatch = /```css\s*([\s\S]*?)```/.exec(reply);
+          const htmlMatch = /```html\s*([\s\S]*?)```/.exec(reply);
+
+          if(cssMatch && htmlMatch) {
+            // 直接应用到当前网页！！！言出法随！！！
+            els.userStyle.innerHTML = cssMatch[1].trim();
+            els.userContent.innerHTML = htmlMatch[1].trim();
+            
+            const comment = reply.replace(/```css\s*[\s\S]*?```/g, '').replace(/```html\s*[\s\S]*?```/g, '').trim();
+            addMsg('ai', comment || "网页已当场变身！看看效果如何？满意就点下方保存发布。");
+          } else {
+            addMsg('ai', reply); // 如果 AI 没按格式返回，就直接显示它说的话
+          }
+        } catch(e) {
+          addMsg('error', e.message);
+        } finally {
+          els.btnSend.textContent = '发送';
+          els.btnSend.disabled = false;
         }
       };
-      if(body) options.body = JSON.stringify(body);
 
-      const res = await fetch(url, options);
-      if(!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || res.statusText);
-      }
-      return await res.json();
-    }
+      // 核心：将当前整个网页保存到 GitHub
+      els.btnPublish.onclick = async () => {
+        const token = els.ghToken.value.trim();
+        const repo = els.ghRepo.value.trim();
+        if(!token || !repo) {
+          addMsg('error', "大小姐，点 ⚙️ 把【GH Token】和【仓库名】填好才能保存哦。");
+          return;
+        }
 
-    els.btnPublish.onclick = async () => {
-      els.btnPublish.textContent = '发布中...';
-      try {
-        let sha = '';
+        els.btnPublish.textContent = '保存发布中...';
         try {
-          const fileInfo = await githubAPI('GET', 'app.html');
-          sha = fileInfo.sha;
-        } catch(e) { }
+          // 1. 获取 GitHub 文件的 SHA
+          const apiUrl = `https://api.github.com/repos/${repo}/contents/index.html`;
+          let sha = '';
+          try {
+            const resGet = await fetch(apiUrl, {
+              headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json" }
+            });
+            if(resGet.ok) {
+              const fileInfo = await resGet.json();
+              sha = fileInfo.sha;
+            }
+          } catch(e) {}
 
-        await githubAPI('PUT', 'app.html', {
-          message: "墨墨专属 AI 更新了画板",
-          content: utf8ToBase64(els.codeEditor.value),
-          sha: sha || undefined
-        });
+          // 2. 清理聊天记录，避免把聊天记录保存进网页源码
+          const oldChatHtml = els.chatBox.innerHTML;
+          els.chatBox.innerHTML = '<div class="momo-msg ai">发布成功！网页已永久更新。</div>';
+          els.panel.classList.remove('open'); // 临时关掉面板截取源码
 
-        addMsg('ai', "✨ 发布成功！现在你可以把带有 /app.html 的链接发给她们看了。");
-      } catch(e) {
-        addMsg('ai', "发布失败了：" + e.message);
-      } finally {
-        els.btnPublish.textContent = '发布到画板';
-      }
-    };
+          // 3. 抓取当前整个网页的 HTML
+          const fullHtml = "<!doctype html>\n" + document.documentElement.outerHTML;
 
-    els.btnPull.onclick = async () => {
-      els.btnPull.textContent = '拉取中...';
-      try {
-        const fileInfo = await githubAPI('GET', 'app.html');
-        const code = decodeURIComponent(escape(atob(fileInfo.content)));
-        els.codeEditor.value = code;
-        localStorage.setItem('momo_local_code', code);
-        updatePreview();
-        addMsg('ai', "已从线上拉取最新的画板代码！");
-      } catch(e) {
-        addMsg('ai', "线上还没有 app.html，你可以先随便发一句需求让我生成一个。");
-      } finally {
-        els.btnPull.textContent = '拉取线上画板';
-      }
-    };
+          // 恢复聊天记录和面板
+          els.chatBox.innerHTML = oldChatHtml;
+          els.panel.classList.add('open');
+
+          // 4. 提交到 GitHub
+          const resPut = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: "墨墨专属 AI 直接修改了网页外观",
+              content: btoa(unescape(encodeURIComponent(fullHtml))),
+              sha: sha || undefined
+            })
+          });
+
+          if(!resPut.ok) {
+            const err = await resPut.json();
+            throw new Error(err.message);
+          }
+          addMsg('ai', "✨ 发布成功！当前你看到的这个网页，已经被永久定格了。刷新一下看看吧！");
+        } catch(e) {
+          addMsg('error', "发布失败：" + e.message);
+        } finally {
+          els.btnPublish.textContent = '✨ 网页改满意了？点我一键保存发布 ✨';
+        }
+      };
+    })();
   </script>
 </body>
 </html>
