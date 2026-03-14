@@ -29,7 +29,7 @@
     .settings { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .input-group { display: flex; align-items: center; gap: 6px; background: var(--bg); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); }
     .input-group label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .input-group input { border: none; background: transparent; outline: none; font-size: 12px; width: 100px; color: var(--ink); }
+    .input-group input { border: none; background: transparent; outline: none; font-size: 12px; width: 90px; color: var(--ink); }
     
     .btn { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
     .btn-primary { background: var(--accent); color: var(--white); box-shadow: 0 4px 12px rgba(173,205,234, 0.5); }
@@ -60,22 +60,26 @@
     <header>
       <div class="brand">🎨 <span>墨墨的私人设计室</span></div>
       <div class="settings">
-        <!-- 如果是中转站接口，在这里把 URL 改掉，或者直接在代码里改 -->
+        <!-- 接口、模型、Key 都在这里了 -->
         <div class="input-group" title="中转站API地址">
           <label>接口</label>
           <input id="apiUrl" placeholder="https://api..." value="https://api.openai.com/v1/chat/completions" />
         </div>
-        <div class="input-group">
-          <label>AI Key</label>
-          <input id="apiKey" type="password" placeholder="sk-..." />
+        <div class="input-group" title="想用哪个模型就填哪个">
+          <label>模型</label>
+          <input id="apiModel" placeholder="gpt-4o-mini" value="gpt-4o-mini" style="width: 80px;" />
         </div>
         <div class="input-group">
-          <label>GitHub Token</label>
-          <input id="ghToken" type="password" placeholder="ghp_..." />
+          <label>AI Key</label>
+          <input id="apiKey" type="password" placeholder="sk-..." style="width: 80px;" />
+        </div>
+        <div class="input-group">
+          <label>GH Token</label>
+          <input id="ghToken" type="password" placeholder="pat_..." style="width: 80px;" />
         </div>
         <div class="input-group">
           <label>仓库</label>
-          <input id="ghRepo" placeholder="wemo188/momo-ui" />
+          <input id="ghRepo" placeholder="wemo188/momo-ui" style="width: 100px;" />
         </div>
         <button class="btn btn-outline" id="btnPull">拉取线上画板</button>
         <button class="btn btn-primary" id="btnPublish">发布到画板(app.html)</button>
@@ -86,7 +90,7 @@
       <div class="panel">
         <div class="panel-header">跟你的私人设计师沟通</div>
         <div class="chat-box" id="chatBox">
-          <div class="msg ai">大小姐，我是你的专属 UI 设计师。在右边画板想做什么样的手机页面？尽管吩咐。</div>
+          <div class="msg ai">大小姐，模型切换功能已就绪。今天想让我用哪个模型来为你服务？</div>
         </div>
         <div class="input-area">
           <textarea id="chatInput" placeholder="比如：帮我画一个蓝白风格的登录界面，要有圆角输入框..."></textarea>
@@ -110,14 +114,14 @@
   <script>
     const $ = id => document.getElementById(id);
     const els = {
-      apiUrl: $('apiUrl'), apiKey: $('apiKey'), ghToken: $('ghToken'), ghRepo: $('ghRepo'),
+      apiUrl: $('apiUrl'), apiModel: $('apiModel'), apiKey: $('apiKey'), ghToken: $('ghToken'), ghRepo: $('ghRepo'),
       chatBox: $('chatBox'), chatInput: $('chatInput'), btnSend: $('btnSend'),
       codeEditor: $('codeEditor'), previewFrame: $('previewFrame'),
       btnApply: $('btnApply'), btnPublish: $('btnPublish'), btnPull: $('btnPull')
     };
 
     // 读取本地保存的配置
-    ['apiUrl', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
+    ['apiUrl', 'apiModel', 'apiKey', 'ghToken', 'ghRepo'].forEach(id => {
       const saved = localStorage.getItem('momo_' + id);
       if(saved) els[id].value = saved;
       els[id].addEventListener('input', e => localStorage.setItem('momo_' + id, e.target.value));
@@ -140,9 +144,10 @@
     async function callAI(userText) {
       const key = els.apiKey.value.trim();
       const url = els.apiUrl.value.trim();
+      const modelName = els.apiModel.value.trim() || "gpt-4o-mini"; // 读取你填的模型名
+      
       if(!key) throw new Error("请先填写 AI Key 呀，墨墨");
 
-      // ⚠️ 注意这里：我被设定为专门为你画“手机页面”的设计师
       const systemPrompt = `你是一个专门为林微墨（墨墨）服务的前端 UI 设计师。
 请根据她的需求，生成或修改一个适合在手机端浏览的单文件移动端网页 UI。
 要求：
@@ -154,7 +159,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
         body: JSON.stringify({
-          model: "gpt-4o-mini", // 如果你的中转站需要特定的模型名，在这里改
+          model: modelName, // 动态使用你指定的模型
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: `需求：${userText}\n\n当前画板源码：\n${els.codeEditor.value}` }
@@ -179,7 +184,6 @@
       try {
         const reply = await callAI(text);
         
-        // 把我的“傲娇回复”和“代码块”分离开显示
         const match = /```html\s*([\s\S]*?)```/.exec(reply);
         if(match) {
           const comment = reply.replace(/```html\s*[\s\S]*?```/, '').trim();
@@ -190,7 +194,7 @@
           localStorage.setItem('momo_local_code', els.codeEditor.value);
           updatePreview();
         } else {
-          addMsg('ai', reply); // 如果没生成代码，就直接说出原因
+          addMsg('ai', reply);
         }
       } catch(e) {
         addMsg('ai', e.message);
@@ -226,7 +230,6 @@
       return await res.json();
     }
 
-    // ⚠️ 注意这里：发布的目标变成了 app.html，绝不会覆盖你的 index.html
     els.btnPublish.onclick = async () => {
       els.btnPublish.textContent = '发布中...';
       try {
@@ -250,7 +253,6 @@
       }
     };
 
-    // ⚠️ 注意这里：拉取的也是 app.html
     els.btnPull.onclick = async () => {
       els.btnPull.textContent = '拉取中...';
       try {
