@@ -2,1923 +2,1392 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>角色卡生成</title>
-
-  <!-- 免费开源字体（可在悬浮球里切换） -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link id="gf"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap"
-        rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=LXGW+WenKai&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet" />
   <style>
     :root{
-      --accent:#adcdea;   /* 你默认喜欢的蓝 */
-      --bg:#ffffff;       /* 白底 */
+      --accent:#adcdea;
+      --bg:#ffffff;
+      --card:rgba(255,255,255,.92);
       --ink:#0f172a;
       --muted:#64748b;
-      --line:rgba(15,23,42,.12);
-      --shadow:0 18px 50px rgba(15,23,42,.16);
-      --radius:22px;
-      --radius2:14px;
-      --font:"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --line:rgba(15,23,42,.10);
+      --shadow:0 8px 32px rgba(15,23,42,.12);
+      --radius:16px;
+      --font:'Noto Sans SC', system-ui, -apple-system, sans-serif;
     }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;overflow:hidden}
     body{
-      margin:0;
       font-family:var(--font);
       color:var(--ink);
       background:var(--bg);
-      overflow:hidden;
-    }
-
-    /* 背景：渐变 + 可选用户上传图 */
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      background:
-        radial-gradient(1100px 900px at 20% 15%, rgba(173,205,234,.58), transparent 62%),
-        radial-gradient(900px 700px at 80% 10%, rgba(173,205,234,.28), transparent 60%),
-        linear-gradient(180deg, #fff, rgba(173,205,234,.10));
-      pointer-events:none;
-      z-index:-2;
-    }
-    #bgImageLayer{
-      position:fixed; inset:0;
-      background-position:center;
       background-size:cover;
+      background-position:center;
       background-repeat:no-repeat;
-      z-index:-3;
     }
 
-    /* 手机画布 */
-    .stage{
-      height:100%;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
-    }
+    /* Phone frame */
     .phone{
-      width:min(420px, 100%);
-      height:min(860px, 100%);
-      border-radius:36px;
-      background:rgba(255,255,255,.72);
-      backdrop-filter:blur(12px);
-      border:1px solid rgba(15,23,42,.10);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-    .safe{
-      height:100%;
-      padding:18px 16px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
+      width:100%;height:100%;
+      display:flex;flex-direction:column;
+      position:relative;overflow:hidden;
     }
 
-    /* 桌面 */
-    .homescreen{
-      flex:1;
+    /* Pages */
+    .page{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;
+      transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease;
+      overflow-y:auto;overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      padding:20px;
+      background: inherit;
+    }
+    .page.hidden{
+      transform:translateX(100%);
+      opacity:0;
+      pointer-events:none;
+    }
+    .page.left{
+      transform:translateX(-30%);
+      opacity:0;
+      pointer-events:none;
+    }
+
+    /* Home screen */
+    .home{
       display:flex;
-      flex-direction:column;
-      padding-top:28px;
-      gap:18px;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
     }
-    .home-title{
-      font-size:13px;
-      color:var(--muted);
-      letter-spacing:.3px;
-    }
-    .icon-grid{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:14px;
+    .app-icon-wrap{
+      display:flex;flex-direction:column;
+      align-items:center;gap:10px;
+      cursor:pointer;
     }
     .app-icon{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:8px;
-      user-select:none;
-      cursor:pointer;
-    }
-    .app-icon .tile{
-      width:64px;height:64px;
+      width:72px;height:72px;
       border-radius:18px;
-      border:1px solid rgba(15,23,42,.10);
-      background:linear-gradient(135deg, rgba(173,205,234,.70), rgba(255,255,255,.95));
-      box-shadow:0 12px 28px rgba(15,23,42,.12);
-      display:grid;
-      place-items:center;
-      position:relative;
-      overflow:hidden;
-    }
-    .app-icon .tile::after{
-      content:"";
-      width:28px;height:28px;
-      border-radius:10px;
-      border:2px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.68);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
-    }
-    .app-icon .name{
-      font-size:12px;
-      color:var(--ink);
-      text-align:center;
-      line-height:1.2;
-    }
-
-    /* App 容器 */
-    .app{
-      flex:1;
-      display:none;
-      flex-direction:column;
-      min-height:0;
-      gap:12px;
-    }
-    .app.show{display:flex}
-
-    .nav{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px;
+      background: linear-gradient(135deg, var(--accent), rgba(255,255,255,.9));
       border:1px solid var(--line);
-      border-radius:16px;
-      background:rgba(255,255,255,.82);
-      backdrop-filter:blur(10px);
-    }
-    .nav .left{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .nav .t{font-weight:800;font-size:14px}
-    .nav .sub{font-size:12px;color:var(--muted)}
-    .nav .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-
-    .btn{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.92);
-      color:var(--ink);
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:13px;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .04s ease, background .15s ease;
-      white-space:nowrap;
-    }
-    .btn:hover{background:#fff}
-    .btn:active{transform:translateY(1px)}
-    .btn.primary{
-      background:linear-gradient(135deg, rgba(173,205,234,.90), rgba(255,255,255,.98));
-      border-color:rgba(15,23,42,.10);
-      font-weight:700;
-    }
-    .btn.danger{
-      border-color:rgba(239,68,68,.25);
-      color:#b91c1c;
-    }
-
-    .card{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.82);
-      backdrop-filter:blur(10px);
-      box-shadow:0 10px 26px rgba(15,23,42,.08);
-      overflow:hidden;
-      min-height:0;
-    }
-    .card-head{
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .card-head .title{font-weight:800;font-size:13px}
-    .card-body{padding:12px 14px}
-    .hint{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.55;
-    }
-
-    /* 页面切换 */
-    .screen{display:none;min-height:0}
-    .screen.show{display:block}
-
-    /* 第一页：管理 */
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .manage{display:flex;flex-direction:column;gap:10px;min-height:0}
-    .role-grid{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:10px;
-    }
-    .role-tile{
-      border:1px solid rgba(15,23,42,.10);
-      border-radius:18px;
-      background:rgba(255,255,255,.92);
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .avatar{
-      width:64px;height:64px;
-      margin:0 auto;
-      border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
-      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(173,205,234,.62));
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      position:relative;
-    }
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-    .avatar .plus{
-      width:26px;height:26px;
-      border-radius:10px;
-      border:1px solid rgba(15,23,42,.18);
-      background:rgba(255,255,255,.68);
+      box-shadow: var(--shadow);
       display:grid;place-items:center;
-      font-weight:900;
-      color:rgba(15,23,42,.55);
+      font-size:28px;
+      transition: transform .15s ease;
     }
-    .role-name{
+    .app-icon:active{transform:scale(.92)}
+    .app-icon-label{
       font-size:12px;
+      font-weight:500;
+      color:var(--ink);
       text-align:center;
-      font-weight:800;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    }
+
+    /* Common UI */
+    .page-title{
+      font-size:20px;font-weight:700;
+      text-align:center;
+      padding:16px 0 20px;
+    }
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:12px 20px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:var(--card);
+      backdrop-filter:blur(10px);
+      font-size:14px;font-weight:500;
+      color:var(--ink);
+      cursor:pointer;
+      transition:transform .06s ease, background .15s ease;
+      user-select:none;
+      font-family:var(--font);
       white-space:nowrap;
     }
-
-    /* 表单 */
-    .form{display:flex;flex-direction:column;gap:10px}
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
+    .btn:active{transform:scale(.96)}
+    .btn.primary{
+      background:linear-gradient(135deg, var(--accent), rgba(255,255,255,.95));
+      border-color:rgba(15,23,42,.08);
     }
-    .field input, .field textarea{
-      width:100%;
-      border:1px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.94);
+    .btn.full{width:100%}
+    .btn.danger{color:#dc2626;border-color:rgba(220,38,38,.2)}
+
+    .field{
+      border:1px solid var(--line);
       border-radius:14px;
+      padding:12px;
+      background:var(--card);
+      backdrop-filter:blur(10px);
+      margin-bottom:12px;
+    }
+    .field label{
+      display:block;font-size:12px;
+      color:var(--muted);margin-bottom:8px;
+    }
+    .field input,.field select,.field textarea{
+      width:100%;
       padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
       outline:none;
-      font-size:13px;
+      background:rgba(255,255,255,.9);
+      font-size:14px;
       font-family:var(--font);
+      color:var(--ink);
     }
-    .field textarea{
-      min-height:130px;
-      resize:vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-size:12px;
-      line-height:1.55;
-    }
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .seg{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{
-      padding:8px 10px;
-      border:1px solid rgba(15,23,42,.12);
-      border-radius:999px;
-      background:rgba(255,255,255,.92);
-      font-size:12px;
+    .field textarea{resize:vertical;min-height:100px;line-height:1.6}
+    .field select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+    .radio-row{display:flex;gap:10px}
+    .radio-item{
+      flex:1;padding:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      text-align:center;
+      font-size:14px;
       cursor:pointer;
-      user-select:none;
+      background:rgba(255,255,255,.8);
+      transition:all .15s ease;
     }
-    .chip.active{
-      background:linear-gradient(135deg, rgba(173,205,234,.78), rgba(255,255,255,.98));
-      border-color:rgba(15,23,42,.10);
-      font-weight:900;
+    .radio-item.active{
+      background:linear-gradient(135deg, var(--accent), rgba(255,255,255,.95));
+      border-color:var(--accent);
+      font-weight:600;
     }
 
-    /* 横向滑动选择 */
-    .hscroll{
-      display:flex;
-      gap:8px;
-      overflow:auto;
-      padding-bottom:4px;
+    .row-actions{
+      display:flex;gap:10px;
+      padding:16px 0;
+    }
+    .row-actions .btn{flex:1}
+
+    .spacer{flex:1}
+
+    /* Scroll selector */
+    .scroll-select{
+      display:flex;gap:8px;
+      overflow-x:auto;
+      padding:8px 0;
       -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
     }
-    .hscroll::-webkit-scrollbar{display:none}
-    .pill{
-      flex:0 0 auto;
-      padding:9px 10px;
+    .scroll-select::-webkit-scrollbar{display:none}
+    .scroll-option{
+      flex-shrink:0;
+      padding:8px 14px;
+      border:1px solid var(--line);
       border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.92);
-      font-size:12px;
+      font-size:13px;
       cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
+      background:rgba(255,255,255,.85);
+      transition:all .15s ease;
+      display:flex;align-items:center;gap:6px;
     }
-    .pill.active{
-      background:linear-gradient(135deg, rgba(173,205,234,.78), rgba(255,255,255,.98));
-      border-color:rgba(15,23,42,.10);
-      font-weight:900;
+    .scroll-option.active{
+      background:linear-gradient(135deg, var(--accent), rgba(255,255,255,.95));
+      border-color:var(--accent);
+      font-weight:600;
+    }
+    .scroll-option .detail-btn{
+      width:18px;height:18px;
+      border-radius:50%;
+      background:rgba(15,23,42,.08);
+      display:grid;place-items:center;
+      font-size:10px;color:var(--muted);
+      cursor:pointer;
     }
 
-    .footer-actions{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:12px 14px;
-      border-top:1px solid var(--line);
-      background:rgba(255,255,255,.72);
-    }
-
-    /* 底部抽屉/弹层 */
-    .overlay{
-      position:absolute;
-      inset:0;
-      background:rgba(15,23,42,.28);
+    /* Detail popup */
+    .popup-overlay{
+      position:fixed;inset:0;
+      background:rgba(15,23,42,.35);
       backdrop-filter:blur(6px);
+      z-index:80;
       display:none;
-      align-items:flex-end;
-      padding:12px;
+      place-items:center;
     }
-    .overlay.show{display:flex}
-    .sheet{
-      width:100%;
+    .popup-overlay.show{display:grid}
+    .popup-box{
+      background:var(--card);
+      backdrop-filter:blur(10px);
+      border:1px solid var(--line);
       border-radius:18px;
-      border:1px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.96);
-      overflow:hidden;
+      padding:20px;
+      max-width:340px;
+      width:90%;
       box-shadow:var(--shadow);
-      max-height:76%;
-      display:flex;
-      flex-direction:column;
     }
-    .sheet-head{
+    .popup-box h3{margin:0 0 10px;font-size:16px}
+    .popup-box p{margin:0;font-size:13px;line-height:1.65;color:var(--muted)}
+    .popup-box .btn{margin-top:14px}
+
+    /* Character card */
+    .char-card{
+      display:flex;flex-direction:column;
+      align-items:center;gap:8px;
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--card);
+      backdrop-filter:blur(10px);
+      margin-bottom:12px;
+      cursor:pointer;
+    }
+    .char-avatar{
+      width:72px;height:72px;
+      border-radius:50%;
+      border:2px dashed var(--line);
+      display:grid;place-items:center;
+      overflow:hidden;
+      position:relative;
+    }
+    .char-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .char-avatar .plus{font-size:28px;color:var(--muted)}
+    .char-avatar input{
+      position:absolute;inset:0;
+      opacity:0;cursor:pointer;
+    }
+    .char-name{font-size:14px;font-weight:600}
+    .char-detail-box{
+      width:100%;
+      margin-top:8px;
       padding:12px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .sheet-head .title{font-weight:900;font-size:13px}
-    .sheet-body{padding:12px;overflow:auto}
-    .mono{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:rgba(255,255,255,.85);
       font-size:12px;
+      line-height:1.65;
       white-space:pre-wrap;
       word-break:break-word;
-      line-height:1.6;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(15,23,42,.10);
-      background:#fff;
+      display:none;
+    }
+    .char-detail-box.show{display:block}
+    .copy-btn{
+      margin-top:8px;
+      font-size:12px;
+      padding:6px 12px;
     }
 
-    /* 悬浮球（透明虚拟球） */
+    /* ====== AssistiveTouch Ball ====== */
     .ball{
       position:fixed;
-      right:18px;
-      bottom:18px;
-      width:56px;height:56px;
-      border-radius:999px;
-      background:rgba(255,255,255,.22);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
+      right:14px;bottom:80px;
+      width:52px;height:52px;
+      border-radius:50%;
+      background:rgba(120,120,128,.25);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
       border:1px solid rgba(255,255,255,.35);
-      box-shadow:0 18px 40px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.55);
-      z-index:999;
-      display:grid;
-      place-items:center;
+      box-shadow:
+        0 2px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.45);
+      display:grid;place-items:center;
+      z-index:50;
       touch-action:none;
-      user-select:none;
+      cursor:pointer;
+      transition:transform .12s ease;
     }
-    .ball::after{
-      content:"";
-      width:20px;height:20px;
-      border-radius:8px;
-      background:rgba(255,255,255,.18);
-      border:1px solid rgba(255,255,255,.35);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+    .ball:active{transform:scale(.9)}
+    .ball-inner{
+      width:28px;height:28px;
+      border-radius:50%;
+      background:rgba(255,255,255,.45);
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:0 1px 4px rgba(0,0,0,.08);
     }
 
-    /* 悬浮球面板 */
-    .ball-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.30);
-      backdrop-filter:blur(6px);
-      z-index:1000;
+    /* ====== Settings Overlay ====== */
+    .settings-overlay{
+      position:fixed;inset:0;
+      background:rgba(15,23,42,.3);
+      backdrop-filter:blur(8px);
+      z-index:60;
       display:none;
-      padding:12px;
-      align-items:flex-end;
     }
-    .ball-overlay.show{display:flex}
-    .panel{
-      width:min(520px, 100%);
-      margin:0 auto;
-      border-radius:18px;
-      background:rgba(255,255,255,.95);
-      border:1px solid rgba(15,23,42,.10);
+    .settings-overlay.show{display:block}
+    .sheet{
+      position:absolute;
+      left:8px;right:8px;bottom:8px;
+      max-height:82vh;
+      border-radius:20px;
+      background:var(--card);
+      backdrop-filter:blur(14px);
+      border:1px solid var(--line);
       box-shadow:var(--shadow);
       overflow:hidden;
+      display:flex;flex-direction:column;
     }
-    .panel-head{
-      padding:12px;
+    .sheet-head{
+      padding:12px 14px;
       border-bottom:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
+      display:flex;align-items:center;
+      justify-content:space-between;gap:10px;
     }
-    .panel-head .title{font-weight:950;font-size:13px}
-    .panel-tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      padding:10px 12px;
-      border-bottom:1px solid var(--line);
-      background:rgba(255,255,255,.80);
-    }
-    .panel-body{
-      padding:12px;
-      max-height:68vh;
-      overflow:auto;
-    }
-    .mini{font-size:12px;color:var(--muted);line-height:1.55}
-
-    .kv{display:grid;grid-template-columns:1fr;gap:10px}
-    .theme-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .preset-list{
-      display:flex;gap:8px;overflow:auto;padding-bottom:4px;
-      -webkit-overflow-scrolling:touch; scrollbar-width:none;
-    }
-    .preset-list::-webkit-scrollbar{display:none}
-    .preset{
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      gap:8px;
+    .tabs{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
-      background:#fff;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.85);
+      font-size:12px;
       cursor:pointer;
-      user-select:none;
-      font-size:12px;
       white-space:nowrap;
+      flex-shrink:0;
     }
-    .swatch{width:12px;height:12px;border-radius:4px;border:1px solid rgba(15,23,42,.12);background:var(--accent)}
-
-    /* 小提示条 */
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:92px;
-      transform:translateX(-50%);
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.92);
-      box-shadow:0 12px 24px rgba(15,23,42,.14);
-      font-size:12px;
-      color:var(--ink);
-      display:none;
-      z-index:2000;
-      max-width:88vw;
-      text-overflow:ellipsis;
-      overflow:hidden;
-      white-space:nowrap;
-    }
-    .toast.show{display:block}
-
-    /* 第三页：每行标题右侧“详情”按钮 */
-    .label-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:6px;
-    }
-    .label-row .l{
-      font-size:12px;
-      color:var(--muted);
+    .tab.active{
+      background:linear-gradient(135deg, var(--accent), rgba(255,255,255,.95));
+      border-color:var(--accent);
       font-weight:700;
     }
-    .linkbtn{
-      border:1px solid rgba(15,23,42,.12);
-      background:rgba(255,255,255,.92);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
+    .sheet-body{
+      flex:1;overflow-y:auto;
+      padding:14px;
+      -webkit-overflow-scrolling:touch;
     }
+    .tabpane{display:none}
+    .tabpane.active{display:block}
+    .sheet-close{
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:rgba(255,255,255,.85);
+      cursor:pointer;
+      font-size:12px;
+      flex-shrink:0;
+    }
+
+    /* Color swatches */
+    .color-row{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+    .color-swatch{
+      width:36px;height:36px;
+      border-radius:10px;
+      border:2px solid var(--line);
+      cursor:pointer;
+      position:relative;
+    }
+    .color-swatch input[type=color]{
+      position:absolute;inset:0;
+      opacity:0;cursor:pointer;
+      width:100%;height:100%;
+    }
+    .color-hex-input{
+      width:100px;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      font-size:13px;
+      font-family:var(--font);
+      outline:none;
+    }
+    .theme-saved{
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      margin:6px 0;
+      display:flex;align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:13px;
+      background:rgba(255,255,255,.85);
+    }
+    .theme-colors{display:flex;gap:4px}
+    .theme-dot{width:18px;height:18px;border-radius:6px;border:1px solid var(--line)}
+
+    /* Misc */
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      padding:40px 0;
+    }
+    .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
   </style>
 </head>
-
 <body>
-  <div id="bgImageLayer" aria-hidden="true"></div>
 
-  <div class="stage">
-    <div class="phone" id="phone">
-      <div class="safe">
+<div class="phone" id="phone">
 
-        <!-- 桌面 -->
-        <section class="homescreen" id="home">
-          <div class="home-title">桌面</div>
-
-          <div class="icon-grid">
-            <div class="app-icon" id="openApp">
-              <div class="tile" aria-hidden="true"></div>
-              <div class="name">角色卡生成</div>
-            </div>
-          </div>
-
-          <div class="hint" style="margin-top:10px;">
-            点图标进入。右下悬浮球可设置接口、自动抓取模型、配色、字体、背景。
-          </div>
-        </section>
-
-        <!-- App -->
-        <section class="app" id="app">
-          <div class="nav">
-            <div class="left">
-              <div class="t" id="navTitle">角色卡生成</div>
-              <div class="sub" id="navSub">创建与管理</div>
-            </div>
-            <div class="right">
-              <button class="btn" id="backHome">回桌面</button>
-            </div>
-          </div>
-
-          <!-- 第一页 -->
-          <div class="card screen show" id="screen1">
-            <div class="card-head">
-              <div class="title">第一页</div>
-              <div class="hint" id="screen1Hint">管理角色：当前 0 个</div>
-            </div>
-            <div class="card-body manage">
-              <div class="actions">
-                <button class="btn primary" id="goCreate">创建角色</button>
-                <button class="btn" id="btnManage">管理角色</button>
-                <button class="btn danger" id="btnExit">退出</button>
-              </div>
-
-              <div class="hint">
-                管理区默认空白；创建后会出现角色卡。点角色名称可查看资料并一键复制；点圆框“+”可上传头像。
-              </div>
-
-              <div class="role-grid" id="roleGrid" style="margin-top:8px;"></div>
-            </div>
-          </div>
-
-          <!-- 第二页 -->
-          <div class="card screen" id="screen2">
-            <div class="card-head">
-              <div class="title">第二页 · 基础信息</div>
-              <div class="hint">手动填写</div>
-            </div>
-            <div class="card-body">
-              <div class="form">
-                <div class="field">
-                  <label>名称</label>
-                  <input id="name" placeholder="例如：林微墨" />
-                </div>
-
-                <div class="row">
-                  <div class="field">
-                    <label>年龄</label>
-                    <input id="age" inputmode="numeric" placeholder="例如：25" />
-                  </div>
-                  <div class="field">
-                    <label>身高（cm）</label>
-                    <input id="height" inputmode="numeric" placeholder="例如：165" />
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label>性别</label>
-                  <div class="seg">
-                    <div class="chip" data-gender="女" id="gF">女</div>
-                    <div class="chip" data-gender="男" id="gM">男</div>
-                  </div>
-                  <div class="hint" style="margin-top:8px;">
-                    选择“女”后，第三页默认细节会按女性向补全（肤色白等）。
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="footer-actions">
-              <button class="btn" id="s2prev">上一步</button>
-              <button class="btn primary" id="s2next">下一步</button>
-            </div>
-          </div>
-
-          <!-- 第三页 -->
-          <div class="card screen" id="screen3">
-            <div class="card-head">
-              <div class="title">第三页 · 创建形象</div>
-              <div class="hint">横向滑动选择 + 详情弹出</div>
-            </div>
-
-            <div class="card-body" style="display:flex; flex-direction:column; gap:10px; min-height:0;">
-              <div class="field">
-                <label>形象资料输入框（可手动编辑；也可用“完成”生成填入）</label>
-                <textarea id="profile" placeholder="在这里写形象资料..."></textarea>
-              </div>
-
-              <div class="field">
-                <div class="label-row">
-                  <div class="l">眼型（横向滑动选择）</div>
-                  <button class="linkbtn" id="eyeInfoBtn">详情</button>
-                </div>
-                <div class="hscroll" id="eyes"></div>
-                <div class="hint" id="eyeDesc" style="margin-top:8px;">请选择一个眼型。</div>
-              </div>
-
-              <div class="field">
-                <div class="label-row">
-                  <div class="l">头发长度（横向滑动选择）</div>
-                  <button class="linkbtn" id="hairInfoBtn">详情</button>
-                </div>
-                <div class="hscroll" id="hair"></div>
-                <div class="hint" id="hairDesc" style="margin-top:8px;">请选择头发长度。</div>
-              </div>
-
-              <div class="field">
-                <div class="label-row">
-                  <div class="l">胸部丰满程度（横向滑动选择）</div>
-                  <button class="linkbtn" id="bustInfoBtn">详情</button>
-                </div>
-                <div class="hscroll" id="bust"></div>
-                <div class="hint" id="bustDesc" style="margin-top:8px;">请选择程度。</div>
-              </div>
-
-              <div class="field">
-                <div class="label-row">
-                  <div class="l">体香（横向滑动选择）</div>
-                  <button class="linkbtn" id="scentInfoBtn">详情</button>
-                </div>
-                <div class="hscroll" id="scent"></div>
-                <div class="hint" id="scentDesc" style="margin-top:8px;">请选择体香。</div>
-              </div>
-
-              <div class="row">
-                <div class="field">
-                  <label>生成字数（控制输出长度）</label>
-                  <input id="words" inputmode="numeric" placeholder="例如：400" />
-                </div>
-                <div class="field">
-                  <label>生成方式</label>
-                  <div class="seg">
-                    <div class="chip active" data-gen="random" id="genRandom">随机生成（本地）</div>
-                    <div class="chip" data-gen="ai" id="genAI">AI 生成（需要接口）</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="actions">
-                <button class="btn" id="btnGenerate">完成（生成到输入框）</button>
-              </div>
-
-              <div class="hint">
-                默认细节（女向时自动补全）：肤色白、鼻子小巧玲珑、唇形柔软润泽、下巴肩颈锁骨线条优美、腰部腿部纤细、玉足。
-              </div>
-            </div>
-
-            <div class="footer-actions">
-              <button class="btn" id="s3prev">上一步</button>
-              <button class="btn primary" id="finalConfirm">最终确认</button>
-            </div>
-          </div>
-
-          <!-- 角色资料弹层 -->
-          <div class="overlay" id="roleOverlay">
-            <div class="sheet">
-              <div class="sheet-head">
-                <div class="title" id="detailTitle">角色资料</div>
-                <div style="display:flex; gap:8px;">
-                  <button class="btn" id="copyRole">一键复制</button>
-                  <button class="btn" id="closeRole">关闭</button>
-                </div>
-              </div>
-              <div class="sheet-body">
-                <div class="mono" id="detailText"></div>
-                <div class="hint" style="margin-top:10px;">
-                  头像：点管理页角色圆框中间“+”可上传。
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 选项详情弹层 -->
-          <div class="overlay" id="infoOverlay">
-            <div class="sheet">
-              <div class="sheet-head">
-                <div class="title" id="infoTitle">详情</div>
-                <button class="btn" id="closeInfo">关闭</button>
-              </div>
-              <div class="sheet-body">
-                <div class="mono" id="infoBody"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
+  <!-- ====== HOME ====== -->
+  <div class="page home" id="pageHome">
+    <div class="app-icon-wrap" id="openApp">
+      <div class="app-icon">🎭</div>
+      <div class="app-icon-label">角色卡生成</div>
     </div>
   </div>
 
-  <!-- 悬浮球 -->
-  <div class="ball" id="ball" aria-label="打开悬浮球面板"></div>
+  <!-- ====== PAGE 1: MAIN ====== -->
+  <div class="page hidden" id="pageMain">
+    <div class="page-title">角色卡生成</div>
+    <button class="btn primary full" id="goCreate" style="margin-bottom:12px">创建角色</button>
+    <div style="font-size:13px;font-weight:600;color:var(--muted);padding:12px 0 8px">管理角色</div>
+    <div id="charList"><div class="empty">还没有角色，去创建一个吧</div></div>
+    <div class="spacer"></div>
+    <button class="btn danger full" id="exitApp" style="margin-top:16px">退出</button>
+  </div>
 
-  <!-- 悬浮球面板 -->
-  <div class="ball-overlay" id="ballOverlay">
-    <div class="panel">
-      <div class="panel-head">
-        <div class="title">悬浮球</div>
-        <button class="btn" id="closePanel">关闭</button>
+  <!-- ====== PAGE 2: BASIC INFO ====== -->
+  <div class="page hidden" id="pageBasic">
+    <div class="page-title">基本信息</div>
+    <div class="field"><label>名称</label><input id="cName" placeholder="角色名称" /></div>
+    <div class="field"><label>年龄</label><input id="cAge" placeholder="例如 18" type="number" /></div>
+    <div class="field"><label>身高（cm）</label><input id="cHeight" placeholder="例如 165" type="number" /></div>
+    <div class="field">
+      <label>性别</label>
+      <div class="radio-row">
+        <div class="radio-item" data-v="男" id="gMale">男</div>
+        <div class="radio-item" data-v="女" id="gFemale">女</div>
       </div>
-
-      <div class="panel-tabs">
-        <button class="chip active" data-tab="api">接口</button>
-        <button class="chip" data-tab="model">模型</button>
-        <button class="chip" data-tab="theme">配色</button>
-        <button class="chip" data-tab="font">字体</button>
-        <button class="chip" data-tab="bg">背景</button>
-      </div>
-
-      <div class="panel-body">
-        <!-- 接口 -->
-        <div class="tabpane" id="tab-api">
-          <div class="kv">
-            <div class="field">
-              <label>接口地址（不含末尾 / ）</label>
-              <input id="apiBase" placeholder="https://你的中转站域名" />
-              <div class="mini" style="margin-top:6px;">
-                默认请求：POST BaseURL/v1/chat/completions；模型列表：GET BaseURL/v1/models
-              </div>
-            </div>
-
-            <div class="field">
-              <label>密钥（仅保存在本机浏览器）</label>
-              <input id="apiKey" placeholder="sk-..." autocomplete="off" />
-              <div class="mini" style="margin-top:6px;">
-                公开分享时不要预填；每个使用者自己填写自己的密钥。
-              </div>
-            </div>
-
-            <div class="field">
-              <label>系统提示词（可选）</label>
-              <textarea id="sys" rows="4" placeholder="例如：你是角色卡生成助手，输出中文，结构清晰..."></textarea>
-            </div>
-
-            <div class="actions">
-              <button class="btn" id="testApi">测试连接</button>
-              <button class="btn primary" id="saveApi">保存</button>
-              <button class="btn" id="wipeKey">清除密钥</button>
-            </div>
-            <div class="mini" id="apiTip" style="margin-top:8px;">未测试</div>
-          </div>
-        </div>
-
-        <!-- 模型（自动抓取） -->
-        <div class="tabpane" id="tab-model" style="display:none;">
-          <div class="field">
-            <label>自动获取模型列表（从中转站拉取）</label>
-
-            <div class="actions" style="margin-top:8px;">
-              <button class="btn" id="refreshModels">刷新模型列表</button>
-              <button class="btn primary" id="saveModel">保存</button>
-            </div>
-
-            <div class="mini" id="modelFetchTip" style="margin-top:8px;">
-              未拉取。请先在“接口”页填接口地址和密钥，然后点“刷新模型列表”。
-            </div>
-
-            <div class="mini" style="margin-top:10px;">滑动选择（点击即选中）：</div>
-            <div class="hscroll" id="modelChips" style="margin-top:8px;"></div>
-
-            <div class="mini" style="margin-top:8px;">
-              当前模型：<b id="curModelText">未选择</b>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>温度（越大越发散）</label>
-            <input id="temp" type="number" min="0" max="2" step="0.1" />
-          </div>
-
-          <div class="field">
-            <label>兜底：自定义模型名（仅当拉取失败时使用）</label>
-            <input id="customModel" placeholder="例如：gpt-4o-mini" />
-            <div class="actions" style="margin-top:10px;">
-              <button class="btn" id="applyCustomModel">使用自定义模型</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 配色 -->
-        <div class="tabpane" id="tab-theme" style="display:none;">
-          <div class="field">
-            <label>手动输入色号调试（支持 #RRGGBB）</label>
-            <div class="theme-row">
-              <div>
-                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">强调色</label>
-                <input id="accent" placeholder="#adcdea" />
-              </div>
-              <div>
-                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">背景色</label>
-                <input id="bg" placeholder="#ffffff" />
-              </div>
-            </div>
-
-            <div class="actions" style="margin-top:10px;">
-              <button class="btn" id="applyTheme">应用</button>
-              <button class="btn primary" id="saveThemePreset">保存主题</button>
-            </div>
-
-            <div class="mini" style="margin-top:10px;">已保存的主题（点击切换）：</div>
-            <div class="preset-list" id="presetList" style="margin-top:8px;"></div>
-          </div>
-        </div>
-
-        <!-- 字体 -->
-        <div class="tabpane" id="tab-font" style="display:none;">
-          <div class="field">
-            <label>开源免费字体（点击切换）</label>
-            <div class="hscroll" id="fontChips"></div>
-            <div class="mini" style="margin-top:8px;">
-              当前字体：<b id="curFontText">默认</b>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>上传字体（TTF/OTF）并应用到本页面</label>
-            <input id="fontFile" type="file" accept=".ttf,.otf,font/ttf,font/otf" />
-            <div class="mini" style="margin-top:8px;">
-              可以直接应用（用 @font-face 注入）。注意：这是“本机/本浏览器生效”；分享给别人，别人需要自己上传或你把字体文件也托管到站点里。
-            </div>
-          </div>
-        </div>
-
-        <!-- 背景 -->
-        <div class="tabpane" id="tab-bg" style="display:none;">
-          <div class="field">
-            <label>上传图片作为背景</label>
-            <input id="bgFile" type="file" accept="image/*" />
-            <div class="actions" style="margin-top:10px;">
-              <button class="btn" id="clearBg">清除背景图</button>
-            </div>
-            <div class="mini" style="margin-top:8px;">
-              背景图默认仅保存在本机。若要分享后别人也看到同一张背景，需要把图片放仓库并用链接引用。
-            </div>
-          </div>
-        </div>
-
-      </div>
+    </div>
+    <div class="row-actions">
+      <button class="btn" id="basicBack">上一步</button>
+      <button class="btn primary" id="basicNext">下一步</button>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <!-- ====== PAGE 3: APPEARANCE ====== -->
+  <div class="page hidden" id="pageAppear">
+    <div class="page-title">创建形象</div>
+    <div class="field">
+      <label>形象描述（AI 生成后会填入此处，也可手动输入）</label>
+      <textarea id="descBox" rows="5" placeholder="点击下方"完成"按钮，AI 将根据你的选择生成形象描述…"></textarea>
+    </div>
 
-  <script>
-    /***********************
-     * 本地存储
-     ***********************/
-    const S = {
-      settings: "rcg_settings_v2",
-      themePresets: "rcg_theme_presets_v2",
-      bg: "rcg_bg_image_v2",
-      ball: "rcg_ball_pos_v2",
-      roles: "rcg_roles_v2",
-      font: "rcg_font_v2",
-      modelsCache: "rcg_models_cache_v2"
-    };
-    const $ = (s)=>document.querySelector(s);
+    <!-- Eye type -->
+    <div class="field">
+      <label>眼型</label>
+      <div class="scroll-select" id="eyeSelect"></div>
+    </div>
 
-    function load(key, fallback){
-      try{
-        const t = localStorage.getItem(key);
-        if(!t) return fallback;
-        return JSON.parse(t);
-      }catch(e){ return fallback; }
-    }
-    function save(key, val){
-      localStorage.setItem(key, JSON.stringify(val));
-    }
-    function toast(msg){
-      const el = $("#toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(toast._t);
-      toast._t = setTimeout(()=> el.classList.remove("show"), 1800);
-    }
+    <!-- Hair -->
+    <div class="field">
+      <label>头发长度</label>
+      <div class="scroll-select" id="hairSelect"></div>
+    </div>
 
-    /***********************
-     * 设置（酒馆模式：用户自填密钥）
-     ***********************/
-    const defaultSettings = {
-      apiBase: "",
-      apiKey: "",
-      system: "",
-      model: "",
-      temperature: 0.2
-    };
-    function getSettings(){
-      return { ...defaultSettings, ...load(S.settings, {}) };
-    }
-    function setSettings(patch){
-      const next = { ...getSettings(), ...patch };
-      save(S.settings, next);
-      return next;
-    }
+    <!-- Chest (female only) -->
+    <div class="field" id="chestField">
+      <label>胸部丰满程度</label>
+      <div class="scroll-select" id="chestSelect"></div>
+    </div>
 
-    /***********************
-     * 你要的 3 个稳定补丁（已集成）
-     ***********************/
-    // 补丁1：请求超时 + 可中断（防“长内容卡住没反应”）
-    let inFlightController = null;
+    <!-- Fragrance -->
+    <div class="field">
+      <label>体香</label>
+      <div class="scroll-select" id="fragSelect"></div>
+    </div>
 
-    async function callChatCompletions({ apiBase, apiKey, model, temperature, system, messages, max_tokens }){
-      const url = apiBase.replace(/\/+$/,"") + "/v1/chat/completions";
+    <!-- Word count -->
+    <div class="field">
+      <label>AI 生成字数</label>
+      <input id="wordCount" type="number" placeholder="例如 200" value="200" />
+    </div>
 
-      if (inFlightController) inFlightController.abort();
-      const controller = new AbortController();
-      inFlightController = controller;
+    <div class="hint" style="padding:0 0 10px">
+      默认设定：肤色白皙，鼻子小巧玲珑，唇形柔软润泽，下巴肩颈锁骨线条优美，腰部腿部纤细，玉足。
+    </div>
 
-      const timeoutMs = 90000;
-      const timer = setTimeout(() => controller.abort(new Error("timeout")), timeoutMs);
+    <div class="row-actions">
+      <button class="btn" id="appearBack">上一步</button>
+      <button class="btn primary" id="appearGenerate">完成（AI 生成）</button>
+    </div>
+    <div class="row-actions" style="padding-top:0">
+      <button class="btn primary full" id="appearConfirm">最终确认</button>
+    </div>
+  </div>
+</div>
 
-      const payload = { model, temperature, messages, max_tokens };
+<!-- Detail popup -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <h3 id="popupTitle"></h3>
+    <p id="popupBody"></p>
+    <button class="btn full" onclick="closePopup()">关闭</button>
+  </div>
+</div>
 
-      try{
-        const r = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + apiKey
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
+<!-- ====== AssistiveTouch Ball ====== -->
+<div class="ball" id="ball"><div class="ball-inner"></div></div>
 
-        if(!r.ok){
-          const t = await r.text().catch(()=> "");
-          throw new Error(`请求失败：${r.status} ${t}`);
-        }
+<!-- ====== Settings Overlay ====== -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="tabs" id="settingsTabs">
+        <button class="tab active" data-tab="api">API</button>
+        <button class="tab" data-tab="colors">颜色</button>
+        <button class="tab" data-tab="fonts">字体</button>
+        <button class="tab" data-tab="bgimg">背景图</button>
+        <button class="tab" data-tab="data">数据</button>
+      </div>
+      <button class="sheet-close" id="closeSettings">关闭</button>
+    </div>
+    <div class="sheet-body">
 
-        const data = await r.json();
-        const text = data?.choices?.[0]?.message?.content;
-        if(typeof text !== "string") throw new Error("响应解析失败（未拿到内容）");
-        return text;
-      }catch(e){
-        if (String(e?.name).includes("Abort") || String(e).includes("timeout")) {
-          throw new Error("请求超时/被中断：建议降低字数或稍后再试");
-        }
-        throw e;
-      }finally{
-        clearTimeout(timer);
-        if (inFlightController === controller) inFlightController = null;
-      }
-    }
+      <!-- API -->
+      <div class="tabpane active" id="pane-api">
+        <div class="field"><label>API Base URL</label><input id="apiBase" placeholder="https://你的中转站域名" /></div>
+        <div class="field"><label>API Key</label><input id="apiKey" placeholder="sk-..." autocomplete="off" /></div>
+        <div class="field">
+          <label>模型选择</label>
+          <div class="scroll-select" id="modelSelect"></div>
+          <input id="modelCustom" placeholder="或手动输入模型名" style="margin-top:8px" />
+        </div>
+        <div class="field">
+          <label>Temperature</label>
+          <input id="temp" type="range" min="0" max="2" step="0.1" value="0.7" style="width:100%" />
+          <div style="text-align:center;font-size:12px;color:var(--muted)" id="tempVal">0.7</div>
+        </div>
+        <button class="btn full" id="testApi">测试连接</button>
+        <div class="hint" id="testResult">未测试</div>
+        <button class="btn full primary" id="saveApi" style="margin-top:10px">保存设置</button>
+      </div>
 
-    // 补丁2：离开页面就中断请求（防切后台回来出问题）
-    window.addEventListener("pagehide", () => {
-      try { inFlightController?.abort(); } catch(e){}
-    });
+      <!-- Colors -->
+      <div class="tabpane" id="pane-colors">
+        <div class="field">
+          <label>主题色（accent）</label>
+          <div class="color-row">
+            <div class="color-swatch" id="swAccent" style="background:var(--accent)">
+              <input type="color" id="pickAccent" />
+            </div>
+            <input class="color-hex-input" id="hexAccent" placeholder="#adcdea" />
+            <button class="btn" onclick="applyColorFromHex('accent')">应用</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>背景色</label>
+          <div class="color-row">
+            <div class="color-swatch" id="swBg" style="background:var(--bg)">
+              <input type="color" id="pickBg" />
+            </div>
+            <input class="color-hex-input" id="hexBg" placeholder="#ffffff" />
+            <button class="btn" onclick="applyColorFromHex('bg')">应用</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>文字色</label>
+          <div class="color-row">
+            <div class="color-swatch" id="swInk" style="background:var(--ink)">
+              <input type="color" id="pickInk" />
+            </div>
+            <input class="color-hex-input" id="hexInk" placeholder="#0f172a" />
+            <button class="btn" onclick="applyColorFromHex('ink')">应用</button>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn primary" id="saveTheme">保存当前主题</button>
+          <button class="btn" id="resetColors">恢复默认</button>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);padding:8px 0 4px">已保存主题</div>
+        <div id="themeList"></div>
+      </div>
 
-    // 补丁3：如果是“返回缓存恢复”，强制刷新（防回来就报加载错误）
-    window.addEventListener("pageshow", (e) => {
-      if (e.persisted) location.reload();
-    });
+      <!-- Fonts -->
+      <div class="tabpane" id="pane-fonts">
+        <div class="field">
+          <label>选择字体</label>
+          <div class="scroll-select" id="fontSelect"></div>
+        </div>
+        <div class="field">
+          <label>上传自定义字体（TTF / OTF / WOFF2）</label>
+          <input type="file" id="fontUpload" accept=".ttf,.otf,.woff,.woff2" />
+          <div class="hint">上传后可在字体列表里选择。字体数据保存在本机浏览器。</div>
+        </div>
+        <div id="customFontList"></div>
+      </div>
 
-    /***********************
-     * 悬浮球：拖拽 + 吸边
-     ***********************/
-    const ball = $("#ball");
-    const ballOverlay = $("#ballOverlay");
+      <!-- Background Image -->
+      <div class="tabpane" id="pane-bgimg">
+        <div class="field">
+          <label>上传背景图片</label>
+          <input type="file" id="bgUpload" accept="image/*" />
+          <div class="hint">图片会保存在本机浏览器（localStorage），建议图片不超过 2MB。</div>
+        </div>
+        <div class="row-actions">
+          <button class="btn danger" id="clearBg">清除背景图</button>
+        </div>
+      </div>
 
-    function applyBallPos(x,y){
-      ball.style.left = x + "px";
-      ball.style.top = y + "px";
-      ball.style.right = "auto";
-      ball.style.bottom = "auto";
-    }
-    function snapBall(){
-      const r = ball.getBoundingClientRect();
-      const vw = innerWidth, vh = innerHeight;
-      const m = 10;
-      const x = (r.left + r.width/2 < vw/2) ? m : (vw - r.width - m);
-      const y = Math.min(Math.max(r.top, m), vh - r.height - m);
-      applyBallPos(x,y);
-      save(S.ball, {x,y});
-    }
-    (function initBall(){
-      const pos = load(S.ball, null);
-      if(pos?.x != null && pos?.y != null){
-        applyBallPos(pos.x, pos.y);
-        snapBall();
-      }
-    })();
+      <!-- Data -->
+      <div class="tabpane" id="pane-data">
+        <div class="field">
+          <label>导出数据</label>
+          <button class="btn full" id="exportData">导出 JSON</button>
+        </div>
+        <div class="field">
+          <label>导入数据</label>
+          <input type="file" id="importData" accept=".json" />
+        </div>
+        <div class="field">
+          <label>清空</label>
+          <div class="row-actions" style="padding:0">
+            <button class="btn danger" id="clearChars">清空角色</button>
+            <button class="btn danger" id="clearAll">清空全部</button>
+          </div>
+        </div>
+      </div>
 
-    let drag = {on:false, dx:0, dy:0, moved:false};
-    ball.addEventListener("pointerdown", (e)=>{
-      drag.on = true; drag.moved = false;
-      ball.setPointerCapture(e.pointerId);
-      const r = ball.getBoundingClientRect();
-      drag.dx = e.clientX - r.left;
-      drag.dy = e.clientY - r.top;
-    });
-    ball.addEventListener("pointermove", (e)=>{
-      if(!drag.on) return;
-      drag.moved = true;
-      const m = 6;
-      const x = Math.min(Math.max(e.clientX - drag.dx, m), innerWidth - 56 - m);
-      const y = Math.min(Math.max(e.clientY - drag.dy, m), innerHeight - 56 - m);
-      applyBallPos(x,y);
-    });
-    ball.addEventListener("pointerup", ()=>{
-      if(!drag.on) return;
-      drag.on = false;
-      snapBall();
-    });
-    ball.addEventListener("click", ()=>{
-      if(drag.moved) return;
-      ballOverlay.classList.add("show");
-    });
+    </div>
+  </div>
+</div>
 
-    $("#closePanel").addEventListener("click", ()=> ballOverlay.classList.remove("show"));
-    ballOverlay.addEventListener("click", (e)=>{
-      if(e.target === ballOverlay) ballOverlay.classList.remove("show");
-    });
+<script>
+/* ====== STORAGE ====== */
+const KEYS={
+  api:'rcard_api_v1',
+  chars:'rcard_chars_v1',
+  colors:'rcard_colors_v1',
+  themes:'rcard_themes_v1',
+  font:'rcard_font_v1',
+  customFonts:'rcard_cfonts_v1',
+  bg:'rcard_bg_v1',
+  ball:'rcard_ball_v1',
+};
+function loadJ(k,fb){try{const t=localStorage.getItem(k);return t?JSON.parse(t):fb}catch(e){return fb}}
+function saveJ(k,v){localStorage.setItem(k,JSON.stringify(v))}
 
-    /***********************
-     * 悬浮球面板：标签切换
-     ***********************/
-    const tabBtns = document.querySelectorAll(".panel-tabs .chip");
-    const panes = {
-      api: $("#tab-api"),
-      model: $("#tab-model"),
-      theme: $("#tab-theme"),
-      font: $("#tab-font"),
-      bg: $("#tab-bg")
-    };
-    function setPanelTab(name){
-      tabBtns.forEach(b=> b.classList.toggle("active", b.dataset.tab === name));
-      Object.entries(panes).forEach(([k, el]) => el.style.display = (k===name) ? "block" : "none");
-    }
-    tabBtns.forEach(b=> b.addEventListener("click", ()=> setPanelTab(b.dataset.tab)));
+/* ====== PAGE NAV ====== */
+const pages={
+  home:document.getElementById('pageHome'),
+  main:document.getElementById('pageMain'),
+  basic:document.getElementById('pageBasic'),
+  appear:document.getElementById('pageAppear'),
+};
+let currentPage='home';
+function goPage(name,dir){
+  const prev=pages[currentPage];
+  const next=pages[name];
+  if(!next||currentPage===name)return;
+  prev.classList.add(dir==='back'?'hidden':'left');
+  next.classList.remove('hidden','left');
+  currentPage=name;
+}
 
-    /***********************
-     * 配色：应用 + 保存主题
-     ***********************/
-    function isHex(s){ return /^#([0-9a-fA-F]{6})$/.test((s||"").trim()); }
-    function applyThemeVars(accent, bg){
-      if(isHex(accent)) document.documentElement.style.setProperty("--accent", accent.trim());
-      if(isHex(bg)) document.documentElement.style.setProperty("--bg", bg.trim());
-    }
+/* ====== HOME / MAIN ====== */
+document.getElementById('openApp').onclick=()=>goPage('main','forward');
+document.getElementById('exitApp').onclick=()=>goPage('home','back');
+document.getElementById('goCreate').onclick=()=>{
+  resetCreateForm();
+  goPage('basic','forward');
+};
 
-    function renderPresets(){
-      const list = $("#presetList");
-      const presets = load(S.themePresets, []);
-      list.innerHTML = "";
-      presets.forEach((p, idx)=>{
-        const el = document.createElement("div");
-        el.className = "preset";
-        el.innerHTML = `<span class="swatch" style="background:${p.accent}"></span>${p.name || ("主题"+(idx+1))}`;
-        el.addEventListener("click", ()=>{
-          $("#accent").value = p.accent;
-          $("#bg").value = p.bg;
-          applyThemeVars(p.accent, p.bg);
-          toast("已切换主题");
-        });
-        list.appendChild(el);
-      });
-      if(!presets.length){
-        const tip = document.createElement("div");
-        tip.className = "mini";
-        tip.textContent = "暂无保存主题";
-        list.appendChild(tip);
-      }
-    }
+/* ====== BASIC INFO ====== */
+let cGender='女';
+const gMale=document.getElementById('gMale');
+const gFemale=document.getElementById('gFemale');
+function setGender(g){
+  cGender=g;
+  gMale.classList.toggle('active',g==='男');
+  gFemale.classList.toggle('active',g==='女');
+}
+gMale.onclick=()=>setGender('男');
+gFemale.onclick=()=>setGender('女');
+setGender('女');
 
-    $("#applyTheme").addEventListener("click", ()=>{
-      const a = $("#accent").value.trim();
-      const b = $("#bg").value.trim();
-      if(!isHex(a) || !isHex(b)) return toast("色号格式需为 #RRGGBB");
-      applyThemeVars(a,b);
-      toast("已应用");
-    });
+document.getElementById('basicBack').onclick=()=>goPage('main','back');
+document.getElementById('basicNext').onclick=()=>{
+  const chestField=document.getElementById('chestField');
+  chestField.style.display=(cGender==='女')?'block':'none';
+  goPage('appear','forward');
+};
 
-    $("#saveThemePreset").addEventListener("click", ()=>{
-      const a = $("#accent").value.trim();
-      const b = $("#bg").value.trim();
-      if(!isHex(a) || !isHex(b)) return toast("色号格式需为 #RRGGBB");
-      const presets = load(S.themePresets, []);
-      const name = prompt("给这个主题取名（可选）") || "";
-      presets.unshift({ name, accent:a, bg:b, ts: Date.now() });
-      save(S.themePresets, presets.slice(0,12));
-      renderPresets();
-      toast("主题已保存");
-    });
+/* ====== APPEARANCE OPTIONS ====== */
+const eyeOptions=[
+  {name:'杏眼',desc:'杏眼形如杏核，眼尾略圆，给人温柔清纯、楚楚动人之感。古典美人的代表眼型，目光澄澈如水。'},
+  {name:'丹凤眼',desc:'丹凤眼眼尾上挑，眼形细长，气质高贵冷艳、英姿飒爽。凤目含威，顾盼生辉，带有东方独特的美感。'},
+  {name:'桃花眼',desc:'桃花眼眼尾微垂，目含春水，似笑非笑，天生带有妩媚魅惑之感。一颦一笑皆是风情，令人心动不已。'},
+  {name:'狐狸眼',desc:'狐狸眼眼尾上翘、眼形狭长，灵动妖冶、摄人心魄。举手投足间带有迷人的野性与聪慧。'},
+  {name:'圆眼',desc:'圆眼大而圆润，如同小鹿般灵动无辜，给人天真可爱、元气满满的感觉。纯真的目光令人心生怜爱。'},
+  {name:'柳叶眼',desc:'柳叶眼形似柳叶，弯弯细长，含情脉脉、温婉如玉。安静时如一泓秋水，微笑时似月牙弯弯。'},
+  {name:'月牙眼',desc:'月牙眼笑起来弯如新月，甜美治愈。不笑时也自带亲和力，让人如沐春风、心生好感。'},
+];
 
-    /***********************
-     * 字体：开源字体 + 上传字体
-     ***********************/
-    const fontOptions = [
-      { name:"默认（思源黑体风格）", css:`"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
-      { name:"Inter", css:`"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
-      { name:"站酷快乐体", css:`"ZCOOL KuaiLe", "Noto Sans SC", sans-serif` },
-      { name:"马善政毛笔体", css:`"Ma Shan Zheng", "Noto Sans SC", sans-serif` }
-    ];
+const hairOptions=[
+  {name:'超短发'},{name:'短发'},{name:'中短发'},{name:'齐肩发'},{name:'中长发'},{name:'长发'},{name:'及腰长发'},{name:'超长发'},
+];
 
-    function setFontCss(css, label){
-      document.documentElement.style.setProperty("--font", css);
-      save(S.font, { type:"builtin", css, label });
-      $("#curFontText").textContent = label || "已设置";
-      toast("字体已切换");
-    }
+const chestOptions=[
+  {name:'平坦'},{name:'微隆'},{name:'适中'},{name:'丰满'},{name:'饱满'},
+];
 
-    function renderFontChips(){
-      const box = $("#fontChips");
-      box.innerHTML = "";
-      const cur = load(S.font, null);
-      fontOptions.forEach(opt=>{
-        const el = document.createElement("div");
-        el.className = "pill" + ((cur?.css===opt.css) ? " active" : "");
-        el.textContent = opt.name;
-        el.addEventListener("click", ()=>{
-          document.querySelectorAll("#fontChips .pill").forEach(x=>x.classList.remove("active"));
-          el.classList.add("active");
-          setFontCss(opt.css, opt.name);
-        });
-        box.appendChild(el);
-      });
-    }
+const fragOptions=[
+  {name:'奶香',desc:'如牛奶般温柔醇厚的甜香，自然散发，令人想要亲近。带有婴儿般纯净的气息，闻之安心舒适。'},
+  {name:'花香',desc:'淡雅的花瓣芬芳，若有若无地萦绕在发丝与肌肤间。如同行走的花园，清新脱俗、沁人心脾。'},
+  {name:'果香',desc:'清甜的水果气息，活泼灵动。如蜜桃、草莓般甜美，充满青春与活力的味道。'},
+  {name:'清香',desc:'如雨后青草、清晨露水般的干净气息。不浓不淡，令人心旷神怡，自然而不做作。'},
+  {name:'麝香',desc:'温暖而略带神秘的麝香调，成熟且高级。自然的肌肤香气混合微微的暖意，令人沉醉。'},
+  {name:'冷香',desc:'如冰雪中盛开的寒梅，清冽而幽远。气质疏离高冷、遗世独立，带有不食人间烟火的仙气。'},
+];
 
-    let uploadedFontUrl = null;
-    function applyUploadedFont(familyName, blobUrl){
-      const old = document.querySelector("#uploadedFontStyle");
-      if(old) old.remove();
-      const style = document.createElement("style");
-      style.id = "uploadedFontStyle";
-      style.textContent = `
-@font-face {
-  font-family: "${familyName}";
-  src: url("${blobUrl}");
-  font-display: swap;
-}`;
-      document.head.appendChild(style);
-      document.documentElement.style.setProperty("--font", `"${familyName}", "Noto Sans SC", system-ui, sans-serif`);
-      $("#curFontText").textContent = "已上传字体";
-      toast("已应用上传字体");
-    }
+let selEye=0,selHair=4,selChest=2,selFrag=0;
 
-    $("#fontFile").addEventListener("change", async (e)=>{
-      const file = e.target.files?.[0];
-      if(!file) return;
-
-      if(uploadedFontUrl) URL.revokeObjectURL(uploadedFontUrl);
-      uploadedFontUrl = URL.createObjectURL(file);
-
-      const family = "UserUploadedFont";
-      applyUploadedFont(family, uploadedFontUrl);
-
-      // 尝试持久化（字体太大可能存不下）
-      try{
-        const buf = await file.arrayBuffer();
-        const bytes = new Uint8Array(buf);
-        let bin = "";
-        for(const b of bytes) bin += String.fromCharCode(b);
-        const b64 = btoa(bin);
-        save(S.font, { type:"uploaded", family, name:file.name, mime:file.type || "font/ttf", b64 });
-      }catch(err){
-        // 存不下也不影响当次使用
-      }
-    });
-
-    function restoreFont(){
-      const f = load(S.font, null);
-      if(!f) { $("#curFontText").textContent = "默认"; return; }
-
-      if(f.type === "builtin"){
-        document.documentElement.style.setProperty("--font", f.css);
-        $("#curFontText").textContent = f.label || "已设置";
+function buildScrollSelect(container,options,selectedIdx,onChange,hasDetail){
+  container.innerHTML='';
+  options.forEach((opt,i)=>{
+    const el=document.createElement('div');
+    el.className='scroll-option'+(i===selectedIdx?' active':'');
+    el.innerHTML=opt.name+(hasDetail?'<div class="detail-btn" data-i="'+i+'">?</div>':'');
+    el.addEventListener('click',(e)=>{
+      if(e.target.classList.contains('detail-btn')){
+        showPopup(opt.name,opt.desc||'暂无详细介绍');
         return;
       }
-      if(f.type === "uploaded" && f.b64){
-        try{
-          const bin = atob(f.b64);
-          const bytes = new Uint8Array(bin.length);
-          for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-          const blob = new Blob([bytes], { type: f.mime || "font/ttf" });
-          uploadedFontUrl = URL.createObjectURL(blob);
-          applyUploadedFont(f.family || "UserUploadedFont", uploadedFontUrl);
-        }catch(e){}
-      }
-    }
+      onChange(i);
+      buildScrollSelect(container,options,i,onChange,hasDetail);
+    });
+    container.appendChild(el);
+  });
+}
 
-    /***********************
-     * 背景图：上传 + 清除
-     ***********************/
-    function setBgImage(dataUrl){
-      const layer = $("#bgImageLayer");
-      if(dataUrl){
-        layer.style.backgroundImage = `url("${dataUrl}")`;
-        save(S.bg, { dataUrl });
-      }else{
-        layer.style.backgroundImage = "";
-        localStorage.removeItem(S.bg);
-      }
+function initAppearanceSelectors(){
+  buildScrollSelect(document.getElementById('eyeSelect'),eyeOptions,selEye,(i)=>{selEye=i},true);
+  buildScrollSelect(document.getElementById('hairSelect'),hairOptions,selHair,(i)=>{selHair=i},false);
+  buildScrollSelect(document.getElementById('chestSelect'),chestOptions,selChest,(i)=>{selChest=i},false);
+  buildScrollSelect(document.getElementById('fragSelect'),fragOptions,selFrag,(i)=>{selFrag=i},true);
+}
+initAppearanceSelectors();
+
+/* ====== POPUP ====== */
+function showPopup(title,body){
+  document.getElementById('popupTitle').textContent=title;
+  document.getElementById('popupBody').textContent=body;
+  document.getElementById('popupOverlay').classList.add('show');
+}
+function closePopup(){document.getElementById('popupOverlay').classList.remove('show')}
+document.getElementById('popupOverlay').addEventListener('click',(e)=>{
+  if(e.target.id==='popupOverlay')closePopup();
+});
+
+/* ====== APPEARANCE ACTIONS ====== */
+document.getElementById('appearBack').onclick=()=>goPage('basic','back');
+
+document.getElementById('appearGenerate').onclick=async ()=>{
+  const api=loadJ(KEYS.api,{});
+  if(!api.apiBase||!api.apiKey||!api.model){
+    alert('请先在悬浮球设置中配置 API');return;
+  }
+  const name=document.getElementById('cName').value||'未命名';
+  const age=document.getElementById('cAge').value||'未知';
+  const height=document.getElementById('cHeight').value||'未知';
+  const eye=eyeOptions[selEye].name;
+  const hair=hairOptions[selHair].name;
+  const chest=(cGender==='女')?chestOptions[selChest].name:'';
+  const frag=fragOptions[selFrag].name;
+  const wc=document.getElementById('wordCount').value||200;
+
+  const defaultFeatures='肤色白皙，鼻子小巧玲珑，唇形柔软润泽，下巴肩颈锁骨线条优美，腰部腿部纤细，玉足。';
+
+  const prompt=`请根据以下设定，用${wc}字左右生成一段细腻唯美的${cGender}性角色形象描述，只输出描述内容，不要额外解释：
+角色名：${name}
+年龄：${age}岁
+身高：${height}cm
+性别：${cGender}
+眼型：${eye}
+头发长度：${hair}
+${chest?'胸部：'+chest:''}
+体香：${frag}
+其他默认特征：${defaultFeatures}`;
+
+  const btn=document.getElementById('appearGenerate');
+  btn.disabled=true;btn.textContent='生成中…';
+
+  try{
+    const reply=await callApi(api,prompt);
+    document.getElementById('descBox').value=reply;
+  }catch(e){
+    alert('生成失败：'+(e?.message||String(e)));
+  }finally{
+    btn.disabled=false;btn.textContent='完成（AI 生成）';
+  }
+};
+
+document.getElementById('appearConfirm').onclick=()=>{
+  const chars=loadJ(KEYS.chars,[]);
+  const desc=document.getElementById('descBox').value||'';
+  const name=document.getElementById('cName').value||'未命名';
+  const age=document.getElementById('cAge').value||'';
+  const height=document.getElementById('cHeight').value||'';
+
+  chars.push({
+    id:'c_'+Date.now().toString(36),
+    name,age,height,
+    gender:cGender,
+    eye:eyeOptions[selEye].name,
+    hair:hairOptions[selHair].name,
+    chest:(cGender==='女')?chestOptions[selChest].name:'',
+    frag:fragOptions[selFrag].name,
+    desc,
+    avatar:null,
+    created:Date.now(),
+  });
+  saveJ(KEYS.chars,chars);
+  renderCharList();
+  goPage('main','back');
+};
+
+function resetCreateForm(){
+  document.getElementById('cName').value='';
+  document.getElementById('cAge').value='';
+  document.getElementById('cHeight').value='';
+  document.getElementById('descBox').value='';
+  document.getElementById('wordCount').value='200';
+  setGender('女');
+  selEye=0;selHair=4;selChest=2;selFrag=0;
+  initAppearanceSelectors();
+}
+
+/* ====== API CALL (with timeout + abort) ====== */
+let inFlightController=null;
+
+async function callApi(api,userPrompt){
+  const url=api.apiBase.replace(/\/+$/,'')+'/v1/chat/completions';
+
+  if(inFlightController)inFlightController.abort();
+  const controller=new AbortController();
+  inFlightController=controller;
+  const timeoutMs=90000;
+  const timer=setTimeout(()=>controller.abort(new Error('timeout')),timeoutMs);
+
+  const payload={
+    model:api.model,
+    temperature:Number(api.temperature??0.7),
+    max_tokens:Number(api.max_tokens||1500),
+    messages:[
+      {role:'user',content:userPrompt}
+    ]
+  };
+
+  try{
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+api.apiKey
+      },
+      body:JSON.stringify(payload),
+      signal:controller.signal
+    });
+    if(!r.ok){
+      const t=await r.text().catch(()=>'');
+      throw new Error('API '+r.status+' '+t);
     }
-    $("#bgFile").addEventListener("change", async (e)=>{
-      const file = e.target.files?.[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ()=> {
-        setBgImage(reader.result);
-        toast("背景图已应用");
+    const data=await r.json();
+    const text=data?.choices?.[0]?.message?.content;
+    if(typeof text!=='string')throw new Error('响应解析失败');
+    return text;
+  }catch(e){
+    if(String(e?.name).includes('Abort')||String(e).includes('timeout')){
+      throw new Error('请求超时/被中断，建议减少生成字数后重试');
+    }
+    throw e;
+  }finally{
+    clearTimeout(timer);
+    if(inFlightController===controller)inFlightController=null;
+  }
+}
+
+// iOS: 离开页面中断请求；返回时刷新
+window.addEventListener('pagehide',()=>{
+  try{inFlightController?.abort()}catch(e){}
+});
+window.addEventListener('pageshow',(e)=>{
+  if(e.persisted)location.reload();
+});
+
+/* ====== CHARACTER LIST ====== */
+function renderCharList(){
+  const chars=loadJ(KEYS.chars,[]);
+  const box=document.getElementById('charList');
+  if(!chars.length){
+    box.innerHTML='<div class="empty">还没有角色，去创建一个吧</div>';
+    return;
+  }
+  box.innerHTML='';
+  chars.forEach((c,idx)=>{
+    const card=document.createElement('div');
+    card.className='char-card';
+
+    const avatar=document.createElement('div');
+    avatar.className='char-avatar';
+    if(c.avatar){
+      avatar.innerHTML='<img src="'+c.avatar+'" alt=""/>';
+    }else{
+      avatar.innerHTML='<div class="plus">+</div>';
+    }
+    const fileInput=document.createElement('input');
+    fileInput.type='file';fileInput.accept='image/*';
+    fileInput.addEventListener('change',(e)=>{
+      const file=e.target.files?.[0];
+      if(!file)return;
+      const reader=new FileReader();
+      reader.onload=(ev)=>{
+        const chars2=loadJ(KEYS.chars,[]);
+        chars2[idx].avatar=ev.target.result;
+        saveJ(KEYS.chars,chars2);
+        renderCharList();
       };
       reader.readAsDataURL(file);
     });
-    $("#clearBg").addEventListener("click", ()=>{
-      setBgImage(null);
-      toast("背景图已清除");
-    });
+    fileInput.addEventListener('click',(e)=>e.stopPropagation());
+    avatar.appendChild(fileInput);
 
-    /***********************
-     * 接口页：保存/测试
-     ***********************/
-    function fillApiForm(){
-      const s = getSettings();
-      $("#apiBase").value = s.apiBase || "";
-      $("#apiKey").value = s.apiKey || "";
-      $("#sys").value = s.system || "";
-    }
+    const nameEl=document.createElement('div');
+    nameEl.className='char-name';
+    nameEl.textContent=c.name||'未命名';
 
-    $("#saveApi").addEventListener("click", ()=>{
-      setSettings({
-        apiBase: $("#apiBase").value.trim(),
-        apiKey: $("#apiKey").value.trim(),
-        system: $("#sys").value || ""
+    const detailBox=document.createElement('div');
+    detailBox.className='char-detail-box';
+    detailBox.id='detail_'+idx;
+
+    let info=`名称：${c.name}\n年龄：${c.age}岁\n身高：${c.height}cm\n性别：${c.gender}\n眼型：${c.eye}\n头发：${c.hair}`;
+    if(c.chest)info+=`\n胸部：${c.chest}`;
+    info+=`\n体香：${c.frag}\n\n${c.desc||'（无形象描述）'}`;
+    detailBox.textContent=info;
+
+    const copyBtn=document.createElement('button');
+    copyBtn.className='btn copy-btn';
+    copyBtn.textContent='一键复制';
+    copyBtn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      navigator.clipboard.writeText(info).then(()=>{
+        copyBtn.textContent='已复制！';
+        setTimeout(()=>{copyBtn.textContent='一键复制'},1500);
+      }).catch(()=>{
+        // fallback
+        const ta=document.createElement('textarea');
+        ta.value=info;document.body.appendChild(ta);
+        ta.select();document.execCommand('copy');
+        document.body.removeChild(ta);
+        copyBtn.textContent='已复制！';
+        setTimeout(()=>{copyBtn.textContent='一键复制'},1500);
       });
-      toast("已保存");
     });
 
-    $("#wipeKey").addEventListener("click", ()=>{
-      setSettings({ apiKey: "" });
-      $("#apiKey").value = "";
-      toast("密钥已清除");
+    const delBtn=document.createElement('button');
+    delBtn.className='btn danger copy-btn';
+    delBtn.textContent='删除';
+    delBtn.style.marginLeft='8px';
+    delBtn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      if(!confirm('确定删除 '+c.name+' ？'))return;
+      const chars3=loadJ(KEYS.chars,[]);
+      chars3.splice(idx,1);
+      saveJ(KEYS.chars,chars3);
+      renderCharList();
     });
 
-    $("#testApi").addEventListener("click", async ()=>{
-      const s0 = getSettings();
-      const apiBase = $("#apiBase").value.trim();
-      const apiKey = $("#apiKey").value.trim();
-      const model = s0.model || $("#curModelText").textContent || "";
-      const temperature = Number(s0.temperature ?? 0.2);
-      const system = ($("#sys").value || "").trim();
-
-      if(!apiBase || !apiKey){
-        $("#apiTip").textContent = "请先填写接口地址和密钥。";
-        return;
-      }
-      if(!model || model === "未选择"){
-        $("#apiTip").textContent = "请先在“模型”页选择一个模型。";
-        return;
-      }
-
-      $("#apiTip").textContent = "测试中…";
-      try{
-        const reply = await callChatCompletions({
-          apiBase, apiKey, model, temperature, system,
-          messages: [
-            ...(system ? [{ role:"system", content: system }] : []),
-            { role:"user", content:"回复 OK（测试连接）" }
-          ],
-          max_tokens: 64
-        });
-        $("#apiTip").textContent = "成功：" + reply.slice(0,80).replace(/\s+/g," ").trim();
-      }catch(e){
-        $("#apiTip").textContent = "失败：" + (e?.message || String(e));
-      }
+    card.addEventListener('click',()=>{
+      const d=document.getElementById('detail_'+idx);
+      d.classList.toggle('show');
     });
 
-    /***********************
-     * 模型：自动抓取 /v1/models（你要求的）
-     ***********************/
-    function getModelsCache(){
-      return load(S.modelsCache, { ts: 0, models: [] });
-    }
-    function setModelsCache(models){
-      save(S.modelsCache, { ts: Date.now(), models });
-    }
+    card.appendChild(avatar);
+    card.appendChild(nameEl);
+    card.appendChild(detailBox);
+    const btnRow=document.createElement('div');
+    btnRow.style.cssText='display:flex;gap:8px;width:100%;justify-content:center';
+    btnRow.appendChild(copyBtn);
+    btnRow.appendChild(delBtn);
+    card.appendChild(btnRow);
+    box.appendChild(card);
+  });
+}
+renderCharList();
 
-    async function fetchModelsFromProxy(){
-      const s = getSettings();
-      if(!s.apiBase || !s.apiKey) throw new Error("请先在“接口”页填写接口地址和密钥");
+/* ====== FLOATING BALL (iOS AssistiveTouch style) ====== */
+const ball=document.getElementById('ball');
+let drag={on:false,dx:0,dy:0,moved:false};
 
-      const url = s.apiBase.replace(/\/+$/,"") + "/v1/models";
-      const r = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + s.apiKey,
-          "Accept": "application/json"
-        }
-      });
+function loadBallPos(){return loadJ(KEYS.ball,null)}
+function saveBallPos(p){saveJ(KEYS.ball,p)}
+function applyBallPos(x,y){
+  ball.style.left=x+'px';ball.style.top=y+'px';
+  ball.style.right='auto';ball.style.bottom='auto';
+}
+function snapToEdge(){
+  const r=ball.getBoundingClientRect();
+  const vw=window.innerWidth;
+  const margin=8;
+  const x=(r.left+r.width/2<vw/2)?margin:(vw-r.width-margin);
+  const y=Math.min(Math.max(r.top,margin),window.innerHeight-r.height-margin);
+  applyBallPos(x,y);saveBallPos({x,y});
+}
 
-      if(!r.ok){
-        const t = await r.text().catch(()=> "");
-        throw new Error(`拉取模型失败：${r.status} ${t}`);
-      }
+ball.addEventListener('pointerdown',(e)=>{
+  drag.on=true;drag.moved=false;
+  ball.setPointerCapture(e.pointerId);
+  const r=ball.getBoundingClientRect();
+  drag.dx=e.clientX-r.left;drag.dy=e.clientY-r.top;
+});
+ball.addEventListener('pointermove',(e)=>{
+  if(!drag.on)return;drag.moved=true;
+  const m=4;
+  const x=Math.min(Math.max(e.clientX-drag.dx,m),window.innerWidth-52-m);
+  const y=Math.min(Math.max(e.clientY-drag.dy,m),window.innerHeight-52-m);
+  applyBallPos(x,y);
+});
+ball.addEventListener('pointerup',()=>{
+  if(drag.on){drag.on=false;snapToEdge()}
+});
+ball.addEventListener('click',()=>{
+  if(drag.moved)return;
+  document.getElementById('settingsOverlay').classList.add('show');
+});
+window.addEventListener('resize',()=>{const p=loadBallPos();if(p)snapToEdge()});
 
-      const data = await r.json();
-      const raw = Array.isArray(data?.data) ? data.data : [];
-      const models = raw
-        .map(x => x?.id || x?.name || x?.model)
-        .filter(Boolean)
-        .filter((v,i,a)=> a.indexOf(v)===i)
-        .sort((a,b)=> String(a).localeCompare(String(b)));
+// restore ball position
+(function(){const p=loadBallPos();if(p&&typeof p.x==='number'){applyBallPos(p.x,p.y);snapToEdge()}})();
 
-      if(!models.length) throw new Error("模型列表为空（可能返回结构不同）");
-      return models;
-    }
+/* ====== SETTINGS OVERLAY ====== */
+const settingsOverlay=document.getElementById('settingsOverlay');
+document.getElementById('closeSettings').onclick=()=>settingsOverlay.classList.remove('show');
+settingsOverlay.addEventListener('click',(e)=>{if(e.target===settingsOverlay)settingsOverlay.classList.remove('show')});
 
-    function renderModelChips(models){
-      const box = $("#modelChips");
-      const s = getSettings();
-      box.innerHTML = "";
+// tabs
+document.querySelectorAll('#settingsTabs .tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#settingsTabs .tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pane-'+btn.dataset.tab).classList.add('active');
+  });
+});
 
-      (models || []).forEach(m=>{
-        const el = document.createElement("div");
-        el.className = "pill" + (s.model === m ? " active" : "");
-        el.textContent = m;
-        el.addEventListener("click", ()=>{
-          document.querySelectorAll("#modelChips .pill").forEach(x=>x.classList.remove("active"));
-          el.classList.add("active");
-          setSettings({ model: m });
-          $("#curModelText").textContent = m;
-          toast("已选择模型");
-        });
-        box.appendChild(el);
-      });
+/* ====== API SETTINGS ====== */
+const commonModels=[
+  'gpt-4o-mini','gpt-4o','gpt-4.1-mini','gpt-4.1','gpt-3.5-turbo',
+  'claude-sonnet-4-20250514','claude-3-5-sonnet-20241022','claude-3-haiku-20240307',
+  'deepseek-chat','deepseek-reasoner',
+  'gemini-2.5-flash','gemini-2.5-pro',
+  'qwen-plus','qwen-turbo','qwen-max',
+];
+let selModelIdx=-1;
 
-      $("#curModelText").textContent = s.model || "未选择";
-      $("#temp").value = String(s.temperature ?? 0.2);
-      $("#customModel").value = "";
-    }
-
-    async function refreshModels(){
-      const tip = $("#modelFetchTip");
-      tip.textContent = "拉取中…";
-      try{
-        const models = await fetchModelsFromProxy();
-        setModelsCache(models);
-        renderModelChips(models);
-
-        const cur = getSettings().model;
-        tip.textContent = `拉取成功：${models.length} 个模型` + (cur ? `（已选择：${cur}）` : "");
-      }catch(e){
-        const cache = getModelsCache();
-        if(cache?.models?.length){
-          renderModelChips(cache.models);
-          tip.textContent = "拉取失败，已使用缓存。错误：" + (e?.message || String(e));
-        }else{
-          tip.textContent = "拉取失败：" + (e?.message || String(e));
-        }
-      }
-    }
-    $("#refreshModels").addEventListener("click", refreshModels);
-
-    $("#applyCustomModel").addEventListener("click", ()=>{
-      const m = $("#customModel").value.trim();
-      if(!m) return toast("请输入模型名");
-      setSettings({ model: m });
-      $("#curModelText").textContent = m;
-      toast("已使用自定义模型");
+function buildModelSelect(){
+  const api=loadJ(KEYS.api,{});
+  const container=document.getElementById('modelSelect');
+  container.innerHTML='';
+  commonModels.forEach((m,i)=>{
+    const el=document.createElement('div');
+    el.className='scroll-option'+(api.model===m?' active':'');
+    el.textContent=m;
+    el.addEventListener('click',()=>{
+      selModelIdx=i;
+      document.getElementById('modelCustom').value=m;
+      buildModelSelect();
+      // update active
+      const api2=loadJ(KEYS.api,{});
+      api2.model=m;saveJ(KEYS.api,api2);
     });
+    container.appendChild(el);
+  });
+}
 
-    $("#saveModel").addEventListener("click", ()=>{
-      const t = Number($("#temp").value || 0.2);
-      setSettings({ temperature: isFinite(t) ? t : 0.2 });
-      toast("模型设置已保存");
-    });
+function initApiForm(){
+  const api=loadJ(KEYS.api,{});
+  document.getElementById('apiBase').value=api.apiBase||'';
+  document.getElementById('apiKey').value=api.apiKey||'';
+  document.getElementById('modelCustom').value=api.model||'';
+  document.getElementById('temp').value=String(api.temperature??0.7);
+  document.getElementById('tempVal').textContent=String(api.temperature??0.7);
+  buildModelSelect();
+}
 
-    /***********************
-     * App：页面切换
-     ***********************/
-    const home = $("#home");
-    const app = $("#app");
+document.getElementById('temp').addEventListener('input',(e)=>{
+  document.getElementById('tempVal').textContent=e.target.value;
+});
 
-    const screens = {
-      s1: $("#screen1"),
-      s2: $("#screen2"),
-      s3: $("#screen3"),
+document.getElementById('modelCustom').addEventListener('input',(e)=>{
+  const api=loadJ(KEYS.api,{});
+  api.model=e.target.value;
+  saveJ(KEYS.api,api);
+  buildModelSelect();
+});
+
+document.getElementById('saveApi').onclick=()=>{
+  const api={
+    apiBase:document.getElementById('apiBase').value.trim(),
+    apiKey:document.getElementById('apiKey').value.trim(),
+    model:document.getElementById('modelCustom').value.trim(),
+    temperature:parseFloat(document.getElementById('temp').value)||0.7,
+  };
+  saveJ(KEYS.api,api);
+  alert('设置已保存');
+};
+
+document.getElementById('testApi').onclick=async ()=>{
+  const api=loadJ(KEYS.api,{});
+  if(!api.apiBase||!api.apiKey||!api.model){
+    document.getElementById('testResult').textContent='请先填写 Base URL / Key / Model';return;
+  }
+  const btn=document.getElementById('testApi');
+  btn.disabled=true;btn.textContent='测试中…';
+  document.getElementById('testResult').textContent='请求中…';
+  try{
+    const reply=await callApi(api,'回复一个OK（测试连接）');
+    document.getElementById('testResult').textContent='成功：'+reply.slice(0,60);
+  }catch(e){
+    document.getElementById('testResult').textContent='失败：'+(e?.message||String(e));
+  }finally{
+    btn.disabled=false;btn.textContent='测试连接';
+  }
+};
+
+/* ====== COLOR THEME ====== */
+const colorMap={
+  accent:{css:'--accent',pick:'pickAccent',hex:'hexAccent',sw:'swAccent'},
+  bg:{css:'--bg',pick:'pickBg',hex:'hexBg',sw:'swBg'},
+  ink:{css:'--ink',pick:'pickInk',hex:'hexInk',sw:'swInk'},
+};
+const defaultColors={accent:'#adcdea',bg:'#ffffff',ink:'#0f172a'};
+
+function applyColor(key,val){
+  document.documentElement.style.setProperty(colorMap[key].css,val);
+  document.getElementById(colorMap[key].sw).style.background=val;
+  document.getElementById(colorMap[key].hex).value=val;
+  document.getElementById(colorMap[key].pick).value=val;
+}
+function applyColorFromHex(key){
+  let v=document.getElementById(colorMap[key].hex).value.trim();
+  if(v&&!v.startsWith('#'))v='#'+v;
+  if(/^#[0-9a-fA-F]{3,8}$/.test(v)){
+    applyColor(key,v);
+    saveCurrentColors();
+  }
+}
+function saveCurrentColors(){
+  const c={};
+  for(const k in colorMap) c[k]=getComputedStyle(document.documentElement).getPropertyValue(colorMap[k].css).trim();
+  saveJ(KEYS.colors,c);
+}
+function loadColors(){
+  const c=loadJ(KEYS.colors,null);
+  if(c){for(const k in c)if(colorMap[k])applyColor(k,c[k])}
+}
+
+for(const key in colorMap){
+  document.getElementById(colorMap[key].pick).addEventListener('input',(e)=>{
+    applyColor(key,e.target.value);
+    saveCurrentColors();
+  });
+}
+
+document.getElementById('resetColors').onclick=()=>{
+  for(const k in defaultColors)applyColor(k,defaultColors[k]);
+  saveCurrentColors();
+};
+
+document.getElementById('saveTheme').onclick=()=>{
+  const themes=loadJ(KEYS.themes,[]);
+  const c={};
+  for(const k in colorMap) c[k]=getComputedStyle(document.documentElement).getPropertyValue(colorMap[k].css).trim();
+  const name='主题 '+(themes.length+1);
+  themes.push({name,colors:c,ts:Date.now()});
+  saveJ(KEYS.themes,themes);
+  renderThemes();
+};
+
+function renderThemes(){
+  const themes=loadJ(KEYS.themes,[]);
+  const box=document.getElementById('themeList');
+  box.innerHTML='';
+  themes.forEach((t,i)=>{
+    const row=document.createElement('div');
+    row.className='theme-saved';
+    row.innerHTML=`
+      <span>${t.name}</span>
+      <div class="theme-colors">
+        <div class="theme-dot" style="background:${t.colors.accent||'#ccc'}"></div>
+        <div class="theme-dot" style="background:${t.colors.bg||'#fff'}"></div>
+        <div class="theme-dot" style="background:${t.colors.ink||'#000'}"></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn" style="height:28px;padding:0 8px;font-size:11px" data-a="apply">应用</button>
+        <button class="btn danger" style="height:28px;padding:0 8px;font-size:11px" data-a="del">删</button>
+      </div>
+    `;
+    row.querySelector('[data-a="apply"]').onclick=()=>{
+      for(const k in t.colors)if(colorMap[k])applyColor(k,t.colors[k]);
+      saveCurrentColors();
     };
-    function showScreen(id){
-      Object.values(screens).forEach(x=>x.classList.remove("show"));
-      screens[id].classList.add("show");
-
-      if(id==="s1"){
-        $("#navTitle").textContent = "角色卡生成";
-        $("#navSub").textContent = "创建与管理";
-      }else if(id==="s2"){
-        $("#navTitle").textContent = "创建角色";
-        $("#navSub").textContent = "基础信息";
-      }else if(id==="s3"){
-        $("#navTitle").textContent = "创建角色";
-        $("#navSub").textContent = "创建形象";
-      }
-    }
-
-    $("#openApp").addEventListener("click", ()=>{
-      home.style.display = "none";
-      app.classList.add("show");
-      renderRoleGrid();
-      showScreen("s1");
-    });
-
-    $("#backHome").addEventListener("click", ()=>{
-      app.classList.remove("show");
-      home.style.display = "flex";
-    });
-
-    $("#btnExit").addEventListener("click", ()=>{
-      app.classList.remove("show");
-      home.style.display = "flex";
-      toast("已退出");
-    });
-
-    $("#btnManage").addEventListener("click", ()=> toast("角色管理在下方"));
-
-    /***********************
-     * 角色向导：状态
-     ***********************/
-    const roleState = {
-      gender: "女",
-      genMode: "random",
-      picks: { eye:null, hair:null, bust:null, scent:null }
+    row.querySelector('[data-a="del"]').onclick=()=>{
+      themes.splice(i,1);saveJ(KEYS.themes,themes);renderThemes();
     };
+    box.appendChild(row);
+  });
+}
 
-    function selectGender(g){
-      roleState.gender = g;
-      $("#gF").classList.toggle("active", g==="女");
-      $("#gM").classList.toggle("active", g==="男");
-    }
-    $("#gF").addEventListener("click", ()=> selectGender("女"));
-    $("#gM").addEventListener("click", ()=> selectGender("男"));
+/* ====== FONT ====== */
+const builtinFonts=[
+  {name:'系统默认',value:'system-ui, -apple-system, sans-serif'},
+  {name:'Noto Sans SC',value:"'Noto Sans SC', sans-serif"},
+  {name:'霞鹜文楷',value:"'LXGW WenKai', serif"},
+  {name:'马善政楷',value:"'Ma Shan Zheng', cursive"},
+  {name:'志莽行书',value:"'Zhi Mang Xing', cursive"},
+  {name:'流建草书',value:"'Liu Jian Mao Cao', cursive"},
+];
 
-    $("#goCreate").addEventListener("click", ()=>{
-      $("#name").value = "";
-      $("#age").value = "";
-      $("#height").value = "";
-      selectGender("女");
+function buildFontSelect(){
+  const currentFont=loadJ(KEYS.font,'system-ui, -apple-system, sans-serif');
+  const container=document.getElementById('fontSelect');
+  container.innerHTML='';
 
-      roleState.genMode = "random";
-      $("#genRandom").classList.add("active");
-      $("#genAI").classList.remove("active");
+  const allFonts=[...builtinFonts,...getCustomFonts()];
 
-      $("#profile").value = "";
-      $("#words").value = "420";
-
-      roleState.picks = { eye:null, hair:null, bust:null, scent:null };
-      setPickDesc();
-      showScreen("s2");
+  allFonts.forEach((f)=>{
+    const el=document.createElement('div');
+    el.className='scroll-option'+(currentFont===f.value?' active':'');
+    el.textContent=f.name;
+    el.style.fontFamily=f.value;
+    el.addEventListener('click',()=>{
+      document.documentElement.style.setProperty('--font',f.value);
+      saveJ(KEYS.font,f.value);
+      buildFontSelect();
     });
+    container.appendChild(el);
+  });
+}
 
-    $("#s2prev").addEventListener("click", ()=> showScreen("s1"));
-    $("#s2next").addEventListener("click", ()=>{
-      const name = $("#name").value.trim();
-      if(!name) return toast("请填写名称");
-      showScreen("s3");
-    });
-    $("#s3prev").addEventListener("click", ()=> showScreen("s2"));
+function getCustomFonts(){
+  return loadJ(KEYS.customFonts,[]);
+}
 
-    $("#genRandom").addEventListener("click", ()=>{
-      roleState.genMode = "random";
-      $("#genRandom").classList.add("active");
-      $("#genAI").classList.remove("active");
-    });
-    $("#genAI").addEventListener("click", ()=>{
-      roleState.genMode = "ai";
-      $("#genAI").classList.add("active");
-      $("#genRandom").classList.remove("active");
-    });
+document.getElementById('fontUpload').addEventListener('change',(e)=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+    const dataUrl=ev.target.result;
+    const fontName='自定义-'+file.name.replace(/\.[^.]+$/,'');
+    const fontValue="'"+fontName+"', sans-serif";
 
-    /***********************
-     * 选项：更细更多档位（按你要求加密）
-     ***********************/
-    const options = {
-      eyes: [
-        { k:"杏眼", d:"清澈柔亮，亲和感强，像把人轻轻拉近。" },
-        { k:"桃花眼", d:"含情脉脉，容易让人误会她对你偏爱。" },
-        { k:"狐狸眼", d:"上挑锐利与魅惑并存，目光像在轻声挑逗。" },
-        { k:"猫眼", d:"灵动带傲，像不经意的挑衅与试探。" },
-        { k:"下垂眼", d:"无辜感强，激发保护欲，温柔但有后劲。" },
-        { k:"丹凤眼", d:"线条凌厉，气场更足，克制里带压迫感。" },
-        { k:"瑞凤眼", d:"贵气柔和，像自带教养与距离感。" },
-        { k:"圆眼", d:"甜感明显，情绪更外显，显得更可爱。" },
-        { k:"细长眼", d:"冷感更强，耐看型，越看越上头。" },
-        { k:"内双微挑", d:"干净利落，既有温柔也有小心机。" },
-        { k:"卧蚕明显", d:"笑意更容易“溢出来”，亲密感提升。" },
-        { k:"泪痣点缀", d:"不必多言的暧昧感，一眼就让人记住。" }
-      ],
-      hair: [
-        { k:"超短（清爽）", d:"利落、俏皮、带点不服软的劲。" },
-        { k:"短发（耳下）", d:"干净利落，独立感更突出。" },
-        { k:"齐肩（锁骨上）", d:"甜感与气质兼容，很耐看。" },
-        { k:"锁骨发", d:"氛围感上来得快，轻熟却不老成。" },
-        { k:"中长（胸上）", d:"日常万能，软感更明显。" },
-        { k:"长发（胸下）", d:"柔顺垂落时更显温软与勾人。" },
-        { k:"及腰长发", d:"存在感很强，转身时像把目光都牵走。" },
-        { k:"过腰超长", d:"梦幻感、女主感拉满，容易被记住。" },
-        { k:"大波浪", d:"成熟氛围更浓，走动时自带“撩”。" },
-        { k:"微卷蓬松", d:"慵懒随性，亲密感更自然。" },
-        { k:"高马尾", d:"元气强，带点“想让人追”的速度感。" },
-        { k:"低盘发", d:"克制优雅，端庄里藏着诱惑。" }
-      ],
-      bust: [
-        { k:"平坦（清冷）", d:"轻盈线条感，靠气质与比例取胜。" },
-        { k:"微隆（含蓄）", d:"若有若无的柔软感，更耐看。" },
-        { k:"小巧（精致）", d:"可爱与精致并存，显得更灵动。" },
-        { k:"匀称（高级）", d:"平衡感好，整体更显“干净贵气”。" },
-        { k:"挺翘（自信）", d:"线条更有张力，存在感增加。" },
-        { k:"饱满（成熟）", d:"冲击力更强，魅力更直接。" },
-        { k:"丰润（软糯）", d:"柔软与张力并存，氛围更女性向。" },
-        { k:"丰盈（压迫感）", d:"靠近时更容易让人心跳加速，目光停不住。" },
-        { k:"极致丰满", d:"非常强烈的视觉存在感，偏“致命吸引”。" }
-      ],
-      scent: [
-        { k:"奶香（柔软）", d:"干净软甜，靠近就让人放松，像被轻轻拥住。" },
-        { k:"花香（明亮）", d:"温柔而清新，像春风里的一瞬心动。" },
-        { k:"果香（活泼）", d:"甜而不腻，亲近感强，像笑起来的太阳。" },
-        { k:"皂感（清洁）", d:"白衬衫式的干净，距离更容易被拉近。" },
-        { k:"木质（克制）", d:"冷静耐闻，越靠近越上头，余韵很长。" },
-        { k:"茶香（清雅）", d:"不抢戏却很高级，像温柔的注视。" },
-        { k:"薄荷（清爽）", d:"微凉干净，像指尖划过的风。" },
-        { k:"琥珀（暧昧）", d:"带点粘稠的甜暖，容易让人失控。" },
-        { k:"麝香（体温）", d:"贴肤、私密、会让人想更靠近一点。" },
-        { k:"檀香（沉静）", d:"稳重而迷人，像压住情绪的热。" },
-        { k:"香草（温甜）", d:"甜得柔和，像抱枕一样的安全感。" },
-        { k:"雨后气息", d:"潮湿与清冷混合，像一场不说破的暧昧。" }
-      ]
+    // Register font
+    const style=document.createElement('style');
+    style.textContent=`@font-face{font-family:'${fontName}';src:url('${dataUrl}');}`;
+    document.head.appendChild(style);
+
+    // Save
+    const customs=getCustomFonts();
+    customs.push({name:fontName,value:fontValue,dataUrl});
+    saveJ(KEYS.customFonts,customs);
+    buildFontSelect();
+    renderCustomFontList();
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+
+function loadCustomFontsOnStart(){
+  const customs=getCustomFonts();
+  customs.forEach(f=>{
+    const style=document.createElement('style');
+    style.textContent=`@font-face{font-family:${f.value.split(',')[0]};src:url('${f.dataUrl}');}`;
+    document.head.appendChild(style);
+  });
+}
+
+function renderCustomFontList(){
+  const customs=getCustomFonts();
+  const box=document.getElementById('customFontList');
+  box.innerHTML='';
+  customs.forEach((f,i)=>{
+    const row=document.createElement('div');
+    row.className='theme-saved';
+    row.innerHTML=`<span style="font-family:${f.value}">${f.name}</span>
+    <button class="btn danger" style="height:28px;padding:0 8px;font-size:11px">删</button>`;
+    row.querySelector('.btn').onclick=()=>{
+      customs.splice(i,1);saveJ(KEYS.customFonts,customs);
+      renderCustomFontList();buildFontSelect();
     };
+    box.appendChild(row);
+  });
+}
 
-    function renderPills(containerId, arr, onPick){
-      const box = $(containerId);
-      box.innerHTML = "";
-      arr.forEach(item=>{
-        const el = document.createElement("div");
-        el.className = "pill";
-        el.textContent = item.k;
-        el.addEventListener("click", ()=>{
-          [...box.children].forEach(x=>x.classList.remove("active"));
-          el.classList.add("active");
-          onPick(item);
-        });
-        box.appendChild(el);
-      });
+/* ====== BACKGROUND IMAGE ====== */
+document.getElementById('bgUpload').addEventListener('change',(e)=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+    const dataUrl=ev.target.result;
+    document.body.style.backgroundImage='url('+dataUrl+')';
+    try{saveJ(KEYS.bg,dataUrl)}catch(err){
+      alert('图片太大，无法保存到浏览器。建议压缩后重试。');
     }
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
 
-    function setPickDesc(){
-      $("#eyeDesc").textContent = roleState.picks.eye ? roleState.picks.eye.d : "请选择一个眼型。";
-      $("#hairDesc").textContent = roleState.picks.hair ? roleState.picks.hair.d : "请选择头发长度。";
-      $("#bustDesc").textContent = roleState.picks.bust ? roleState.picks.bust.d : "请选择程度。";
-      $("#scentDesc").textContent = roleState.picks.scent ? roleState.picks.scent.d : "请选择体香。";
-    }
+document.getElementById('clearBg').onclick=()=>{
+  document.body.style.backgroundImage='none';
+  localStorage.removeItem(KEYS.bg);
+};
 
-    renderPills("#eyes", options.eyes, (x)=>{ roleState.picks.eye=x; setPickDesc(); });
-    renderPills("#hair", options.hair, (x)=>{ roleState.picks.hair=x; setPickDesc(); });
-    renderPills("#bust", options.bust, (x)=>{ roleState.picks.bust=x; setPickDesc(); });
-    renderPills("#scent", options.scent, (x)=>{ roleState.picks.scent=x; setPickDesc(); });
+function loadBgOnStart(){
+  const bg=loadJ(KEYS.bg,null);
+  if(bg)document.body.style.backgroundImage='url('+bg+')';
+}
 
-    /***********************
-     * 详情弹层
-     ***********************/
-    function openInfo(title, body){
-      $("#infoTitle").textContent = title;
-      $("#infoBody").textContent = body;
-      $("#infoOverlay").classList.add("show");
-    }
-    $("#closeInfo").addEventListener("click", ()=> $("#infoOverlay").classList.remove("show"));
-    $("#infoOverlay").addEventListener("click", (e)=>{
-      if(e.target.id === "infoOverlay") $("#infoOverlay").classList.remove("show");
-    });
+/* ====== DATA (export / import / clear) ====== */
+document.getElementById('exportData').onclick=()=>{
+  const data={
+    version:1,
+    exportedAt:new Date().toISOString(),
+    chars:loadJ(KEYS.chars,[]),
+    colors:loadJ(KEYS.colors,null),
+    themes:loadJ(KEYS.themes,[]),
+    font:loadJ(KEYS.font,null),
+    api:{...loadJ(KEYS.api,{}),apiKey:''},
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='rolecard-export.json';a.click();
+  URL.revokeObjectURL(a.href);
+};
 
-    $("#eyeInfoBtn").addEventListener("click", ()=>{
-      const x = roleState.picks.eye;
-      if(!x) return toast("先选一个眼型");
-      openInfo("眼型 · " + x.k, x.d);
-    });
-    $("#hairInfoBtn").addEventListener("click", ()=>{
-      const x = roleState.picks.hair;
-      if(!x) return toast("先选一个头发长度");
-      openInfo("头发长度 · " + x.k, x.d);
-    });
-    $("#bustInfoBtn").addEventListener("click", ()=>{
-      const x = roleState.picks.bust;
-      if(!x) return toast("先选一个程度");
-      openInfo("胸部 · " + x.k, x.d);
-    });
-    $("#scentInfoBtn").addEventListener("click", ()=>{
-      const x = roleState.picks.scent;
-      if(!x) return toast("先选一个体香");
-      openInfo("体香 · " + x.k, x.d);
-    });
+document.getElementById('importData').addEventListener('change',async(e)=>{
+  const file=e.target.files?.[0];if(!file)return;
+  const text=await file.text();
+  const data=JSON.parse(text);
+  if(data.chars)saveJ(KEYS.chars,data.chars);
+  if(data.colors){saveJ(KEYS.colors,data.colors);loadColors()}
+  if(data.themes)saveJ(KEYS.themes,data.themes);
+  if(data.font){saveJ(KEYS.font,data.font);document.documentElement.style.setProperty('--font',data.font)}
+  if(data.api){const cur=loadJ(KEYS.api,{});saveJ(KEYS.api,{...cur,...data.api})}
+  renderCharList();renderThemes();buildFontSelect();initApiForm();
+  alert('导入成功');e.target.value='';
+});
 
-    /***********************
-     * 形象生成：本地随机 / AI
-     ***********************/
-    function defaultFemaleDetails(){
-      return [
-        "肤色白",
-        "鼻子小巧玲珑",
-        "唇形柔软润泽",
-        "下巴、肩颈与锁骨线条优美",
-        "腰部与腿部纤细",
-        "玉足"
-      ];
-    }
+document.getElementById('clearChars').onclick=()=>{
+  if(!confirm('确定清空所有角色？'))return;
+  saveJ(KEYS.chars,[]);renderCharList();
+};
 
-    function buildLocalProfile(){
-      const name = $("#name").value.trim();
-      const age = $("#age").value.trim();
-      const height = $("#height").value.trim();
-      const gender = roleState.gender;
-      const picks = roleState.picks;
+document.getElementById('clearAll').onclick=()=>{
+  if(!confirm('确定清空全部数据？'))return;
+  Object.values(KEYS).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+};
 
-      const parts = [];
-      parts.push(`姓名：${name}`);
-      if(age) parts.push(`年龄：${age}`);
-      if(height) parts.push(`身高：${height}cm`);
-      parts.push(`性别：${gender}`);
+/* ====== INIT ====== */
+(function init(){
+  loadColors();
+  loadBgOnStart();
+  loadCustomFontsOnStart();
+  renderCustomFontList();
 
-      if(gender === "女"){
-        parts.push("默认细节：" + defaultFemaleDetails().join("、"));
-      }
+  const savedFont=loadJ(KEYS.font,null);
+  if(savedFont)document.documentElement.style.setProperty('--font',savedFont);
 
-      if(picks.eye) parts.push(`眼型：${picks.eye.k}（${picks.eye.d}）`);
-      if(picks.hair) parts.push(`头发：${picks.hair.k}（${picks.hair.d}）`);
-      if(picks.bust) parts.push(`胸部：${picks.bust.k}（${picks.bust.d}）`);
-      if(picks.scent) parts.push(`体香：${picks.scent.k}（${picks.scent.d}）`);
-
-      const vibe = [];
-      if(picks.eye) vibe.push(picks.eye.k);
-      if(picks.hair) vibe.push(picks.hair.k);
-      if(picks.scent) vibe.push(picks.scent.k);
-      const vibeLine = vibe.length ? vibe.join(" / ") : "清爽耐看";
-
-      const portrait = [
-        `形象概述：${name}${gender==="女" ? "带着女性向氛围" : ""}，整体气质偏${vibeLine}。`,
-        gender==="女"
-          ? "她的线条与细节更强调柔软、优雅与隐约的勾人感，但不低俗。"
-          : "他的气质更强调干净、克制与存在感，不刻意用力。"
-      ].join("\n");
-
-      return parts.join("\n") + "\n\n" + portrait;
-    }
-
-    async function buildAIProfile(){
-      const s = getSettings();
-      if(!s.apiBase || !s.apiKey) throw new Error("请先在悬浮球“接口”里配置接口地址与密钥");
-      if(!s.model) throw new Error("请先在悬浮球“模型”里刷新并选择模型");
-
-      const name = $("#name").value.trim();
-      const age = $("#age").value.trim();
-      const height = $("#height").value.trim();
-      const gender = roleState.gender;
-      const picks = roleState.picks;
-
-      const words = Math.max(120, Math.min(3000, parseInt($("#words").value || "420", 10) || 420));
-      const max_tokens = Math.max(256, Math.min(2048, Math.floor(words * 1.2)));
-
-      const baseFacts = [
-        `姓名：${name}`,
-        age ? `年龄：${age}` : "",
-        height ? `身高：${height}cm` : "",
-        `性别：${gender}`,
-        gender==="女" ? ("默认细节：" + defaultFemaleDetails().join("、")) : "",
-        picks.eye ? `眼型：${picks.eye.k}` : "",
-        picks.hair ? `头发：${picks.hair.k}` : "",
-        picks.bust ? `胸部：${picks.bust.k}` : "",
-        picks.scent ? `体香：${picks.scent.k}` : ""
-      ].filter(Boolean).join("\n");
-
-      const sys = (s.system || "").trim();
-      const user = [
-        "请根据以下选项，生成“角色形象资料”。要求：",
-        "1) 中文输出；2) 不要提到“我作为AI”；3) 结构清晰（分段/要点）；",
-        "4) 女性向（性别为女）强调氛围、细节与魅力表现，但避免低俗露骨；",
-        `5) 大约 ${words} 字左右。`,
-        "",
-        "选项：",
-        baseFacts
-      ].join("\n");
-
-      const messages = [
-        ...(sys ? [{ role:"system", content: sys }] : []),
-        { role:"user", content: user }
-      ];
-
-      return await callChatCompletions({
-        apiBase: s.apiBase,
-        apiKey: s.apiKey,
-        model: s.model,
-        temperature: Number(s.temperature ?? 0.2),
-        system: sys,
-        messages,
-        max_tokens
-      });
-    }
-
-    async function generateIntoProfile(){
-      const name = $("#name").value.trim();
-      if(!name) return toast("请先填写名称");
-      try{
-        if(roleState.genMode === "ai"){
-          toast("AI 生成中…");
-          const text = await buildAIProfile();
-          $("#profile").value = text;
-          toast("已生成");
-        }else{
-          $("#profile").value = buildLocalProfile();
-          toast("已生成");
-        }
-      }catch(e){
-        toast(e?.message || String(e));
-      }
-    }
-    $("#btnGenerate").addEventListener("click", generateIntoProfile);
-
-    /***********************
-     * 角色保存/管理
-     ***********************/
-    function getRoles(){ return load(S.roles, []); }
-    function setRoles(list){ save(S.roles, list); return list; }
-
-    function renderRoleGrid(){
-      const roles = getRoles();
-      $("#screen1Hint").textContent = `管理角色：当前 ${roles.length} 个`;
-      const grid = $("#roleGrid");
-      grid.innerHTML = "";
-
-      roles.forEach((r)=>{
-        const tile = document.createElement("div");
-        tile.className = "role-tile";
-        tile.innerHTML = `
-          <div class="avatar" data-id="${r.id}">
-            ${r.avatar ? `<img alt="avatar" src="${r.avatar}">` : `<div class="plus">+</div>`}
-          </div>
-          <div class="role-name">${r.name || "角色"}</div>
-        `;
-
-        const avatar = tile.querySelector(".avatar");
-        avatar.addEventListener("click", async (e)=>{
-          e.stopPropagation();
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = "image/*";
-          input.onchange = async ()=>{
-            const file = input.files?.[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = ()=>{
-              const list = getRoles();
-              const it = list.find(x=>x.id===r.id);
-              if(it) it.avatar = reader.result;
-              setRoles(list);
-              renderRoleGrid();
-              toast("头像已更新");
-            };
-            reader.readAsDataURL(file);
-          };
-          input.click();
-        });
-
-        tile.querySelector(".role-name").addEventListener("click", (e)=>{
-          e.stopPropagation();
-          openRoleDetail(r.id);
-        });
-
-        grid.appendChild(tile);
-      });
-    }
-
-    function openRoleDetail(id){
-      const roles = getRoles();
-      const r = roles.find(x=>x.id===id);
-      if(!r) return;
-
-      $("#detailTitle").textContent = r.name || "角色资料";
-      $("#detailText").textContent = r.profile || "（空）";
-      $("#roleOverlay").classList.add("show");
-
-      $("#copyRole").onclick = async ()=>{
-        try{
-          await navigator.clipboard.writeText(r.profile || "");
-          toast("已复制");
-        }catch(e){
-          toast("复制失败（可长按手动复制）");
-        }
-      };
-    }
-
-    $("#closeRole").addEventListener("click", ()=> $("#roleOverlay").classList.remove("show"));
-    $("#roleOverlay").addEventListener("click", (e)=>{
-      if(e.target.id === "roleOverlay") $("#roleOverlay").classList.remove("show");
-    });
-
-    function uid(){
-      return "r_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
-    }
-
-    $("#finalConfirm").addEventListener("click", async ()=>{
-      const name = $("#name").value.trim();
-      if(!name) return toast("请填写名称");
-
-      let profileText = ($("#profile").value || "").trim();
-      if(!profileText){
-        // 如果空，就按当前生成方式自动生成一次
-        await generateIntoProfile();
-        profileText = ($("#profile").value || "").trim();
-        if(!profileText) return;
-      }
-
-      const roles = getRoles();
-      const newRole = {
-        id: uid(),
-        name,
-        gender: roleState.gender,
-        age: $("#age").value.trim(),
-        height: $("#height").value.trim(),
-        picks: roleState.picks,
-        profile: profileText,
-        avatar: "",
-        createdAt: Date.now()
-      };
-      roles.unshift(newRole);
-      setRoles(roles);
-      renderRoleGrid();
-      showScreen("s1");
-      toast("已创建角色");
-    });
-
-    /***********************
-     * 初始化
-     ***********************/
-    (function init(){
-      // 默认主题输入框
-      $("#accent").value = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#adcdea";
-      $("#bg").value = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
-
-      // 背景图
-      const bg = load(S.bg, null);
-      if(bg?.dataUrl) setBgImage(bg.dataUrl);
-
-      // 表单
-      fillApiForm();
-
-      // 模型：先用缓存渲染一版
-      const cache = getModelsCache();
-      renderModelChips(cache.models || []);
-      $("#modelFetchTip").textContent = cache.models?.length
-        ? `已加载缓存模型列表：${cache.models.length} 个（建议点“刷新模型列表”更新）`
-        : "未拉取。请先在“接口”页填接口地址和密钥，然后点“刷新模型列表”。";
-
-      // 温度
-      const s = getSettings();
-      $("#temp").value = String(s.temperature ?? 0.2);
-      $("#curModelText").textContent = s.model || "未选择";
-
-      // 主题列表
-      renderPresets();
-
-      // 字体
-      renderFontChips();
-      restoreFont();
-
-      // 初始选择
-      selectGender("女");
-      setPickDesc();
-      $("#words").value = "420";
-    })();
-  </script>
+  buildFontSelect();
+  initApiForm();
+  renderThemes();
+})();
+</script>
 </body>
 </html>
