@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>角色卡生成</title>
 
-  <!-- Open-source fonts (Google Fonts). You can switch in floating ball. -->
+  <!-- 免费开源字体（可在悬浮球里切换） -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link id="gf"
@@ -14,36 +14,35 @@
 
   <style>
     :root{
-      --accent: #adcdea;
-      --bg: #ffffff;
-      --ink: #0f172a;
-      --muted: #64748b;
-      --line: rgba(15,23,42,.12);
-      --shadow: 0 18px 50px rgba(15,23,42,.16);
-      --radius: 22px;
-      --radius2: 14px;
-
-      --font: "Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --accent:#adcdea;   /* 你默认喜欢的蓝 */
+      --bg:#ffffff;       /* 白底 */
+      --ink:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.12);
+      --shadow:0 18px 50px rgba(15,23,42,.16);
+      --radius:22px;
+      --radius2:14px;
+      --font:"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: var(--font);
-      color: var(--ink);
-      background: var(--bg);
+      font-family:var(--font);
+      color:var(--ink);
+      background:var(--bg);
       overflow:hidden;
     }
 
-    /* Background: allow user uploaded image */
+    /* 背景：渐变 + 可选用户上传图 */
     body::before{
       content:"";
       position:fixed; inset:0;
       background:
-        radial-gradient(1100px 900px at 20% 15%, color-mix(in oklab, var(--accent) 70%, transparent), transparent 62%),
-        radial-gradient(900px 700px at 80% 10%, color-mix(in oklab, var(--accent) 35%, transparent), transparent 60%),
-        linear-gradient(180deg, #fff, color-mix(in oklab, var(--accent) 18%, #fff));
+        radial-gradient(1100px 900px at 20% 15%, rgba(173,205,234,.58), transparent 62%),
+        radial-gradient(900px 700px at 80% 10%, rgba(173,205,234,.28), transparent 60%),
+        linear-gradient(180deg, #fff, rgba(173,205,234,.10));
       pointer-events:none;
       z-index:-2;
     }
@@ -52,55 +51,53 @@
       background-position:center;
       background-size:cover;
       background-repeat:no-repeat;
-      filter: saturate(1.02);
       z-index:-3;
     }
 
-    /* Phone frame */
+    /* 手机画布 */
     .stage{
       height:100%;
       display:flex;
       justify-content:center;
       align-items:center;
-      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      padding:max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
     }
     .phone{
       width:min(420px, 100%);
       height:min(860px, 100%);
-      border-radius: 36px;
-      background: rgba(255,255,255,.72);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: var(--shadow);
+      border-radius:36px;
+      background:rgba(255,255,255,.72);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(15,23,42,.10);
+      box-shadow:var(--shadow);
       overflow:hidden;
       position:relative;
     }
     .safe{
       height:100%;
-      padding: 18px 16px 18px;
+      padding:18px 16px;
       display:flex;
       flex-direction:column;
       gap:14px;
     }
 
-    /* Home screen */
+    /* 桌面 */
     .homescreen{
       flex:1;
       display:flex;
       flex-direction:column;
-      justify-content:flex-start;
-      padding-top: 28px;
-      gap: 18px;
+      padding-top:28px;
+      gap:18px;
     }
     .home-title{
       font-size:13px;
-      color: var(--muted);
+      color:var(--muted);
       letter-spacing:.3px;
     }
     .icon-grid{
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      grid-template-columns:repeat(4, 1fr);
+      gap:14px;
     }
     .app-icon{
       display:flex;
@@ -111,14 +108,11 @@
       cursor:pointer;
     }
     .app-icon .tile{
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: linear-gradient(135deg,
-        color-mix(in oklab, var(--accent) 62%, #fff),
-        #fff 70%);
-      box-shadow: 0 12px 28px rgba(15,23,42,.12);
+      width:64px;height:64px;
+      border-radius:18px;
+      border:1px solid rgba(15,23,42,.10);
+      background:linear-gradient(135deg, rgba(173,205,234,.70), rgba(255,255,255,.95));
+      box-shadow:0 12px 28px rgba(15,23,42,.12);
       display:grid;
       place-items:center;
       position:relative;
@@ -126,21 +120,20 @@
     }
     .app-icon .tile::after{
       content:"";
-      width: 28px;
-      height: 28px;
-      border-radius: 10px;
-      border: 2px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.68);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+      width:28px;height:28px;
+      border-radius:10px;
+      border:2px solid rgba(15,23,42,.12);
+      background:rgba(255,255,255,.68);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
     }
     .app-icon .name{
       font-size:12px;
-      color: var(--ink);
+      color:var(--ink);
       text-align:center;
       line-height:1.2;
     }
 
-    /* App container */
+    /* App 容器 */
     .app{
       flex:1;
       display:none;
@@ -148,74 +141,59 @@
       min-height:0;
       gap:12px;
     }
-    .app.show{ display:flex; }
+    .app.show{display:flex}
 
     .nav{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      padding: 10px 10px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255,255,255,.82);
-      backdrop-filter: blur(10px);
-    }
-    .nav .t{
-      font-weight:700;
-      font-size:14px;
-    }
-    .nav .sub{
-      font-size:12px;
-      color: var(--muted);
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(10px);
     }
     .nav .left{
       display:flex;
       flex-direction:column;
       gap:2px;
-      min-width: 0;
+      min-width:0;
     }
-    .nav .right{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
+    .nav .t{font-weight:800;font-size:14px}
+    .nav .sub{font-size:12px;color:var(--muted)}
+    .nav .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 
     .btn{
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.92);
-      color: var(--ink);
-      border-radius: 14px;
-      padding: 10px 12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+      color:var(--ink);
+      border-radius:14px;
+      padding:10px 12px;
       font-size:13px;
       cursor:pointer;
       user-select:none;
-      transition: transform .04s ease, background .15s ease;
+      transition:transform .04s ease, background .15s ease;
       white-space:nowrap;
     }
-    .btn:hover{ background:#fff; }
-    .btn:active{ transform: translateY(1px); }
+    .btn:hover{background:#fff}
+    .btn:active{transform:translateY(1px)}
     .btn.primary{
-      background: linear-gradient(135deg,
-        color-mix(in oklab, var(--accent) 75%, #fff),
-        #fff);
-      border-color: rgba(15,23,42,.10);
-      font-weight:600;
+      background:linear-gradient(135deg, rgba(173,205,234,.90), rgba(255,255,255,.98));
+      border-color:rgba(15,23,42,.10);
+      font-weight:700;
     }
     .btn.danger{
-      background: rgba(255,255,255,.92);
-      border-color: rgba(239,68,68,.25);
-      color: #b91c1c;
+      border-color:rgba(239,68,68,.25);
+      color:#b91c1c;
     }
 
     .card{
       border:1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.82);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 26px rgba(15,23,42,.08);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(10px);
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
       overflow:hidden;
       min-height:0;
     }
@@ -227,44 +205,30 @@
       justify-content:space-between;
       gap:10px;
     }
-    .card-head .title{
-      font-weight:700;
-      font-size:13px;
-    }
-    .card-body{
-      padding:12px 14px;
-    }
+    .card-head .title{font-weight:800;font-size:13px}
+    .card-body{padding:12px 14px}
     .hint{
-      color: var(--muted);
+      color:var(--muted);
       font-size:12px;
       line-height:1.55;
     }
 
-    /* Screens */
-    .screen{ display:none; min-height:0; }
-    .screen.show{ display:block; }
+    /* 页面切换 */
+    .screen{display:none;min-height:0}
+    .screen.show{display:block}
 
-    /* Screen 1: Create/Manage */
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .manage{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height:0;
-    }
+    /* 第一页：管理 */
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .manage{display:flex;flex-direction:column;gap:10px;min-height:0}
     .role-grid{
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns:repeat(3, 1fr);
+      gap:10px;
     }
     .role-tile{
       border:1px solid rgba(15,23,42,.10);
-      border-radius: 18px;
-      background: rgba(255,255,255,.92);
+      border-radius:18px;
+      background:rgba(255,255,255,.92);
       padding:10px;
       display:flex;
       flex-direction:column;
@@ -273,116 +237,102 @@
       user-select:none;
     }
     .avatar{
-      width: 64px;
-      height: 64px;
-      margin: 0 auto;
-      border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.12);
-      background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), color-mix(in oklab, var(--accent) 60%, #fff));
+      width:64px;height:64px;
+      margin:0 auto;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(173,205,234,.62));
       display:grid;
       place-items:center;
       overflow:hidden;
       position:relative;
     }
-    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     .avatar .plus{
-      width: 26px; height: 26px;
-      border-radius: 10px;
-      border: 1px solid rgba(15,23,42,.18);
-      background: rgba(255,255,255,.68);
-      display:grid; place-items:center;
-      font-weight:700;
-      color: rgba(15,23,42,.55);
+      width:26px;height:26px;
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,.18);
+      background:rgba(255,255,255,.68);
+      display:grid;place-items:center;
+      font-weight:900;
+      color:rgba(15,23,42,.55);
     }
     .role-name{
       font-size:12px;
       text-align:center;
-      font-weight:700;
+      font-weight:800;
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
     }
 
-    /* Forms */
-    .form{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    /* 表单 */
+    .form{display:flex;flex-direction:column;gap:10px}
     .field label{
       display:block;
       font-size:12px;
-      color: var(--muted);
+      color:var(--muted);
       margin-bottom:6px;
     }
     .field input, .field textarea{
       width:100%;
-      border: 1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.94);
-      border-radius: 14px;
-      padding: 10px 12px;
+      border:1px solid rgba(15,23,42,.12);
+      background:rgba(255,255,255,.94);
+      border-radius:14px;
+      padding:10px 12px;
       outline:none;
-      font-size: 13px;
-      font-family: var(--font);
+      font-size:13px;
+      font-family:var(--font);
     }
     .field textarea{
-      min-height: 130px;
-      resize: vertical;
+      min-height:130px;
+      resize:vertical;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-size: 12px;
-      line-height: 1.55;
+      font-size:12px;
+      line-height:1.55;
     }
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .seg{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .seg{display:flex;gap:8px;flex-wrap:wrap}
     .chip{
       padding:8px 10px;
       border:1px solid rgba(15,23,42,.12);
-      border-radius: 999px;
-      background: rgba(255,255,255,.92);
+      border-radius:999px;
+      background:rgba(255,255,255,.92);
       font-size:12px;
       cursor:pointer;
       user-select:none;
     }
     .chip.active{
-      background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 70%, #fff), #fff);
-      border-color: rgba(15,23,42,.10);
-      font-weight:700;
+      background:linear-gradient(135deg, rgba(173,205,234,.78), rgba(255,255,255,.98));
+      border-color:rgba(15,23,42,.10);
+      font-weight:900;
     }
 
-    /* slider (horizontal scroll) */
+    /* 横向滑动选择 */
     .hscroll{
       display:flex;
       gap:8px;
       overflow:auto;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
+      padding-bottom:4px;
+      -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
     }
-    .hscroll::-webkit-scrollbar{ display:none; }
+    .hscroll::-webkit-scrollbar{display:none}
     .pill{
       flex:0 0 auto;
       padding:9px 10px;
-      border-radius: 999px;
+      border-radius:999px;
       border:1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.92);
+      background:rgba(255,255,255,.92);
       font-size:12px;
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
     }
     .pill.active{
-      background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 70%, #fff), #fff);
-      border-color: rgba(15,23,42,.10);
-      font-weight:700;
+      background:linear-gradient(135deg, rgba(173,205,234,.78), rgba(255,255,255,.98));
+      border-color:rgba(15,23,42,.10);
+      font-weight:900;
     }
 
     .footer-actions{
@@ -392,168 +342,139 @@
       flex-wrap:wrap;
       padding:12px 14px;
       border-top:1px solid var(--line);
-      background: rgba(255,255,255,.72);
+      background:rgba(255,255,255,.72);
     }
 
-    /* details modal */
+    /* 底部抽屉/弹层 */
     .overlay{
       position:absolute;
       inset:0;
-      background: rgba(15,23,42,.28);
-      backdrop-filter: blur(6px);
+      background:rgba(15,23,42,.28);
+      backdrop-filter:blur(6px);
       display:none;
       align-items:flex-end;
-      padding: 12px;
+      padding:12px;
     }
-    .overlay.show{ display:flex; }
+    .overlay.show{display:flex}
     .sheet{
       width:100%;
-      border-radius: 18px;
+      border-radius:18px;
       border:1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.96);
+      background:rgba(255,255,255,.96);
       overflow:hidden;
-      box-shadow: var(--shadow);
-      max-height: 76%;
+      box-shadow:var(--shadow);
+      max-height:76%;
       display:flex;
       flex-direction:column;
     }
     .sheet-head{
-      padding:12px 12px;
+      padding:12px;
       border-bottom:1px solid var(--line);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
     }
-    .sheet-head .title{ font-weight:800; font-size:13px; }
-    .sheet-body{ padding:12px; overflow:auto; }
+    .sheet-head .title{font-weight:900;font-size:13px}
+    .sheet-body{padding:12px;overflow:auto}
     .mono{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
       font-size:12px;
-      white-space: pre-wrap;
-      word-break: break-word;
+      white-space:pre-wrap;
+      word-break:break-word;
       line-height:1.6;
       padding:12px;
-      border-radius: 14px;
+      border-radius:14px;
       border:1px solid rgba(15,23,42,.10);
       background:#fff;
     }
 
-    /* Floating ball (iOS-like transparent) */
+    /* 悬浮球（透明虚拟球） */
     .ball{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.22);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,.35);
-      box-shadow:
-        0 18px 40px rgba(15,23,42,.18),
-        inset 0 1px 0 rgba(255,255,255,.55);
-      z-index: 999;
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      width:56px;height:56px;
+      border-radius:999px;
+      background:rgba(255,255,255,.22);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.35);
+      box-shadow:0 18px 40px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.55);
+      z-index:999;
       display:grid;
       place-items:center;
-      touch-action: none;
+      touch-action:none;
       user-select:none;
     }
     .ball::after{
       content:"";
-      width: 20px;
-      height: 20px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.35);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+      width:20px;height:20px;
+      border-radius:8px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.35);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
     }
 
-    /* Floating panel */
+    /* 悬浮球面板 */
     .ball-overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,.30);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.30);
+      backdrop-filter:blur(6px);
+      z-index:1000;
       display:none;
-      padding: 12px;
+      padding:12px;
       align-items:flex-end;
     }
-    .ball-overlay.show{ display:flex; }
-
+    .ball-overlay.show{display:flex}
     .panel{
       width:min(520px, 100%);
-      margin: 0 auto;
-      border-radius: 18px;
-      background: rgba(255,255,255,.95);
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: var(--shadow);
+      margin:0 auto;
+      border-radius:18px;
+      background:rgba(255,255,255,.95);
+      border:1px solid rgba(15,23,42,.10);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
     .panel-head{
-      padding:12px 12px;
+      padding:12px;
       border-bottom:1px solid var(--line);
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
     }
-    .panel-head .title{
-      font-weight:900;
-      font-size:13px;
-    }
+    .panel-head .title{font-weight:950;font-size:13px}
     .panel-tabs{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,.80);
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.80);
     }
     .panel-body{
-      padding: 12px;
-      max-height: 68vh;
+      padding:12px;
+      max-height:68vh;
       overflow:auto;
     }
-    .mini{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.55;
-    }
+    .mini{font-size:12px;color:var(--muted);line-height:1.55}
 
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    .kv .field input, .kv .field textarea{
-      font-family: var(--font);
-    }
-
-    .theme-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-
+    .kv{display:grid;grid-template-columns:1fr;gap:10px}
+    .theme-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .preset-list{
-      display:flex;
-      gap:8px;
-      overflow:auto;
-      padding-bottom:4px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width:none;
+      display:flex;gap:8px;overflow:auto;padding-bottom:4px;
+      -webkit-overflow-scrolling:touch; scrollbar-width:none;
     }
-    .preset-list::-webkit-scrollbar{ display:none; }
+    .preset-list::-webkit-scrollbar{display:none}
     .preset{
       flex:0 0 auto;
       display:flex;
       align-items:center;
       gap:8px;
       padding:8px 10px;
-      border-radius: 999px;
+      border-radius:999px;
       border:1px solid rgba(15,23,42,.12);
       background:#fff;
       cursor:pointer;
@@ -561,33 +482,53 @@
       font-size:12px;
       white-space:nowrap;
     }
-    .swatch{
-      width:12px; height:12px; border-radius:4px;
-      border:1px solid rgba(15,23,42,.12);
-      background: var(--accent);
-    }
+    .swatch{width:12px;height:12px;border-radius:4px;border:1px solid rgba(15,23,42,.12);background:var(--accent)}
 
-    /* tiny toast */
+    /* 小提示条 */
     .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 92px;
-      transform: translateX(-50%);
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 12px 24px rgba(15,23,42,.14);
-      font-size: 12px;
-      color: var(--ink);
+      position:fixed;
+      left:50%;
+      bottom:92px;
+      transform:translateX(-50%);
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      background:rgba(255,255,255,.92);
+      box-shadow:0 12px 24px rgba(15,23,42,.14);
+      font-size:12px;
+      color:var(--ink);
       display:none;
-      z-index: 2000;
-      max-width: 88vw;
-      text-overflow: ellipsis;
+      z-index:2000;
+      max-width:88vw;
+      text-overflow:ellipsis;
       overflow:hidden;
       white-space:nowrap;
     }
-    .toast.show{ display:block; }
+    .toast.show{display:block}
+
+    /* 第三页：每行标题右侧“详情”按钮 */
+    .label-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .label-row .l{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .linkbtn{
+      border:1px solid rgba(15,23,42,.12);
+      background:rgba(255,255,255,.92);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
   </style>
 </head>
 
@@ -598,7 +539,7 @@
     <div class="phone" id="phone">
       <div class="safe">
 
-        <!-- Home Screen -->
+        <!-- 桌面 -->
         <section class="homescreen" id="home">
           <div class="home-title">桌面</div>
 
@@ -610,7 +551,7 @@
           </div>
 
           <div class="hint" style="margin-top:10px;">
-            点图标进入 App。右下悬浮球可配置 API / 模型 / 主题 / 字体 / 背景。
+            点图标进入。右下悬浮球可设置接口、自动抓取模型、配色、字体、背景。
           </div>
         </section>
 
@@ -626,7 +567,7 @@
             </div>
           </div>
 
-          <!-- Screen 1 -->
+          <!-- 第一页 -->
           <div class="card screen show" id="screen1">
             <div class="card-head">
               <div class="title">第一页</div>
@@ -640,14 +581,14 @@
               </div>
 
               <div class="hint">
-                说明：管理区默认空白；创建后会出现「角色1/角色2…」卡片。点击角色名查看资料，可一键复制。
+                管理区默认空白；创建后会出现角色卡。点角色名称可查看资料并一键复制；点圆框“+”可上传头像。
               </div>
 
               <div class="role-grid" id="roleGrid" style="margin-top:8px;"></div>
             </div>
           </div>
 
-          <!-- Screen 2 -->
+          <!-- 第二页 -->
           <div class="card screen" id="screen2">
             <div class="card-head">
               <div class="title">第二页 · 基础信息</div>
@@ -678,7 +619,7 @@
                     <div class="chip" data-gender="男" id="gM">男</div>
                   </div>
                   <div class="hint" style="margin-top:8px;">
-                    提示：如果选择“女”，第三页会按女性向默认细节生成（肤色白、鼻子小巧玲珑等）。
+                    选择“女”后，第三页默认细节会按女性向补全（肤色白等）。
                   </div>
                 </div>
               </div>
@@ -689,59 +630,75 @@
             </div>
           </div>
 
-          <!-- Screen 3 -->
+          <!-- 第三页 -->
           <div class="card screen" id="screen3">
             <div class="card-head">
               <div class="title">第三页 · 创建形象</div>
-              <div class="hint">可选项 + 详细说明</div>
+              <div class="hint">横向滑动选择 + 详情弹出</div>
             </div>
 
             <div class="card-body" style="display:flex; flex-direction:column; gap:10px; min-height:0;">
               <div class="field">
-                <label>形象资料输入框（你可手动编辑；也可点“完成”让 AI/随机生成内容填入）</label>
+                <label>形象资料输入框（可手动编辑；也可用“完成”生成填入）</label>
                 <textarea id="profile" placeholder="在这里写形象资料..."></textarea>
               </div>
 
               <div class="field">
-                <label>眼型（横向滑动选择）</label>
+                <div class="label-row">
+                  <div class="l">眼型（横向滑动选择）</div>
+                  <button class="linkbtn" id="eyeInfoBtn">详情</button>
+                </div>
                 <div class="hscroll" id="eyes"></div>
-                <div class="hint" id="eyeDesc" style="margin-top:8px;">请选择一个眼型查看魅力表现。</div>
+                <div class="hint" id="eyeDesc" style="margin-top:8px;">请选择一个眼型。</div>
               </div>
 
               <div class="field">
-                <label>头发长度（横向滑动选择）</label>
+                <div class="label-row">
+                  <div class="l">头发长度（横向滑动选择）</div>
+                  <button class="linkbtn" id="hairInfoBtn">详情</button>
+                </div>
                 <div class="hscroll" id="hair"></div>
-                <div class="hint" id="hairDesc" style="margin-top:8px;">请选择头发长度查看气质倾向。</div>
+                <div class="hint" id="hairDesc" style="margin-top:8px;">请选择头发长度。</div>
               </div>
 
               <div class="field">
-                <label>胸部丰满程度（横向滑动选择）</label>
+                <div class="label-row">
+                  <div class="l">胸部丰满程度（横向滑动选择）</div>
+                  <button class="linkbtn" id="bustInfoBtn">详情</button>
+                </div>
                 <div class="hscroll" id="bust"></div>
-                <div class="hint" id="bustDesc" style="margin-top:8px;">请选择程度查看魅力表达。</div>
+                <div class="hint" id="bustDesc" style="margin-top:8px;">请选择程度。</div>
               </div>
 
               <div class="field">
-                <label>体香（横向滑动选择）</label>
+                <div class="label-row">
+                  <div class="l">体香（横向滑动选择）</div>
+                  <button class="linkbtn" id="scentInfoBtn">详情</button>
+                </div>
                 <div class="hscroll" id="scent"></div>
-                <div class="hint" id="scentDesc" style="margin-top:8px;">请选择体香查看印象描述。</div>
+                <div class="hint" id="scentDesc" style="margin-top:8px;">请选择体香。</div>
               </div>
 
               <div class="row">
                 <div class="field">
-                  <label>AI 生成形象字数（用于控制输出长度）</label>
+                  <label>生成字数（控制输出长度）</label>
                   <input id="words" inputmode="numeric" placeholder="例如：400" />
                 </div>
                 <div class="field">
                   <label>生成方式</label>
                   <div class="seg">
                     <div class="chip active" data-gen="random" id="genRandom">随机生成（本地）</div>
-                    <div class="chip" data-gen="ai" id="genAI">AI 生成（需要 API）</div>
+                    <div class="chip" data-gen="ai" id="genAI">AI 生成（需要接口）</div>
                   </div>
                 </div>
               </div>
 
+              <div class="actions">
+                <button class="btn" id="btnGenerate">完成（生成到输入框）</button>
+              </div>
+
               <div class="hint">
-                默认细节（女向时会自动补全）：肤色白、鼻子小巧玲珑、唇形柔软润泽、下巴肩颈锁骨线条优美、腰部腿部纤细、玉足。
+                默认细节（女向时自动补全）：肤色白、鼻子小巧玲珑、唇形柔软润泽、下巴肩颈锁骨线条优美、腰部腿部纤细、玉足。
               </div>
             </div>
 
@@ -751,7 +708,7 @@
             </div>
           </div>
 
-          <!-- Role detail overlay -->
+          <!-- 角色资料弹层 -->
           <div class="overlay" id="roleOverlay">
             <div class="sheet">
               <div class="sheet-head">
@@ -770,16 +727,28 @@
             </div>
           </div>
 
+          <!-- 选项详情弹层 -->
+          <div class="overlay" id="infoOverlay">
+            <div class="sheet">
+              <div class="sheet-head">
+                <div class="title" id="infoTitle">详情</div>
+                <button class="btn" id="closeInfo">关闭</button>
+              </div>
+              <div class="sheet-body">
+                <div class="mono" id="infoBody"></div>
+              </div>
+            </div>
+          </div>
         </section>
 
       </div>
     </div>
   </div>
 
-  <!-- Floating Ball -->
+  <!-- 悬浮球 -->
   <div class="ball" id="ball" aria-label="打开悬浮球面板"></div>
 
-  <!-- Floating Panel -->
+  <!-- 悬浮球面板 -->
   <div class="ball-overlay" id="ballOverlay">
     <div class="panel">
       <div class="panel-head">
@@ -788,7 +757,7 @@
       </div>
 
       <div class="panel-tabs">
-        <button class="chip active" data-tab="api">API</button>
+        <button class="chip active" data-tab="api">接口</button>
         <button class="chip" data-tab="model">模型</button>
         <button class="chip" data-tab="theme">配色</button>
         <button class="chip" data-tab="font">字体</button>
@@ -796,75 +765,86 @@
       </div>
 
       <div class="panel-body">
-        <!-- API -->
+        <!-- 接口 -->
         <div class="tabpane" id="tab-api">
           <div class="kv">
             <div class="field">
-              <label>API Base URL（不含末尾 / ）</label>
+              <label>接口地址（不含末尾 / ）</label>
               <input id="apiBase" placeholder="https://你的中转站域名" />
               <div class="mini" style="margin-top:6px;">
-                默认请求：<b>POST</b> <span style="font-family:ui-monospace">BaseURL/v1/chat/completions</span>
+                默认请求：POST BaseURL/v1/chat/completions；模型列表：GET BaseURL/v1/models
               </div>
             </div>
 
             <div class="field">
-              <label>API Key（仅保存在本机浏览器）</label>
+              <label>密钥（仅保存在本机浏览器）</label>
               <input id="apiKey" placeholder="sk-..." autocomplete="off" />
               <div class="mini" style="margin-top:6px;">
-                公开分享时不要预填；每个使用者自己填写自己的 Key。
+                公开分享时不要预填；每个使用者自己填写自己的密钥。
               </div>
             </div>
 
             <div class="field">
-              <label>System Prompt（可选）</label>
+              <label>系统提示词（可选）</label>
               <textarea id="sys" rows="4" placeholder="例如：你是角色卡生成助手，输出中文，结构清晰..."></textarea>
             </div>
 
             <div class="actions">
               <button class="btn" id="testApi">测试连接</button>
               <button class="btn primary" id="saveApi">保存</button>
-              <button class="btn" id="wipeKey">清除 Key</button>
+              <button class="btn" id="wipeKey">清除密钥</button>
             </div>
             <div class="mini" id="apiTip" style="margin-top:8px;">未测试</div>
           </div>
         </div>
 
-        <!-- Model -->
+        <!-- 模型（自动抓取） -->
         <div class="tabpane" id="tab-model" style="display:none;">
           <div class="field">
-            <label>滑动选择模型（点击即选中）</label>
-            <div class="hscroll" id="modelChips"></div>
+            <label>自动获取模型列表（从中转站拉取）</label>
+
+            <div class="actions" style="margin-top:8px;">
+              <button class="btn" id="refreshModels">刷新模型列表</button>
+              <button class="btn primary" id="saveModel">保存</button>
+            </div>
+
+            <div class="mini" id="modelFetchTip" style="margin-top:8px;">
+              未拉取。请先在“接口”页填接口地址和密钥，然后点“刷新模型列表”。
+            </div>
+
+            <div class="mini" style="margin-top:10px;">滑动选择（点击即选中）：</div>
+            <div class="hscroll" id="modelChips" style="margin-top:8px;"></div>
+
             <div class="mini" style="margin-top:8px;">
               当前模型：<b id="curModelText">未选择</b>
             </div>
           </div>
 
           <div class="field">
-            <label>Temperature</label>
+            <label>温度（越大越发散）</label>
             <input id="temp" type="number" min="0" max="2" step="0.1" />
           </div>
 
           <div class="field">
-            <label>自定义模型名（可选，不想填就用上面滑动选择）</label>
+            <label>兜底：自定义模型名（仅当拉取失败时使用）</label>
             <input id="customModel" placeholder="例如：gpt-4o-mini" />
             <div class="actions" style="margin-top:10px;">
               <button class="btn" id="applyCustomModel">使用自定义模型</button>
-              <button class="btn primary" id="saveModel">保存</button>
             </div>
           </div>
         </div>
 
-        <!-- Theme -->
+        <!-- 配色 -->
         <div class="tabpane" id="tab-theme" style="display:none;">
           <div class="field">
             <label>手动输入色号调试（支持 #RRGGBB）</label>
             <div class="theme-row">
               <div>
-                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">强调色 Accent</label>
+                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">强调色</label>
                 <input id="accent" placeholder="#adcdea" />
               </div>
               <div>
-                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">背景色 Background</label>
+                <label style="margin:0 0 6px; font-size:12px; color:var(--muted);">背景色</label>
                 <input id="bg" placeholder="#ffffff" />
               </div>
             </div>
@@ -879,7 +859,7 @@
           </div>
         </div>
 
-        <!-- Font -->
+        <!-- 字体 -->
         <div class="tabpane" id="tab-font" style="display:none;">
           <div class="field">
             <label>开源免费字体（点击切换）</label>
@@ -893,13 +873,12 @@
             <label>上传字体（TTF/OTF）并应用到本页面</label>
             <input id="fontFile" type="file" accept=".ttf,.otf,font/ttf,font/otf" />
             <div class="mini" style="margin-top:8px;">
-              你问的那个问题：<b>可以直接应用</b>。实现方式是前端读取字体文件并用 <span style="font-family:ui-monospace">@font-face</span> 注入。
-              但注意：这是“本机/本浏览器生效”，分享给别人除非你把字体文件也托管到站点里，否则别人不会自动拥有该字体。
+              可以直接应用（用 @font-face 注入）。注意：这是“本机/本浏览器生效”；分享给别人，别人需要自己上传或你把字体文件也托管到站点里。
             </div>
           </div>
         </div>
 
-        <!-- Background -->
+        <!-- 背景 -->
         <div class="tabpane" id="tab-bg" style="display:none;">
           <div class="field">
             <label>上传图片作为背景</label>
@@ -908,7 +887,7 @@
               <button class="btn" id="clearBg">清除背景图</button>
             </div>
             <div class="mini" style="margin-top:8px;">
-              背景图默认仅保存在本机（localStorage）。如果你想“分享出去别人也看到同一张背景”，需要把图片放到仓库里并用 URL 引用。
+              背景图默认仅保存在本机。若要分享后别人也看到同一张背景，需要把图片放仓库并用链接引用。
             </div>
           </div>
         </div>
@@ -921,15 +900,16 @@
 
   <script>
     /***********************
-     * Storage
+     * 本地存储
      ***********************/
     const S = {
-      settings: "rcg_settings_v1",
-      themePresets: "rcg_theme_presets_v1",
-      bg: "rcg_bg_image_v1",
-      ball: "rcg_ball_pos_v1",
-      roles: "rcg_roles_v1",
-      font: "rcg_font_v1"
+      settings: "rcg_settings_v2",
+      themePresets: "rcg_theme_presets_v2",
+      bg: "rcg_bg_image_v2",
+      ball: "rcg_ball_pos_v2",
+      roles: "rcg_roles_v2",
+      font: "rcg_font_v2",
+      modelsCache: "rcg_models_cache_v2"
     };
     const $ = (s)=>document.querySelector(s);
 
@@ -952,16 +932,15 @@
     }
 
     /***********************
-     * Settings (BYOK)
+     * 设置（酒馆模式：用户自填密钥）
      ***********************/
     const defaultSettings = {
       apiBase: "",
       apiKey: "",
       system: "",
-      model: "gpt-4o-mini",
+      model: "",
       temperature: 0.2
     };
-
     function getSettings(){
       return { ...defaultSettings, ...load(S.settings, {}) };
     }
@@ -972,15 +951,14 @@
     }
 
     /***********************
-     * Fetch patches (your "3 patches")
+     * 你要的 3 个稳定补丁（已集成）
      ***********************/
-    // Patch 1: timeout + abortable
+    // 补丁1：请求超时 + 可中断（防“长内容卡住没反应”）
     let inFlightController = null;
 
     async function callChatCompletions({ apiBase, apiKey, model, temperature, system, messages, max_tokens }){
       const url = apiBase.replace(/\/+$/,"") + "/v1/chat/completions";
 
-      // Abort previous
       if (inFlightController) inFlightController.abort();
       const controller = new AbortController();
       inFlightController = controller;
@@ -988,12 +966,7 @@
       const timeoutMs = 90000;
       const timer = setTimeout(() => controller.abort(new Error("timeout")), timeoutMs);
 
-      const payload = {
-        model,
-        temperature,
-        messages,
-        max_tokens
-      };
+      const payload = { model, temperature, messages, max_tokens };
 
       try{
         const r = await fetch(url, {
@@ -1008,12 +981,12 @@
 
         if(!r.ok){
           const t = await r.text().catch(()=> "");
-          throw new Error(`API 请求失败：${r.status} ${t}`);
+          throw new Error(`请求失败：${r.status} ${t}`);
         }
 
         const data = await r.json();
         const text = data?.choices?.[0]?.message?.content;
-        if(typeof text !== "string") throw new Error("响应解析失败（未拿到 content）");
+        if(typeof text !== "string") throw new Error("响应解析失败（未拿到内容）");
         return text;
       }catch(e){
         if (String(e?.name).includes("Abort") || String(e).includes("timeout")) {
@@ -1026,18 +999,18 @@
       }
     }
 
-    // Patch 2: leave page => abort
+    // 补丁2：离开页面就中断请求（防切后台回来出问题）
     window.addEventListener("pagehide", () => {
       try { inFlightController?.abort(); } catch(e){}
     });
 
-    // Patch 3: bfcache restore => reload
+    // 补丁3：如果是“返回缓存恢复”，强制刷新（防回来就报加载错误）
     window.addEventListener("pageshow", (e) => {
       if (e.persisted) location.reload();
     });
 
     /***********************
-     * Floating ball (drag + snap)
+     * 悬浮球：拖拽 + 吸边
      ***********************/
     const ball = $("#ball");
     const ballOverlay = $("#ballOverlay");
@@ -1097,7 +1070,7 @@
     });
 
     /***********************
-     * Panel tabs
+     * 悬浮球面板：标签切换
      ***********************/
     const tabBtns = document.querySelectorAll(".panel-tabs .chip");
     const panes = {
@@ -1114,10 +1087,9 @@
     tabBtns.forEach(b=> b.addEventListener("click", ()=> setPanelTab(b.dataset.tab)));
 
     /***********************
-     * Theme editor + presets
+     * 配色：应用 + 保存主题
      ***********************/
     function isHex(s){ return /^#([0-9a-fA-F]{6})$/.test((s||"").trim()); }
-
     function applyThemeVars(accent, bg){
       if(isHex(accent)) document.documentElement.style.setProperty("--accent", accent.trim());
       if(isHex(bg)) document.documentElement.style.setProperty("--bg", bg.trim());
@@ -1162,20 +1134,19 @@
       const presets = load(S.themePresets, []);
       const name = prompt("给这个主题取名（可选）") || "";
       presets.unshift({ name, accent:a, bg:b, ts: Date.now() });
-      // keep last 12
       save(S.themePresets, presets.slice(0,12));
       renderPresets();
       toast("主题已保存");
     });
 
     /***********************
-     * Fonts: built-in + upload ttf
+     * 字体：开源字体 + 上传字体
      ***********************/
     const fontOptions = [
-      { name:"默认（Noto Sans SC）", css:`"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
+      { name:"默认（思源黑体风格）", css:`"Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
       { name:"Inter", css:`"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif` },
-      { name:"ZCOOL KuaiLe（站酷快乐体）", css:`"ZCOOL KuaiLe", "Noto Sans SC", sans-serif` },
-      { name:"Ma Shan Zheng（马善政毛笔）", css:`"Ma Shan Zheng", "Noto Sans SC", sans-serif` }
+      { name:"站酷快乐体", css:`"ZCOOL KuaiLe", "Noto Sans SC", sans-serif` },
+      { name:"马善政毛笔体", css:`"Ma Shan Zheng", "Noto Sans SC", sans-serif` }
     ];
 
     function setFontCss(css, label){
@@ -1202,10 +1173,8 @@
       });
     }
 
-    // Upload font: inject @font-face with blob url (session). We also try to persist base64 (may exceed localStorage).
     let uploadedFontUrl = null;
     function applyUploadedFont(familyName, blobUrl){
-      // remove old style
       const old = document.querySelector("#uploadedFontStyle");
       if(old) old.remove();
       const style = document.createElement("style");
@@ -1226,24 +1195,22 @@
       const file = e.target.files?.[0];
       if(!file) return;
 
-      // revoke previous
       if(uploadedFontUrl) URL.revokeObjectURL(uploadedFontUrl);
       uploadedFontUrl = URL.createObjectURL(file);
 
       const family = "UserUploadedFont";
       applyUploadedFont(family, uploadedFontUrl);
 
-      // Try persist (best-effort)
+      // 尝试持久化（字体太大可能存不下）
       try{
         const buf = await file.arrayBuffer();
         const bytes = new Uint8Array(buf);
         let bin = "";
         for(const b of bytes) bin += String.fromCharCode(b);
         const b64 = btoa(bin);
-        // Warning: localStorage ~5MB, big fonts may fail.
         save(S.font, { type:"uploaded", family, name:file.name, mime:file.type || "font/ttf", b64 });
       }catch(err){
-        // ignore persistence failure
+        // 存不下也不影响当次使用
       }
     });
 
@@ -1264,63 +1231,12 @@
           const blob = new Blob([bytes], { type: f.mime || "font/ttf" });
           uploadedFontUrl = URL.createObjectURL(blob);
           applyUploadedFont(f.family || "UserUploadedFont", uploadedFontUrl);
-        }catch(e){
-          // fallback
-        }
+        }catch(e){}
       }
     }
 
     /***********************
-     * Model slider selection
-     ***********************/
-    const modelPreset = [
-      "gpt-4o-mini",
-      "gpt-4.1-mini",
-      "gpt-4o",
-      "claude-3-5-sonnet",
-      "deepseek-chat",
-      "qwen2.5-72b-instruct",
-      "glm-4"
-    ];
-
-    function renderModelChips(){
-      const box = $("#modelChips");
-      const s = getSettings();
-      box.innerHTML = "";
-      modelPreset.forEach(m=>{
-        const el = document.createElement("div");
-        el.className = "pill" + (s.model === m ? " active" : "");
-        el.textContent = m;
-        el.addEventListener("click", ()=>{
-          document.querySelectorAll("#modelChips .pill").forEach(x=>x.classList.remove("active"));
-          el.classList.add("active");
-          setSettings({ model: m });
-          $("#curModelText").textContent = m;
-          toast("已选择模型");
-        });
-        box.appendChild(el);
-      });
-      $("#curModelText").textContent = s.model || "未选择";
-      $("#temp").value = String(s.temperature ?? 0.2);
-      $("#customModel").value = "";
-    }
-
-    $("#applyCustomModel").addEventListener("click", ()=>{
-      const m = $("#customModel").value.trim();
-      if(!m) return toast("请输入模型名");
-      setSettings({ model: m });
-      renderModelChips();
-      toast("已使用自定义模型");
-    });
-
-    $("#saveModel").addEventListener("click", ()=>{
-      const t = Number($("#temp").value || 0.2);
-      setSettings({ temperature: isFinite(t) ? t : 0.2 });
-      toast("模型设置已保存");
-    });
-
-    /***********************
-     * Background image upload
+     * 背景图：上传 + 清除
      ***********************/
     function setBgImage(dataUrl){
       const layer = $("#bgImageLayer");
@@ -1348,7 +1264,7 @@
     });
 
     /***********************
-     * API panel actions
+     * 接口页：保存/测试
      ***********************/
     function fillApiForm(){
       const s = getSettings();
@@ -1369,19 +1285,23 @@
     $("#wipeKey").addEventListener("click", ()=>{
       setSettings({ apiKey: "" });
       $("#apiKey").value = "";
-      toast("Key 已清除");
+      toast("密钥已清除");
     });
 
     $("#testApi").addEventListener("click", async ()=>{
-      const s = getSettings();
+      const s0 = getSettings();
       const apiBase = $("#apiBase").value.trim();
       const apiKey = $("#apiKey").value.trim();
-      const model = s.model || "gpt-4o-mini";
-      const temperature = Number(s.temperature ?? 0.2);
+      const model = s0.model || $("#curModelText").textContent || "";
+      const temperature = Number(s0.temperature ?? 0.2);
       const system = ($("#sys").value || "").trim();
 
-      if(!apiBase || !apiKey || !model){
-        $("#apiTip").textContent = "请先填写 Base URL / Key，并选择模型。";
+      if(!apiBase || !apiKey){
+        $("#apiTip").textContent = "请先填写接口地址和密钥。";
+        return;
+      }
+      if(!model || model === "未选择"){
+        $("#apiTip").textContent = "请先在“模型”页选择一个模型。";
         return;
       }
 
@@ -1402,7 +1322,107 @@
     });
 
     /***********************
-     * Role app
+     * 模型：自动抓取 /v1/models（你要求的）
+     ***********************/
+    function getModelsCache(){
+      return load(S.modelsCache, { ts: 0, models: [] });
+    }
+    function setModelsCache(models){
+      save(S.modelsCache, { ts: Date.now(), models });
+    }
+
+    async function fetchModelsFromProxy(){
+      const s = getSettings();
+      if(!s.apiBase || !s.apiKey) throw new Error("请先在“接口”页填写接口地址和密钥");
+
+      const url = s.apiBase.replace(/\/+$/,"") + "/v1/models";
+      const r = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + s.apiKey,
+          "Accept": "application/json"
+        }
+      });
+
+      if(!r.ok){
+        const t = await r.text().catch(()=> "");
+        throw new Error(`拉取模型失败：${r.status} ${t}`);
+      }
+
+      const data = await r.json();
+      const raw = Array.isArray(data?.data) ? data.data : [];
+      const models = raw
+        .map(x => x?.id || x?.name || x?.model)
+        .filter(Boolean)
+        .filter((v,i,a)=> a.indexOf(v)===i)
+        .sort((a,b)=> String(a).localeCompare(String(b)));
+
+      if(!models.length) throw new Error("模型列表为空（可能返回结构不同）");
+      return models;
+    }
+
+    function renderModelChips(models){
+      const box = $("#modelChips");
+      const s = getSettings();
+      box.innerHTML = "";
+
+      (models || []).forEach(m=>{
+        const el = document.createElement("div");
+        el.className = "pill" + (s.model === m ? " active" : "");
+        el.textContent = m;
+        el.addEventListener("click", ()=>{
+          document.querySelectorAll("#modelChips .pill").forEach(x=>x.classList.remove("active"));
+          el.classList.add("active");
+          setSettings({ model: m });
+          $("#curModelText").textContent = m;
+          toast("已选择模型");
+        });
+        box.appendChild(el);
+      });
+
+      $("#curModelText").textContent = s.model || "未选择";
+      $("#temp").value = String(s.temperature ?? 0.2);
+      $("#customModel").value = "";
+    }
+
+    async function refreshModels(){
+      const tip = $("#modelFetchTip");
+      tip.textContent = "拉取中…";
+      try{
+        const models = await fetchModelsFromProxy();
+        setModelsCache(models);
+        renderModelChips(models);
+
+        const cur = getSettings().model;
+        tip.textContent = `拉取成功：${models.length} 个模型` + (cur ? `（已选择：${cur}）` : "");
+      }catch(e){
+        const cache = getModelsCache();
+        if(cache?.models?.length){
+          renderModelChips(cache.models);
+          tip.textContent = "拉取失败，已使用缓存。错误：" + (e?.message || String(e));
+        }else{
+          tip.textContent = "拉取失败：" + (e?.message || String(e));
+        }
+      }
+    }
+    $("#refreshModels").addEventListener("click", refreshModels);
+
+    $("#applyCustomModel").addEventListener("click", ()=>{
+      const m = $("#customModel").value.trim();
+      if(!m) return toast("请输入模型名");
+      setSettings({ model: m });
+      $("#curModelText").textContent = m;
+      toast("已使用自定义模型");
+    });
+
+    $("#saveModel").addEventListener("click", ()=>{
+      const t = Number($("#temp").value || 0.2);
+      setSettings({ temperature: isFinite(t) ? t : 0.2 });
+      toast("模型设置已保存");
+    });
+
+    /***********************
+     * App：页面切换
      ***********************/
     const home = $("#home");
     const app = $("#app");
@@ -1415,6 +1435,7 @@
     function showScreen(id){
       Object.values(screens).forEach(x=>x.classList.remove("show"));
       screens[id].classList.add("show");
+
       if(id==="s1"){
         $("#navTitle").textContent = "角色卡生成";
         $("#navSub").textContent = "创建与管理";
@@ -1445,34 +1466,16 @@
       toast("已退出");
     });
 
-    $("#btnManage").addEventListener("click", ()=>{
-      // currently screen1 already includes management
-      toast("角色管理在下方");
-    });
+    $("#btnManage").addEventListener("click", ()=> toast("角色管理在下方"));
 
+    /***********************
+     * 角色向导：状态
+     ***********************/
     const roleState = {
       gender: "女",
       genMode: "random",
-      picks: {
-        eye: null, hair: null, bust: null, scent: null
-      }
+      picks: { eye:null, hair:null, bust:null, scent:null }
     };
-
-    $("#goCreate").addEventListener("click", ()=>{
-      // reset for new role
-      $("#name").value = "";
-      $("#age").value = "";
-      $("#height").value = "";
-      selectGender("女");
-      roleState.genMode = "random";
-      $("#genRandom").classList.add("active");
-      $("#genAI").classList.remove("active");
-      $("#profile").value = "";
-      $("#words").value = "400";
-      roleState.picks = { eye:null, hair:null, bust:null, scent:null };
-      setPickDesc();
-      showScreen("s2");
-    });
 
     function selectGender(g){
       roleState.gender = g;
@@ -1482,13 +1485,30 @@
     $("#gF").addEventListener("click", ()=> selectGender("女"));
     $("#gM").addEventListener("click", ()=> selectGender("男"));
 
+    $("#goCreate").addEventListener("click", ()=>{
+      $("#name").value = "";
+      $("#age").value = "";
+      $("#height").value = "";
+      selectGender("女");
+
+      roleState.genMode = "random";
+      $("#genRandom").classList.add("active");
+      $("#genAI").classList.remove("active");
+
+      $("#profile").value = "";
+      $("#words").value = "420";
+
+      roleState.picks = { eye:null, hair:null, bust:null, scent:null };
+      setPickDesc();
+      showScreen("s2");
+    });
+
     $("#s2prev").addEventListener("click", ()=> showScreen("s1"));
     $("#s2next").addEventListener("click", ()=>{
       const name = $("#name").value.trim();
       if(!name) return toast("请填写名称");
       showScreen("s3");
     });
-
     $("#s3prev").addEventListener("click", ()=> showScreen("s2"));
 
     $("#genRandom").addEventListener("click", ()=>{
@@ -1502,32 +1522,62 @@
       $("#genRandom").classList.remove("active");
     });
 
+    /***********************
+     * 选项：更细更多档位（按你要求加密）
+     ***********************/
     const options = {
       eyes: [
-        { k:"杏眼", d:"清澈柔亮，天然亲和，像把人轻轻拉近。" },
-        { k:"狐狸眼", d:"上挑锋芒与魅惑并存，目光像在轻声挑逗。" },
-        { k:"桃花眼", d:"含情脉脉，容易让人误会她在对你偏爱。" },
-        { k:"猫眼", d:"灵动又带点傲气，像不经意的挑衅。" },
-        { k:"下垂眼", d:"无辜感强，容易激发保护欲，温柔但有后劲。" }
+        { k:"杏眼", d:"清澈柔亮，亲和感强，像把人轻轻拉近。" },
+        { k:"桃花眼", d:"含情脉脉，容易让人误会她对你偏爱。" },
+        { k:"狐狸眼", d:"上挑锐利与魅惑并存，目光像在轻声挑逗。" },
+        { k:"猫眼", d:"灵动带傲，像不经意的挑衅与试探。" },
+        { k:"下垂眼", d:"无辜感强，激发保护欲，温柔但有后劲。" },
+        { k:"丹凤眼", d:"线条凌厉，气场更足，克制里带压迫感。" },
+        { k:"瑞凤眼", d:"贵气柔和，像自带教养与距离感。" },
+        { k:"圆眼", d:"甜感明显，情绪更外显，显得更可爱。" },
+        { k:"细长眼", d:"冷感更强，耐看型，越看越上头。" },
+        { k:"内双微挑", d:"干净利落，既有温柔也有小心机。" },
+        { k:"卧蚕明显", d:"笑意更容易“溢出来”，亲密感提升。" },
+        { k:"泪痣点缀", d:"不必多言的暧昧感，一眼就让人记住。" }
       ],
       hair: [
-        { k:"短发", d:"干净利落，俏皮感与独立感更突出。" },
-        { k:"中长发", d:"日常耐看，甜感与气质兼容。" },
-        { k:"长发", d:"氛围感强，柔顺垂落时更显温软与勾人。" },
-        { k:"超长发", d:"存在感拉满，走动时像把目光都牵走。" }
+        { k:"超短（清爽）", d:"利落、俏皮、带点不服软的劲。" },
+        { k:"短发（耳下）", d:"干净利落，独立感更突出。" },
+        { k:"齐肩（锁骨上）", d:"甜感与气质兼容，很耐看。" },
+        { k:"锁骨发", d:"氛围感上来得快，轻熟却不老成。" },
+        { k:"中长（胸上）", d:"日常万能，软感更明显。" },
+        { k:"长发（胸下）", d:"柔顺垂落时更显温软与勾人。" },
+        { k:"及腰长发", d:"存在感很强，转身时像把目光都牵走。" },
+        { k:"过腰超长", d:"梦幻感、女主感拉满，容易被记住。" },
+        { k:"大波浪", d:"成熟氛围更浓，走动时自带“撩”。" },
+        { k:"微卷蓬松", d:"慵懒随性，亲密感更自然。" },
+        { k:"高马尾", d:"元气强，带点“想让人追”的速度感。" },
+        { k:"低盘发", d:"克制优雅，端庄里藏着诱惑。" }
       ],
       bust: [
-        { k:"纤细", d:"清冷与轻盈，靠线条与气质取胜。" },
-        { k:"匀称", d:"恰到好处的平衡感，耐看且更显高级。" },
-        { k:"饱满", d:"成熟丰盈，冲击力更强，魅力更直接。" },
-        { k:"丰润", d:"软糯与张力并存，极具女性向氛围。" }
+        { k:"平坦（清冷）", d:"轻盈线条感，靠气质与比例取胜。" },
+        { k:"微隆（含蓄）", d:"若有若无的柔软感，更耐看。" },
+        { k:"小巧（精致）", d:"可爱与精致并存，显得更灵动。" },
+        { k:"匀称（高级）", d:"平衡感好，整体更显“干净贵气”。" },
+        { k:"挺翘（自信）", d:"线条更有张力，存在感增加。" },
+        { k:"饱满（成熟）", d:"冲击力更强，魅力更直接。" },
+        { k:"丰润（软糯）", d:"柔软与张力并存，氛围更女性向。" },
+        { k:"丰盈（压迫感）", d:"靠近时更容易让人心跳加速，目光停不住。" },
+        { k:"极致丰满", d:"非常强烈的视觉存在感，偏“致命吸引”。" }
       ],
       scent: [
-        { k:"奶香", d:"干净软甜，靠近就让人放松，像被轻轻拥住。" },
-        { k:"花香", d:"温柔而明亮，像春风里的一瞬心动。" },
-        { k:"木质香", d:"克制冷静，越靠近越上头，余韵很长。" },
-        { k:"薄荷清香", d:"清爽干净，像白衬衫与微凉的手指。" },
-        { k:"琥珀麝香", d:"暧昧粘稠，一点点就足够让人失控。" }
+        { k:"奶香（柔软）", d:"干净软甜，靠近就让人放松，像被轻轻拥住。" },
+        { k:"花香（明亮）", d:"温柔而清新，像春风里的一瞬心动。" },
+        { k:"果香（活泼）", d:"甜而不腻，亲近感强，像笑起来的太阳。" },
+        { k:"皂感（清洁）", d:"白衬衫式的干净，距离更容易被拉近。" },
+        { k:"木质（克制）", d:"冷静耐闻，越靠近越上头，余韵很长。" },
+        { k:"茶香（清雅）", d:"不抢戏却很高级，像温柔的注视。" },
+        { k:"薄荷（清爽）", d:"微凉干净，像指尖划过的风。" },
+        { k:"琥珀（暧昧）", d:"带点粘稠的甜暖，容易让人失控。" },
+        { k:"麝香（体温）", d:"贴肤、私密、会让人想更靠近一点。" },
+        { k:"檀香（沉静）", d:"稳重而迷人，像压住情绪的热。" },
+        { k:"香草（温甜）", d:"甜得柔和，像抱枕一样的安全感。" },
+        { k:"雨后气息", d:"潮湿与清冷混合，像一场不说破的暧昧。" }
       ]
     };
 
@@ -1548,10 +1598,10 @@
     }
 
     function setPickDesc(){
-      $("#eyeDesc").textContent = roleState.picks.eye ? roleState.picks.eye.d : "请选择一个眼型查看魅力表现。";
-      $("#hairDesc").textContent = roleState.picks.hair ? roleState.picks.hair.d : "请选择头发长度查看气质倾向。";
-      $("#bustDesc").textContent = roleState.picks.bust ? roleState.picks.bust.d : "请选择程度查看魅力表达。";
-      $("#scentDesc").textContent = roleState.picks.scent ? roleState.picks.scent.d : "请选择体香查看印象描述。";
+      $("#eyeDesc").textContent = roleState.picks.eye ? roleState.picks.eye.d : "请选择一个眼型。";
+      $("#hairDesc").textContent = roleState.picks.hair ? roleState.picks.hair.d : "请选择头发长度。";
+      $("#bustDesc").textContent = roleState.picks.bust ? roleState.picks.bust.d : "请选择程度。";
+      $("#scentDesc").textContent = roleState.picks.scent ? roleState.picks.scent.d : "请选择体香。";
     }
 
     renderPills("#eyes", options.eyes, (x)=>{ roleState.picks.eye=x; setPickDesc(); });
@@ -1559,6 +1609,43 @@
     renderPills("#bust", options.bust, (x)=>{ roleState.picks.bust=x; setPickDesc(); });
     renderPills("#scent", options.scent, (x)=>{ roleState.picks.scent=x; setPickDesc(); });
 
+    /***********************
+     * 详情弹层
+     ***********************/
+    function openInfo(title, body){
+      $("#infoTitle").textContent = title;
+      $("#infoBody").textContent = body;
+      $("#infoOverlay").classList.add("show");
+    }
+    $("#closeInfo").addEventListener("click", ()=> $("#infoOverlay").classList.remove("show"));
+    $("#infoOverlay").addEventListener("click", (e)=>{
+      if(e.target.id === "infoOverlay") $("#infoOverlay").classList.remove("show");
+    });
+
+    $("#eyeInfoBtn").addEventListener("click", ()=>{
+      const x = roleState.picks.eye;
+      if(!x) return toast("先选一个眼型");
+      openInfo("眼型 · " + x.k, x.d);
+    });
+    $("#hairInfoBtn").addEventListener("click", ()=>{
+      const x = roleState.picks.hair;
+      if(!x) return toast("先选一个头发长度");
+      openInfo("头发长度 · " + x.k, x.d);
+    });
+    $("#bustInfoBtn").addEventListener("click", ()=>{
+      const x = roleState.picks.bust;
+      if(!x) return toast("先选一个程度");
+      openInfo("胸部 · " + x.k, x.d);
+    });
+    $("#scentInfoBtn").addEventListener("click", ()=>{
+      const x = roleState.picks.scent;
+      if(!x) return toast("先选一个体香");
+      openInfo("体香 · " + x.k, x.d);
+    });
+
+    /***********************
+     * 形象生成：本地随机 / AI
+     ***********************/
     function defaultFemaleDetails(){
       return [
         "肤色白",
@@ -1575,10 +1662,9 @@
       const age = $("#age").value.trim();
       const height = $("#height").value.trim();
       const gender = roleState.gender;
-
       const picks = roleState.picks;
-      const parts = [];
 
+      const parts = [];
       parts.push(`姓名：${name}`);
       if(age) parts.push(`年龄：${age}`);
       if(height) parts.push(`身高：${height}cm`);
@@ -1589,11 +1675,10 @@
       }
 
       if(picks.eye) parts.push(`眼型：${picks.eye.k}（${picks.eye.d}）`);
-      if(picks.hair) parts.push(`头发长度：${picks.hair.k}（${picks.hair.d}）`);
+      if(picks.hair) parts.push(`头发：${picks.hair.k}（${picks.hair.d}）`);
       if(picks.bust) parts.push(`胸部：${picks.bust.k}（${picks.bust.d}）`);
       if(picks.scent) parts.push(`体香：${picks.scent.k}（${picks.scent.d}）`);
 
-      // add a "portrait paragraph"
       const vibe = [];
       if(picks.eye) vibe.push(picks.eye.k);
       if(picks.hair) vibe.push(picks.hair.k);
@@ -1612,9 +1697,8 @@
 
     async function buildAIProfile(){
       const s = getSettings();
-      if(!s.apiBase || !s.apiKey || !s.model){
-        throw new Error("请先在悬浮球里配置 API Base / Key / 模型");
-      }
+      if(!s.apiBase || !s.apiKey) throw new Error("请先在悬浮球“接口”里配置接口地址与密钥");
+      if(!s.model) throw new Error("请先在悬浮球“模型”里刷新并选择模型");
 
       const name = $("#name").value.trim();
       const age = $("#age").value.trim();
@@ -1622,8 +1706,7 @@
       const gender = roleState.gender;
       const picks = roleState.picks;
 
-      const words = Math.max(120, Math.min(3000, parseInt($("#words").value || "400", 10) || 400));
-      // rough mapping: 1 token ~ 0.75 word for Chinese varies; just keep safe
+      const words = Math.max(120, Math.min(3000, parseInt($("#words").value || "420", 10) || 420));
       const max_tokens = Math.max(256, Math.min(2048, Math.floor(words * 1.2)));
 
       const baseFacts = [
@@ -1633,7 +1716,7 @@
         `性别：${gender}`,
         gender==="女" ? ("默认细节：" + defaultFemaleDetails().join("、")) : "",
         picks.eye ? `眼型：${picks.eye.k}` : "",
-        picks.hair ? `头发长度：${picks.hair.k}` : "",
+        picks.hair ? `头发：${picks.hair.k}` : "",
         picks.bust ? `胸部：${picks.bust.k}` : "",
         picks.scent ? `体香：${picks.scent.k}` : ""
       ].filter(Boolean).join("\n");
@@ -1642,7 +1725,7 @@
       const user = [
         "请根据以下选项，生成“角色形象资料”。要求：",
         "1) 中文输出；2) 不要提到“我作为AI”；3) 结构清晰（分段/要点）；",
-        "4) 风格偏女性向时（性别为女）强调氛围、细节与魅力表现，但避免低俗露骨；",
+        "4) 女性向（性别为女）强调氛围、细节与魅力表现，但避免低俗露骨；",
         `5) 大约 ${words} 字左右。`,
         "",
         "选项：",
@@ -1665,13 +1748,30 @@
       });
     }
 
-    function getRoles(){
-      return load(S.roles, []);
+    async function generateIntoProfile(){
+      const name = $("#name").value.trim();
+      if(!name) return toast("请先填写名称");
+      try{
+        if(roleState.genMode === "ai"){
+          toast("AI 生成中…");
+          const text = await buildAIProfile();
+          $("#profile").value = text;
+          toast("已生成");
+        }else{
+          $("#profile").value = buildLocalProfile();
+          toast("已生成");
+        }
+      }catch(e){
+        toast(e?.message || String(e));
+      }
     }
-    function setRoles(list){
-      save(S.roles, list);
-      return list;
-    }
+    $("#btnGenerate").addEventListener("click", generateIntoProfile);
+
+    /***********************
+     * 角色保存/管理
+     ***********************/
+    function getRoles(){ return load(S.roles, []); }
+    function setRoles(list){ save(S.roles, list); return list; }
 
     function renderRoleGrid(){
       const roles = getRoles();
@@ -1679,20 +1779,19 @@
       const grid = $("#roleGrid");
       grid.innerHTML = "";
 
-      roles.forEach((r, idx)=>{
+      roles.forEach((r)=>{
         const tile = document.createElement("div");
         tile.className = "role-tile";
         tile.innerHTML = `
           <div class="avatar" data-id="${r.id}">
             ${r.avatar ? `<img alt="avatar" src="${r.avatar}">` : `<div class="plus">+</div>`}
           </div>
-          <div class="role-name">${r.name || ("角色"+(idx+1))}</div>
+          <div class="role-name">${r.name || "角色"}</div>
         `;
 
         const avatar = tile.querySelector(".avatar");
         avatar.addEventListener("click", async (e)=>{
           e.stopPropagation();
-          // upload avatar
           const input = document.createElement("input");
           input.type = "file";
           input.accept = "image/*";
@@ -1720,8 +1819,6 @@
 
         grid.appendChild(tile);
       });
-
-      // if empty, keep blank (as you asked)
     }
 
     function openRoleDetail(id){
@@ -1757,23 +1854,13 @@
       if(!name) return toast("请填写名称");
 
       let profileText = ($("#profile").value || "").trim();
-
-      // If empty or user wants generation, we generate now and fill in
       if(!profileText){
-        try{
-          if(roleState.genMode === "ai"){
-            toast("AI 生成中…");
-            profileText = await buildAIProfile();
-          }else{
-            profileText = buildLocalProfile();
-          }
-          $("#profile").value = profileText;
-        }catch(e){
-          return toast(e?.message || String(e));
-        }
+        // 如果空，就按当前生成方式自动生成一次
+        await generateIntoProfile();
+        profileText = ($("#profile").value || "").trim();
+        if(!profileText) return;
       }
 
-      // Save role
       const roles = getRoles();
       const newRole = {
         id: uid(),
@@ -1789,41 +1876,48 @@
       roles.unshift(newRole);
       setRoles(roles);
       renderRoleGrid();
-
-      // back to screen1
       showScreen("s1");
       toast("已创建角色");
     });
 
     /***********************
-     * Init: load theme, bg, settings, fonts, models
+     * 初始化
      ***********************/
     (function init(){
-      // theme defaults reflect your preference: #adcdea + #ffffff
-      const presets = load(S.themePresets, []);
-      // apply last used theme if exists in settings store? (we just use CSS vars)
-      // We'll restore by reading inputs saved in presets? simplest: keep current CSS as default.
+      // 默认主题输入框
       $("#accent").value = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#adcdea";
       $("#bg").value = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
 
-      // bg
+      // 背景图
       const bg = load(S.bg, null);
       if(bg?.dataUrl) setBgImage(bg.dataUrl);
 
-      // settings
+      // 表单
       fillApiForm();
-      renderModelChips();
+
+      // 模型：先用缓存渲染一版
+      const cache = getModelsCache();
+      renderModelChips(cache.models || []);
+      $("#modelFetchTip").textContent = cache.models?.length
+        ? `已加载缓存模型列表：${cache.models.length} 个（建议点“刷新模型列表”更新）`
+        : "未拉取。请先在“接口”页填接口地址和密钥，然后点“刷新模型列表”。";
+
+      // 温度
+      const s = getSettings();
+      $("#temp").value = String(s.temperature ?? 0.2);
+      $("#curModelText").textContent = s.model || "未选择";
+
+      // 主题列表
       renderPresets();
+
+      // 字体
       renderFontChips();
       restoreFont();
 
-      // initial gender selection
+      // 初始选择
       selectGender("女");
       setPickDesc();
-
-      // set initial temp
-      const s = getSettings();
-      $("#temp").value = String(s.temperature ?? 0.2);
+      $("#words").value = "420";
     })();
   </script>
 </body>
