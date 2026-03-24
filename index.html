@@ -2,1091 +2,900 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Pure Float UI</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pure Page</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --main:#adcdea;
-  --white:#ffffff;
-  --text:#243746;
-  --sub:#6d8598;
-  --bg:#f5f9fc;
-  --line:#dbe8f2;
-  --radius:18px;
-  --font-body:"Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --c1:#adcdea;--c2:#ffffff;
+  --bg:#f4f8fc;--text:#1e3244;--sub:#5e7f96;
+  --line:#dde9f2;--card:rgba(255,255,255,.85);
+  --r:18px;
+  --font:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  --sT:env(safe-area-inset-top,0px);
+  --sB:env(safe-area-inset-bottom,0px);
 }
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:var(--font-body);
-  background:linear-gradient(180deg,#ffffff 0%,#adcdea22 100%);
+  font-family:var(--font);
   color:var(--text);
-  min-height:100vh;
-  min-height:100dvh;
+  background:var(--bg);
+  min-height:100vh;min-height:100dvh;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
   background-size:cover;
   background-position:center;
+  background-attachment:fixed;
   background-repeat:no-repeat;
-  overflow-x:hidden;
-  -webkit-tap-highlight-color:transparent;
 }
-body.has-bg::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:var(--bg-image) center/cover no-repeat;
-  z-index:-3;
-}
-body.has-bg::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:rgba(255,255,255,.28);
-  backdrop-filter:blur(var(--bg-blur,0px));
-  -webkit-backdrop-filter:blur(var(--bg-blur,0px));
-  z-index:-2;
-}
-#app{
-  max-width:720px;
-  margin:0 auto;
-  min-height:100vh;
-  min-height:100dvh;
-  padding:calc(28px + var(--safe-top)) 18px calc(100px + var(--safe-bottom));
-}
-.hero{
-  padding:34px 24px;
-  border-radius:24px;
-  background:linear-gradient(135deg, rgba(173,205,234,.8), rgba(255,255,255,.95));
-  border:1px solid rgba(255,255,255,.7);
-  box-shadow:0 10px 30px rgba(173,205,234,.18);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
-.hero h1{
-  font-size:1.7rem;
-  margin-bottom:8px;
-  letter-spacing:.02em;
-}
-.hero p{
-  color:var(--sub);
-  line-height:1.8;
-  font-size:.95rem;
-}
-.section-title{
-  margin:26px 4px 12px;
-  font-size:1rem;
-  font-weight:600;
-}
-.card{
-  background:rgba(255,255,255,.82);
-  border:1px solid rgba(255,255,255,.72);
-  border-radius:20px;
-  padding:20px 18px;
-  margin-bottom:12px;
-  box-shadow:0 8px 22px rgba(36,55,70,.05);
+body.hasBg #app{
+  background:rgba(255,255,255,.72);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
 }
-.card h3{
-  font-size:1rem;
-  margin-bottom:8px;
+#app{
+  max-width:680px;margin:0 auto;
+  min-height:100vh;min-height:100dvh;
+  padding:calc(26px + var(--sT)) 16px calc(90px + var(--sB));
+  transition:background .3s;
 }
-.card p{
-  font-size:.9rem;
-  color:var(--sub);
-  line-height:1.8;
+.hero{
+  background:linear-gradient(135deg,rgba(173,205,234,.7),rgba(255,255,255,.9));
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:22px;
+  padding:32px 22px;
+  box-shadow:0 8px 28px rgba(173,205,234,.15);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  position:relative;overflow:hidden;
 }
-.footer{
-  text-align:center;
-  color:#90a6b7;
-  font-size:.78rem;
-  margin-top:28px;
+.hero::after{
+  content:'';position:absolute;width:180px;height:180px;
+  top:-40px;right:-40px;border-radius:50%;
+  background:rgba(255,255,255,.18);pointer-events:none;
 }
+.hero h1{font-size:1.65rem;position:relative;z-index:1;margin-bottom:6px}
+.hero p{color:var(--sub);line-height:1.8;font-size:.92rem;position:relative;z-index:1}
+.secTitle{font-size:.98rem;font-weight:600;margin:24px 4px 12px}
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:var(--r);
+  padding:18px;margin-bottom:10px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 4px 16px rgba(30,50,68,.04);
+}
+.card h3{font-size:.96rem;margin-bottom:6px}
+.card p{font-size:.88rem;color:var(--sub);line-height:1.75}
+.foot{text-align:center;color:#9cb5c6;font-size:.76rem;margin-top:24px}
 
-/* ===== 虚拟悬浮球 ===== */
-#assistiveBall{
-  position:fixed;
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  z-index:9999;
-  background:rgba(35,35,35,.18);
-  backdrop-filter:blur(18px) saturate(160%);
-  -webkit-backdrop-filter:blur(18px) saturate(160%);
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 8px 30px rgba(0,0,0,.08);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  touch-action:none;
-  user-select:none;
-  -webkit-user-select:none;
-  transition:transform .18s ease, opacity .25s ease, box-shadow .25s ease;
-}
-#assistiveBall::before{
-  content:"";
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  box-shadow:
-    inset 0 1px 2px rgba(255,255,255,.45),
-    0 0 0 1px rgba(255,255,255,.08);
-}
-#assistiveBall.tap{
-  transform:scale(.92);
-}
-#assistiveBall.dragging{
-  transform:scale(1.06);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.2),
-    0 14px 36px rgba(0,0,0,.14);
-}
-
-/* ===== 菜单按钮 ===== */
-#menuLayer{
-  position:fixed;
-  inset:0;
-  z-index:9997;
-  pointer-events:none;
-}
-.menuBtn{
-  position:absolute;
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  background:rgba(255,255,255,.54);
-  backdrop-filter:blur(16px) saturate(160%);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  border:1px solid rgba(255,255,255,.72);
-  box-shadow:0 8px 24px rgba(0,0,0,.08);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform:scale(.4);
-  opacity:0;
-  pointer-events:none;
-  transition:transform .28s cubic-bezier(.22,1.2,.36,1), opacity .2s ease;
-}
-.menuBtn.show{
-  transform:scale(1);
-  opacity:1;
-  pointer-events:auto;
-}
-.menuBtn svg{
-  width:20px;
-  height:20px;
-  stroke:#375064;
-  opacity:.8;
-}
-
-/* ===== 遮罩 ===== */
-#overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(25,35,45,.18);
-  backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
-  z-index:9990;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .25s ease;
-}
-#overlay.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-/* ===== 面板 ===== */
-.panel{
-  position:fixed;
-  left:0;right:0;bottom:0;
-  z-index:9995;
-  background:rgba(255,255,255,.95);
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
-  border-radius:24px 24px 0 0;
-  transform:translateY(100%);
-  transition:transform .32s cubic-bezier(.2,.8,.2,1);
-  max-height:90vh;
-  max-height:90dvh;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 -10px 40px rgba(0,0,0,.08);
-  padding-bottom:var(--safe-bottom);
-}
-.panel.show{transform:translateY(0)}
-.panel-bar{
-  width:38px;height:4px;border-radius:4px;
-  background:#d8e6f1;margin:10px auto 0;
-}
-.panel-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 18px 12px;
-  border-bottom:1px solid #edf3f8;
-}
-.panel-head h2{
-  font-size:1rem;
-}
-.closeBtn{
-  width:30px;height:30px;border:none;
-  border-radius:50%;
-  background:#eef4f8;
-  display:flex;align-items:center;justify-content:center;
-}
-.closeBtn svg{width:14px;height:14px;stroke:#6d8598}
-.panel-body{
-  overflow:auto;
-  padding:18px;
-  -webkit-overflow-scrolling:touch;
-}
-.panel-body::-webkit-scrollbar{display:none}
-
-/* 表单 */
-.form-group{margin-bottom:16px}
-.label{
-  display:block;
-  font-size:.8rem;
-  color:var(--sub);
-  margin-bottom:6px;
-}
-.input,.select,textarea{
-  width:100%;
-  border:none;
-  outline:none;
-  background:#f5f9fc;
-  border:1px solid #e3edf5;
-  color:var(--text);
-  border-radius:12px;
-  min-height:44px;
-  padding:0 14px;
-  font-family:inherit;
-  font-size:.92rem;
-}
-textarea{
-  min-height:100px;
-  padding:12px 14px;
-  resize:none;
-}
-.row{display:flex;gap:8px}
-.btn{
-  border:none;
-  min-height:42px;
-  border-radius:12px;
-  padding:0 16px;
-  font-family:inherit;
-  font-size:.88rem;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#f0f6fb;
-  color:var(--text);
-}
-.btn.primary{background:var(--main)}
-.btn.danger{background:#fdeceb;color:#bd3d31}
-.btn.full{width:100%}
-
-.config-item,.font-item{
-  background:#f6fafc;
-  border:1px solid #e5edf4;
-  border-radius:14px;
-  padding:12px 14px;
-  margin-bottom:8px;
-}
-.config-item.active,.font-item.active{
-  border-color:#adcdea;
-  background:#edf6fd;
-}
-.config-top{
-  display:flex;align-items:center;gap:8px;
-}
-.config-name{font-size:.9rem;font-weight:600;flex:1}
-.config-model{font-size:.78rem;color:var(--sub)}
-.config-actions{
-  display:flex;gap:8px;margin-top:10px;
-}
-.smallBtn{
-  border:none;
-  background:#ffffff;
-  border-radius:10px;
-  height:34px;
-  padding:0 12px;
-  font-size:.8rem;
-  color:#476073;
-  border:1px solid #e5edf4;
-}
-.font-item{
+/* ===== Ball ===== */
+#ball{
+  position:fixed;z-index:10000;
+  width:54px;height:54px;border-radius:50%;
+  touch-action:none;user-select:none;-webkit-user-select:none;
   cursor:pointer;
+  background:rgba(40,40,40,.15);
+  backdrop-filter:blur(20px) saturate(1.6);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 4px 20px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .6s,transform .15s;
 }
-.uploadBox{
-  position:relative;
-  border:1.5px dashed #d9e7f1;
-  background:#f9fcfe;
-  border-radius:16px;
-  padding:26px 16px;
-  text-align:center;
-}
-.uploadBox input{
-  position:absolute;
-  inset:0;
-  opacity:0;
-}
-.uploadBox p{
-  color:var(--sub);
-  font-size:.86rem;
-  line-height:1.7;
-}
-.bgPreview{
-  width:100%;
-  aspect-ratio:16/10;
-  border-radius:16px;
-  overflow:hidden;
-  background:#f4f8fb;
-  margin-bottom:14px;
-  border:1px solid #e7eef5;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--sub);
-  font-size:.85rem;
-}
-.bgPreview img{width:100%;height:100%;object-fit:cover}
-
-.chatBox{
-  min-height:180px;
-  max-height:48vh;
-  overflow:auto;
-  margin-bottom:14px;
-}
-.chatBox::-webkit-scrollbar{display:none}
-.msg{
-  max-width:88%;
-  padding:12px 14px;
-  border-radius:16px;
-  margin-bottom:10px;
-  font-size:.88rem;
-  line-height:1.7;
-  word-break:break-word;
-}
-.msg.user{
-  margin-left:auto;
-  background:#dcecf8;
-  border-bottom-right-radius:6px;
-}
-.msg.bot{
-  background:#f4f8fb;
-  border-bottom-left-radius:6px;
-}
-.msg.error{
-  background:#fdeceb;
-  color:#ba3c31;
-}
-.sendRow{
-  display:flex;
-  gap:8px;
-}
-.sendRow .input{flex:1}
-
-#toast{
-  position:fixed;
-  left:50%;
-  top:calc(14px + var(--safe-top));
-  transform:translateX(-50%) translateY(-10px);
-  background:rgba(23,31,38,.86);
-  color:#fff;
-  font-size:.84rem;
-  padding:10px 18px;
-  border-radius:12px;
-  z-index:10000;
-  opacity:0;
-  transition:.25s ease;
+#ball .dot{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 3px rgba(255,255,255,.4);
   pointer-events:none;
-  white-space:nowrap;
 }
-#toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
+#ball.idle{opacity:.4}
+#ball.pressing{transform:scale(.88);opacity:1}
+#ball.dragging{transform:scale(1.08);opacity:1;
+  box-shadow:0 10px 32px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.2)}
+
+/* ===== Menu ===== */
+#menuBg{
+  position:fixed;inset:0;z-index:9996;
+  display:none;
 }
+#menuBg.show{display:block}
+.mi{
+  position:fixed;z-index:9998;
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:0 6px 20px rgba(0,0,0,.07);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(.3);
+  pointer-events:none;
+  transition:all .25s cubic-bezier(.175,.885,.32,1.275);
+}
+.mi.show{opacity:1;transform:scale(1);pointer-events:auto}
+.mi:active{transform:scale(.9)!important;background:rgba(173,205,234,.5)}
+.mi svg{width:19px;height:19px;stroke:var(--text);stroke-width:1.8;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+
+/* ===== Overlay ===== */
+#ov{
+  position:fixed;inset:0;z-index:9990;
+  background:rgba(15,25,35,.2);
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+#ov.show{opacity:1;pointer-events:auto}
+
+/* ===== Panel ===== */
+.pn{
+  position:fixed;left:0;right:0;bottom:0;z-index:9994;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:22px 22px 0 0;
+  max-height:88vh;max-height:88dvh;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:0 -6px 30px rgba(0,0,0,.07);
+  padding-bottom:var(--sB);
+}
+.pn.show{transform:translateY(0)}
+.pnBar{width:36px;height:4px;border-radius:4px;background:#d4e2ed;margin:10px auto 0}
+.pnH{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 10px;border-bottom:1px solid #edf3f8;flex-shrink:0;
+}
+.pnH h2{font-size:1rem;font-weight:600}
+.pnX{
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:#edf3f8;display:flex;align-items:center;justify-content:center;
+}
+.pnX svg{width:13px;height:13px;stroke:#6d8598;stroke-width:2.5;fill:none;
+  stroke-linecap:round}
+.pnB{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 18px 22px;
+}
+.pnB::-webkit-scrollbar{display:none}
+
+/* ===== Form ===== */
+.fg{margin-bottom:14px}
+.lb{display:block;font-size:.78rem;color:var(--sub);margin-bottom:5px;font-weight:500}
+.ip{
+  width:100%;height:44px;border-radius:11px;
+  border:1.5px solid var(--line);background:#f6fafd;
+  padding:0 14px;font-size:.9rem;color:var(--text);
+  font-family:inherit;outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .2s;
+}
+.ip:focus{border-color:var(--c1)}
+select.ip{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235e7f96' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
+.rw{display:flex;gap:8px}
+.bt{
+  height:42px;border-radius:11px;border:none;
+  padding:0 18px;font-size:.86rem;font-weight:500;
+  font-family:inherit;display:flex;align-items:center;justify-content:center;
+  background:#edf4f9;color:var(--text);cursor:pointer;
+  transition:transform .12s;
+}
+.bt:active{transform:scale(.96)}
+.bt.p{background:var(--c1)}
+.bt.d{background:#fdecea;color:#b73a2e}
+.bt.f{width:100%}
+.bt.s{height:34px;font-size:.8rem;padding:0 12px;border-radius:9px}
+
+/* Config items */
+.ci{
+  background:#f5f9fc;border:1.5px solid #e5edf4;
+  border-radius:14px;padding:12px 14px;margin-bottom:8px;
+}
+.ci.on{border-color:var(--c1);background:#eaf3fb}
+.ciTop{display:flex;align-items:center;gap:6px}
+.ciN{flex:1;font-size:.9rem;font-weight:600}
+.ciM{font-size:.76rem;color:var(--sub)}
+.ciA{display:flex;gap:6px;margin-top:8px}
+
+/* Font items */
+.fi{
+  background:#f5f9fc;border:1.5px solid #e5edf4;
+  border-radius:14px;padding:14px;margin-bottom:8px;
+  cursor:pointer;transition:border-color .2s;
+  position:relative;
+}
+.fi.on{border-color:var(--c1);background:#eaf3fb}
+.fi .fn{font-size:.9rem;margin-bottom:4px}
+.fi .fp{font-size:.82rem;color:var(--sub)}
+.fi .ck{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;border-radius:50%;
+  background:var(--c1);
+  display:none;align-items:center;justify-content:center;
+}
+.fi.on .ck{display:flex}
+.fi .ck svg{width:12px;height:12px;stroke:#fff;stroke-width:3;fill:none;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* Upload */
+.upBox{
+  position:relative;border:1.5px dashed #d0dfeb;
+  background:#f9fcfe;border-radius:14px;padding:24px 14px;
+  text-align:center;cursor:pointer;
+  transition:border-color .2s;
+}
+.upBox:active{border-color:var(--c1)}
+.upBox input[type=file]{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;cursor:pointer;font-size:0;
+}
+.upBox p{color:var(--sub);font-size:.84rem;line-height:1.6}
+
+/* BG preview */
+.bgPv{
+  width:100%;aspect-ratio:16/10;border-radius:14px;overflow:hidden;
+  background:#f0f5f9;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--sub);font-size:.84rem;border:1px solid #e5edf4;
+}
+.bgPv img{width:100%;height:100%;object-fit:cover}
+
+/* Chat */
+.chatWrap{min-height:160px;max-height:46vh;overflow-y:auto;margin-bottom:12px}
+.chatWrap::-webkit-scrollbar{display:none}
+.cm{
+  max-width:86%;padding:11px 14px;border-radius:14px;
+  margin-bottom:10px;font-size:.88rem;line-height:1.7;word-break:break-word;
+}
+.cm.u{margin-left:auto;background:#daeaf6;border-bottom-right-radius:5px}
+.cm.b{background:#f0f5f9;border-bottom-left-radius:5px}
+.cm.e{background:#fdecea;color:#b73a2e}
+
+/* Toast */
+#toast{
+  position:fixed;left:50%;top:calc(14px + var(--sT));
+  transform:translateX(-50%) translateY(-14px);
+  background:rgba(20,30,40,.88);color:#fff;
+  padding:9px 20px;border-radius:11px;font-size:.82rem;
+  z-index:99999;opacity:0;pointer-events:none;
+  transition:.25s;white-space:nowrap;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 .spin{
-  width:18px;height:18px;border-radius:50%;
-  border:2px solid #d8e5ef;
-  border-top-color:#537086;
-  animation:spin .7s linear infinite;
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid #d4e2ed;border-top-color:#4a7085;
+  animation:sp .6s linear infinite;display:inline-block;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:6px;border-radius:3px;
+  background:#e0ecf3;outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:22px;height:22px;border-radius:50%;
+  background:#fff;border:2px solid var(--c1);
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
 </style>
 </head>
 <body>
 
 <div id="app">
   <div class="hero">
-    <h1>纯净网页</h1>
-    <p>页面采用 #adcdea 与 #ffffff 的轻柔配色，悬浮虚拟球可以管理 API、字体、背景和 AI 样式美化。</p>
+    <h1>Pure Page</h1>
+    <p>轻柔的蓝白配色，通过悬浮虚拟球管理 API、字体、背景与 AI 美化。</p>
   </div>
-
-  <div class="section-title">内容区域</div>
-
-  <div class="card">
-    <h3>透明感设计</h3>
-    <p>界面使用浅蓝与白色构建，整体轻盈、干净，适合在手机浏览器中操作与管理。</p>
-  </div>
-
-  <div class="card">
-    <h3>字体自由切换</h3>
-    <p>内置宋体风格、霞鹜文楷、思源黑体等开源字体，支持后续上传 TTF 文件直接应用。</p>
-  </div>
-
-  <div class="card">
-    <h3>AI 一键美化</h3>
-    <p>配置模型后，可以通过自然语言直接改变网页布局、阴影、色彩、卡片风格等效果。</p>
-  </div>
-
-  <div class="card">
-    <h3>背景图替换</h3>
-    <p>可上传图片作为背景图，搭配半透明内容层，让页面更有空间感。</p>
-  </div>
-
-  <div class="footer">MoPage · Pure Floating UI</div>
+  <div class="secTitle">内容</div>
+  <div class="card"><h3>透明感设计</h3><p>干净轻盈的界面，专注内容本身，所有风格均可通过 AI 实时调整。</p></div>
+  <div class="card"><h3>字体定制</h3><p>内置霞鹜文楷、思源宋体等开源字体，也支持上传你自己的 TTF 字体文件。</p></div>
+  <div class="card"><h3>智能美化</h3><p>接入 AI 大模型，用自然语言描述想要的视觉效果，自动生成并应用。</p></div>
+  <div class="card"><h3>背景图片</h3><p>上传图片作为背景，搭配半透明内容层，打造专属空间。</p></div>
+  <div class="foot">MoPage</div>
 </div>
 
 <!-- 悬浮球 -->
-<div id="assistiveBall" aria-label="menu"></div>
+<div id="ball"><div class="dot"></div></div>
 
-<!-- 菜单层 -->
-<div id="menuLayer">
-  <div class="menuBtn" data-panel="apiPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="4" width="18" height="6" rx="2"></rect>
-      <rect x="3" y="14" width="18" height="6" rx="2"></rect>
-    </svg>
-  </div>
-  <div class="menuBtn" data-panel="fontPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 20h14"></path><path d="M8 20l4-14 4 14"></path><path d="M9.8 14h4.4"></path>
-    </svg>
-  </div>
-  <div class="menuBtn" data-panel="bgPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="4" width="18" height="16" rx="3"></rect>
-      <circle cx="8.5" cy="9" r="1.8"></circle>
-      <path d="M21 16l-5-5-8 9"></path>
-    </svg>
-  </div>
-  <div class="menuBtn" data-panel="aiPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3l1.6 4.8L18.5 9.5l-4.9 1.7L12 16l-1.6-4.8L5.5 9.5l4.9-1.7L12 3z"></path>
-    </svg>
+<!-- 菜单背景 -->
+<div id="menuBg"></div>
+
+<!-- 四个菜单按钮 -->
+<div class="mi" id="mi0">
+  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>
+</div>
+<div class="mi" id="mi1">
+  <svg viewBox="0 0 24 24"><path d="M5 20h14"/><path d="M8 20l4-14 4 14"/><path d="M9.5 14h5"/></svg>
+</div>
+<div class="mi" id="mi2">
+  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>
+</div>
+<div class="mi" id="mi3">
+  <svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+</div>
+
+<div id="ov"></div>
+
+<!-- API 面板 -->
+<div class="pn" id="pnApi">
+  <div class="pnBar"></div>
+  <div class="pnH"><h2>API 配置</h2><button class="pnX" data-close><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="pnB">
+    <div id="cfgList"></div>
+    <div class="fg"><label class="lb">配置名称</label><input class="ip" id="cN" placeholder="例如：中转站A"></div>
+    <div class="fg"><label class="lb">Base URL</label><input class="ip" id="cU" placeholder="https://api.example.com"></div>
+    <div class="fg"><label class="lb">API Key</label><input class="ip" id="cK" type="password" placeholder="sk-..."></div>
+    <div class="fg">
+      <label class="lb">模型</label>
+      <div class="rw"><input class="ip" id="cM" placeholder="gpt-4o" style="flex:1"><button class="bt s" id="fetchBtn">抓取</button></div>
+      <select class="ip" id="cSel" style="display:none;margin-top:8px"></select>
+    </div>
+    <button class="bt p f" id="saveCfgBtn">保存配置</button>
+    <input type="hidden" id="editId" value="">
   </div>
 </div>
 
-<div id="overlay"></div>
-
-<!-- API -->
-<div class="panel" id="apiPanel">
-  <div class="panel-bar"></div>
-  <div class="panel-head">
-    <h2>API 配置</h2>
-    <button class="closeBtn" onclick="closePanel()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"></path>
-      </svg>
-    </button>
-  </div>
-  <div class="panel-body">
-    <div id="configList"></div>
-
-    <div class="form-group">
-      <label class="label">配置名称</label>
-      <input class="input" id="cfgName" placeholder="例如：中转站 A">
-    </div>
-    <div class="form-group">
-      <label class="label">Base URL</label>
-      <input class="input" id="cfgUrl" placeholder="https://api.example.com">
-    </div>
-    <div class="form-group">
-      <label class="label">API Key</label>
-      <input class="input" id="cfgKey" type="password" placeholder="sk-...">
-    </div>
-    <div class="form-group">
-      <label class="label">模型</label>
-      <div class="row">
-        <input class="input" id="cfgModel" placeholder="gpt-4o-mini" style="flex:1">
-        <button class="btn" onclick="fetchModels()">抓取</button>
-      </div>
-      <select class="select" id="cfgModelSelect" style="display:none;margin-top:8px" onchange="document.getElementById('cfgModel').value=this.value"></select>
-    </div>
-    <button class="btn primary full" onclick="saveConfig()">保存配置</button>
-    <div id="editingId" style="display:none"></div>
-  </div>
-</div>
-
-<!-- 字体 -->
-<div class="panel" id="fontPanel">
-  <div class="panel-bar"></div>
-  <div class="panel-head">
-    <h2>字体设置</h2>
-    <button class="closeBtn" onclick="closePanel()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"></path>
-      </svg>
-    </button>
-  </div>
-  <div class="panel-body">
-    <div id="fontList"></div>
-    <div class="uploadBox">
-      <input type="file" id="fontUpload" accept=".ttf,.otf,.woff,.woff2">
-      <p>点击上传字体文件<br>支持 TTF / OTF / WOFF / WOFF2</p>
-    </div>
-    <div id="userFontList" style="margin-top:14px"></div>
-  </div>
-</div>
-
-<!-- 背景 -->
-<div class="panel" id="bgPanel">
-  <div class="panel-bar"></div>
-  <div class="panel-head">
-    <h2>背景设置</h2>
-    <button class="closeBtn" onclick="closePanel()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"></path>
-      </svg>
-    </button>
-  </div>
-  <div class="panel-body">
-    <div class="bgPreview" id="bgPreview">暂无背景图</div>
-    <div class="uploadBox">
-      <input type="file" id="bgUpload" accept="image/*">
-      <p>点击上传背景图片<br>支持 JPG / PNG / WebP</p>
-    </div>
-    <div class="form-group" style="margin-top:16px">
-      <label class="label">背景模糊</label>
-      <input type="range" min="0" max="20" value="0" id="blurRange" style="width:100%" oninput="setBgBlur(this.value)">
-    </div>
-    <button class="btn danger full" onclick="removeBg()">移除背景</button>
-  </div>
-</div>
-
-<!-- AI -->
-<div class="panel" id="aiPanel">
-  <div class="panel-bar"></div>
-  <div class="panel-head">
-    <h2>AI 美化</h2>
-    <button class="closeBtn" onclick="closePanel()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"></path>
-      </svg>
-    </button>
-  </div>
-  <div class="panel-body">
-    <div class="row" style="margin-bottom:12px">
-      <button class="btn primary" style="flex:1" onclick="quickBeautify()">一键美化</button>
-      <button class="btn" style="flex:1" onclick="resetAiCss()">重置样式</button>
-    </div>
-    <div class="chatBox" id="chatBox"></div>
-    <div class="sendRow">
-      <input class="input" id="aiInput" placeholder="描述你想要的页面风格...">
-      <button class="btn primary" onclick="sendAi()">发送</button>
-    </div>
-    <div id="apiHint" style="margin-top:10px;color:var(--sub);font-size:.82rem;text-align:center;display:none">
-      请先添加并启用 API 配置
+<!-- 字体面板 -->
+<div class="pn" id="pnFont">
+  <div class="pnBar"></div>
+  <div class="pnH"><h2>字体设置</h2><button class="pnX" data-close><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="pnB">
+    <div id="fList"></div>
+    <div class="secTitle" style="margin-top:6px">上传自定义字体</div>
+    <div class="upBox" id="fontUpBox">
+      <input type="file" accept=".ttf,.otf,.woff,.woff2" id="fontFile">
+      <p>点击选择字体文件<br>.ttf / .otf / .woff / .woff2</p>
     </div>
   </div>
 </div>
 
-<style id="aiStyleTag"></style>
+<!-- 背景面板 -->
+<div class="pn" id="pnBg">
+  <div class="pnBar"></div>
+  <div class="pnH"><h2>背景设置</h2><button class="pnX" data-close><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="pnB">
+    <div class="bgPv" id="bgPv">暂无背景图</div>
+    <div class="upBox">
+      <input type="file" accept="image/*" id="bgFile">
+      <p>点击选择图片<br>JPG / PNG / WebP</p>
+    </div>
+    <div class="fg" style="margin-top:14px">
+      <label class="lb">内容层透明度</label>
+      <input type="range" min="40" max="98" value="72" id="alphaR">
+    </div>
+    <button class="bt d f" id="rmBgBtn" style="margin-top:10px">移除背景</button>
+  </div>
+</div>
+
+<!-- AI 面板 -->
+<div class="pn" id="pnAi" style="max-height:92vh;max-height:92dvh">
+  <div class="pnBar"></div>
+  <div class="pnH"><h2>AI 美化</h2><button class="pnX" data-close><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="pnB" style="display:flex;flex-direction:column">
+    <div class="rw" style="margin-bottom:10px">
+      <button class="bt p s" id="quickBtn" style="flex:1">一键美化</button>
+      <button class="bt s" id="resetCssBtn" style="flex:1">重置样式</button>
+    </div>
+    <div class="chatWrap" id="chatBox"></div>
+    <div class="rw">
+      <input class="ip" id="aiIp" placeholder="描述你想要的样式..." enterkeyhint="send">
+      <button class="bt p" id="sendBtn">发送</button>
+    </div>
+    <p id="apiWarn" style="text-align:center;color:var(--sub);font-size:.8rem;margin-top:8px;display:none">请先添加并启用 API</p>
+  </div>
+</div>
+
+<style id="aiCSS"></style>
 <div id="toast"></div>
 
 <script>
+/* ==================== 工具 ==================== */
 const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
 
-/* ===== Toast ===== */
-function toast(msg,time=2200){
-  const t=$("toast");
-  t.textContent=msg;
-  t.classList.add("show");
-  clearTimeout(t._timer);
-  t._timer=setTimeout(()=>t.classList.remove("show"),time);
+function toast(m,t){
+  const el=$('toast');el.textContent=m;el.classList.add('show');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),t||2200);
 }
 
-/* ===== 简单存储 ===== */
-function getStore(key, fallback){
-  try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback}
+/* ==================== IndexedDB ==================== */
+const DB_NAME='PurePage';const DB_VER=1;
+function openDB(){
+  return new Promise((ok,no)=>{
+    const r=indexedDB.open(DB_NAME,DB_VER);
+    r.onupgradeneeded=e=>{
+      const db=e.target.result;
+      if(!db.objectStoreNames.contains('fonts'))db.createObjectStore('fonts',{keyPath:'name'});
+      if(!db.objectStoreNames.contains('data'))db.createObjectStore('data',{keyPath:'key'});
+    };
+    r.onsuccess=()=>ok(r.result);
+    r.onerror=()=>no(r.error);
+  });
 }
-function setStore(key,val){localStorage.setItem(key,JSON.stringify(val))}
+async function dbPut(store,obj){
+  const db=await openDB();
+  return new Promise((ok,no)=>{
+    const tx=db.transaction(store,'readwrite');
+    tx.objectStore(store).put(obj);
+    tx.oncomplete=ok;tx.onerror=no;
+  });
+}
+async function dbGet(store,key){
+  const db=await openDB();
+  return new Promise((ok,no)=>{
+    const tx=db.transaction(store);
+    const r=tx.objectStore(store).get(key);
+    r.onsuccess=()=>ok(r.result);r.onerror=no;
+  });
+}
+async function dbAll(store){
+  const db=await openDB();
+  return new Promise((ok,no)=>{
+    const tx=db.transaction(store);
+    const r=tx.objectStore(store).getAll();
+    r.onsuccess=()=>ok(r.result);r.onerror=no;
+  });
+}
+async function dbDel(store,key){
+  const db=await openDB();
+  return new Promise((ok,no)=>{
+    const tx=db.transaction(store,'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete=ok;tx.onerror=no;
+  });
+}
 
-/* ===== 悬浮球 ===== */
-const ball=$("assistiveBall");
-const menuBtns=[...document.querySelectorAll(".menuBtn")];
-let ballState={dragging:false,startX:0,startY:0,left:0,top:0,moved:false,open:false};
+/* ==================== 悬浮球 ==================== */
+const ball=$('ball');
+let bDrag=false,bMoved=false,bSX,bSY,bOX,bOY,idleTimer;
 
-function initBall(){
-  const saved=getStore("ballPos",null);
-  if(saved){
-    ball.style.left=saved.left+"px";
-    ball.style.top=saved.top+"px";
-  }else{
-    ball.style.left=(window.innerWidth-72)+"px";
-    ball.style.top=(window.innerHeight*0.42)+"px";
+// 初始位置
+const bPos=JSON.parse(localStorage.getItem('bPos')||'null');
+if(bPos){ball.style.left=bPos.x+'px';ball.style.top=bPos.y+'px'}
+else{ball.style.left=(window.innerWidth-68)+'px';ball.style.top=Math.round(window.innerHeight*.4)+'px'}
+
+function ballSnap(){
+  const r=ball.getBoundingClientRect();
+  const cx=r.left+27;
+  const tx=cx<window.innerWidth/2?8:window.innerWidth-62;
+  const ty=Math.max(8,Math.min(window.innerHeight-62,r.top));
+  ball.style.transition='left .28s,top .28s';
+  ball.style.left=tx+'px';ball.style.top=ty+'px';
+  localStorage.setItem('bPos',JSON.stringify({x:tx,y:ty}));
+  setTimeout(()=>{ball.style.transition='opacity .6s,transform .15s'},300);
+  startIdle();
+}
+
+function startIdle(){
+  clearTimeout(idleTimer);
+  ball.classList.remove('idle');
+  idleTimer=setTimeout(()=>ball.classList.add('idle'),3000);
+}
+startIdle();
+
+ball.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  const t=e.touches[0];
+  const r=ball.getBoundingClientRect();
+  bDrag=true;bMoved=false;
+  bSX=t.clientX;bSY=t.clientY;
+  bOX=r.left;bOY=r.top;
+  ball.classList.remove('idle');
+  ball.classList.add('pressing');
+  clearTimeout(idleTimer);
+},{passive:false});
+
+ball.addEventListener('touchmove',function(e){
+  e.preventDefault();
+  if(!bDrag)return;
+  const t=e.touches[0];
+  const dx=t.clientX-bSX,dy=t.clientY-bSY;
+  if(Math.abs(dx)>6||Math.abs(dy)>6)bMoved=true;
+  if(bMoved){
+    ball.classList.remove('pressing');
+    ball.classList.add('dragging');
+    let nx=bOX+dx,ny=bOY+dy;
+    nx=Math.max(0,Math.min(window.innerWidth-54,nx));
+    ny=Math.max(0,Math.min(window.innerHeight-54,ny));
+    ball.style.left=nx+'px';ball.style.top=ny+'px';
+    if(menuIsOpen)posMenu();
   }
-}
-initBall();
+},{passive:false});
 
-function snapBall(){
-  const rect=ball.getBoundingClientRect();
-  const targetLeft=(rect.left+rect.width/2<window.innerWidth/2)?10:(window.innerWidth-68);
-  let targetTop=Math.max(10, Math.min(window.innerHeight-68, rect.top));
-  ball.style.left=targetLeft+"px";
-  ball.style.top=targetTop+"px";
-  setStore("ballPos",{left:targetLeft,top:targetTop});
-}
+ball.addEventListener('touchend',function(e){
+  e.preventDefault();
+  ball.classList.remove('pressing','dragging');
+  if(!bMoved){
+    toggleMenu();
+  }else{
+    ballSnap();
+  }
+  bDrag=false;
+},{passive:false});
 
-function placeMenu(){
-  const rect=ball.getBoundingClientRect();
-  const leftSide=rect.left < window.innerWidth/2;
-  const x=leftSide ? rect.right + 12 : rect.left - 60;
-  const startY=rect.top - 90;
-  menuBtns.forEach((btn,i)=>{
-    btn.style.left=x+"px";
-    btn.style.top=(startY + i*58)+"px";
+/* ==================== 菜单 ==================== */
+const mis=[$('mi0'),$('mi1'),$('mi2'),$('mi3')];
+const panels=['pnApi','pnFont','pnBg','pnAi'];
+let menuIsOpen=false;
+
+function posMenu(){
+  const r=ball.getBoundingClientRect();
+  const bcx=r.left+27,bcy=r.top+27;
+  const leftSide=bcx<window.innerWidth/2;
+  const dist=72;
+  const angles=leftSide?[-60,-20,20,60]:[-120,-160,160,120];
+  mis.forEach((m,i)=>{
+    const a=angles[i]*Math.PI/180;
+    const x=bcx+dist*Math.cos(a)-23;
+    const y=bcy+dist*Math.sin(a)-23;
+    m.style.left=Math.round(x)+'px';
+    m.style.top=Math.round(y)+'px';
   });
 }
 
 function openMenu(){
-  placeMenu();
-  ballState.open=true;
-  menuBtns.forEach((btn,i)=>{
-    setTimeout(()=>btn.classList.add("show"),i*22);
-  });
+  menuIsOpen=true;
+  posMenu();
+  $('menuBg').classList.add('show');
+  mis.forEach((m,i)=>setTimeout(()=>m.classList.add('show'),i*35));
+  startIdle();
 }
 function closeMenu(){
-  ballState.open=false;
-  menuBtns.forEach(btn=>btn.classList.remove("show"));
+  menuIsOpen=false;
+  $('menuBg').classList.remove('show');
+  mis.forEach(m=>m.classList.remove('show'));
 }
 function toggleMenu(){
-  if(ballState.open) closeMenu();
-  else openMenu();
+  menuIsOpen?closeMenu():openMenu();
 }
 
-/* pointer 事件，iPhone浏览器更稳定 */
-ball.addEventListener("pointerdown",e=>{
-  ballState.dragging=true;
-  ballState.moved=false;
-  ballState.startX=e.clientX;
-  ballState.startY=e.clientY;
-  const rect=ball.getBoundingClientRect();
-  ballState.left=rect.left;
-  ballState.top=rect.top;
-  ball.setPointerCapture(e.pointerId);
-});
+$('menuBg').addEventListener('touchstart',e=>{e.preventDefault();closeMenu()},{passive:false});
+$('menuBg').addEventListener('click',closeMenu);
 
-ball.addEventListener("pointermove",e=>{
-  if(!ballState.dragging) return;
-  const dx=e.clientX-ballState.startX;
-  const dy=e.clientY-ballState.startY;
-  if(Math.abs(dx)>6 || Math.abs(dy)>6) ballState.moved=true;
-
-  if(ballState.moved){
-    ball.classList.add("dragging");
-    let x=ballState.left+dx;
-    let y=ballState.top+dy;
-    x=Math.max(0,Math.min(window.innerWidth-58,x));
-    y=Math.max(0,Math.min(window.innerHeight-58,y));
-    ball.style.left=x+"px";
-    ball.style.top=y+"px";
-    if(ballState.open) placeMenu();
-  }
-});
-
-ball.addEventListener("pointerup",e=>{
-  ball.classList.remove("dragging");
-  ball.classList.add("tap");
-  setTimeout(()=>ball.classList.remove("tap"),140);
-
-  if(ballState.dragging && !ballState.moved){
-    toggleMenu();
-  }else{
-    snapBall();
-  }
-  ballState.dragging=false;
-});
-
-window.addEventListener("resize",()=>{
-  snapBall();
-  if(ballState.open) placeMenu();
-});
-
-document.addEventListener("click",e=>{
-  if(
-    !ball.contains(e.target) &&
-    !menuBtns.some(btn=>btn.contains(e.target)) &&
-    !e.target.closest(".panel")
-  ){
+mis.forEach((m,i)=>{
+  m.addEventListener('click',()=>{
     closeMenu();
-  }
-});
-
-/* ===== 面板 ===== */
-let currentPanel=null;
-function openPanel(id){
-  closeMenu();
-  currentPanel=$(id);
-  $("overlay").classList.add("show");
-  currentPanel.classList.add("show");
-  if(id==="aiPanel") updateApiHint();
-}
-function closePanel(){
-  $("overlay").classList.remove("show");
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("show"));
-  currentPanel=null;
-}
-$("overlay").addEventListener("click",closePanel);
-
-menuBtns.forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    openPanel(btn.dataset.panel);
+    openPanel(panels[i]);
   });
 });
 
-/* ===== API 配置 ===== */
-function getConfigs(){
-  return getStore("apiConfigs",{list:[],active:""});
+/* ==================== 面板 ==================== */
+let curPanel=null;
+function openPanel(id){
+  closePanel();
+  setTimeout(()=>{
+    curPanel=$(id);
+    $('ov').classList.add('show');
+    curPanel.classList.add('show');
+    if(id==='pnAi')$('apiWarn').style.display=getActive()?'none':'block';
+    if(id==='pnApi')renderCfgs();
+    if(id==='pnFont')renderFonts();
+  },curPanel?320:10);
 }
-function setConfigs(v){
-  setStore("apiConfigs",v);
+function closePanel(){
+  $('ov').classList.remove('show');
+  document.querySelectorAll('.pn.show').forEach(p=>p.classList.remove('show'));
+  curPanel=null;
 }
-function renderConfigs(){
-  const box=$("configList");
-  const data=getConfigs();
-  if(!data.list.length){
-    box.innerHTML=`<div class="config-item">暂无配置</div>`;
-    return;
-  }
-  box.innerHTML=data.list.map(item=>`
-    <div class="config-item ${data.active===item.id?'active':''}">
-      <div class="config-top">
-        <div class="config-name">${escapeHtml(item.name)}</div>
-        <div class="config-model">${escapeHtml(item.model)}</div>
+$('ov').addEventListener('click',closePanel);
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closePanel));
+
+/* ==================== API 配置 ==================== */
+function getCfgs(){try{return JSON.parse(localStorage.getItem('cfgs'))||{list:[],act:''}}catch{return{list:[],act:''}}}
+function setCfgs(v){localStorage.setItem('cfgs',JSON.stringify(v))}
+function getActive(){const c=getCfgs();return c.list.find(x=>x.id===c.act)||null}
+
+function renderCfgs(){
+  const c=getCfgs();
+  if(!c.list.length){$('cfgList').innerHTML='<p style="color:var(--sub);font-size:.84rem;text-align:center;padding:12px 0">暂无配置</p>';return}
+  $('cfgList').innerHTML=c.list.map(it=>`
+    <div class="ci${c.act===it.id?' on':''}">
+      <div class="ciTop"><span class="ciN">${esc(it.name)}</span><span class="ciM">${esc(it.model)}</span></div>
+      <div class="ciA">
+        <button class="bt s" data-act="${it.id}">启用</button>
+        <button class="bt s" data-edit="${it.id}">编辑</button>
+        <button class="bt s" data-del="${it.id}">删除</button>
       </div>
-      <div class="config-actions">
-        <button class="smallBtn" onclick="activateConfig('${item.id}')">启用</button>
-        <button class="smallBtn" onclick="editConfig('${item.id}')">编辑</button>
-        <button class="smallBtn" onclick="deleteConfig('${item.id}')">删除</button>
-      </div>
-    </div>
-  `).join("");
-}
-function saveConfig(){
-  const name=$("cfgName").value.trim();
-  const url=$("cfgUrl").value.trim();
-  const key=$("cfgKey").value.trim();
-  const model=$("cfgModel").value.trim();
-  if(!name||!url||!key||!model){toast("请完整填写");return}
-  const data=getConfigs();
-  const editing=$("editingId").textContent.trim();
-  if(editing){
-    const i=data.list.findIndex(v=>v.id===editing);
-    if(i>-1) data.list[i]={...data.list[i],name,url,key,model};
-    $("editingId").textContent="";
-  }else{
-    const id="cfg_"+Date.now();
-    data.list.push({id,name,url,key,model});
-    if(!data.active) data.active=id;
-  }
-  setConfigs(data);
-  renderConfigs();
-  clearConfigForm();
-  toast("配置已保存");
-}
-function clearConfigForm(){
-  $("cfgName").value="";
-  $("cfgUrl").value="";
-  $("cfgKey").value="";
-  $("cfgModel").value="";
-  $("cfgModelSelect").style.display="none";
-}
-function activateConfig(id){
-  const data=getConfigs();
-  data.active=id;
-  setConfigs(data);
-  renderConfigs();
-  toast("已启用");
-}
-function editConfig(id){
-  const data=getConfigs();
-  const item=data.list.find(v=>v.id===id);
-  if(!item) return;
-  $("cfgName").value=item.name;
-  $("cfgUrl").value=item.url;
-  $("cfgKey").value=item.key;
-  $("cfgModel").value=item.model;
-  $("editingId").textContent=id;
-  toast("已载入配置");
-}
-function deleteConfig(id){
-  const data=getConfigs();
-  data.list=data.list.filter(v=>v.id!==id);
-  if(data.active===id) data.active=data.list[0]?.id||"";
-  setConfigs(data);
-  renderConfigs();
-  toast("已删除");
-}
-async function fetchModels(){
-  const url=$("cfgUrl").value.trim().replace(/\/+$/,"");
-  const key=$("cfgKey").value.trim();
-  if(!url||!key){toast("请先填写地址和 Key");return}
-  try{
-    toast("正在抓取模型...");
-    const res=await fetch(url+"/v1/models",{
-      headers:{Authorization:"Bearer "+key}
-    });
-    if(!res.ok) throw new Error(res.status);
-    const data=await res.json();
-    const list=(data.data||[]).map(v=>v.id);
-    if(!list.length){toast("未获取到模型");return}
-    const sel=$("cfgModelSelect");
-    sel.innerHTML=list.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-    sel.style.display="block";
-    $("cfgModel").value=list[0];
-    toast("模型抓取成功");
-  }catch(err){
-    toast("抓取失败");
-  }
-}
-function getActiveConfig(){
-  const data=getConfigs();
-  return data.list.find(v=>v.id===data.active)||null;
+    </div>`).join('');
 }
 
-/* ===== 字体 ===== */
-const builtFonts=[
-  {name:"系统默认",family:'-apple-system,BlinkMacSystemFont,"Noto Sans SC",sans-serif'},
-  {name:"宋体风格",family:'"Noto Serif SC",serif'},
-  {name:"霞鹜文楷",family:'"LXGW WenKai",cursive'},
-  {name:"思源黑体",family:'"Noto Sans SC",sans-serif'},
-  {name:"站酷小薇体",family:'"ZCOOL XiaoWei",serif'}
+$('cfgList').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.act){const c=getCfgs();c.act=b.dataset.act;setCfgs(c);renderCfgs();toast('已启用')}
+  if(b.dataset.edit){
+    const c=getCfgs();const it=c.list.find(x=>x.id===b.dataset.edit);if(!it)return;
+    $('cN').value=it.name;$('cU').value=it.url;$('cK').value=it.key;$('cM').value=it.model;
+    $('editId').value=it.id;toast('正在编辑');
+  }
+  if(b.dataset.del){
+    const c=getCfgs();c.list=c.list.filter(x=>x.id!==b.dataset.del);
+    if(c.act===b.dataset.del)c.act=c.list[0]?.id||'';
+    setCfgs(c);renderCfgs();toast('已删除');
+  }
+});
+
+$('saveCfgBtn').addEventListener('click',()=>{
+  const name=$('cN').value.trim(),url=$('cU').value.trim(),
+        key=$('cK').value.trim(),model=$('cM').value.trim();
+  if(!name||!url||!key||!model){toast('请完整填写');return}
+  const c=getCfgs();const eid=$('editId').value;
+  if(eid){
+    const i=c.list.findIndex(x=>x.id===eid);
+    if(i>-1)c.list[i]={...c.list[i],name,url,key,model};
+    $('editId').value='';
+  }else{
+    const id='c'+Date.now();
+    c.list.push({id,name,url,key,model});
+    if(!c.act)c.act=id;
+  }
+  setCfgs(c);renderCfgs();
+  $('cN').value='';$('cU').value='';$('cK').value='';$('cM').value='';
+  $('cSel').style.display='none';
+  toast('已保存');
+});
+
+$('fetchBtn').addEventListener('click',async()=>{
+  const url=$('cU').value.trim().replace(/\/+$/,'');
+  const key=$('cK').value.trim();
+  if(!url||!key){toast('请先填写地址和 Key');return}
+  toast('正在抓取...');
+  try{
+    const r=await fetch(url+'/v1/models',{headers:{Authorization:'Bearer '+key}});
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    const models=(d.data||[]).map(m=>m.id).sort();
+    if(!models.length){toast('未获取到模型');return}
+    const sel=$('cSel');
+    sel.innerHTML=models.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    sel.style.display='block';$('cM').value=models[0];
+    toast('获取到 '+models.length+' 个模型');
+  }catch(e){toast('抓取失败')}
+});
+$('cSel').addEventListener('change',function(){$('cM').value=this.value});
+
+/* ==================== 字体 ==================== */
+const BUILTIN=[
+  {name:'系统默认',   fam:'-apple-system,BlinkMacSystemFont,"Noto Sans SC",sans-serif',type:'b'},
+  {name:'霞鹜文楷',   fam:'"LXGW WenKai",cursive',type:'b'},
+  {name:'思源宋体',   fam:'"Noto Serif SC",serif',type:'b'},
+  {name:'思源黑体',   fam:'"Noto Sans SC",sans-serif',type:'b'},
+  {name:'站酷小薇体', fam:'"ZCOOL XiaoWei",serif',type:'b'},
+  {name:'马善政楷体', fam:'"Ma Shan Zheng",cursive',type:'b'},
 ];
-let customFonts=getStore("customFonts",[]);
+let userFonts=[];
+
+function curFont(){return localStorage.getItem('curFont')||BUILTIN[0].fam}
 
 function renderFonts(){
-  const current=localStorage.getItem("currentFont")||builtFonts[0].family;
-  $("fontList").innerHTML=[...builtFonts,...customFonts].map(f=>`
-    <div class="font-item ${current===f.family?'active':''}" style="font-family:${f.family}" onclick="applyFont(${JSON.stringify(f.family)})">
-      <div style="font-size:.92rem">${escapeHtml(f.name)}</div>
-      <div style="font-size:.8rem;color:var(--sub);margin-top:6px">山川明月，清风入怀</div>
-    </div>
-  `).join("");
+  const cur=curFont();
+  const all=[...BUILTIN,...userFonts];
+  $('fList').innerHTML=all.map((f,i)=>`
+    <div class="fi${cur===f.fam?' on':''}" data-fam="${esc(f.fam)}" data-idx="${i}" data-type="${f.type}">
+      <div class="fn">${esc(f.name)}</div>
+      <div class="fp" style="font-family:${f.fam}">山川明月，清风入怀 AaBbCc 123</div>
+      <div class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      ${f.type==='u'?'<button class="bt s d" data-rmfont="'+esc(f.name)+'" style="position:absolute;right:12px;top:12px;height:28px">删除</button>':''}
+    </div>`).join('');
+}
 
-  $("userFontList").innerHTML=customFonts.map(f=>`
-    <div class="config-item">
-      <div class="config-top">
-        <div class="config-name" style="font-family:${f.family}">${escapeHtml(f.name)}</div>
-      </div>
-      <div class="config-actions">
-        <button class="smallBtn" onclick="applyFont(${JSON.stringify(f.family)})">应用</button>
-        <button class="smallBtn" onclick="removeFont('${f.name}')">删除</button>
-      </div>
-    </div>
-  `).join("");
-}
-function applyFont(family){
-  document.documentElement.style.setProperty("--font-body",family);
-  localStorage.setItem("currentFont",family);
+$('fList').addEventListener('click',e=>{
+  // 删除按钮
+  const rmBtn=e.target.closest('[data-rmfont]');
+  if(rmBtn){
+    e.stopPropagation();
+    const name=rmBtn.dataset.rmfont;
+    removeUserFont(name);
+    return;
+  }
+  // 选择字体
+  const item=e.target.closest('.fi');
+  if(!item)return;
+  const fam=item.dataset.fam;
+  localStorage.setItem('curFont',fam);
+  document.documentElement.style.setProperty('--font',fam);
   renderFonts();
-}
-$("fontUpload").addEventListener("change",async e=>{
+  toast('字体已切换');
+});
+
+$('fontFile').addEventListener('change',async function(e){
   const file=e.target.files[0];
-  if(!file) return;
-  const name=file.name.replace(/\.(ttf|otf|woff2?|TTF|OTF|WOFF2?)$/,"");
+  if(!file)return;
+  toast('正在加载字体...');
   try{
-    const buffer=await file.arrayBuffer();
-    const blob=new Blob([buffer],{type:file.type||"font/ttf"});
-    const url=URL.createObjectURL(blob);
-    const face=new FontFace(name,`url(${url})`);
+    const buf=await file.arrayBuffer();
+    const name=file.name.replace(/\.\w+$/,'');
+    const face=new FontFace(name,buf);
     await face.load();
     document.fonts.add(face);
-    const family=`"${name}"`;
-    customFonts.push({name,family,url});
-    setStore("customFonts",customFonts);
+    const fam='"'+name+'"';
+    userFonts.push({name,fam,type:'u'});
+    // 存入 IndexedDB
+    await dbPut('fonts',{name,data:Array.from(new Uint8Array(buf))});
     renderFonts();
-    toast("字体上传成功");
+    toast('字体已加载：'+name);
   }catch(err){
-    toast("字体加载失败");
+    toast('字体加载失败');
   }
-  e.target.value="";
+  this.value='';
 });
-async function restoreCustomFonts(){
-  for(const f of customFonts){
-    try{
-      const face=new FontFace(f.name,`url(${f.url})`);
+
+async function removeUserFont(name){
+  await dbDel('fonts',name);
+  userFonts=userFonts.filter(f=>f.name!==name);
+  const cur=curFont();
+  if(cur==='"'+name+'"'){
+    localStorage.setItem('curFont',BUILTIN[0].fam);
+    document.documentElement.style.setProperty('--font',BUILTIN[0].fam);
+  }
+  renderFonts();
+  toast('已删除字体');
+}
+
+async function restoreFonts(){
+  try{
+    const all=await dbAll('fonts');
+    for(const item of all){
+      const buf=new Uint8Array(item.data).buffer;
+      const face=new FontFace(item.name,buf);
       await face.load();
       document.fonts.add(face);
-    }catch(err){}
-  }
-}
-function removeFont(name){
-  customFonts=customFonts.filter(f=>f.name!==name);
-  setStore("customFonts",customFonts);
-  renderFonts();
-  toast("已删除字体");
+      userFonts.push({name:item.name,fam:'"'+item.name+'"',type:'u'});
+    }
+  }catch(e){}
 }
 
-/* ===== 背景 ===== */
-$("bgUpload").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(!file) return;
+/* ==================== 背景 ==================== */
+$('bgFile').addEventListener('change',function(e){
+  const file=e.target.files[0];if(!file)return;
+  toast('正在加载图片...');
   const reader=new FileReader();
-  reader.onload=ev=>{
+  reader.onload=async ev=>{
     const data=ev.target.result;
-    localStorage.setItem("pageBg",data);
     applyBg(data);
-    toast("背景已设置");
+    try{await dbPut('data',{key:'bg',val:data})}catch(e){}
+    toast('背景已设置');
   };
   reader.readAsDataURL(file);
-  e.target.value="";
+  this.value='';
 });
-function applyBg(data){
-  document.body.classList.add("has-bg");
-  document.body.style.setProperty("--bg-image",`url(${data})`);
-  $("bgPreview").innerHTML=`<img src="${data}" alt="">`;
-}
-function removeBg(){
-  localStorage.removeItem("pageBg");
-  document.body.classList.remove("has-bg");
-  document.body.style.removeProperty("--bg-image");
-  $("bgPreview").textContent="暂无背景图";
-  toast("背景已移除");
-}
-function setBgBlur(v){
-  document.body.style.setProperty("--bg-blur",v+"px");
-  localStorage.setItem("bgBlur",v);
+
+function applyBg(dataUrl){
+  document.body.style.backgroundImage='url('+dataUrl+')';
+  document.body.classList.add('hasBg');
+  $('bgPv').innerHTML='<img src="'+dataUrl+'">';
 }
 
-/* ===== AI ===== */
-const AI_SYSTEM=`你是一个网页样式助手。你必须只返回 JSON，不要返回多余内容：
-{"css":"CSS代码","message":"一句话说明"}
-你负责根据用户要求改造这个页面的外观。
+$('rmBgBtn').addEventListener('click',async()=>{
+  document.body.style.backgroundImage='none';
+  document.body.classList.remove('hasBg');
+  $('bgPv').textContent='暂无背景图';
+  try{await dbDel('data','bg')}catch(e){}
+  toast('背景已移除');
+});
+
+$('alphaR').addEventListener('input',function(){
+  const v=this.value/100;
+  document.documentElement.style.setProperty('--card','rgba(255,255,255,'+v+')');
+  localStorage.setItem('cardAlpha',this.value);
+});
+
+async function restoreBg(){
+  try{
+    const item=await dbGet('data','bg');
+    if(item&&item.val)applyBg(item.val);
+  }catch(e){}
+  const alpha=localStorage.getItem('cardAlpha');
+  if(alpha){
+    $('alphaR').value=alpha;
+    document.documentElement.style.setProperty('--card','rgba(255,255,255,'+(alpha/100)+')');
+  }
+}
+
+/* ==================== AI ==================== */
+const SYS_PROMPT=`你是网页样式助手。用户用自然语言描述想要的网页视觉变化。
+你必须只返回一个JSON对象：{"css":"CSS代码","message":"简要说明"}
+不要返回其他内容。
+
 页面结构：
-body, #app, .hero, .card, .section-title, .footer
-要求移动端友好，风格高级、干净、柔和。
-主配色围绕 #adcdea 和 #ffffff。`;
+- body: 页面整体
+- #app: 主容器 max-width:680px
+- .hero: 顶部横幅卡片
+- .card: 内容卡片
+- .secTitle: 分区标题
+- .foot: 底部文字
+- 主色 #adcdea（浅蓝）和 #ffffff（白色）
+- CSS变量: --c1, --c2, --text, --sub, --card, --r
 
-function addMsg(text,type,html=false){
-  const box=$("chatBox");
-  const div=document.createElement("div");
-  div.className="msg "+type;
-  if(html) div.innerHTML=text;
-  else div.textContent=text;
-  box.appendChild(div);
+你可以修改颜色、间距、圆角、阴影、动画、渐变、字号、布局。
+确保对移动端友好。只返回JSON。`;
+
+function addMsg(text,cls,html){
+  const box=$('chatBox');
+  const d=document.createElement('div');
+  d.className='cm '+cls;
+  if(html)d.innerHTML=text;else d.textContent=text;
+  box.appendChild(d);
   box.scrollTop=box.scrollHeight;
-  return div;
+  return d;
 }
-function updateApiHint(){
-  $("apiHint").style.display=getActiveConfig()?"none":"block";
-}
+
 async function sendAi(customText){
-  const cfg=getActiveConfig();
-  if(!cfg){toast("请先配置 API");updateApiHint();return}
-  const input=$("aiInput");
-  const text=(customText||input.value).trim();
-  if(!text) return;
-  input.value="";
-  addMsg(text,"user");
-  const loading=addMsg('<div class="spin"></div>',"bot",true);
+  const cfg=getActive();
+  if(!cfg){toast('请先配置 API');$('apiWarn').style.display='block';return}
+  const input=$('aiIp');
+  const text=customText||input.value.trim();
+  if(!text)return;
+  input.value='';
+  addMsg(text,'u');
+  const loading=addMsg('<span class="spin"></span>','b',true);
 
   try{
-    const res=await fetch(cfg.url.replace(/\/+$/,"")+"/v1/chat/completions",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer "+cfg.key
-      },
+    const base=cfg.url.replace(/\/+$/,'');
+    const r=await fetch(base+'/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
       body:JSON.stringify({
         model:cfg.model,
-        messages:[
-          {role:"system",content:AI_SYSTEM},
-          {role:"user",content:text}
-        ],
-        temperature:.8
+        messages:[{role:'system',content:SYS_PROMPT},{role:'user',content:text}],
+        temperature:.7,max_tokens:2000
       })
     });
-    if(!res.ok) throw new Error("接口错误");
-    const data=await res.json();
-    const content=data.choices?.[0]?.message?.content || "";
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    const content=d.choices?.[0]?.message?.content||'';
     loading.remove();
-
     let parsed;
-    try{
-      parsed=JSON.parse(content.replace(/```json|```/g,"").trim());
-    }catch(err){
-      addMsg("AI 返回格式无法解析","error");
-      return;
-    }
-
+    try{parsed=JSON.parse(content.replace(/```json|```/g,'').trim())}
+    catch{addMsg('AI 返回格式无法解析','e');return}
     if(parsed.css){
-      $("aiStyleTag").textContent=parsed.css;
-      localStorage.setItem("aiCss",parsed.css);
+      $('aiCSS').textContent=parsed.css;
+      localStorage.setItem('aiCss',parsed.css);
     }
-    addMsg(parsed.message || "已应用新的样式","bot");
-  }catch(err){
+    addMsg(parsed.message||'样式已更新','b');
+  }catch(e){
     loading.remove();
-    addMsg("请求失败，请检查配置或接口可用性","error");
+    addMsg('请求失败：'+e.message,'e');
   }
 }
-function quickBeautify(){
-  sendAi("请直接把这个页面美化得更高级、通透、柔和、现代，增强层次与细节。");
-}
-function resetAiCss(){
-  $("aiStyleTag").textContent="";
-  localStorage.removeItem("aiCss");
-  toast("已重置 AI 样式");
-}
-$("aiInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    sendAi();
-  }
+
+$('sendBtn').addEventListener('click',()=>sendAi());
+$('aiIp').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendAi()}});
+$('quickBtn').addEventListener('click',()=>sendAi('请一键美化页面，让它更高级、更精致、更有层次感，但保持蓝白色调和移动端友好。'));
+$('resetCssBtn').addEventListener('click',()=>{
+  $('aiCSS').textContent='';
+  localStorage.removeItem('aiCss');
+  $('chatBox').innerHTML='';
+  toast('样式已重置');
 });
 
-/* ===== 工具 ===== */
-function escapeHtml(str=""){
-  return str.replace(/[&<>"']/g,s=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[s]));
-}
-
-/* ===== 初始化 ===== */
+/* ==================== 初始化 ==================== */
 (async function init(){
-  renderConfigs();
+  // 恢复字体
+  const cf=curFont();
+  document.documentElement.style.setProperty('--font',cf);
+
+  // 恢复用户字体
+  await restoreFonts();
   renderFonts();
-  await restoreCustomFonts();
 
-  const currentFont=localStorage.getItem("currentFont");
-  if(currentFont){
-    document.documentElement.style.setProperty("--font-body",currentFont);
-  }
+  // 恢复背景
+  await restoreBg();
 
-  const bg=localStorage.getItem("pageBg");
-  if(bg) applyBg(bg);
+  // 恢复 AI 样式
+  const aiCss=localStorage.getItem('aiCss');
+  if(aiCss)$('aiCSS').textContent=aiCss;
 
-  const blur=localStorage.getItem("bgBlur");
-  if(blur){
-    $("blurRange").value=blur;
-    setBgBlur(blur);
-  }
-
-  const aiCss=localStorage.getItem("aiCss");
-  if(aiCss) $("aiStyleTag").textContent=aiCss;
+  // 渲染配置
+  renderCfgs();
 })();
 </script>
 </body>
