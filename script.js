@@ -879,6 +879,8 @@
   // ========= 聊天 =========
   var chatHistory = LS.get('chatHistory') || [];
   var visionImageData = null;
+  var useStream = LS.get('useStream');
+  if (useStream === null) useStream = true;
 
   function restoreChatHistory() {
     if (!chatMessages) return;
@@ -1146,8 +1148,17 @@
 
     var replyDiv = addChatMsg('assistant', '思考中...');
 
-    try {
-      var base = activeApi.url.replace(/\/+$/, '');
+    var base = activeApi.url.replace(/\/+$/, '');
+    var messages = [
+      { role: 'system', content: SYSTEM_PROMPT }
+    ].concat(chatHistory.slice(-20).map(function(item) {
+      return {
+        role: item.role,
+        content: item.content
+      };
+    }));
+
+    async function handleNormalResponse() {
       var response = await fetch(base + '/chat/completions', {
         method: 'POST',
         headers: {
@@ -1156,14 +1167,7 @@
         },
         body: JSON.stringify({
           model: activeApi.model,
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT }
-          ].concat(chatHistory.slice(-20).map(function(item) {
-            return {
-              role: item.role,
-              content: item.content
-            };
-          }))
+          messages: messages
         })
       });
 
@@ -1188,8 +1192,98 @@
         displayContent: displayReply
       });
       saveChatHistory();
-
       clearVisionImage();
+    }
+
+    async function handleStreamResponse() {
+      var response = await fetch(base + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + activeApi.key
+        },
+        body: JSON.stringify({
+          model: activeApi.model,
+          messages: messages,
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        var errData = await response.json().catch(function() { return {}; });
+        throw new Error(errData.error?.message || ('请求失败: ' + response.status));
+      }
+
+      if (!response.body) {
+        throw new Error('当前接口不支持流式输出');
+      }
+
+      var reader = response.body.getReader();
+      var decoder = new TextDecoder('utf-8');
+      var buffer = '';
+      var fullReply = '';
+
+      while (true) {
+        var result = await reader.read();
+        if (result.done) break;
+
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line.startsWith('data:')) continue;
+
+          var dataStr = line.slice(5).trim();
+          if (dataStr === '[DONE]') continue;
+
+          try {
+            var data = JSON.parse(dataStr);
+            var delta = data.choices && data.choices[0] && data.choices[0].delta ? data.choices[0].delta : {};
+            var content = delta.content || '';
+
+            if (content) {
+              fullReply += content;
+              if (replyDiv) {
+                replyDiv.innerHTML = esc(cleanReplyForDisplay(fullReply)).replace(/\n/g, '<br>');
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (!fullReply.trim()) {
+        fullReply = '(无回复)';
+      }
+
+      applyReplyToSourceRepo(fullReply);
+
+      var displayReply = cleanReplyForDisplay(fullReply);
+      if (replyDiv) {
+        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
+      }
+
+      chatHistory.push({
+        role: 'assistant',
+        content: fullReply,
+        displayContent: displayReply
+      });
+      saveChatHistory();
+      clearVisionImage();
+    }
+
+    try {
+      if (useStream) {
+        try {
+          await handleStreamResponse();
+        } catch (streamErr) {
+          showToast('流式失败，自动切换普通模式');
+          await handleNormalResponse();
+        }
+      } else {
+        await handleNormalResponse();
+      }
     } catch (err) {
       if (replyDiv) {
         replyDiv.innerHTML = '请求失败: ' + esc(err.message);
@@ -1315,6 +1409,15 @@
       ball.style.top = savedBallPos.top + 'px';
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
+    }
+
+    if ($('#useStreamToggle')) {
+      $('#useStreamToggle').checked = !!useStream;
+      $('#useStreamToggle').addEventListener('change', function() {
+        useStream = this.checked;
+        LS.set('useStream', useStream);
+        showToast(useStream ? '已开启流式输出' : '已关闭流式输出');
+      });
     }
 
     if ($('#mainContent') && !$('#mainContent').innerHTML.trim()) {
