@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
 
@@ -296,10 +297,10 @@
     });
   });
 
-  // ========== AI 助手 ==========
+  // ========== AI 助手（含聊天记录保存） ==========
   var chatMessages = $('#chatMessages');
   var chatInput = $('#chatInput');
-  var chatHistory = [];
+  var chatHistory = LS.get('chatHistory') || [];
 
   function updateAiStatus() {
     var status = $('#aiStatus');
@@ -322,17 +323,56 @@
     return div;
   }
 
-  var SYSTEM_PROMPT = '你是一个网页设计助手。用户会让你修改当前网页的布局和样式。\n\n' +
-    '当你需要修改网页样式时，请在回复中包含CSS代码块，格式如下：\n```css\n/* 你的CSS样式 */\n```\n\n' +
-    '当你需要修改网页HTML内容时，请在回复中包含特殊格式：\n```html-inject\n<!-- 替换 #mainContent 的 innerHTML -->\n```\n\n' +
-    '你的CSS会被直接注入页面。请注意：\n' +
-    '- 背景色使用 var(--bg-primary) 即 #252629\n' +
-    '- 强调色使用 var(--accent) 即 #57658a\n' +
-    '- 文字色使用 var(--text-primary) 即 #e8e9ed\n' +
-    '- 只修改 .main-content 内部的样式\n' +
-    '- 可以修改的CSS变量: --bg-primary, --bg-secondary, --bg-card, --accent, --accent-light 等\n' +
-    '- 使用简洁优雅的设计风格\n' +
-    '- 回复要简洁友好';
+  // 恢复历史聊天记录
+  function restoreChatHistory() {
+    if (chatHistory.length === 0) return;
+    for (var i = 0; i < chatHistory.length; i++) {
+      addChatMsg(chatHistory[i].role, chatHistory[i].content);
+    }
+  }
+
+  // 保存聊天记录
+  function saveChatHistory() {
+    LS.set('chatHistory', chatHistory);
+  }
+
+  var SYSTEM_PROMPT = '你是一个强大的网页设计助手。用户会要求你修改当前网页的样式、布局、配色、主题等。\n\n' +
+    '你可以通过以下方式修改网页：\n\n' +
+    '1. 修改CSS变量（改配色最有效的方式）：\n' +
+    '```cssvar\n' +
+    '--bg-primary: #新颜色;\n' +
+    '--bg-card: #新颜色;\n' +
+    '--accent: #新颜色;\n' +
+    '--border: #新颜色;\n' +
+    '```\n\n' +
+    '可用的CSS变量有：\n' +
+    '- --bg-primary: 页面大背景色（当前 #f0f6fb）\n' +
+    '- --bg-secondary: 面板背景色（当前 #ffffff）\n' +
+    '- --bg-card: 卡片背景色（当前 #ffffff）\n' +
+    '- --accent: 主强调色/按钮色（当前 #adcdea）\n' +
+    '- --accent-deep: 深一点的强调色（当前 #8ab8de）\n' +
+    '- --text-primary: 主文字色（当前 #1a1a1a）\n' +
+    '- --text-secondary: 次要文字色（当前 #555555）\n' +
+    '- --text-muted: 弱文字色（当前 #999999）\n' +
+    '- --border: 边框色（当前 #1a1a1a）\n' +
+    '- --border-light: 浅边框色\n' +
+    '- --shadow: 阴影色\n' +
+    '- --radius: 圆角大小（当前 16px）\n' +
+    '- --radius-sm: 小圆角（当前 10px）\n\n' +
+    '2. 注入额外CSS样式：\n' +
+    '```css\n' +
+    '.hero-title { font-size: 40px; }\n' +
+    '```\n\n' +
+    '3. 替换页面主体HTML：\n' +
+    '```html-inject\n' +
+    '<div>新的HTML内容</div>\n' +
+    '```\n\n' +
+    '注意事项：\n' +
+    '- 改配色时优先用 ```cssvar``` 代码块修改CSS变量，这样全站统一生效\n' +
+    '- 如果用户说要暗色/深色主题，把 --bg-primary 改深色，--text-primary 改浅色，--bg-card 也改深色\n' +
+    '- 如果用户说要某个颜色为主色，改 --accent 和 --accent-deep\n' +
+    '- 回复要简洁友好\n' +
+    '- 每次修改后简单说明你改了什么';
 
   function sendMessage() {
     if (!activeApi) { showToast('请先配置并选择 API'); return; }
@@ -341,6 +381,7 @@
     chatInput.value = '';
     addChatMsg('user', text);
     chatHistory.push({ role: 'user', content: text });
+    saveChatHistory();
 
     var loadingDiv = addChatMsg('assistant', '思考中');
     loadingDiv.classList.add('loading-dots');
@@ -368,8 +409,16 @@
     .then(function(data) {
       var reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
       chatHistory.push({ role: 'assistant', content: reply });
+      saveChatHistory();
       loadingDiv.remove();
       addChatMsg('assistant', reply);
+
+      // 提取并应用 CSS 变量
+      var cssVarReg = /```cssvar\n?([\s\S]*?)```/g;
+      var cssVarMatch;
+      while ((cssVarMatch = cssVarReg.exec(reply)) !== null) {
+        applyAiCSSVars(cssVarMatch[1]);
+      }
 
       // 提取并应用 CSS
       var cssReg = /```css\n?([\s\S]*?)```/g;
@@ -391,6 +440,25 @@
     });
   }
 
+  // 应用 AI 返回的 CSS 变量
+  function applyAiCSSVars(text) {
+    var lines = text.split('\n');
+    var savedVars = LS.get('aiCSSVars') || {};
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line || line.indexOf('--') !== 0) continue;
+      var parts = line.replace(';', '').split(':');
+      if (parts.length < 2) continue;
+      var varName = parts[0].trim();
+      var varValue = parts.slice(1).join(':').trim();
+      document.documentElement.style.setProperty(varName, varValue);
+      savedVars[varName] = varValue;
+    }
+    LS.set('aiCSSVars', savedVars);
+    showToast('配色已更新');
+  }
+
+  // 应用 AI 返回的 CSS
   function applyAiCSS(css) {
     var styleEl = document.getElementById('ai-custom-style');
     if (!styleEl) {
@@ -410,6 +478,15 @@
     s.id = 'ai-custom-style';
     s.textContent = savedCSS;
     document.head.appendChild(s);
+  }
+
+  // 恢复 AI 自定义 CSS 变量
+  var savedVars = LS.get('aiCSSVars');
+  if (savedVars) {
+    var varKeys = Object.keys(savedVars);
+    for (var vi = 0; vi < varKeys.length; vi++) {
+      document.documentElement.style.setProperty(varKeys[vi], savedVars[varKeys[vi]]);
+    }
   }
 
   $('#sendBtn').addEventListener('click', sendMessage);
@@ -606,6 +683,7 @@
   function init() {
     renderSavedApis();
     updateAiStatus();
+    restoreChatHistory();
     renderFontList();
     restoreCustomFonts();
     renderCustomFonts();
