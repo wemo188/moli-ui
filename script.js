@@ -173,12 +173,16 @@
     return;
   }
 
-  // ========= 悬浮球 =========
+  // ========= 悬浮球 + 面板（稳定版） =========
   var isDragging = false;
   var hasMoved = false;
-  var touchMoved = false;
-  var startX = 0, startY = 0, origX = 0, origY = 0;
+  var startX = 0;
+  var startY = 0;
+  var origX = 0;
+  var origY = 0;
   var menuOpen = false;
+  var currentPanelEl = null;
+  var lastToggleTime = 0;
 
   function getBallRect() {
     return ball.getBoundingClientRect();
@@ -187,7 +191,7 @@
   function positionMenu() {
     var rect = getBallRect();
     ballMenuEl.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-    if (rect.left + 26 < window.innerWidth / 2) {
+    if (rect.left + rect.width / 2 < window.innerWidth / 2) {
       ballMenuEl.style.left = rect.left + 'px';
       ballMenuEl.style.right = 'auto';
     } else {
@@ -196,17 +200,14 @@
     }
   }
 
-  function toggleMenu() {
-    menuOpen = !menuOpen;
-    ball.classList.toggle('active', menuOpen);
-    if (menuOpen) {
-      positionMenu();
-      ballMenuEl.classList.remove('hidden');
-      requestAnimationFrame(function() { ballMenuEl.classList.add('show'); });
-    } else {
-      ballMenuEl.classList.remove('show');
-      setTimeout(function() { ballMenuEl.classList.add('hidden'); }, 250);
-    }
+  function openMenu() {
+    menuOpen = true;
+    ball.classList.add('active');
+    positionMenu();
+    ballMenuEl.classList.remove('hidden');
+    requestAnimationFrame(function() {
+      ballMenuEl.classList.add('show');
+    });
   }
 
   function closeMenu() {
@@ -214,94 +215,19 @@
     menuOpen = false;
     ball.classList.remove('active');
     ballMenuEl.classList.remove('show');
-    setTimeout(function() { ballMenuEl.classList.add('hidden'); }, 250);
+    setTimeout(function() {
+      ballMenuEl.classList.add('hidden');
+    }, 250);
   }
-
-  ball.addEventListener('touchstart', function(e) {
-    var t = e.touches[0];
-    var rect = getBallRect();
-    startX = t.clientX;
-    startY = t.clientY;
-    origX = rect.left;
-    origY = rect.top;
-    isDragging = true;
-    hasMoved = false;
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!isDragging) return;
-
-    var t = e.touches[0];
-    var dx = t.clientX - startX;
-    var dy = t.clientY - startY;
-
-    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-      hasMoved = true;
-    }
-
-    if (!hasMoved) return;
-
-    var nx = Math.max(0, Math.min(window.innerWidth - 52, origX + dx));
-    var ny = Math.max(0, Math.min(window.innerHeight - 52, origY + dy));
-
-    ball.style.left = nx + 'px';
-    ball.style.top = ny + 'px';
-    ball.style.right = 'auto';
-    ball.style.bottom = 'auto';
-  }, { passive: true });
-
-  document.addEventListener('touchend', function(e) {
-    if (!isDragging) return;
-
-    if (!hasMoved) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleMenu();
-    } else {
-      var rect = getBallRect();
-      LS.set('floatingBallPos', {
-        left: rect.left,
-        top: rect.top
-      });
-    }
-
-    isDragging = false;
-    hasMoved = false;
-  }, { passive: false });
-
-  ball.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // 手机上只使用 touchend，避免 click 再次触发导致一开一关
-    if ('ontouchstart' in window) return;
-
-  var lastToggleTime = 0;
 
   function toggleMenu() {
     var now = Date.now();
     if (now - lastToggleTime < 250) return;
     lastToggleTime = now;
 
-    menuOpen = !menuOpen;
-    ball.classList.toggle('active', menuOpen);
-
-    if (menuOpen) {
-      positionMenu();
-      ballMenuEl.classList.remove('hidden');
-      requestAnimationFrame(function() {
-        ballMenuEl.classList.add('show');
-      });
-    } else {
-      ballMenuEl.classList.remove('show');
-      setTimeout(function() {
-        ballMenuEl.classList.add('hidden');
-      }, 250);
-    }
+    if (menuOpen) closeMenu();
+    else openMenu();
   }
-
-  // ========= 面板 =========
-  var currentPanelEl = null;
 
   function openPanel(id) {
     closeMenu();
@@ -327,25 +253,95 @@
     if (!currentPanelEl) return;
     overlay.classList.remove('show');
     currentPanelEl.classList.remove('show');
+
     var p = currentPanelEl;
     setTimeout(function() {
       overlay.classList.add('hidden');
       p.classList.add('hidden');
     }, 350);
+
     currentPanelEl = null;
   }
 
+  // 手机：拖动 / 点击
+  ball.addEventListener('touchstart', function(e) {
+    var t = e.touches[0];
+    var rect = getBallRect();
+
+    startX = t.clientX;
+    startY = t.clientY;
+    origX = rect.left;
+    origY = rect.top;
+
+    isDragging = true;
+    hasMoved = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+
+    var t = e.touches[0];
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+      hasMoved = true;
+    }
+
+    if (!hasMoved) return;
+
+    var nx = Math.max(0, Math.min(window.innerWidth - 52, origX + dx));
+    var ny = Math.max(0, Math.min(window.innerHeight - 52, origY + dy));
+
+    ball.style.left = nx + 'px';
+    ball.style.top = ny + 'px';
+    ball.style.right = 'auto';
+    ball.style.bottom = 'auto';
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!isDragging) return;
+
+    if (!hasMoved) {
+      e.preventDefault();
+      toggleMenu();
+    } else {
+      var rect = getBallRect();
+      LS.set('floatingBallPos', {
+        left: rect.left,
+        top: rect.top
+      });
+    }
+
+    isDragging = false;
+    hasMoved = false;
+  }, { passive: false });
+
+  // 桌面：点击
+  ball.addEventListener('click', function(e) {
+    e.preventDefault();
+    if ('ontouchstart' in window) return;
+    toggleMenu();
+  });
+
+  // 菜单项
   $$('.ball-menu-item').forEach(function(item) {
     item.addEventListener('click', function() {
       openPanel(item.dataset.panel);
     });
   });
 
+  // 关闭按钮
   $$('.panel-close').forEach(function(btn) {
-    btn.addEventListener('click', closePanel);
+    btn.addEventListener('click', function() {
+      closePanel();
+    });
   });
 
-  overlay.addEventListener('click', closePanel);
+  // 遮罩关闭
+  overlay.addEventListener('click', function() {
+    closePanel();
+  });
 
   // ========= API 配置 =========
   var apiConfigs = LS.get('apiConfigs') || [];
