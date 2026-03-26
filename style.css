@@ -59,7 +59,6 @@ html, body {
   padding: 60px 20px calc(40px + var(--safe-bottom));
 }
 
-/* 悬浮球 */
 .floating-ball {
   position: fixed;
   right: 20px;
@@ -151,7 +150,6 @@ html, body {
   color: var(--text-primary);
 }
 
-/* 遮罩 */
 .overlay {
   position: fixed;
   inset: 0;
@@ -171,7 +169,6 @@ html, body {
   opacity: 1;
 }
 
-/* 面板 */
 .panel {
   position: fixed;
   left: 0;
@@ -238,7 +235,6 @@ html, body {
   flex: 1;
 }
 
-/* 表单 */
 .form-group {
   margin-bottom: 16px;
 }
@@ -329,7 +325,6 @@ html, body {
   color: #fff;
 }
 
-/* 按钮 */
 .btn {
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -387,7 +382,6 @@ html, body {
   margin: 20px 0;
 }
 
-/* API 列表 */
 .saved-list {
   display: flex;
   flex-direction: column;
@@ -445,19 +439,10 @@ html, body {
   height: 15px;
 }
 
-.saved-item-actions .use-btn {
-  color: var(--accent-deep);
-}
+.saved-item-actions .use-btn { color: var(--accent-deep); }
+.saved-item-actions .edit-btn { color: #666; }
+.saved-item-actions .del-btn { color: #c44; }
 
-.saved-item-actions .edit-btn {
-  color: #666;
-}
-
-.saved-item-actions .del-btn {
-  color: #c44;
-}
-
-/* AI 聊天 */
 .ai-status {
   display: flex;
   align-items: center;
@@ -477,13 +462,8 @@ html, body {
   border-radius: 50%;
 }
 
-.status-dot.offline {
-  background: #c44;
-}
-
-.status-dot.online {
-  background: #5cb85c;
-}
+.status-dot.offline { background: #c44; }
+.status-dot.online { background: #5cb85c; }
 
 .chat-messages {
   height: 280px;
@@ -573,19 +553,14 @@ html, body {
   transition: transform 0.15s;
 }
 
-.send-btn:active {
-  transform: scale(0.9);
-}
-
-.send-btn svg {
-  width: 18px;
-  height: 18px;
-}
+.send-btn:active { transform: scale(0.9); }
+.send-btn svg { width: 18px; height: 18px; }
 
 .chat-toolbar {
   display: flex;
   gap: 8px;
   margin-bottom: 10px;
+  align-items: center;
 }
 
 .image-preview-box {
@@ -596,9 +571,7 @@ html, body {
   background: var(--bg-card);
 }
 
-.image-preview-box.hidden {
-  display: none;
-}
+.image-preview-box.hidden { display: none; }
 
 .image-preview-box img {
   width: 100%;
@@ -618,7 +591,6 @@ html, body {
   border-top: 1px solid var(--border-light);
 }
 
-/* 字体 */
 .font-list {
   display: flex;
   flex-direction: column;
@@ -637,9 +609,7 @@ html, body {
   transition: box-shadow 0.2s;
 }
 
-.font-item.active {
-  box-shadow: 0 0 0 2px var(--accent);
-}
+.font-item.active { box-shadow: 0 0 0 2px var(--accent); }
 
 .font-item-preview {
   font-size: 15px;
@@ -677,7 +647,6 @@ html, body {
   border-radius: 50%;
 }
 
-/* 上传区 */
 .upload-area {
   border: 2px dashed var(--border);
   border-radius: var(--radius);
@@ -706,7 +675,6 @@ html, body {
   color: var(--text-muted);
 }
 
-/* 背景预览 */
 .bg-preview {
   margin-bottom: 16px;
   border-radius: var(--radius-sm);
@@ -714,9 +682,7 @@ html, body {
   border: 1.5px solid var(--border);
 }
 
-.bg-preview.hidden {
-  display: none;
-}
+.bg-preview.hidden { display: none; }
 
 .bg-preview img {
   width: 100%;
@@ -725,7 +691,6 @@ html, body {
   display: block;
 }
 
-/* 滑块 */
 input[type="range"] {
   width: 100%;
   -webkit-appearance: none;
@@ -746,7 +711,6 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-/* 主题 */
 .theme-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -762,13 +726,8 @@ input[type="range"]::-webkit-slider-thumb {
   position: relative;
 }
 
-.theme-card:active {
-  transform: scale(0.96);
-}
-
-.theme-card.active {
-  box-shadow: 0 0 0 2px var(--accent);
-}
+.theme-card:active { transform: scale(0.96); }
+.theme-card.active { box-shadow: 0 0 0 2px var(--accent); }
 
 .theme-card-colors {
   display: flex;
@@ -783,16 +742,8 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1.5px solid rgba(128,128,128,0.3);
 }
 
-.theme-card-name {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.theme-card-desc {
-  font-size: 10px;
-  margin-top: 2px;
-  opacity: 0.6;
-}
+.theme-card-name { font-size: 12px; font-weight: 600; }
+.theme-card-desc { font-size: 10px; margin-top: 2px; opacity: 0.6; }
 
 .theme-card-del {
   position: absolute;
@@ -815,9 +766,7 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 12px;
 }
 
-.color-group {
-  text-align: center;
-}
+.color-group { text-align: center; }
 
 .color-group label {
   display: block;
@@ -838,14 +787,8 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 
-.color-group input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 2px;
-}
-
-.color-group input[type="color"]::-webkit-color-swatch {
-  border: none;
-  border-radius: 8px;
-}
+.color-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.color-group input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
 
 /* 源码仓 */
 .export-section {
@@ -857,11 +800,11 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.export-section-header span {
+.export-section-header > span {
   font-size: 13px;
   font-weight: 600;
   color: var(--accent-deep);
@@ -882,19 +825,19 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.4;
 }
 
-.source-toggle-card {
-  margin-bottom: 14px;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-primary);
+.source-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
+/* 通用自定义勾选 */
 .source-check-label {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   color: var(--text-primary);
   cursor: pointer;
   user-select: none;
@@ -905,10 +848,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .source-check-ui {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid var(--border);
-  border-radius: 6px;
+  border-radius: 5px;
   background: var(--bg-card);
   position: relative;
   flex-shrink: 0;
@@ -923,66 +866,55 @@ input[type="range"]::-webkit-slider-thumb {
 .source-check-label input[type="checkbox"]:checked + .source-check-ui::after {
   content: '';
   position: absolute;
-  left: 5px;
+  left: 4px;
   top: 1px;
-  width: 4px;
-  height: 8px;
+  width: 3px;
+  height: 7px;
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-.source-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+.source-send-check {
+  padding: 4px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
 }
 
-.source-section-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.section-check {
+/* 流式输出勾选 */
+.stream-check-label {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg-card);
+  margin-left: auto;
   font-size: 12px;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
-  transition: background 0.2s, box-shadow 0.2s;
 }
 
-.section-check:active {
-  transform: scale(0.98);
+.stream-check-label input[type="checkbox"] {
+  display: none;
 }
 
-.section-check input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
+.stream-check-ui {
   width: 16px;
   height: 16px;
   border: 2px solid var(--border);
   border-radius: 5px;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   position: relative;
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
-.section-check input[type="checkbox"]:checked {
+.stream-check-label input[type="checkbox"]:checked + .stream-check-ui {
   background: var(--accent);
   border-color: var(--border);
 }
 
-.section-check input[type="checkbox"]:checked::after {
+.stream-check-label input[type="checkbox"]:checked + .stream-check-ui::after {
   content: '';
   position: absolute;
   left: 4px;
@@ -992,6 +924,49 @@ input[type="range"]::-webkit-slider-thumb {
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+/* 确认弹窗 */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s;
+}
+
+.confirm-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.confirm-box {
+  width: 90%;
+  max-width: 340px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+
+.confirm-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.confirm-msg {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+  line-height: 1.5;
 }
 
 /* Toast */
