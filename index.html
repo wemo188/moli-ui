@@ -290,7 +290,9 @@ document.currentScript.parentNode.insertBefore(_lk, document.currentScript);
   <div class="panel-header">
     <h2>源码仓</h2>
     <div class="panel-close" data-close="sourcePanel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
     </div>
   </div>
   <div class="panel-body">
@@ -298,29 +300,36 @@ document.currentScript.parentNode.insertBefore(_lk, document.currentScript);
       把你的 GitHub 源码粘贴到这里，AI 就能基于真实代码修改，而不是瞎猜。
     </p>
 
+    <div style="margin-bottom:12px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-primary);">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-primary);cursor:pointer;">
+        <input type="checkbox" id="useSourceRepoForAI">
+        <span>发送给 AI 时附带源码仓内容</span>
+      </label>
+    </div>
+
     <div class="btn-row" style="margin-bottom:12px;">
-      <div style="margin-bottom:12px;">
-  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);">
-    <input type="checkbox" id="useSourceRepoForAI">
-    修改功能时，把源码仓一起发给 AI
-  </label>
-</div>
       <button class="btn btn-outline" id="saveSourceBtn" type="button">保存源码</button>
       <button class="btn btn-outline" id="clearSourceBtn" type="button">清空源码</button>
     </div>
 
     <div class="export-section">
-      <div class="export-section-header"><span>index.html</span></div>
+      <div class="export-section-header">
+        <span>index.html</span>
+      </div>
       <textarea id="sourceHtml" class="export-textarea" placeholder="把 index.html 粘贴到这里"></textarea>
     </div>
 
     <div class="export-section">
-      <div class="export-section-header"><span>style.css</span></div>
+      <div class="export-section-header">
+        <span>style.css</span>
+      </div>
       <textarea id="sourceCss" class="export-textarea" placeholder="把 style.css 粘贴到这里"></textarea>
     </div>
 
     <div class="export-section">
-      <div class="export-section-header"><span>script.js</span></div>
+      <div class="export-section-header">
+        <span>script.js</span>
+      </div>
       <textarea id="sourceJs" class="export-textarea" placeholder="把 script.js 粘贴到这里"></textarea>
     </div>
   </div>
