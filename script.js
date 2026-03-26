@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
 
@@ -5,7 +6,7 @@
   var $$ = function(s) { return document.querySelectorAll(s); };
   var LS = {
     get: function(k) { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
-    set: function(k, v) { localStorage.setItem(k, JSON.stringify(v)); },
+    set: function(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
     remove: function(k) { localStorage.removeItem(k); }
   };
 
@@ -28,8 +29,51 @@
     return d.innerHTML;
   }
 
-  // ========== 预设主题 ==========
-  var THEMES = [
+  // ========== IndexedDB（存大字体文件） ==========
+  var IDB = {
+    db: null,
+    open: function(cb) {
+      if (IDB.db) { cb(IDB.db); return; }
+      var req = indexedDB.open('MonoSpaceDB', 1);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('fonts')) {
+          db.createObjectStore('fonts', { keyPath: 'familyName' });
+        }
+      };
+      req.onsuccess = function(e) { IDB.db = e.target.result; cb(IDB.db); };
+      req.onerror = function() { cb(null); };
+    },
+    saveFont: function(fontObj, cb) {
+      IDB.open(function(db) {
+        if (!db) { cb(false); return; }
+        var tx = db.transaction('fonts', 'readwrite');
+        tx.objectStore('fonts').put(fontObj);
+        tx.oncomplete = function() { cb(true); };
+        tx.onerror = function() { cb(false); };
+      });
+    },
+    getAllFonts: function(cb) {
+      IDB.open(function(db) {
+        if (!db) { cb([]); return; }
+        var tx = db.transaction('fonts', 'readonly');
+        var req = tx.objectStore('fonts').getAll();
+        req.onsuccess = function() { cb(req.result || []); };
+        req.onerror = function() { cb([]); };
+      });
+    },
+    deleteFont: function(familyName, cb) {
+      IDB.open(function(db) {
+        if (!db) { cb(); return; }
+        var tx = db.transaction('fonts', 'readwrite');
+        tx.objectStore('fonts').delete(familyName);
+        tx.oncomplete = function() { cb(); };
+      });
+    }
+  };
+
+  // ========== 预设主题（4个） ==========
+  var PRESET_THEMES = [
     {
       id: 'blue-white', name: '蓝白', desc: '清爽蓝白',
       vars: {
@@ -58,24 +102,6 @@
       }
     },
     {
-      id: 'forest', name: '森林', desc: '清新绿意',
-      vars: {
-        '--bg-primary': '#f0f5f1', '--bg-secondary': '#ffffff', '--bg-card': '#ffffff',
-        '--accent': '#7bb88e', '--accent-deep': '#5a9c6e',
-        '--text-primary': '#1a2b1e', '--text-secondary': '#4a6650', '--text-muted': '#8aa892',
-        '--border': '#1a2b1e', '--border-light': 'rgba(123,184,142,0.3)', '--shadow': 'rgba(123,184,142,0.12)'
-      }
-    },
-    {
-      id: 'sunset', name: '日落', desc: '温暖橙调',
-      vars: {
-        '--bg-primary': '#fef6f0', '--bg-secondary': '#ffffff', '--bg-card': '#ffffff',
-        '--accent': '#e8a86b', '--accent-deep': '#d48c4a',
-        '--text-primary': '#2b1e12', '--text-secondary': '#7a5f42', '--text-muted': '#b09878',
-        '--border': '#2b1e12', '--border-light': 'rgba(232,168,107,0.3)', '--shadow': 'rgba(232,168,107,0.12)'
-      }
-    },
-    {
       id: 'midnight', name: '午夜蓝', desc: '深蓝沉稳',
       vars: {
         '--bg-primary': '#0c1525', '--bg-secondary': '#111d32', '--bg-card': '#172740',
@@ -83,27 +109,10 @@
         '--text-primary': '#dbe8ff', '--text-secondary': '#7a9ab5', '--text-muted': '#4a6680',
         '--border': '#223550', '--border-light': 'rgba(173,205,234,0.15)', '--shadow': 'rgba(0,0,0,0.3)'
       }
-    },
-    {
-      id: 'purple', name: '紫雾', desc: '优雅紫调',
-      vars: {
-        '--bg-primary': '#f4f0fa', '--bg-secondary': '#ffffff', '--bg-card': '#ffffff',
-        '--accent': '#a98ec4', '--accent-deep': '#8b6dab',
-        '--text-primary': '#201828', '--text-secondary': '#5a4868', '--text-muted': '#9888a5',
-        '--border': '#201828', '--border-light': 'rgba(169,142,196,0.3)', '--shadow': 'rgba(169,142,196,0.12)'
-      }
-    },
-    {
-      id: 'pure-dark', name: '纯黑', desc: 'OLED 深黑',
-      vars: {
-        '--bg-primary': '#000000', '--bg-secondary': '#0a0a0a', '--bg-card': '#141414',
-        '--accent': '#adcdea', '--accent-deep': '#8ab8de',
-        '--text-primary': '#f0f0f0', '--text-secondary': '#888888', '--text-muted': '#555555',
-        '--border': '#2a2a2a', '--border-light': 'rgba(173,205,234,0.12)', '--shadow': 'rgba(0,0,0,0.5)'
-      }
     }
   ];
 
+  var customThemes = LS.get('customThemes') || [];
   var currentThemeId = LS.get('currentThemeId') || 'blue-white';
 
   // ========== 悬浮球拖拽 ==========
@@ -220,14 +229,24 @@
     }
   }
 
+  function findThemeById(id) {
+    for (var i = 0; i < PRESET_THEMES.length; i++) {
+      if (PRESET_THEMES[i].id === id) return PRESET_THEMES[i];
+    }
+    for (var j = 0; j < customThemes.length; j++) {
+      if (customThemes[j].id === id) return customThemes[j];
+    }
+    return null;
+  }
+
   function renderThemeList() {
     var container = $('#themeList');
     if (!container) return;
-    container.innerHTML = THEMES.map(function(theme) {
+    container.innerHTML = PRESET_THEMES.map(function(theme) {
       var dots = '';
-      var showColors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
-      for (var i = 0; i < showColors.length; i++) {
-        dots += '<div class="theme-color-dot" style="background:' + showColors[i] + '"></div>';
+      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
       }
       return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
         '<div class="theme-card-colors">' + dots + '</div>' +
@@ -238,22 +257,62 @@
 
     container.querySelectorAll('.theme-card').forEach(function(card) {
       card.addEventListener('click', function() {
-        var themeId = card.dataset.theme;
-        for (var i = 0; i < THEMES.length; i++) {
-          if (THEMES[i].id === themeId) {
-            currentThemeId = themeId;
-            LS.set('currentThemeId', themeId);
-            applyThemeVars(THEMES[i].vars);
-            LS.set('aiCSSVars', THEMES[i].vars);
-            updateColorInputs(THEMES[i].vars);
-            renderThemeList();
-            showToast('已切换: ' + THEMES[i].name);
-            break;
-          }
-        }
+        selectTheme(card.dataset.theme);
+      });
+    });
+
+    renderCustomThemeList();
+  }
+
+  function renderCustomThemeList() {
+    var container = $('#customThemeList');
+    if (!container) return;
+    if (customThemes.length === 0) {
+      container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">还没有自定义主题</p>';
+      return;
+    }
+    container.innerHTML = customThemes.map(function(theme, idx) {
+      var dots = '';
+      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
+      }
+      return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
+        '<button class="theme-card-del" onclick="event.stopPropagation();window._delTheme(' + idx + ')">x</button>' +
+        '<div class="theme-card-colors">' + dots + '</div>' +
+        '<div class="theme-card-name">' + esc(theme.name) + '</div>' +
+        '<div class="theme-card-desc">' + esc(theme.desc || '自定义') + '</div>' +
+      '</div>';
+    }).join('');
+
+    container.querySelectorAll('.theme-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectTheme(card.dataset.theme);
       });
     });
   }
+
+  function selectTheme(themeId) {
+    var theme = findThemeById(themeId);
+    if (!theme) return;
+    currentThemeId = themeId;
+    LS.set('currentThemeId', themeId);
+    applyThemeVars(theme.vars);
+    LS.set('aiCSSVars', theme.vars);
+    updateColorInputs(theme.vars);
+    renderThemeList();
+    showToast('已切换: ' + theme.name);
+  }
+
+  window._delTheme = function(idx) {
+    var removed = customThemes.splice(idx, 1)[0];
+    LS.set('customThemes', customThemes);
+    if (currentThemeId === removed.id) {
+      selectTheme('blue-white');
+    }
+    renderThemeList();
+    showToast('已删除: ' + removed.name);
+  };
 
   function updateColorInputs(vars) {
     var map = {
@@ -277,37 +336,63 @@
     $('#applyCustomColors').addEventListener('click', function() {
       var vars = {
         '--bg-primary': $('#colorBg').value,
-        '--bg-card': $('#colorCard').value,
         '--bg-secondary': $('#colorCard').value,
+        '--bg-card': $('#colorCard').value,
         '--accent': $('#colorAccent').value,
         '--accent-deep': $('#colorAccentDeep').value,
         '--text-primary': $('#colorText').value,
         '--border': $('#colorBorder').value
       };
       applyThemeVars(vars);
-      var saved = LS.get('aiCSSVars') || {};
-      var keys = Object.keys(vars);
-      for (var i = 0; i < keys.length; i++) saved[keys[i]] = vars[keys[i]];
-      LS.set('aiCSSVars', saved);
-      currentThemeId = 'custom';
-      LS.set('currentThemeId', 'custom');
+      LS.set('aiCSSVars', vars);
+      currentThemeId = 'custom-temp';
+      LS.set('currentThemeId', 'custom-temp');
       renderThemeList();
       showToast('自定义配色已应用');
     });
   }
 
+  if ($('#saveCustomTheme')) {
+    $('#saveCustomTheme').addEventListener('click', function() {
+      var name = ($('#customThemeName') && $('#customThemeName').value.trim()) || '';
+      if (!name) { showToast('请输入主题名称'); return; }
+      var vars = {
+        '--bg-primary': $('#colorBg').value,
+        '--bg-secondary': $('#colorCard').value,
+        '--bg-card': $('#colorCard').value,
+        '--accent': $('#colorAccent').value,
+        '--accent-deep': $('#colorAccentDeep').value,
+        '--text-primary': $('#colorText').value,
+        '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
+        '--text-muted': '#999999',
+        '--border': $('#colorBorder').value,
+        '--border-light': 'rgba(173,205,234,0.3)',
+        '--shadow': 'rgba(0,0,0,0.06)'
+      };
+      var id = 'custom-' + Date.now();
+      customThemes.push({ id: id, name: name, desc: '自定义', vars: vars });
+      LS.set('customThemes', customThemes);
+      currentThemeId = id;
+      LS.set('currentThemeId', id);
+      applyThemeVars(vars);
+      LS.set('aiCSSVars', vars);
+      renderThemeList();
+      if ($('#customThemeName')) $('#customThemeName').value = '';
+      showToast('主题 "' + name + '" 已保存');
+    });
+  }
+
   if ($('#resetTheme')) {
     $('#resetTheme').addEventListener('click', function() {
-      currentThemeId = 'blue-white';
-      LS.set('currentThemeId', 'blue-white');
-      applyThemeVars(THEMES[0].vars);
-      LS.set('aiCSSVars', THEMES[0].vars);
-      updateColorInputs(THEMES[0].vars);
-      renderThemeList();
+      selectTheme('blue-white');
       var aiStyle = document.getElementById('ai-custom-style');
       if (aiStyle) aiStyle.remove();
       LS.remove('aiCustomCSS');
-      showToast('已恢复默认主题');
+      LS.remove('aiCustomHTML');
+      LS.remove('aiCustomJS');
+      var aiJs = document.getElementById('ai-custom-js');
+      if (aiJs) aiJs.remove();
+      showToast('已恢复默认');
     });
   }
 
@@ -322,8 +407,9 @@
 
   if ($('#clearAllBtn')) {
     $('#clearAllBtn').addEventListener('click', function() {
-      if (!confirm('确定重置所有设置？API、聊天、主题、字体、背景都会清除。')) return;
+      if (!confirm('确定重置所有设置？')) return;
       localStorage.clear();
+      try { indexedDB.deleteDatabase('MonoSpaceDB'); } catch(e) {}
       location.reload();
     });
   }
@@ -359,8 +445,7 @@
   window._useApi = function(i) {
     activeApi = apiConfigs[i];
     LS.set('activeApi', activeApi);
-    renderSavedApis();
-    updateAiStatus();
+    renderSavedApis(); updateAiStatus();
     showToast('已切换至: ' + activeApi.name);
   };
 
@@ -370,8 +455,7 @@
     if (activeApi && activeApi.name === removed.name) {
       activeApi = null; LS.remove('activeApi'); updateAiStatus();
     }
-    renderSavedApis();
-    showToast('已删除');
+    renderSavedApis(); showToast('已删除');
   };
 
   $('#saveApiBtn').addEventListener('click', function() {
@@ -388,8 +472,7 @@
     if (existing >= 0) apiConfigs[existing] = config;
     else apiConfigs.push(config);
     LS.set('apiConfigs', apiConfigs);
-    renderSavedApis();
-    showToast('配置已保存');
+    renderSavedApis(); showToast('配置已保存');
     $('#apiName').value = ''; $('#apiUrl').value = '';
     $('#apiKey').value = ''; $('#apiModel').value = '';
   });
@@ -449,7 +532,7 @@
     .catch(function(err) { showToast('连接失败: ' + err.message); });
   });
 
-  // ========== AI 助手 ==========
+  // ========== AI 助手（含 HTML/JS 持久化） ==========
   var chatMessages = $('#chatMessages');
   var chatInput = $('#chatInput');
   var chatHistory = LS.get('chatHistory') || [];
@@ -483,18 +566,25 @@
   }
 
   function saveChatHistory() {
-    try { LS.set('chatHistory', chatHistory); } catch(e) { /* 超出容量 */ }
+    try {
+      // 只保留最近50条防止超出
+      var toSave = chatHistory.slice(-50);
+      LS.set('chatHistory', toSave);
+    } catch(e) {}
   }
 
-  var SYSTEM_PROMPT = '你是一个强大的网页设计助手。用户会要求你修改当前网页的样式、布局、配色、主题等。\n\n' +
-    '你可以通过以下方式修改网页：\n\n' +
+  var SYSTEM_PROMPT = '你是一个强大的网页全栈助手。你可以修改当前网页的样式、布局、配色，也可以新增功能和交互。\n\n' +
+    '你有以下能力：\n\n' +
     '1. 修改CSS变量（改配色最有效）：\n```cssvar\n--bg-primary: #新颜色;\n--accent: #新颜色;\n```\n\n' +
-    '可用的CSS变量：\n' +
-    '--bg-primary, --bg-secondary, --bg-card, --accent, --accent-deep,\n' +
-    '--text-primary, --text-secondary, --text-muted, --border, --border-light, --shadow, --radius, --radius-sm\n\n' +
-    '2. 注入额外CSS：\n```css\n.hero-title { font-size: 40px; }\n```\n\n' +
-    '3. 替换页面HTML：\n```html-inject\n<div>新内容</div>\n```\n\n' +
-    '注意：改配色优先用 cssvar，回复要简洁。';
+    '可用变量：--bg-primary, --bg-secondary, --bg-card, --accent, --accent-deep, --text-primary, --text-secondary, --text-muted, --border, --border-light, --shadow, --radius, --radius-sm\n\n' +
+    '2. 注入CSS样式：\n```css\n.hero-title { font-size: 40px; }\n```\n\n' +
+    '3. 替换页面主体HTML（会持久化保存）：\n```html-inject\n<div>新内容</div>\n```\n\n' +
+    '4. 注入JavaScript代码（会持久化保存，可以新增功能）：\n```js-inject\nconsole.log("hello");\n```\n\n' +
+    '注意事项：\n' +
+    '- 改配色用 cssvar，改样式用 css，改内容用 html-inject，加功能用 js-inject\n' +
+    '- js-inject 里可以访问 document，可以创建按钮、绑定事件、添加新面板等\n' +
+    '- 所有修改都会被保存，刷新页面不会丢失\n' +
+    '- 回复简洁友好，每次说明改了什么';
 
   function sendMessage() {
     if (!activeApi) { showToast('请先配置并选择 API'); return; }
@@ -516,7 +606,7 @@
     fetch(base + '/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeApi.key },
-      body: JSON.stringify({ model: activeApi.model, messages: messages, max_tokens: 2048 })
+      body: JSON.stringify({ model: activeApi.model, messages: messages, max_tokens: 4096 })
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
@@ -527,12 +617,18 @@
       addChatMsg('assistant', reply);
 
       var m;
+      // CSS 变量
       var r1 = /```cssvar\n?([\s\S]*?)```/g;
       while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
+      // CSS
       var r2 = /```css\n?([\s\S]*?)```/g;
       while ((m = r2.exec(reply)) !== null) applyAiCSS(m[1]);
+      // HTML（持久化）
       var r3 = /```html-inject\n?([\s\S]*?)```/g;
-      while ((m = r3.exec(reply)) !== null) $('#mainContent').innerHTML = m[1];
+      while ((m = r3.exec(reply)) !== null) applyAiHTML(m[1]);
+      // JS（持久化）
+      var r4 = /```js-inject\n?([\s\S]*?)```/g;
+      while ((m = r4.exec(reply)) !== null) applyAiJS(m[1]);
     })
     .catch(function(err) {
       loadingDiv.remove();
@@ -558,32 +654,73 @@
   }
 
   function applyAiCSS(css) {
-    var styleEl = document.getElementById('ai-custom-style');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'ai-custom-style';
-      document.head.appendChild(styleEl);
+    var el = document.getElementById('ai-custom-style');
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'ai-custom-style';
+      document.head.appendChild(el);
     }
-    styleEl.textContent += '\n' + css;
-    try { LS.set('aiCustomCSS', styleEl.textContent); } catch(e) {}
+    el.textContent += '\n' + css;
+    LS.set('aiCustomCSS', el.textContent);
     showToast('样式已应用');
   }
 
-  // 恢复 AI CSS
-  var savedCSS = LS.get('aiCustomCSS');
-  if (savedCSS) {
-    var s = document.createElement('style');
-    s.id = 'ai-custom-style';
-    s.textContent = savedCSS;
-    document.head.appendChild(s);
+  function applyAiHTML(html) {
+    var main = $('#mainContent');
+    if (main) {
+      main.innerHTML = html;
+      LS.set('aiCustomHTML', html);
+      showToast('页面内容已更新');
+    }
   }
 
-  // 恢复 AI CSS 变量
-  var savedVars = LS.get('aiCSSVars');
-  if (savedVars) {
-    var vk = Object.keys(savedVars);
-    for (var vi = 0; vi < vk.length; vi++) {
-      document.documentElement.style.setProperty(vk[vi], savedVars[vk[vi]]);
+  function applyAiJS(code) {
+    try {
+      var fn = new Function(code);
+      fn();
+      // 累加保存
+      var existing = LS.get('aiCustomJS') || '';
+      existing += '\n;' + code;
+      LS.set('aiCustomJS', existing);
+      showToast('功能已添加');
+    } catch(err) {
+      showToast('JS 执行失败: ' + err.message);
+    }
+  }
+
+  // 恢复 AI 的所有修改
+  function restoreAiMods() {
+    // CSS 变量
+    var savedVars = LS.get('aiCSSVars');
+    if (savedVars) {
+      var vk = Object.keys(savedVars);
+      for (var i = 0; i < vk.length; i++) {
+        document.documentElement.style.setProperty(vk[i], savedVars[vk[i]]);
+      }
+    }
+    // CSS
+    var savedCSS = LS.get('aiCustomCSS');
+    if (savedCSS) {
+      var s = document.createElement('style');
+      s.id = 'ai-custom-style';
+      s.textContent = savedCSS;
+      document.head.appendChild(s);
+    }
+    // HTML
+    var savedHTML = LS.get('aiCustomHTML');
+    if (savedHTML) {
+      var main = $('#mainContent');
+      if (main) main.innerHTML = savedHTML;
+    }
+    // JS
+    var savedJS = LS.get('aiCustomJS');
+    if (savedJS) {
+      try {
+        var fn = new Function(savedJS);
+        fn();
+      } catch(e) {
+        console.warn('恢复 AI JS 失败:', e);
+      }
     }
   }
 
@@ -592,7 +729,7 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
 
-  // ========== 字体设置（修复版） ==========
+  // ========== 字体设置（IndexedDB 大文件） ==========
   var builtinFonts = [
     { name: '系统默认', family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif', preview: '系统默认字体 ABCabc' },
     { name: '霞鹜文楷', family: '"LXGW WenKai", serif', preview: '霞鹜文楷 落霞与孤鹜齐飞' },
@@ -604,9 +741,8 @@
 
   var currentFontIndex = LS.get('currentFontIndex');
   var currentFontCustom = LS.get('currentFontCustom') || null;
-  var customFonts = LS.get('customFonts') || [];
+  var customFontMetas = LS.get('customFontMetas') || [];
 
-  // 注入自定义字体的 style 标签
   var fontStyleEl = document.getElementById('custom-font-faces');
   if (!fontStyleEl) {
     fontStyleEl = document.createElement('style');
@@ -615,34 +751,20 @@
   }
 
   function applyFontByIndex(idx) {
-    currentFontIndex = idx;
-    currentFontCustom = null;
+    currentFontIndex = idx; currentFontCustom = null;
     document.body.style.fontFamily = builtinFonts[idx].family;
-    LS.set('currentFontIndex', idx);
-    LS.remove('currentFontCustom');
+    LS.set('currentFontIndex', idx); LS.remove('currentFontCustom');
   }
 
   function applyFontByCustom(familyName) {
-    currentFontIndex = null;
-    currentFontCustom = familyName;
+    currentFontIndex = null; currentFontCustom = familyName;
     document.body.style.fontFamily = '"' + familyName + '", sans-serif';
-    LS.remove('currentFontIndex');
-    LS.set('currentFontCustom', familyName);
+    LS.remove('currentFontIndex'); LS.set('currentFontCustom', familyName);
   }
 
-  function rebuildFontFaces() {
-    var css = '';
-    for (var i = 0; i < customFonts.length; i++) {
-      var f = customFonts[i];
-      if (f.dataUrl) {
-        css += '@font-face {\n';
-        css += '  font-family: "' + f.familyName + '";\n';
-        css += '  src: url(' + f.dataUrl + ');\n';
-        css += '  font-display: swap;\n';
-        css += '}\n';
-      }
-    }
-    fontStyleEl.textContent = css;
+  function registerFontFromDataUrl(familyName, dataUrl) {
+    var css = '@font-face { font-family: "' + familyName + '"; src: url(' + dataUrl + '); font-display: swap; }\n';
+    fontStyleEl.textContent += css;
   }
 
   function renderFontList() {
@@ -662,8 +784,7 @@
       item.addEventListener('click', function() {
         var idx = parseInt(item.dataset.idx);
         applyFontByIndex(idx);
-        renderFontList();
-        renderCustomFonts();
+        renderFontList(); renderCustomFonts();
         showToast('已切换: ' + builtinFonts[idx].name);
       });
     });
@@ -671,13 +792,13 @@
 
   function renderCustomFonts() {
     var container = $('#customFonts');
-    if (customFonts.length === 0) { container.innerHTML = ''; return; }
-    container.innerHTML = customFonts.map(function(f, idx) {
+    if (customFontMetas.length === 0) { container.innerHTML = ''; return; }
+    container.innerHTML = customFontMetas.map(function(f, idx) {
       var isActive = (currentFontCustom === f.familyName);
       return '<div class="font-item' + (isActive ? ' active' : '') + '" data-cidx="' + idx + '">' +
         '<div>' +
-          '<div class="font-item-preview" style="font-family:\'' + f.familyName + '\'">' + f.name + ' 永远相信美好</div>' +
-          '<div class="font-item-name">' + f.name + ' (自定义)</div>' +
+          '<div class="font-item-preview" style="font-family:\'' + f.familyName + '\'">' + esc(f.name) + ' 永远相信美好</div>' +
+          '<div class="font-item-name">' + esc(f.name) + ' (自定义)</div>' +
         '</div>' +
         '<div class="font-item-check"></div>' +
       '</div>';
@@ -686,15 +807,30 @@
     container.querySelectorAll('.font-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var cidx = parseInt(item.dataset.cidx);
-        applyFontByCustom(customFonts[cidx].familyName);
-        renderFontList();
-        renderCustomFonts();
-        showToast('已切换: ' + customFonts[cidx].name);
+        applyFontByCustom(customFontMetas[cidx].familyName);
+        renderFontList(); renderCustomFonts();
+        showToast('已切换: ' + customFontMetas[cidx].name);
       });
     });
   }
 
-  // 上传字体 — 用 readAsDataURL 避免大文件问题
+  // 从 IndexedDB 恢复所有自定义字体
+  function restoreCustomFontsFromDB() {
+    IDB.getAllFonts(function(fonts) {
+      for (var i = 0; i < fonts.length; i++) {
+        registerFontFromDataUrl(fonts[i].familyName, fonts[i].dataUrl);
+      }
+      // 恢复当前选择的字体
+      if (currentFontCustom) {
+        document.fonts.load('16px "' + currentFontCustom + '"').then(function() {
+          document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
+        }).catch(function() {});
+      }
+      renderCustomFonts();
+    });
+  }
+
+  // 上传字体
   var fontUploadArea = $('#fontUploadArea');
   var fontFileInput = $('#fontFileInput');
   fontUploadArea.addEventListener('click', function() { fontFileInput.click(); });
@@ -703,54 +839,39 @@
     var file = e.target.files[0];
     if (!file) return;
 
-    // 限制大小 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('字体文件太大，请选择 5MB 以内的');
-      fontFileInput.value = '';
-      return;
-    }
-
     var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
     var familyName = 'Custom-' + fontName + '-' + Date.now();
 
-    showToast('正在加载字体...');
+    showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
 
     var reader = new FileReader();
     reader.onload = function(ev) {
       var dataUrl = ev.target.result;
 
-      // 用 @font-face 方式注册
-      var fontInfo = { name: fontName, familyName: familyName, dataUrl: dataUrl };
-      customFonts.push(fontInfo);
+      // 注册字体
+      registerFontFromDataUrl(familyName, dataUrl);
 
-      // 保存（可能会因为太大失败）
-      try {
-        LS.set('customFonts', customFonts);
-      } catch(err) {
-        // 存不下就不存 dataUrl，只保留名字
-        fontInfo.dataUrl = null;
-        try { LS.set('customFonts', customFonts); } catch(e2) {}
-        showToast('字体已加载，但文件太大无法持久保存');
-      }
+      // 存到 IndexedDB（支持大文件）
+      IDB.saveFont({ familyName: familyName, name: fontName, dataUrl: dataUrl }, function(ok) {
+        if (!ok) showToast('存储失败，字体本次可用但不会持久');
+      });
 
-      rebuildFontFaces();
+      // 记录元数据到 localStorage（很小，只有名字）
+      customFontMetas.push({ name: fontName, familyName: familyName });
+      LS.set('customFontMetas', customFontMetas);
 
-      // 等字体加载完再应用
+      // 等字体加载完
       document.fonts.load('16px "' + familyName + '"').then(function() {
         applyFontByCustom(familyName);
-        renderFontList();
-        renderCustomFonts();
+        renderFontList(); renderCustomFonts();
         showToast('字体 "' + fontName + '" 已加载');
       }).catch(function() {
         applyFontByCustom(familyName);
-        renderFontList();
-        renderCustomFonts();
+        renderFontList(); renderCustomFonts();
         showToast('字体已添加');
       });
     };
-    reader.onerror = function() {
-      showToast('读取字体文件失败');
-    };
+    reader.onerror = function() { showToast('读取文件失败'); };
     reader.readAsDataURL(file);
     fontFileInput.value = '';
   });
@@ -767,39 +888,31 @@
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(ev) {
-      var dataUrl = ev.target.result;
-      $('#bgPreviewImg').src = dataUrl;
+      $('#bgPreviewImg').src = ev.target.result;
       $('#bgPreview').classList.remove('hidden');
-      bgData = { url: dataUrl };
+      bgData = { url: ev.target.result };
     };
     reader.readAsDataURL(file);
     bgFileInput.value = '';
   });
 
-  $('#bgBlur').addEventListener('input', function(e) {
-    $('#bgBlurVal').textContent = e.target.value + 'px';
-  });
-  $('#bgDark').addEventListener('input', function(e) {
-    $('#bgDarkVal').textContent = e.target.value + '%';
-  });
+  $('#bgBlur').addEventListener('input', function(e) { $('#bgBlurVal').textContent = e.target.value + 'px'; });
+  $('#bgDark').addEventListener('input', function(e) { $('#bgDarkVal').textContent = e.target.value + '%'; });
 
   $('#applyBgBtn').addEventListener('click', function() {
     if (!bgData) { showToast('请先上传图片'); return; }
     bgData.blur = $('#bgBlur').value;
     bgData.dark = $('#bgDark').value;
     applyBg(bgData);
-    try { LS.set('bgData', bgData); } catch(e) { showToast('图片太大无法保存'); }
+    try { LS.set('bgData', bgData); } catch(e) { showToast('图片太大无法持久保存'); }
     showToast('背景已应用');
   });
 
   $('#removeBgBtn').addEventListener('click', function() {
-    bgData = null;
-    LS.remove('bgData');
+    bgData = null; LS.remove('bgData');
     var layer = $('#bgLayer');
-    layer.style.backgroundImage = 'none';
-    layer.style.filter = '';
-    layer.style.inset = '0';
-    layer.style.setProperty('--bg-overlay-alpha', '0');
+    layer.style.backgroundImage = 'none'; layer.style.filter = '';
+    layer.style.inset = '0'; layer.style.setProperty('--bg-overlay-alpha', '0');
     $('#bgPreview').classList.add('hidden');
     showToast('背景已移除');
   });
@@ -814,41 +927,93 @@
     layer.style.setProperty('--bg-overlay-alpha', (parseInt(data.dark) || 30) / 100);
   }
 
+  // ========== 导出代码 ==========
+  if ($('#generateExport')) {
+    $('#generateExport').addEventListener('click', function() {
+      var aiCSS = LS.get('aiCustomCSS') || '';
+      var aiHTML = LS.get('aiCustomHTML') || '';
+      var aiJS = LS.get('aiCustomJS') || '';
+      var aiVars = LS.get('aiCSSVars') || {};
+
+      // 生成 style.css：把当前 CSS 变量写进 :root
+      var originalCSS = '';
+      var styleSheets = document.querySelectorAll('link[rel="stylesheet"]');
+      // 我们直接用提示告诉用户手动操作
+      var varsCSS = ':root {\n';
+      var vk = Object.keys(aiVars);
+      for (var i = 0; i < vk.length; i++) {
+        varsCSS += '  ' + vk[i] + ': ' + aiVars[vk[i]] + ';\n';
+      }
+      varsCSS += '}\n';
+
+      var exportCSS = '/* === 以下 :root 覆盖替换 style.css 最顶部的 :root === */\n' + varsCSS;
+      if (aiCSS) {
+        exportCSS += '\n/* === AI 注入的额外样式，追加到 style.css 末尾 === */\n' + aiCSS;
+      }
+
+      var exportHTML = '';
+      if (aiHTML) {
+        exportHTML = '<!-- 替换 index.html 中 <main id="mainContent"> 到 </main> 之间的内容 -->\n' + aiHTML;
+      } else {
+        exportHTML = '（没有 HTML 修改）';
+      }
+
+      var exportJS = '';
+      if (aiJS) {
+        exportJS = '// 将以下代码追加到 script.js 的 init() 函数末尾\n' + aiJS;
+      } else {
+        exportJS = '（没有 JS 修改）';
+      }
+
+      $('#exportHtml').value = exportHTML;
+      $('#exportCss').value = exportCSS;
+      $('#exportJs').value = exportJS;
+      $('#exportOutput').classList.remove('hidden');
+      showToast('代码已生成');
+    });
+  }
+
+  window._copyExport = function(id) {
+    var el = $('#' + id);
+    if (!el) return;
+    el.select();
+    el.setSelectionRange(0, 999999);
+    try {
+      navigator.clipboard.writeText(el.value).then(function() {
+        showToast('已复制');
+      }).catch(function() {
+        document.execCommand('copy');
+        showToast('已复制');
+      });
+    } catch(e) {
+      document.execCommand('copy');
+      showToast('已复制');
+    }
+  };
+
   // ========== 初始化 ==========
   function init() {
-    // API
     renderSavedApis();
     updateAiStatus();
-
-    // 聊天记录
     restoreChatHistory();
-
-    // 字体
-    rebuildFontFaces();
+    restoreAiMods();
+    renderThemeList();
     renderFontList();
-    renderCustomFonts();
-    if (currentFontCustom) {
-      document.fonts.load('16px "' + currentFontCustom + '"').then(function() {
-        document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
-      }).catch(function() {});
-    } else if (currentFontIndex !== null && currentFontIndex !== undefined && builtinFonts[currentFontIndex]) {
+    restoreCustomFontsFromDB();
+
+    // 恢复内置字体选择
+    if (currentFontCustom === null && currentFontIndex !== null && currentFontIndex !== undefined && builtinFonts[currentFontIndex]) {
       document.body.style.fontFamily = builtinFonts[currentFontIndex].family;
     }
 
-    // 主题
-    renderThemeList();
+    // 恢复主题颜色选择器
     var themeVars = LS.get('aiCSSVars');
-    if (themeVars) {
-      updateColorInputs(themeVars);
-    }
+    if (themeVars) updateColorInputs(themeVars);
 
-    // 背景图
+    // 恢复背景
     if (bgData) {
       applyBg(bgData);
-      if (bgData.url) {
-        $('#bgPreviewImg').src = bgData.url;
-        $('#bgPreview').classList.remove('hidden');
-      }
+      if (bgData.url) { $('#bgPreviewImg').src = bgData.url; $('#bgPreview').classList.remove('hidden'); }
       if (bgData.blur) { $('#bgBlur').value = bgData.blur; $('#bgBlurVal').textContent = bgData.blur + 'px'; }
       if (bgData.dark) { $('#bgDark').value = bgData.dark; $('#bgDarkVal').textContent = bgData.dark + '%'; }
     }
