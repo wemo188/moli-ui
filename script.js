@@ -346,12 +346,10 @@
   window._editApi = function(i) {
     var config = apiConfigs[i];
     if (!config) return;
-
     $('#apiName').value = config.name || '';
     $('#apiUrl').value = config.url || '';
     $('#apiKey').value = config.key || '';
     $('#apiModel').value = config.model || '';
-
     openPanel('apiPanel');
     showToast('已载入配置，可直接修改后保存');
   };
@@ -413,9 +411,7 @@
     var base = url.replace(/\/+$/, '');
 
     fetch(base + '/models', {
-      headers: {
-        'Authorization': 'Bearer ' + key
-      }
+      headers: { 'Authorization': 'Bearer ' + key }
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
@@ -486,20 +482,66 @@
   });
 
   // ========= 源码仓 =========
-  function saveSourceRepo() {
+  function getSourceRepo() {
+    return LS.get('sourceRepo') || { html: '', css: '', js: '', enabled: false };
+  }
+
+  function setSourceRepo(repo) {
     LS.set('sourceRepo', {
-      html: ($('#sourceHtml').value || ''),
-      css: ($('#sourceCss').value || ''),
-      js: ($('#sourceJs').value || '')
+      html: repo.html || '',
+      css: repo.css || '',
+      js: repo.js || '',
+      enabled: !!repo.enabled
     });
-    showToast('源码已保存');
   }
 
   function restoreSourceRepo() {
-    var repo = LS.get('sourceRepo') || {};
+    var repo = getSourceRepo();
     if ($('#sourceHtml')) $('#sourceHtml').value = repo.html || '';
     if ($('#sourceCss')) $('#sourceCss').value = repo.css || '';
     if ($('#sourceJs')) $('#sourceJs').value = repo.js || '';
+    if ($('#useSourceRepoForAI')) $('#useSourceRepoForAI').checked = !!repo.enabled;
+  }
+
+  function saveSourceRepo() {
+    var repo = {
+      html: ($('#sourceHtml') ? $('#sourceHtml').value : ''),
+      css: ($('#sourceCss') ? $('#sourceCss').value : ''),
+      js: ($('#sourceJs') ? $('#sourceJs').value : ''),
+      enabled: ($('#useSourceRepoForAI') ? $('#useSourceRepoForAI').checked : false)
+    };
+    setSourceRepo(repo);
+    showToast('源码仓已保存');
+  }
+
+  function updateSourceRepoFile(type, content) {
+    var repo = getSourceRepo();
+    if (type === 'html') repo.html = content;
+    if (type === 'css') repo.css = content;
+    if (type === 'js') repo.js = content;
+    setSourceRepo(repo);
+    restoreSourceRepo();
+  }
+
+  function sourceRepoEnabled() {
+    var repo = getSourceRepo();
+    return !!repo.enabled && (!!repo.html || !!repo.css || !!repo.js);
+  }
+
+  function getSourceRepoText() {
+    var repo = getSourceRepo();
+    if (!repo.enabled) return '';
+    if (!repo.html && !repo.css && !repo.js) return '';
+    return (
+      '\n\n=== 用户提供的真实源码（你必须优先基于这些源码修改） ===\n\n' +
+      '[index.html]\n' + (repo.html || '') + '\n\n' +
+      '[style.css]\n' + (repo.css || '') + '\n\n' +
+      '[script.js]\n' + (repo.js || '') + '\n\n' +
+      '如果用户要求修改功能，你应该优先输出完整文件代码块：\n' +
+      '```source-html\n完整 index.html\n```\n' +
+      '```source-css\n完整 style.css\n```\n' +
+      '```source-js\n完整 script.js\n```\n'
+    );
   }
 
   if ($('#saveSourceBtn')) {
@@ -509,24 +551,19 @@
   if ($('#clearSourceBtn')) {
     $('#clearSourceBtn').addEventListener('click', function() {
       if (!confirm('确定清空源码仓内容吗？')) return;
-      LS.remove('sourceRepo');
-      $('#sourceHtml').value = '';
-      $('#sourceCss').value = '';
-      $('#sourceJs').value = '';
+      setSourceRepo({ html: '', css: '', js: '', enabled: false });
+      restoreSourceRepo();
       showToast('源码仓已清空');
     });
   }
 
-  function getSourceRepoText() {
-    var repo = LS.get('sourceRepo') || {};
-    if (!repo.html && !repo.css && !repo.js) return '';
-    return (
-      '\n\n=== 用户提供的真实源码（优先基于这些源码修改） ===\n\n' +
-      '[index.html]\n' + (repo.html || '') + '\n\n' +
-      '[style.css]\n' + (repo.css || '') + '\n\n' +
-      '[script.js]\n' + (repo.js || '') + '\n\n' +
-      '如果用户要求修改功能，请优先基于以上真实源码进行修改，而不是另造假按钮或假输入框。\n'
-    );
+  if ($('#useSourceRepoForAI')) {
+    $('#useSourceRepoForAI').addEventListener('change', function() {
+      var repo = getSourceRepo();
+      repo.enabled = this.checked;
+      setSourceRepo(repo);
+      showToast(this.checked ? '已开启：发送源码仓给 AI' : '已关闭：不发送源码仓');
+    });
   }
 
   // ========= AI 助手 =========
@@ -576,25 +613,25 @@
   }
 
   var SYSTEM_PROMPT =
-    '你是一个内嵌在网页中的AI助手。你不是普通聊天AI。你已经运行在用户的网页里。\n\n' +
-    '重要：你不需要用户给你代码。你已经在这个网页内部运行。你的回复中的代码会被自动执行并持久保存。\n' +
-    '你绝对不能说"请把代码发给我"、"我无法访问你的文件"之类的话。你就在这个网页里，你可以直接修改它。\n\n' +
-    '你有以下能力：\n' +
-    '1. 改配色：```cssvar``` 代码块\n' +
-    '2. 改样式：```css``` 代码块\n' +
-    '3. 改主页面内容：```html-inject``` 代码块\n' +
-    '4. 改功能或新增功能：```js-inject``` 代码块\n\n' +
-    '现有重要元素：\n' +
-    '#mainContent #apiPanel #apiName #apiUrl #apiKey #apiModel #saveApiBtn #testApiBtn #fetchModelsBtn #savedApis\n' +
-    '#aiPanel #chatMessages #chatInput #sendBtn #aiStatus\n' +
-    '#themePanel #themeList #customThemeList #colorBg #colorCard #colorAccent #colorAccentDeep #colorText #colorBorder\n' +
-    '#fontPanel #fontList #fontUploadArea #customFonts\n' +
-    '#bgPanel #bgUploadArea #bgPreview #bgBlur #bgDark #applyBgBtn #removeBgBtn\n' +
-    '#sourcePanel #sourceHtml #sourceCss #sourceJs #saveSourceBtn\n' +
-    '#floatingBall #ballMenu #bgLayer #overlay #toast\n\n' +
-    '如果用户要求修改已有功能，优先修改现有逻辑，而不是新增假的替代UI。\n' +
-    '比如“API配置可编辑”应该修改 savedApis 列表和编辑回填逻辑，而不是新增一个独立输入框。\n' +
-    '回复简洁友好。';
+    '你是一个内嵌在网页中的AI开发助手。你已经运行在用户的网页里。\n\n' +
+    '重要规则：\n' +
+    '1. 你不能说“请把代码发给我”“我无法访问文件”。\n' +
+    '2. 如果源码仓被启用并有真实源码，你必须优先基于源码仓工作。\n' +
+    '3. 修改已有功能时，优先输出完整文件内容，而不是临时伪造一个按钮或输入框。\n' +
+    '4. 只有在用户明确要运行时预览时，才使用 html-inject / js-inject / css 这种注入方式。\n\n' +
+    '你支持以下回复格式：\n' +
+    'A. 修改真实源码（优先推荐）\n' +
+    '```source-html\n完整 index.html\n```\n' +
+    '```source-css\n完整 style.css\n```\n' +
+    '```source-js\n完整 script.js\n```\n\n' +
+    'B. 修改运行时页面（仅用于即时预览）\n' +
+    '```cssvar\n--accent: #ff6600;\n```\n' +
+    '```css\n.card { border-radius: 20px; }\n```\n' +
+    '```html-inject\n<div>新页面内容</div>\n```\n' +
+    '```js-inject\ndocument.getElementById("apiUrl").type = "text";\n```\n\n' +
+    '如果用户说的是“修复功能 / 修改逻辑 / 导出后也要保留”，你应该优先输出 source-html / source-css / source-js。\n' +
+    '如果用户只是说“先预览效果”，你可以用 html-inject / css / js-inject。\n' +
+    '禁止偷懒做假功能。';
 
   function buildUserContent(text) {
     if (visionImageData) {
@@ -615,14 +652,12 @@
     var text = chatInput.value.trim();
     if (!text && !visionImageData) return;
 
-    var sourceRepoText = getSourceRepoText();
-
     var wrappedText =
       '请直接修改当前网页，不要索要代码。\n' +
       '如果能修改，请直接返回 cssvar / css / html-inject / js-inject 代码块。\n' +
-      '如果源码仓有内容，必须优先基于源码仓内容修改，而不是瞎猜。\n' +
+      '如果启用了源码仓且用户是在改功能/逻辑，请优先返回 source-html / source-css / source-js。\n' +
       '用户需求：' + (text || '请分析这张图片并给出修改方案。') +
-      sourceRepoText;
+      getSourceRepoText();
 
     var displayText = text || '[发送了一张图片]';
 
@@ -646,8 +681,7 @@
         role: 'system',
         content:
           '再次强调：你已经在网页内部运行，不允许要求用户提供代码、文件、项目结构、工作区、仓库内容。' +
-          '你必须直接输出可执行代码块来修改网页。' +
-          '禁止回复“请把代码发给我”“我无法访问文件”“我需要项目结构”。'
+          '你必须直接输出可执行代码块来修改网页。'
       }
     ];
 
@@ -747,6 +781,26 @@
   function applyReplyMods(reply) {
     var m;
 
+    // 源码仓完整替换
+    var rSourceHtml = /```source-html\n?([\s\S]*?)```/g;
+    while ((m = rSourceHtml.exec(reply)) !== null) {
+      updateSourceRepoFile('html', m[1].trim());
+      showToast('源码仓 index.html 已更新');
+    }
+
+    var rSourceCss = /```source-css\n?([\s\S]*?)```/g;
+    while ((m = rSourceCss.exec(reply)) !== null) {
+      updateSourceRepoFile('css', m[1].trim());
+      showToast('源码仓 style.css 已更新');
+    }
+
+    var rSourceJs = /```source-js\n?([\s\S]*?)```/g;
+    while ((m = rSourceJs.exec(reply)) !== null) {
+      updateSourceRepoFile('js', m[1].trim());
+      showToast('源码仓 script.js 已更新');
+    }
+
+    // 运行时注入
     var r1 = /```cssvar\n?([\s\S]*?)```/g;
     while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
 
@@ -850,8 +904,6 @@
   });
 
   // ========= 图片给 AI =========
-  var visionImageData = null;
-
   function clearVisionImage() {
     visionImageData = null;
     $('#imagePreviewBox').classList.add('hidden');
@@ -1018,6 +1070,7 @@
         name: fontName,
         familyName: familyName
       });
+
       LS.set('customFontMetas', customFontMetas);
 
       document.fonts.load('16px "' + familyName + '"').then(function() {
@@ -1041,7 +1094,7 @@
     $('#fontFileInput').value = '';
   });
 
-  // ========= 背景图片 =========
+  // ========= 背景 =========
   var bgData = LS.get('bgData') || null;
 
   $('#bgUploadArea').addEventListener('click', function() {
@@ -1124,6 +1177,7 @@
 
   function renderThemeList() {
     var container = $('#themeList');
+    if (!container) return;
     container.innerHTML = PRESET_THEMES.map(function(theme) {
       var dots = '';
       var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
@@ -1148,6 +1202,8 @@
 
   function renderCustomThemeList() {
     var container = $('#customThemeList');
+    if (!container) return;
+
     if (customThemes.length === 0) {
       container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">还没有自定义主题</p>';
       return;
@@ -1183,6 +1239,7 @@
       colorText: '--text-primary',
       colorBorder: '--border'
     };
+
     Object.keys(map).forEach(function(id) {
       var el = $('#' + id);
       var val = vars[map[id]];
@@ -1276,9 +1333,12 @@
     try {
       chatHistory = [];
       LS.remove('chatHistory');
-      chatMessages.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
+      var chatBox = $('#chatMessages');
+      if (chatBox) {
+        chatBox.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
+      }
       showToast('已清空聊天记录');
-    } catch (e) {
+    } catch(e) {
       showToast('清空失败');
     }
   });
@@ -1292,6 +1352,19 @@
 
   // ========= 导出 =========
   $('#generateExport').addEventListener('click', function() {
+    var repo = getSourceRepo();
+
+    // 优先导出源码仓
+    if (repo.html || repo.css || repo.js) {
+      $('#exportHtml').value = repo.html || '（源码仓中没有 index.html）';
+      $('#exportCss').value = repo.css || '（源码仓中没有 style.css）';
+      $('#exportJs').value = repo.js || '（源码仓中没有 script.js）';
+      $('#exportOutput').classList.remove('hidden');
+      showToast('已导出源码仓内容');
+      return;
+    }
+
+    // 没有源码仓才退回补丁导出
     var aiCSS = LS.get('aiCustomCSS') || '';
     var aiHTML = LS.get('aiCustomHTML') || '';
     var aiJS = LS.get('aiCustomJS') || '';
@@ -1313,7 +1386,7 @@
     $('#exportCss').value = exportCSS;
     $('#exportJs').value = exportJS;
     $('#exportOutput').classList.remove('hidden');
-    showToast('代码已生成');
+    showToast('已导出运行时补丁');
   });
 
   window._copyExport = function(id) {
