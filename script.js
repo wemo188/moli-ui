@@ -78,16 +78,6 @@
         req.onsuccess = function() { resolve(req.result || []); };
         req.onerror = function() { resolve([]); };
       });
-    },
-    deleteFont: async function(id) {
-      var db = await DB.open();
-      if (!db) return;
-      return new Promise(function(resolve) {
-        var tx = db.transaction('fonts', 'readwrite');
-        tx.objectStore('fonts').delete(id);
-        tx.oncomplete = function() { resolve(); };
-        tx.onerror = function() { resolve(); };
-      });
     }
   };
 
@@ -169,6 +159,8 @@
 
   var customThemes = LS.get('customThemes') || [];
   var currentThemeId = LS.get('currentThemeId') || 'blue-white';
+  var useStream = LS.get('useStream');
+  if (useStream === null) useStream = true;
 
   // ========= 悬浮球 =========
   var ball = $('#floatingBall');
@@ -523,11 +515,6 @@
     restoreSourceRepo();
   }
 
-  function sourceRepoEnabled() {
-    var repo = getSourceRepo();
-    return !!repo.enabled && (!!repo.html || !!repo.css || !!repo.js);
-  }
-
   function getSourceRepoText() {
     var repo = getSourceRepo();
     if (!repo.enabled) return '';
@@ -537,10 +524,7 @@
       '[index.html]\n' + (repo.html || '') + '\n\n' +
       '[style.css]\n' + (repo.css || '') + '\n\n' +
       '[script.js]\n' + (repo.js || '') + '\n\n' +
-      '如果用户要求修改功能，你应该优先输出完整文件代码块：\n' +
-      '```source-html\n完整 index.html\n```\n' +
-      '```source-css\n完整 style.css\n```\n' +
-      '```source-js\n完整 script.js\n```\n'
+      '如果用户要求修改功能，你应该优先返回 source-html / source-css / source-js 代码块。\n'
     );
   }
 
@@ -571,8 +555,6 @@
   var chatInput = $('#chatInput');
   var chatHistory = LS.get('chatHistory') || [];
   var visionImageData = null;
-  var useStream = LS.get('useStream');
-  if (useStream === null) useStream = true;
 
   function updateAiStatus() {
     var status = $('#aiStatus');
@@ -614,7 +596,7 @@
     } catch(e) {}
   }
 
-    var SYSTEM_PROMPT =
+  var SYSTEM_PROMPT =
     '你是网页内置开发助手，已经运行在当前网页里。\n' +
     '不要索要代码，不要说无法访问文件。\n' +
     '你可以直接修改网页。\n\n' +
@@ -642,6 +624,129 @@
       ];
     }
     return text;
+  }
+
+  function cleanReplyForDisplay(reply) {
+    var cleaned = reply;
+    cleaned = cleaned.replace(/```source-html\n?[\s\S]*?```/g, '[已更新源码仓 index.html]');
+    cleaned = cleaned.replace(/```source-css\n?[\s\S]*?```/g, '[已更新源码仓 style.css]');
+    cleaned = cleaned.replace(/```source-js\n?[\s\S]*?```/g, '[已更新源码仓 script.js]');
+    return cleaned;
+  }
+
+  function applyReplyMods(reply) {
+    var m;
+
+    var rSourceHtml = /```source-html\n?([\s\S]*?)```/g;
+    while ((m = rSourceHtml.exec(reply)) !== null) {
+      updateSourceRepoFile('html', m[1].trim());
+      showToast('源码仓 index.html 已更新');
+    }
+
+    var rSourceCss = /```source-css\n?([\s\S]*?)```/g;
+    while ((m = rSourceCss.exec(reply)) !== null) {
+      updateSourceRepoFile('css', m[1].trim());
+      showToast('源码仓 style.css 已更新');
+    }
+
+    var rSourceJs = /```source-js\n?([\s\S]*?)```/g;
+    while ((m = rSourceJs.exec(reply)) !== null) {
+      updateSourceRepoFile('js', m[1].trim());
+      showToast('源码仓 script.js 已更新');
+    }
+
+    var r1 = /```cssvar\n?([\s\S]*?)```/g;
+    while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
+
+    var r2 = /```css\n?([\s\S]*?)```/g;
+    while ((m = r2.exec(reply)) !== null) applyAiCSS(m[1]);
+
+    var r3 = /```html-inject\n?([\s\S]*?)```/g;
+    while ((m = r3.exec(reply)) !== null) applyAiHTML(m[1]);
+
+    var r4 = /```js-inject\n?([\s\S]*?)```/g;
+    while ((m = r4.exec(reply)) !== null) applyAiJS(m[1]);
+  }
+
+  function applyAiCSSVars(text) {
+    var lines = text.split('\n');
+    var savedVars = LS.get('aiCSSVars') || {};
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line || line.indexOf('--') !== 0) continue;
+      var parts = line.replace(';', '').split(':');
+      if (parts.length < 2) continue;
+      var varName = parts[0].trim();
+      var varValue = parts.slice(1).join(':').trim();
+      document.documentElement.style.setProperty(varName, varValue);
+      savedVars[varName] = varValue;
+    }
+    LS.set('aiCSSVars', savedVars);
+    showToast('配色已更新');
+  }
+
+  function applyAiCSS(css) {
+    var styleEl = document.getElementById('ai-custom-style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'ai-custom-style';
+      document.head.appendChild(styleEl);
+    }
+    styleEl.textContent += '\n' + css;
+    LS.set('aiCustomCSS', styleEl.textContent);
+    showToast('样式已应用');
+  }
+
+  function applyAiHTML(html) {
+    $('#mainContent').innerHTML = html;
+    LS.set('aiCustomHTML', html);
+    showToast('页面内容已更新');
+  }
+
+  function applyAiJS(code) {
+    try {
+      var fn = new Function(code);
+      fn();
+      var existing = LS.get('aiCustomJS') || '';
+      existing += '\n;' + code;
+      LS.set('aiCustomJS', existing);
+      showToast('功能已添加');
+    } catch (err) {
+      showToast('JS 执行失败: ' + err.message);
+    }
+  }
+
+  function restoreAiMods() {
+    var savedVars = LS.get('aiCSSVars');
+    if (savedVars) {
+      var vk = Object.keys(savedVars);
+      for (var i = 0; i < vk.length; i++) {
+        document.documentElement.style.setProperty(vk[i], savedVars[vk[i]]);
+      }
+    }
+
+    var savedCSS = LS.get('aiCustomCSS');
+    if (savedCSS) {
+      var s = document.createElement('style');
+      s.id = 'ai-custom-style';
+      s.textContent = savedCSS;
+      document.head.appendChild(s);
+    }
+
+    var savedHTML = LS.get('aiCustomHTML');
+    if (savedHTML) {
+      $('#mainContent').innerHTML = savedHTML;
+    }
+
+    var savedJS = LS.get('aiCustomJS');
+    if (savedJS) {
+      try {
+        var fn = new Function(savedJS);
+        fn();
+      } catch (e) {
+        console.warn('恢复 AI JS 失败', e);
+      }
+    }
   }
 
   async function sendMessage() {
@@ -807,123 +912,6 @@
     }
   }
 
-  function applyReplyMods(reply) {
-    var m;
-
-    // 源码仓完整替换
-    var rSourceHtml = /```source-html\n?([\s\S]*?)```/g;
-    while ((m = rSourceHtml.exec(reply)) !== null) {
-      updateSourceRepoFile('html', m[1].trim());
-      showToast('源码仓 index.html 已更新');
-    }
-
-    var rSourceCss = /```source-css\n?([\s\S]*?)```/g;
-    while ((m = rSourceCss.exec(reply)) !== null) {
-      updateSourceRepoFile('css', m[1].trim());
-      showToast('源码仓 style.css 已更新');
-    }
-
-    var rSourceJs = /```source-js\n?([\s\S]*?)```/g;
-    while ((m = rSourceJs.exec(reply)) !== null) {
-      updateSourceRepoFile('js', m[1].trim());
-      showToast('源码仓 script.js 已更新');
-    }
-
-    // 运行时注入
-    var r1 = /```cssvar\n?([\s\S]*?)```/g;
-    while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
-
-    var r2 = /```css\n?([\s\S]*?)```/g;
-    while ((m = r2.exec(reply)) !== null) applyAiCSS(m[1]);
-
-    var r3 = /```html-inject\n?([\s\S]*?)```/g;
-    while ((m = r3.exec(reply)) !== null) applyAiHTML(m[1]);
-
-    var r4 = /```js-inject\n?([\s\S]*?)```/g;
-    while ((m = r4.exec(reply)) !== null) applyAiJS(m[1]);
-  }
-
-  function applyAiCSSVars(text) {
-    var lines = text.split('\n');
-    var savedVars = LS.get('aiCSSVars') || {};
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i].trim();
-      if (!line || line.indexOf('--') !== 0) continue;
-      var parts = line.replace(';', '').split(':');
-      if (parts.length < 2) continue;
-      var varName = parts[0].trim();
-      var varValue = parts.slice(1).join(':').trim();
-      document.documentElement.style.setProperty(varName, varValue);
-      savedVars[varName] = varValue;
-    }
-    LS.set('aiCSSVars', savedVars);
-    showToast('配色已更新');
-  }
-
-  function applyAiCSS(css) {
-    var styleEl = document.getElementById('ai-custom-style');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'ai-custom-style';
-      document.head.appendChild(styleEl);
-    }
-    styleEl.textContent += '\n' + css;
-    LS.set('aiCustomCSS', styleEl.textContent);
-    showToast('样式已应用');
-  }
-
-  function applyAiHTML(html) {
-    $('#mainContent').innerHTML = html;
-    LS.set('aiCustomHTML', html);
-    showToast('页面内容已更新');
-  }
-
-  function applyAiJS(code) {
-    try {
-      var fn = new Function(code);
-      fn();
-      var existing = LS.get('aiCustomJS') || '';
-      existing += '\n;' + code;
-      LS.set('aiCustomJS', existing);
-      showToast('功能已添加');
-    } catch (err) {
-      showToast('JS 执行失败: ' + err.message);
-    }
-  }
-
-  function restoreAiMods() {
-    var savedVars = LS.get('aiCSSVars');
-    if (savedVars) {
-      var vk = Object.keys(savedVars);
-      for (var i = 0; i < vk.length; i++) {
-        document.documentElement.style.setProperty(vk[i], savedVars[vk[i]]);
-      }
-    }
-
-    var savedCSS = LS.get('aiCustomCSS');
-    if (savedCSS) {
-      var s = document.createElement('style');
-      s.id = 'ai-custom-style';
-      s.textContent = savedCSS;
-      document.head.appendChild(s);
-    }
-
-    var savedHTML = LS.get('aiCustomHTML');
-    if (savedHTML) {
-      $('#mainContent').innerHTML = savedHTML;
-    }
-
-    var savedJS = LS.get('aiCustomJS');
-    if (savedJS) {
-      try {
-        var fn = new Function(savedJS);
-        fn();
-      } catch (e) {
-        console.warn('恢复 AI JS 失败', e);
-      }
-    }
-  }
-
   $('#sendBtn').addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1002,6 +990,8 @@
 
   function renderFontList() {
     var container = $('#fontList');
+    if (!container) return;
+
     container.innerHTML = builtinFonts.map(function(f, idx) {
       var active = (currentFontCustom === null && currentFontIndex === idx);
       return '<div class="font-item' + (active ? ' active' : '') + '" data-idx="' + idx + '">' +
@@ -1026,6 +1016,8 @@
 
   function renderCustomFonts() {
     var container = $('#customFonts');
+    if (!container) return;
+
     if (customFontMetas.length === 0) {
       container.innerHTML = '';
       return;
@@ -1068,117 +1060,136 @@
     renderCustomFonts();
   }
 
-  $('#fontUploadArea').addEventListener('click', function() {
-    $('#fontFileInput').click();
-  });
+  if ($('#fontUploadArea')) {
+    $('#fontUploadArea').addEventListener('click', function() {
+      $('#fontFileInput').click();
+    });
+  }
 
-  $('#fontFileInput').addEventListener('change', function(e) {
-    var file = e.target.files[0];
-    if (!file) return;
+  if ($('#fontFileInput')) {
+    $('#fontFileInput').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
 
-    var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
-    var familyName = 'Custom-' + fontName + '-' + Date.now();
-    var fontId = 'font-' + Date.now();
+      var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
+      var familyName = 'Custom-' + fontName + '-' + Date.now();
+      var fontId = 'font-' + Date.now();
 
-    showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
+      showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
 
-    var reader = new FileReader();
-    reader.onload = async function(ev) {
-      var dataUrl = ev.target.result;
-      registerFontFromDataUrl(familyName, dataUrl);
+      var reader = new FileReader();
+      reader.onload = async function(ev) {
+        var dataUrl = ev.target.result;
+        registerFontFromDataUrl(familyName, dataUrl);
 
-      await DB.saveFont({
-        id: fontId,
-        familyName: familyName,
-        name: fontName,
-        dataUrl: dataUrl
-      });
+        await DB.saveFont({
+          id: fontId,
+          familyName: familyName,
+          name: fontName,
+          dataUrl: dataUrl
+        });
 
-      customFontMetas.push({
-        id: fontId,
-        name: fontName,
-        familyName: familyName
-      });
+        customFontMetas.push({
+          id: fontId,
+          name: fontName,
+          familyName: familyName
+        });
 
-      LS.set('customFontMetas', customFontMetas);
+        LS.set('customFontMetas', customFontMetas);
 
-      document.fonts.load('16px "' + familyName + '"').then(function() {
-        applyFontByCustom(familyName);
-        renderFontList();
-        renderCustomFonts();
-        showToast('字体 "' + fontName + '" 已加载');
-      }).catch(function() {
-        applyFontByCustom(familyName);
-        renderFontList();
-        renderCustomFonts();
-        showToast('字体已添加');
-      });
-    };
+        document.fonts.load('16px "' + familyName + '"').then(function() {
+          applyFontByCustom(familyName);
+          renderFontList();
+          renderCustomFonts();
+          showToast('字体 "' + fontName + '" 已加载');
+        }).catch(function() {
+          applyFontByCustom(familyName);
+          renderFontList();
+          renderCustomFonts();
+          showToast('字体已添加');
+        });
+      };
 
-    reader.onerror = function() {
-      showToast('读取字体失败');
-    };
+      reader.onerror = function() {
+        showToast('读取字体失败');
+      };
 
-    reader.readAsDataURL(file);
-    $('#fontFileInput').value = '';
-  });
+      reader.readAsDataURL(file);
+      $('#fontFileInput').value = '';
+    });
+  }
 
   // ========= 背景 =========
   var bgData = LS.get('bgData') || null;
 
-  $('#bgUploadArea').addEventListener('click', function() {
-    $('#bgFileInput').click();
-  });
+  if ($('#bgUploadArea')) {
+    $('#bgUploadArea').addEventListener('click', function() {
+      $('#bgFileInput').click();
+    });
+  }
 
-  $('#bgFileInput').addEventListener('change', function(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var dataUrl = ev.target.result;
-      $('#bgPreviewImg').src = dataUrl;
-      $('#bgPreview').classList.remove('hidden');
-      bgData = { url: dataUrl };
-    };
-    reader.readAsDataURL(file);
-    $('#bgFileInput').value = '';
-  });
+  if ($('#bgFileInput')) {
+    $('#bgFileInput').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var dataUrl = ev.target.result;
+        $('#bgPreviewImg').src = dataUrl;
+        $('#bgPreview').classList.remove('hidden');
+        bgData = { url: dataUrl };
+      };
+      reader.readAsDataURL(file);
+      $('#bgFileInput').value = '';
+    });
+  }
 
-  $('#bgBlur').addEventListener('input', function(e) {
-    $('#bgBlurVal').textContent = e.target.value + 'px';
-  });
+  if ($('#bgBlur')) {
+    $('#bgBlur').addEventListener('input', function(e) {
+      $('#bgBlurVal').textContent = e.target.value + 'px';
+    });
+  }
 
-  $('#bgDark').addEventListener('input', function(e) {
-    $('#bgDarkVal').textContent = e.target.value + '%';
-  });
+  if ($('#bgDark')) {
+    $('#bgDark').addEventListener('input', function(e) {
+      $('#bgDarkVal').textContent = e.target.value + '%';
+    });
+  }
 
-  $('#applyBgBtn').addEventListener('click', function() {
-    if (!bgData) {
-      showToast('请先上传图片');
-      return;
-    }
-    bgData.blur = $('#bgBlur').value;
-    bgData.dark = $('#bgDark').value;
-    applyBg(bgData);
-    LS.set('bgData', bgData);
-    showToast('背景已应用');
-  });
+  if ($('#applyBgBtn')) {
+    $('#applyBgBtn').addEventListener('click', function() {
+      if (!bgData) {
+        showToast('请先上传图片');
+        return;
+      }
+      bgData.blur = $('#bgBlur').value;
+      bgData.dark = $('#bgDark').value;
+      applyBg(bgData);
+      LS.set('bgData', bgData);
+      showToast('背景已应用');
+    });
+  }
 
-  $('#removeBgBtn').addEventListener('click', function() {
-    bgData = null;
-    LS.remove('bgData');
-    var layer = $('#bgLayer');
-    layer.style.backgroundImage = 'none';
-    layer.style.filter = '';
-    layer.style.inset = '0';
-    layer.style.setProperty('--bg-overlay-alpha', '0');
-    $('#bgPreview').classList.add('hidden');
-    showToast('背景已移除');
-  });
+  if ($('#removeBgBtn')) {
+    $('#removeBgBtn').addEventListener('click', function() {
+      bgData = null;
+      LS.remove('bgData');
+      var layer = $('#bgLayer');
+      if (layer) {
+        layer.style.backgroundImage = 'none';
+        layer.style.filter = '';
+        layer.style.inset = '0';
+        layer.style.setProperty('--bg-overlay-alpha', '0');
+      }
+      $('#bgPreview').classList.add('hidden');
+      showToast('背景已移除');
+    });
+  }
 
   function applyBg(data) {
     if (!data || !data.url) return;
     var layer = $('#bgLayer');
+    if (!layer) return;
     layer.style.backgroundImage = 'url(' + data.url + ')';
     var blur = parseInt(data.blur) || 0;
     layer.style.filter = 'blur(' + blur + 'px)';
@@ -1207,6 +1218,7 @@
   function renderThemeList() {
     var container = $('#themeList');
     if (!container) return;
+
     container.innerHTML = PRESET_THEMES.map(function(theme) {
       var dots = '';
       var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
@@ -1296,127 +1308,137 @@
     showToast('已删除: ' + removed.name);
   };
 
-  $('#applyCustomColors').addEventListener('click', function() {
-    var vars = {
-      '--bg-primary': $('#colorBg').value,
-      '--bg-secondary': $('#colorCard').value,
-      '--bg-card': $('#colorCard').value,
-      '--accent': $('#colorAccent').value,
-      '--accent-deep': $('#colorAccentDeep').value,
-      '--text-primary': $('#colorText').value,
-      '--border': $('#colorBorder').value
-    };
-    applyThemeVars(vars);
-    LS.set('aiCSSVars', vars);
-    currentThemeId = 'custom-temp';
-    LS.set('currentThemeId', 'custom-temp');
-    renderThemeList();
-    showToast('自定义配色已应用');
-  });
-
-  $('#saveCustomTheme').addEventListener('click', function() {
-    var name = ($('#customThemeName').value || '').trim();
-    if (!name) {
-      showToast('请输入主题名称');
-      return;
-    }
-
-    var vars = {
-      '--bg-primary': $('#colorBg').value,
-      '--bg-secondary': $('#colorCard').value,
-      '--bg-card': $('#colorCard').value,
-      '--accent': $('#colorAccent').value,
-      '--accent-deep': $('#colorAccentDeep').value,
-      '--text-primary': $('#colorText').value,
-      '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
-      '--text-muted': '#999999',
-      '--border': $('#colorBorder').value,
-      '--border-light': 'rgba(173, 205, 234, 0.3)',
-      '--shadow': 'rgba(0, 0, 0, 0.06)'
-    };
-
-    var id = 'custom-' + Date.now();
-    customThemes.push({
-      id: id,
-      name: name,
-      desc: '自定义',
-      vars: vars
+  if ($('#applyCustomColors')) {
+    $('#applyCustomColors').addEventListener('click', function() {
+      var vars = {
+        '--bg-primary': $('#colorBg').value,
+        '--bg-secondary': $('#colorCard').value,
+        '--bg-card': $('#colorCard').value,
+        '--accent': $('#colorAccent').value,
+        '--accent-deep': $('#colorAccentDeep').value,
+        '--text-primary': $('#colorText').value,
+        '--border': $('#colorBorder').value
+      };
+      applyThemeVars(vars);
+      LS.set('aiCSSVars', vars);
+      currentThemeId = 'custom-temp';
+      LS.set('currentThemeId', 'custom-temp');
+      renderThemeList();
+      showToast('自定义配色已应用');
     });
+  }
 
-    LS.set('customThemes', customThemes);
-    currentThemeId = id;
-    LS.set('currentThemeId', id);
-    applyThemeVars(vars);
-    LS.set('aiCSSVars', vars);
-    $('#customThemeName').value = '';
-    renderThemeList();
-    showToast('主题已保存');
-  });
-
-  $('#resetTheme').addEventListener('click', function() {
-    selectTheme('blue-white');
-    showToast('已恢复默认主题');
-  });
-
-  $('#clearChatBtn').addEventListener('click', function() {
-    try {
-      chatHistory = [];
-      LS.remove('chatHistory');
-      var chatBox = $('#chatMessages');
-      if (chatBox) {
-        chatBox.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
+  if ($('#saveCustomTheme')) {
+    $('#saveCustomTheme').addEventListener('click', function() {
+      var name = ($('#customThemeName').value || '').trim();
+      if (!name) {
+        showToast('请输入主题名称');
+        return;
       }
-      showToast('已清空聊天记录');
-    } catch(e) {
-      showToast('清空失败');
-    }
-  });
 
-  $('#clearAllBtn').addEventListener('click', function() {
-    if (!confirm('确定重置所有设置？API、聊天、主题、字体、背景都会被清除。')) return;
-    localStorage.clear();
-    try { indexedDB.deleteDatabase('MonoSpaceDB'); } catch(e) {}
-    location.reload();
-  });
+      var vars = {
+        '--bg-primary': $('#colorBg').value,
+        '--bg-secondary': $('#colorCard').value,
+        '--bg-card': $('#colorCard').value,
+        '--accent': $('#colorAccent').value,
+        '--accent-deep': $('#colorAccentDeep').value,
+        '--text-primary': $('#colorText').value,
+        '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
+        '--text-muted': '#999999',
+        '--border': $('#colorBorder').value,
+        '--border-light': 'rgba(173, 205, 234, 0.3)',
+        '--shadow': 'rgba(0, 0, 0, 0.06)'
+      };
+
+      var id = 'custom-' + Date.now();
+      customThemes.push({
+        id: id,
+        name: name,
+        desc: '自定义',
+        vars: vars
+      });
+
+      LS.set('customThemes', customThemes);
+      currentThemeId = id;
+      LS.set('currentThemeId', id);
+      applyThemeVars(vars);
+      LS.set('aiCSSVars', vars);
+      $('#customThemeName').value = '';
+      renderThemeList();
+      showToast('主题已保存');
+    });
+  }
+
+  if ($('#resetTheme')) {
+    $('#resetTheme').addEventListener('click', function() {
+      selectTheme('blue-white');
+      showToast('已恢复默认主题');
+    });
+  }
+
+  if ($('#clearChatBtn')) {
+    $('#clearChatBtn').addEventListener('click', function() {
+      try {
+        chatHistory = [];
+        LS.remove('chatHistory');
+        var chatBox = $('#chatMessages');
+        if (chatBox) {
+          chatBox.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
+        }
+        showToast('已清空聊天记录');
+      } catch(e) {
+        showToast('清空失败');
+      }
+    });
+  }
+
+  if ($('#clearAllBtn')) {
+    $('#clearAllBtn').addEventListener('click', function() {
+      if (!confirm('确定重置所有设置？API、聊天、主题、字体、背景都会被清除。')) return;
+      localStorage.clear();
+      try { indexedDB.deleteDatabase('MonoSpaceDB'); } catch(e) {}
+      location.reload();
+    });
+  }
 
   // ========= 导出 =========
-  $('#generateExport').addEventListener('click', function() {
-    var repo = getSourceRepo();
+  if ($('#generateExport')) {
+    $('#generateExport').addEventListener('click', function() {
+      var repo = getSourceRepo();
 
-    // 优先导出源码仓
-    if (repo.html || repo.css || repo.js) {
-      $('#exportHtml').value = repo.html || '（源码仓中没有 index.html）';
-      $('#exportCss').value = repo.css || '（源码仓中没有 style.css）';
-      $('#exportJs').value = repo.js || '（源码仓中没有 script.js）';
+      if (repo.html || repo.css || repo.js) {
+        $('#exportHtml').value = repo.html || '（源码仓中没有 index.html）';
+        $('#exportCss').value = repo.css || '（源码仓中没有 style.css）';
+        $('#exportJs').value = repo.js || '（源码仓中没有 script.js）';
+        $('#exportOutput').classList.remove('hidden');
+        showToast('已导出源码仓内容');
+        return;
+      }
+
+      var aiCSS = LS.get('aiCustomCSS') || '';
+      var aiHTML = LS.get('aiCustomHTML') || '';
+      var aiJS = LS.get('aiCustomJS') || '';
+      var aiVars = LS.get('aiCSSVars') || {};
+
+      var varsCSS = ':root {\n';
+      Object.keys(aiVars).forEach(function(k) {
+        varsCSS += '  ' + k + ': ' + aiVars[k] + ';\n';
+      });
+      varsCSS += '}\n';
+
+      var exportCSS = '/* 把这段 :root 覆盖到 style.css 顶部 */\n' + varsCSS;
+      if (aiCSS) exportCSS += '\n/* 追加到 style.css 末尾的 AI 样式 */\n' + aiCSS;
+
+      var exportHTML = aiHTML || '（没有 HTML 修改）';
+      var exportJS = aiJS || '（没有 JS 修改）';
+
+      $('#exportHtml').value = exportHTML;
+      $('#exportCss').value = exportCSS;
+      $('#exportJs').value = exportJS;
       $('#exportOutput').classList.remove('hidden');
-      showToast('已导出源码仓内容');
-      return;
-    }
-
-    // 没有源码仓才退回补丁导出
-    var aiCSS = LS.get('aiCustomCSS') || '';
-    var aiHTML = LS.get('aiCustomHTML') || '';
-    var aiJS = LS.get('aiCustomJS') || '';
-    var aiVars = LS.get('aiCSSVars') || {};
-
-    var varsCSS = ':root {\n';
-    Object.keys(aiVars).forEach(function(k) {
-      varsCSS += '  ' + k + ': ' + aiVars[k] + ';\n';
+      showToast('已导出运行时补丁');
     });
-    varsCSS += '}\n';
-
-    var exportCSS = '/* 把这段 :root 覆盖到 style.css 顶部 */\n' + varsCSS;
-    if (aiCSS) exportCSS += '\n/* 追加到 style.css 末尾的 AI 样式 */\n' + aiCSS;
-
-    var exportHTML = aiHTML || '（没有 HTML 修改）';
-    var exportJS = aiJS || '（没有 JS 修改）';
-
-    $('#exportHtml').value = exportHTML;
-    $('#exportCss').value = exportCSS;
-    $('#exportJs').value = exportJS;
-    $('#exportOutput').classList.remove('hidden');
-    showToast('已导出运行时补丁');
-  });
+  }
 
   window._copyExport = function(id) {
     var el = $('#' + id);
@@ -1479,21 +1501,21 @@
       ball.style.bottom = 'auto';
     }
 
-    if (!LS.get('aiCustomHTML')) {
-      $('#mainContent').innerHTML =
-        '<div style="text-align:center;padding:80px 20px 40px;">' +
-        '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
-        '<p style="font-size:14px;color:var(--text-secondary);">这是一个可被 AI 自我改造的网页空间。</p>' +
-        '</div>';
-    }
-    
-        if ($('#useStreamToggle')) {
+    if ($('#useStreamToggle')) {
       $('#useStreamToggle').checked = !!useStream;
       $('#useStreamToggle').addEventListener('change', function() {
         useStream = this.checked;
         LS.set('useStream', useStream);
         showToast(useStream ? '已开启流式输出' : '已关闭流式输出');
       });
+    }
+
+    if (!LS.get('aiCustomHTML')) {
+      $('#mainContent').innerHTML =
+        '<div style="text-align:center;padding:80px 20px 40px;">' +
+        '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
+        '<p style="font-size:14px;color:var(--text-secondary);">这是一个可被 AI 自我改造的网页空间。</p>' +
+        '</div>';
     }
   }
 
