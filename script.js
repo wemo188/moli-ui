@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
 
@@ -422,21 +423,37 @@
     });
   });
 
-  // ========= 聊天最小版 =========
-  function restoreChatHistory() {
-    var chatHistory = LS.get('chatHistory') || [];
-    if (!chatMessages || !chatHistory.length) return;
+  // ========= 聊天 =========
+  var chatHistory = LS.get('chatHistory') || [];
+  var visionImageData = null;
 
+  function restoreChatHistory() {
+    if (!chatMessages || !chatHistory.length) return;
     for (var i = 0; i < chatHistory.length; i++) {
       var item = chatHistory[i];
       var div = document.createElement('div');
       div.className = 'chat-msg ' + (item.role === 'assistant' ? 'assistant' : item.role === 'user' ? 'user' : 'system');
-      div.innerHTML = esc(item.content || '').replace(/\n/g, '<br>');
+      div.innerHTML = esc(item.displayContent || item.content || '').replace(/\n/g, '<br>');
       chatMessages.appendChild(div);
     }
   }
 
+  function saveChatHistory() {
+    LS.set('chatHistory', chatHistory.slice(-50));
+  }
+
+  function addChatMsg(role, content) {
+    if (!chatMessages) return null;
+    var div = document.createElement('div');
+    div.className = 'chat-msg ' + role;
+    div.innerHTML = esc(content).replace(/\n/g, '<br>');
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+  }
+
   safeOn('#clearChatBtn', 'click', function() {
+    chatHistory = [];
     LS.remove('chatHistory');
     if (chatMessages) {
       chatMessages.innerHTML = '<div class="chat-msg system">聊天记录已清空。</div>';
@@ -444,7 +461,7 @@
     showToast('已清空聊天记录');
   });
 
-  // ========= 源码仓：三个文件独立 =========
+  // ========= 源码仓：三个文件独立 + 发给 AI =========
   function getSourceRepo() {
     return LS.get('sourceRepo') || {
       html: '',
@@ -513,6 +530,48 @@
     });
   }
 
+  function updateSourceRepoFile(type, content) {
+    var repo = getSourceRepo();
+
+    if (type === 'html') {
+      repo.html = content;
+      if ($('#sourceHtml')) $('#sourceHtml').value = content;
+    }
+    if (type === 'css') {
+      repo.css = content;
+      if ($('#sourceCss')) $('#sourceCss').value = content;
+    }
+    if (type === 'js') {
+      repo.js = content;
+      if ($('#sourceJs')) $('#sourceJs').value = content;
+    }
+
+    setSourceRepo(repo);
+  }
+
+  function getSourceRepoPromptBlock() {
+    var repo = getSourceRepo();
+    if (!repo.enabled) return '';
+
+    if (!repo.html && !repo.css && !repo.js) return '';
+
+    return '\n\n=== 以下是当前真实源码，请优先基于它修改 ===\n' +
+      '[index.html]\n' + (repo.html || '') + '\n\n' +
+      '[style.css]\n' + (repo.css || '') + '\n\n' +
+      '[script.js]\n' + (repo.js || '') + '\n\n' +
+      '如果用户是在修改功能、修逻辑、做长期保留改动，你应该优先返回以下代码块之一或多个：\n' +
+      '```source-html\n完整 index.html\n```\n' +
+      '```source-css\n完整 style.css\n```\n' +
+      '```source-js\n完整 script.js\n```';
+  }
+
+  function cleanReplyForDisplay(reply) {
+    return reply
+      .replace(/```source-html\n?[\s\S]*?```/g, '[已更新源码仓：index.html]')
+      .replace(/```source-css\n?[\s\S]*?```/g, '[已更新源码仓：style.css]')
+      .replace(/```source-js\n?[\s\S]*?```/g, '[已更新源码仓：script.js]');
+  }
+
   safeOn('#copySourceHtml', 'click', function() { copySourceField('html'); });
   safeOn('#saveSourceHtml', 'click', function() { saveSourceField('html'); });
   safeOn('#clearSourceHtml', 'click', function() { clearSourceField('html'); });
@@ -530,6 +589,166 @@
     repo.enabled = this.checked;
     setSourceRepo(repo);
     showToast(this.checked ? '已开启：发送源码仓给 AI' : '已关闭：不发送源码仓');
+  });
+
+  // ========= 发送图片给 AI =========
+  function clearVisionImage() {
+    visionImageData = null;
+    if ($('#imagePreviewBox')) $('#imagePreviewBox').classList.add('hidden');
+    if ($('#imagePreviewImg')) $('#imagePreviewImg').src = '';
+    if ($('#visionImageInput')) $('#visionImageInput').value = '';
+  }
+
+  safeOn('#pickVisionImage', 'click', function() {
+    if ($('#visionImageInput')) $('#visionImageInput').click();
+  });
+
+  safeOn('#visionImageInput', 'change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      visionImageData = ev.target.result;
+      if ($('#imagePreviewImg')) $('#imagePreviewImg').src = visionImageData;
+      if ($('#imagePreviewBox')) $('#imagePreviewBox').classList.remove('hidden');
+      showToast('图片已添加');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  safeOn('#removeVisionImage', 'click', clearVisionImage);
+
+  // ========= AI 请求 =========
+  var SYSTEM_PROMPT =
+    '你是网页内置开发助手，已经运行在当前网页里。\n' +
+    '不要索要代码，不要说无法访问文件。\n' +
+    '如果用户是在修改功能、修逻辑、做长期保留改动，并且消息里附带了真实源码，你应该优先返回：\n' +
+    '```source-html\n完整 index.html\n```\n' +
+    '```source-css\n完整 style.css\n```\n' +
+    '```source-js\n完整 script.js\n```\n' +
+    '不要伪造功能，不要额外创建假按钮。\n' +
+    '如果用户只是要预览效果，才使用普通文本或前端注入思路。';
+
+  function buildUserContent(text) {
+    if (visionImageData) {
+      return [
+        { type: 'text', text: text },
+        { type: 'image_url', image_url: { url: visionImageData } }
+      ];
+    }
+    return text;
+  }
+
+  function applyReplyToSourceRepo(reply) {
+    var match;
+
+    var htmlReg = /```source-html\n?([\s\S]*?)```/g;
+    while ((match = htmlReg.exec(reply)) !== null) {
+      updateSourceRepoFile('html', match[1].trim());
+      showToast('源码仓已更新：index.html');
+    }
+
+    var cssReg = /```source-css\n?([\s\S]*?)```/g;
+    while ((match = cssReg.exec(reply)) !== null) {
+      updateSourceRepoFile('css', match[1].trim());
+      showToast('源码仓已更新：style.css');
+    }
+
+    var jsReg = /```source-js\n?([\s\S]*?)```/g;
+    while ((match = jsReg.exec(reply)) !== null) {
+      updateSourceRepoFile('js', match[1].trim());
+      showToast('源码仓已更新：script.js');
+    }
+  }
+
+  async function sendMessage() {
+    if (!activeApi) {
+      showToast('请先配置并选择 API');
+      return;
+    }
+
+    var text = chatInput ? chatInput.value.trim() : '';
+    if (!text && !visionImageData) return;
+
+    var displayText = text || '[发送了一张图片]';
+
+    var wrappedText =
+      '请直接回答并处理当前网页。\n' +
+      '如果是修改功能或源码，请优先输出 source-html / source-css / source-js。\n' +
+      '用户需求：' + displayText +
+      getSourceRepoPromptBlock();
+
+    if (chatInput) chatInput.value = '';
+
+    addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
+
+    chatHistory.push({
+      role: 'user',
+      content: buildUserContent(wrappedText),
+      displayContent: displayText + (visionImageData ? '\n[附带图片]' : '')
+    });
+    saveChatHistory();
+
+    var replyDiv = addChatMsg('assistant', '思考中...');
+
+    try {
+      var base = activeApi.url.replace(/\/+$/, '');
+      var response = await fetch(base + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + activeApi.key
+        },
+        body: JSON.stringify({
+          model: activeApi.model,
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT }
+          ].concat(chatHistory.slice(-20).map(function(item) {
+            return {
+              role: item.role,
+              content: item.content
+            };
+          }))
+        })
+      });
+
+      if (!response.ok) {
+        var errData = await response.json().catch(function() { return {}; });
+        throw new Error(errData.error?.message || ('请求失败: ' + response.status));
+      }
+
+      var data = await response.json();
+      var fullReply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
+
+      applyReplyToSourceRepo(fullReply);
+
+      var displayReply = cleanReplyForDisplay(fullReply);
+      if (replyDiv) {
+        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
+      }
+
+      chatHistory.push({
+        role: 'assistant',
+        content: fullReply,
+        displayContent: displayReply
+      });
+      saveChatHistory();
+
+      clearVisionImage();
+
+    } catch (err) {
+      if (replyDiv) {
+        replyDiv.innerHTML = '请求失败: ' + esc(err.message);
+      }
+    }
+  }
+
+  safeOn('#sendBtn', 'click', sendMessage);
+  safeOn('#chatInput', 'keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   });
 
   // ========= 背景 =========
@@ -629,11 +848,7 @@
     }
 
     if ($('#mainContent') && !$('#mainContent').innerHTML.trim()) {
-      $('#mainContent').innerHTML =
-        '<div style="text-align:center;padding:80px 20px 40px;">' +
-        '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
-        '<p style="font-size:14px;color:var(--text-secondary);">源码仓现在已经改成三个文件分别保存、复制、清空。</p>' +
-        '</div>';
+      $('#mainContent').innerHTML = '';
     }
   }
 
