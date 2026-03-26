@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
 
@@ -40,6 +39,25 @@
   function safeOn(selector, event, fn) {
     var el = typeof selector === 'string' ? $(selector) : selector;
     if (el) el.addEventListener(event, fn);
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(resolve, reject) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   // ========= 核心元素 =========
@@ -377,6 +395,7 @@
     var url = $('#apiUrl') ? $('#apiUrl').value.trim() : '';
     var key = $('#apiKey') ? $('#apiKey').value.trim() : '';
     var model = $('#apiModel') ? $('#apiModel').value.trim() : '';
+
     if (!url || !key || !model) {
       showToast('请填写完整信息');
       return;
@@ -425,33 +444,95 @@
     showToast('已清空聊天记录');
   });
 
-  // ========= 源码仓最小版 =========
+  // ========= 源码仓：三个文件独立 =========
+  function getSourceRepo() {
+    return LS.get('sourceRepo') || {
+      html: '',
+      css: '',
+      js: '',
+      enabled: false
+    };
+  }
+
+  function setSourceRepo(repo) {
+    LS.set('sourceRepo', {
+      html: repo.html || '',
+      css: repo.css || '',
+      js: repo.js || '',
+      enabled: !!repo.enabled
+    });
+  }
+
   function restoreSourceRepo() {
-    var repo = LS.get('sourceRepo') || { html: '', css: '', js: '', enabled: false };
+    var repo = getSourceRepo();
     if ($('#sourceHtml')) $('#sourceHtml').value = repo.html || '';
     if ($('#sourceCss')) $('#sourceCss').value = repo.css || '';
     if ($('#sourceJs')) $('#sourceJs').value = repo.js || '';
     if ($('#useSourceRepoForAI')) $('#useSourceRepoForAI').checked = !!repo.enabled;
   }
 
-  safeOn('#saveSourceBtn', 'click', function() {
-    LS.set('sourceRepo', {
-      html: $('#sourceHtml') ? $('#sourceHtml').value : '',
-      css: $('#sourceCss') ? $('#sourceCss').value : '',
-      js: $('#sourceJs') ? $('#sourceJs').value : '',
-      enabled: $('#useSourceRepoForAI') ? $('#useSourceRepoForAI').checked : false
+  function saveSourceField(type) {
+    var repo = getSourceRepo();
+    if (type === 'html' && $('#sourceHtml')) repo.html = $('#sourceHtml').value;
+    if (type === 'css' && $('#sourceCss')) repo.css = $('#sourceCss').value;
+    if (type === 'js' && $('#sourceJs')) repo.js = $('#sourceJs').value;
+    setSourceRepo(repo);
+    showToast(type + ' 已保存');
+  }
+
+  function clearSourceField(type) {
+    var repo = getSourceRepo();
+
+    if (type === 'html') {
+      repo.html = '';
+      if ($('#sourceHtml')) $('#sourceHtml').value = '';
+    }
+    if (type === 'css') {
+      repo.css = '';
+      if ($('#sourceCss')) $('#sourceCss').value = '';
+    }
+    if (type === 'js') {
+      repo.js = '';
+      if ($('#sourceJs')) $('#sourceJs').value = '';
+    }
+
+    setSourceRepo(repo);
+    showToast(type + ' 已清空');
+  }
+
+  function copySourceField(type) {
+    var text = '';
+    if (type === 'html' && $('#sourceHtml')) text = $('#sourceHtml').value;
+    if (type === 'css' && $('#sourceCss')) text = $('#sourceCss').value;
+    if (type === 'js' && $('#sourceJs')) text = $('#sourceJs').value;
+
+    copyText(text || '').then(function() {
+      showToast(type + ' 已复制');
+    }).catch(function() {
+      showToast('复制失败');
     });
-    showToast('源码仓已保存');
+  }
+
+  safeOn('#copySourceHtml', 'click', function() { copySourceField('html'); });
+  safeOn('#saveSourceHtml', 'click', function() { saveSourceField('html'); });
+  safeOn('#clearSourceHtml', 'click', function() { clearSourceField('html'); });
+
+  safeOn('#copySourceCss', 'click', function() { copySourceField('css'); });
+  safeOn('#saveSourceCss', 'click', function() { saveSourceField('css'); });
+  safeOn('#clearSourceCss', 'click', function() { clearSourceField('css'); });
+
+  safeOn('#copySourceJs', 'click', function() { copySourceField('js'); });
+  safeOn('#saveSourceJs', 'click', function() { saveSourceField('js'); });
+  safeOn('#clearSourceJs', 'click', function() { clearSourceField('js'); });
+
+  safeOn('#useSourceRepoForAI', 'change', function() {
+    var repo = getSourceRepo();
+    repo.enabled = this.checked;
+    setSourceRepo(repo);
+    showToast(this.checked ? '已开启：发送源码仓给 AI' : '已关闭：不发送源码仓');
   });
 
-  safeOn('#clearSourceBtn', 'click', function() {
-    if (!confirm('确定清空源码仓？')) return;
-    LS.set('sourceRepo', { html: '', css: '', js: '', enabled: false });
-    restoreSourceRepo();
-    showToast('源码仓已清空');
-  });
-
-  // ========= 背景最小版 =========
+  // ========= 背景 =========
   var bgData = LS.get('bgData') || null;
 
   function applyBg(data) {
@@ -517,7 +598,7 @@
   });
 
   // ========= 初始化 =========
-  async function init() {
+  function init() {
     renderSavedApis();
     updateAiStatus();
     restoreChatHistory();
@@ -551,7 +632,7 @@
       $('#mainContent').innerHTML =
         '<div style="text-align:center;padding:80px 20px 40px;">' +
         '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
-        '<p style="font-size:14px;color:var(--text-secondary);">先把底层功能跑稳，再继续加模块。</p>' +
+        '<p style="font-size:14px;color:var(--text-secondary);">源码仓现在已经改成三个文件分别保存、复制、清空。</p>' +
         '</div>';
     }
   }
