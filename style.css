@@ -386,13 +386,6 @@ html, body {
   margin: 20px 0;
 }
 
-.section-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--text-primary);
-}
-
 /* API 列表 */
 .saved-list {
   display: flex;
@@ -536,17 +529,6 @@ html, body {
   border: 1.5px solid var(--border);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
-}
-
-.chat-msg.assistant pre {
-  background: var(--bg-primary);
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin: 6px 0;
-  font-size: 12px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  border: 1px solid var(--border-light);
 }
 
 .chat-input-area {
@@ -864,11 +846,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 8px;
 }
 
-/* 导出与源码仓 */
-.export-output.hidden {
-  display: none;
-}
-
+/* 源码仓 */
 .export-section {
   margin-bottom: 16px;
 }
@@ -878,6 +856,8 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .export-section-header span {
@@ -899,44 +879,6 @@ input[type="range"]::-webkit-slider-thumb {
   resize: vertical;
   outline: none;
   line-height: 1.4;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  padding: 10px 24px;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  font-size: 13px;
-  color: var(--text-primary);
-  z-index: 99999;
-  transition: opacity 0.3s, transform 0.3s;
-  white-space: nowrap;
-  box-shadow: 0 2px 12px var(--shadow);
-}
-
-.toast.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-.loading-dots::after {
-  content: '...';
-  animation: pulse 1.2s infinite;
 }
 
 .source-toggle-card {
@@ -993,4 +935,42 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 10px 24px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  z-index: 99999;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+.toast.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.loading-dots::after {
+  content: '...';
+  animation: pulse 1.2s infinite;
 }
