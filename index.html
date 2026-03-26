@@ -144,10 +144,15 @@ document.currentScript.parentNode.insertBefore(_lk, document.currentScript);
       <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
     </div>
 
-    <div class="chat-toolbar">
-      <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
-      <input type="file" id="visionImageInput" accept="image/*" hidden>
-    </div>
+<div class="chat-toolbar">
+  <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
+  <input type="file" id="visionImageInput" accept="image/*" hidden>
+
+  <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);margin-left:auto;">
+    <input type="checkbox" id="useStreamToggle">
+    流式输出
+  </label>
+</div>
 
     <div class="chat-input-area">
       <textarea id="chatInput" placeholder="告诉 AI 你想怎么改变网页..." rows="2"></textarea>
