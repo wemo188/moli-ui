@@ -1,14 +1,16 @@
+
 :root {
-  --bg-primary: #f5f9fc;
+  --bg-primary: #f0f6fb;
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
   --accent: #adcdea;
   --accent-deep: #8ab8de;
-  --text-primary: #2c3a4a;
-  --text-secondary: #7a9ab5;
-  --text-muted: #b0c4d8;
-  --border: rgba(173, 205, 234, 0.3);
-  --shadow: rgba(173, 205, 234, 0.15);
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #999999;
+  --border: #1a1a1a;
+  --border-light: rgba(173, 205, 234, 0.3);
+  --shadow: rgba(0, 0, 0, 0.06);
   --radius: 16px;
   --radius-sm: 10px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
@@ -47,7 +49,8 @@ html, body {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(245, 249, 252, var(--bg-overlay-alpha, 0.3));
+  background: rgba(240, 246, 251, var(--bg-overlay-alpha, 0.3));
+}
 
 .main-content {
   position: relative;
@@ -71,7 +74,7 @@ html, body {
 .hero-title {
   font-size: 32px;
   font-weight: 700;
-  background: linear-gradient(135deg, #8ab8de 0%, #adcdea 50%, #6da3cf 100%);
+  background: linear-gradient(135deg, #8ab8de 0%, #adcdea 50%, #79aed5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -159,7 +162,7 @@ html, body {
   background: var(--accent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 2px solid #fff;
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,8 +170,8 @@ html, body {
   cursor: pointer;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
   box-shadow:
-    0 4px 20px rgba(173, 205, 234, 0.45),
-    0 2px 8px rgba(0,0,0,0.05);
+    0 4px 20px rgba(173, 205, 234, 0.4),
+    0 2px 8px rgba(0,0,0,0.08);
   touch-action: none;
 }
 
@@ -187,7 +190,7 @@ html, body {
   transform: scale(1.08);
   box-shadow:
     0 4px 24px rgba(138, 184, 222, 0.5),
-    0 2px 8px rgba(0,0,0,0.05);
+    0 2px 8px rgba(0,0,0,0.08);
 }
 
 .ball-menu {
@@ -215,7 +218,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1.5px solid var(--border);
@@ -256,7 +259,7 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 9990;
-  background: rgba(173, 205, 234, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   transition: opacity 0.3s;
@@ -277,7 +280,7 @@ html, body {
   right: 0;
   bottom: 0;
   max-height: 85vh;
-  background: #fff;
+  background: #ffffff;
   border-radius: 24px 24px 0 0;
   border-top: 2px solid var(--border);
   z-index: 9995;
@@ -310,7 +313,7 @@ html, body {
 .panel-header h2 {
   font-size: 17px;
   font-weight: 600;
-  color: var(--accent-deep);
+  color: var(--text-primary);
 }
 
 .panel-close {
@@ -344,7 +347,7 @@ html, body {
 .form-group label {
   display: block;
   font-size: 12px;
-  color: var(--accent-deep);
+  color: var(--text-secondary);
   margin-bottom: 6px;
   font-weight: 600;
 }
@@ -365,7 +368,7 @@ html, body {
 
 .form-group input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(173, 205, 234, 0.2);
+  box-shadow: 0 0 0 3px rgba(173, 205, 234, 0.25);
 }
 
 .input-with-btn {
@@ -399,7 +402,7 @@ html, body {
 .model-list {
   max-height: 150px;
   overflow-y: auto;
-  background: #fff;
+  background: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   margin-top: 8px;
@@ -413,7 +416,7 @@ html, body {
   padding: 9px 14px;
   font-size: 13px;
   cursor: pointer;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
   transition: background 0.15s;
   color: var(--text-primary);
 }
@@ -443,8 +446,9 @@ html, body {
 
 .btn-primary {
   background: var(--accent);
+  border: 1.5px solid var(--border);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(173, 205, 234, 0.35);
+  box-shadow: 0 2px 10px rgba(173, 205, 234, 0.3);
 }
 
 .btn-primary:active {
@@ -454,11 +458,11 @@ html, body {
 .btn-outline {
   background: transparent;
   border: 1.5px solid var(--border);
-  color: var(--accent-deep);
+  color: var(--text-primary);
 }
 
 .btn-outline:active {
-  background: rgba(173, 205, 234, 0.15);
+  background: var(--bg-primary);
 }
 
 .btn-row {
@@ -468,11 +472,11 @@ html, body {
 
 .btn-danger {
   background: rgba(220,70,70,0.08);
-  color: #d46b6b;
+  color: #c44;
 }
 
 .divider {
-  height: 1px;
+  height: 1.5px;
   background: var(--border);
   margin: 20px 0;
 }
@@ -481,7 +485,7 @@ html, body {
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 12px;
-  color: var(--accent-deep);
+  color: var(--text-primary);
 }
 
 .saved-list {
@@ -530,7 +534,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #ffffff;
 }
 
 .saved-item-actions button svg {
@@ -543,7 +547,7 @@ html, body {
 }
 
 .saved-item-actions .del-btn {
-  color: #d46b6b;
+  color: #c44;
 }
 
 .ai-status {
@@ -566,13 +570,11 @@ html, body {
 }
 
 .status-dot.offline {
-  background: #d46b6b;
-  box-shadow: 0 0 6px rgba(212, 107, 107, 0.3);
+  background: #c44;
 }
 
 .status-dot.online {
-  background: #6dbf8b;
-  box-shadow: 0 0 6px rgba(109, 191, 139, 0.4);
+  background: #5cb85c;
 }
 
 .chat-messages {
@@ -598,7 +600,8 @@ html, body {
 .chat-msg.system {
   align-self: center;
   max-width: 100%;
-  background: rgba(173, 205, 234, 0.15);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
   color: var(--text-secondary);
   font-size: 12px;
   text-align: center;
@@ -608,15 +611,15 @@ html, body {
 .chat-msg.user {
   align-self: flex-end;
   background: var(--accent);
+  border: 1.5px solid var(--border);
   color: #fff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(173, 205, 234, 0.3);
 }
 
 .chat-msg.assistant {
   align-self: flex-start;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 1.5px solid var(--border);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
 }
@@ -629,6 +632,7 @@ html, body {
   font-size: 12px;
   overflow-x: auto;
   white-space: pre-wrap;
+  border: 1px solid var(--border-light);
 }
 
 .chat-input-area {
@@ -654,7 +658,7 @@ html, body {
 
 .chat-input-area textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(173, 205, 234, 0.2);
+  box-shadow: 0 0 0 3px rgba(173, 205, 234, 0.25);
 }
 
 .send-btn {
@@ -662,7 +666,7 @@ html, body {
   height: 42px;
   flex-shrink: 0;
   background: var(--accent);
-  border: none;
+  border: 1.5px solid var(--border);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -670,7 +674,7 @@ html, body {
   cursor: pointer;
   color: #fff;
   transition: transform 0.15s;
-  box-shadow: 0 2px 10px rgba(173, 205, 234, 0.35);
+  box-shadow: 0 2px 10px rgba(173, 205, 234, 0.3);
 }
 
 .send-btn:active {
@@ -693,17 +697,15 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: var(--bg-primary);
+  background: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: box-shadow 0.2s;
 }
 
 .font-item.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(173, 205, 234, 0.25);
-  background: #fff;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .font-item-preview {
@@ -743,19 +745,19 @@ html, body {
 }
 
 .upload-area {
-  border: 2px dashed rgba(173, 205, 234, 0.4);
+  border: 2px dashed var(--border);
   border-radius: var(--radius);
   padding: 30px 20px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
   margin-bottom: 16px;
-  background: #fff;
+  background: #ffffff;
 }
 
 .upload-area:active {
   border-color: var(--accent);
-  background: rgba(173, 205, 234, 0.08);
+  background: var(--bg-primary);
 }
 
 .upload-area svg {
@@ -792,7 +794,7 @@ input[type="range"] {
   width: 100%;
   -webkit-appearance: none;
   height: 4px;
-  background: rgba(173, 205, 234, 0.3);
+  background: var(--border-light);
   border-radius: 2px;
   outline: none;
   margin-top: 8px;
@@ -804,9 +806,8 @@ input[type="range"]::-webkit-slider-thumb {
   height: 20px;
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid #fff;
+  border: 2px solid var(--border);
   cursor: pointer;
-  box-shadow: 0 1px 6px rgba(173, 205, 234, 0.4);
 }
 
 .toast {
@@ -815,7 +816,7 @@ input[type="range"]::-webkit-slider-thumb {
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
   padding: 10px 24px;
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid var(--border);
