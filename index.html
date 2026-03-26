@@ -11,14 +11,14 @@
 <script>
 var _t=new Date().getTime();
 var _lk=document.createElement('link');
-_lk.rel='stylesheet';_lk.href='style.css?t='+_t;
+_lk.rel='stylesheet';
+_lk.href='style.css?t='+_t;
 document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
 </script>
 </head>
 <body>
 
-<main id="mainContent" class="main-content">
-</main>
+<main id="mainContent" class="main-content"></main>
 
 <div id="bgLayer" class="bg-layer"></div>
 
@@ -58,7 +58,7 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
 
 <div id="overlay" class="overlay hidden"></div>
 
-<!-- API 配置面板 -->
+<!-- API 配置 -->
 <div id="apiPanel" class="panel hidden">
   <div class="panel-header">
     <h2>API 配置</h2>
@@ -73,13 +73,13 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
     </div>
     <div class="form-group">
       <label>API 地址</label>
-      <input type="text" id="apiUrl" placeholder="https://api.example.com/v1">
+      <input type="text" id="apiUrl" placeholder="http://107.151.246.146:3000/v1 或 https://example.com/v1">
     </div>
     <div class="form-group">
       <label>API Key</label>
       <div class="input-with-btn">
         <input type="password" id="apiKey" placeholder="sk-...">
-        <button class="icon-btn" id="toggleKeyVisible">
+        <button class="icon-btn" id="toggleKeyVisible" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
@@ -88,15 +88,15 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
       <label>模型</label>
       <div class="input-with-btn">
         <input type="text" id="apiModel" placeholder="gpt-4o / claude-sonnet-4-20250514">
-        <button class="icon-btn" id="fetchModelsBtn">
+        <button class="icon-btn" id="fetchModelsBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
         </button>
       </div>
       <div id="modelList" class="model-list hidden"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" id="saveApiBtn">保存配置</button>
-      <button class="btn btn-outline" id="testApiBtn">测试连接</button>
+      <button class="btn btn-primary" id="saveApiBtn" type="button">保存配置</button>
+      <button class="btn btn-outline" id="testApiBtn" type="button">测试连接</button>
     </div>
     <div class="divider"></div>
     <h3 class="section-title">已保存的配置</h3>
@@ -104,7 +104,7 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
   </div>
 </div>
 
-<!-- AI 助手面板 -->
+<!-- AI 助手 -->
 <div id="aiPanel" class="panel hidden">
   <div class="panel-header">
     <h2>AI 助手</h2>
@@ -117,19 +117,31 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
       <div class="status-dot offline"></div>
       <span>未连接</span>
     </div>
+
     <div id="chatMessages" class="chat-messages">
-      <div class="chat-msg system">选择一个已保存的 API 配置，然后开始对话。AI 可以修改网页的布局、样式，也可以新增功能。</div>
+      <div class="chat-msg system">选择一个已保存的 API 配置，然后开始对话。AI 可以修改网页布局、样式，也可以新增功能。</div>
     </div>
+
+    <div id="imagePreviewBox" class="image-preview-box hidden">
+      <img id="imagePreviewImg" src="" alt="preview">
+      <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
+    </div>
+
+    <div class="chat-toolbar">
+      <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
+      <input type="file" id="visionImageInput" accept="image/*" hidden>
+    </div>
+
     <div class="chat-input-area">
       <textarea id="chatInput" placeholder="告诉 AI 你想怎么改变网页..." rows="2"></textarea>
-      <button class="send-btn" id="sendBtn">
+      <button class="send-btn" id="sendBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       </button>
     </div>
   </div>
 </div>
 
-<!-- 主题配色面板 -->
+<!-- 主题配色 -->
 <div id="themePanel" class="panel hidden">
   <div class="panel-header">
     <h2>主题配色</h2>
@@ -140,10 +152,14 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
   <div class="panel-body">
     <h3 class="section-title">预设主题</h3>
     <div id="themeList" class="theme-list"></div>
+
     <div class="divider"></div>
+
     <h3 class="section-title">我的主题</h3>
     <div id="customThemeList" class="theme-list"></div>
+
     <div class="divider"></div>
+
     <h3 class="section-title">自定义颜色</h3>
     <div class="color-grid">
       <div class="color-group">
@@ -171,22 +187,26 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
         <input type="color" id="colorBorder" value="#1a1a1a">
       </div>
     </div>
+
     <div class="form-group" style="margin-top:12px;">
       <input type="text" id="customThemeName" placeholder="给这个配色起个名字">
     </div>
+
     <div class="btn-row">
-      <button class="btn btn-primary" id="applyCustomColors">应用颜色</button>
-      <button class="btn btn-outline" id="saveCustomTheme">保存为主题</button>
+      <button class="btn btn-primary" id="applyCustomColors" type="button">应用颜色</button>
+      <button class="btn btn-outline" id="saveCustomTheme" type="button">保存主题</button>
     </div>
+
     <div class="divider"></div>
+
     <h3 class="section-title">管理</h3>
-    <button class="btn btn-outline" id="resetTheme" style="width:100%;">恢复默认主题</button>
-    <button class="btn btn-outline" id="clearChatBtn" style="width:100%;margin-top:8px;">清空聊天记录</button>
-    <button class="btn btn-danger" id="clearAllBtn" style="width:100%;margin-top:8px;">重置所有设置</button>
+    <button class="btn btn-outline" id="resetTheme" style="width:100%;" type="button">恢复默认主题</button>
+    <button class="btn btn-outline" id="clearChatBtn" style="width:100%;margin-top:8px;" type="button">仅清空 AI 对话</button>
+    <button class="btn btn-danger" id="clearAllBtn" style="width:100%;margin-top:8px;" type="button">重置所有设置</button>
   </div>
 </div>
 
-<!-- 字体设置面板 -->
+<!-- 字体设置 -->
 <div id="fontPanel" class="panel hidden">
   <div class="panel-header">
     <h2>字体设置</h2>
@@ -197,18 +217,20 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
   <div class="panel-body">
     <h3 class="section-title">内置字体</h3>
     <div id="fontList" class="font-list"></div>
+
     <div class="divider"></div>
+
     <h3 class="section-title">上传自定义字体</h3>
     <div class="upload-area" id="fontUploadArea">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <p>点击上传 .ttf / .woff2 字体文件（支持大文件）</p>
+      <p>点击上传 .ttf / .otf / .woff / .woff2（支持大文件）</p>
       <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>
     </div>
     <div id="customFonts" class="font-list"></div>
   </div>
 </div>
 
-<!-- 背景图片面板 -->
+<!-- 背景图片 -->
 <div id="bgPanel" class="panel hidden">
   <div class="panel-header">
     <h2>背景图片</h2>
@@ -222,27 +244,31 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
       <p>点击上传背景图片</p>
       <input type="file" id="bgFileInput" accept="image/*" hidden>
     </div>
+
     <div id="bgPreview" class="bg-preview hidden">
       <img id="bgPreviewImg" src="" alt="preview">
     </div>
+
     <div class="form-group">
       <label>背景模糊度</label>
       <input type="range" id="bgBlur" min="0" max="20" value="0">
       <span id="bgBlurVal">0px</span>
     </div>
+
     <div class="form-group">
       <label>背景暗度</label>
       <input type="range" id="bgDark" min="0" max="80" value="30">
       <span id="bgDarkVal">30%</span>
     </div>
+
     <div class="btn-row">
-      <button class="btn btn-primary" id="applyBgBtn">应用背景</button>
-      <button class="btn btn-outline" id="removeBgBtn">移除背景</button>
+      <button class="btn btn-primary" id="applyBgBtn" type="button">应用背景</button>
+      <button class="btn btn-outline" id="removeBgBtn" type="button">移除背景</button>
     </div>
   </div>
 </div>
 
-<!-- 导出代码面板 -->
+<!-- 导出代码 -->
 <div id="exportPanel" class="panel hidden">
   <div class="panel-header">
     <h2>导出代码</h2>
@@ -251,27 +277,30 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
     </div>
   </div>
   <div class="panel-body">
-    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">将 AI 的所有修改合并到源码中，生成完整文件。长按文本框全选后复制，粘贴到 GitHub 对应文件。</p>
-    <button class="btn btn-primary" id="generateExport" style="width:100%;margin-bottom:16px;">生成导出代码</button>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">生成当前网页修改后的导出内容。你可以复制后覆盖 GitHub 里的文件。</p>
+    <button class="btn btn-primary" id="generateExport" style="width:100%;margin-bottom:16px;" type="button">生成导出代码</button>
+
     <div id="exportOutput" class="export-output hidden">
       <div class="export-section">
         <div class="export-section-header">
           <span>index.html</span>
-          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportHtml')">复制</button>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportHtml')" type="button">复制</button>
         </div>
         <textarea id="exportHtml" class="export-textarea" readonly></textarea>
       </div>
+
       <div class="export-section">
         <div class="export-section-header">
           <span>style.css</span>
-          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportCss')">复制</button>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportCss')" type="button">复制</button>
         </div>
         <textarea id="exportCss" class="export-textarea" readonly></textarea>
       </div>
+
       <div class="export-section">
         <div class="export-section-header">
           <span>script.js</span>
-          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportJs')">复制</button>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportJs')" type="button">复制</button>
         </div>
         <textarea id="exportJs" class="export-textarea" readonly></textarea>
       </div>
@@ -282,9 +311,9 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
 <div id="toast" class="toast hidden"></div>
 
 <script>
-var _t=new Date().getTime();
+var _ts=new Date().getTime();
 var _sc=document.createElement('script');
-_sc.src='script.js?t='+_t;
+_sc.src='script.js?t='+_ts;
 document.body.appendChild(_sc);
 </script>
 </body>
