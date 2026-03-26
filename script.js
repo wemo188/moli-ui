@@ -61,6 +61,459 @@
     });
   }
 
+  // ========= IndexedDB：字体 =========
+  var DB = {
+    db: null,
+    open: function() {
+      return new Promise(function(resolve) {
+        if (DB.db) return resolve(DB.db);
+        var req = indexedDB.open('MonoSpaceDB', 2);
+        req.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains('fonts')) {
+            db.createObjectStore('fonts', { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = function(e) {
+          DB.db = e.target.result;
+          resolve(DB.db);
+        };
+        req.onerror = function() { resolve(null); };
+      });
+    },
+    saveFont: async function(obj) {
+      var db = await DB.open();
+      if (!db) return false;
+      return new Promise(function(resolve) {
+        var tx = db.transaction('fonts', 'readwrite');
+        tx.objectStore('fonts').put(obj);
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
+      });
+    },
+    getAllFonts: async function() {
+      var db = await DB.open();
+      if (!db) return [];
+      return new Promise(function(resolve) {
+        var tx = db.transaction('fonts', 'readonly');
+        var req = tx.objectStore('fonts').getAll();
+        req.onsuccess = function() { resolve(req.result || []); };
+        req.onerror = function() { resolve([]); };
+      });
+    }
+  };
+
+  // ========= 主题 =========
+  var PRESET_THEMES = [
+    {
+      id: 'blue-white',
+      name: '蓝白',
+      desc: '清爽蓝白',
+      vars: {
+        '--bg-primary': '#f0f6fb',
+        '--bg-secondary': '#ffffff',
+        '--bg-card': '#ffffff',
+        '--accent': '#adcdea',
+        '--accent-deep': '#8ab8de',
+        '--text-primary': '#1a1a1a',
+        '--text-secondary': '#555555',
+        '--text-muted': '#999999',
+        '--border': '#1a1a1a',
+        '--border-light': 'rgba(173, 205, 234, 0.3)',
+        '--shadow': 'rgba(0, 0, 0, 0.06)'
+      }
+    },
+    {
+      id: 'dark',
+      name: '暗夜',
+      desc: '深色护眼',
+      vars: {
+        '--bg-primary': '#0f1114',
+        '--bg-secondary': '#1a1d22',
+        '--bg-card': '#22262d',
+        '--accent': '#5b9bd5',
+        '--accent-deep': '#3a7cc2',
+        '--text-primary': '#e0e4ea',
+        '--text-secondary': '#8e95a3',
+        '--text-muted': '#555d6b',
+        '--border': '#2e333b',
+        '--border-light': 'rgba(91,155,213,0.15)',
+        '--shadow': 'rgba(0,0,0,0.3)'
+      }
+    },
+    {
+      id: 'sakura',
+      name: '樱花',
+      desc: '柔和粉白',
+      vars: {
+        '--bg-primary': '#fdf2f4',
+        '--bg-secondary': '#ffffff',
+        '--bg-card': '#ffffff',
+        '--accent': '#e8a0b4',
+        '--accent-deep': '#d4819a',
+        '--text-primary': '#2d1f24',
+        '--text-secondary': '#7a5a63',
+        '--text-muted': '#b09098',
+        '--border': '#2d1f24',
+        '--border-light': 'rgba(232,160,180,0.3)',
+        '--shadow': 'rgba(232,160,180,0.12)'
+      }
+    },
+    {
+      id: 'midnight',
+      name: '午夜蓝',
+      desc: '深蓝沉稳',
+      vars: {
+        '--bg-primary': '#0c1525',
+        '--bg-secondary': '#111d32',
+        '--bg-card': '#172740',
+        '--accent': '#adcdea',
+        '--accent-deep': '#8ab8de',
+        '--text-primary': '#dbe8ff',
+        '--text-secondary': '#7a9ab5',
+        '--text-muted': '#4a6680',
+        '--border': '#223550',
+        '--border-light': 'rgba(173,205,234,0.15)',
+        '--shadow': 'rgba(0,0,0,0.3)'
+      }
+    }
+  ];
+
+  var customThemes = LS.get('customThemes') || [];
+  var currentThemeId = LS.get('currentThemeId') || 'blue-white';
+
+  function applyThemeVars(vars) {
+    if (!vars) return;
+    Object.keys(vars).forEach(function(k) {
+      document.documentElement.style.setProperty(k, vars[k]);
+    });
+  }
+
+  function findThemeById(id) {
+    for (var i = 0; i < PRESET_THEMES.length; i++) {
+      if (PRESET_THEMES[i].id === id) return PRESET_THEMES[i];
+    }
+    for (var j = 0; j < customThemes.length; j++) {
+      if (customThemes[j].id === id) return customThemes[j];
+    }
+    return null;
+  }
+
+  function updateColorInputs(vars) {
+    var map = {
+      colorBg: '--bg-primary',
+      colorCard: '--bg-card',
+      colorAccent: '--accent',
+      colorAccentDeep: '--accent-deep',
+      colorText: '--text-primary',
+      colorBorder: '--border'
+    };
+
+    Object.keys(map).forEach(function(id) {
+      var el = $('#' + id);
+      var val = vars[map[id]];
+      if (el && val && val.indexOf('#') === 0) el.value = val;
+    });
+  }
+
+  function selectTheme(id) {
+    var theme = findThemeById(id);
+    if (!theme) return;
+    currentThemeId = id;
+    LS.set('currentThemeId', id);
+    applyThemeVars(theme.vars);
+    LS.set('themeVars', theme.vars);
+    updateColorInputs(theme.vars);
+    renderThemeList();
+    showToast('已切换: ' + theme.name);
+  }
+
+  function renderThemeList() {
+    var c = $('#themeList');
+    if (!c) return;
+
+    c.innerHTML = PRESET_THEMES.map(function(t) {
+      var dots = '';
+      var colors = [t.vars['--bg-primary'], t.vars['--accent'], t.vars['--text-primary'], t.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
+      }
+      return '<div class="theme-card' + (currentThemeId === t.id ? ' active' : '') + '" data-theme="' + t.id + '">' +
+        '<div class="theme-card-colors">' + dots + '</div>' +
+        '<div class="theme-card-name">' + esc(t.name) + '</div>' +
+        '<div class="theme-card-desc">' + esc(t.desc) + '</div>' +
+      '</div>';
+    }).join('');
+
+    c.querySelectorAll('.theme-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectTheme(card.dataset.theme);
+      });
+    });
+
+    renderCustomThemeList();
+  }
+
+  function renderCustomThemeList() {
+    var c = $('#customThemeList');
+    if (!c) return;
+
+    if (!customThemes.length) {
+      c.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">暂无自定义主题</p>';
+      return;
+    }
+
+    c.innerHTML = customThemes.map(function(t, idx) {
+      var dots = '';
+      var colors = [t.vars['--bg-primary'], t.vars['--accent'], t.vars['--text-primary'], t.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
+      }
+      return '<div class="theme-card' + (currentThemeId === t.id ? ' active' : '') + '" data-theme="' + t.id + '">' +
+        '<button class="theme-card-del" onclick="event.stopPropagation();window._delTheme(' + idx + ')" type="button">x</button>' +
+        '<div class="theme-card-colors">' + dots + '</div>' +
+        '<div class="theme-card-name">' + esc(t.name) + '</div>' +
+        '<div class="theme-card-desc">' + esc(t.desc || '自定义') + '</div>' +
+      '</div>';
+    }).join('');
+
+    c.querySelectorAll('.theme-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectTheme(card.dataset.theme);
+      });
+    });
+  }
+
+  window._delTheme = function(idx) {
+    var removed = customThemes.splice(idx, 1)[0];
+    LS.set('customThemes', customThemes);
+    if (currentThemeId === removed.id) selectTheme('blue-white');
+    renderThemeList();
+    showToast('已删除: ' + removed.name);
+  };
+
+  safeOn('#applyCustomColors', 'click', function() {
+    var vars = {
+      '--bg-primary': $('#colorBg').value,
+      '--bg-secondary': $('#colorCard').value,
+      '--bg-card': $('#colorCard').value,
+      '--accent': $('#colorAccent').value,
+      '--accent-deep': $('#colorAccentDeep').value,
+      '--text-primary': $('#colorText').value,
+      '--border': $('#colorBorder').value
+    };
+    applyThemeVars(vars);
+    LS.set('themeVars', vars);
+    currentThemeId = 'custom-temp';
+    LS.set('currentThemeId', 'custom-temp');
+    renderThemeList();
+    showToast('配色已应用');
+  });
+
+  safeOn('#saveCustomTheme', 'click', function() {
+    var name = $('#customThemeName') ? $('#customThemeName').value.trim() : '';
+    if (!name) {
+      showToast('请输入主题名称');
+      return;
+    }
+
+    var vars = {
+      '--bg-primary': $('#colorBg').value,
+      '--bg-secondary': $('#colorCard').value,
+      '--bg-card': $('#colorCard').value,
+      '--accent': $('#colorAccent').value,
+      '--accent-deep': $('#colorAccentDeep').value,
+      '--text-primary': $('#colorText').value,
+      '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
+      '--text-muted': '#999999',
+      '--border': $('#colorBorder').value,
+      '--border-light': 'rgba(173, 205, 234, 0.3)',
+      '--shadow': 'rgba(0, 0, 0, 0.06)'
+    };
+
+    var id = 'custom-' + Date.now();
+    customThemes.push({
+      id: id,
+      name: name,
+      desc: '自定义',
+      vars: vars
+    });
+
+    LS.set('customThemes', customThemes);
+    currentThemeId = id;
+    LS.set('currentThemeId', id);
+    LS.set('themeVars', vars);
+    applyThemeVars(vars);
+    if ($('#customThemeName')) $('#customThemeName').value = '';
+    renderThemeList();
+    showToast('主题已保存');
+  });
+
+  safeOn('#resetTheme', 'click', function() {
+    selectTheme('blue-white');
+    showToast('已恢复默认主题');
+  });
+
+  // ========= 字体 =========
+  var builtinFonts = [
+    { name: '系统默认', family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif', preview: '系统默认字体 ABCabc' },
+    { name: '霞鹜文楷', family: '"LXGW WenKai", serif', preview: '霞鹜文楷 落霞与孤鹜齐飞' },
+    { name: '思源宋体', family: '"Noto Serif SC", serif', preview: '思源宋体 秋水共长天一色' },
+    { name: '思源黑体', family: '"Noto Sans SC", sans-serif', preview: '思源黑体 千里之行始于足下' },
+    { name: '站酷小薇', family: '"ZCOOL XiaoWei", serif', preview: '站酷小薇 山高月小水落石出' },
+    { name: '马善政楷体', family: '"Ma Shan Zheng", cursive', preview: '马善政楷 清风明月本无价' }
+  ];
+
+  var currentFontIndex = LS.get('currentFontIndex');
+  var currentFontCustom = LS.get('currentFontCustom') || null;
+  var customFontMetas = LS.get('customFontMetas') || [];
+
+  var fontStyleEl = document.getElementById('custom-font-faces');
+  if (!fontStyleEl) {
+    fontStyleEl = document.createElement('style');
+    fontStyleEl.id = 'custom-font-faces';
+    document.head.appendChild(fontStyleEl);
+  }
+
+  function registerFont(name, url) {
+    fontStyleEl.textContent += '@font-face{font-family:"' + name + '";src:url(' + url + ');font-display:swap;}';
+  }
+
+  function applyFontByIndex(idx) {
+    currentFontIndex = idx;
+    currentFontCustom = null;
+    document.body.style.fontFamily = builtinFonts[idx].family;
+    LS.set('currentFontIndex', idx);
+    LS.remove('currentFontCustom');
+  }
+
+  function applyFontByCustom(name) {
+    currentFontIndex = null;
+    currentFontCustom = name;
+    document.body.style.fontFamily = '"' + name + '", sans-serif';
+    LS.remove('currentFontIndex');
+    LS.set('currentFontCustom', name);
+  }
+
+  function renderFontList() {
+    var c = $('#fontList');
+    if (!c) return;
+
+    c.innerHTML = builtinFonts.map(function(f, idx) {
+      var active = (currentFontCustom === null && currentFontIndex === idx);
+      return '<div class="font-item' + (active ? ' active' : '') + '" data-idx="' + idx + '">' +
+        '<div>' +
+          '<div class="font-item-preview" style="font-family:' + f.family + '">' + f.preview + '</div>' +
+          '<div class="font-item-name">' + f.name + '</div>' +
+        '</div>' +
+        '<div class="font-item-check"></div>' +
+      '</div>';
+    }).join('');
+
+    c.querySelectorAll('.font-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var idx = parseInt(item.dataset.idx);
+        applyFontByIndex(idx);
+        renderFontList();
+        renderCustomFonts();
+        showToast('已切换: ' + builtinFonts[idx].name);
+      });
+    });
+  }
+
+  function renderCustomFonts() {
+    var c = $('#customFonts');
+    if (!c) return;
+
+    if (!customFontMetas.length) {
+      c.innerHTML = '';
+      return;
+    }
+
+    c.innerHTML = customFontMetas.map(function(f, idx) {
+      var active = (currentFontCustom === f.familyName);
+      return '<div class="font-item' + (active ? ' active' : '') + '" data-cidx="' + idx + '">' +
+        '<div>' +
+          '<div class="font-item-preview" style="font-family:\'' + f.familyName + '\'">' + esc(f.name) + ' 永远相信美好</div>' +
+          '<div class="font-item-name">' + esc(f.name) + ' (自定义)</div>' +
+        '</div>' +
+        '<div class="font-item-check"></div>' +
+      '</div>';
+    }).join('');
+
+    c.querySelectorAll('.font-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var idx = parseInt(item.dataset.cidx);
+        applyFontByCustom(customFontMetas[idx].familyName);
+        renderFontList();
+        renderCustomFonts();
+        showToast('已切换: ' + customFontMetas[idx].name);
+      });
+    });
+  }
+
+  async function restoreCustomFontsFromDB() {
+    try {
+      var fonts = await DB.getAllFonts();
+      for (var i = 0; i < fonts.length; i++) {
+        registerFont(fonts[i].familyName, fonts[i].dataUrl);
+      }
+
+      if (currentFontCustom) {
+        try {
+          await document.fonts.load('16px "' + currentFontCustom + '"');
+          document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
+        } catch (e) {}
+      }
+
+      renderCustomFonts();
+    } catch (e) {
+      console.warn('restoreCustomFontsFromDB', e);
+    }
+  }
+
+  safeOn('#fontUploadArea', 'click', function() {
+    if ($('#fontFileInput')) $('#fontFileInput').click();
+  });
+
+  safeOn('#fontFileInput', 'change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+
+    var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
+    var familyName = 'Custom-' + fontName + '-' + Date.now();
+    var fontId = 'font-' + Date.now();
+
+    showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
+
+    var reader = new FileReader();
+    reader.onload = async function(ev) {
+      var dataUrl = ev.target.result;
+      registerFont(familyName, dataUrl);
+      await DB.saveFont({ id: fontId, familyName: familyName, name: fontName, dataUrl: dataUrl });
+
+      customFontMetas.push({
+        id: fontId,
+        name: fontName,
+        familyName: familyName
+      });
+      LS.set('customFontMetas', customFontMetas);
+
+      try { await document.fonts.load('16px "' + familyName + '"'); } catch (e) {}
+      applyFontByCustom(familyName);
+      renderFontList();
+      renderCustomFonts();
+      showToast('字体已添加');
+    };
+
+    reader.onerror = function() {
+      showToast('读取字体失败');
+    };
+
+    reader.readAsDataURL(file);
+    if ($('#fontFileInput')) $('#fontFileInput').value = '';
+  });
+
   // ========= 核心元素 =========
   var ball = $('#floatingBall');
   var ballMenuEl = $('#ballMenu');
@@ -234,7 +687,7 @@
     closePanel();
   });
 
-  // ========= API 配置 =========
+  // ========= API =========
   var apiConfigs = LS.get('apiConfigs') || [];
   var activeApi = LS.get('activeApi') || null;
 
@@ -428,7 +881,12 @@
   var visionImageData = null;
 
   function restoreChatHistory() {
-    if (!chatMessages || !chatHistory.length) return;
+    if (!chatMessages) return;
+    if (!chatHistory.length) {
+      chatMessages.innerHTML = '<div class="chat-msg system">已就绪。</div>';
+      return;
+    }
+
     for (var i = 0; i < chatHistory.length; i++) {
       var item = chatHistory[i];
       var div = document.createElement('div');
@@ -456,12 +914,12 @@
     chatHistory = [];
     LS.remove('chatHistory');
     if (chatMessages) {
-      chatMessages.innerHTML = '<div class="chat-msg system">聊天记录已清空。</div>';
+      chatMessages.innerHTML = '<div class="chat-msg system">已清空。</div>';
     }
-    showToast('已清空聊天记录');
+    showToast('已清空对话');
   });
 
-  // ========= 源码仓：三个文件独立 + 发给 AI =========
+  // ========= 源码仓 =========
   function getSourceRepo() {
     return LS.get('sourceRepo') || {
       html: '',
@@ -552,7 +1010,6 @@
   function getSourceRepoPromptBlock() {
     var repo = getSourceRepo();
     if (!repo.enabled) return '';
-
     if (!repo.html && !repo.css && !repo.js) return '';
 
     return '\n\n=== 以下是当前真实源码，请优先基于它修改 ===\n' +
@@ -588,10 +1045,10 @@
     var repo = getSourceRepo();
     repo.enabled = this.checked;
     setSourceRepo(repo);
-    showToast(this.checked ? '已开启：发送源码仓给 AI' : '已关闭：不发送源码仓');
+    showToast(this.checked ? '已开启源码仓' : '已关闭源码仓');
   });
 
-  // ========= 发送图片给 AI =========
+  // ========= 图片给 AI =========
   function clearVisionImage() {
     visionImageData = null;
     if ($('#imagePreviewBox')) $('#imagePreviewBox').classList.add('hidden');
@@ -618,7 +1075,7 @@
 
   safeOn('#removeVisionImage', 'click', clearVisionImage);
 
-  // ========= AI 请求 =========
+  // ========= AI =========
   var SYSTEM_PROMPT =
     '你是网页内置开发助手，已经运行在当前网页里。\n' +
     '不要索要代码，不要说无法访问文件。\n' +
@@ -626,8 +1083,7 @@
     '```source-html\n完整 index.html\n```\n' +
     '```source-css\n完整 style.css\n```\n' +
     '```source-js\n完整 script.js\n```\n' +
-    '不要伪造功能，不要额外创建假按钮。\n' +
-    '如果用户只是要预览效果，才使用普通文本或前端注入思路。';
+    '不要伪造功能，不要额外创建假按钮。';
 
   function buildUserContent(text) {
     if (visionImageData) {
@@ -645,19 +1101,19 @@
     var htmlReg = /```source-html\n?([\s\S]*?)```/g;
     while ((match = htmlReg.exec(reply)) !== null) {
       updateSourceRepoFile('html', match[1].trim());
-      showToast('源码仓已更新：index.html');
+      showToast('已更新 index.html');
     }
 
     var cssReg = /```source-css\n?([\s\S]*?)```/g;
     while ((match = cssReg.exec(reply)) !== null) {
       updateSourceRepoFile('css', match[1].trim());
-      showToast('源码仓已更新：style.css');
+      showToast('已更新 style.css');
     }
 
     var jsReg = /```source-js\n?([\s\S]*?)```/g;
     while ((match = jsReg.exec(reply)) !== null) {
       updateSourceRepoFile('js', match[1].trim());
-      showToast('源码仓已更新：script.js');
+      showToast('已更新 script.js');
     }
   }
 
@@ -671,9 +1127,8 @@
     if (!text && !visionImageData) return;
 
     var displayText = text || '[发送了一张图片]';
-
     var wrappedText =
-      '请直接回答并处理当前网页。\n' +
+      '请直接处理当前网页。\n' +
       '如果是修改功能或源码，请优先输出 source-html / source-css / source-js。\n' +
       '用户需求：' + displayText +
       getSourceRepoPromptBlock();
@@ -735,7 +1190,6 @@
       saveChatHistory();
 
       clearVisionImage();
-
     } catch (err) {
       if (replyDiv) {
         replyDiv.innerHTML = '请求失败: ' + esc(err.message);
@@ -818,6 +1272,22 @@
 
   // ========= 初始化 =========
   function init() {
+    renderThemeList();
+    var savedThemeVars = LS.get('themeVars');
+    if (savedThemeVars) {
+      applyThemeVars(savedThemeVars);
+      updateColorInputs(savedThemeVars);
+    } else {
+      selectTheme(currentThemeId);
+    }
+
+    renderFontList();
+    restoreCustomFontsFromDB();
+
+    if (currentFontCustom === null && currentFontIndex !== null && currentFontIndex !== undefined && builtinFonts[currentFontIndex]) {
+      document.body.style.fontFamily = builtinFonts[currentFontIndex].family;
+    }
+
     renderSavedApis();
     updateAiStatus();
     restoreChatHistory();
