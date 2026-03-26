@@ -231,7 +231,7 @@
     .then(function(r){if(r.ok)showToast('连接成功');else showToast('连接失败: '+r.status);})
     .catch(function(err){showToast('连接失败: '+err.message);});
   });
-  
+
   // ========= 源码仓 =========
   function getSourceRepo() { return LS.get('sourceRepo') || {html:'',css:'',js:'',enabled:false}; }
   function setSourceRepo(repo) { LS.set('sourceRepo', {html:repo.html||'',css:repo.css||'',js:repo.js||'',enabled:!!repo.enabled}); }
