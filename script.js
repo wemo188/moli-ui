@@ -4,15 +4,23 @@
 
   var $ = function(s) { return document.querySelector(s); };
   var $$ = function(s) { return document.querySelectorAll(s); };
+
   var LS = {
-    get: function(k) { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
-    set: function(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
-    remove: function(k) { localStorage.removeItem(k); }
+    get: function(k) {
+      try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; }
+    },
+    set: function(k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
+    },
+    remove: function(k) {
+      localStorage.removeItem(k);
+    }
   };
 
   function showToast(msg, duration) {
     duration = duration || 2000;
     var t = $('#toast');
+    if (!t) return;
     t.textContent = msg;
     t.classList.remove('hidden');
     requestAnimationFrame(function() { t.classList.add('show'); });
@@ -29,85 +37,128 @@
     return d.innerHTML;
   }
 
-  // ========== IndexedDB（存大字体文件） ==========
-  var IDB = {
+  // ========= IndexedDB：大字体存储 =========
+  var DB = {
     db: null,
-    open: function(cb) {
-      if (IDB.db) { cb(IDB.db); return; }
-      var req = indexedDB.open('MonoSpaceDB', 1);
-      req.onupgradeneeded = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('fonts')) {
-          db.createObjectStore('fonts', { keyPath: 'familyName' });
-        }
-      };
-      req.onsuccess = function(e) { IDB.db = e.target.result; cb(IDB.db); };
-      req.onerror = function() { cb(null); };
+    open: function() {
+      return new Promise(function(resolve) {
+        if (DB.db) return resolve(DB.db);
+        var req = indexedDB.open('MonoSpaceDB', 2);
+        req.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains('fonts')) db.createObjectStore('fonts', { keyPath: 'id' });
+        };
+        req.onsuccess = function(e) {
+          DB.db = e.target.result;
+          resolve(DB.db);
+        };
+        req.onerror = function() { resolve(null); };
+      });
     },
-    saveFont: function(fontObj, cb) {
-      IDB.open(function(db) {
-        if (!db) { cb(false); return; }
+    saveFont: async function(fontObj) {
+      var db = await DB.open();
+      if (!db) return false;
+      return new Promise(function(resolve) {
         var tx = db.transaction('fonts', 'readwrite');
         tx.objectStore('fonts').put(fontObj);
-        tx.oncomplete = function() { cb(true); };
-        tx.onerror = function() { cb(false); };
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
       });
     },
-    getAllFonts: function(cb) {
-      IDB.open(function(db) {
-        if (!db) { cb([]); return; }
+    getAllFonts: async function() {
+      var db = await DB.open();
+      if (!db) return [];
+      return new Promise(function(resolve) {
         var tx = db.transaction('fonts', 'readonly');
         var req = tx.objectStore('fonts').getAll();
-        req.onsuccess = function() { cb(req.result || []); };
-        req.onerror = function() { cb([]); };
+        req.onsuccess = function() { resolve(req.result || []); };
+        req.onerror = function() { resolve([]); };
       });
     },
-    deleteFont: function(familyName, cb) {
-      IDB.open(function(db) {
-        if (!db) { cb(); return; }
+    deleteFont: async function(id) {
+      var db = await DB.open();
+      if (!db) return;
+      return new Promise(function(resolve) {
         var tx = db.transaction('fonts', 'readwrite');
-        tx.objectStore('fonts').delete(familyName);
-        tx.oncomplete = function() { cb(); };
+        tx.objectStore('fonts').delete(id);
+        tx.oncomplete = function() { resolve(); };
+        tx.onerror = function() { resolve(); };
       });
     }
   };
 
-  // ========== 预设主题（4个） ==========
+  // ========= 预设主题（4个） =========
   var PRESET_THEMES = [
     {
-      id: 'blue-white', name: '蓝白', desc: '清爽蓝白',
+      id: 'blue-white',
+      name: '蓝白',
+      desc: '清爽蓝白',
       vars: {
-        '--bg-primary': '#f0f6fb', '--bg-secondary': '#ffffff', '--bg-card': '#ffffff',
-        '--accent': '#adcdea', '--accent-deep': '#8ab8de',
-        '--text-primary': '#1a1a1a', '--text-secondary': '#555555', '--text-muted': '#999999',
-        '--border': '#1a1a1a', '--border-light': 'rgba(173,205,234,0.3)', '--shadow': 'rgba(0,0,0,0.06)'
+        '--bg-primary': '#f0f6fb',
+        '--bg-secondary': '#ffffff',
+        '--bg-card': '#ffffff',
+        '--accent': '#adcdea',
+        '--accent-deep': '#8ab8de',
+        '--text-primary': '#1a1a1a',
+        '--text-secondary': '#555555',
+        '--text-muted': '#999999',
+        '--border': '#1a1a1a',
+        '--border-light': 'rgba(173, 205, 234, 0.3)',
+        '--shadow': 'rgba(0, 0, 0, 0.06)'
       }
     },
     {
-      id: 'dark', name: '暗夜', desc: '深色护眼',
+      id: 'dark',
+      name: '暗夜',
+      desc: '深色护眼',
       vars: {
-        '--bg-primary': '#0f1114', '--bg-secondary': '#1a1d22', '--bg-card': '#22262d',
-        '--accent': '#5b9bd5', '--accent-deep': '#3a7cc2',
-        '--text-primary': '#e0e4ea', '--text-secondary': '#8e95a3', '--text-muted': '#555d6b',
-        '--border': '#2e333b', '--border-light': 'rgba(91,155,213,0.15)', '--shadow': 'rgba(0,0,0,0.3)'
+        '--bg-primary': '#0f1114',
+        '--bg-secondary': '#1a1d22',
+        '--bg-card': '#22262d',
+        '--accent': '#5b9bd5',
+        '--accent-deep': '#3a7cc2',
+        '--text-primary': '#e0e4ea',
+        '--text-secondary': '#8e95a3',
+        '--text-muted': '#555d6b',
+        '--border': '#2e333b',
+        '--border-light': 'rgba(91,155,213,0.15)',
+        '--shadow': 'rgba(0,0,0,0.3)'
       }
     },
     {
-      id: 'sakura', name: '樱花', desc: '柔和粉白',
+      id: 'sakura',
+      name: '樱花',
+      desc: '柔和粉白',
       vars: {
-        '--bg-primary': '#fdf2f4', '--bg-secondary': '#ffffff', '--bg-card': '#ffffff',
-        '--accent': '#e8a0b4', '--accent-deep': '#d4819a',
-        '--text-primary': '#2d1f24', '--text-secondary': '#7a5a63', '--text-muted': '#b09098',
-        '--border': '#2d1f24', '--border-light': 'rgba(232,160,180,0.3)', '--shadow': 'rgba(232,160,180,0.12)'
+        '--bg-primary': '#fdf2f4',
+        '--bg-secondary': '#ffffff',
+        '--bg-card': '#ffffff',
+        '--accent': '#e8a0b4',
+        '--accent-deep': '#d4819a',
+        '--text-primary': '#2d1f24',
+        '--text-secondary': '#7a5a63',
+        '--text-muted': '#b09098',
+        '--border': '#2d1f24',
+        '--border-light': 'rgba(232,160,180,0.3)',
+        '--shadow': 'rgba(232,160,180,0.12)'
       }
     },
     {
-      id: 'midnight', name: '午夜蓝', desc: '深蓝沉稳',
+      id: 'midnight',
+      name: '午夜蓝',
+      desc: '深蓝沉稳',
       vars: {
-        '--bg-primary': '#0c1525', '--bg-secondary': '#111d32', '--bg-card': '#172740',
-        '--accent': '#adcdea', '--accent-deep': '#8ab8de',
-        '--text-primary': '#dbe8ff', '--text-secondary': '#7a9ab5', '--text-muted': '#4a6680',
-        '--border': '#223550', '--border-light': 'rgba(173,205,234,0.15)', '--shadow': 'rgba(0,0,0,0.3)'
+        '--bg-primary': '#0c1525',
+        '--bg-secondary': '#111d32',
+        '--bg-card': '#172740',
+        '--accent': '#adcdea',
+        '--accent-deep': '#8ab8de',
+        '--text-primary': '#dbe8ff',
+        '--text-secondary': '#7a9ab5',
+        '--text-muted': '#4a6680',
+        '--border': '#223550',
+        '--border-light': 'rgba(173,205,234,0.15)',
+        '--shadow': 'rgba(0,0,0,0.3)'
       }
     }
   ];
@@ -115,43 +166,47 @@
   var customThemes = LS.get('customThemes') || [];
   var currentThemeId = LS.get('currentThemeId') || 'blue-white';
 
-  // ========== 悬浮球拖拽 ==========
+  // ========= 悬浮球拖动 =========
   var ball = $('#floatingBall');
   var ballMenuEl = $('#ballMenu');
   var isDragging = false, hasMoved = false;
   var startX, startY, origX, origY;
 
+  function getBallRect() { return ball.getBoundingClientRect(); }
+
   ball.addEventListener('touchstart', function(e) {
     var t = e.touches[0];
-    var rect = ball.getBoundingClientRect();
-    startX = t.clientX; startY = t.clientY;
-    origX = rect.left; origY = rect.top;
-    isDragging = true; hasMoved = false;
+    var rect = getBallRect();
+    startX = t.clientX;
+    startY = t.clientY;
+    origX = rect.left;
+    origY = rect.top;
+    isDragging = true;
+    hasMoved = false;
   }, { passive: true });
 
   document.addEventListener('touchmove', function(e) {
     if (!isDragging) return;
     var t = e.touches[0];
-    var dx = t.clientX - startX, dy = t.clientY - startY;
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
     if (!hasMoved) return;
     var nx = Math.max(0, Math.min(window.innerWidth - 52, origX + dx));
     var ny = Math.max(0, Math.min(window.innerHeight - 52, origY + dy));
-    ball.style.left = nx + 'px'; ball.style.top = ny + 'px';
-    ball.style.right = 'auto'; ball.style.bottom = 'auto';
+    ball.style.left = nx + 'px';
+    ball.style.top = ny + 'px';
+    ball.style.right = 'auto';
+    ball.style.bottom = 'auto';
   }, { passive: true });
 
   document.addEventListener('touchend', function() {
     if (isDragging && !hasMoved) toggleMenu();
-    isDragging = false;
     if (hasMoved) {
-      var rect = ball.getBoundingClientRect();
-      if (rect.left + 26 < window.innerWidth / 2) {
-        ball.style.left = '12px'; ball.style.right = 'auto';
-      } else {
-        ball.style.left = 'auto'; ball.style.right = '12px';
-      }
+      var rect = getBallRect();
+      LS.set('floatingBallPos', { left: rect.left, top: rect.top });
     }
+    isDragging = false;
   });
 
   ball.addEventListener('click', function() {
@@ -159,6 +214,7 @@
   });
 
   var menuOpen = false;
+
   function toggleMenu() {
     menuOpen = !menuOpen;
     ball.classList.toggle('active', menuOpen);
@@ -173,31 +229,41 @@
   }
 
   function positionMenu() {
-    var rect = ball.getBoundingClientRect();
+    var rect = getBallRect();
     ballMenuEl.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
     if (rect.left + 26 < window.innerWidth / 2) {
-      ballMenuEl.style.left = rect.left + 'px'; ballMenuEl.style.right = 'auto';
+      ballMenuEl.style.left = rect.left + 'px';
+      ballMenuEl.style.right = 'auto';
     } else {
-      ballMenuEl.style.right = (window.innerWidth - rect.right) + 'px'; ballMenuEl.style.left = 'auto';
+      ballMenuEl.style.right = (window.innerWidth - rect.right) + 'px';
+      ballMenuEl.style.left = 'auto';
     }
   }
 
   function closeMenu() {
     if (!menuOpen) return;
-    menuOpen = false; ball.classList.remove('active');
+    menuOpen = false;
+    ball.classList.remove('active');
     ballMenuEl.classList.remove('show');
     setTimeout(function() { ballMenuEl.classList.add('hidden'); }, 250);
   }
 
-  // ========== 面板管理 ==========
+  // ========= 面板管理 =========
   var overlay = $('#overlay');
   var currentPanelEl = null;
 
   function openPanel(id) {
     closeMenu();
+
+    if (currentPanelEl && currentPanelEl.id !== id) {
+      currentPanelEl.classList.remove('show');
+      currentPanelEl.classList.add('hidden');
+    }
+
     currentPanelEl = $('#' + id);
     overlay.classList.remove('hidden');
     currentPanelEl.classList.remove('hidden');
+
     requestAnimationFrame(function() {
       overlay.classList.add('show');
       currentPanelEl.classList.add('show');
@@ -209,221 +275,37 @@
     overlay.classList.remove('show');
     currentPanelEl.classList.remove('show');
     var p = currentPanelEl;
-    setTimeout(function() { overlay.classList.add('hidden'); p.classList.add('hidden'); }, 350);
+    setTimeout(function() {
+      overlay.classList.add('hidden');
+      p.classList.add('hidden');
+    }, 350);
     currentPanelEl = null;
   }
 
   $$('.ball-menu-item').forEach(function(item) {
-    item.addEventListener('click', function() { openPanel(item.dataset.panel); });
+    item.addEventListener('click', function() {
+      openPanel(item.dataset.panel);
+    });
   });
+
   $$('.panel-close').forEach(function(btn) {
-    btn.addEventListener('click', function() { closePanel(); });
+    btn.addEventListener('click', closePanel);
   });
+
   overlay.addEventListener('click', closePanel);
 
-  // ========== 主题配色 ==========
-  function applyThemeVars(vars) {
-    var keys = Object.keys(vars);
-    for (var i = 0; i < keys.length; i++) {
-      document.documentElement.style.setProperty(keys[i], vars[keys[i]]);
-    }
-  }
-
-  function findThemeById(id) {
-    for (var i = 0; i < PRESET_THEMES.length; i++) {
-      if (PRESET_THEMES[i].id === id) return PRESET_THEMES[i];
-    }
-    for (var j = 0; j < customThemes.length; j++) {
-      if (customThemes[j].id === id) return customThemes[j];
-    }
-    return null;
-  }
-
-  function renderThemeList() {
-    var container = $('#themeList');
-    if (!container) return;
-    container.innerHTML = PRESET_THEMES.map(function(theme) {
-      var dots = '';
-      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
-      for (var i = 0; i < colors.length; i++) {
-        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
-      }
-      return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
-        '<div class="theme-card-colors">' + dots + '</div>' +
-        '<div class="theme-card-name">' + theme.name + '</div>' +
-        '<div class="theme-card-desc">' + theme.desc + '</div>' +
-      '</div>';
-    }).join('');
-
-    container.querySelectorAll('.theme-card').forEach(function(card) {
-      card.addEventListener('click', function() {
-        selectTheme(card.dataset.theme);
-      });
-    });
-
-    renderCustomThemeList();
-  }
-
-  function renderCustomThemeList() {
-    var container = $('#customThemeList');
-    if (!container) return;
-    if (customThemes.length === 0) {
-      container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">还没有自定义主题</p>';
-      return;
-    }
-    container.innerHTML = customThemes.map(function(theme, idx) {
-      var dots = '';
-      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
-      for (var i = 0; i < colors.length; i++) {
-        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
-      }
-      return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
-        '<button class="theme-card-del" onclick="event.stopPropagation();window._delTheme(' + idx + ')">x</button>' +
-        '<div class="theme-card-colors">' + dots + '</div>' +
-        '<div class="theme-card-name">' + esc(theme.name) + '</div>' +
-        '<div class="theme-card-desc">' + esc(theme.desc || '自定义') + '</div>' +
-      '</div>';
-    }).join('');
-
-    container.querySelectorAll('.theme-card').forEach(function(card) {
-      card.addEventListener('click', function() {
-        selectTheme(card.dataset.theme);
-      });
-    });
-  }
-
-  function selectTheme(themeId) {
-    var theme = findThemeById(themeId);
-    if (!theme) return;
-    currentThemeId = themeId;
-    LS.set('currentThemeId', themeId);
-    applyThemeVars(theme.vars);
-    LS.set('aiCSSVars', theme.vars);
-    updateColorInputs(theme.vars);
-    renderThemeList();
-    showToast('已切换: ' + theme.name);
-  }
-
-  window._delTheme = function(idx) {
-    var removed = customThemes.splice(idx, 1)[0];
-    LS.set('customThemes', customThemes);
-    if (currentThemeId === removed.id) {
-      selectTheme('blue-white');
-    }
-    renderThemeList();
-    showToast('已删除: ' + removed.name);
-  };
-
-  function updateColorInputs(vars) {
-    var map = {
-      'colorBg': '--bg-primary', 'colorCard': '--bg-card',
-      'colorAccent': '--accent', 'colorAccentDeep': '--accent-deep',
-      'colorText': '--text-primary', 'colorBorder': '--border'
-    };
-    var keys = Object.keys(map);
-    for (var i = 0; i < keys.length; i++) {
-      var el = $('#' + keys[i]);
-      if (el && vars[map[keys[i]]]) {
-        var val = vars[map[keys[i]]];
-        if (val.indexOf('#') === 0 && (val.length === 7 || val.length === 4)) {
-          el.value = val;
-        }
-      }
-    }
-  }
-
-  if ($('#applyCustomColors')) {
-    $('#applyCustomColors').addEventListener('click', function() {
-      var vars = {
-        '--bg-primary': $('#colorBg').value,
-        '--bg-secondary': $('#colorCard').value,
-        '--bg-card': $('#colorCard').value,
-        '--accent': $('#colorAccent').value,
-        '--accent-deep': $('#colorAccentDeep').value,
-        '--text-primary': $('#colorText').value,
-        '--border': $('#colorBorder').value
-      };
-      applyThemeVars(vars);
-      LS.set('aiCSSVars', vars);
-      currentThemeId = 'custom-temp';
-      LS.set('currentThemeId', 'custom-temp');
-      renderThemeList();
-      showToast('自定义配色已应用');
-    });
-  }
-
-  if ($('#saveCustomTheme')) {
-    $('#saveCustomTheme').addEventListener('click', function() {
-      var name = ($('#customThemeName') && $('#customThemeName').value.trim()) || '';
-      if (!name) { showToast('请输入主题名称'); return; }
-      var vars = {
-        '--bg-primary': $('#colorBg').value,
-        '--bg-secondary': $('#colorCard').value,
-        '--bg-card': $('#colorCard').value,
-        '--accent': $('#colorAccent').value,
-        '--accent-deep': $('#colorAccentDeep').value,
-        '--text-primary': $('#colorText').value,
-        '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
-        '--text-muted': '#999999',
-        '--border': $('#colorBorder').value,
-        '--border-light': 'rgba(173,205,234,0.3)',
-        '--shadow': 'rgba(0,0,0,0.06)'
-      };
-      var id = 'custom-' + Date.now();
-      customThemes.push({ id: id, name: name, desc: '自定义', vars: vars });
-      LS.set('customThemes', customThemes);
-      currentThemeId = id;
-      LS.set('currentThemeId', id);
-      applyThemeVars(vars);
-      LS.set('aiCSSVars', vars);
-      renderThemeList();
-      if ($('#customThemeName')) $('#customThemeName').value = '';
-      showToast('主题 "' + name + '" 已保存');
-    });
-  }
-
-  if ($('#resetTheme')) {
-    $('#resetTheme').addEventListener('click', function() {
-      selectTheme('blue-white');
-      var aiStyle = document.getElementById('ai-custom-style');
-      if (aiStyle) aiStyle.remove();
-      LS.remove('aiCustomCSS');
-      LS.remove('aiCustomHTML');
-      LS.remove('aiCustomJS');
-      var aiJs = document.getElementById('ai-custom-js');
-      if (aiJs) aiJs.remove();
-      showToast('已恢复默认');
-    });
-  }
-
-  if ($('#clearChatBtn')) {
-    $('#clearChatBtn').addEventListener('click', function() {
-      chatHistory = [];
-      LS.remove('chatHistory');
-      chatMessages.innerHTML = '<div class="chat-msg system">聊天记录已清空。</div>';
-      showToast('聊天记录已清空');
-    });
-  }
-
-  if ($('#clearAllBtn')) {
-    $('#clearAllBtn').addEventListener('click', function() {
-      if (!confirm('确定重置所有设置？')) return;
-      localStorage.clear();
-      try { indexedDB.deleteDatabase('MonoSpaceDB'); } catch(e) {}
-      location.reload();
-    });
-  }
-
-  // ========== API 配置 ==========
+  // ========= API 配置 =========
   var apiConfigs = LS.get('apiConfigs') || [];
   var activeApi = LS.get('activeApi') || null;
 
   function renderSavedApis() {
     var container = $('#savedApis');
+    if (!container) return;
     if (apiConfigs.length === 0) {
       container.innerHTML = '<p style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px;">暂无保存的配置</p>';
       return;
     }
+
     container.innerHTML = apiConfigs.map(function(c, i) {
       return '<div class="saved-item">' +
         '<div class="saved-item-info">' +
@@ -431,10 +313,10 @@
           '<div class="saved-item-url">' + esc(c.url) + ' · ' + esc(c.model) + '</div>' +
         '</div>' +
         '<div class="saved-item-actions">' +
-          '<button class="use-btn" onclick="window._useApi(' + i + ')">' +
+          '<button class="use-btn" onclick="window._useApi(' + i + ')" type="button">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
-          '<button class="del-btn" onclick="window._delApi(' + i + ')">' +
+          '<button class="del-btn" onclick="window._delApi(' + i + ')" type="button">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
           '</button>' +
         '</div>' +
@@ -445,7 +327,8 @@
   window._useApi = function(i) {
     activeApi = apiConfigs[i];
     LS.set('activeApi', activeApi);
-    renderSavedApis(); updateAiStatus();
+    renderSavedApis();
+    updateAiStatus();
     showToast('已切换至: ' + activeApi.name);
   };
 
@@ -453,9 +336,12 @@
     var removed = apiConfigs.splice(i, 1)[0];
     LS.set('apiConfigs', apiConfigs);
     if (activeApi && activeApi.name === removed.name) {
-      activeApi = null; LS.remove('activeApi'); updateAiStatus();
+      activeApi = null;
+      LS.remove('activeApi');
     }
-    renderSavedApis(); showToast('已删除');
+    renderSavedApis();
+    updateAiStatus();
+    showToast('已删除');
   };
 
   $('#saveApiBtn').addEventListener('click', function() {
@@ -463,18 +349,22 @@
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
     var model = $('#apiModel').value.trim();
-    if (!name || !url || !key || !model) { showToast('请填写所有字段'); return; }
-    var existing = -1;
-    for (var j = 0; j < apiConfigs.length; j++) {
-      if (apiConfigs[j].name === name) { existing = j; break; }
+    if (!name || !url || !key || !model) {
+      showToast('请填写所有字段');
+      return;
     }
+
     var config = { name: name, url: url, key: key, model: model };
+    var existing = -1;
+    for (var i = 0; i < apiConfigs.length; i++) {
+      if (apiConfigs[i].name === name) { existing = i; break; }
+    }
     if (existing >= 0) apiConfigs[existing] = config;
     else apiConfigs.push(config);
+
     LS.set('apiConfigs', apiConfigs);
-    renderSavedApis(); showToast('配置已保存');
-    $('#apiName').value = ''; $('#apiUrl').value = '';
-    $('#apiKey').value = ''; $('#apiModel').value = '';
+    renderSavedApis();
+    showToast('配置已保存');
   });
 
   $('#toggleKeyVisible').addEventListener('click', function() {
@@ -486,23 +376,29 @@
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
     if (!url || !key) { showToast('请先填写 API 地址和 Key'); return; }
+
     showToast('正在获取模型列表...');
     var base = url.replace(/\/+$/, '');
-    fetch(base + '/models', { headers: { 'Authorization': 'Bearer ' + key } })
+
+    fetch(base + '/models', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    })
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var raw = data.data || data;
       var models = [];
-      for (var k = 0; k < raw.length; k++) {
-        var id = raw[k].id || raw[k].name || raw[k];
+      for (var i = 0; i < raw.length; i++) {
+        var id = raw[i].id || raw[i].name || raw[i];
         if (id) models.push(id);
       }
       if (models.length === 0) { showToast('未找到模型'); return; }
+
       var list = $('#modelList');
       list.innerHTML = models.map(function(m) {
         return '<div class="model-item">' + esc(m) + '</div>';
       }).join('');
       list.classList.remove('hidden');
+
       list.querySelectorAll('.model-item').forEach(function(item) {
         item.addEventListener('click', function() {
           $('#apiModel').value = item.textContent;
@@ -510,32 +406,48 @@
         });
       });
     })
-    .catch(function(err) { showToast('获取失败: ' + err.message); });
+    .catch(function(err) {
+      showToast('获取失败: ' + err.message);
+    });
   });
 
   $('#testApiBtn').addEventListener('click', function() {
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
     var model = $('#apiModel').value.trim();
-    if (!url || !key || !model) { showToast('请填写完整信息'); return; }
+    if (!url || !key || !model) {
+      showToast('请填写完整信息');
+      return;
+    }
+
     showToast('正在测试连接...');
     var base = url.replace(/\/+$/, '');
+
     fetch(base + '/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify({ model: model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 10 })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: 'Hi' }]
+      })
     })
     .then(function(res) {
       if (res.ok) showToast('连接成功');
       else showToast('连接失败: ' + res.status);
     })
-    .catch(function(err) { showToast('连接失败: ' + err.message); });
+    .catch(function(err) {
+      showToast('连接失败: ' + err.message);
+    });
   });
 
-  // ========== AI 助手（含 HTML/JS 持久化） ==========
+  // ========= AI 助手 =========
   var chatMessages = $('#chatMessages');
   var chatInput = $('#chatInput');
   var chatHistory = LS.get('chatHistory') || [];
+  var visionImageData = null;
 
   function updateAiStatus() {
     var status = $('#aiStatus');
@@ -559,98 +471,204 @@
   }
 
   function restoreChatHistory() {
-    if (chatHistory.length === 0) return;
+    if (!chatHistory || chatHistory.length === 0) return;
     for (var i = 0; i < chatHistory.length; i++) {
-      addChatMsg(chatHistory[i].role, chatHistory[i].content);
+      if (chatHistory[i].displayRole && chatHistory[i].displayContent) {
+        addChatMsg(chatHistory[i].displayRole, chatHistory[i].displayContent);
+      } else if (chatHistory[i].role === 'user') {
+        addChatMsg('user', chatHistory[i].content || '');
+      } else if (chatHistory[i].role === 'assistant') {
+        addChatMsg('assistant', chatHistory[i].content || '');
+      }
     }
   }
 
   function saveChatHistory() {
     try {
-      // 只保留最近50条防止超出
-      var toSave = chatHistory.slice(-50);
-      LS.set('chatHistory', toSave);
+      LS.set('chatHistory', chatHistory.slice(-50));
     } catch(e) {}
   }
 
-  var SYSTEM_PROMPT = '你是一个内嵌在网页中的AI助手。你不是普通聊天AI。你已经运行在用户的网页里。\n\n' +
+  var SYSTEM_PROMPT =
+    '你是一个内嵌在网页中的AI助手。你不是普通聊天AI。你已经运行在用户的网页里。\n\n' +
     '重要：你不需要用户给你代码。你已经在这个网页内部运行。你的回复中的代码会被自动执行并持久保存。\n\n' +
     '你绝对不能说"请把代码发给我"、"我无法访问你的文件"之类的话。你就在这个网页里，你可以直接修改它。\n\n' +
-    '== 你的4种能力（在回复中用对应代码块即可自动生效） ==\n\n' +
-    '能力1 - 改配色，用 cssvar 代码块：\n```cssvar\n--accent: #ff6600;\n--bg-primary: #111111;\n```\n\n' +
-    '能力2 - 改样式，用 css 代码块：\n```css\n.card { border-radius: 20px; }\n```\n\n' +
-    '能力3 - 替换页面内容，用 html-inject 代码块：\n```html-inject\n<div class="hero-section"><h1>新标题</h1></div>\n```\n\n' +
-    '能力4 - 执行JS修改功能或新增功能，用 js-inject 代码块：\n```js-inject\ndocument.getElementById("apiUrl").type = "text";\nalert("修改成功");\n```\n\n' +
-    '你只要在回复中写出上面格式的代码块，系统会自动提取并执行，不需要用户手动操作。所有修改自动保存，刷新不丢。\n\n' +
-    '== 页面上已有的元素ID ==\n\n' +
-    'API配置面板 #apiPanel：\n' +
-    '#apiName(名称输入框) #apiUrl(地址输入框) #apiKey(密钥输入框) #apiModel(模型输入框)\n' +
-    '#saveApiBtn(保存按钮) #testApiBtn(测试按钮) #fetchModelsBtn(获取模型按钮) #savedApis(已保存列表)\n\n' +
-    'AI助手面板 #aiPanel：\n' +
-    '#chatMessages(消息容器) #chatInput(输入框) #sendBtn(发送按钮) #aiStatus(状态栏)\n\n' +
-    '主题面板 #themePanel：\n' +
-    '#themeList(预设主题) #customThemeList(自定义主题) #colorBg #colorCard #colorAccent #colorAccentDeep #colorText #colorBorder(颜色选择器)\n\n' +
-    '字体面板 #fontPanel：#fontList #fontUploadArea #customFonts\n' +
-    '背景面板 #bgPanel：#bgUploadArea #bgPreview #bgBlur #bgDark #applyBgBtn #removeBgBtn\n' +
-    '导出面板 #exportPanel：#generateExport\n' +
-    '其他：#mainContent(主内容区) #floatingBall(悬浮球) #ballMenu(菜单) #bgLayer(背景层) #overlay(遮罩) #toast(提示)\n\n' +
-    '== 示例对话 ==\n\n' +
-    '用户：把API地址输入框改成不限格式\n' +
-    '你的回复：好的，已经改好了。\n```js-inject\ndocument.getElementById("apiUrl").type = "text";\n```\n\n' +
-    '用户：给主页加个标题\n' +
-    '你的回复：加好啦~\n```html-inject\n<div style="text-align:center;padding:60px 20px;"><h1 style="font-size:28px;">欢迎回来</h1></div>\n```\n\n' +
-    '用户：把背景改成深色\n' +
-    '你的回复：换好了，深色护眼~\n```cssvar\n--bg-primary: #111111;\n--bg-secondary: #1a1a1a;\n--bg-card: #222222;\n--text-primary: #eeeeee;\n--text-secondary: #aaaaaa;\n```\n\n' +
-    '记住：你就在网页里运行，直接输出代码块就能改页面。回复简洁友好。';
+    '你有以下能力：\n' +
+    '1. 改配色：```cssvar``` 代码块\n' +
+    '2. 改样式：```css``` 代码块\n' +
+    '3. 改主页面内容：```html-inject``` 代码块\n' +
+    '4. 改功能或新增功能：```js-inject``` 代码块\n\n' +
+    '页面主要元素ID：\n' +
+    '#mainContent #apiPanel #apiName #apiUrl #apiKey #apiModel #saveApiBtn #testApiBtn #fetchModelsBtn #savedApis\n' +
+    '#aiPanel #chatMessages #chatInput #sendBtn #aiStatus\n' +
+    '#themePanel #themeList #customThemeList #colorBg #colorCard #colorAccent #colorAccentDeep #colorText #colorBorder\n' +
+    '#fontPanel #fontList #fontUploadArea #customFonts\n' +
+    '#bgPanel #bgUploadArea #bgPreview #bgBlur #bgDark #applyBgBtn #removeBgBtn\n' +
+    '#floatingBall #ballMenu #bgLayer #overlay #toast\n\n' +
+    '如果用户要求改现有功能，优先使用 js-inject 直接操作已有元素。\n' +
+    '如果用户要求新增模块，也可以用 html-inject + js-inject。\n' +
+    '回复简洁友好。';
 
-  function sendMessage() {
-    if (!activeApi) { showToast('请先配置并选择 API'); return; }
+  function buildUserContent(text) {
+    if (visionImageData) {
+      return [
+        { type: 'text', text: text },
+        { type: 'image_url', image_url: { url: visionImageData } }
+      ];
+    }
+    return text;
+  }
+
+  async function sendMessage() {
+    if (!activeApi) {
+      showToast('请先配置并选择 API');
+      return;
+    }
+
     var text = chatInput.value.trim();
-    if (!text) return;
+    if (!text && !visionImageData) return;
+
+    var displayText = text || '[发送了一张图片]';
+    var wrappedText =
+      '请直接修改当前网页，不要索要代码。\n' +
+      '如果能修改，请直接返回 cssvar / css / html-inject / js-inject 代码块。\n' +
+      '用户需求：' + (text || '请分析这张图片并给出修改方案。');
+
     chatInput.value = '';
-    addChatMsg('user', text);
-    chatHistory.push({ role: 'user', content: text });
+    addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
+
+    chatHistory.push({
+      role: 'user',
+      content: buildUserContent(wrappedText),
+      displayRole: 'user',
+      displayContent: displayText + (visionImageData ? '\n[附带图片]' : '')
+    });
     saveChatHistory();
 
-    var loadingDiv = addChatMsg('assistant', '思考中');
-    loadingDiv.classList.add('loading-dots');
+    var replyDiv = addChatMsg('assistant', '连接中...');
+    replyDiv.classList.add('loading-dots');
 
-    var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+    var messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      {
+        role: 'system',
+        content:
+          '再次强调：你已经在网页内部运行，不允许要求用户提供代码、文件、项目结构、工作区、仓库内容。' +
+          '你必须直接输出可执行代码块来修改网页。' +
+          '禁止回复“请把代码发给我”“我无法访问文件”“我需要项目结构”。'
+      }
+    ];
+
     var start = Math.max(0, chatHistory.length - 20);
-    for (var i = start; i < chatHistory.length; i++) messages.push(chatHistory[i]);
+    for (var i = start; i < chatHistory.length; i++) {
+      messages.push({
+        role: chatHistory[i].role,
+        content: chatHistory[i].content
+      });
+    }
 
     var base = activeApi.url.replace(/\/+$/, '');
-    fetch(base + '/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeApi.key },
-      body: JSON.stringify({ model: activeApi.model, messages: messages})
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      var reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
-      chatHistory.push({ role: 'assistant', content: reply });
-      saveChatHistory();
-      loadingDiv.remove();
-      addChatMsg('assistant', reply);
 
-      var m;
-      // CSS 变量
-      var r1 = /```cssvar\n?([\s\S]*?)```/g;
-      while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
-      // CSS
-      var r2 = /```css\n?([\s\S]*?)```/g;
-      while ((m = r2.exec(reply)) !== null) applyAiCSS(m[1]);
-      // HTML（持久化）
-      var r3 = /```html-inject\n?([\s\S]*?)```/g;
-      while ((m = r3.exec(reply)) !== null) applyAiHTML(m[1]);
-      // JS（持久化）
-      var r4 = /```js-inject\n?([\s\S]*?)```/g;
-      while ((m = r4.exec(reply)) !== null) applyAiJS(m[1]);
-    })
-    .catch(function(err) {
-      loadingDiv.remove();
-      addChatMsg('system', '请求失败: ' + err.message);
-    });
+    try {
+      const response = await fetch(base + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + activeApi.key
+        },
+        body: JSON.stringify({
+          model: activeApi.model,
+          messages: messages,
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        // fallback 非流式
+        const data = await response.json().catch(function(){ return {}; });
+        throw new Error(data.error?.message || ('请求失败: ' + response.status));
+      }
+
+      if (!response.body) {
+        throw new Error('当前接口不支持流式输出');
+      }
+
+      replyDiv.classList.remove('loading-dots');
+      replyDiv.innerHTML = '';
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let fullReply = '';
+
+      while (true) {
+        const result = await reader.read();
+        if (result.done) break;
+
+        buffer += decoder.decode(result.value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (let j = 0; j < lines.length; j++) {
+          const line = lines[j].trim();
+          if (!line.startsWith('data:')) continue;
+
+          const dataStr = line.slice(5).trim();
+          if (dataStr === '[DONE]') continue;
+
+          try {
+            const data = JSON.parse(dataStr);
+            const delta = data.choices && data.choices[0] && data.choices[0].delta ? data.choices[0].delta : {};
+            const content = delta.content || '';
+            const reasoning = delta.reasoning_content || delta.thinking || '';
+
+            if (reasoning) fullReply += '\n[思考]\n' + reasoning + '\n';
+            if (content) fullReply += content;
+
+            replyDiv.innerHTML = esc(fullReply).replace(/\n/g, '<br>');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          } catch (e) {}
+        }
+      }
+
+      if (!fullReply.trim()) {
+        fullReply = '模型没有返回内容';
+        replyDiv.innerHTML = esc(fullReply);
+      }
+
+      chatHistory.push({
+        role: 'assistant',
+        content: fullReply,
+        displayRole: 'assistant',
+        displayContent: fullReply
+      });
+      saveChatHistory();
+
+      applyReplyMods(fullReply);
+
+      // 发送后清掉临时图片
+      clearVisionImage();
+
+    } catch (err) {
+      replyDiv.classList.remove('loading-dots');
+      replyDiv.innerHTML = '请求失败: ' + esc(err.message);
+    }
+  }
+
+  function applyReplyMods(reply) {
+    var m;
+
+    var r1 = /```cssvar\n?([\s\S]*?)```/g;
+    while ((m = r1.exec(reply)) !== null) applyAiCSSVars(m[1]);
+
+    var r2 = /```css\n?([\s\S]*?)```/g;
+    while ((m = r2.exec(reply)) !== null) applyAiCSS(m[1]);
+
+    var r3 = /```html-inject\n?([\s\S]*?)```/g;
+    while ((m = r3.exec(reply)) !== null) applyAiHTML(m[1]);
+
+    var r4 = /```js-inject\n?([\s\S]*?)```/g;
+    while ((m = r4.exec(reply)) !== null) applyAiJS(m[1]);
   }
 
   function applyAiCSSVars(text) {
@@ -671,43 +689,37 @@
   }
 
   function applyAiCSS(css) {
-    var el = document.getElementById('ai-custom-style');
-    if (!el) {
-      el = document.createElement('style');
-      el.id = 'ai-custom-style';
-      document.head.appendChild(el);
+    var styleEl = document.getElementById('ai-custom-style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'ai-custom-style';
+      document.head.appendChild(styleEl);
     }
-    el.textContent += '\n' + css;
-    LS.set('aiCustomCSS', el.textContent);
+    styleEl.textContent += '\n' + css;
+    LS.set('aiCustomCSS', styleEl.textContent);
     showToast('样式已应用');
   }
 
   function applyAiHTML(html) {
-    var main = $('#mainContent');
-    if (main) {
-      main.innerHTML = html;
-      LS.set('aiCustomHTML', html);
-      showToast('页面内容已更新');
-    }
+    $('#mainContent').innerHTML = html;
+    LS.set('aiCustomHTML', html);
+    showToast('页面内容已更新');
   }
 
   function applyAiJS(code) {
     try {
       var fn = new Function(code);
       fn();
-      // 累加保存
       var existing = LS.get('aiCustomJS') || '';
       existing += '\n;' + code;
       LS.set('aiCustomJS', existing);
       showToast('功能已添加');
-    } catch(err) {
+    } catch (err) {
       showToast('JS 执行失败: ' + err.message);
     }
   }
 
-  // 恢复 AI 的所有修改
   function restoreAiMods() {
-    // CSS 变量
     var savedVars = LS.get('aiCSSVars');
     if (savedVars) {
       var vk = Object.keys(savedVars);
@@ -715,7 +727,7 @@
         document.documentElement.style.setProperty(vk[i], savedVars[vk[i]]);
       }
     }
-    // CSS
+
     var savedCSS = LS.get('aiCustomCSS');
     if (savedCSS) {
       var s = document.createElement('style');
@@ -723,30 +735,59 @@
       s.textContent = savedCSS;
       document.head.appendChild(s);
     }
-    // HTML
+
     var savedHTML = LS.get('aiCustomHTML');
     if (savedHTML) {
-      var main = $('#mainContent');
-      if (main) main.innerHTML = savedHTML;
+      $('#mainContent').innerHTML = savedHTML;
     }
-    // JS
+
     var savedJS = LS.get('aiCustomJS');
     if (savedJS) {
       try {
         var fn = new Function(savedJS);
         fn();
       } catch(e) {
-        console.warn('恢复 AI JS 失败:', e);
+        console.warn('恢复 AI JS 失败', e);
       }
     }
   }
 
   $('#sendBtn').addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   });
 
-  // ========== 字体设置（IndexedDB 大文件） ==========
+  // ========= 发送图片给 AI =========
+  function clearVisionImage() {
+    visionImageData = null;
+    $('#imagePreviewBox').classList.add('hidden');
+    $('#imagePreviewImg').src = '';
+    $('#visionImageInput').value = '';
+  }
+
+  $('#pickVisionImage').addEventListener('click', function() {
+    $('#visionImageInput').click();
+  });
+
+  $('#visionImageInput').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      visionImageData = ev.target.result;
+      $('#imagePreviewImg').src = visionImageData;
+      $('#imagePreviewBox').classList.remove('hidden');
+      showToast('图片已添加');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('#removeVisionImage').addEventListener('click', clearVisionImage);
+
+  // ========= 字体 =========
   var builtinFonts = [
     { name: '系统默认', family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif', preview: '系统默认字体 ABCabc' },
     { name: '霞鹜文楷', family: '"LXGW WenKai", serif', preview: '霞鹜文楷 落霞与孤鹜齐飞' },
@@ -767,28 +808,31 @@
     document.head.appendChild(fontStyleEl);
   }
 
+  function registerFontFromDataUrl(familyName, dataUrl) {
+    fontStyleEl.textContent += '@font-face{font-family:"' + familyName + '";src:url(' + dataUrl + ');font-display:swap;}';
+  }
+
   function applyFontByIndex(idx) {
-    currentFontIndex = idx; currentFontCustom = null;
+    currentFontIndex = idx;
+    currentFontCustom = null;
     document.body.style.fontFamily = builtinFonts[idx].family;
-    LS.set('currentFontIndex', idx); LS.remove('currentFontCustom');
+    LS.set('currentFontIndex', idx);
+    LS.remove('currentFontCustom');
   }
 
   function applyFontByCustom(familyName) {
-    currentFontIndex = null; currentFontCustom = familyName;
+    currentFontIndex = null;
+    currentFontCustom = familyName;
     document.body.style.fontFamily = '"' + familyName + '", sans-serif';
-    LS.remove('currentFontIndex'); LS.set('currentFontCustom', familyName);
-  }
-
-  function registerFontFromDataUrl(familyName, dataUrl) {
-    var css = '@font-face { font-family: "' + familyName + '"; src: url(' + dataUrl + '); font-display: swap; }\n';
-    fontStyleEl.textContent += css;
+    LS.remove('currentFontIndex');
+    LS.set('currentFontCustom', familyName);
   }
 
   function renderFontList() {
     var container = $('#fontList');
     container.innerHTML = builtinFonts.map(function(f, idx) {
-      var isActive = (currentFontCustom === null && currentFontIndex === idx);
-      return '<div class="font-item' + (isActive ? ' active' : '') + '" data-idx="' + idx + '">' +
+      var active = (currentFontCustom === null && currentFontIndex === idx);
+      return '<div class="font-item' + (active ? ' active' : '') + '" data-idx="' + idx + '">' +
         '<div>' +
           '<div class="font-item-preview" style="font-family:' + f.family + '">' + f.preview + '</div>' +
           '<div class="font-item-name">' + f.name + '</div>' +
@@ -801,7 +845,8 @@
       item.addEventListener('click', function() {
         var idx = parseInt(item.dataset.idx);
         applyFontByIndex(idx);
-        renderFontList(); renderCustomFonts();
+        renderFontList();
+        renderCustomFonts();
         showToast('已切换: ' + builtinFonts[idx].name);
       });
     });
@@ -809,10 +854,13 @@
 
   function renderCustomFonts() {
     var container = $('#customFonts');
-    if (customFontMetas.length === 0) { container.innerHTML = ''; return; }
+    if (customFontMetas.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
     container.innerHTML = customFontMetas.map(function(f, idx) {
-      var isActive = (currentFontCustom === f.familyName);
-      return '<div class="font-item' + (isActive ? ' active' : '') + '" data-cidx="' + idx + '">' +
+      var active = (currentFontCustom === f.familyName);
+      return '<div class="font-item' + (active ? ' active' : '') + '" data-cidx="' + idx + '">' +
         '<div>' +
           '<div class="font-item-preview" style="font-family:\'' + f.familyName + '\'">' + esc(f.name) + ' 永远相信美好</div>' +
           '<div class="font-item-name">' + esc(f.name) + ' (自定义)</div>' +
@@ -823,113 +871,128 @@
 
     container.querySelectorAll('.font-item').forEach(function(item) {
       item.addEventListener('click', function() {
-        var cidx = parseInt(item.dataset.cidx);
-        applyFontByCustom(customFontMetas[cidx].familyName);
-        renderFontList(); renderCustomFonts();
-        showToast('已切换: ' + customFontMetas[cidx].name);
+        var idx = parseInt(item.dataset.cidx);
+        applyFontByCustom(customFontMetas[idx].familyName);
+        renderFontList();
+        renderCustomFonts();
+        showToast('已切换: ' + customFontMetas[idx].name);
       });
     });
   }
 
-  // 从 IndexedDB 恢复所有自定义字体
-  function restoreCustomFontsFromDB() {
-    IDB.getAllFonts(function(fonts) {
-      for (var i = 0; i < fonts.length; i++) {
-        registerFontFromDataUrl(fonts[i].familyName, fonts[i].dataUrl);
-      }
-      // 恢复当前选择的字体
-      if (currentFontCustom) {
-        document.fonts.load('16px "' + currentFontCustom + '"').then(function() {
-          document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
-        }).catch(function() {});
-      }
-      renderCustomFonts();
-    });
+  async function restoreCustomFontsFromDB() {
+    var fonts = await DB.getAllFonts();
+    for (var i = 0; i < fonts.length; i++) {
+      registerFontFromDataUrl(fonts[i].familyName, fonts[i].dataUrl);
+    }
+
+    if (currentFontCustom) {
+      document.fonts.load('16px "' + currentFontCustom + '"').then(function() {
+        document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
+      }).catch(function() {});
+    }
+    renderCustomFonts();
   }
 
-  // 上传字体
-  var fontUploadArea = $('#fontUploadArea');
-  var fontFileInput = $('#fontFileInput');
-  fontUploadArea.addEventListener('click', function() { fontFileInput.click(); });
+  $('#fontUploadArea').addEventListener('click', function() {
+    $('#fontFileInput').click();
+  });
 
-  fontFileInput.addEventListener('change', function(e) {
+  $('#fontFileInput').addEventListener('change', function(e) {
     var file = e.target.files[0];
     if (!file) return;
 
     var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
     var familyName = 'Custom-' + fontName + '-' + Date.now();
+    var fontId = 'font-' + Date.now();
 
     showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
 
     var reader = new FileReader();
-    reader.onload = function(ev) {
+    reader.onload = async function(ev) {
       var dataUrl = ev.target.result;
-
-      // 注册字体
       registerFontFromDataUrl(familyName, dataUrl);
 
-      // 存到 IndexedDB（支持大文件）
-      IDB.saveFont({ familyName: familyName, name: fontName, dataUrl: dataUrl }, function(ok) {
-        if (!ok) showToast('存储失败，字体本次可用但不会持久');
+      await DB.saveFont({
+        id: fontId,
+        familyName: familyName,
+        name: fontName,
+        dataUrl: dataUrl
       });
 
-      // 记录元数据到 localStorage（很小，只有名字）
-      customFontMetas.push({ name: fontName, familyName: familyName });
+      customFontMetas.push({
+        id: fontId,
+        name: fontName,
+        familyName: familyName
+      });
       LS.set('customFontMetas', customFontMetas);
 
-      // 等字体加载完
       document.fonts.load('16px "' + familyName + '"').then(function() {
         applyFontByCustom(familyName);
-        renderFontList(); renderCustomFonts();
+        renderFontList();
+        renderCustomFonts();
         showToast('字体 "' + fontName + '" 已加载');
       }).catch(function() {
         applyFontByCustom(familyName);
-        renderFontList(); renderCustomFonts();
+        renderFontList();
+        renderCustomFonts();
         showToast('字体已添加');
       });
     };
-    reader.onerror = function() { showToast('读取文件失败'); };
+    reader.onerror = function() {
+      showToast('读取字体失败');
+    };
     reader.readAsDataURL(file);
-    fontFileInput.value = '';
+
+    $('#fontFileInput').value = '';
   });
 
-  // ========== 背景图片 ==========
+  // ========= 背景图片 =========
   var bgData = LS.get('bgData') || null;
-  var bgUploadArea = $('#bgUploadArea');
-  var bgFileInput = $('#bgFileInput');
 
-  bgUploadArea.addEventListener('click', function() { bgFileInput.click(); });
+  $('#bgUploadArea').addEventListener('click', function() {
+    $('#bgFileInput').click();
+  });
 
-  bgFileInput.addEventListener('change', function(e) {
+  $('#bgFileInput').addEventListener('change', function(e) {
     var file = e.target.files[0];
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(ev) {
-      $('#bgPreviewImg').src = ev.target.result;
+      var dataUrl = ev.target.result;
+      $('#bgPreviewImg').src = dataUrl;
       $('#bgPreview').classList.remove('hidden');
-      bgData = { url: ev.target.result };
+      bgData = { url: dataUrl };
     };
     reader.readAsDataURL(file);
-    bgFileInput.value = '';
+    $('#bgFileInput').value = '';
   });
 
-  $('#bgBlur').addEventListener('input', function(e) { $('#bgBlurVal').textContent = e.target.value + 'px'; });
-  $('#bgDark').addEventListener('input', function(e) { $('#bgDarkVal').textContent = e.target.value + '%'; });
+  $('#bgBlur').addEventListener('input', function(e) {
+    $('#bgBlurVal').textContent = e.target.value + 'px';
+  });
+
+  $('#bgDark').addEventListener('input', function(e) {
+    $('#bgDarkVal').textContent = e.target.value + '%';
+  });
 
   $('#applyBgBtn').addEventListener('click', function() {
     if (!bgData) { showToast('请先上传图片'); return; }
     bgData.blur = $('#bgBlur').value;
     bgData.dark = $('#bgDark').value;
     applyBg(bgData);
-    try { LS.set('bgData', bgData); } catch(e) { showToast('图片太大无法持久保存'); }
+    try { LS.set('bgData', bgData); } catch(e) {}
     showToast('背景已应用');
   });
 
   $('#removeBgBtn').addEventListener('click', function() {
-    bgData = null; LS.remove('bgData');
+    bgData = null;
+    LS.remove('bgData');
     var layer = $('#bgLayer');
-    layer.style.backgroundImage = 'none'; layer.style.filter = '';
-    layer.style.inset = '0'; layer.style.setProperty('--bg-overlay-alpha', '0');
+    layer.style.backgroundImage = 'none';
+    layer.style.filter = '';
+    layer.style.inset = '0';
+    layer.style.setProperty('--bg-overlay-alpha', '0');
     $('#bgPreview').classList.add('hidden');
     showToast('背景已移除');
   });
@@ -944,95 +1007,285 @@
     layer.style.setProperty('--bg-overlay-alpha', (parseInt(data.dark) || 30) / 100);
   }
 
-  // ========== 导出代码 ==========
-  if ($('#generateExport')) {
-    $('#generateExport').addEventListener('click', function() {
-      var aiCSS = LS.get('aiCustomCSS') || '';
-      var aiHTML = LS.get('aiCustomHTML') || '';
-      var aiJS = LS.get('aiCustomJS') || '';
-      var aiVars = LS.get('aiCSSVars') || {};
+  // ========= 主题 =========
+  function applyThemeVars(vars) {
+    var keys = Object.keys(vars);
+    for (var i = 0; i < keys.length; i++) {
+      document.documentElement.style.setProperty(keys[i], vars[keys[i]]);
+    }
+  }
 
-      // 生成 style.css：把当前 CSS 变量写进 :root
-      var originalCSS = '';
-      var styleSheets = document.querySelectorAll('link[rel="stylesheet"]');
-      // 我们直接用提示告诉用户手动操作
-      var varsCSS = ':root {\n';
-      var vk = Object.keys(aiVars);
-      for (var i = 0; i < vk.length; i++) {
-        varsCSS += '  ' + vk[i] + ': ' + aiVars[vk[i]] + ';\n';
+  function findThemeById(id) {
+    for (var i = 0; i < PRESET_THEMES.length; i++) {
+      if (PRESET_THEMES[i].id === id) return PRESET_THEMES[i];
+    }
+    for (var j = 0; j < customThemes.length; j++) {
+      if (customThemes[j].id === id) return customThemes[j];
+    }
+    return null;
+  }
+
+  function renderThemeList() {
+    var container = $('#themeList');
+    container.innerHTML = PRESET_THEMES.map(function(theme) {
+      var dots = '';
+      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
       }
-      varsCSS += '}\n';
+      return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
+        '<div class="theme-card-colors">' + dots + '</div>' +
+        '<div class="theme-card-name">' + esc(theme.name) + '</div>' +
+        '<div class="theme-card-desc">' + esc(theme.desc) + '</div>' +
+      '</div>';
+    }).join('');
 
-      var exportCSS = '/* === 以下 :root 覆盖替换 style.css 最顶部的 :root === */\n' + varsCSS;
-      if (aiCSS) {
-        exportCSS += '\n/* === AI 注入的额外样式，追加到 style.css 末尾 === */\n' + aiCSS;
+    container.querySelectorAll('.theme-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectTheme(card.dataset.theme);
+      });
+    });
+
+    renderCustomThemeList();
+  }
+
+  function renderCustomThemeList() {
+    var container = $('#customThemeList');
+    if (customThemes.length === 0) {
+      container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">还没有自定义主题</p>';
+      return;
+    }
+
+    container.innerHTML = customThemes.map(function(theme, idx) {
+      var dots = '';
+      var colors = [theme.vars['--bg-primary'], theme.vars['--accent'], theme.vars['--text-primary'], theme.vars['--border']];
+      for (var i = 0; i < colors.length; i++) {
+        dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
       }
+      return '<div class="theme-card' + (currentThemeId === theme.id ? ' active' : '') + '" data-theme="' + theme.id + '">' +
+        '<button class="theme-card-del" onclick="event.stopPropagation();window._delTheme(' + idx + ')" type="button">x</button>' +
+        '<div class="theme-card-colors">' + dots + '</div>' +
+        '<div class="theme-card-name">' + esc(theme.name) + '</div>' +
+        '<div class="theme-card-desc">' + esc(theme.desc || '自定义') + '</div>' +
+      '</div>';
+    }).join('');
 
-      var exportHTML = '';
-      if (aiHTML) {
-        exportHTML = '<!-- 替换 index.html 中 <main id="mainContent"> 到 </main> 之间的内容 -->\n' + aiHTML;
-      } else {
-        exportHTML = '（没有 HTML 修改）';
-      }
-
-      var exportJS = '';
-      if (aiJS) {
-        exportJS = '// 将以下代码追加到 script.js 的 init() 函数末尾\n' + aiJS;
-      } else {
-        exportJS = '（没有 JS 修改）';
-      }
-
-      $('#exportHtml').value = exportHTML;
-      $('#exportCss').value = exportCSS;
-      $('#exportJs').value = exportJS;
-      $('#exportOutput').classList.remove('hidden');
-      showToast('代码已生成');
+    container.querySelectorAll('.theme-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectTheme(card.dataset.theme);
+      });
     });
   }
+
+  function updateColorInputs(vars) {
+    var map = {
+      colorBg: '--bg-primary',
+      colorCard: '--bg-card',
+      colorAccent: '--accent',
+      colorAccentDeep: '--accent-deep',
+      colorText: '--text-primary',
+      colorBorder: '--border'
+    };
+    Object.keys(map).forEach(function(id) {
+      var el = $('#' + id);
+      var val = vars[map[id]];
+      if (el && val && val.indexOf('#') === 0) el.value = val;
+    });
+  }
+
+  function selectTheme(themeId) {
+    var theme = findThemeById(themeId);
+    if (!theme) return;
+    currentThemeId = themeId;
+    LS.set('currentThemeId', themeId);
+    applyThemeVars(theme.vars);
+    LS.set('aiCSSVars', theme.vars);
+    updateColorInputs(theme.vars);
+    renderThemeList();
+    showToast('已切换: ' + theme.name);
+  }
+
+  window._delTheme = function(idx) {
+    var removed = customThemes.splice(idx, 1)[0];
+    LS.set('customThemes', customThemes);
+    if (currentThemeId === removed.id) selectTheme('blue-white');
+    renderThemeList();
+    showToast('已删除: ' + removed.name);
+  };
+
+  $('#applyCustomColors').addEventListener('click', function() {
+    var vars = {
+      '--bg-primary': $('#colorBg').value,
+      '--bg-secondary': $('#colorCard').value,
+      '--bg-card': $('#colorCard').value,
+      '--accent': $('#colorAccent').value,
+      '--accent-deep': $('#colorAccentDeep').value,
+      '--text-primary': $('#colorText').value,
+      '--border': $('#colorBorder').value
+    };
+    applyThemeVars(vars);
+    LS.set('aiCSSVars', vars);
+    currentThemeId = 'custom-temp';
+    LS.set('currentThemeId', 'custom-temp');
+    renderThemeList();
+    showToast('自定义配色已应用');
+  });
+
+  $('#saveCustomTheme').addEventListener('click', function() {
+    var name = ($('#customThemeName').value || '').trim();
+    if (!name) {
+      showToast('请输入主题名称');
+      return;
+    }
+    var vars = {
+      '--bg-primary': $('#colorBg').value,
+      '--bg-secondary': $('#colorCard').value,
+      '--bg-card': $('#colorCard').value,
+      '--accent': $('#colorAccent').value,
+      '--accent-deep': $('#colorAccentDeep').value,
+      '--text-primary': $('#colorText').value,
+      '--text-secondary': $('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
+      '--text-muted': '#999999',
+      '--border': $('#colorBorder').value,
+      '--border-light': 'rgba(173, 205, 234, 0.3)',
+      '--shadow': 'rgba(0, 0, 0, 0.06)'
+    };
+
+    var id = 'custom-' + Date.now();
+    customThemes.push({
+      id: id,
+      name: name,
+      desc: '自定义',
+      vars: vars
+    });
+    LS.set('customThemes', customThemes);
+    currentThemeId = id;
+    LS.set('currentThemeId', id);
+    applyThemeVars(vars);
+    LS.set('aiCSSVars', vars);
+    $('#customThemeName').value = '';
+    renderThemeList();
+    showToast('主题已保存');
+  });
+
+  $('#resetTheme').addEventListener('click', function() {
+    selectTheme('blue-white');
+    showToast('已恢复默认主题');
+  });
+
+  $('#clearChatBtn').addEventListener('click', function() {
+    try {
+      chatHistory = [];
+      localStorage.removeItem('chatHistory');
+      var chatBox = $('#chatMessages');
+      if (chatBox) {
+        chatBox.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
+      }
+      showToast('已清空聊天记录');
+    } catch (e) {
+      showToast('清空失败');
+    }
+  });
+
+  $('#clearAllBtn').addEventListener('click', function() {
+    if (!confirm('确定重置所有设置？API、聊天、主题、字体、背景都会被清除。')) return;
+    localStorage.clear();
+    try { indexedDB.deleteDatabase('MonoSpaceDB'); } catch(e) {}
+    location.reload();
+  });
+
+  // ========= 导出 =========
+  $('#generateExport').addEventListener('click', function() {
+    var aiCSS = LS.get('aiCustomCSS') || '';
+    var aiHTML = LS.get('aiCustomHTML') || '';
+    var aiJS = LS.get('aiCustomJS') || '';
+    var aiVars = LS.get('aiCSSVars') || {};
+
+    var varsCSS = ':root {\n';
+    Object.keys(aiVars).forEach(function(k) {
+      varsCSS += '  ' + k + ': ' + aiVars[k] + ';\n';
+    });
+    varsCSS += '}\n';
+
+    var exportCSS = '/* 把这段 :root 覆盖到 style.css 顶部 */\n' + varsCSS;
+    if (aiCSS) exportCSS += '\n/* 追加到 style.css 末尾的 AI 样式 */\n' + aiCSS;
+
+    var exportHTML = aiHTML || '（没有 HTML 修改）';
+    var exportJS = aiJS || '（没有 JS 修改）';
+
+    $('#exportHtml').value = exportHTML;
+    $('#exportCss').value = exportCSS;
+    $('#exportJs').value = exportJS;
+    $('#exportOutput').classList.remove('hidden');
+    showToast('代码已生成');
+  });
 
   window._copyExport = function(id) {
     var el = $('#' + id);
     if (!el) return;
     el.select();
     el.setSelectionRange(0, 999999);
-    try {
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(el.value).then(function() {
         showToast('已复制');
       }).catch(function() {
         document.execCommand('copy');
         showToast('已复制');
       });
-    } catch(e) {
+    } else {
       document.execCommand('copy');
       showToast('已复制');
     }
   };
 
-  // ========== 初始化 ==========
-  function init() {
+  // ========= 初始化 =========
+  async function init() {
     renderSavedApis();
     updateAiStatus();
     restoreChatHistory();
     restoreAiMods();
     renderThemeList();
     renderFontList();
-    restoreCustomFontsFromDB();
+    await restoreCustomFontsFromDB();
 
-    // 恢复内置字体选择
     if (currentFontCustom === null && currentFontIndex !== null && currentFontIndex !== undefined && builtinFonts[currentFontIndex]) {
       document.body.style.fontFamily = builtinFonts[currentFontIndex].family;
     }
 
-    // 恢复主题颜色选择器
     var themeVars = LS.get('aiCSSVars');
     if (themeVars) updateColorInputs(themeVars);
 
-    // 恢复背景
     if (bgData) {
       applyBg(bgData);
-      if (bgData.url) { $('#bgPreviewImg').src = bgData.url; $('#bgPreview').classList.remove('hidden'); }
-      if (bgData.blur) { $('#bgBlur').value = bgData.blur; $('#bgBlurVal').textContent = bgData.blur + 'px'; }
-      if (bgData.dark) { $('#bgDark').value = bgData.dark; $('#bgDarkVal').textContent = bgData.dark + '%'; }
+      if (bgData.url) {
+        $('#bgPreviewImg').src = bgData.url;
+        $('#bgPreview').classList.remove('hidden');
+      }
+      if (bgData.blur) {
+        $('#bgBlur').value = bgData.blur;
+        $('#bgBlurVal').textContent = bgData.blur + 'px';
+      }
+      if (bgData.dark) {
+        $('#bgDark').value = bgData.dark;
+        $('#bgDarkVal').textContent = bgData.dark + '%';
+      }
+    }
+
+    var savedBallPos = LS.get('floatingBallPos');
+    if (savedBallPos) {
+      ball.style.left = savedBallPos.left + 'px';
+      ball.style.top = savedBallPos.top + 'px';
+      ball.style.right = 'auto';
+      ball.style.bottom = 'auto';
+    }
+
+    if (!LS.get('aiCustomHTML')) {
+      $('#mainContent').innerHTML =
+        '<div style="text-align:center;padding:80px 20px 40px;">' +
+        '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
+        '<p style="font-size:14px;color:var(--text-secondary);">这是一个可被 AI 自我改造的网页空间。</p>' +
+        '</div>';
     }
   }
 
