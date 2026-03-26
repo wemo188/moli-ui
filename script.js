@@ -717,15 +717,9 @@
           '<div class="saved-item-url">' + esc(cfg.url) + ' · ' + esc(cfg.model) + '</div>' +
         '</div>' +
         '<div class="saved-item-actions">' +
-          '<button class="use-btn" onclick="window._useApi(' + i + ')" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' +
-          '</button>' +
-          '<button class="edit-btn" onclick="window._editApi(' + i + ')" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
-          '</button>' +
-          '<button class="del-btn" onclick="window._delApi(' + i + ')" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
-          '</button>' +
+          '<button class="use-btn" onclick="window._useApi(' + i + ')" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+          '<button class="edit-btn" onclick="window._editApi(' + i + ')" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>' +
+          '<button class="del-btn" onclick="window._delApi(' + i + ')" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -775,7 +769,6 @@
 
     var config = { name: name, url: url, key: key, model: model };
     var existing = -1;
-
     for (var i = 0; i < apiConfigs.length; i++) {
       if (apiConfigs[i].name === name) {
         existing = i;
@@ -921,18 +914,17 @@
   });
 
   // ========= 源码仓 =========
-  var sourceSections = LS.get('sourceSections') || {
-    html: [],
-    css: [],
-    js: []
+  var sendFiles = LS.get('sendFiles') || {
+    html: false,
+    css: false,
+    js: false
   };
 
   function getSourceRepo() {
     return LS.get('sourceRepo') || {
       html: '',
       css: '',
-      js: '',
-      enabled: false
+      js: ''
     };
   }
 
@@ -940,8 +932,7 @@
     LS.set('sourceRepo', {
       html: repo.html || '',
       css: repo.css || '',
-      js: repo.js || '',
-      enabled: !!repo.enabled
+      js: repo.js || ''
     });
   }
 
@@ -950,13 +941,19 @@
     if ($('#sourceHtml')) $('#sourceHtml').value = repo.html || '';
     if ($('#sourceCss')) $('#sourceCss').value = repo.css || '';
     if ($('#sourceJs')) $('#sourceJs').value = repo.js || '';
-    if ($('#useSourceRepoForAI')) $('#useSourceRepoForAI').checked = !!repo.enabled;
 
-    $$('input[data-source-file]').forEach(function(el) {
-      var file = el.getAttribute('data-source-file');
-      var value = el.value;
-      el.checked = !!(sourceSections[file] && sourceSections[file].indexOf(value) > -1);
-    });
+    if ($('#sendHtmlToAI')) $('#sendHtmlToAI').checked = !!sendFiles.html;
+    if ($('#sendCssToAI')) $('#sendCssToAI').checked = !!sendFiles.css;
+    if ($('#sendJsToAI')) $('#sendJsToAI').checked = !!sendFiles.js;
+  }
+
+  function saveSendFiles() {
+    sendFiles = {
+      html: $('#sendHtmlToAI') ? $('#sendHtmlToAI').checked : false,
+      css: $('#sendCssToAI') ? $('#sendCssToAI').checked : false,
+      js: $('#sendJsToAI') ? $('#sendJsToAI').checked : false
+    };
+    LS.set('sendFiles', sendFiles);
   }
 
   function saveSourceField(type) {
@@ -970,6 +967,7 @@
 
   function clearSourceField(type) {
     var repo = getSourceRepo();
+
     if (type === 'html') {
       repo.html = '';
       if ($('#sourceHtml')) $('#sourceHtml').value = '';
@@ -982,6 +980,7 @@
       repo.js = '';
       if ($('#sourceJs')) $('#sourceJs').value = '';
     }
+
     setSourceRepo(repo);
     showToast(type + ' 已清空');
   }
@@ -1001,7 +1000,6 @@
 
   function updateSourceRepoFile(type, content) {
     var repo = getSourceRepo();
-
     if (type === 'html') {
       repo.html = content;
       if ($('#sourceHtml')) $('#sourceHtml').value = content;
@@ -1014,137 +1012,46 @@
       repo.js = content;
       if ($('#sourceJs')) $('#sourceJs').value = content;
     }
-
     setSourceRepo(repo);
-  }
-
-  function saveSectionSelection() {
-    sourceSections = { html: [], css: [], js: [] };
-    $$('input[data-source-file]').forEach(function(el) {
-      if (el.checked) {
-        var file = el.getAttribute('data-source-file');
-        sourceSections[file].push(el.value);
-      }
-    });
-    LS.set('sourceSections', sourceSections);
-  }
-
-  function extractHtmlSections(text, selected) {
-    var parts = [];
-
-    if (selected.indexOf('mainContent') > -1) {
-      var m1 = text.match(/<main id="mainContent"[\s\S]*?<\/main>/);
-      if (m1) parts.push('[mainContent]\n' + m1[0]);
-    }
-
-    if (selected.indexOf('floating') > -1) {
-      var m2 = text.match(/<div id="floatingBall"[\s\S]*?<\/div>\s*<div id="ballMenu"[\s\S]*?<\/div>/);
-      if (m2) parts.push('[悬浮球与菜单]\n' + m2[0]);
-    }
-
-    ['apiPanel','aiPanel','themePanel','fontPanel','bgPanel','sourcePanel'].forEach(function(id) {
-      if (selected.indexOf(id) > -1) {
-        var reg = new RegExp('<div id="' + id + '"[\\s\\S]*?<\\/div>\\s*<\\/div>', 'm');
-        var m = text.match(reg);
-        if (m) parts.push('[' + id + ']\n' + m[0]);
-      }
-    });
-
-    return parts.join('\n\n');
-  }
-
-  function extractCssSections(text, selected) {
-    var lines = text;
-    var parts = [];
-
-    function pushIf(name, regex) {
-      if (selected.indexOf(name) > -1) {
-        var m = lines.match(regex);
-        if (m) parts.push('[' + name + ']\n' + m[0]);
-      }
-    }
-
-    pushIf('root', /:root\s*\{[\s\S]*?\}/);
-    pushIf('global', /\*\s*\{[\s\S]*?\}\s*html,\s*body\s*\{[\s\S]*?\}/);
-    pushIf('main', /\.main-content\s*\{[\s\S]*?\}/);
-    pushIf('floating', /\.floating-ball\s*\{[\s\S]*?\}\s*\.floating-ball svg\s*\{[\s\S]*?\}\s*\.floating-ball:active\s*\{[\s\S]*?\}\s*\.floating-ball\.active\s*\{[\s\S]*?\}/);
-    pushIf('menu', /\.ball-menu\s*\{[\s\S]*?\.ball-menu-item span\s*\{[\s\S]*?\}/);
-    pushIf('panel', /\.overlay\s*\{[\s\S]*?\.panel-body\s*\{[\s\S]*?\}/);
-    pushIf('api', /\.saved-list\s*\{[\s\S]*?\.saved-item-actions \.del-btn\s*\{[\s\S]*?\}/);
-    pushIf('chat', /\.ai-status\s*\{[\s\S]*?\.remove-image-btn\s*\{[\s\S]*?\}/);
-    pushIf('font', /\.font-list\s*\{[\s\S]*?\.font-item\.active \.font-item-check::after\s*\{[\s\S]*?\}/);
-    pushIf('bg', /\.bg-preview\s*\{[\s\S]*?input\[type="range"\]::-webkit-slider-thumb\s*\{[\s\S]*?\}/);
-    pushIf('theme', /\.theme-list\s*\{[\s\S]*?\.color-group input\[type="color"\]::-webkit-color-swatch\s*\{[\s\S]*?\}/);
-    pushIf('source', /\.export-section\s*\{[\s\S]*?\.section-check input\[type="checkbox"\]:checked::after\s*\{[\s\S]*?\}/);
-
-    return parts.join('\n\n');
-  }
-
-  function extractJsSections(text, selected) {
-    var parts = [];
-
-    function addBlock(name, startMark, endMark) {
-      if (selected.indexOf(name) === -1) return;
-      var s = text.indexOf(startMark);
-      if (s === -1) return;
-      var e = endMark ? text.indexOf(endMark, s + startMark.length) : -1;
-      if (e === -1) {
-        parts.push('[' + name + ']\n' + text.slice(s));
-      } else {
-        parts.push('[' + name + ']\n' + text.slice(s, e));
-      }
-    }
-
-    addBlock('utils', 'var $ = function', '// ========= IndexedDB：字体 =========');
-    addBlock('floating', '// ========= 悬浮球 =========', '// ========= API =========');
-    addBlock('api', '// ========= API =========', '// ========= 聊天 =========');
-    addBlock('chat', '// ========= 聊天 =========', '// ========= 背景 =========');
-    addBlock('bg', '// ========= 背景 =========', '// ========= 初始化 =========');
-    addBlock('init', '// ========= 初始化 =========', 'init();');
-    addBlock('theme', '// ========= 主题 =========', '// ========= 字体 =========');
-    addBlock('font', '// ========= 字体 =========', '// ========= 悬浮球 =========');
-    addBlock('source', '// ========= 源码仓 =========', '// ========= 图片给 AI =========');
-    addBlock('panel', 'function openPanel(id)', '// ========= API =========');
-
-    return parts.join('\n\n');
   }
 
   function buildSelectedSourcePrompt() {
     var repo = getSourceRepo();
-    if (!repo.enabled) return '';
+    var parts = [];
+    var allowed = [];
 
-    var blocks = [];
-
-    if (repo.html && sourceSections.html && sourceSections.html.length) {
-      var htmlPart = extractHtmlSections(repo.html, sourceSections.html);
-      if (htmlPart) blocks.push('[index.html]\n' + htmlPart);
+    if (sendFiles.html && repo.html) {
+      parts.push('[index.html]\n' + repo.html);
+      allowed.push('html');
+    }
+    if (sendFiles.css && repo.css) {
+      parts.push('[style.css]\n' + repo.css);
+      allowed.push('css');
+    }
+    if (sendFiles.js && repo.js) {
+      parts.push('[script.js]\n' + repo.js);
+      allowed.push('js');
     }
 
-    if (repo.css && sourceSections.css && sourceSections.css.length) {
-      var cssPart = extractCssSections(repo.css, sourceSections.css);
-      if (cssPart) blocks.push('[style.css]\n' + cssPart);
-    }
+    if (!parts.length) return '';
 
-    if (repo.js && sourceSections.js && sourceSections.js.length) {
-      var jsPart = extractJsSections(repo.js, sourceSections.js);
-      if (jsPart) blocks.push('[script.js]\n' + jsPart);
-    }
-
-    if (!blocks.length) return '';
-
-    return '\n\n=== 以下是用户选择发送的源码分区 ===\n' +
-      blocks.join('\n\n') +
-      '\n\n如果用户是在修改功能、修逻辑、做长期保留改动，你应该优先返回：\n' +
-      '```source-html\n完整 index.html\n```\n' +
-      '```source-css\n完整 style.css\n```\n' +
-      '```source-js\n完整 script.js\n```';
+    return '\n\n=== 以下是允许修改的源码文件 ===\n' +
+      parts.join('\n\n') +
+      '\n\n你只能修改这些被发送的文件：' + allowed.join(', ') + '。\n' +
+      '没有被发送的文件，你绝对不能返回对应的 source 代码块。\n' +
+      '如果用户只发送了 html 和 css，你绝对不能返回 source-js。\n' +
+      '如果用户只发送了 js，你绝对不能返回 source-html 或 source-css。\n' +
+      '允许的返回格式只有：\n' +
+      (sendFiles.html ? '```source-html\n完整 index.html\n```\n' : '') +
+      (sendFiles.css ? '```source-css\n完整 style.css\n```\n' : '') +
+      (sendFiles.js ? '```source-js\n完整 script.js\n```\n' : '');
   }
 
   function cleanReplyForDisplay(reply) {
     return reply
-      .replace(/```source-html\n?[\s\S]*?```/g, '[已更新源码仓：index.html]')
-      .replace(/```source-css\n?[\s\S]*?```/g, '[已更新源码仓：style.css]')
-      .replace(/```source-js\n?[\s\S]*?```/g, '[已更新源码仓：script.js]');
+      .replace(/```source-html\n?[\s\S]*?```/g, '[AI 提交了 index.html 修改]')
+      .replace(/```source-css\n?[\s\S]*?```/g, '[AI 提交了 style.css 修改]')
+      .replace(/```source-js\n?[\s\S]*?```/g, '[AI 提交了 script.js 修改]');
   }
 
   safeOn('#copySourceHtml', 'click', function() { copySourceField('html'); });
@@ -1159,17 +1066,64 @@
   safeOn('#saveSourceJs', 'click', function() { saveSourceField('js'); });
   safeOn('#clearSourceJs', 'click', function() { clearSourceField('js'); });
 
-  safeOn('#useSourceRepoForAI', 'change', function() {
-    var repo = getSourceRepo();
-    repo.enabled = this.checked;
-    setSourceRepo(repo);
-    showToast(this.checked ? '已开启源码仓' : '已关闭源码仓');
+  safeOn('#sendHtmlToAI', 'change', function() {
+    saveSendFiles();
+    showToast(this.checked ? '已勾选 index.html' : '已取消 index.html');
   });
 
-  $$('input[data-source-file]').forEach(function(el) {
-    el.addEventListener('change', function() {
-      saveSectionSelection();
-    });
+  safeOn('#sendCssToAI', 'change', function() {
+    saveSendFiles();
+    showToast(this.checked ? '已勾选 style.css' : '已取消 style.css');
+  });
+
+  safeOn('#sendJsToAI', 'change', function() {
+    saveSendFiles();
+    showToast(this.checked ? '已勾选 script.js' : '已取消 script.js');
+  });
+
+  // ========= 确认写入 =========
+  var pendingWrites = [];
+  var confirmBusy = false;
+
+  function askWriteConfirm(type, content) {
+    pendingWrites.push({ type: type, content: content });
+    if (!confirmBusy) openNextConfirm();
+  }
+
+  function openNextConfirm() {
+    if (!pendingWrites.length) {
+      confirmBusy = false;
+      return;
+    }
+
+    confirmBusy = true;
+    var item = pendingWrites[0];
+    var titleMap = {
+      html: '确认写入 index.html',
+      css: '确认写入 style.css',
+      js: '确认写入 script.js'
+    };
+
+    $('#confirmTitle').textContent = titleMap[item.type] || '确认写入';
+    $('#confirmMsg').textContent = 'AI 请求改写 ' + item.type + '，是否同意写入？';
+    $('#confirmOverlay').classList.remove('hidden');
+  }
+
+  safeOn('#confirmYes', 'click', function() {
+    if (!pendingWrites.length) return;
+    var item = pendingWrites.shift();
+    updateSourceRepoFile(item.type, item.content);
+    $('#confirmOverlay').classList.add('hidden');
+    showToast('已写入 ' + item.type);
+    openNextConfirm();
+  });
+
+  safeOn('#confirmNo', 'click', function() {
+    if (!pendingWrites.length) return;
+    var item = pendingWrites.shift();
+    $('#confirmOverlay').classList.add('hidden');
+    showToast('已拒绝 ' + item.type + ' 的改写');
+    openNextConfirm();
   });
 
   // ========= 图片给 AI =========
@@ -1203,10 +1157,10 @@
   var SYSTEM_PROMPT =
     '你是网页内置开发助手，已经运行在当前网页里。\n' +
     '不要索要代码，不要说无法访问文件。\n' +
-    '如果用户提供了源码分区，并要求修改功能或长期保留改动，你应该优先返回：\n' +
-    '```source-html\n完整 index.html\n```\n' +
-    '```source-css\n完整 style.css\n```\n' +
-    '```source-js\n完整 script.js\n```\n' +
+    '你只能修改用户消息里明确发送给你的文件。\n' +
+    '绝对禁止返回未被发送文件对应的 source 代码块。\n' +
+    '如果只发送了 html 和 css，你绝不能返回 source-js。\n' +
+    '如果只发送了 js，你绝不能返回 source-html 或 source-css。\n' +
     '不要伪造功能，不要额外创建假按钮。';
 
   function buildUserContent(text) {
@@ -1222,22 +1176,35 @@
   function applyReplyToSourceRepo(reply) {
     var match;
 
-    var htmlReg = /```source-html\n?([\s\S]*?)```/g;
-    while ((match = htmlReg.exec(reply)) !== null) {
-      updateSourceRepoFile('html', match[1].trim());
-      showToast('已更新 index.html');
+    if (sendFiles.html) {
+      var htmlReg = /```source-html\n?([\s\S]*?)```/g;
+      while ((match = htmlReg.exec(reply)) !== null) {
+        askWriteConfirm('html', match[1].trim());
+      }
     }
 
-    var cssReg = /```source-css\n?([\s\S]*?)```/g;
-    while ((match = cssReg.exec(reply)) !== null) {
-      updateSourceRepoFile('css', match[1].trim());
-      showToast('已更新 style.css');
+    if (sendFiles.css) {
+      var cssReg = /```source-css\n?([\s\S]*?)```/g;
+      while ((match = cssReg.exec(reply)) !== null) {
+        askWriteConfirm('css', match[1].trim());
+      }
     }
 
-    var jsReg = /```source-js\n?([\s\S]*?)```/g;
-    while ((match = jsReg.exec(reply)) !== null) {
-      updateSourceRepoFile('js', match[1].trim());
-      showToast('已更新 script.js');
+    if (sendFiles.js) {
+      var jsReg = /```source-js\n?([\s\S]*?)```/g;
+      while ((match = jsReg.exec(reply)) !== null) {
+        askWriteConfirm('js', match[1].trim());
+      }
+    }
+
+    if (!sendFiles.html && /```source-html\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 index.html 改写');
+    }
+    if (!sendFiles.css && /```source-css\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 style.css 改写');
+    }
+    if (!sendFiles.js && /```source-js\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 script.js 改写');
     }
   }
 
@@ -1250,10 +1217,12 @@
     var text = chatInput ? chatInput.value.trim() : '';
     if (!text && !visionImageData) return;
 
+    saveSendFiles();
+
     var displayText = text || '[发送了一张图片]';
     var wrappedText =
       '请直接处理当前网页。\n' +
-      '如果是修改功能或源码，请优先输出 source-html / source-css / source-js。\n' +
+      '如果是修改源码，请只返回被允许修改的文件。\n' +
       '用户需求：' + displayText +
       buildSelectedSourcePrompt();
 
