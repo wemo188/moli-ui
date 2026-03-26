@@ -71,9 +71,7 @@
     <div class="panel-header">
       <h2>API 配置</h2>
       <div class="panel-close" data-close="apiPanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
     <div class="panel-body">
@@ -81,25 +79,19 @@
         <label>配置名称</label>
         <input type="text" id="apiName" placeholder="例如：OpenAI 中转">
       </div>
-
       <div class="form-group">
         <label>API 地址</label>
-        <input type="text" id="apiUrl" placeholder="http://107.151.246.146:3000/v1 或 https://example.com/v1">
+        <input type="text" id="apiUrl" placeholder="https://example.com/v1">
       </div>
-
       <div class="form-group">
         <label>API Key</label>
         <div class="input-with-btn">
           <input type="password" id="apiKey" placeholder="sk-...">
           <button class="icon-btn" id="toggleKeyVisible" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
       </div>
-
       <div class="form-group">
         <label>模型</label>
         <div class="input-with-btn">
@@ -110,14 +102,11 @@
         </div>
         <div id="modelList" class="model-list hidden"></div>
       </div>
-
       <div class="btn-row">
         <button class="btn btn-primary" id="saveApiBtn" type="button">保存配置</button>
         <button class="btn btn-outline" id="testApiBtn" type="button">测试连接</button>
       </div>
-
       <div class="divider"></div>
-
       <div id="savedApis" class="saved-list"></div>
     </div>
   </div>
@@ -127,42 +116,32 @@
     <div class="panel-header">
       <h2>AI 助手</h2>
       <div class="panel-close" data-close="aiPanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
-
     <div class="panel-body">
       <div class="ai-status" id="aiStatus">
         <div class="status-dot offline"></div>
         <span>未连接</span>
       </div>
-
       <div id="chatMessages" class="chat-messages"></div>
-
       <div id="imagePreviewBox" class="image-preview-box hidden">
         <img id="imagePreviewImg" src="" alt="preview">
         <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
       </div>
-
-<div class="chat-toolbar">
-  <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
-  <input type="file" id="visionImageInput" accept="image/*" hidden>
-
-  <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);margin-left:auto;">
-    <input type="checkbox" id="useStreamToggle">
-    流式输出
-  </label>
-</div>
-
+      <div class="chat-toolbar">
+        <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
+        <input type="file" id="visionImageInput" accept="image/*" hidden>
+        <label class="stream-check-label">
+          <input type="checkbox" id="useStreamToggle">
+          <span class="stream-check-ui"></span>
+          <span>流式输出</span>
+        </label>
+      </div>
       <div class="chat-input-area">
         <textarea id="chatInput" placeholder="输入内容..." rows="2"></textarea>
         <button class="send-btn" id="sendBtn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 2L11 13"/>
-            <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
       </div>
     </div>
@@ -173,58 +152,30 @@
     <div class="panel-header">
       <h2>主题配色</h2>
       <div class="panel-close" data-close="themePanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
     <div class="panel-body">
       <div id="themeList" class="theme-list"></div>
-
       <div class="divider"></div>
-
       <div id="customThemeList" class="theme-list"></div>
-
       <div class="divider"></div>
-
       <div class="color-grid">
-        <div class="color-group">
-          <label>页面背景</label>
-          <input type="color" id="colorBg" value="#f0f6fb">
-        </div>
-        <div class="color-group">
-          <label>卡片背景</label>
-          <input type="color" id="colorCard" value="#ffffff">
-        </div>
-        <div class="color-group">
-          <label>主题色</label>
-          <input type="color" id="colorAccent" value="#adcdea">
-        </div>
-        <div class="color-group">
-          <label>强调色</label>
-          <input type="color" id="colorAccentDeep" value="#8ab8de">
-        </div>
-        <div class="color-group">
-          <label>文字色</label>
-          <input type="color" id="colorText" value="#1a1a1a">
-        </div>
-        <div class="color-group">
-          <label>边框色</label>
-          <input type="color" id="colorBorder" value="#1a1a1a">
-        </div>
+        <div class="color-group"><label>页面背景</label><input type="color" id="colorBg" value="#f0f6fb"></div>
+        <div class="color-group"><label>卡片背景</label><input type="color" id="colorCard" value="#ffffff"></div>
+        <div class="color-group"><label>主题色</label><input type="color" id="colorAccent" value="#adcdea"></div>
+        <div class="color-group"><label>强调色</label><input type="color" id="colorAccentDeep" value="#8ab8de"></div>
+        <div class="color-group"><label>文字色</label><input type="color" id="colorText" value="#1a1a1a"></div>
+        <div class="color-group"><label>边框色</label><input type="color" id="colorBorder" value="#1a1a1a"></div>
       </div>
-
       <div class="form-group" style="margin-top:12px;">
         <input type="text" id="customThemeName" placeholder="主题名称">
       </div>
-
       <div class="btn-row">
         <button class="btn btn-primary" id="applyCustomColors" type="button">应用颜色</button>
         <button class="btn btn-outline" id="saveCustomTheme" type="button">保存主题</button>
       </div>
-
       <div class="divider"></div>
-
       <button class="btn btn-outline" id="resetTheme" style="width:100%;" type="button">恢复默认主题</button>
       <button class="btn btn-outline" id="clearChatBtn" style="width:100%;margin-top:8px;" type="button">清空对话</button>
       <button class="btn btn-danger" id="clearAllBtn" style="width:100%;margin-top:8px;" type="button">重置所有设置</button>
@@ -236,22 +187,17 @@
     <div class="panel-header">
       <h2>字体设置</h2>
       <div class="panel-close" data-close="fontPanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
     <div class="panel-body">
       <div id="fontList" class="font-list"></div>
-
       <div class="divider"></div>
-
       <div class="upload-area" id="fontUploadArea">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <p>上传字体文件</p>
         <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>
       </div>
-
       <div id="customFonts" class="font-list"></div>
     </div>
   </div>
@@ -261,9 +207,7 @@
     <div class="panel-header">
       <h2>背景图片</h2>
       <div class="panel-close" data-close="bgPanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
     <div class="panel-body">
@@ -272,23 +216,19 @@
         <p>上传背景图片</p>
         <input type="file" id="bgFileInput" accept="image/*" hidden>
       </div>
-
       <div id="bgPreview" class="bg-preview hidden">
         <img id="bgPreviewImg" src="" alt="preview">
       </div>
-
       <div class="form-group">
         <label>模糊度</label>
         <input type="range" id="bgBlur" min="0" max="20" value="0">
         <span id="bgBlurVal">0px</span>
       </div>
-
       <div class="form-group">
         <label>暗度</label>
         <input type="range" id="bgDark" min="0" max="80" value="30">
         <span id="bgDarkVal">30%</span>
       </div>
-
       <div class="btn-row">
         <button class="btn btn-primary" id="applyBgBtn" type="button">应用背景</button>
         <button class="btn btn-outline" id="removeBgBtn" type="button">移除背景</button>
@@ -301,43 +241,27 @@
     <div class="panel-header">
       <h2>源码仓</h2>
       <div class="panel-close" data-close="sourcePanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
     </div>
-
     <div class="panel-body">
-      <div class="source-toggle-card">
-        <label class="source-check-label">
-          <input type="checkbox" id="useSourceRepoForAI">
-          <span class="source-check-ui"></span>
-          <span>发送源码仓给 AI</span>
-        </label>
-      </div>
 
       <!-- index.html -->
       <div class="export-section">
         <div class="export-section-header">
           <span>index.html</span>
           <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendHtmlToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
             <button class="btn btn-outline btn-sm" id="copySourceHtml" type="button">复制</button>
             <button class="btn btn-outline btn-sm" id="saveSourceHtml" type="button">保存</button>
             <button class="btn btn-outline btn-sm" id="clearSourceHtml" type="button">清空</button>
           </div>
         </div>
         <textarea id="sourceHtml" class="export-textarea" placeholder="index.html"></textarea>
-
-        <div class="source-section-grid" id="htmlSectionGrid">
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="mainContent"><span>mainContent</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="floating"><span>悬浮球与菜单</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="apiPanel"><span>API 面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="aiPanel"><span>AI 面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="themePanel"><span>主题面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="fontPanel"><span>字体面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="bgPanel"><span>背景面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="html" value="sourcePanel"><span>源码仓面板</span></label>
-        </div>
       </div>
 
       <!-- style.css -->
@@ -345,27 +269,17 @@
         <div class="export-section-header">
           <span>style.css</span>
           <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendCssToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
             <button class="btn btn-outline btn-sm" id="copySourceCss" type="button">复制</button>
             <button class="btn btn-outline btn-sm" id="saveSourceCss" type="button">保存</button>
             <button class="btn btn-outline btn-sm" id="clearSourceCss" type="button">清空</button>
           </div>
         </div>
         <textarea id="sourceCss" class="export-textarea" placeholder="style.css"></textarea>
-
-        <div class="source-section-grid" id="cssSectionGrid">
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="root"><span>:root 变量</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="global"><span>全局基础</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="main"><span>mainContent</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="floating"><span>悬浮球</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="menu"><span>菜单</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="panel"><span>面板</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="api"><span>API 区</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="chat"><span>聊天区</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="font"><span>字体区</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="bg"><span>背景区</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="theme"><span>主题区</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="css" value="source"><span>源码仓区</span></label>
-        </div>
       </div>
 
       <!-- script.js -->
@@ -373,25 +287,29 @@
         <div class="export-section-header">
           <span>script.js</span>
           <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
             <button class="btn btn-outline btn-sm" id="copySourceJs" type="button">复制</button>
             <button class="btn btn-outline btn-sm" id="saveSourceJs" type="button">保存</button>
             <button class="btn btn-outline btn-sm" id="clearSourceJs" type="button">清空</button>
           </div>
         </div>
         <textarea id="sourceJs" class="export-textarea" placeholder="script.js"></textarea>
+      </div>
+    </div>
+  </div>
 
-        <div class="source-section-grid" id="jsSectionGrid">
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="utils"><span>工具函数</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="floating"><span>悬浮球逻辑</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="panel"><span>面板逻辑</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="api"><span>API 管理</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="chat"><span>AI 聊天</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="source"><span>源码仓</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="theme"><span>主题管理</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="font"><span>字体管理</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="bg"><span>背景管理</span></label>
-          <label class="section-check"><input type="checkbox" data-source-file="js" value="init"><span>初始化</span></label>
-        </div>
+  <!-- 确认弹窗 -->
+  <div id="confirmOverlay" class="confirm-overlay hidden">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirmTitle">确认写入</div>
+      <div class="confirm-msg" id="confirmMsg"></div>
+      <div class="btn-row" style="justify-content:flex-end;">
+        <button class="btn btn-outline" id="confirmNo" type="button">拒绝</button>
+        <button class="btn btn-primary" id="confirmYes" type="button">同意写入</button>
       </div>
     </div>
   </div>
