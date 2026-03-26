@@ -5,12 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Mono Space</title>
-  
-  <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mono Space">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,20 +124,25 @@
         <div class="status-dot offline"></div>
         <span>未连接</span>
       </div>
+
       <div id="chatMessages" class="chat-messages"></div>
+
       <div id="imagePreviewBox" class="image-preview-box hidden">
         <img id="imagePreviewImg" src="" alt="preview">
         <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
       </div>
+
       <div class="chat-toolbar">
         <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
         <input type="file" id="visionImageInput" accept="image/*" hidden>
+
         <label class="stream-check-label">
           <input type="checkbox" id="useStreamToggle">
           <span class="stream-check-ui"></span>
           <span>流式输出</span>
         </label>
       </div>
+
       <div class="chat-input-area">
         <textarea id="chatInput" placeholder="输入内容..." rows="2"></textarea>
         <button class="send-btn" id="sendBtn" type="button">
@@ -252,6 +251,24 @@
     </div>
     <div class="panel-body">
 
+      <!-- 源码 AI 工作台 -->
+      <div class="source-ai-box">
+        <div class="source-ai-top">
+          <div class="source-ai-title">源码改写</div>
+          <div class="source-ai-status" id="sourceAiDraftStatus">暂无草稿</div>
+        </div>
+
+        <textarea id="sourceAiInput" class="source-ai-input" placeholder="直接告诉 AI 你要怎么修改源码..."></textarea>
+
+        <div class="source-ai-actions">
+          <button class="btn btn-primary" id="sourceAiSendBtn" type="button">发送</button>
+          <button class="btn btn-outline" id="sourceAiStopBtn" type="button">停止</button>
+          <button class="btn btn-outline" id="previewAiDraftBtn" type="button">预览效果</button>
+          <button class="btn btn-outline" id="saveAiDraftBtn" type="button">一键保存 AI 修改</button>
+          <button class="btn btn-outline" id="discardAiDraftBtn" type="button">丢弃 AI 修改</button>
+        </div>
+      </div>
+
       <!-- index.html -->
       <div class="export-section">
         <div class="export-section-header">
@@ -308,17 +325,16 @@
     </div>
   </div>
 
-  <!-- 确认弹窗 -->
-  <div id="confirmOverlay" class="confirm-overlay hidden">
-    <div class="confirm-box">
-      <div class="confirm-title" id="confirmTitle">确认写入</div>
-      <div class="confirm-msg" id="confirmMsg"></div>
-      <div class="btn-row" style="justify-content:flex-end;">
-        <button class="btn btn-outline" id="confirmNo" type="button">拒绝</button>
-        <button class="btn btn-primary" id="confirmYes" type="button">同意写入</button>
-      </div>
+  <!-- 对话消息操作模板容器 -->
+  <template id="assistantMsgToolsTpl">
+    <div class="msg-tools">
+      <button class="msg-tool-btn msg-copy-btn" type="button">复制</button>
+      <button class="msg-tool-btn msg-edit-btn" type="button">编辑</button>
+      <button class="msg-tool-btn msg-reroll-prev" type="button">&lt;</button>
+      <span class="msg-roll-indicator">1/1</span>
+      <button class="msg-tool-btn msg-reroll-next" type="button">&gt;</button>
     </div>
-  </div>
+  </template>
 
   <div id="toast" class="toast hidden"></div>
 
