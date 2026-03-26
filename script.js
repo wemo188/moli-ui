@@ -606,7 +606,7 @@
     fetch(base + '/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + activeApi.key },
-      body: JSON.stringify({ model: activeApi.model, messages: messages, max_tokens: 4096 })
+      body: JSON.stringify({ model: activeApi.model, messages: messages})
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
