@@ -1,12 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Mono Space</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Mono Space">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
@@ -147,15 +146,10 @@
         <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
       </div>
 
-<div class="chat-toolbar">
-  <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
-  <input type="file" id="visionImageInput" accept="image/*" hidden>
-
-  <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);margin-left:auto;">
-    <input type="checkbox" id="useStreamToggle">
-    流式输出
-  </label>
-</div>
+      <div class="chat-toolbar">
+        <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
+        <input type="file" id="visionImageInput" accept="image/*" hidden>
+      </div>
 
       <div class="chat-input-area">
         <textarea id="chatInput" placeholder="输入内容..." rows="2"></textarea>
@@ -313,10 +307,11 @@
         <label class="source-check-label">
           <input type="checkbox" id="useSourceRepoForAI">
           <span class="source-check-ui"></span>
-          <span>发送给 AI 时附带源码仓内容</span>
+          <span>发送源码仓给 AI</span>
         </label>
       </div>
 
+      <!-- index.html -->
       <div class="export-section">
         <div class="export-section-header">
           <span>index.html</span>
@@ -327,8 +322,20 @@
           </div>
         </div>
         <textarea id="sourceHtml" class="export-textarea" placeholder="index.html"></textarea>
+
+        <div class="source-section-grid" id="htmlSectionGrid">
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="mainContent"><span>mainContent</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="floating"><span>悬浮球与菜单</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="apiPanel"><span>API 面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="aiPanel"><span>AI 面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="themePanel"><span>主题面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="fontPanel"><span>字体面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="bgPanel"><span>背景面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="html" value="sourcePanel"><span>源码仓面板</span></label>
+        </div>
       </div>
 
+      <!-- style.css -->
       <div class="export-section">
         <div class="export-section-header">
           <span>style.css</span>
@@ -339,8 +346,24 @@
           </div>
         </div>
         <textarea id="sourceCss" class="export-textarea" placeholder="style.css"></textarea>
+
+        <div class="source-section-grid" id="cssSectionGrid">
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="root"><span>:root 变量</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="global"><span>全局基础</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="main"><span>mainContent</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="floating"><span>悬浮球</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="menu"><span>菜单</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="panel"><span>面板</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="api"><span>API 区</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="chat"><span>聊天区</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="font"><span>字体区</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="bg"><span>背景区</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="theme"><span>主题区</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="css" value="source"><span>源码仓区</span></label>
+        </div>
       </div>
 
+      <!-- script.js -->
       <div class="export-section">
         <div class="export-section-header">
           <span>script.js</span>
@@ -351,6 +374,19 @@
           </div>
         </div>
         <textarea id="sourceJs" class="export-textarea" placeholder="script.js"></textarea>
+
+        <div class="source-section-grid" id="jsSectionGrid">
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="utils"><span>工具函数</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="floating"><span>悬浮球逻辑</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="panel"><span>面板逻辑</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="api"><span>API 管理</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="chat"><span>AI 聊天</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="source"><span>源码仓</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="theme"><span>主题管理</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="font"><span>字体管理</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="bg"><span>背景管理</span></label>
+          <label class="section-check"><input type="checkbox" data-source-file="js" value="init"><span>初始化</span></label>
+        </div>
       </div>
     </div>
   </div>
