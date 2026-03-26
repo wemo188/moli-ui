@@ -226,7 +226,6 @@
     origY = rect.top;
     isDragging = true;
     hasMoved = false;
-    touchMoved = false;
   }, { passive: true });
 
   document.addEventListener('touchmove', function(e) {
@@ -238,7 +237,6 @@
 
     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
       hasMoved = true;
-      touchMoved = true;
     }
 
     if (!hasMoved) return;
@@ -252,10 +250,12 @@
     ball.style.bottom = 'auto';
   }, { passive: true });
 
-  document.addEventListener('touchend', function() {
+  document.addEventListener('touchend', function(e) {
     if (!isDragging) return;
 
     if (!hasMoved) {
+      e.preventDefault();
+      e.stopPropagation();
       toggleMenu();
     } else {
       var rect = getBallRect();
@@ -267,17 +267,38 @@
 
     isDragging = false;
     hasMoved = false;
-
-    setTimeout(function() {
-      touchMoved = false;
-    }, 50);
-  });
+  }, { passive: false });
 
   ball.addEventListener('click', function(e) {
     e.preventDefault();
-    if (touchMoved) return;
-    toggleMenu();
-  });
+    e.stopPropagation();
+
+    // 手机上只使用 touchend，避免 click 再次触发导致一开一关
+    if ('ontouchstart' in window) return;
+
+  var lastToggleTime = 0;
+
+  function toggleMenu() {
+    var now = Date.now();
+    if (now - lastToggleTime < 250) return;
+    lastToggleTime = now;
+
+    menuOpen = !menuOpen;
+    ball.classList.toggle('active', menuOpen);
+
+    if (menuOpen) {
+      positionMenu();
+      ballMenuEl.classList.remove('hidden');
+      requestAnimationFrame(function() {
+        ballMenuEl.classList.add('show');
+      });
+    } else {
+      ballMenuEl.classList.remove('show');
+      setTimeout(function() {
+        ballMenuEl.classList.add('hidden');
+      }, 250);
+    }
+  }
 
   // ========= 面板 =========
   var currentPanelEl = null;
