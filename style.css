@@ -1,7 +1,6 @@
-
 :root {
-  --bg-primary: #fdebdb;
-  --bg-secondary: #fff5ee;
+  --bg-primary: #f5f9fc;
+  --bg-secondary: #ffffff;
   --bg-card: #ffffff;
   --accent: #adcdea;
   --accent-deep: #8ab8de;
@@ -48,8 +47,7 @@ html, body {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(253, 235, 219, var(--bg-overlay-alpha, 0.3));
-}
+  background: rgba(245, 249, 252, var(--bg-overlay-alpha, 0.3));
 
 .main-content {
   position: relative;
