@@ -577,7 +577,6 @@
     var now = Date.now();
     if (now - lastToggleTime < 250) return;
     lastToggleTime = now;
-
     if (menuOpen) closeMenu();
     else openMenu();
   }
@@ -629,7 +628,6 @@
 
   document.addEventListener('touchmove', function(e) {
     if (!isDragging) return;
-
     var t = e.touches[0];
     var dx = t.clientX - startX;
     var dy = t.clientY - startY;
@@ -648,7 +646,6 @@
 
   document.addEventListener('touchend', function(e) {
     if (!isDragging) return;
-
     if (!hasMoved) {
       e.preventDefault();
       toggleMenu();
@@ -659,7 +656,6 @@
         top: rect.top
       });
     }
-
     isDragging = false;
     hasMoved = false;
   }, { passive: false });
@@ -868,57 +864,36 @@
     });
   });
 
-  // ========= 聊天 =========
+  // ========= 聊天与源码 =========
   var chatHistory = LS.get('chatHistory') || [];
   var visionImageData = null;
   var useStream = LS.get('useStream');
   if (useStream === null) useStream = true;
 
-  function restoreChatHistory() {
-    if (!chatMessages) return;
-    if (!chatHistory.length) {
-      chatMessages.innerHTML = '<div class="chat-msg system">已就绪。</div>';
-      return;
-    }
-
-    for (var i = 0; i < chatHistory.length; i++) {
-      var item = chatHistory[i];
-      var div = document.createElement('div');
-      div.className = 'chat-msg ' + (item.role === 'assistant' ? 'assistant' : item.role === 'user' ? 'user' : 'system');
-      div.innerHTML = esc(item.displayContent || item.content || '').replace(/\n/g, '<br>');
-      chatMessages.appendChild(div);
-    }
-  }
-
-  function saveChatHistory() {
-    LS.set('chatHistory', chatHistory.slice(-50));
-  }
-
-  function addChatMsg(role, content) {
-    if (!chatMessages) return null;
-    var div = document.createElement('div');
-    div.className = 'chat-msg ' + role;
-    div.innerHTML = esc(content).replace(/\n/g, '<br>');
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    return div;
-  }
-
-  safeOn('#clearChatBtn', 'click', function() {
-    chatHistory = [];
-    LS.remove('chatHistory');
-    if (chatMessages) {
-      chatMessages.innerHTML = '<div class="chat-msg system">已清空。</div>';
-    }
-    showToast('已清空对话');
-  });
-
-  // ========= 源码仓 =========
   var sendFiles = LS.get('sendFiles') || {
     html: false,
     css: false,
     js: false
   };
+
+  var aiDraft = LS.get('aiDraft') || {
+    html: '',
+    css: '',
+    js: '',
+    hasHtml: false,
+    hasCss: false,
+    hasJs: false
+  };
+
+  var sourcePreviewCache = {
+    active: false,
+    originalMain: '',
+    originalDraftStyle: ''
+  };
+
+  var currentAbortController = null;
+  var assistantRollMap = {};
+  var assistantRollCounter = 0;
 
   function getSourceRepo() {
     return LS.get('sourceRepo') || {
@@ -967,7 +942,6 @@
 
   function clearSourceField(type) {
     var repo = getSourceRepo();
-
     if (type === 'html') {
       repo.html = '';
       if ($('#sourceHtml')) $('#sourceHtml').value = '';
@@ -980,7 +954,6 @@
       repo.js = '';
       if ($('#sourceJs')) $('#sourceJs').value = '';
     }
-
     setSourceRepo(repo);
     showToast(type + ' 已清空');
   }
@@ -1015,6 +988,74 @@
     setSourceRepo(repo);
   }
 
+  function updateDraftStatus() {
+    var names = [];
+    if (aiDraft.hasHtml) names.push('html');
+    if (aiDraft.hasCss) names.push('css');
+    if (aiDraft.hasJs) names.push('js');
+    $('#sourceAiDraftStatus').textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
+  }
+
+  function saveDraft() {
+    LS.set('aiDraft', aiDraft);
+    updateDraftStatus();
+  }
+
+  function clearDraft() {
+    aiDraft = {
+      html: '',
+      css: '',
+      js: '',
+      hasHtml: false,
+      hasCss: false,
+      hasJs: false
+    };
+    saveDraft();
+  }
+
+  function applyReplyToDraft(reply) {
+    var match;
+    var accepted = false;
+
+    if (sendFiles.html) {
+      var htmlReg = /```source-html\n?([\s\S]*?)```/g;
+      while ((match = htmlReg.exec(reply)) !== null) {
+        aiDraft.html = match[1].trim();
+        aiDraft.hasHtml = true;
+        accepted = true;
+      }
+    } else if (/```source-html\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 index.html 改写');
+    }
+
+    if (sendFiles.css) {
+      var cssReg = /```source-css\n?([\s\S]*?)```/g;
+      while ((match = cssReg.exec(reply)) !== null) {
+        aiDraft.css = match[1].trim();
+        aiDraft.hasCss = true;
+        accepted = true;
+      }
+    } else if (/```source-css\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 style.css 改写');
+    }
+
+    if (sendFiles.js) {
+      var jsReg = /```source-js\n?([\s\S]*?)```/g;
+      while ((match = jsReg.exec(reply)) !== null) {
+        aiDraft.js = match[1].trim();
+        aiDraft.hasJs = true;
+        accepted = true;
+      }
+    } else if (/```source-js\n?[\s\S]*?```/g.test(reply)) {
+      showToast('已拦截未授权的 script.js 改写');
+    }
+
+    if (accepted) {
+      saveDraft();
+      showToast('AI 草稿已生成');
+    }
+  }
+
   function buildSelectedSourcePrompt() {
     var repo = getSourceRepo();
     var parts = [];
@@ -1041,31 +1082,219 @@
       '没有被发送的文件，你绝对不能返回对应的 source 代码块。\n' +
       '如果用户只发送了 html 和 css，你绝对不能返回 source-js。\n' +
       '如果用户只发送了 js，你绝对不能返回 source-html 或 source-css。\n' +
-      '允许的返回格式只有：\n' +
+      '请优先返回以下格式：\n' +
       (sendFiles.html ? '```source-html\n完整 index.html\n```\n' : '') +
       (sendFiles.css ? '```source-css\n完整 style.css\n```\n' : '') +
       (sendFiles.js ? '```source-js\n完整 script.js\n```\n' : '');
   }
 
   function cleanReplyForDisplay(reply) {
-    return reply
-      .replace(/```source-html\n?[\s\S]*?```/g, '[AI 提交了 index.html 修改]')
-      .replace(/```source-css\n?[\s\S]*?```/g, '[AI 提交了 style.css 修改]')
-      .replace(/```source-js\n?[\s\S]*?```/g, '[AI 提交了 script.js 修改]');
+    var cleaned = reply
+      .replace(/```source-html\n?[\s\S]*?```/g, '[AI 提交了 index.html 草稿]')
+      .replace(/```source-css\n?[\s\S]*?```/g, '[AI 提交了 style.css 草稿]')
+      .replace(/```source-js\n?[\s\S]*?```/g, '[AI 提交了 script.js 草稿]');
+
+    if (cleaned.length > 1200) {
+      cleaned = cleaned.slice(0, 1200) + '\n\n[回复过长，已折叠显示]';
+    }
+    return cleaned;
   }
 
-  safeOn('#copySourceHtml', 'click', function() { copySourceField('html'); });
-  safeOn('#saveSourceHtml', 'click', function() { saveSourceField('html'); });
-  safeOn('#clearSourceHtml', 'click', function() { clearSourceField('html'); });
+  function extractBodyInner(html) {
+    var bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (bodyMatch) return bodyMatch[1];
+    return html;
+  }
 
-  safeOn('#copySourceCss', 'click', function() { copySourceField('css'); });
-  safeOn('#saveSourceCss', 'click', function() { saveSourceField('css'); });
-  safeOn('#clearSourceCss', 'click', function() { clearSourceField('css'); });
+  function extractStyleBody(css) {
+    return css;
+  }
 
-  safeOn('#copySourceJs', 'click', function() { copySourceField('js'); });
-  safeOn('#saveSourceJs', 'click', function() { saveSourceField('js'); });
-  safeOn('#clearSourceJs', 'click', function() { clearSourceField('js'); });
+  function ensureDraftStyleEl() {
+    var el = document.getElementById('draft-preview-style');
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'draft-preview-style';
+      document.head.appendChild(el);
+    }
+    return el;
+  }
 
+  function previewDraft() {
+    if (!aiDraft.hasHtml && !aiDraft.hasCss && !aiDraft.hasJs) {
+      showToast('暂无可预览的草稿');
+      return;
+    }
+
+    if (!sourcePreviewCache.active) {
+      sourcePreviewCache.originalMain = $('#mainContent') ? $('#mainContent').innerHTML : '';
+      var existingDraftStyle = document.getElementById('draft-preview-style');
+      sourcePreviewCache.originalDraftStyle = existingDraftStyle ? existingDraftStyle.textContent : '';
+      sourcePreviewCache.active = true;
+    }
+
+    if (aiDraft.hasHtml && $('#mainContent')) {
+      $('#mainContent').innerHTML = extractBodyInner(aiDraft.html);
+    }
+
+    if (aiDraft.hasCss) {
+      var styleEl = ensureDraftStyleEl();
+      styleEl.textContent = extractStyleBody(aiDraft.css);
+    }
+
+    if (aiDraft.hasJs) {
+      showToast('JS 草稿暂不自动预览');
+    } else {
+      showToast('已预览草稿效果');
+    }
+  }
+
+  function discardDraftPreview() {
+    if (!sourcePreviewCache.active) return;
+
+    if ($('#mainContent')) {
+      $('#mainContent').innerHTML = sourcePreviewCache.originalMain || '';
+    }
+
+    var styleEl = document.getElementById('draft-preview-style');
+    if (styleEl) {
+      styleEl.textContent = sourcePreviewCache.originalDraftStyle || '';
+    }
+
+    sourcePreviewCache.active = false;
+  }
+
+  function saveDraftToSource() {
+    if (!aiDraft.hasHtml && !aiDraft.hasCss && !aiDraft.hasJs) {
+      showToast('暂无可保存的草稿');
+      return;
+    }
+
+    if (aiDraft.hasHtml) updateSourceRepoFile('html', aiDraft.html);
+    if (aiDraft.hasCss) updateSourceRepoFile('css', aiDraft.css);
+    if (aiDraft.hasJs) updateSourceRepoFile('js', aiDraft.js);
+
+    clearDraft();
+    showToast('已保存 AI 修改');
+  }
+
+  function discardDraftAll() {
+    discardDraftPreview();
+    clearDraft();
+    showToast('已丢弃 AI 修改');
+  }
+
+  function attachMsgTools(div, role, rawContent, meta) {
+    if (!div || role !== 'assistant') return;
+
+    var tpl = $('#assistantMsgToolsTpl');
+    if (!tpl) return;
+
+    var tools = tpl.content.firstElementChild.cloneNode(true);
+    div.appendChild(tools);
+
+    var copyBtn = tools.querySelector('.msg-copy-btn');
+    var editBtn = tools.querySelector('.msg-edit-btn');
+    var prevBtn = tools.querySelector('.msg-reroll-prev');
+    var nextBtn = tools.querySelector('.msg-reroll-next');
+    var indicator = tools.querySelector('.msg-roll-indicator');
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        copyText(rawContent || '').then(function() {
+          showToast('已复制消息');
+        }).catch(function() {
+          showToast('复制失败');
+        });
+      });
+    }
+
+    if (editBtn) {
+      editBtn.addEventListener('click', function() {
+        if ($('#sourceAiInput')) {
+          $('#sourceAiInput').value = rawContent || '';
+          openPanel('sourcePanel');
+          showToast('已填入源码改写框');
+        }
+      });
+    }
+
+    if (!meta || !meta.rollGroupId) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      if (indicator) indicator.textContent = '1/1';
+      return;
+    }
+
+    function refreshRollIndicator() {
+      var arr = assistantRollMap[meta.rollGroupId] || [];
+      var index = arr.findIndex(function(x) { return x.msgId === meta.msgId; });
+      if (index < 0) index = 0;
+      if (indicator) indicator.textContent = (index + 1) + '/' + arr.length;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        showToast('当前版本切换仅做记录，后续再补内容切换');
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        showToast('当前版本切换仅做记录，后续再补内容切换');
+      });
+    }
+
+    refreshRollIndicator();
+  }
+
+  function addChatMsg(role, content, meta) {
+    if (!chatMessages) return null;
+    var div = document.createElement('div');
+    div.className = 'chat-msg ' + role;
+    div.innerHTML = esc(content).replace(/\n/g, '<br>');
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    if (role === 'assistant') {
+      attachMsgTools(div, role, content, meta);
+    }
+
+    return div;
+  }
+
+  function restoreChatHistory() {
+    if (!chatMessages) return;
+    if (!chatHistory.length) {
+      chatMessages.innerHTML = '<div class="chat-msg system">已就绪。</div>';
+      return;
+    }
+
+    for (var i = 0; i < chatHistory.length; i++) {
+      var item = chatHistory[i];
+      addChatMsg(
+        item.role === 'assistant' ? 'assistant' : item.role === 'user' ? 'user' : 'system',
+        item.displayContent || item.content || '',
+        item.meta || null
+      );
+    }
+  }
+
+  function saveChatHistory() {
+    LS.set('chatHistory', chatHistory.slice(-50));
+  }
+
+  safeOn('#clearChatBtn', 'click', function() {
+    chatHistory = [];
+    assistantRollMap = {};
+    LS.remove('chatHistory');
+    if (chatMessages) {
+      chatMessages.innerHTML = '<div class="chat-msg system">已清空。</div>';
+    }
+    showToast('已清空对话');
+  });
+
+  // ========= 文件发送勾选 =========
   safeOn('#sendHtmlToAI', 'change', function() {
     saveSendFiles();
     showToast(this.checked ? '已勾选 index.html' : '已取消 index.html');
@@ -1081,50 +1310,17 @@
     showToast(this.checked ? '已勾选 script.js' : '已取消 script.js');
   });
 
-  // ========= 确认写入 =========
-  var pendingWrites = [];
-  var confirmBusy = false;
+  safeOn('#copySourceHtml', 'click', function() { copySourceField('html'); });
+  safeOn('#saveSourceHtml', 'click', function() { saveSourceField('html'); });
+  safeOn('#clearSourceHtml', 'click', function() { clearSourceField('html'); });
 
-  function askWriteConfirm(type, content) {
-    pendingWrites.push({ type: type, content: content });
-    if (!confirmBusy) openNextConfirm();
-  }
+  safeOn('#copySourceCss', 'click', function() { copySourceField('css'); });
+  safeOn('#saveSourceCss', 'click', function() { saveSourceField('css'); });
+  safeOn('#clearSourceCss', 'click', function() { clearSourceField('css'); });
 
-  function openNextConfirm() {
-    if (!pendingWrites.length) {
-      confirmBusy = false;
-      return;
-    }
-
-    confirmBusy = true;
-    var item = pendingWrites[0];
-    var titleMap = {
-      html: '确认写入 index.html',
-      css: '确认写入 style.css',
-      js: '确认写入 script.js'
-    };
-
-    $('#confirmTitle').textContent = titleMap[item.type] || '确认写入';
-    $('#confirmMsg').textContent = 'AI 请求改写 ' + item.type + '，是否同意写入？';
-    $('#confirmOverlay').classList.remove('hidden');
-  }
-
-  safeOn('#confirmYes', 'click', function() {
-    if (!pendingWrites.length) return;
-    var item = pendingWrites.shift();
-    updateSourceRepoFile(item.type, item.content);
-    $('#confirmOverlay').classList.add('hidden');
-    showToast('已写入 ' + item.type);
-    openNextConfirm();
-  });
-
-  safeOn('#confirmNo', 'click', function() {
-    if (!pendingWrites.length) return;
-    var item = pendingWrites.shift();
-    $('#confirmOverlay').classList.add('hidden');
-    showToast('已拒绝 ' + item.type + ' 的改写');
-    openNextConfirm();
-  });
+  safeOn('#copySourceJs', 'click', function() { copySourceField('js'); });
+  safeOn('#saveSourceJs', 'click', function() { saveSourceField('js'); });
+  safeOn('#clearSourceJs', 'click', function() { clearSourceField('js'); });
 
   // ========= 图片给 AI =========
   function clearVisionImage() {
@@ -1153,7 +1349,7 @@
 
   safeOn('#removeVisionImage', 'click', clearVisionImage);
 
-  // ========= AI =========
+  // ========= AI 提示词 =========
   var SYSTEM_PROMPT =
     '你是网页内置开发助手，已经运行在当前网页里。\n' +
     '不要索要代码，不要说无法访问文件。\n' +
@@ -1161,6 +1357,7 @@
     '绝对禁止返回未被发送文件对应的 source 代码块。\n' +
     '如果只发送了 html 和 css，你绝不能返回 source-js。\n' +
     '如果只发送了 js，你绝不能返回 source-html 或 source-css。\n' +
+    '如果用户是在美化，优先修改 css；如果是结构，优先修改 html；如果是逻辑，优先修改 js。\n' +
     '不要伪造功能，不要额外创建假按钮。';
 
   function buildUserContent(text) {
@@ -1173,73 +1370,33 @@
     return text;
   }
 
-  function applyReplyToSourceRepo(reply) {
-    var match;
-
-    if (sendFiles.html) {
-      var htmlReg = /```source-html\n?([\s\S]*?)```/g;
-      while ((match = htmlReg.exec(reply)) !== null) {
-        askWriteConfirm('html', match[1].trim());
-      }
-    }
-
-    if (sendFiles.css) {
-      var cssReg = /```source-css\n?([\s\S]*?)```/g;
-      while ((match = cssReg.exec(reply)) !== null) {
-        askWriteConfirm('css', match[1].trim());
-      }
-    }
-
-    if (sendFiles.js) {
-      var jsReg = /```source-js\n?([\s\S]*?)```/g;
-      while ((match = jsReg.exec(reply)) !== null) {
-        askWriteConfirm('js', match[1].trim());
-      }
-    }
-
-    if (!sendFiles.html && /```source-html\n?[\s\S]*?```/g.test(reply)) {
-      showToast('已拦截未授权的 index.html 改写');
-    }
-    if (!sendFiles.css && /```source-css\n?[\s\S]*?```/g.test(reply)) {
-      showToast('已拦截未授权的 style.css 改写');
-    }
-    if (!sendFiles.js && /```source-js\n?[\s\S]*?```/g.test(reply)) {
-      showToast('已拦截未授权的 script.js 改写');
-    }
+  function buildSourceAiPrompt(userText) {
+    var sourceBlock = buildSelectedSourcePrompt();
+    return '请直接处理当前网页源码。\n' +
+      '只允许修改被发送的文件。\n' +
+      '如果要提交修改，请使用 source-html / source-css / source-js 代码块。\n' +
+      '用户需求：' + userText +
+      sourceBlock;
   }
 
-  async function sendMessage() {
+  function extractReplyIntoDraft(reply) {
+    applyReplyToDraft(reply);
+    return cleanReplyForDisplay(reply);
+  }
+
+  async function sendChatRequest(userText, opts) {
+    opts = opts || {};
     if (!activeApi) {
       showToast('请先配置并选择 API');
       return;
     }
 
-    var text = chatInput ? chatInput.value.trim() : '';
-    if (!text && !visionImageData) return;
+    var sourceMode = !!opts.sourceMode;
+    var rollGroupId = opts.rollGroupId || null;
+    var replyDiv = opts.replyDiv || null;
 
-    saveSendFiles();
+    var wrappedText = sourceMode ? buildSourceAiPrompt(userText) : userText;
 
-    var displayText = text || '[发送了一张图片]';
-    var wrappedText =
-      '请直接处理当前网页。\n' +
-      '如果是修改源码，请只返回被允许修改的文件。\n' +
-      '用户需求：' + displayText +
-      buildSelectedSourcePrompt();
-
-    if (chatInput) chatInput.value = '';
-
-    addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
-
-    chatHistory.push({
-      role: 'user',
-      content: buildUserContent(wrappedText),
-      displayContent: displayText + (visionImageData ? '\n[附带图片]' : '')
-    });
-    saveChatHistory();
-
-    var replyDiv = addChatMsg('assistant', '思考中...');
-
-    var base = activeApi.url.replace(/\/+$/, '');
     var messages = [
       { role: 'system', content: SYSTEM_PROMPT }
     ].concat(chatHistory.slice(-20).map(function(item) {
@@ -1247,7 +1404,12 @@
         role: item.role,
         content: item.content
       };
-    }));
+    })).concat([
+      { role: 'user', content: buildUserContent(wrappedText) }
+    ]);
+
+    var base = activeApi.url.replace(/\/+$/, '');
+    currentAbortController = new AbortController();
 
     async function handleNormalResponse() {
       var response = await fetch(base + '/chat/completions', {
@@ -1259,7 +1421,8 @@
         body: JSON.stringify({
           model: activeApi.model,
           messages: messages
-        })
+        }),
+        signal: currentAbortController.signal
       });
 
       if (!response.ok) {
@@ -1269,24 +1432,10 @@
 
       var data = await response.json();
       var fullReply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
-
-      applyReplyToSourceRepo(fullReply);
-
-      var displayReply = cleanReplyForDisplay(fullReply);
-      if (replyDiv) {
-        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
-      }
-
-      chatHistory.push({
-        role: 'assistant',
-        content: fullReply,
-        displayContent: displayReply
-      });
-      saveChatHistory();
-      clearVisionImage();
+      return fullReply;
     }
 
-    async function handleStreamResponse() {
+    async function handleStreamResponse(onChunk) {
       var response = await fetch(base + '/chat/completions', {
         method: 'POST',
         headers: {
@@ -1297,7 +1446,8 @@
           model: activeApi.model,
           messages: messages,
           stream: true
-        })
+        }),
+        signal: currentAbortController.signal
       });
 
       if (!response.ok) {
@@ -1333,48 +1483,93 @@
             var data = JSON.parse(dataStr);
             var delta = data.choices && data.choices[0] && data.choices[0].delta ? data.choices[0].delta : {};
             var content = delta.content || '';
-
             if (content) {
               fullReply += content;
-              if (replyDiv) {
-                replyDiv.innerHTML = esc(cleanReplyForDisplay(fullReply)).replace(/\n/g, '<br>');
-              }
+              if (onChunk) onChunk(fullReply);
             }
           } catch (e) {}
         }
       }
 
-      if (!fullReply.trim()) {
-        fullReply = '(无回复)';
+      if (!fullReply.trim()) fullReply = '(无回复)';
+      return fullReply;
+    }
+
+    try {
+      var fullReply = '';
+
+      if (useStream) {
+        try {
+          fullReply = await handleStreamResponse(function(tempReply) {
+            if (replyDiv) {
+              var displayTemp = sourceMode ? cleanReplyForDisplay(tempReply) : tempReply;
+              replyDiv.innerHTML = esc(displayTemp).replace(/\n/g, '<br>');
+            }
+          });
+        } catch (streamErr) {
+          showToast('流式失败，自动切换普通模式');
+          fullReply = await handleNormalResponse();
+        }
+      } else {
+        fullReply = await handleNormalResponse();
       }
 
-      applyReplyToSourceRepo(fullReply);
+      currentAbortController = null;
+      return fullReply;
+    } catch (err) {
+      currentAbortController = null;
+      throw err;
+    }
+  }
 
-      var displayReply = cleanReplyForDisplay(fullReply);
+  async function sendNormalChatMessage() {
+    if (!activeApi) {
+      showToast('请先配置并选择 API');
+      return;
+    }
+
+    var text = chatInput ? chatInput.value.trim() : '';
+    if (!text && !visionImageData) return;
+
+    var displayText = text || '[发送了一张图片]';
+    if (chatInput) chatInput.value = '';
+
+    addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
+
+    chatHistory.push({
+      role: 'user',
+      content: buildUserContent(displayText),
+      displayContent: displayText + (visionImageData ? '\n[附带图片]' : '')
+    });
+    saveChatHistory();
+
+    var replyDiv = addChatMsg('assistant', '思考中...', {
+      rollGroupId: null,
+      msgId: 'assistant-' + (++assistantRollCounter)
+    });
+
+    try {
+      var fullReply = await sendChatRequest(displayText, {
+        sourceMode: false,
+        replyDiv: replyDiv
+      });
+
+      var msgId = 'assistant-' + (++assistantRollCounter);
       if (replyDiv) {
-        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
+        replyDiv.innerHTML = esc(fullReply).replace(/\n/g, '<br>');
       }
+
+      var meta = { msgId: msgId, rollGroupId: null };
+      if (replyDiv) attachMsgTools(replyDiv, 'assistant', fullReply, meta);
 
       chatHistory.push({
         role: 'assistant',
         content: fullReply,
-        displayContent: displayReply
+        displayContent: fullReply,
+        meta: meta
       });
       saveChatHistory();
       clearVisionImage();
-    }
-
-    try {
-      if (useStream) {
-        try {
-          await handleStreamResponse();
-        } catch (streamErr) {
-          showToast('流式失败，自动切换普通模式');
-          await handleNormalResponse();
-        }
-      } else {
-        await handleNormalResponse();
-      }
     } catch (err) {
       if (replyDiv) {
         replyDiv.innerHTML = '请求失败: ' + esc(err.message);
@@ -1382,12 +1577,120 @@
     }
   }
 
-  safeOn('#sendBtn', 'click', sendMessage);
+  async function sendSourceAiMessage(forceUserText, existingRollGroupId) {
+    if (!activeApi) {
+      showToast('请先配置并选择 API');
+      return;
+    }
+
+    saveSendFiles();
+
+    if (!sendFiles.html && !sendFiles.css && !sendFiles.js) {
+      showToast('请先勾选至少一个发送文件');
+      return;
+    }
+
+    var text = typeof forceUserText === 'string' ? forceUserText : ($('#sourceAiInput') ? $('#sourceAiInput').value.trim() : '');
+    if (!text) return;
+
+    if (!forceUserText && $('#sourceAiInput')) $('#sourceAiInput').value = '';
+
+    addChatMsg('user', '[源码改写]\n' + text);
+
+    chatHistory.push({
+      role: 'user',
+      content: buildUserContent('[源码改写]\n' + text),
+      displayContent: '[源码改写]\n' + text
+    });
+    saveChatHistory();
+
+    var rollGroupId = existingRollGroupId || ('roll-' + Date.now());
+    var msgId = 'assistant-' + (++assistantRollCounter);
+    var meta = { msgId: msgId, rollGroupId: rollGroupId };
+
+    var replyDiv = addChatMsg('assistant', '思考中...', meta);
+
+    if (!assistantRollMap[rollGroupId]) assistantRollMap[rollGroupId] = [];
+    assistantRollMap[rollGroupId].push({ msgId: msgId, content: '' });
+
+    try {
+      var fullReply = await sendChatRequest(text, {
+        sourceMode: true,
+        replyDiv: replyDiv,
+        rollGroupId: rollGroupId
+      });
+
+      var displayReply = extractReplyIntoDraft(fullReply);
+
+      if (replyDiv) {
+        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
+      }
+
+      if (assistantRollMap[rollGroupId]) {
+        for (var i = 0; i < assistantRollMap[rollGroupId].length; i++) {
+          if (assistantRollMap[rollGroupId][i].msgId === msgId) {
+            assistantRollMap[rollGroupId][i].content = fullReply;
+            break;
+          }
+        }
+      }
+
+      if (replyDiv) attachMsgTools(replyDiv, 'assistant', fullReply, meta);
+
+      chatHistory.push({
+        role: 'assistant',
+        content: fullReply,
+        displayContent: displayReply,
+        meta: meta
+      });
+      saveChatHistory();
+      clearVisionImage();
+    } catch (err) {
+      if (replyDiv) {
+        replyDiv.innerHTML = '请求失败: ' + esc(err.message);
+      }
+    }
+  }
+
+  safeOn('#sendBtn', 'click', sendNormalChatMessage);
   safeOn('#chatInput', 'keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      sendNormalChatMessage();
     }
+  });
+
+  safeOn('#sourceAiSendBtn', 'click', function() {
+    sendSourceAiMessage();
+  });
+
+  safeOn('#sourceAiInput', 'keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendSourceAiMessage();
+    }
+  });
+
+  safeOn('#sourceAiStopBtn', 'click', function() {
+    if (currentAbortController) {
+      currentAbortController.abort();
+      currentAbortController = null;
+      showToast('已停止');
+    } else {
+      showToast('当前没有进行中的请求');
+    }
+  });
+
+  safeOn('#previewAiDraftBtn', 'click', function() {
+    previewDraft();
+  });
+
+  safeOn('#saveAiDraftBtn', 'click', function() {
+    saveDraftToSource();
+  });
+
+  safeOn('#discardAiDraftBtn', 'click', function() {
+    discardDraftAll();
   });
 
   // ========= 背景 =========
@@ -1477,6 +1780,7 @@
     updateAiStatus();
     restoreChatHistory();
     restoreSourceRepo();
+    updateDraftStatus();
 
     if (bgData) {
       applyBg(bgData);
