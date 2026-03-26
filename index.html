@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
 <script>
-var t=new Date().getTime();
-var lk=document.createElement('link');
-lk.rel='stylesheet';lk.href='style.css?t='+t;
-document.currentScript.parentNode.insertBefore(lk,document.currentScript);
+var _t=new Date().getTime();
+var _lk=document.createElement('link');
+_lk.rel='stylesheet';_lk.href='style.css?t='+_t;
+document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
 </script>
 </head>
 <body>
@@ -36,7 +36,7 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
     </div>
     <div class="card">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 3z"/><path d="M17 4a2 2 0 0 0 2 2 2 2 0 0 0-2 2 2 2 0 0 0-2-2 2 2 0 0 0 2-2"/><path d="M21 10a1 1 0 0 0 1 1 1 1 0 0 0-1 1 1 1 0 0 0-1-1 1 1 0 0 0 1-1"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 3z"/><path d="M17 4a2 2 0 0 0 2 2 2 2 0 0 0-2 2 2 2 0 0 0-2-2 2 2 0 0 0 2-2"/></svg>
       </div>
       <h3>AI 美化</h3>
       <p>让 AI 一键改变整个网站的布局与风格。</p>
@@ -76,6 +76,10 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 3z"/><path d="M17 4a2 2 0 0 0 2 2 2 2 0 0 0-2 2 2 2 0 0 0-2-2 2 2 0 0 0 2-2"/></svg>
     <span>AI 助手</span>
   </div>
+  <div class="ball-menu-item" data-panel="themePanel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
+    <span>主题配色</span>
+  </div>
   <div class="ball-menu-item" data-panel="fontPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
     <span>字体设置</span>
@@ -84,14 +88,15 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
     <span>背景图片</span>
   </div>
-  <div class="ball-menu-item" data-panel="themePanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
-    <span>主题配色</span>
+  <div class="ball-menu-item" data-panel="exportPanel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span>导出代码</span>
   </div>
 </div>
 
 <div id="overlay" class="overlay hidden"></div>
 
+<!-- API 配置面板 -->
 <div id="apiPanel" class="panel hidden">
   <div class="panel-header">
     <h2>API 配置</h2>
@@ -137,6 +142,7 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
   </div>
 </div>
 
+<!-- AI 助手面板 -->
 <div id="aiPanel" class="panel hidden">
   <div class="panel-header">
     <h2>AI 助手</h2>
@@ -150,7 +156,7 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
       <span>未连接</span>
     </div>
     <div id="chatMessages" class="chat-messages">
-      <div class="chat-msg system">选择一个已保存的 API 配置，然后开始对话。你可以让 AI 修改网页的布局和样式。</div>
+      <div class="chat-msg system">选择一个已保存的 API 配置，然后开始对话。AI 可以修改网页的布局、样式，也可以新增功能。</div>
     </div>
     <div class="chat-input-area">
       <textarea id="chatInput" placeholder="告诉 AI 你想怎么改变网页..." rows="2"></textarea>
@@ -161,6 +167,64 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
   </div>
 </div>
 
+<!-- 主题配色面板 -->
+<div id="themePanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>主题配色</h2>
+    <div class="panel-close" data-close="themePanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="panel-body">
+    <h3 class="section-title">预设主题</h3>
+    <div id="themeList" class="theme-list"></div>
+    <div class="divider"></div>
+    <h3 class="section-title">我的主题</h3>
+    <div id="customThemeList" class="theme-list"></div>
+    <div class="divider"></div>
+    <h3 class="section-title">自定义颜色</h3>
+    <div class="color-grid">
+      <div class="color-group">
+        <label>页面背景</label>
+        <input type="color" id="colorBg" value="#f0f6fb">
+      </div>
+      <div class="color-group">
+        <label>卡片背景</label>
+        <input type="color" id="colorCard" value="#ffffff">
+      </div>
+      <div class="color-group">
+        <label>主题色</label>
+        <input type="color" id="colorAccent" value="#adcdea">
+      </div>
+      <div class="color-group">
+        <label>强调色</label>
+        <input type="color" id="colorAccentDeep" value="#8ab8de">
+      </div>
+      <div class="color-group">
+        <label>文字色</label>
+        <input type="color" id="colorText" value="#1a1a1a">
+      </div>
+      <div class="color-group">
+        <label>边框色</label>
+        <input type="color" id="colorBorder" value="#1a1a1a">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px;">
+      <input type="text" id="customThemeName" placeholder="给这个配色起个名字">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="applyCustomColors">应用颜色</button>
+      <button class="btn btn-outline" id="saveCustomTheme">保存为主题</button>
+    </div>
+    <div class="divider"></div>
+    <h3 class="section-title">管理</h3>
+    <button class="btn btn-outline" id="resetTheme" style="width:100%;">恢复默认主题</button>
+    <button class="btn btn-outline" id="clearChatBtn" style="width:100%;margin-top:8px;">清空聊天记录</button>
+    <button class="btn btn-danger" id="clearAllBtn" style="width:100%;margin-top:8px;">重置所有设置</button>
+  </div>
+</div>
+
+<!-- 字体设置面板 -->
 <div id="fontPanel" class="panel hidden">
   <div class="panel-header">
     <h2>字体设置</h2>
@@ -175,13 +239,14 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
     <h3 class="section-title">上传自定义字体</h3>
     <div class="upload-area" id="fontUploadArea">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <p>点击上传 .ttf / .woff2 字体文件</p>
+      <p>点击上传 .ttf / .woff2 字体文件（支持大文件）</p>
       <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>
     </div>
     <div id="customFonts" class="font-list"></div>
   </div>
 </div>
 
+<!-- 背景图片面板 -->
 <div id="bgPanel" class="panel hidden">
   <div class="panel-header">
     <h2>背景图片</h2>
@@ -215,62 +280,50 @@ document.currentScript.parentNode.insertBefore(lk,document.currentScript);
   </div>
 </div>
 
-<div id="themePanel" class="panel hidden">
+<!-- 导出代码面板 -->
+<div id="exportPanel" class="panel hidden">
   <div class="panel-header">
-    <h2>主题配色</h2>
-    <div class="panel-close" data-close="themePanel">
+    <h2>导出代码</h2>
+    <div class="panel-close" data-close="exportPanel">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </div>
   </div>
   <div class="panel-body">
-    <h3 class="section-title">预设主题</h3>
-    <div id="themeList" class="theme-list"></div>
-    <div class="divider"></div>
-    <h3 class="section-title">自定义颜色</h3>
-    <div class="color-grid">
-      <div class="color-group">
-        <label>页面背景</label>
-        <input type="color" id="colorBg" value="#f0f6fb">
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">将 AI 的所有修改合并到源码中，生成完整文件。长按文本框全选后复制，粘贴到 GitHub 对应文件。</p>
+    <button class="btn btn-primary" id="generateExport" style="width:100%;margin-bottom:16px;">生成导出代码</button>
+    <div id="exportOutput" class="export-output hidden">
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>index.html</span>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportHtml')">复制</button>
+        </div>
+        <textarea id="exportHtml" class="export-textarea" readonly></textarea>
       </div>
-      <div class="color-group">
-        <label>卡片背景</label>
-        <input type="color" id="colorCard" value="#ffffff">
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>style.css</span>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportCss')">复制</button>
+        </div>
+        <textarea id="exportCss" class="export-textarea" readonly></textarea>
       </div>
-      <div class="color-group">
-        <label>主题色</label>
-        <input type="color" id="colorAccent" value="#adcdea">
-      </div>
-      <div class="color-group">
-        <label>强调色</label>
-        <input type="color" id="colorAccentDeep" value="#8ab8de">
-      </div>
-      <div class="color-group">
-        <label>文字色</label>
-        <input type="color" id="colorText" value="#1a1a1a">
-      </div>
-      <div class="color-group">
-        <label>边框色</label>
-        <input type="color" id="colorBorder" value="#1a1a1a">
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>script.js</span>
+          <button class="btn btn-outline btn-sm" onclick="window._copyExport('exportJs')">复制</button>
+        </div>
+        <textarea id="exportJs" class="export-textarea" readonly></textarea>
       </div>
     </div>
-    <div class="btn-row" style="margin-top:16px;">
-      <button class="btn btn-primary" id="applyCustomColors">应用颜色</button>
-      <button class="btn btn-outline" id="resetTheme">恢复默认</button>
-    </div>
-    <div class="divider"></div>
-    <h3 class="section-title">管理</h3>
-    <button class="btn btn-outline" id="clearChatBtn" style="width:100%;">清空聊天记录</button>
-    <button class="btn btn-danger" id="clearAllBtn" style="width:100%;margin-top:8px;">重置所有设置</button>
   </div>
 </div>
 
 <div id="toast" class="toast hidden"></div>
 
 <script>
-var t=new Date().getTime();
-var sc=document.createElement('script');
-sc.src='script.js?t='+t;
-document.body.appendChild(sc);
+var _t=new Date().getTime();
+var _sc=document.createElement('script');
+_sc.src='script.js?t='+_t;
+document.body.appendChild(_sc);
 </script>
 </body>
 </html>
