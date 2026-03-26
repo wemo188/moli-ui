@@ -262,7 +262,8 @@ html, body {
 }
 
 .form-group input:focus,
-.export-textarea:focus {
+.export-textarea:focus,
+.source-ai-input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
@@ -510,6 +511,31 @@ html, body {
   border: 1.5px solid var(--border);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
+}
+
+.msg-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.msg-tool-btn {
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.msg-roll-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 34px;
+  text-align: center;
 }
 
 .chat-input-area {
@@ -832,6 +858,56 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
 }
 
+/* 源码 AI 工作台 */
+.source-ai-box {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  padding: 12px;
+  margin-bottom: 18px;
+}
+
+.source-ai-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.source-ai-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.source-ai-status {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.source-ai-input {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.source-ai-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 /* 通用自定义勾选 */
 .source-check-label {
   display: flex;
@@ -926,50 +1002,6 @@ input[type="range"]::-webkit-slider-thumb {
   transform: rotate(45deg);
 }
 
-/* 确认弹窗 */
-.confirm-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99998;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.3s;
-}
-
-.confirm-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.confirm-box {
-  width: 90%;
-  max-width: 340px;
-  background: var(--bg-secondary);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-}
-
-.confirm-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: var(--text-primary);
-}
-
-.confirm-msg {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: 18px;
-  line-height: 1.5;
-}
-
-/* Toast */
 .toast {
   position: fixed;
   top: 50px;
