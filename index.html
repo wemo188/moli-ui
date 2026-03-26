@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -9,11 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
 <script>
-var _t=new Date().getTime();
-var _lk=document.createElement('link');
-_lk.rel='stylesheet';
-_lk.href='style.css?t='+_t;
-document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
+var _t = new Date().getTime();
+var _lk = document.createElement('link');
+_lk.rel = 'stylesheet';
+_lk.href = 'style.css?t=' + _t;
+document.currentScript.parentNode.insertBefore(_lk, document.currentScript);
 </script>
 </head>
 <body>
@@ -34,22 +35,32 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
     <span>API 配置</span>
   </div>
+
   <div class="ball-menu-item" data-panel="aiPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 3z"/><path d="M17 4a2 2 0 0 0 2 2 2 2 0 0 0-2 2 2 2 0 0 0-2-2 2 2 0 0 0 2-2"/></svg>
     <span>AI 助手</span>
   </div>
+
   <div class="ball-menu-item" data-panel="themePanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
     <span>主题配色</span>
   </div>
+
   <div class="ball-menu-item" data-panel="fontPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
     <span>字体设置</span>
   </div>
+
   <div class="ball-menu-item" data-panel="bgPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
     <span>背景图片</span>
   </div>
+
+  <div class="ball-menu-item" data-panel="sourcePanel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    <span>源码仓</span>
+  </div>
+
   <div class="ball-menu-item" data-panel="exportPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     <span>导出代码</span>
@@ -71,10 +82,12 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
       <label>配置名称</label>
       <input type="text" id="apiName" placeholder="例如：OpenAI 中转">
     </div>
+
     <div class="form-group">
       <label>API 地址</label>
       <input type="text" id="apiUrl" placeholder="http://107.151.246.146:3000/v1 或 https://example.com/v1">
     </div>
+
     <div class="form-group">
       <label>API Key</label>
       <div class="input-with-btn">
@@ -84,6 +97,7 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
         </button>
       </div>
     </div>
+
     <div class="form-group">
       <label>模型</label>
       <div class="input-with-btn">
@@ -94,11 +108,14 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
       </div>
       <div id="modelList" class="model-list hidden"></div>
     </div>
+
     <div class="btn-row">
       <button class="btn btn-primary" id="saveApiBtn" type="button">保存配置</button>
       <button class="btn btn-outline" id="testApiBtn" type="button">测试连接</button>
     </div>
+
     <div class="divider"></div>
+
     <h3 class="section-title">已保存的配置</h3>
     <div id="savedApis" class="saved-list"></div>
   </div>
@@ -268,6 +285,41 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
   </div>
 </div>
 
+<!-- 源码仓 -->
+<div id="sourcePanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>源码仓</h2>
+    <div class="panel-close" data-close="sourcePanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="panel-body">
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+      把你的 GitHub 源码粘贴到这里，AI 就能基于真实代码修改，而不是瞎猜。
+    </p>
+
+    <div class="btn-row" style="margin-bottom:12px;">
+      <button class="btn btn-outline" id="saveSourceBtn" type="button">保存源码</button>
+      <button class="btn btn-outline" id="clearSourceBtn" type="button">清空源码</button>
+    </div>
+
+    <div class="export-section">
+      <div class="export-section-header"><span>index.html</span></div>
+      <textarea id="sourceHtml" class="export-textarea" placeholder="把 index.html 粘贴到这里"></textarea>
+    </div>
+
+    <div class="export-section">
+      <div class="export-section-header"><span>style.css</span></div>
+      <textarea id="sourceCss" class="export-textarea" placeholder="把 style.css 粘贴到这里"></textarea>
+    </div>
+
+    <div class="export-section">
+      <div class="export-section-header"><span>script.js</span></div>
+      <textarea id="sourceJs" class="export-textarea" placeholder="把 script.js 粘贴到这里"></textarea>
+    </div>
+  </div>
+</div>
+
 <!-- 导出代码 -->
 <div id="exportPanel" class="panel hidden">
   <div class="panel-header">
@@ -277,7 +329,10 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
     </div>
   </div>
   <div class="panel-body">
-    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">生成当前网页修改后的导出内容。你可以复制后覆盖 GitHub 里的文件。</p>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+      生成当前网页修改后的导出内容。你可以复制后覆盖 GitHub 里的文件。
+    </p>
+
     <button class="btn btn-primary" id="generateExport" style="width:100%;margin-bottom:16px;" type="button">生成导出代码</button>
 
     <div id="exportOutput" class="export-output hidden">
@@ -311,9 +366,9 @@ document.currentScript.parentNode.insertBefore(_lk,document.currentScript);
 <div id="toast" class="toast hidden"></div>
 
 <script>
-var _ts=new Date().getTime();
-var _sc=document.createElement('script');
-_sc.src='script.js?t='+_ts;
+var _ts = new Date().getTime();
+var _sc = document.createElement('script');
+_sc.src = 'script.js?t=' + _ts;
 document.body.appendChild(_sc);
 </script>
 </body>
