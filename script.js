@@ -46,13 +46,17 @@
         var req = indexedDB.open('MonoSpaceDB', 2);
         req.onupgradeneeded = function(e) {
           var db = e.target.result;
-          if (!db.objectStoreNames.contains('fonts')) db.createObjectStore('fonts', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('fonts')) {
+            db.createObjectStore('fonts', { keyPath: 'id' });
+          }
         };
         req.onsuccess = function(e) {
           DB.db = e.target.result;
           resolve(DB.db);
         };
-        req.onerror = function() { resolve(null); };
+        req.onerror = function() {
+          resolve(null);
+        };
       });
     },
     saveFont: async function(fontObj) {
@@ -87,7 +91,7 @@
     }
   };
 
-  // ========= 预设主题（4个） =========
+  // ========= 预设主题 =========
   var PRESET_THEMES = [
     {
       id: 'blue-white',
@@ -166,13 +170,15 @@
   var customThemes = LS.get('customThemes') || [];
   var currentThemeId = LS.get('currentThemeId') || 'blue-white';
 
-  // ========= 悬浮球拖动 =========
+  // ========= 悬浮球 =========
   var ball = $('#floatingBall');
   var ballMenuEl = $('#ballMenu');
   var isDragging = false, hasMoved = false;
   var startX, startY, origX, origY;
 
-  function getBallRect() { return ball.getBoundingClientRect(); }
+  function getBallRect() {
+    return ball.getBoundingClientRect();
+  }
 
   ball.addEventListener('touchstart', function(e) {
     var t = e.touches[0];
@@ -192,6 +198,7 @@
     var dy = t.clientY - startY;
     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
     if (!hasMoved) return;
+
     var nx = Math.max(0, Math.min(window.innerWidth - 52, origX + dx));
     var ny = Math.max(0, Math.min(window.innerHeight - 52, origY + dy));
     ball.style.left = nx + 'px';
@@ -301,6 +308,7 @@
   function renderSavedApis() {
     var container = $('#savedApis');
     if (!container) return;
+
     if (apiConfigs.length === 0) {
       container.innerHTML = '<p style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px;">暂无保存的配置</p>';
       return;
@@ -313,10 +321,13 @@
           '<div class="saved-item-url">' + esc(c.url) + ' · ' + esc(c.model) + '</div>' +
         '</div>' +
         '<div class="saved-item-actions">' +
-          '<button class="use-btn" onclick="window._useApi(' + i + ')" type="button">' +
+          '<button class="use-btn" onclick="window._useApi(' + i + ')" type="button" title="使用">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
-          '<button class="del-btn" onclick="window._delApi(' + i + ')" type="button">' +
+          '<button class="edit-btn" onclick="window._editApi(' + i + ')" type="button" title="编辑">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
+          '</button>' +
+          '<button class="del-btn" onclick="window._delApi(' + i + ')" type="button" title="删除">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
           '</button>' +
         '</div>' +
@@ -330,6 +341,19 @@
     renderSavedApis();
     updateAiStatus();
     showToast('已切换至: ' + activeApi.name);
+  };
+
+  window._editApi = function(i) {
+    var config = apiConfigs[i];
+    if (!config) return;
+
+    $('#apiName').value = config.name || '';
+    $('#apiUrl').value = config.url || '';
+    $('#apiKey').value = config.key || '';
+    $('#apiModel').value = config.model || '';
+
+    openPanel('apiPanel');
+    showToast('已载入配置，可直接修改后保存');
   };
 
   window._delApi = function(i) {
@@ -349,6 +373,7 @@
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
     var model = $('#apiModel').value.trim();
+
     if (!name || !url || !key || !model) {
       showToast('请填写所有字段');
       return;
@@ -357,8 +382,12 @@
     var config = { name: name, url: url, key: key, model: model };
     var existing = -1;
     for (var i = 0; i < apiConfigs.length; i++) {
-      if (apiConfigs[i].name === name) { existing = i; break; }
+      if (apiConfigs[i].name === name) {
+        existing = i;
+        break;
+      }
     }
+
     if (existing >= 0) apiConfigs[existing] = config;
     else apiConfigs.push(config);
 
@@ -375,23 +404,35 @@
   $('#fetchModelsBtn').addEventListener('click', function() {
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
-    if (!url || !key) { showToast('请先填写 API 地址和 Key'); return; }
+    if (!url || !key) {
+      showToast('请先填写 API 地址和 Key');
+      return;
+    }
 
     showToast('正在获取模型列表...');
     var base = url.replace(/\/+$/, '');
 
     fetch(base + '/models', {
-      headers: { 'Authorization': 'Bearer ' + key }
+      headers: {
+        'Authorization': 'Bearer ' + key
+      }
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var raw = data.data || data;
       var models = [];
-      for (var i = 0; i < raw.length; i++) {
-        var id = raw[i].id || raw[i].name || raw[i];
-        if (id) models.push(id);
+
+      if (Array.isArray(raw)) {
+        for (var i = 0; i < raw.length; i++) {
+          var id = raw[i].id || raw[i].name || raw[i];
+          if (id) models.push(id);
+        }
       }
-      if (models.length === 0) { showToast('未找到模型'); return; }
+
+      if (models.length === 0) {
+        showToast('未找到模型');
+        return;
+      }
 
       var list = $('#modelList');
       list.innerHTML = models.map(function(m) {
@@ -415,6 +456,7 @@
     var url = $('#apiUrl').value.trim();
     var key = $('#apiKey').value.trim();
     var model = $('#apiModel').value.trim();
+
     if (!url || !key || !model) {
       showToast('请填写完整信息');
       return;
@@ -443,6 +485,50 @@
     });
   });
 
+  // ========= 源码仓 =========
+  function saveSourceRepo() {
+    LS.set('sourceRepo', {
+      html: ($('#sourceHtml').value || ''),
+      css: ($('#sourceCss').value || ''),
+      js: ($('#sourceJs').value || '')
+    });
+    showToast('源码已保存');
+  }
+
+  function restoreSourceRepo() {
+    var repo = LS.get('sourceRepo') || {};
+    if ($('#sourceHtml')) $('#sourceHtml').value = repo.html || '';
+    if ($('#sourceCss')) $('#sourceCss').value = repo.css || '';
+    if ($('#sourceJs')) $('#sourceJs').value = repo.js || '';
+  }
+
+  if ($('#saveSourceBtn')) {
+    $('#saveSourceBtn').addEventListener('click', saveSourceRepo);
+  }
+
+  if ($('#clearSourceBtn')) {
+    $('#clearSourceBtn').addEventListener('click', function() {
+      if (!confirm('确定清空源码仓内容吗？')) return;
+      LS.remove('sourceRepo');
+      $('#sourceHtml').value = '';
+      $('#sourceCss').value = '';
+      $('#sourceJs').value = '';
+      showToast('源码仓已清空');
+    });
+  }
+
+  function getSourceRepoText() {
+    var repo = LS.get('sourceRepo') || {};
+    if (!repo.html && !repo.css && !repo.js) return '';
+    return (
+      '\n\n=== 用户提供的真实源码（优先基于这些源码修改） ===\n\n' +
+      '[index.html]\n' + (repo.html || '') + '\n\n' +
+      '[style.css]\n' + (repo.css || '') + '\n\n' +
+      '[script.js]\n' + (repo.js || '') + '\n\n' +
+      '如果用户要求修改功能，请优先基于以上真实源码进行修改，而不是另造假按钮或假输入框。\n'
+    );
+  }
+
   // ========= AI 助手 =========
   var chatMessages = $('#chatMessages');
   var chatInput = $('#chatInput');
@@ -462,7 +548,7 @@
     var div = document.createElement('div');
     div.className = 'chat-msg ' + role;
     var html = esc(content);
-    html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    html = html.replace(/```(\w[\w-]*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
     html = html.replace(/\n/g, '<br>');
     div.innerHTML = html;
     chatMessages.appendChild(div);
@@ -476,7 +562,7 @@
       if (chatHistory[i].displayRole && chatHistory[i].displayContent) {
         addChatMsg(chatHistory[i].displayRole, chatHistory[i].displayContent);
       } else if (chatHistory[i].role === 'user') {
-        addChatMsg('user', chatHistory[i].content || '');
+        addChatMsg('user', typeof chatHistory[i].content === 'string' ? chatHistory[i].content : '[复杂消息]');
       } else if (chatHistory[i].role === 'assistant') {
         addChatMsg('assistant', chatHistory[i].content || '');
       }
@@ -491,22 +577,23 @@
 
   var SYSTEM_PROMPT =
     '你是一个内嵌在网页中的AI助手。你不是普通聊天AI。你已经运行在用户的网页里。\n\n' +
-    '重要：你不需要用户给你代码。你已经在这个网页内部运行。你的回复中的代码会被自动执行并持久保存。\n\n' +
+    '重要：你不需要用户给你代码。你已经在这个网页内部运行。你的回复中的代码会被自动执行并持久保存。\n' +
     '你绝对不能说"请把代码发给我"、"我无法访问你的文件"之类的话。你就在这个网页里，你可以直接修改它。\n\n' +
     '你有以下能力：\n' +
     '1. 改配色：```cssvar``` 代码块\n' +
     '2. 改样式：```css``` 代码块\n' +
     '3. 改主页面内容：```html-inject``` 代码块\n' +
     '4. 改功能或新增功能：```js-inject``` 代码块\n\n' +
-    '页面主要元素ID：\n' +
+    '现有重要元素：\n' +
     '#mainContent #apiPanel #apiName #apiUrl #apiKey #apiModel #saveApiBtn #testApiBtn #fetchModelsBtn #savedApis\n' +
     '#aiPanel #chatMessages #chatInput #sendBtn #aiStatus\n' +
     '#themePanel #themeList #customThemeList #colorBg #colorCard #colorAccent #colorAccentDeep #colorText #colorBorder\n' +
     '#fontPanel #fontList #fontUploadArea #customFonts\n' +
     '#bgPanel #bgUploadArea #bgPreview #bgBlur #bgDark #applyBgBtn #removeBgBtn\n' +
+    '#sourcePanel #sourceHtml #sourceCss #sourceJs #saveSourceBtn\n' +
     '#floatingBall #ballMenu #bgLayer #overlay #toast\n\n' +
-    '如果用户要求改现有功能，优先使用 js-inject 直接操作已有元素。\n' +
-    '如果用户要求新增模块，也可以用 html-inject + js-inject。\n' +
+    '如果用户要求修改已有功能，优先修改现有逻辑，而不是新增假的替代UI。\n' +
+    '比如“API配置可编辑”应该修改 savedApis 列表和编辑回填逻辑，而不是新增一个独立输入框。\n' +
     '回复简洁友好。';
 
   function buildUserContent(text) {
@@ -528,11 +615,16 @@
     var text = chatInput.value.trim();
     if (!text && !visionImageData) return;
 
-    var displayText = text || '[发送了一张图片]';
+    var sourceRepoText = getSourceRepoText();
+
     var wrappedText =
       '请直接修改当前网页，不要索要代码。\n' +
       '如果能修改，请直接返回 cssvar / css / html-inject / js-inject 代码块。\n' +
-      '用户需求：' + (text || '请分析这张图片并给出修改方案。');
+      '如果源码仓有内容，必须优先基于源码仓内容修改，而不是瞎猜。\n' +
+      '用户需求：' + (text || '请分析这张图片并给出修改方案。') +
+      sourceRepoText;
+
+    var displayText = text || '[发送了一张图片]';
 
     chatInput.value = '';
     addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
@@ -584,8 +676,7 @@
       });
 
       if (!response.ok) {
-        // fallback 非流式
-        const data = await response.json().catch(function(){ return {}; });
+        const data = await response.json().catch(function() { return {}; });
         throw new Error(data.error?.message || ('请求失败: ' + response.status));
       }
 
@@ -645,8 +736,6 @@
       saveChatHistory();
 
       applyReplyMods(fullReply);
-
-      // 发送后清掉临时图片
       clearVisionImage();
 
     } catch (err) {
@@ -746,7 +835,7 @@
       try {
         var fn = new Function(savedJS);
         fn();
-      } catch(e) {
+      } catch (e) {
         console.warn('恢复 AI JS 失败', e);
       }
     }
@@ -760,7 +849,9 @@
     }
   });
 
-  // ========= 发送图片给 AI =========
+  // ========= 图片给 AI =========
+  var visionImageData = null;
+
   function clearVisionImage() {
     visionImageData = null;
     $('#imagePreviewBox').classList.add('hidden');
@@ -858,6 +949,7 @@
       container.innerHTML = '';
       return;
     }
+
     container.innerHTML = customFontMetas.map(function(f, idx) {
       var active = (currentFontCustom === f.familyName);
       return '<div class="font-item' + (active ? ' active' : '') + '" data-cidx="' + idx + '">' +
@@ -891,6 +983,7 @@
         document.body.style.fontFamily = '"' + currentFontCustom + '", sans-serif';
       }).catch(function() {});
     }
+
     renderCustomFonts();
   }
 
@@ -939,11 +1032,12 @@
         showToast('字体已添加');
       });
     };
+
     reader.onerror = function() {
       showToast('读取字体失败');
     };
-    reader.readAsDataURL(file);
 
+    reader.readAsDataURL(file);
     $('#fontFileInput').value = '';
   });
 
@@ -977,11 +1071,14 @@
   });
 
   $('#applyBgBtn').addEventListener('click', function() {
-    if (!bgData) { showToast('请先上传图片'); return; }
+    if (!bgData) {
+      showToast('请先上传图片');
+      return;
+    }
     bgData.blur = $('#bgBlur').value;
     bgData.dark = $('#bgDark').value;
     applyBg(bgData);
-    try { LS.set('bgData', bgData); } catch(e) {}
+    LS.set('bgData', bgData);
     showToast('背景已应用');
   });
 
@@ -1137,6 +1234,7 @@
       showToast('请输入主题名称');
       return;
     }
+
     var vars = {
       '--bg-primary': $('#colorBg').value,
       '--bg-secondary': $('#colorCard').value,
@@ -1158,6 +1256,7 @@
       desc: '自定义',
       vars: vars
     });
+
     LS.set('customThemes', customThemes);
     currentThemeId = id;
     LS.set('currentThemeId', id);
@@ -1176,11 +1275,8 @@
   $('#clearChatBtn').addEventListener('click', function() {
     try {
       chatHistory = [];
-      localStorage.removeItem('chatHistory');
-      var chatBox = $('#chatMessages');
-      if (chatBox) {
-        chatBox.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
-      }
+      LS.remove('chatHistory');
+      chatMessages.innerHTML = '<div class="chat-msg system">聊天记录已清空，可以开始新的对话。</div>';
       showToast('已清空聊天记录');
     } catch (e) {
       showToast('清空失败');
@@ -1241,6 +1337,7 @@
 
   // ========= 初始化 =========
   async function init() {
+    restoreSourceRepo();
     renderSavedApis();
     updateAiStatus();
     restoreChatHistory();
