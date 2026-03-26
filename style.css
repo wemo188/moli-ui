@@ -1,14 +1,14 @@
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --accent: #57658a;
-  --accent-light: #7b8cc4;
-  --accent-glow: rgba(87, 101, 138, 0.35);
-  --text-primary: #e8e9ed;
-  --text-secondary: #9a9da6;
-  --text-muted: #6c6f78;
-  --border: rgba(87, 101, 138, 0.15);
+  --bg-primary: #0b1628;
+  --bg-secondary: #0f1d35;
+  --bg-card: #132744;
+  --accent: #2e7cff;
+  --accent-light: #5a9fff;
+  --accent-glow: rgba(46, 124, 255, 0.25);
+  --text-primary: #dbe8ff;
+  --text-secondary: #8aaad4;
+  --text-muted: #4a6a90;
+  --border: #0a0a0a;
   --radius: 14px;
   --radius-sm: 8px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
@@ -804,4 +804,324 @@ input[type="range"]::-webkit-slider-thumb {
 .loading-dots::after {
   content: '...';
   animation: pulse 1.2s infinite;
+}
+
+/* ===== 机能风覆盖样式 ===== */
+
+body {
+  background: linear-gradient(160deg, #0b1628 0%, #091222 40%, #0d1a30 100%);
+}
+
+.card {
+  background: linear-gradient(135deg, #132744 0%, #0f1f3a 100%);
+  border: 1.5px solid #0a0a0a;
+  box-shadow:
+    0 0 0 1px rgba(46, 124, 255, 0.08),
+    0 4px 20px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(46, 124, 255, 0.06);
+}
+
+.card:active {
+  box-shadow:
+    0 0 0 1px rgba(46, 124, 255, 0.2),
+    0 2px 10px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(46, 124, 255, 0.1);
+}
+
+.card-icon {
+  background: rgba(46, 124, 255, 0.12);
+  border: 1px solid rgba(46, 124, 255, 0.15);
+  color: #5a9fff;
+}
+
+.hero-title {
+  background: linear-gradient(135deg, #5a9fff 0%, #2e7cff 40%, #a0c4ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(46, 124, 255, 0.3));
+}
+
+.hero-divider {
+  background: linear-gradient(90deg, transparent, #2e7cff, transparent);
+  height: 1.5px;
+  width: 60px;
+}
+
+/* 悬浮球机能风 */
+.floating-ball {
+  background: rgba(46, 124, 255, 0.45);
+  border: 1.5px solid #0a0a0a;
+  box-shadow:
+    0 0 20px rgba(46, 124, 255, 0.25),
+    0 4px 16px rgba(0,0,0,0.5),
+    inset 0 0 8px rgba(46, 124, 255, 0.15);
+}
+
+.floating-ball.active {
+  background: rgba(46, 124, 255, 0.7);
+  box-shadow:
+    0 0 30px rgba(46, 124, 255, 0.4),
+    0 4px 16px rgba(0,0,0,0.5),
+    inset 0 0 12px rgba(46, 124, 255, 0.2);
+}
+
+/* 菜单项机能风 */
+.ball-menu-item {
+  background: rgba(15, 29, 53, 0.95);
+  border: 1.5px solid #0a0a0a;
+  box-shadow:
+    0 0 0 1px rgba(46, 124, 255, 0.08),
+    0 4px 16px rgba(0,0,0,0.4);
+}
+
+.ball-menu-item:active {
+  background: rgba(46, 124, 255, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(46, 124, 255, 0.3),
+    0 4px 16px rgba(0,0,0,0.4);
+}
+
+.ball-menu-item svg {
+  color: #5a9fff;
+  filter: drop-shadow(0 0 4px rgba(46, 124, 255, 0.3));
+}
+
+/* 面板机能风 */
+.panel {
+  background: linear-gradient(180deg, #0f1d35 0%, #0b1628 100%);
+  border-top: 1.5px solid #0a0a0a;
+  box-shadow:
+    0 -4px 30px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(46, 124, 255, 0.06);
+}
+
+.panel-header {
+  border-bottom: 1.5px solid #0a0a0a;
+}
+
+.panel-header h2 {
+  color: #5a9fff;
+  letter-spacing: 1px;
+}
+
+.panel-close {
+  background: rgba(10, 10, 10, 0.5);
+  border: 1px solid rgba(46, 124, 255, 0.12);
+}
+
+/* 表单输入框机能风 */
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group input[type="password"] {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1.5px solid #0a0a0a;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.form-group input:focus {
+  border-color: #2e7cff;
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,0.3),
+    0 0 0 2px rgba(46, 124, 255, 0.15);
+}
+
+.form-group label {
+  color: #5a9fff;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.icon-btn {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1.5px solid #0a0a0a;
+  color: #5a9fff;
+}
+
+/* 按钮机能风 */
+.btn-primary {
+  background: linear-gradient(135deg, #2e7cff 0%, #1a5fd4 100%);
+  border: 1.5px solid #0a0a0a;
+  color: #fff;
+  box-shadow:
+    0 0 12px rgba(46, 124, 255, 0.2),
+    0 4px 12px rgba(0,0,0,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+}
+
+.btn-primary:active {
+  background: linear-gradient(135deg, #5a9fff 0%, #2e7cff 100%);
+  box-shadow:
+    0 0 20px rgba(46, 124, 255, 0.35),
+    0 2px 8px rgba(0,0,0,0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid #0a0a0a;
+  color: #5a9fff;
+  box-shadow: 0 0 0 1px rgba(46, 124, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+}
+
+/* 保存列表机能风 */
+.saved-item {
+  background: rgba(10, 10, 10, 0.3);
+  border: 1.5px solid #0a0a0a;
+  box-shadow: 0 0 0 1px rgba(46, 124, 255, 0.05);
+}
+
+.saved-item-actions button {
+  background: rgba(10, 10, 10, 0.5);
+  border: 1px solid rgba(46, 124, 255, 0.1);
+}
+
+/* AI 聊天机能风 */
+.ai-status {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1px solid #0a0a0a;
+}
+
+.status-dot.online {
+  background: #2e7cff;
+  box-shadow: 0 0 8px rgba(46, 124, 255, 0.6);
+}
+
+.status-dot.offline {
+  background: #ff3a3a;
+  box-shadow: 0 0 8px rgba(255, 58, 58, 0.4);
+}
+
+.chat-msg.user {
+  background: linear-gradient(135deg, #2e7cff 0%, #1a5fd4 100%);
+  border: 1px solid #0a0a0a;
+  box-shadow: 0 0 10px rgba(46, 124, 255, 0.15);
+}
+
+.chat-msg.assistant {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1px solid #0a0a0a;
+}
+
+.chat-msg.system {
+  background: rgba(46, 124, 255, 0.08);
+  border: 1px solid rgba(46, 124, 255, 0.1);
+}
+
+.chat-input-area textarea {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1.5px solid #0a0a0a;
+}
+
+.chat-input-area textarea:focus {
+  border-color: #2e7cff;
+  box-shadow: 0 0 0 2px rgba(46, 124, 255, 0.15);
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #2e7cff 0%, #1a5fd4 100%);
+  border: 1.5px solid #0a0a0a;
+  box-shadow: 0 0 12px rgba(46, 124, 255, 0.2);
+}
+
+/* 字体列表机能风 */
+.font-item {
+  background: rgba(10, 10, 10, 0.3);
+  border: 1.5px solid #0a0a0a;
+}
+
+.font-item.active {
+  border-color: #0a0a0a;
+  box-shadow:
+    0 0 0 1px #2e7cff,
+    0 0 12px rgba(46, 124, 255, 0.15);
+}
+
+.font-item-check {
+  border: 2px solid #4a6a90;
+}
+
+.font-item.active .font-item-check {
+  border-color: #2e7cff;
+  background: #2e7cff;
+  box-shadow: 0 0 8px rgba(46, 124, 255, 0.4);
+}
+
+/* 上传区域机能风 */
+.upload-area {
+  border: 2px dashed rgba(46, 124, 255, 0.2);
+  background: rgba(10, 10, 10, 0.2);
+}
+
+.upload-area:active {
+  border-color: #2e7cff;
+  background: rgba(46, 124, 255, 0.05);
+}
+
+.upload-area svg {
+  color: #4a6a90;
+}
+
+/* 背景预览边框 */
+.bg-preview {
+  border: 1.5px solid #0a0a0a;
+}
+
+/* Range 滑块机能风 */
+input[type="range"] {
+  background: rgba(10, 10, 10, 0.5);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  background: #2e7cff;
+  border: 2px solid #0a0a0a;
+  box-shadow: 0 0 8px rgba(46, 124, 255, 0.4);
+}
+
+/* 遮罩 */
+.overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Toast 机能风 */
+.toast {
+  background: rgba(15, 29, 53, 0.95);
+  border: 1.5px solid #0a0a0a;
+  box-shadow:
+    0 0 0 1px rgba(46, 124, 255, 0.1),
+    0 4px 20px rgba(0,0,0,0.4);
+  color: #5a9fff;
+}
+
+/* 分割线 */
+.divider {
+  background: #0a0a0a;
+  box-shadow: 0 1px 0 rgba(46, 124, 255, 0.06);
+}
+
+.section-title {
+  color: #5a9fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+/* 模型列表 */
+.model-list {
+  background: rgba(10, 10, 10, 0.4);
+  border: 1.5px solid #0a0a0a;
+}
+
+.model-item {
+  border-bottom: 1px solid #0a0a0a;
+}
+
+.model-item:active {
+  background: rgba(46, 124, 255, 0.15);
 }
