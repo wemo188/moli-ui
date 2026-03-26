@@ -571,6 +571,8 @@
   var chatInput = $('#chatInput');
   var chatHistory = LS.get('chatHistory') || [];
   var visionImageData = null;
+  var useStream = LS.get('useStream');
+  if (useStream === null) useStream = true;
 
   function updateAiStatus() {
     var status = $('#aiStatus');
@@ -653,9 +655,9 @@
 
     var wrappedText =
       '请直接修改当前网页，不要索要代码。\n' +
-      '如果能修改，请直接返回 cssvar / css / html-inject / js-inject 代码块。\n' +
-      '如果启用了源码仓且用户是在改功能/逻辑，请优先返回 source-html / source-css / source-js。\n' +
-      '用户需求：' + (text || '请分析这张图片并给出修改方案。') +
+      '如果启用了源码仓，你应该直接输出 source-html / source-css / source-js 代码块来修改源码仓内容。\n' +
+      '不要在聊天中发大段代码让用户看，直接写入源码仓即可。\n' +
+      '用户需求：' + (text || '请分析这张图片。') +
       getSourceRepoText();
 
     var displayText = text || '[发送了一张图片]';
@@ -671,15 +673,12 @@
     });
     saveChatHistory();
 
-    var replyDiv = addChatMsg('assistant', '连接中...');
+    var replyDiv = addChatMsg('assistant', '思考中...');
     replyDiv.classList.add('loading-dots');
 
     var messages = [
       { role: 'system', content: SYSTEM_PROMPT },
-            {
-        role: 'system',
-        content: '直接输出可执行代码块修改网页，不要索要代码。'
-      }
+      { role: 'system', content: '直接输出可执行代码块修改网页，不要索要代码。source-html/source-css/source-js 会自动写入源码仓，不需要用户手动复制。' }
     ];
 
     var start = Math.max(0, chatHistory.length - 20);
@@ -693,7 +692,7 @@
     var base = activeApi.url.replace(/\/+$/, '');
 
     try {
-      const response = await fetch(base + '/chat/completions', {
+      var response = await fetch(base + '/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -702,15 +701,42 @@
         body: JSON.stringify({
           model: activeApi.model,
           messages: messages,
-          stream: true
+          stream: !!useStream
         })
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(function() { return {}; });
-        throw new Error(data.error?.message || ('请求失败: ' + response.status));
+        var errData = await response.json().catch(function() { return {}; });
+        throw new Error(errData.error?.message || ('请求失败: ' + response.status));
       }
 
+      // ===== 非流式 =====
+      if (!useStream) {
+        var data = await response.json();
+        var fullReply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
+
+        replyDiv.classList.remove('loading-dots');
+
+        applyReplyMods(fullReply);
+
+        var displayReply = cleanReplyForDisplay(fullReply);
+        replyDiv.innerHTML = esc(displayReply)
+          .replace(/```(\w[\w-]*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+          .replace(/\n/g, '<br>');
+
+        chatHistory.push({
+          role: 'assistant',
+          content: fullReply,
+          displayRole: 'assistant',
+          displayContent: displayReply
+        });
+        saveChatHistory();
+
+        clearVisionImage();
+        return;
+      }
+
+      // ===== 流式 =====
       if (!response.body) {
         throw new Error('当前接口不支持流式输出');
       }
@@ -747,7 +773,8 @@
             if (reasoning) fullReply += '\n[思考]\n' + reasoning + '\n';
             if (content) fullReply += content;
 
-            replyDiv.innerHTML = esc(fullReply).replace(/\n/g, '<br>');
+            var liveDisplay = cleanReplyForDisplay(fullReply);
+            replyDiv.innerHTML = esc(liveDisplay).replace(/\n/g, '<br>');
             chatMessages.scrollTop = chatMessages.scrollHeight;
           } catch (e) {}
         }
@@ -755,18 +782,23 @@
 
       if (!fullReply.trim()) {
         fullReply = '模型没有返回内容';
-        replyDiv.innerHTML = esc(fullReply);
       }
+
+      applyReplyMods(fullReply);
+
+      var finalDisplay = cleanReplyForDisplay(fullReply);
+      replyDiv.innerHTML = esc(finalDisplay)
+        .replace(/```(\w[\w-]*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+        .replace(/\n/g, '<br>');
 
       chatHistory.push({
         role: 'assistant',
         content: fullReply,
         displayRole: 'assistant',
-        displayContent: fullReply
+        displayContent: finalDisplay
       });
       saveChatHistory();
 
-      applyReplyMods(fullReply);
       clearVisionImage();
 
     } catch (err) {
@@ -1453,6 +1485,15 @@
         '<h1 style="font-size:28px;margin-bottom:10px;">Mono Space</h1>' +
         '<p style="font-size:14px;color:var(--text-secondary);">这是一个可被 AI 自我改造的网页空间。</p>' +
         '</div>';
+    }
+    
+        if ($('#useStreamToggle')) {
+      $('#useStreamToggle').checked = !!useStream;
+      $('#useStreamToggle').addEventListener('change', function() {
+        useStream = this.checked;
+        LS.set('useStream', useStream);
+        showToast(useStream ? '已开启流式输出' : '已关闭流式输出');
+      });
     }
   }
 
