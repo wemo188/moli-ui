@@ -103,6 +103,18 @@
     }
   };
 
+  // ========= 核心元素 =========
+  var ball = $('#floatingBall');
+  var ballMenuEl = $('#ballMenu');
+  var overlay = $('#overlay');
+  var chatMessages = $('#chatMessages');
+  var chatInput = $('#chatInput');
+
+  if (!ball || !ballMenuEl || !overlay) {
+    alert('页面缺少核心元素：floatingBall / ballMenu / overlay');
+    return;
+  }
+
   // ========= 主题 =========
   var PRESET_THEMES = [
     {
@@ -208,7 +220,6 @@
       colorText: '--text-primary',
       colorBorder: '--border'
     };
-
     Object.keys(map).forEach(function(id) {
       var el = $('#' + id);
       var val = vars[map[id]];
@@ -513,18 +524,6 @@
     reader.readAsDataURL(file);
     if ($('#fontFileInput')) $('#fontFileInput').value = '';
   });
-
-  // ========= 核心元素 =========
-  var ball = $('#floatingBall');
-  var ballMenuEl = $('#ballMenu');
-  var overlay = $('#overlay');
-  var chatMessages = $('#chatMessages');
-  var chatInput = $('#chatInput');
-
-  if (!ball || !ballMenuEl || !overlay) {
-    alert('页面缺少核心元素：floatingBall / ballMenu / overlay');
-    return;
-  }
 
   // ========= 悬浮球 =========
   var isDragging = false;
@@ -922,6 +921,12 @@
   });
 
   // ========= 源码仓 =========
+  var sourceSections = LS.get('sourceSections') || {
+    html: [],
+    css: [],
+    js: []
+  };
+
   function getSourceRepo() {
     return LS.get('sourceRepo') || {
       html: '',
@@ -946,6 +951,12 @@
     if ($('#sourceCss')) $('#sourceCss').value = repo.css || '';
     if ($('#sourceJs')) $('#sourceJs').value = repo.js || '';
     if ($('#useSourceRepoForAI')) $('#useSourceRepoForAI').checked = !!repo.enabled;
+
+    $$('input[data-source-file]').forEach(function(el) {
+      var file = el.getAttribute('data-source-file');
+      var value = el.value;
+      el.checked = !!(sourceSections[file] && sourceSections[file].indexOf(value) > -1);
+    });
   }
 
   function saveSourceField(type) {
@@ -959,7 +970,6 @@
 
   function clearSourceField(type) {
     var repo = getSourceRepo();
-
     if (type === 'html') {
       repo.html = '';
       if ($('#sourceHtml')) $('#sourceHtml').value = '';
@@ -972,7 +982,6 @@
       repo.js = '';
       if ($('#sourceJs')) $('#sourceJs').value = '';
     }
-
     setSourceRepo(repo);
     showToast(type + ' 已清空');
   }
@@ -1009,16 +1018,123 @@
     setSourceRepo(repo);
   }
 
-  function getSourceRepoPromptBlock() {
+  function saveSectionSelection() {
+    sourceSections = { html: [], css: [], js: [] };
+    $$('input[data-source-file]').forEach(function(el) {
+      if (el.checked) {
+        var file = el.getAttribute('data-source-file');
+        sourceSections[file].push(el.value);
+      }
+    });
+    LS.set('sourceSections', sourceSections);
+  }
+
+  function extractHtmlSections(text, selected) {
+    var parts = [];
+
+    if (selected.indexOf('mainContent') > -1) {
+      var m1 = text.match(/<main id="mainContent"[\s\S]*?<\/main>/);
+      if (m1) parts.push('[mainContent]\n' + m1[0]);
+    }
+
+    if (selected.indexOf('floating') > -1) {
+      var m2 = text.match(/<div id="floatingBall"[\s\S]*?<\/div>\s*<div id="ballMenu"[\s\S]*?<\/div>/);
+      if (m2) parts.push('[悬浮球与菜单]\n' + m2[0]);
+    }
+
+    ['apiPanel','aiPanel','themePanel','fontPanel','bgPanel','sourcePanel'].forEach(function(id) {
+      if (selected.indexOf(id) > -1) {
+        var reg = new RegExp('<div id="' + id + '"[\\s\\S]*?<\\/div>\\s*<\\/div>', 'm');
+        var m = text.match(reg);
+        if (m) parts.push('[' + id + ']\n' + m[0]);
+      }
+    });
+
+    return parts.join('\n\n');
+  }
+
+  function extractCssSections(text, selected) {
+    var lines = text;
+    var parts = [];
+
+    function pushIf(name, regex) {
+      if (selected.indexOf(name) > -1) {
+        var m = lines.match(regex);
+        if (m) parts.push('[' + name + ']\n' + m[0]);
+      }
+    }
+
+    pushIf('root', /:root\s*\{[\s\S]*?\}/);
+    pushIf('global', /\*\s*\{[\s\S]*?\}\s*html,\s*body\s*\{[\s\S]*?\}/);
+    pushIf('main', /\.main-content\s*\{[\s\S]*?\}/);
+    pushIf('floating', /\.floating-ball\s*\{[\s\S]*?\}\s*\.floating-ball svg\s*\{[\s\S]*?\}\s*\.floating-ball:active\s*\{[\s\S]*?\}\s*\.floating-ball\.active\s*\{[\s\S]*?\}/);
+    pushIf('menu', /\.ball-menu\s*\{[\s\S]*?\.ball-menu-item span\s*\{[\s\S]*?\}/);
+    pushIf('panel', /\.overlay\s*\{[\s\S]*?\.panel-body\s*\{[\s\S]*?\}/);
+    pushIf('api', /\.saved-list\s*\{[\s\S]*?\.saved-item-actions \.del-btn\s*\{[\s\S]*?\}/);
+    pushIf('chat', /\.ai-status\s*\{[\s\S]*?\.remove-image-btn\s*\{[\s\S]*?\}/);
+    pushIf('font', /\.font-list\s*\{[\s\S]*?\.font-item\.active \.font-item-check::after\s*\{[\s\S]*?\}/);
+    pushIf('bg', /\.bg-preview\s*\{[\s\S]*?input\[type="range"\]::-webkit-slider-thumb\s*\{[\s\S]*?\}/);
+    pushIf('theme', /\.theme-list\s*\{[\s\S]*?\.color-group input\[type="color"\]::-webkit-color-swatch\s*\{[\s\S]*?\}/);
+    pushIf('source', /\.export-section\s*\{[\s\S]*?\.section-check input\[type="checkbox"\]:checked::after\s*\{[\s\S]*?\}/);
+
+    return parts.join('\n\n');
+  }
+
+  function extractJsSections(text, selected) {
+    var parts = [];
+
+    function addBlock(name, startMark, endMark) {
+      if (selected.indexOf(name) === -1) return;
+      var s = text.indexOf(startMark);
+      if (s === -1) return;
+      var e = endMark ? text.indexOf(endMark, s + startMark.length) : -1;
+      if (e === -1) {
+        parts.push('[' + name + ']\n' + text.slice(s));
+      } else {
+        parts.push('[' + name + ']\n' + text.slice(s, e));
+      }
+    }
+
+    addBlock('utils', 'var $ = function', '// ========= IndexedDB：字体 =========');
+    addBlock('floating', '// ========= 悬浮球 =========', '// ========= API =========');
+    addBlock('api', '// ========= API =========', '// ========= 聊天 =========');
+    addBlock('chat', '// ========= 聊天 =========', '// ========= 背景 =========');
+    addBlock('bg', '// ========= 背景 =========', '// ========= 初始化 =========');
+    addBlock('init', '// ========= 初始化 =========', 'init();');
+    addBlock('theme', '// ========= 主题 =========', '// ========= 字体 =========');
+    addBlock('font', '// ========= 字体 =========', '// ========= 悬浮球 =========');
+    addBlock('source', '// ========= 源码仓 =========', '// ========= 图片给 AI =========');
+    addBlock('panel', 'function openPanel(id)', '// ========= API =========');
+
+    return parts.join('\n\n');
+  }
+
+  function buildSelectedSourcePrompt() {
     var repo = getSourceRepo();
     if (!repo.enabled) return '';
-    if (!repo.html && !repo.css && !repo.js) return '';
 
-    return '\n\n=== 以下是当前真实源码，请优先基于它修改 ===\n' +
-      '[index.html]\n' + (repo.html || '') + '\n\n' +
-      '[style.css]\n' + (repo.css || '') + '\n\n' +
-      '[script.js]\n' + (repo.js || '') + '\n\n' +
-      '如果用户是在修改功能、修逻辑、做长期保留改动，你应该优先返回以下代码块之一或多个：\n' +
+    var blocks = [];
+
+    if (repo.html && sourceSections.html && sourceSections.html.length) {
+      var htmlPart = extractHtmlSections(repo.html, sourceSections.html);
+      if (htmlPart) blocks.push('[index.html]\n' + htmlPart);
+    }
+
+    if (repo.css && sourceSections.css && sourceSections.css.length) {
+      var cssPart = extractCssSections(repo.css, sourceSections.css);
+      if (cssPart) blocks.push('[style.css]\n' + cssPart);
+    }
+
+    if (repo.js && sourceSections.js && sourceSections.js.length) {
+      var jsPart = extractJsSections(repo.js, sourceSections.js);
+      if (jsPart) blocks.push('[script.js]\n' + jsPart);
+    }
+
+    if (!blocks.length) return '';
+
+    return '\n\n=== 以下是用户选择发送的源码分区 ===\n' +
+      blocks.join('\n\n') +
+      '\n\n如果用户是在修改功能、修逻辑、做长期保留改动，你应该优先返回：\n' +
       '```source-html\n完整 index.html\n```\n' +
       '```source-css\n完整 style.css\n```\n' +
       '```source-js\n完整 script.js\n```';
@@ -1048,6 +1164,12 @@
     repo.enabled = this.checked;
     setSourceRepo(repo);
     showToast(this.checked ? '已开启源码仓' : '已关闭源码仓');
+  });
+
+  $$('input[data-source-file]').forEach(function(el) {
+    el.addEventListener('change', function() {
+      saveSectionSelection();
+    });
   });
 
   // ========= 图片给 AI =========
@@ -1081,7 +1203,7 @@
   var SYSTEM_PROMPT =
     '你是网页内置开发助手，已经运行在当前网页里。\n' +
     '不要索要代码，不要说无法访问文件。\n' +
-    '如果用户是在修改功能、修逻辑、做长期保留改动，并且消息里附带了真实源码，你应该优先返回：\n' +
+    '如果用户提供了源码分区，并要求修改功能或长期保留改动，你应该优先返回：\n' +
     '```source-html\n完整 index.html\n```\n' +
     '```source-css\n完整 style.css\n```\n' +
     '```source-js\n完整 script.js\n```\n' +
@@ -1133,7 +1255,7 @@
       '请直接处理当前网页。\n' +
       '如果是修改功能或源码，请优先输出 source-html / source-css / source-js。\n' +
       '用户需求：' + displayText +
-      getSourceRepoPromptBlock();
+      buildSelectedSourcePrompt();
 
     if (chatInput) chatInput.value = '';
 
