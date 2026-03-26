@@ -47,7 +47,7 @@ html, body {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0, var(--bg-overlay-alpha, 0.3));
+  background: rgba(0,0,0, var(--bg-overlay-alpha, 0));
 }
 
 .main-content {
