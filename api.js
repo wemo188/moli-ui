@@ -8,7 +8,6 @@
     apiConfigs: [],
     activeApi: null,
     eventsBound: false,
-    testingConnection: false,
     fetchingModels: false,
 
     updateAiStatus: function() {
@@ -247,59 +246,6 @@
         } finally {
           Api.fetchingModels = false;
           Api.setBtnLoading('#fetchModelsBtn', '获取中', false);
-        }
-      });
-
-      App.safeOn('#testApiBtn', 'click', async function() {
-        if (Api.testingConnection) {
-          App.showToast('正在测试连接，请稍候...');
-          return;
-        }
-
-        var url = App.$('#apiUrl') ? App.$('#apiUrl').value.trim() : '';
-        var key = App.$('#apiKey') ? App.$('#apiKey').value.trim() : '';
-        var model = App.$('#apiModel') ? App.$('#apiModel').value.trim() : '';
-
-        if (!url || !key || !model) {
-          App.showToast('请填写完整信息', 2200);
-          return;
-        }
-
-        Api.testingConnection = true;
-        Api.setBtnLoading('#testApiBtn', '测试中', true);
-        App.showToast('正在测试连接...', 1800);
-
-        try {
-          var response = await fetch(url.replace(/\/+$/, '') + '/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + key
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [
-                { role: 'user', content: 'Hi' }
-              ]
-            })
-          });
-
-          var data = await response.json().catch(function() { return {}; });
-
-          if (!response.ok) {
-            var msg =
-              (data && data.error && data.error.message) ||
-              (data && data.message) ||
-              ('HTTP ' + response.status);
-            throw new Error(msg);
-          }
-
-          App.showToast('连接成功', 2400);
-        } catch (err) {
-          App.showToast('连接失败: ' + err.message, 3200);
-        } finally {
-          Api.testingConnection = false;
-          Api.setBtnLoading('#testApiBtn', '测试中', false);
         }
       });
     },
