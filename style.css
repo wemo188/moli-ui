@@ -69,8 +69,8 @@ html, body {
 }
 
 .floating-ball.mascot-ball {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   border-radius: 0;
   background: transparent;
   border: none;
