@@ -414,6 +414,15 @@ ball.addEventListener('click', function(e) {
     var roleText = App.$('#roleChatText');
     var floatingBall = App.$('#floatingBall');
 
+    var paletteBtn = App.$('#panelPaletteBtn');
+    var palette = App.$('#panelPalette');
+    var applyPaletteBtn = App.$('#applyPanelPaletteBtn');
+    var outerColor = App.$('#panelOuterColor');
+    var innerColor = App.$('#panelInnerColor');
+    var lineColor = App.$('#panelLineColor');
+    var barColor = App.$('#panelBarColor');
+    var heartColor = App.$('#panelHeartColor');
+
     if (!slider) return;
 
     var currentPage = 0;
@@ -569,10 +578,62 @@ ball.addEventListener('click', function(e) {
 
       roleInput.addEventListener('input', function() {
         roleInput.style.height = 'auto';
-        roleInput.style.height = Math.min(roleInput.scrollHeight, 100) + 'px';
+        roleInput.style.height = Math.min(roleInput.scrollHeight, 86) + 'px';
       });
     }
 
+    function loadPanelPalette() {
+      var saved = App.LS.get('panelPalette');
+      if (!saved) return;
+
+      if (saved.outer) document.documentElement.style.setProperty('--panel-outer', saved.outer);
+      if (saved.inner) document.documentElement.style.setProperty('--panel-inner', saved.inner);
+      if (saved.line) document.documentElement.style.setProperty('--panel-line', saved.line);
+      if (saved.bar) document.documentElement.style.setProperty('--panel-bar', saved.bar);
+      if (saved.heart) document.documentElement.style.setProperty('--panel-heart', saved.heart);
+
+      if (outerColor && saved.outer) outerColor.value = saved.outer;
+      if (innerColor && saved.inner) innerColor.value = saved.inner;
+      if (lineColor && saved.line) lineColor.value = saved.line;
+      if (barColor && saved.bar) barColor.value = saved.bar;
+      if (heartColor && saved.heart) heartColor.value = saved.heart;
+    }
+
+    if (paletteBtn && palette) {
+      paletteBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        palette.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!palette.contains(e.target) && e.target !== paletteBtn) {
+          palette.classList.add('hidden');
+        }
+      });
+    }
+
+    if (applyPaletteBtn) {
+      applyPaletteBtn.addEventListener('click', function() {
+        var data = {
+          outer: outerColor ? outerColor.value : '#1a1a1a',
+          inner: innerColor ? innerColor.value : '#ffffff',
+          line: lineColor ? lineColor.value : '#57658a',
+          bar: barColor ? barColor.value : '#6f9fc8',
+          heart: heartColor ? heartColor.value : '#6f9fc8'
+        };
+
+        document.documentElement.style.setProperty('--panel-outer', data.outer);
+        document.documentElement.style.setProperty('--panel-inner', data.inner);
+        document.documentElement.style.setProperty('--panel-line', data.line);
+        document.documentElement.style.setProperty('--panel-bar', data.bar);
+        document.documentElement.style.setProperty('--panel-heart', data.heart);
+
+        App.LS.set('panelPalette', data);
+        if (palette) palette.classList.add('hidden');
+      });
+    }
+
+    loadPanelPalette();
     snapToPage(false);
   };
 
