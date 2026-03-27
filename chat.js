@@ -9,6 +9,7 @@
     visionImageData: null,
     useStream: true,
     assistantRollMap: {},
+    collapseThreshold: 220,
 
     SYSTEM_PROMPT:
       '你是网页内置开发助手，已经运行在当前网页里。\n' +
@@ -20,7 +21,6 @@
       '如果用户是在美化，优先修改 css；如果是结构，优先修改 html；如果是逻辑，优先修改 js。\n' +
       '不要伪造功能，不要额外创建假按钮。',
 
-    // ========= token 估算工具 =========
     estimateTokens: function(text) {
       if (!text) return 0;
       var cjk = 0;
@@ -86,7 +86,6 @@
         elapsed.toFixed(1) + 's';
     },
 
-    // ========= 基础方法 =========
     buildUserContent: function(text) {
       if (Chat.visionImageData) {
         return [
@@ -102,6 +101,69 @@
       if (App.$('#imagePreviewBox')) App.$('#imagePreviewBox').classList.add('hidden');
       if (App.$('#imagePreviewImg')) App.$('#imagePreviewImg').src = '';
       if (App.$('#visionImageInput')) App.$('#visionImageInput').value = '';
+    },
+
+    clearConversation: function() {
+      Chat.chatHistory = [];
+      Chat.assistantRollMap = {};
+      App.LS.remove('chatHistory');
+
+      if (App.state.chatMessages) {
+        App.state.chatMessages.innerHTML = '<div class="chat-msg system">\u5DF2\u6E05\u7A7A\u3002</div>';
+      }
+
+      Chat.clearVisionImage();
+      App.showToast('\u5DF2\u6E05\u7A7A\u5BF9\u8BDD');
+    },
+
+    ensureExpandableMessage: function(wrap, msgEl, content) {
+      if (!wrap || !msgEl) return;
+      if (!msgEl.classList.contains('assistant')) return;
+
+      var oldBtn = wrap.querySelector('.msg-expand-btn');
+      if (oldBtn) oldBtn.remove();
+
+      msgEl.classList.remove('is-collapsible');
+      msgEl.classList.remove('expanded');
+
+      var plainText = (content || '').replace(/\s+/g, '');
+      var shouldCollapse = plainText.length >= Chat.collapseThreshold;
+
+      if (!shouldCollapse) return;
+
+      msgEl.classList.add('is-collapsible');
+
+      var expandBtn = document.createElement('button');
+      expandBtn.type = 'button';
+      expandBtn.className = 'msg-expand-btn';
+      expandBtn.textContent = '展开查看';
+
+      function syncBtnText() {
+        expandBtn.textContent = msgEl.classList.contains('expanded') ? '收起' : '展开查看';
+      }
+
+      function toggleExpand(e) {
+        if (e) e.stopPropagation();
+        msgEl.classList.toggle('expanded');
+        syncBtnText();
+      }
+
+      expandBtn.addEventListener('click', toggleExpand);
+      msgEl.addEventListener('click', function(e) {
+        var target = e.target;
+        if (target && target.closest && target.closest('.msg-tools')) return;
+        if (target && target.closest && target.closest('.msg-expand-btn')) return;
+        toggleExpand(e);
+      });
+
+      var tools = wrap.querySelector('.msg-tools');
+      if (tools) {
+        wrap.insertBefore(expandBtn, tools);
+      } else {
+        wrap.appendChild(expandBtn);
+      }
+
+      syncBtnText();
     },
 
     attachMsgTools: function(wrap, role, rawContent, meta) {
@@ -166,6 +228,7 @@
 
       if (role === 'assistant') {
         Chat.attachMsgTools(wrap, role, content, meta);
+        Chat.ensureExpandableMessage(wrap, div, content);
       }
 
       return div;
@@ -192,7 +255,6 @@
       App.LS.set('chatHistory', Chat.chatHistory.slice(-50));
     },
 
-    // ========= 请求核心 =========
     sendChatRequest: async function(userText, opts) {
       opts = opts || {};
       if (!App.api || !App.api.activeApi) {
@@ -311,6 +373,11 @@
               if (replyDiv) {
                 var displayTemp = App.source ? App.source.cleanReplyForDisplay(tempReply) : tempReply;
                 replyDiv.innerHTML = App.esc(displayTemp).replace(/\n/g, '<br>');
+
+                var wrap = replyDiv.parentNode;
+                if (wrap) {
+                  Chat.ensureExpandableMessage(wrap, replyDiv, displayTemp);
+                }
               }
               Chat.updateStreamStats(statsEl, tempReply, startTime);
 
@@ -339,7 +406,6 @@
       }
     },
 
-    // ========= 发送消息 =========
     sendNormalChatMessage: async function(forceText, existingRollGroupId) {
       if (!App.api || !App.api.activeApi) {
         App.showToast('\u8BF7\u5148\u914D\u7F6E\u5E76\u9009\u62E9 API');
@@ -374,7 +440,6 @@
 
       var replyDiv = Chat.addChatMsg('assistant', '\u601D\u8003\u4E2D...', meta);
 
-      // 找到刚创建的 wrap，在 msg-tools 前插入 statsEl
       var allWraps = App.state.chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
       var currentWrap = allWraps[allWraps.length - 1];
       var statsEl = null;
@@ -382,7 +447,6 @@
 
       if (currentWrap) {
         statsEl = Chat.createStatsEl(currentWrap);
-        // 把 statsEl 移到 msg-tools 前面
         var existingTools = currentWrap.querySelector('.msg-tools');
         if (existingTools) {
           currentWrap.insertBefore(statsEl, existingTools);
@@ -406,14 +470,13 @@
           replyDiv.innerHTML = App.esc(displayReply).replace(/\n/g, '<br>');
         }
 
-        // 更新最终统计
         Chat.finalizeStreamStats(statsEl, fullReply, startTime);
 
-        // 重建工具条
         if (currentWrap) {
           var oldTools = currentWrap.querySelector('.msg-tools');
           if (oldTools) oldTools.remove();
           Chat.attachMsgTools(currentWrap, 'assistant', fullReply, meta);
+          Chat.ensureExpandableMessage(currentWrap, replyDiv, displayReply);
         }
 
         Chat.chatHistory.push({
@@ -426,7 +489,6 @@
         Chat.clearVisionImage();
       } catch (err) {
         if (err.name === 'AbortError') {
-          // 停止后保留已输出内容，更新统计为中断状态
           if (statsEl) {
             var elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
             var currentText = replyDiv ? replyDiv.textContent : '';
@@ -451,7 +513,6 @@
       }
     },
 
-    // ========= 事件绑定 =========
     bindEvents: function() {
       App.safeOn('#pickVisionImage', 'click', function() {
         if (App.$('#visionImageInput')) App.$('#visionImageInput').click();
@@ -493,13 +554,7 @@
       });
 
       App.safeOn('#clearChatBtn', 'click', function() {
-        Chat.chatHistory = [];
-        Chat.assistantRollMap = {};
-        App.LS.remove('chatHistory');
-        if (App.state.chatMessages) {
-          App.state.chatMessages.innerHTML = '<div class="chat-msg system">\u5DF2\u6E05\u7A7A\u3002</div>';
-        }
-        App.showToast('\u5DF2\u6E05\u7A7A\u5BF9\u8BDD');
+        Chat.clearConversation();
       });
 
       App.safeOn('#clearAllBtn', 'click', function() {
