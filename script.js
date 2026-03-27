@@ -411,6 +411,7 @@ ball.addEventListener('click', function(e) {
     var roleInput = App.$('#roleChatInput');
     var roleSendBtn = App.$('#roleChatSendBtn');
     var roleText = App.$('#roleChatText');
+    var floatingBall = App.$('#floatingBall');
 
     if (!slider) return;
 
@@ -418,27 +419,45 @@ ball.addEventListener('click', function(e) {
     var totalPages = 2;
     var startX = 0;
     var currentX = 0;
-    var moving = false;
+    var baseX = 0;
+    var dragging = false;
+    var pageWidth = window.innerWidth;
 
-    function updateSlider(animate) {
-      if (animate === false) {
-        slider.style.transition = 'none';
+    function setBallVisibility() {
+      if (!floatingBall) return;
+      if (currentPage === 0) {
+        floatingBall.classList.remove('page-hidden');
       } else {
-        slider.style.transition = 'transform 0.45s cubic-bezier(0.22, 0.8, 0.2, 1)';
+        floatingBall.classList.add('page-hidden');
       }
+    }
 
-      slider.style.transform = 'translateX(-' + (currentPage * 100) + 'vw)';
-
+    function updateDots() {
       dots.forEach(function(dot, idx) {
         dot.classList.toggle('active', idx === currentPage);
       });
+    }
+
+    function snapToPage(animate) {
+      pageWidth = window.innerWidth;
+      var targetX = -currentPage * pageWidth;
+
+      if (animate) {
+        slider.style.transition = 'transform 0.42s cubic-bezier(0.22, 0.8, 0.2, 1)';
+      } else {
+        slider.style.transition = 'none';
+      }
+
+      slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
+      updateDots();
+      setBallVisibility();
     }
 
     dots.forEach(function(dot) {
       dot.addEventListener('click', function() {
         var idx = parseInt(dot.dataset.screen, 10) || 0;
         currentPage = Math.max(0, Math.min(totalPages - 1, idx));
-        updateSlider(true);
+        snapToPage(true);
       });
     });
 
@@ -446,22 +465,40 @@ ball.addEventListener('click', function(e) {
       if (!e.touches || !e.touches.length) return;
       startX = e.touches[0].clientX;
       currentX = startX;
-      moving = true;
+      pageWidth = window.innerWidth;
+      baseX = -currentPage * pageWidth;
+      dragging = true;
       slider.style.transition = 'none';
     }, { passive: true });
 
     slider.addEventListener('touchmove', function(e) {
-      if (!moving || !e.touches || !e.touches.length) return;
+      if (!dragging || !e.touches || !e.touches.length) return;
+
       currentX = e.touches[0].clientX;
+      var deltaX = currentX - startX;
+      var nextX = baseX + deltaX;
+
+      var maxLeft = -(totalPages - 1) * pageWidth;
+      var minLeft = 0;
+
+      if (nextX > minLeft) {
+        nextX = minLeft + (nextX - minLeft) * 0.28;
+      }
+      if (nextX < maxLeft) {
+        nextX = maxLeft + (nextX - maxLeft) * 0.28;
+      }
+
+      slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
     }, { passive: true });
 
     slider.addEventListener('touchend', function() {
-      if (!moving) return;
-      moving = false;
+      if (!dragging) return;
+      dragging = false;
 
       var deltaX = currentX - startX;
+      var threshold = pageWidth * 0.16;
 
-      if (Math.abs(deltaX) > 50) {
+      if (Math.abs(deltaX) > threshold) {
         if (deltaX < 0 && currentPage < totalPages - 1) {
           currentPage += 1;
         } else if (deltaX > 0 && currentPage > 0) {
@@ -469,8 +506,12 @@ ball.addEventListener('click', function(e) {
         }
       }
 
-      updateSlider(true);
+      snapToPage(true);
     }, { passive: true });
+
+    window.addEventListener('resize', function() {
+      snapToPage(false);
+    });
 
     function sendRoleMessage() {
       if (!roleInput || !roleText) return;
@@ -500,7 +541,7 @@ ball.addEventListener('click', function(e) {
       });
     }
 
-    updateSlider(true);
+    snapToPage(false);
   };
 
   App.init = function() {
