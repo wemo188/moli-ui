@@ -993,7 +993,9 @@
     if (aiDraft.hasHtml) names.push('html');
     if (aiDraft.hasCss) names.push('css');
     if (aiDraft.hasJs) names.push('js');
-    $('#sourceAiDraftStatus').textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
+    if ($('#sourceAiDraftStatus')) {
+      $('#sourceAiDraftStatus').textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
+    }
   }
 
   function saveDraft() {
@@ -1106,10 +1108,6 @@
     return html;
   }
 
-  function extractStyleBody(css) {
-    return css;
-  }
-
   function ensureDraftStyleEl() {
     var el = document.getElementById('draft-preview-style');
     if (!el) {
@@ -1139,7 +1137,7 @@
 
     if (aiDraft.hasCss) {
       var styleEl = ensureDraftStyleEl();
-      styleEl.textContent = extractStyleBody(aiDraft.css);
+      styleEl.textContent = aiDraft.css;
     }
 
     if (aiDraft.hasJs) {
@@ -1184,80 +1182,96 @@
     showToast('已丢弃 AI 修改');
   }
 
-  function attachMsgTools(div, role, rawContent, meta) {
-    if (!div || role !== 'assistant') return;
+  function attachMsgTools(wrap, role, rawContent, meta) {
+    if (!wrap || role !== 'assistant') return;
 
-    var tpl = $('#assistantMsgToolsTpl');
-    if (!tpl) return;
+    var tools = document.createElement('div');
+    tools.className = 'msg-tools';
 
-    var tools = tpl.content.firstElementChild.cloneNode(true);
-    div.appendChild(tools);
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'msg-tool-btn';
+    copyBtn.type = 'button';
+    copyBtn.textContent = '复制';
 
-    var copyBtn = tools.querySelector('.msg-copy-btn');
-    var editBtn = tools.querySelector('.msg-edit-btn');
-    var prevBtn = tools.querySelector('.msg-reroll-prev');
-    var nextBtn = tools.querySelector('.msg-reroll-next');
-    var indicator = tools.querySelector('.msg-roll-indicator');
+    var editBtn = document.createElement('button');
+    editBtn.className = 'msg-tool-btn';
+    editBtn.type = 'button';
+    editBtn.textContent = '编辑';
 
-    if (copyBtn) {
-      copyBtn.addEventListener('click', function() {
-        copyText(rawContent || '').then(function() {
-          showToast('已复制消息');
-        }).catch(function() {
-          showToast('复制失败');
-        });
+    var rerollBtn = document.createElement('button');
+    rerollBtn.className = 'msg-tool-btn';
+    rerollBtn.type = 'button';
+    rerollBtn.textContent = '重试';
+
+    var indicator = document.createElement('span');
+    indicator.className = 'msg-roll-indicator';
+    indicator.textContent = meta && meta.rollIndex && meta.rollCount
+      ? (meta.rollIndex + '/' + meta.rollCount)
+      : '1/1';
+
+    tools.appendChild(copyBtn);
+    tools.appendChild(editBtn);
+    tools.appendChild(rerollBtn);
+    tools.appendChild(indicator);
+
+    wrap.appendChild(tools);
+
+    copyBtn.addEventListener('click', function() {
+      copyText(rawContent || '').then(function() {
+        showToast('已复制消息');
+      }).catch(function() {
+        showToast('复制失败');
       });
-    }
+    });
 
-    if (editBtn) {
-      editBtn.addEventListener('click', function() {
+    editBtn.addEventListener('click', function() {
+      if (meta && meta.sourceMode) {
         if ($('#sourceAiInput')) {
-          $('#sourceAiInput').value = rawContent || '';
+          $('#sourceAiInput').value = meta.userText || '';
           openPanel('sourcePanel');
           showToast('已填入源码改写框');
         }
-      });
-    }
+      } else {
+        if ($('#chatInput')) {
+          $('#chatInput').value = meta && meta.userText ? meta.userText : '';
+          openPanel('aiPanel');
+          showToast('已填入聊天输入框');
+        }
+      }
+    });
 
-    if (!meta || !meta.rollGroupId) {
-      if (prevBtn) prevBtn.style.display = 'none';
-      if (nextBtn) nextBtn.style.display = 'none';
-      if (indicator) indicator.textContent = '1/1';
-      return;
-    }
+    rerollBtn.addEventListener('click', function() {
+      if (!meta || !meta.userText) {
+        showToast('缺少可重试内容');
+        return;
+      }
 
-    function refreshRollIndicator() {
-      var arr = assistantRollMap[meta.rollGroupId] || [];
-      var index = arr.findIndex(function(x) { return x.msgId === meta.msgId; });
-      if (index < 0) index = 0;
-      if (indicator) indicator.textContent = (index + 1) + '/' + arr.length;
-    }
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function() {
-        showToast('当前版本切换仅做记录，后续再补内容切换');
-      });
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function() {
-        showToast('当前版本切换仅做记录，后续再补内容切换');
-      });
-    }
-
-    refreshRollIndicator();
+      if (meta.sourceMode) {
+        if ($('#sourceAiInput')) $('#sourceAiInput').value = meta.userText;
+        sendSourceAiMessage(meta.userText, meta.rollGroupId);
+      } else {
+        if ($('#chatInput')) $('#chatInput').value = meta.userText;
+        sendNormalChatMessage(meta.userText, meta.rollGroupId);
+      }
+    });
   }
 
   function addChatMsg(role, content, meta) {
     if (!chatMessages) return null;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'chat-msg-wrap ' + role;
+
     var div = document.createElement('div');
     div.className = 'chat-msg ' + role;
     div.innerHTML = esc(content).replace(/\n/g, '<br>');
-    chatMessages.appendChild(div);
+    wrap.appendChild(div);
+
+    chatMessages.appendChild(wrap);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     if (role === 'assistant') {
-      attachMsgTools(div, role, content, meta);
+      attachMsgTools(wrap, role, content, meta);
     }
 
     return div;
@@ -1392,7 +1406,6 @@
     }
 
     var sourceMode = !!opts.sourceMode;
-    var rollGroupId = opts.rollGroupId || null;
     var replyDiv = opts.replyDiv || null;
 
     var wrappedText = sourceMode ? buildSourceAiPrompt(userText) : userText;
@@ -1522,17 +1535,17 @@
     }
   }
 
-  async function sendNormalChatMessage() {
+  async function sendNormalChatMessage(forceText, existingRollGroupId) {
     if (!activeApi) {
       showToast('请先配置并选择 API');
       return;
     }
 
-    var text = chatInput ? chatInput.value.trim() : '';
+    var text = typeof forceText === 'string' ? forceText : (chatInput ? chatInput.value.trim() : '');
     if (!text && !visionImageData) return;
 
     var displayText = text || '[发送了一张图片]';
-    if (chatInput) chatInput.value = '';
+    if (typeof forceText !== 'string' && chatInput) chatInput.value = '';
 
     addChatMsg('user', displayText + (visionImageData ? '\n[附带图片]' : ''));
 
@@ -1543,10 +1556,19 @@
     });
     saveChatHistory();
 
-    var replyDiv = addChatMsg('assistant', '思考中...', {
-      rollGroupId: null,
-      msgId: 'assistant-' + (++assistantRollCounter)
-    });
+    var rollGroupId = existingRollGroupId || ('chat-roll-' + Date.now());
+    if (!assistantRollMap[rollGroupId]) assistantRollMap[rollGroupId] = [];
+    var rollIndex = assistantRollMap[rollGroupId].length + 1;
+
+    var meta = {
+      userText: displayText,
+      sourceMode: false,
+      rollGroupId: rollGroupId,
+      rollIndex: rollIndex,
+      rollCount: rollIndex
+    };
+
+    var replyDiv = addChatMsg('assistant', '思考中...', meta);
 
     try {
       var fullReply = await sendChatRequest(displayText, {
@@ -1554,13 +1576,20 @@
         replyDiv: replyDiv
       });
 
-      var msgId = 'assistant-' + (++assistantRollCounter);
+      meta.rollCount = rollIndex;
+      assistantRollMap[rollGroupId].push(fullReply);
+
       if (replyDiv) {
         replyDiv.innerHTML = esc(fullReply).replace(/\n/g, '<br>');
       }
 
-      var meta = { msgId: msgId, rollGroupId: null };
-      if (replyDiv) attachMsgTools(replyDiv, 'assistant', fullReply, meta);
+      var allWraps = chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
+      var lastWrap = allWraps[allWraps.length - 1];
+      if (lastWrap) {
+        var oldTools = lastWrap.querySelector('.msg-tools');
+        if (oldTools) oldTools.remove();
+        attachMsgTools(lastWrap, 'assistant', fullReply, meta);
+      }
 
       chatHistory.push({
         role: 'assistant',
@@ -1593,7 +1622,9 @@
     var text = typeof forceUserText === 'string' ? forceUserText : ($('#sourceAiInput') ? $('#sourceAiInput').value.trim() : '');
     if (!text) return;
 
-    if (!forceUserText && $('#sourceAiInput')) $('#sourceAiInput').value = '';
+    if (typeof forceUserText !== 'string' && $('#sourceAiInput')) {
+      $('#sourceAiInput').value = '';
+    }
 
     addChatMsg('user', '[源码改写]\n' + text);
 
@@ -1604,38 +1635,42 @@
     });
     saveChatHistory();
 
-    var rollGroupId = existingRollGroupId || ('roll-' + Date.now());
-    var msgId = 'assistant-' + (++assistantRollCounter);
-    var meta = { msgId: msgId, rollGroupId: rollGroupId };
+    var rollGroupId = existingRollGroupId || ('source-roll-' + Date.now());
+    if (!assistantRollMap[rollGroupId]) assistantRollMap[rollGroupId] = [];
+    var rollIndex = assistantRollMap[rollGroupId].length + 1;
+
+    var meta = {
+      userText: text,
+      sourceMode: true,
+      rollGroupId: rollGroupId,
+      rollIndex: rollIndex,
+      rollCount: rollIndex
+    };
 
     var replyDiv = addChatMsg('assistant', '思考中...', meta);
-
-    if (!assistantRollMap[rollGroupId]) assistantRollMap[rollGroupId] = [];
-    assistantRollMap[rollGroupId].push({ msgId: msgId, content: '' });
 
     try {
       var fullReply = await sendChatRequest(text, {
         sourceMode: true,
-        replyDiv: replyDiv,
-        rollGroupId: rollGroupId
+        replyDiv: replyDiv
       });
 
       var displayReply = extractReplyIntoDraft(fullReply);
+
+      meta.rollCount = rollIndex;
+      assistantRollMap[rollGroupId].push(fullReply);
 
       if (replyDiv) {
         replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
       }
 
-      if (assistantRollMap[rollGroupId]) {
-        for (var i = 0; i < assistantRollMap[rollGroupId].length; i++) {
-          if (assistantRollMap[rollGroupId][i].msgId === msgId) {
-            assistantRollMap[rollGroupId][i].content = fullReply;
-            break;
-          }
-        }
+      var allWraps = chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
+      var lastWrap = allWraps[allWraps.length - 1];
+      if (lastWrap) {
+        var oldTools = lastWrap.querySelector('.msg-tools');
+        if (oldTools) oldTools.remove();
+        attachMsgTools(lastWrap, 'assistant', fullReply, meta);
       }
-
-      if (replyDiv) attachMsgTools(replyDiv, 'assistant', fullReply, meta);
 
       chatHistory.push({
         role: 'assistant',
@@ -1652,7 +1687,10 @@
     }
   }
 
-  safeOn('#sendBtn', 'click', sendNormalChatMessage);
+  safeOn('#sendBtn', 'click', function() {
+    sendNormalChatMessage();
+  });
+
   safeOn('#chatInput', 'keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -1672,6 +1710,16 @@
   });
 
   safeOn('#sourceAiStopBtn', 'click', function() {
+    if (currentAbortController) {
+      currentAbortController.abort();
+      currentAbortController = null;
+      showToast('已停止');
+    } else {
+      showToast('当前没有进行中的请求');
+    }
+  });
+
+  safeOn('#stopChatBtn', 'click', function() {
     if (currentAbortController) {
       currentAbortController.abort();
       currentAbortController = null;
