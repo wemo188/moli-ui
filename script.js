@@ -390,6 +390,10 @@ ball.addEventListener('click', function(e) {
   };
 
   App.mascot.init();
+  
+  setTimeout(function() {
+  if (App.mascot) App.mascot.doAction('wave');
+}, 1000);
 };
 
   App.runInits = function() {
