@@ -412,6 +412,8 @@ ball.addEventListener('click', function(e) {
     var roleSendBtn = App.$('#roleChatSendBtn');
     var roleText = App.$('#roleChatText');
 
+    if (!tabs.length || !pages.length) return;
+
     tabs.forEach(function(tab) {
       tab.addEventListener('click', function() {
         var target = tab.dataset.page;
@@ -425,8 +427,11 @@ ball.addEventListener('click', function(e) {
         });
 
         tab.classList.add('active');
+
         var targetPage = App.$('#' + target);
-        if (targetPage) targetPage.classList.add('active');
+        if (targetPage) {
+          targetPage.classList.add('active');
+        }
       });
     });
 
@@ -471,9 +476,9 @@ ball.addEventListener('click', function(e) {
       return;
     }
 
-App.initFloatingBall();
-App.initMainPages();
-App.runInits();
+    App.initFloatingBall();
+    App.runInits();
+    App.initMainPages();
   };
 
   window.addEventListener('load', function() {
