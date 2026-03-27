@@ -16,7 +16,53 @@
 </head>
 <body>
 
-  <main id="mainContent" class="main-content"></main>
+<main id="mainContent" class="main-content">
+  <section class="page-shell">
+
+    <div class="page-tabs">
+      <button class="page-tab active" type="button" data-page="page1">第一页</button>
+      <button class="page-tab" type="button" data-page="page2">第二页</button>
+    </div>
+
+    <section class="content-page active" id="page1">
+      <div class="blank-page"></div>
+    </section>
+
+    <section class="content-page" id="page2">
+      <div class="role-chat-stage">
+        <div class="role-chat-frame">
+
+          <div class="role-frame-side"></div>
+
+          <div class="role-hearts">
+            <span class="heart heart-1"></span>
+            <span class="heart heart-2"></span>
+            <span class="heart heart-3"></span>
+            <span class="heart heart-4"></span>
+          </div>
+
+          <div class="role-chat-inner">
+            <div class="role-chat-display">
+              <div class="role-chat-label">ROLE CHAT</div>
+              <div class="role-chat-name" id="roleChatName">未创建角色</div>
+              <div class="role-chat-sub" id="roleChatSub">短对话模式</div>
+              <div class="role-chat-text" id="roleChatText">这里是角色短对话区域。创建角色后，你可以在这里和他进行简短聊天。</div>
+            </div>
+
+            <div class="role-chat-dot"></div>
+
+            <div class="role-chat-inputbar">
+              <textarea id="roleChatInput" placeholder="输入一条想对角色说的话..." rows="1"></textarea>
+              <button id="roleChatSendBtn" type="button">发送</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </section>
+</main>
 
   <div id="bgLayer" class="bg-layer"></div>
 
