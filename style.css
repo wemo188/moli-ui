@@ -60,8 +60,8 @@ html, body {
 
 .floating-ball {
   position: fixed;
-  right: 10px;
-  bottom: calc(20px + var(--safe-bottom));
+  right: 6px;
+  bottom: calc(12px + var(--safe-bottom));
   z-index: 9999;
   cursor: pointer;
   touch-action: none;
