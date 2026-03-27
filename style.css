@@ -886,22 +886,6 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text-secondary);
 }
 
-.source-ai-input {
-  width: 100%;
-  min-height: 90px;
-  padding: 10px 12px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 1.5;
-  resize: vertical;
-  outline: none;
-  font-family: inherit;
-  margin-bottom: 10px;
-}
-
 .source-ai-actions {
   display: flex;
   gap: 8px;
