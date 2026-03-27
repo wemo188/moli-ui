@@ -190,8 +190,8 @@
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) App.state.hasMoved = true;
       if (!App.state.hasMoved) return;
 
-      var nx = Math.max(0, Math.min(window.innerWidth - 150, App.state.origX + dx));
-      var ny = Math.max(0, Math.min(window.innerHeight - 150, App.state.origY + dy));
+      var nx = Math.max(0, Math.min(window.innerWidth - 200, App.state.origX + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - 200, App.state.origY + dy));
 
       ball.style.left = nx + 'px';
       ball.style.top = ny + 'px';
