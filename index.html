@@ -112,45 +112,52 @@
   </div>
 
   <!-- AI 助手 -->
-  <div id="aiPanel" class="panel hidden">
-    <div class="panel-header">
-      <h2>AI 助手</h2>
-      <div class="panel-close" data-close="aiPanel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div class="ai-status" id="aiStatus">
-        <div class="status-dot offline"></div>
-        <span>未连接</span>
-      </div>
-
-      <div id="chatMessages" class="chat-messages"></div>
-
-      <div id="imagePreviewBox" class="image-preview-box hidden">
-        <img id="imagePreviewImg" src="" alt="preview">
-        <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
-      </div>
-
-      <div class="chat-toolbar">
-        <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
-        <input type="file" id="visionImageInput" accept="image/*" hidden>
-
-        <label class="stream-check-label">
-          <input type="checkbox" id="useStreamToggle">
-          <span class="stream-check-ui"></span>
-          <span>流式输出</span>
-        </label>
-      </div>
-
-      <div class="chat-input-area">
-        <textarea id="chatInput" placeholder="输入内容..." rows="2"></textarea>
-        <button class="send-btn" id="sendBtn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        </button>
-      </div>
+<div id="aiPanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>AI 助手</h2>
+    <div class="panel-close" data-close="aiPanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
     </div>
   </div>
+  <div class="panel-body">
+    <div class="ai-status" id="aiStatus">
+      <div class="status-dot offline"></div>
+      <span>未连接</span>
+    </div>
+
+    <div id="chatMessages" class="chat-messages"></div>
+
+    <div id="imagePreviewBox" class="image-preview-box hidden">
+      <img id="imagePreviewImg" src="" alt="preview">
+      <button id="removeVisionImage" class="remove-image-btn" type="button">移除图片</button>
+    </div>
+
+    <div class="chat-toolbar">
+      <button class="btn btn-outline btn-sm" id="pickVisionImage" type="button">上传图片给 AI</button>
+      <input type="file" id="visionImageInput" accept="image/*" hidden>
+
+      <button class="btn btn-outline btn-sm" id="stopChatBtn" type="button">停止</button>
+
+      <label class="stream-check-label">
+        <input type="checkbox" id="useStreamToggle">
+        <span class="stream-check-ui"></span>
+        <span>流式输出</span>
+      </label>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea id="chatInput" placeholder="输入内容..." rows="2"></textarea>
+      <button class="send-btn" id="sendBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
 
   <!-- 主题配色 -->
   <div id="themePanel" class="panel hidden">
