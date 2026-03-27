@@ -1962,3 +1962,139 @@ input[type="range"]::-webkit-slider-thumb {
   transform: scale(0.88);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
+
+/* =========================
+   第二页：图片贴图 + 对话叠加
+========================= */
+.frame-img-stage {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.frame-bg-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.frame-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14% 10% 6% 8%;
+  pointer-events: none;
+}
+
+.frame-overlay > * {
+  pointer-events: auto;
+}
+
+.frame-top-area {
+  padding-top: 2%;
+}
+
+.frame-role-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e1f22;
+  margin-bottom: 4px;
+}
+
+.frame-role-desc {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7896;
+}
+
+.frame-text-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4% 2%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.frame-role-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #252629;
+  white-space: pre-wrap;
+  word-break: break-word;
+  width: 100%;
+}
+
+.frame-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 0 2% 2%;
+}
+
+.frame-input-area textarea {
+  flex: 1;
+  min-height: 22px;
+  max-height: 100px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #f8fbff;
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.frame-input-area textarea::placeholder {
+  color: rgba(248,251,255,0.72);
+}
+
+.frame-input-area button {
+  flex-shrink: 0;
+  min-width: 58px;
+  height: 36px;
+  padding: 0 12px;
+  border: 2px solid #111111;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #252629;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.frame-input-area button:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 640px) {
+  .frame-img-stage {
+    max-width: 100%;
+  }
+
+  .frame-overlay {
+    padding: 12% 8% 5% 7%;
+  }
+
+  .frame-role-name {
+    font-size: 16px;
+  }
+
+  .frame-role-text {
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .frame-input-area button {
+    min-width: 52px;
+    height: 34px;
+  }
+}
