@@ -60,27 +60,34 @@ html, body {
 
 .floating-ball {
   position: fixed;
-  right: 20px;
-  bottom: calc(30px + var(--safe-bottom));
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  right: 10px;
+  bottom: calc(20px + var(--safe-bottom));
   z-index: 9999;
   cursor: pointer;
   touch-action: none;
-  transition: transform 0.2s, background 0.2s;
-  box-shadow: 0 4px 20px rgba(173,205,234,0.4), 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
 }
 
-.floating-ball svg {
-  width: 22px;
-  height: 22px;
-  color: #fff;
+.floating-ball.mascot-ball {
+  width: 80px;
+  height: 80px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+
+.mascot-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease;
 }
 
 .floating-ball:active {
@@ -88,8 +95,67 @@ html, body {
 }
 
 .floating-ball.active {
-  background: var(--accent-deep);
-  transform: scale(1.08);
+  transform: scale(1.05);
+}
+
+/* 动画：轻微浮动呼吸 */
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.mascot-img.breathing {
+  animation: mascotFloat 3s ease-in-out infinite;
+}
+
+/* 动画：招手时轻微晃动 */
+@keyframes mascotWave {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-3deg); }
+  40% { transform: rotate(3deg); }
+  60% { transform: rotate(-2deg); }
+  80% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.mascot-img.waving {
+  animation: mascotWave 0.8s ease-in-out;
+}
+
+/* 动画：歪头 */
+@keyframes mascotTilt {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-5deg) translateX(-2px); }
+  100% { transform: rotate(0deg); }
+}
+
+.mascot-img.tilting {
+  animation: mascotTilt 1.2s ease-in-out;
+}
+
+/* 动画：惊讶弹跳 */
+@keyframes mascotBounce {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-8px) scale(1.05); }
+  60% { transform: translateY(0) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.mascot-img.surprised {
+  animation: mascotBounce 0.6s ease-out;
+}
+
+/* 动画：开心晃动 */
+@keyframes mascotHappy {
+  0% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-4px) rotate(3deg); }
+  50% { transform: translateY(0) rotate(-3deg); }
+  75% { transform: translateY(-4px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+.mascot-img.happy {
+  animation: mascotHappy 0.8s ease-in-out;
 }
 
 .ball-menu {
