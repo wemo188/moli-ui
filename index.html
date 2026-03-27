@@ -329,23 +329,31 @@
   </div>
 
   <!-- 对话消息操作模板容器 -->
-  <template id="assistantMsgToolsTpl">
-    <div class="msg-tools">
-      <button class="msg-tool-btn msg-copy-btn" type="button">复制</button>
-      <button class="msg-tool-btn msg-edit-btn" type="button">编辑</button>
-      <button class="msg-tool-btn msg-reroll-prev" type="button">&lt;</button>
-      <span class="msg-roll-indicator">1/1</span>
-      <button class="msg-tool-btn msg-reroll-next" type="button">&gt;</button>
-    </div>
-  </template>
+<template id="assistantMsgToolsTpl">
+  <div class="msg-tools">
+    <button class="msg-tool-btn msg-copy-btn" type="button">复制</button>
+    <button class="msg-tool-btn msg-reroll-btn" type="button">重试</button>
+    <span class="msg-roll-indicator">1/1</span>
+  </div>
+</template>
 
   <div id="toast" class="toast hidden"></div>
 
-  <script>
-    var _ts = new Date().getTime();
-    var _sc = document.createElement('script');
-    _sc.src = 'script.js?t=' + _ts;
-    document.body.appendChild(_sc);
-  </script>
+<script>
+  var _ts = new Date().getTime();
+  [
+    'script.js',
+    'theme.js',
+    'font.js',
+    'api.js',
+    'source.js',
+    'bg.js',
+    'chat.js'
+  ].forEach(function(file) {
+    var s = document.createElement('script');
+    s.src = file + '?t=' + _ts;
+    document.body.appendChild(s);
+  });
+</script>
 </body>
 </html>
