@@ -1038,3 +1038,58 @@ input[type="range"]::-webkit-slider-thumb {
   content: '...';
   animation: pulse 1.2s infinite;
 }
+
+.chat-msg-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-msg-wrap.user {
+  align-items: flex-end;
+}
+
+.chat-msg-wrap.assistant {
+  align-items: flex-start;
+}
+
+.chat-msg-wrap.system {
+  align-items: center;
+}
+
+.msg-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: 88%;
+}
+
+.chat-msg-wrap.user .msg-tools {
+  justify-content: flex-end;
+}
+
+.chat-msg-wrap.assistant .msg-tools {
+  justify-content: flex-start;
+}
+
+.msg-tool-btn {
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.msg-tool-btn:active {
+  transform: scale(0.96);
+}
+
+.msg-roll-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 34px;
+  text-align: center;
+}
