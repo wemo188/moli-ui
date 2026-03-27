@@ -1278,9 +1278,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* =========================
-   第二页：高还原版角色短对话
+   第二页重做版：高还原原图构图
 ========================= */
-.role-chat-stage {
+.panel-artboard {
   width: 100%;
   height: 76vh;
   display: flex;
@@ -1288,168 +1288,148 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
 }
 
-.role-chat-frame {
+.panel-artboard-frame {
   position: relative;
   width: 100%;
   height: 76vh;
+  background: #ffffff;
   border: 4px solid #111111;
   border-radius: 34px;
-  background: #ffffff;
-  box-shadow: 0 18px 36px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.1);
   overflow: visible;
 }
 
 /* 右侧凸出结构 */
-.role-frame-side {
+.panel-side-ear {
   position: absolute;
-  right: -10px;
-  top: 64px;
+  top: 70px;
+  right: -11px;
   width: 24px;
-  height: 112px;
+  height: 110px;
+  background: #ffffff;
   border: 4px solid #111111;
   border-left: none;
   border-radius: 0 16px 16px 0;
-  background: #ffffff;
   pointer-events: none;
 }
 
-/* 爱心 */
-.role-hearts {
+/* 右上爱心 */
+.panel-hearts {
   position: absolute;
-  right: 20px;
-  top: 10px;
-  width: 96px;
-  height: 58px;
+  right: 18px;
+  top: 12px;
+  width: 90px;
+  height: 56px;
   pointer-events: none;
 }
 
-.heart {
+.panel-heart {
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #6c7fb1;
+  background: #6f83b4;
   transform: rotate(45deg);
   border-radius: 2px;
 }
 
-.heart::before,
-.heart::after {
+.panel-heart::before,
+.panel-heart::after {
   content: '';
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #6c7fb1;
+  background: #6f83b4;
   border-radius: 50%;
 }
 
-.heart::before {
+.panel-heart::before {
   left: -7px;
   top: 0;
 }
 
-.heart::after {
+.panel-heart::after {
   left: 0;
   top: -7px;
 }
 
-.heart-1 { right: 0; top: 2px; transform: rotate(45deg) scale(1); }
-.heart-2 { right: 20px; top: 14px; transform: rotate(45deg) scale(0.78); }
-.heart-3 { right: 40px; top: 4px; transform: rotate(45deg) scale(0.64); }
-.heart-4 { right: 54px; top: 24px; transform: rotate(45deg) scale(0.48); }
+.panel-heart.h1 { right: 0; top: 2px; transform: rotate(45deg) scale(1); }
+.panel-heart.h2 { right: 20px; top: 14px; transform: rotate(45deg) scale(0.76); }
+.panel-heart.h3 { right: 40px; top: 4px; transform: rotate(45deg) scale(0.62); }
+.panel-heart.h4 { right: 54px; top: 24px; transform: rotate(45deg) scale(0.5); }
 
-.role-chat-inner {
+.panel-content {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 22px 16px 16px;
+  padding: 22px 16px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* 上方大留白内容区 */
-.role-chat-display {
+/* 文字区：就是整块白底里的留白，不再用卡片感 */
+.panel-text-area {
   flex: 1;
+  width: 100%;
+  padding: 10px 4px 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 12px 4px 0;
 }
 
-.role-chat-label {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 4px 10px;
-  margin-bottom: 14px;
-  border-radius: 999px;
-  border: 3px solid #111111;
-  background: #e9eefc;
-  color: #4d5f8a;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-}
-
-.role-chat-name {
+.panel-role-name {
   font-size: 20px;
   font-weight: 800;
-  color: #1e1f22;
+  color: #212226;
   margin-bottom: 4px;
 }
 
-.role-chat-sub {
+.panel-role-desc {
   font-size: 12px;
-  color: #6b7894;
-  margin-bottom: 18px;
   font-weight: 700;
+  color: #6b7896;
+  margin-bottom: 18px;
 }
 
-/* 文本区：不再做浮层卡片，而是直接融入白底留白 */
-.role-chat-text {
+.panel-role-text {
+  flex: 1;
   font-size: 15px;
   line-height: 1.95;
-  color: #2a2b2f;
+  color: #252629;
   white-space: pre-wrap;
   word-break: break-word;
-  min-height: 260px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  min-height: 250px;
+  padding-right: 8px;
 }
 
-/* 左下角小黑点 */
-.role-chat-dot {
+/* 左下圆点 */
+.panel-corner-dot {
   position: absolute;
   left: 16px;
-  bottom: 92px;
+  bottom: 88px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background: #111111;
 }
 
-/* 底部蓝色输入栏 */
-.role-chat-inputbar {
-  position: relative;
-  z-index: 3;
+/* 底部蓝条输入栏 */
+.panel-input-bar {
   display: flex;
   align-items: flex-end;
   gap: 10px;
   padding: 12px 14px;
+  background: linear-gradient(180deg, #7c91c8 0%, #60729e 100%);
   border: 4px solid #111111;
   border-radius: 18px;
-  background: linear-gradient(180deg, #7690ca 0%, #5f719d 100%);
 }
 
-.role-chat-inputbar textarea {
+.panel-input-bar textarea {
   flex: 1;
   min-height: 22px;
   max-height: 120px;
   border: none;
-  resize: none;
   outline: none;
+  resize: none;
   background: transparent;
   color: #f8fbff;
   font-size: 14px;
@@ -1457,11 +1437,11 @@ input[type="range"]::-webkit-slider-thumb {
   font-family: inherit;
 }
 
-.role-chat-inputbar textarea::placeholder {
-  color: rgba(248,251,255,0.78);
+.panel-input-bar textarea::placeholder {
+  color: rgba(248,251,255,0.76);
 }
 
-.role-chat-inputbar button {
+.panel-input-bar button {
   flex-shrink: 0;
   min-width: 66px;
   height: 40px;
@@ -1476,59 +1456,59 @@ input[type="range"]::-webkit-slider-thumb {
   transition: transform 0.15s ease;
 }
 
-.role-chat-inputbar button:active {
+.panel-input-bar button:active {
   transform: scale(0.96);
 }
 
 @media (max-width: 640px) {
-  .role-chat-stage {
+  .panel-artboard {
     height: 74vh;
   }
 
-  .role-chat-frame {
+  .panel-artboard-frame {
     height: 74vh;
     border-radius: 28px;
   }
 
-  .role-frame-side {
+  .panel-side-ear {
+    top: 60px;
     right: -8px;
-    top: 58px;
     width: 18px;
-    height: 96px;
+    height: 94px;
   }
 
-  .role-chat-inner {
+  .panel-content {
     padding: 18px 12px 12px;
   }
 
-  .role-chat-name {
+  .panel-role-name {
     font-size: 18px;
   }
 
-  .role-chat-sub {
+  .panel-role-desc {
     margin-bottom: 14px;
   }
 
-  .role-chat-text {
+  .panel-role-text {
     min-height: 220px;
     font-size: 14px;
     line-height: 1.9;
   }
 
-  .role-chat-inputbar {
+  .panel-input-bar {
     padding: 10px 12px;
     border-radius: 16px;
   }
 
-  .role-chat-inputbar button {
+  .panel-input-bar button {
     min-width: 60px;
     height: 38px;
     border-radius: 12px;
   }
 
-  .role-chat-dot {
+  .panel-corner-dot {
     left: 12px;
-    bottom: 86px;
+    bottom: 84px;
   }
 }
 
