@@ -1,3 +1,4 @@
+
 :root {
   --bg-primary: #f0f6fb;
   --bg-secondary: #ffffff;
@@ -13,6 +14,12 @@
   --radius: 16px;
   --radius-sm: 10px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
+
+  --panel-outer: #1a1a1a;
+  --panel-inner: #ffffff;
+  --panel-line: #57658a;
+  --panel-bar: #6f9fc8;
+  --panel-heart: #6f9fc8;
 }
 
 * {
@@ -56,6 +63,9 @@ html, body {
   padding: 60px 20px calc(40px + var(--safe-bottom));
 }
 
+/* =========================
+   悬浮小助手
+========================= */
 .floating-ball {
   position: fixed;
   right: 6px;
@@ -96,17 +106,18 @@ html, body {
   transform: scale(1.05);
 }
 
-/* 动画：轻微浮动呼吸 */
+.floating-ball.page-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.88);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
 @keyframes mascotFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }
 }
 
-.mascot-img.breathing {
-  animation: mascotFloat 3s ease-in-out infinite;
-}
-
-/* 动画：招手时轻微晃动 */
 @keyframes mascotWave {
   0% { transform: rotate(0deg); }
   20% { transform: rotate(-3deg); }
@@ -116,22 +127,12 @@ html, body {
   100% { transform: rotate(0deg); }
 }
 
-.mascot-img.waving {
-  animation: mascotWave 0.8s ease-in-out;
-}
-
-/* 动画：歪头 */
 @keyframes mascotTilt {
   0% { transform: rotate(0deg); }
   50% { transform: rotate(-5deg) translateX(-2px); }
   100% { transform: rotate(0deg); }
 }
 
-.mascot-img.tilting {
-  animation: mascotTilt 1.2s ease-in-out;
-}
-
-/* 动画：惊讶弹跳 */
 @keyframes mascotBounce {
   0% { transform: translateY(0) scale(1); }
   30% { transform: translateY(-8px) scale(1.05); }
@@ -139,11 +140,6 @@ html, body {
   100% { transform: translateY(0) scale(1); }
 }
 
-.mascot-img.surprised {
-  animation: mascotBounce 0.6s ease-out;
-}
-
-/* 动画：开心晃动 */
 @keyframes mascotHappy {
   0% { transform: translateY(0) rotate(0); }
   25% { transform: translateY(-4px) rotate(3deg); }
@@ -152,10 +148,15 @@ html, body {
   100% { transform: translateY(0) rotate(0); }
 }
 
-.mascot-img.happy {
-  animation: mascotHappy 0.8s ease-in-out;
-}
+.mascot-img.breathing { animation: mascotFloat 3s ease-in-out infinite; }
+.mascot-img.waving { animation: mascotWave 0.8s ease-in-out; }
+.mascot-img.tilting { animation: mascotTilt 1.2s ease-in-out; }
+.mascot-img.surprised { animation: mascotBounce 0.6s ease-out; }
+.mascot-img.happy { animation: mascotHappy 0.8s ease-in-out; }
 
+/* =========================
+   悬浮菜单
+========================= */
 .ball-menu {
   position: fixed;
   z-index: 9998;
@@ -213,6 +214,9 @@ html, body {
   color: var(--text-primary);
 }
 
+/* =========================
+   遮罩与弹层
+========================= */
 .overlay {
   position: fixed;
   inset: 0;
@@ -298,6 +302,9 @@ html, body {
   flex: 1;
 }
 
+/* =========================
+   表单
+========================= */
 .form-group {
   margin-bottom: 16px;
 }
@@ -325,8 +332,7 @@ html, body {
 }
 
 .form-group input:focus,
-.export-textarea:focus,
-.source-ai-input:focus {
+.export-textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
@@ -389,6 +395,9 @@ html, body {
   color: #fff;
 }
 
+/* =========================
+   按钮
+========================= */
 .btn {
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -446,6 +455,9 @@ html, body {
   margin: 20px 0;
 }
 
+/* =========================
+   已保存配置列表
+========================= */
 .saved-list {
   display: flex;
   flex-direction: column;
@@ -507,6 +519,9 @@ html, body {
 .saved-item-actions .edit-btn { color: #666; }
 .saved-item-actions .del-btn { color: #c44; }
 
+/* =========================
+   AI 面板
+========================= */
 .ai-status {
   display: flex;
   align-items: center;
@@ -539,6 +554,16 @@ html, body {
   margin-bottom: 12px;
   padding: 4px;
 }
+
+.chat-msg-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-msg-wrap.user { align-items: flex-end; }
+.chat-msg-wrap.assistant { align-items: flex-start; }
+.chat-msg-wrap.system { align-items: center; }
 
 .chat-msg {
   max-width: 88%;
@@ -606,8 +631,16 @@ html, body {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
   flex-wrap: wrap;
+  max-width: 88%;
+}
+
+.chat-msg-wrap.user .msg-tools {
+  justify-content: flex-end;
+}
+
+.chat-msg-wrap.assistant .msg-tools {
+  justify-content: flex-start;
 }
 
 .msg-tool-btn {
@@ -618,6 +651,10 @@ html, body {
   padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.msg-tool-btn:active {
+  transform: scale(0.96);
 }
 
 .msg-roll-indicator {
@@ -639,6 +676,13 @@ html, body {
 
 .msg-expand-btn:active {
   transform: scale(0.96);
+}
+
+.chat-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
 }
 
 .chat-input-area {
@@ -685,13 +729,7 @@ html, body {
 .send-btn:active { transform: scale(0.9); }
 .send-btn svg { width: 18px; height: 18px; }
 
-.chat-toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
+/* 图片预览 */
 .image-preview-box {
   margin-bottom: 12px;
   border: 1.5px solid var(--border);
@@ -720,6 +758,9 @@ html, body {
   border-top: 1px solid var(--border-light);
 }
 
+/* =========================
+   字体 / 上传 / 背景 / 主题
+========================= */
 .font-list {
   display: flex;
   flex-direction: column;
@@ -919,7 +960,9 @@ input[type="range"]::-webkit-slider-thumb {
 .color-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
 .color-group input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
 
-/* 源码仓 */
+/* =========================
+   源码仓
+========================= */
 .export-section {
   margin-bottom: 18px;
 }
@@ -961,7 +1004,6 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
 }
 
-/* 源码 AI 工作台 */
 .source-ai-box {
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
@@ -995,7 +1037,7 @@ input[type="range"]::-webkit-slider-thumb {
   flex-wrap: wrap;
 }
 
-/* 通用自定义勾选 */
+/* 勾选 */
 .source-check-label {
   display: flex;
   align-items: center;
@@ -1045,7 +1087,6 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--bg-card);
 }
 
-/* 流式输出勾选 */
 .stream-check-label {
   display: flex;
   align-items: center;
@@ -1089,6 +1130,9 @@ input[type="range"]::-webkit-slider-thumb {
   transform: rotate(45deg);
 }
 
+/* =========================
+   Toast
+========================= */
 .toast {
   position: fixed;
   top: 50px;
@@ -1126,62 +1170,7 @@ input[type="range"]::-webkit-slider-thumb {
   animation: pulse 1.2s infinite;
 }
 
-.chat-msg-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.chat-msg-wrap.user {
-  align-items: flex-end;
-}
-
-.chat-msg-wrap.assistant {
-  align-items: flex-start;
-}
-
-.chat-msg-wrap.system {
-  align-items: center;
-}
-
-.msg-tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  max-width: 88%;
-}
-
-.chat-msg-wrap.user .msg-tools {
-  justify-content: flex-end;
-}
-
-.chat-msg-wrap.assistant .msg-tools {
-  justify-content: flex-start;
-}
-
-.msg-tool-btn {
-  border: 1.5px solid var(--border);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.msg-tool-btn:active {
-  transform: scale(0.96);
-}
-
-.msg-roll-indicator {
-  font-size: 11px;
-  color: var(--text-muted);
-  min-width: 34px;
-  text-align: center;
-}
-
-/* 流式输出实时统计 */
+/* 流式统计 */
 .msg-stream-stats {
   font-size: 11px;
   color: var(--text-muted);
@@ -1213,711 +1202,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* =========================
-   主页面双页结构
+   整屏滑页
 ========================= */
-.page-shell {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.page-tabs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.page-tab {
-  min-width: 94px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 2px solid #111111;
-  background: rgba(87, 101, 138, 0.15);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.page-tab.active {
-  background: linear-gradient(135deg, #6f82b1 0%, #57658a 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(87,101,138,0.35);
-}
-
-.page-tab:active {
-  transform: scale(0.97);
-}
-
-.content-page {
-  display: none;
-  min-height: 68vh;
-}
-
-.content-page.active {
-  display: block;
-}
-
-/* 第一页留白 */
-.blank-page {
-  min-height: 68vh;
-  border-radius: 32px;
-  border: 2px dashed rgba(87, 101, 138, 0.22);
-  background:
-    linear-gradient(180deg, rgba(87,101,138,0.05), rgba(37,38,41,0.05)),
-    rgba(255,255,255,0.08);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* =========================
-   第二页重做版：高还原原图构图
-========================= */
-.panel-artboard {
-  width: 100%;
-  height: 76vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.panel-artboard-frame {
-  position: relative;
-  width: 100%;
-  height: 76vh;
-  background: #ffffff;
-  border: 4px solid #111111;
-  border-radius: 34px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.1);
-  overflow: visible;
-}
-
-/* 右侧凸出结构 */
-.panel-side-ear {
-  position: absolute;
-  top: 70px;
-  right: -11px;
-  width: 24px;
-  height: 110px;
-  background: #ffffff;
-  border: 4px solid #111111;
-  border-left: none;
-  border-radius: 0 16px 16px 0;
-  pointer-events: none;
-}
-
-/* 右上爱心 */
-.panel-hearts {
-  position: absolute;
-  right: 18px;
-  top: 12px;
-  width: 90px;
-  height: 56px;
-  pointer-events: none;
-}
-
-.panel-heart {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #6f83b4;
-  transform: rotate(45deg);
-  border-radius: 2px;
-}
-
-.panel-heart::before,
-.panel-heart::after {
-  content: '';
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #6f83b4;
-  border-radius: 50%;
-}
-
-.panel-heart::before {
-  left: -7px;
-  top: 0;
-}
-
-.panel-heart::after {
-  left: 0;
-  top: -7px;
-}
-
-.panel-heart.h1 { right: 0; top: 2px; transform: rotate(45deg) scale(1); }
-.panel-heart.h2 { right: 20px; top: 14px; transform: rotate(45deg) scale(0.76); }
-.panel-heart.h3 { right: 40px; top: 4px; transform: rotate(45deg) scale(0.62); }
-.panel-heart.h4 { right: 54px; top: 24px; transform: rotate(45deg) scale(0.5); }
-
-.panel-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 22px 16px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* 文字区：就是整块白底里的留白，不再用卡片感 */
-.panel-text-area {
-  flex: 1;
-  width: 100%;
-  padding: 10px 4px 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-role-name {
-  font-size: 20px;
-  font-weight: 800;
-  color: #212226;
-  margin-bottom: 4px;
-}
-
-.panel-role-desc {
-  font-size: 12px;
-  font-weight: 700;
-  color: #6b7896;
-  margin-bottom: 18px;
-}
-
-.panel-role-text {
-  flex: 1;
-  font-size: 15px;
-  line-height: 1.95;
-  color: #252629;
-  white-space: pre-wrap;
-  word-break: break-word;
-  min-height: 250px;
-  padding-right: 8px;
-}
-
-/* 左下圆点 */
-.panel-corner-dot {
-  position: absolute;
-  left: 16px;
-  bottom: 88px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #111111;
-}
-
-/* 底部蓝条输入栏 */
-.panel-input-bar {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  padding: 12px 14px;
-  background: linear-gradient(180deg, #7c91c8 0%, #60729e 100%);
-  border: 4px solid #111111;
-  border-radius: 18px;
-}
-
-.panel-input-bar textarea {
-  flex: 1;
-  min-height: 22px;
-  max-height: 120px;
-  border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  color: #f8fbff;
-  font-size: 14px;
-  line-height: 1.55;
-  font-family: inherit;
-}
-
-.panel-input-bar textarea::placeholder {
-  color: rgba(248,251,255,0.76);
-}
-
-.panel-input-bar button {
-  flex-shrink: 0;
-  min-width: 66px;
-  height: 40px;
-  padding: 0 14px;
-  border: 3px solid #111111;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #252629;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.panel-input-bar button:active {
-  transform: scale(0.96);
-}
-
-@media (max-width: 640px) {
-  .panel-artboard {
-    height: 74vh;
-  }
-
-  .panel-artboard-frame {
-    height: 74vh;
-    border-radius: 28px;
-  }
-
-  .panel-side-ear {
-    top: 60px;
-    right: -8px;
-    width: 18px;
-    height: 94px;
-  }
-
-  .panel-content {
-    padding: 18px 12px 12px;
-  }
-
-  .panel-role-name {
-    font-size: 18px;
-  }
-
-  .panel-role-desc {
-    margin-bottom: 14px;
-  }
-
-  .panel-role-text {
-    min-height: 220px;
-    font-size: 14px;
-    line-height: 1.9;
-  }
-
-  .panel-input-bar {
-    padding: 10px 12px;
-    border-radius: 16px;
-  }
-
-  .panel-input-bar button {
-    min-width: 60px;
-    height: 38px;
-    border-radius: 12px;
-  }
-
-  .panel-corner-dot {
-    left: 12px;
-    bottom: 84px;
-  }
-}
-
-  .role-chat-frame {
-    min-height: 70vh;
-    border-radius: 28px;
-  }
-
-  .role-chat-inner {
-    min-height: 70vh;
-    padding: 20px 14px 14px;
-  }
-
-  .role-chat-display {
-    padding: 26px 4px 14px;
-  }
-
-  .role-chat-name {
-    font-size: 19px;
-  }
-
-  .role-chat-text {
-    min-height: 156px;
-    font-size: 14px;
-    padding: 16px 14px;
-    border-radius: 18px;
-  }
-
-  .role-chat-inputbar {
-    padding: 12px;
-    border-radius: 20px;
-  }
-
-  .role-chat-inputbar button {
-    min-width: 66px;
-    height: 40px;
-    border-radius: 14px;
-  }
-
-  .role-frame-side {
-    right: -9px;
-    width: 20px;
-    height: 108px;
-  }
-}
-
-.page-tabs,
-.page-tab,
-.content-page,
-.role-chat-stage,
-.role-chat-frame,
-.role-chat-inner,
-.role-chat-inputbar,
-.role-chat-inputbar textarea,
-.role-chat-inputbar button {
-  position: relative;
-  z-index: 2;
-}
-
-.role-hearts,
-.role-frame-side {
-  pointer-events: none;
-}
-
-/* =========================
-   整屏滑页主结构
-========================= */
-.page-slider-main {
-  min-height: 100vh;
-  padding: 0;
-  overflow: hidden;
-}
-
-.page-slider {
-  display: flex;
-  width: 200vw;
-  min-height: 100vh;
-  transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.2, 1);
-  will-change: transform;
-}
-
-.screen-page {
-  width: 100vw;
-  min-height: 100vh;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 68px 18px calc(34px + var(--safe-bottom));
-}
-
-.screen-page-inner {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* 第一页留白 */
-.blank-screen {
-  width: 100%;
-  min-height: 76vh;
-  border-radius: 34px;
-  border: 2px dashed rgba(87, 101, 138, 0.22);
-  background:
-    linear-gradient(180deg, rgba(87,101,138,0.05), rgba(37,38,41,0.05)),
-    rgba(255,255,255,0.08);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* 下面的小页码点 */
-.screen-indicators {
-  position: fixed;
-  left: 50%;
-  bottom: calc(14px + var(--safe-bottom));
-  transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(20,20,24,0.38);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.screen-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.35);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.screen-dot.active {
-  width: 24px;
-  border-radius: 999px;
-  background: #8ba0d1;
-  box-shadow: 0 0 12px rgba(139,160,209,0.4);
-}
-
-/* =========================
-   第二页：角色短对话版面
-========================= */
-.role-chat-stage {
-  width: 100%;
-  min-height: 76vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.role-chat-frame {
-  position: relative;
-  width: 100%;
-  min-height: 76vh;
-  border: 3px solid #111111;
-  border-radius: 34px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,247,255,0.96) 100%);
-  box-shadow:
-    0 24px 50px rgba(0,0,0,0.18),
-    0 10px 24px rgba(87,101,138,0.18);
-  overflow: visible;
-}
-
-.role-frame-side {
-  position: absolute;
-  right: -12px;
-  top: 58px;
-  width: 28px;
-  height: 126px;
-  border: 3px solid #111111;
-  border-left: none;
-  border-radius: 0 18px 18px 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(240,244,255,0.95));
-  box-shadow: 4px 6px 14px rgba(0,0,0,0.08);
-  pointer-events: none;
-}
-
-.role-hearts {
-  position: absolute;
-  right: 18px;
-  top: 14px;
-  width: 100px;
-  height: 62px;
-  pointer-events: none;
-}
-
-.heart {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: linear-gradient(180deg, #7f95c7 0%, #57658a 100%);
-  transform: rotate(45deg);
-  border-radius: 3px;
-  box-shadow: 0 3px 10px rgba(87,101,138,0.25);
-}
-
-.heart::before,
-.heart::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: linear-gradient(180deg, #7f95c7 0%, #57658a 100%);
-  border-radius: 50%;
-}
-
-.heart::before {
-  left: -8px;
-  top: 0;
-}
-
-.heart::after {
-  left: 0;
-  top: -8px;
-}
-
-.heart-1 { right: 4px; top: 3px; transform: rotate(45deg) scale(0.95); }
-.heart-2 { right: 28px; top: 16px; transform: rotate(45deg) scale(0.78); }
-.heart-3 { right: 52px; top: 5px; transform: rotate(45deg) scale(0.62); }
-.heart-4 { right: 66px; top: 28px; transform: rotate(45deg) scale(0.5); }
-
-.role-chat-inner {
-  position: relative;
-  min-height: 76vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 18px 18px;
-}
-
-.role-chat-display {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 32px 10px 18px;
-}
-
-.role-chat-label {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 5px 10px;
-  margin-bottom: 16px;
-  border-radius: 999px;
-  border: 2px solid #111111;
-  background: rgba(87,101,138,0.12);
-  color: #57658a;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-}
-
-.role-chat-name {
-  font-size: 21px;
-  font-weight: 800;
-  color: #1e2024;
-  margin-bottom: 4px;
-  letter-spacing: 0.02em;
-}
-
-.role-chat-sub {
-  font-size: 12px;
-  color: #57658a;
-  margin-bottom: 22px;
-  font-weight: 700;
-}
-
-.role-chat-text {
-  position: relative;
-  font-size: 15px;
-  line-height: 1.9;
-  color: #252629;
-  min-height: 180px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  padding: 18px 16px;
-  border: 2px solid rgba(17,17,17,0.08);
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(240,244,255,0.75) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.8),
-    0 8px 18px rgba(87,101,138,0.08);
-}
-
-.role-chat-dot {
-  position: absolute;
-  left: 18px;
-  bottom: 92px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: #111111;
-  box-shadow:
-    0 0 0 5px rgba(87,101,138,0.1),
-    0 4px 10px rgba(0,0,0,0.12);
-}
-
-.role-chat-inputbar {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  padding: 14px;
-  border: 3px solid #111111;
-  border-radius: 24px;
-  background:
-    linear-gradient(135deg, #6f82b1 0%, #57658a 55%, #4b5676 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.16),
-    0 10px 24px rgba(87,101,138,0.24);
-}
-
-.role-chat-inputbar textarea {
-  flex: 1;
-  min-height: 24px;
-  max-height: 120px;
-  border: none;
-  resize: none;
-  outline: none;
-  background: transparent;
-  color: #f3f7ff;
-  font-size: 14px;
-  line-height: 1.6;
-  font-family: inherit;
-}
-
-.role-chat-inputbar textarea::placeholder {
-  color: rgba(243,247,255,0.72);
-}
-
-.role-chat-inputbar button {
-  flex-shrink: 0;
-  min-width: 72px;
-  height: 42px;
-  padding: 0 16px;
-  border: 2px solid #111111;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #eef3ff 100%);
-  color: #252629;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.role-chat-inputbar button:active {
-  transform: scale(0.96);
-  background: #e8efff;
-}
-
-@media (max-width: 640px) {
-  .screen-page {
-    padding: 62px 16px calc(30px + var(--safe-bottom));
-  }
-
-  .role-chat-frame,
-  .role-chat-stage {
-    min-height: 74vh;
-  }
-
-  .role-chat-inner {
-    min-height: 74vh;
-    padding: 20px 14px 14px;
-  }
-
-  .role-chat-display {
-    padding: 26px 4px 14px;
-  }
-
-  .role-chat-name {
-    font-size: 19px;
-  }
-
-  .role-chat-text {
-    min-height: 156px;
-    font-size: 14px;
-    padding: 16px 14px;
-    border-radius: 18px;
-  }
-
-  .role-chat-inputbar {
-    padding: 12px;
-    border-radius: 20px;
-  }
-
-  .role-chat-inputbar button {
-    min-width: 66px;
-    height: 40px;
-    border-radius: 14px;
-  }
-
-  .role-frame-side {
-    right: -9px;
-    width: 20px;
-    height: 108px;
-  }
-}
-
-/* 丝滑横向整屏 */
 .page-slider-main {
   position: relative;
   width: 100vw;
@@ -1956,151 +1242,54 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
 }
 
-.floating-ball.page-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.88);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* =========================
-   第二页：图片贴图 + 对话叠加
-========================= */
-.frame-img-stage {
-  position: relative;
+.blank-screen {
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+  min-height: 76vh;
+  border-radius: 34px;
+  border: 2px dashed rgba(87, 101, 138, 0.22);
+  background:
+    linear-gradient(180deg, rgba(87,101,138,0.05), rgba(37,38,41,0.05)),
+    rgba(255,255,255,0.08);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-.frame-bg-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.frame-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 14% 10% 6% 8%;
-  pointer-events: none;
-}
-
-.frame-overlay > * {
-  pointer-events: auto;
-}
-
-.frame-top-area {
-  padding-top: 2%;
-}
-
-.frame-role-name {
-  font-size: 18px;
-  font-weight: 800;
-  color: #1e1f22;
-  margin-bottom: 4px;
-}
-
-.frame-role-desc {
-  font-size: 11px;
-  font-weight: 700;
-  color: #6b7896;
-}
-
-.frame-text-area {
-  flex: 1;
+.screen-indicators {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 20;
   display: flex;
   align-items: center;
-  padding: 4% 2%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(20,20,24,0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.frame-role-text {
-  font-size: 14px;
-  line-height: 1.9;
-  color: #252629;
-  white-space: pre-wrap;
-  word-break: break-word;
-  width: 100%;
-}
-
-.frame-input-area {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  padding: 0 2% 2%;
-}
-
-.frame-input-area textarea {
-  flex: 1;
-  min-height: 22px;
-  max-height: 100px;
+.screen-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  color: #f8fbff;
-  font-size: 13px;
-  line-height: 1.5;
-  font-family: inherit;
-}
-
-.frame-input-area textarea::placeholder {
-  color: rgba(248,251,255,0.72);
-}
-
-.frame-input-area button {
-  flex-shrink: 0;
-  min-width: 58px;
-  height: 36px;
-  padding: 0 12px;
-  border: 2px solid #111111;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #252629;
-  font-size: 12px;
-  font-weight: 800;
+  background: rgba(255,255,255,0.35);
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: all 0.2s ease;
 }
 
-.frame-input-area button:active {
-  transform: scale(0.96);
-}
-
-@media (max-width: 640px) {
-  .frame-img-stage {
-    max-width: 100%;
-  }
-
-  .frame-overlay {
-    padding: 12% 8% 5% 7%;
-  }
-
-  .frame-role-name {
-    font-size: 16px;
-  }
-
-  .frame-role-text {
-    font-size: 13px;
-    line-height: 1.85;
-  }
-
-  .frame-input-area button {
-    min-width: 52px;
-    height: 34px;
-  }
+.screen-dot.active {
+  width: 24px;
+  border-radius: 999px;
+  background: #8ba0d1;
+  box-shadow: 0 0 12px rgba(139,160,209,0.4);
 }
 
 /* =========================
-   第二页：手动重建版短对话面板
+   第二页：短版角色对话面板（当前使用）
 ========================= */
 .manual-chat-shell {
   width: 100%;
@@ -2112,35 +1301,34 @@ input[type="range"]::-webkit-slider-thumb {
 .manual-chat-outer {
   position: relative;
   width: 100%;
-  min-height: 72vh;
-  border: 4px solid #111111;
-  border-radius: 34px;
-  background: #ffffff;
-  box-shadow: 0 18px 38px rgba(0,0,0,0.12);
+  max-width: 420px;
+  min-height: 420px;
+  background: var(--panel-outer);
+  border: 4px solid var(--panel-line);
+  border-radius: 30px;
+  box-shadow: 0 16px 32px rgba(0,0,0,0.14);
+  padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px 16px 14px;
 }
 
-/* 内层长方体对话面板 */
 .manual-chat-inner {
   position: relative;
-  width: calc(100% - 48px);
-  min-height: 54vh;
-  border: 4px solid #111111;
-  border-radius: 28px;
-  background: #ffffff;
-  padding: 18px 16px 18px 16px;
+  width: calc(100% - 44px);
+  min-height: 280px;
+  background: var(--panel-inner);
+  border: 4px solid var(--panel-line);
+  border-radius: 24px;
+  padding: 16px 14px;
 }
 
-/* 头部 */
 .manual-chat-header {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .manual-role-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: #1f2024;
   margin-bottom: 4px;
@@ -2149,94 +1337,101 @@ input[type="range"]::-webkit-slider-thumb {
 .manual-role-sub {
   font-size: 12px;
   font-weight: 700;
-  color: #68789a;
+  color: #65728d;
 }
 
-/* 文本区域 */
 .manual-chat-text-panel {
-  min-height: 40vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  min-height: 180px;
 }
 
 .manual-role-text {
   width: 100%;
-  font-size: 15px;
-  line-height: 1.95;
+  font-size: 14px;
+  line-height: 1.9;
   color: #252629;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* 爱心 */
+.manual-heart-btn,
 .manual-heart {
   position: absolute;
   width: 16px;
   height: 16px;
-  background: #6d80b2;
+  background: var(--panel-heart);
   transform: rotate(45deg);
   border-radius: 2px;
 }
 
+.manual-heart-btn::before,
+.manual-heart-btn::after,
 .manual-heart::before,
 .manual-heart::after {
   content: '';
   position: absolute;
   width: 16px;
   height: 16px;
-  background: #6d80b2;
+  background: var(--panel-heart);
   border-radius: 50%;
 }
 
+.manual-heart-btn::before,
 .manual-heart::before {
   left: -8px;
   top: 0;
 }
 
+.manual-heart-btn::after,
 .manual-heart::after {
   left: 0;
   top: -8px;
 }
 
-.manual-heart.heart-top {
+.manual-heart-btn {
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.manual-heart-btn:active {
+  transform: rotate(45deg) scale(0.92);
+}
+
+.manual-heart-btn.heart-top {
   right: 18px;
-  top: 14px;
-  transform: rotate(45deg) scale(1);
+  top: 16px;
 }
 
 .manual-heart.heart-bottom-1 {
   right: 20px;
-  bottom: 150px;
-  transform: rotate(45deg) scale(0.92);
+  bottom: 122px;
+  transform: rotate(45deg) scale(0.9);
 }
 
 .manual-heart.heart-bottom-2 {
-  right: 24px;
-  bottom: 122px;
+  right: 22px;
+  bottom: 96px;
   transform: rotate(45deg) scale(0.72);
 }
 
 .manual-heart.heart-bottom-3 {
   right: 18px;
-  bottom: 96px;
-  transform: rotate(45deg) scale(0.55);
+  bottom: 72px;
+  transform: rotate(45deg) scale(0.56);
 }
 
-/* 底部蓝色输入栏 */
 .manual-input-bar {
   margin-top: 14px;
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 64px;
-  padding: 10px 12px;
-  border: 4px solid #111111;
+  min-height: 58px;
+  background: var(--panel-bar);
+  border: 4px solid var(--panel-line);
   border-radius: 18px;
-  background: linear-gradient(180deg, #7890c8 0%, #60719d 100%);
+  padding: 8px 10px;
 }
 
-/* 左侧停止黑点 */
 .manual-stop-btn {
   width: 18px;
   height: 18px;
@@ -2245,120 +1440,176 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: #111111;
   cursor: pointer;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.18);
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.08);
 }
 
 .manual-stop-btn:active {
-  transform: scale(0.92);
+  transform: scale(0.9);
 }
 
-/* 输入框 */
 .manual-input-bar textarea {
   flex: 1;
   min-height: 22px;
-  max-height: 100px;
+  max-height: 86px;
   border: none;
   outline: none;
   resize: none;
   background: transparent;
-  color: #f7fbff;
+  color: #f6fbff;
   font-size: 14px;
   line-height: 1.55;
   font-family: inherit;
 }
 
 .manual-input-bar textarea::placeholder {
-  color: rgba(247,251,255,0.74);
+  color: rgba(246,251,255,0.7);
 }
 
-/* 右侧发送按钮：不显示文字，只显示箭头感 */
 .manual-send-btn {
-  width: 44px;
-  height: 44px;
+  position: relative;
+  width: 42px;
+  height: 42px;
   flex-shrink: 0;
-  border: 3px solid #111111;
-  border-radius: 14px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 3px solid var(--panel-line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #e8f2ff 100%);
+  box-shadow:
+    0 4px 0 #9bb6d0,
+    0 8px 12px rgba(0,0,0,0.12);
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.2s ease;
 }
 
-.manual-send-btn span {
-  display: block;
-  width: 0;
-  height: 0;
-  margin-left: 2px;
-  border-left: 12px solid #57658a;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
+.manual-send-btn::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #8ab8de 0%, #5c7fb4 100%);
 }
 
 .manual-send-btn:active {
-  transform: scale(0.96);
-  background: #eef3ff;
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #9bb6d0,
+    0 3px 6px rgba(0,0,0,0.12);
+}
+
+.panel-palette {
+  position: absolute;
+  top: 46px;
+  right: 10px;
+  z-index: 10;
+  width: 170px;
+  padding: 10px;
+  background: rgba(255,255,255,0.98);
+  border: 3px solid var(--panel-line);
+  border-radius: 16px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.14);
+}
+
+.panel-palette.hidden {
+  display: none;
+}
+
+.panel-palette-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.panel-palette-row label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2a2b30;
+}
+
+.panel-palette-row input[type="color"] {
+  width: 34px;
+  height: 26px;
+  border: 2px solid var(--panel-line);
+  border-radius: 8px;
+  background: transparent;
+  padding: 0;
+}
+
+.panel-palette-actions button {
+  width: 100%;
+  height: 34px;
+  border: 3px solid var(--panel-line);
+  border-radius: 10px;
+  background: #eef5ff;
+  color: #253047;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.panel-palette-actions button:active {
+  transform: scale(0.97);
 }
 
 @media (max-width: 640px) {
+  .screen-page {
+    padding: 62px 16px calc(30px + var(--safe-bottom));
+  }
+
   .manual-chat-outer {
-    min-height: 72vh;
-    border-radius: 28px;
-    padding: 14px 12px 12px;
+    max-width: 100%;
+    min-height: 390px;
+    border-radius: 24px;
+    padding: 14px 14px 12px;
   }
 
   .manual-chat-inner {
-    width: calc(100% - 38px);
-    min-height: 52vh;
-    border-radius: 22px;
+    width: calc(100% - 36px);
+    min-height: 250px;
+    border-radius: 18px;
     padding: 14px 12px;
   }
 
   .manual-role-name {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .manual-role-text {
-    font-size: 14px;
-    line-height: 1.9;
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .manual-chat-text-panel {
+    min-height: 160px;
   }
 
   .manual-input-bar {
-    min-height: 58px;
+    min-height: 54px;
     border-radius: 16px;
-    padding: 8px 10px;
   }
 
   .manual-send-btn {
     width: 40px;
     height: 40px;
-    border-radius: 12px;
   }
 
-  .manual-send-btn span {
-    border-left-width: 10px;
-    border-top-width: 6px;
-    border-bottom-width: 6px;
-  }
-
-  .manual-heart.heart-top {
+  .manual-heart-btn.heart-top {
     right: 14px;
-    top: 12px;
+    top: 14px;
   }
 
   .manual-heart.heart-bottom-1 {
     right: 16px;
-    bottom: 138px;
+    bottom: 114px;
   }
 
   .manual-heart.heart-bottom-2 {
-    right: 20px;
-    bottom: 112px;
+    right: 18px;
+    bottom: 90px;
   }
 
   .manual-heart.heart-bottom-3 {
     right: 14px;
-    bottom: 88px;
+    bottom: 68px;
   }
 }
