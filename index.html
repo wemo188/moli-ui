@@ -314,19 +314,125 @@
           <span>script.js</span>
           <div class="source-actions">
             <label class="source-check-label source-send-check">
-              <input type="checkbox" id="sendJsToAI">
+              <input type="checkbox" id="sendCoreJsToAI">
               <span class="source-check-ui"></span>
               <span>发送</span>
             </label>
-            <button class="btn btn-outline btn-sm" id="copySourceJs" type="button">复制</button>
-            <button class="btn btn-outline btn-sm" id="saveSourceJs" type="button">保存</button>
-            <button class="btn btn-outline btn-sm" id="clearSourceJs" type="button">清空</button>
+            <button class="btn btn-outline btn-sm" id="copySourceCoreJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceCoreJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceCoreJs" type="button">清空</button>
           </div>
         </div>
-        <textarea id="sourceJs" class="export-textarea" placeholder="script.js"></textarea>
+        <textarea id="sourceCoreJs" class="export-textarea" placeholder="script.js"></textarea>
       </div>
-    </div>
-  </div>
+
+      <!-- theme.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>theme.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendThemeJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceThemeJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceThemeJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceThemeJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceThemeJs" class="export-textarea" placeholder="theme.js"></textarea>
+      </div>
+
+      <!-- font.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>font.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendFontJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceFontJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceFontJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceFontJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceFontJs" class="export-textarea" placeholder="font.js"></textarea>
+      </div>
+
+      <!-- api.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>api.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendApiJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceApiJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceApiJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceApiJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceApiJs" class="export-textarea" placeholder="api.js"></textarea>
+      </div>
+
+      <!-- source.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>source.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendSourceJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceSourceJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceSourceJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceSourceJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceSourceJs" class="export-textarea" placeholder="source.js"></textarea>
+      </div>
+
+      <!-- bg.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>bg.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendBgJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceBgJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceBgJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceBgJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceBgJs" class="export-textarea" placeholder="bg.js"></textarea>
+      </div>
+
+      <!-- chat.js -->
+      <div class="export-section">
+        <div class="export-section-header">
+          <span>chat.js</span>
+          <div class="source-actions">
+            <label class="source-check-label source-send-check">
+              <input type="checkbox" id="sendChatJsToAI">
+              <span class="source-check-ui"></span>
+              <span>发送</span>
+            </label>
+            <button class="btn btn-outline btn-sm" id="copySourceChatJs" type="button">复制</button>
+            <button class="btn btn-outline btn-sm" id="saveSourceChatJs" type="button">保存</button>
+            <button class="btn btn-outline btn-sm" id="clearSourceChatJs" type="button">清空</button>
+          </div>
+        </div>
+        <textarea id="sourceChatJs" class="export-textarea" placeholder="chat.js"></textarea>
+      </div>
 
   <!-- 对话消息操作模板容器 -->
 <template id="assistantMsgToolsTpl">
