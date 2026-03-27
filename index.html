@@ -445,21 +445,12 @@
 
   <div id="toast" class="toast hidden"></div>
 
-<script>
-  var _ts = new Date().getTime();
-  [
-    'script.js',
-    'theme.js',
-    'font.js',
-    'api.js',
-    'source.js',
-    'bg.js',
-    'chat.js'
-  ].forEach(function(file) {
-    var s = document.createElement('script');
-    s.src = file + '?t=' + _ts;
-    document.body.appendChild(s);
-  });
-</script>
+<script src="script.js"></script>
+<script src="theme.js"></script>
+<script src="font.js"></script>
+<script src="api.js"></script>
+<script src="source.js"></script>
+<script src="bg.js"></script>
+<script src="chat.js"></script>
 </body>
 </html>
