@@ -202,9 +202,12 @@
     document.addEventListener('touchend', function(e) {
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
-        e.preventDefault();
-        App.toggleMenu();
-      } else {
+  e.preventDefault();
+  if (App.mascot && typeof App.mascot.onTap === 'function') {
+    App.mascot.onTap();
+  }
+  App.toggleMenu();
+}else {
         var rect = App.getBallRect();
         App.LS.set('floatingBallPos', {
           left: rect.left,
@@ -215,11 +218,14 @@
       App.state.hasMoved = false;
     }, { passive: false });
 
-    ball.addEventListener('click', function(e) {
-      e.preventDefault();
-      if ('ontouchstart' in window) return;
-      App.toggleMenu();
-    });
+ball.addEventListener('click', function(e) {
+  e.preventDefault();
+  if (App.mascot && typeof App.mascot.onTap === 'function') {
+    App.mascot.onTap();
+  }
+  if ('ontouchstart' in window) return;
+  App.toggleMenu();
+});
 
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function() {
@@ -244,7 +250,147 @@
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
     }
+    
+  // ========= 动画 =========
+  App.mascot = {
+    img: App.$('#mascotImg'),
+    sprites: {
+      idle:     'https://iili.io/qZ5NWvf.png',
+      blink:    'https://iili.io/qZDVJbs.md.png',
+      wave:     'https://iili.io/qZDtY6x.md.png',
+      tiltA:    'https://iili.io/qZbJDCP.md.png',
+      tiltB:    'https://iili.io/qZbBqba.md.png',
+      surprise: 'https://iili.io/qZbIihX.md.png',
+      happy:    'https://iili.io/qZb5EJf.md.png'
+    },
+    currentState: 'idle',
+    animLock: false,
+    blinkTimer: null,
+    idleTimer: null,
+
+    preload: function() {
+      var self = this;
+      Object.keys(self.sprites).forEach(function(key) {
+        var img = new Image();
+        img.src = self.sprites[key];
+      });
+    },
+
+    setSprite: function(key) {
+      if (!this.img || !this.sprites[key]) return;
+      this.img.src = this.sprites[key];
+      this.currentState = key;
+    },
+
+    clearAnimClass: function() {
+      if (!this.img) return;
+      this.img.classList.remove('breathing', 'waving', 'tilting', 'surprised', 'happy');
+    },
+
+    goIdle: function() {
+      this.setSprite('idle');
+      this.clearAnimClass();
+      this.img.classList.add('breathing');
+      this.animLock = false;
+    },
+
+    doBlink: function() {
+      var self = this;
+      if (self.animLock) return;
+
+      self.setSprite('blink');
+      setTimeout(function() {
+        if (self.currentState === 'blink') {
+          self.setSprite('idle');
+        }
+      }, 180);
+    },
+
+    doAction: function(action) {
+      var self = this;
+      if (self.animLock) return;
+      self.animLock = true;
+      self.clearAnimClass();
+
+      switch (action) {
+        case 'wave':
+          self.setSprite('wave');
+          self.img.classList.add('waving');
+          setTimeout(function() { self.goIdle(); }, 1200);
+          break;
+
+        case 'tilt':
+          var tiltKey = Math.random() > 0.5 ? 'tiltA' : 'tiltB';
+          self.setSprite(tiltKey);
+          self.img.classList.add('tilting');
+          setTimeout(function() { self.goIdle(); }, 1600);
+          break;
+
+        case 'surprise':
+          self.setSprite('surprise');
+          self.img.classList.add('surprised');
+          setTimeout(function() { self.goIdle(); }, 1200);
+          break;
+
+        case 'happy':
+          self.setSprite('happy');
+          self.img.classList.add('happy');
+          setTimeout(function() { self.goIdle(); }, 1400);
+          break;
+
+        default:
+          self.goIdle();
+      }
+    },
+
+    startBlinkLoop: function() {
+      var self = this;
+      function scheduleBlink() {
+        var delay = 2500 + Math.random() * 4000;
+        self.blinkTimer = setTimeout(function() {
+          if (!self.animLock) {
+            self.doBlink();
+          }
+          scheduleBlink();
+        }, delay);
+      }
+      scheduleBlink();
+    },
+
+    startIdleActions: function() {
+      var self = this;
+      var actions = ['wave', 'tilt', 'surprise', 'happy'];
+
+      function scheduleAction() {
+        var delay = 8000 + Math.random() * 15000;
+        self.idleTimer = setTimeout(function() {
+          if (!self.animLock) {
+            var pick = actions[Math.floor(Math.random() * actions.length)];
+            self.doAction(pick);
+          }
+          scheduleAction();
+        }, delay);
+      }
+      scheduleAction();
+    },
+
+    onTap: function() {
+      var actions = ['wave', 'happy', 'surprise', 'tilt'];
+      var pick = actions[Math.floor(Math.random() * actions.length)];
+      this.doAction(pick);
+    },
+
+    init: function() {
+      if (!this.img) return;
+      this.preload();
+      this.goIdle();
+      this.startBlinkLoop();
+      this.startIdleActions();
+    }
   };
+
+  App.mascot.init();
+};
 
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
