@@ -20,6 +20,73 @@
       '如果用户是在美化，优先修改 css；如果是结构，优先修改 html；如果是逻辑，优先修改 js。\n' +
       '不要伪造功能，不要额外创建假按钮。',
 
+    // ========= token 估算工具 =========
+    estimateTokens: function(text) {
+      if (!text) return 0;
+      var cjk = 0;
+      var other = 0;
+      for (var i = 0; i < text.length; i++) {
+        var code = text.charCodeAt(i);
+        if (
+          (code >= 0x4E00 && code <= 0x9FFF) ||
+          (code >= 0x3400 && code <= 0x4DBF) ||
+          (code >= 0x3000 && code <= 0x303F) ||
+          (code >= 0xFF00 && code <= 0xFFEF)
+        ) {
+          cjk++;
+        } else {
+          other++;
+        }
+      }
+      return Math.round(cjk * 1.0 + other * 0.3);
+    },
+
+    formatNum: function(n) {
+      if (n >= 10000) return (n / 1000).toFixed(1) + 'k';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+      return String(n);
+    },
+
+    createStatsEl: function(wrap) {
+      var el = document.createElement('div');
+      el.className = 'msg-stream-stats streaming';
+      el.textContent = '等待响应...';
+      wrap.appendChild(el);
+      return el;
+    },
+
+    updateStreamStats: function(statsEl, fullReply, startTime) {
+      if (!statsEl) return;
+      var now = Date.now();
+      var elapsed = (now - startTime) / 1000;
+      var chars = fullReply.length;
+      var tokens = Chat.estimateTokens(fullReply);
+      var speed = elapsed > 0.5 ? Math.round(tokens / elapsed) : '--';
+
+      statsEl.textContent =
+        '\u21BB ' +
+        Chat.formatNum(chars) + '\u5B57 \u00B7 ' +
+        '~' + Chat.formatNum(tokens) + 'tk \u00B7 ' +
+        speed + 'tk/s \u00B7 ' +
+        elapsed.toFixed(1) + 's';
+    },
+
+    finalizeStreamStats: function(statsEl, fullReply, startTime) {
+      if (!statsEl) return;
+      var elapsed = (Date.now() - startTime) / 1000;
+      var chars = fullReply.length;
+      var tokens = Chat.estimateTokens(fullReply);
+      var speed = elapsed > 0 ? Math.round(tokens / elapsed) : 0;
+
+      statsEl.className = 'msg-stream-stats done';
+      statsEl.textContent =
+        Chat.formatNum(chars) + '\u5B57 \u00B7 ' +
+        '~' + Chat.formatNum(tokens) + 'tk \u00B7 ' +
+        speed + 'tk/s \u00B7 ' +
+        elapsed.toFixed(1) + 's';
+    },
+
+    // ========= 基础方法 =========
     buildUserContent: function(text) {
       if (Chat.visionImageData) {
         return [
@@ -46,12 +113,12 @@
       var copyBtn = document.createElement('button');
       copyBtn.className = 'msg-tool-btn';
       copyBtn.type = 'button';
-      copyBtn.textContent = '复制';
+      copyBtn.textContent = '\u590D\u5236';
 
       var rerollBtn = document.createElement('button');
       rerollBtn.className = 'msg-tool-btn';
       rerollBtn.type = 'button';
-      rerollBtn.textContent = '重试';
+      rerollBtn.textContent = '\u91CD\u8BD5';
 
       var indicator = document.createElement('span');
       indicator.className = 'msg-roll-indicator';
@@ -67,18 +134,17 @@
 
       copyBtn.addEventListener('click', function() {
         App.copyText(rawContent || '').then(function() {
-          App.showToast('已复制消息');
+          App.showToast('\u5DF2\u590D\u5236\u6D88\u606F');
         }).catch(function() {
-          App.showToast('复制失败');
+          App.showToast('\u590D\u5236\u5931\u8D25');
         });
       });
 
       rerollBtn.addEventListener('click', function() {
         if (!meta || !meta.userText) {
-          App.showToast('缺少可重试内容');
+          App.showToast('\u7F3A\u5C11\u53EF\u91CD\u8BD5\u5185\u5BB9');
           return;
         }
-
         if (App.$('#chatInput')) App.$('#chatInput').value = meta.userText;
         Chat.sendNormalChatMessage(meta.userText, meta.rollGroupId);
       });
@@ -108,7 +174,7 @@
     restoreChatHistory: function() {
       if (!App.state.chatMessages) return;
       if (!Chat.chatHistory.length) {
-        App.state.chatMessages.innerHTML = '<div class="chat-msg system">已就绪。</div>';
+        App.state.chatMessages.innerHTML = '<div class="chat-msg system">\u5DF2\u5C31\u7EEA\u3002</div>';
         return;
       }
 
@@ -126,14 +192,17 @@
       App.LS.set('chatHistory', Chat.chatHistory.slice(-50));
     },
 
-    async sendChatRequest(userText, opts) {
+    // ========= 请求核心 =========
+    sendChatRequest: async function(userText, opts) {
       opts = opts || {};
       if (!App.api || !App.api.activeApi) {
-        App.showToast('请先配置并选择 API');
+        App.showToast('\u8BF7\u5148\u914D\u7F6E\u5E76\u9009\u62E9 API');
         return;
       }
 
       var replyDiv = opts.replyDiv || null;
+      var statsEl = opts.statsEl || null;
+      var startTime = opts.startTime || Date.now();
       var wrappedText = userText + (App.source ? App.source.buildSelectedSourcePrompt() : '');
 
       var messages = [
@@ -166,11 +235,11 @@
 
         if (!response.ok) {
           var errData = await response.json().catch(function() { return {}; });
-          throw new Error((errData.error && errData.error.message) || ('请求失败: ' + response.status));
+          throw new Error((errData.error && errData.error.message) || ('\u8BF7\u6C42\u5931\u8D25: ' + response.status));
         }
 
         var data = await response.json();
-        return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(无回复)';
+        return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '(\u65E0\u56DE\u590D)';
       }
 
       async function handleStreamResponse(onChunk) {
@@ -190,11 +259,11 @@
 
         if (!response.ok) {
           var errData = await response.json().catch(function() { return {}; });
-          throw new Error((errData.error && errData.error.message) || ('请求失败: ' + response.status));
+          throw new Error((errData.error && errData.error.message) || ('\u8BF7\u6C42\u5931\u8D25: ' + response.status));
         }
 
         if (!response.body) {
-          throw new Error('当前接口不支持流式输出');
+          throw new Error('\u5F53\u524D\u63A5\u53E3\u4E0D\u652F\u6301\u6D41\u5F0F\u8F93\u51FA');
         }
 
         var reader = response.body.getReader();
@@ -229,7 +298,7 @@
           }
         }
 
-        if (!fullReply.trim()) fullReply = '(无回复)';
+        if (!fullReply.trim()) fullReply = '(\u65E0\u56DE\u590D)';
         return fullReply;
       }
 
@@ -243,16 +312,22 @@
                 var displayTemp = App.source ? App.source.cleanReplyForDisplay(tempReply) : tempReply;
                 replyDiv.innerHTML = App.esc(displayTemp).replace(/\n/g, '<br>');
               }
+              Chat.updateStreamStats(statsEl, tempReply, startTime);
+
+              if (App.state.chatMessages) {
+                App.state.chatMessages.scrollTop = App.state.chatMessages.scrollHeight;
+              }
             });
           } catch (streamErr) {
             if (streamErr.name === 'AbortError') {
               App.state.currentAbortController = null;
               throw streamErr;
             }
-            App.showToast('流式失败，自动切换普通模式');
+            App.showToast('\u6D41\u5F0F\u5931\u8D25\uFF0C\u81EA\u52A8\u5207\u6362\u666E\u901A\u6A21\u5F0F');
             fullReply = await handleNormalResponse();
           }
         } else {
+          if (statsEl) statsEl.textContent = '\u8BF7\u6C42\u4E2D\uFF08\u975E\u6D41\u5F0F\uFF09...';
           fullReply = await handleNormalResponse();
         }
 
@@ -264,24 +339,25 @@
       }
     },
 
-    async sendNormalChatMessage(forceText, existingRollGroupId) {
+    // ========= 发送消息 =========
+    sendNormalChatMessage: async function(forceText, existingRollGroupId) {
       if (!App.api || !App.api.activeApi) {
-        App.showToast('请先配置并选择 API');
+        App.showToast('\u8BF7\u5148\u914D\u7F6E\u5E76\u9009\u62E9 API');
         return;
       }
 
       var text = typeof forceText === 'string' ? forceText : (App.state.chatInput ? App.state.chatInput.value.trim() : '');
       if (!text && !Chat.visionImageData) return;
 
-      var displayText = text || '[发送了一张图片]';
+      var displayText = text || '[\u53D1\u9001\u4E86\u4E00\u5F20\u56FE\u7247]';
       if (typeof forceText !== 'string' && App.state.chatInput) App.state.chatInput.value = '';
 
-      Chat.addChatMsg('user', displayText + (Chat.visionImageData ? '\n[附带图片]' : ''));
+      Chat.addChatMsg('user', displayText + (Chat.visionImageData ? '\n[\u9644\u5E26\u56FE\u7247]' : ''));
 
       Chat.chatHistory.push({
         role: 'user',
         content: Chat.buildUserContent(displayText),
-        displayContent: displayText + (Chat.visionImageData ? '\n[附带图片]' : '')
+        displayContent: displayText + (Chat.visionImageData ? '\n[\u9644\u5E26\u56FE\u7247]' : '')
       });
       Chat.saveChatHistory();
 
@@ -296,11 +372,28 @@
         rollCount: rollIndex
       };
 
-      var replyDiv = Chat.addChatMsg('assistant', '思考中...', meta);
+      var replyDiv = Chat.addChatMsg('assistant', '\u601D\u8003\u4E2D...', meta);
+
+      // 找到刚创建的 wrap，在 msg-tools 前插入 statsEl
+      var allWraps = App.state.chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
+      var currentWrap = allWraps[allWraps.length - 1];
+      var statsEl = null;
+      var startTime = Date.now();
+
+      if (currentWrap) {
+        statsEl = Chat.createStatsEl(currentWrap);
+        // 把 statsEl 移到 msg-tools 前面
+        var existingTools = currentWrap.querySelector('.msg-tools');
+        if (existingTools) {
+          currentWrap.insertBefore(statsEl, existingTools);
+        }
+      }
 
       try {
         var fullReply = await Chat.sendChatRequest(displayText, {
-          replyDiv: replyDiv
+          replyDiv: replyDiv,
+          statsEl: statsEl,
+          startTime: startTime
         });
 
         var displayReply = App.source ? App.source.cleanReplyForDisplay(fullReply) : fullReply;
@@ -313,12 +406,14 @@
           replyDiv.innerHTML = App.esc(displayReply).replace(/\n/g, '<br>');
         }
 
-        var allWraps = App.state.chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
-        var lastWrap = allWraps[allWraps.length - 1];
-        if (lastWrap) {
-          var oldTools = lastWrap.querySelector('.msg-tools');
+        // 更新最终统计
+        Chat.finalizeStreamStats(statsEl, fullReply, startTime);
+
+        // 重建工具条
+        if (currentWrap) {
+          var oldTools = currentWrap.querySelector('.msg-tools');
           if (oldTools) oldTools.remove();
-          Chat.attachMsgTools(lastWrap, 'assistant', fullReply, meta);
+          Chat.attachMsgTools(currentWrap, 'assistant', fullReply, meta);
         }
 
         Chat.chatHistory.push({
@@ -331,15 +426,32 @@
         Chat.clearVisionImage();
       } catch (err) {
         if (err.name === 'AbortError') {
-          App.showToast('已停止');
+          // 停止后保留已输出内容，更新统计为中断状态
+          if (statsEl) {
+            var elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            var currentText = replyDiv ? replyDiv.textContent : '';
+            var abortTokens = Chat.estimateTokens(currentText);
+            statsEl.className = 'msg-stream-stats done';
+            statsEl.textContent =
+              '\u5DF2\u505C\u6B62 \u00B7 ' +
+              Chat.formatNum(currentText.length) + '\u5B57 \u00B7 ' +
+              '~' + Chat.formatNum(abortTokens) + 'tk \u00B7 ' +
+              elapsed + 's';
+          }
+          App.showToast('\u5DF2\u505C\u6B62');
           return;
         }
         if (replyDiv) {
-          replyDiv.innerHTML = '请求失败: ' + App.esc(err.message);
+          replyDiv.innerHTML = '\u8BF7\u6C42\u5931\u8D25: ' + App.esc(err.message);
+        }
+        if (statsEl) {
+          statsEl.className = 'msg-stream-stats done';
+          statsEl.textContent = '\u8BF7\u6C42\u5931\u8D25';
         }
       }
     },
 
+    // ========= 事件绑定 =========
     bindEvents: function() {
       App.safeOn('#pickVisionImage', 'click', function() {
         if (App.$('#visionImageInput')) App.$('#visionImageInput').click();
@@ -353,7 +465,7 @@
           Chat.visionImageData = ev.target.result;
           if (App.$('#imagePreviewImg')) App.$('#imagePreviewImg').src = Chat.visionImageData;
           if (App.$('#imagePreviewBox')) App.$('#imagePreviewBox').classList.remove('hidden');
-          App.showToast('图片已添加');
+          App.showToast('\u56FE\u7247\u5DF2\u6DFB\u52A0');
         };
         reader.readAsDataURL(file);
       });
@@ -375,9 +487,8 @@
         if (App.state.currentAbortController) {
           App.state.currentAbortController.abort();
           App.state.currentAbortController = null;
-          App.showToast('已停止');
         } else {
-          App.showToast('当前没有进行中的请求');
+          App.showToast('\u5F53\u524D\u6CA1\u6709\u8FDB\u884C\u4E2D\u7684\u8BF7\u6C42');
         }
       });
 
@@ -386,9 +497,15 @@
         Chat.assistantRollMap = {};
         App.LS.remove('chatHistory');
         if (App.state.chatMessages) {
-          App.state.chatMessages.innerHTML = '<div class="chat-msg system">已清空。</div>';
+          App.state.chatMessages.innerHTML = '<div class="chat-msg system">\u5DF2\u6E05\u7A7A\u3002</div>';
         }
-        App.showToast('已清空对话');
+        App.showToast('\u5DF2\u6E05\u7A7A\u5BF9\u8BDD');
+      });
+
+      App.safeOn('#clearAllBtn', 'click', function() {
+        if (!confirm('\u786E\u5B9A\u8981\u91CD\u7F6E\u6240\u6709\u8BBE\u7F6E\u5417\uFF1F')) return;
+        localStorage.clear();
+        location.reload();
       });
 
       if (App.$('#useStreamToggle')) {
@@ -396,7 +513,7 @@
         App.$('#useStreamToggle').addEventListener('change', function() {
           Chat.useStream = this.checked;
           App.LS.set('useStream', Chat.useStream);
-          App.showToast(Chat.useStream ? '已开启流式输出' : '已关闭流式输出');
+          App.showToast(Chat.useStream ? '\u5DF2\u5F00\u542F\u6D41\u5F0F\u8F93\u51FA' : '\u5DF2\u5173\u95ED\u6D41\u5F0F\u8F93\u51FA');
         });
       }
     },
