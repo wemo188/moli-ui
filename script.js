@@ -405,6 +405,60 @@ ball.addEventListener('click', function(e) {
     });
   };
 
+  App.initMainPages = function() {
+    var tabs = App.$$('.page-tab');
+    var pages = App.$$('.content-page');
+    var roleInput = App.$('#roleChatInput');
+    var roleSendBtn = App.$('#roleChatSendBtn');
+    var roleText = App.$('#roleChatText');
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var target = tab.dataset.page;
+
+        tabs.forEach(function(btn) {
+          btn.classList.remove('active');
+        });
+
+        pages.forEach(function(page) {
+          page.classList.remove('active');
+        });
+
+        tab.classList.add('active');
+        var targetPage = App.$('#' + target);
+        if (targetPage) targetPage.classList.add('active');
+      });
+    });
+
+    function sendRoleMessage() {
+      if (!roleInput || !roleText) return;
+      var text = roleInput.value.trim();
+      if (!text) return;
+
+      roleText.textContent = text;
+      roleInput.value = '';
+      roleInput.style.height = '24px';
+    }
+
+    if (roleSendBtn) {
+      roleSendBtn.addEventListener('click', sendRoleMessage);
+    }
+
+    if (roleInput) {
+      roleInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendRoleMessage();
+        }
+      });
+
+      roleInput.addEventListener('input', function() {
+        roleInput.style.height = 'auto';
+        roleInput.style.height = Math.min(roleInput.scrollHeight, 120) + 'px';
+      });
+    }
+  };
+
   App.init = function() {
     App.state.ball = App.$('#floatingBall');
     App.state.ballMenuEl = App.$('#ballMenu');
@@ -417,8 +471,9 @@ ball.addEventListener('click', function(e) {
       return;
     }
 
-    App.initFloatingBall();
-    App.runInits();
+App.initFloatingBall();
+App.initMainPages();
+App.runInits();
   };
 
   window.addEventListener('load', function() {
