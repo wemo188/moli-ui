@@ -271,7 +271,7 @@
     App.runInits();
   };
 
-  setTimeout(function() {
+  window.addEventListener('load', function() {
     App.init();
-  }, 80);
+  });
 })();
