@@ -410,6 +410,7 @@ ball.addEventListener('click', function(e) {
     var dots = App.$$('.screen-dot');
     var roleInput = App.$('#roleChatInput');
     var roleSendBtn = App.$('#roleChatSendBtn');
+    var roleStopBtn = App.$('#roleChatStopBtn');
     var roleText = App.$('#roleChatText');
     var floatingBall = App.$('#floatingBall');
 
@@ -422,6 +423,8 @@ ball.addEventListener('click', function(e) {
     var baseX = 0;
     var dragging = false;
     var pageWidth = window.innerWidth;
+    var roleTypingTimer = null;
+    var roleIsTyping = false;
 
     function setBallVisibility() {
       if (!floatingBall) return;
@@ -481,12 +484,8 @@ ball.addEventListener('click', function(e) {
       var maxLeft = -(totalPages - 1) * pageWidth;
       var minLeft = 0;
 
-      if (nextX > minLeft) {
-        nextX = minLeft + (nextX - minLeft) * 0.28;
-      }
-      if (nextX < maxLeft) {
-        nextX = maxLeft + (nextX - maxLeft) * 0.28;
-      }
+      if (nextX > minLeft) nextX = minLeft + (nextX - minLeft) * 0.28;
+      if (nextX < maxLeft) nextX = maxLeft + (nextX - maxLeft) * 0.28;
 
       slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
     }, { passive: true });
@@ -499,11 +498,8 @@ ball.addEventListener('click', function(e) {
       var threshold = pageWidth * 0.16;
 
       if (Math.abs(deltaX) > threshold) {
-        if (deltaX < 0 && currentPage < totalPages - 1) {
-          currentPage += 1;
-        } else if (deltaX > 0 && currentPage > 0) {
-          currentPage -= 1;
-        }
+        if (deltaX < 0 && currentPage < totalPages - 1) currentPage += 1;
+        else if (deltaX > 0 && currentPage > 0) currentPage -= 1;
       }
 
       snapToPage(true);
@@ -513,18 +509,54 @@ ball.addEventListener('click', function(e) {
       snapToPage(false);
     });
 
+    function stopRoleTyping() {
+      if (roleTypingTimer) {
+        clearTimeout(roleTypingTimer);
+        roleTypingTimer = null;
+      }
+      roleIsTyping = false;
+    }
+
+    function typeRoleText(fullText) {
+      stopRoleTyping();
+      if (!roleText) return;
+
+      roleText.textContent = '';
+      roleIsTyping = true;
+
+      var i = 0;
+      function step() {
+        if (!roleIsTyping) return;
+        roleText.textContent = fullText.slice(0, i);
+        i++;
+        if (i <= fullText.length) {
+          roleTypingTimer = setTimeout(step, 22);
+        } else {
+          roleIsTyping = false;
+          roleTypingTimer = null;
+        }
+      }
+      step();
+    }
+
     function sendRoleMessage() {
       if (!roleInput || !roleText) return;
       var text = roleInput.value.trim();
       if (!text) return;
 
-      roleText.textContent = text;
+      typeRoleText(text);
       roleInput.value = '';
-      roleInput.style.height = '24px';
+      roleInput.style.height = '22px';
     }
 
     if (roleSendBtn) {
       roleSendBtn.addEventListener('click', sendRoleMessage);
+    }
+
+    if (roleStopBtn) {
+      roleStopBtn.addEventListener('click', function() {
+        stopRoleTyping();
+      });
     }
 
     if (roleInput) {
@@ -537,7 +569,7 @@ ball.addEventListener('click', function(e) {
 
       roleInput.addEventListener('input', function() {
         roleInput.style.height = 'auto';
-        roleInput.style.height = Math.min(roleInput.scrollHeight, 120) + 'px';
+        roleInput.style.height = Math.min(roleInput.scrollHeight, 100) + 'px';
       });
     }
 
