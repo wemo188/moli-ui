@@ -434,6 +434,14 @@ ball.addEventListener('click', function(e) {
     var pageWidth = window.innerWidth;
     var roleTypingTimer = null;
     var roleIsTyping = false;
+    var touchStartedOnInteractive = false;
+
+    function isInteractiveTarget(target) {
+      if (!target) return false;
+      return !!target.closest(
+        '#roleChatInput, #roleChatSendBtn, #roleChatStopBtn, #panelPaletteBtn, #panelPalette, .panel-palette, .panel-palette-row, .panel-palette-actions, .manual-input-bar'
+      );
+    }
 
     function setBallVisibility() {
       if (!floatingBall) return;
@@ -475,6 +483,10 @@ ball.addEventListener('click', function(e) {
 
     slider.addEventListener('touchstart', function(e) {
       if (!e.touches || !e.touches.length) return;
+
+      touchStartedOnInteractive = isInteractiveTarget(e.target);
+      if (touchStartedOnInteractive) return;
+
       startX = e.touches[0].clientX;
       currentX = startX;
       pageWidth = window.innerWidth;
@@ -484,7 +496,8 @@ ball.addEventListener('click', function(e) {
     }, { passive: true });
 
     slider.addEventListener('touchmove', function(e) {
-      if (!dragging || !e.touches || !e.touches.length) return;
+      if (!dragging) return;
+      if (!e.touches || !e.touches.length) return;
 
       currentX = e.touches[0].clientX;
       var deltaX = currentX - startX;
@@ -500,6 +513,11 @@ ball.addEventListener('click', function(e) {
     }, { passive: true });
 
     slider.addEventListener('touchend', function() {
+      if (touchStartedOnInteractive) {
+        touchStartedOnInteractive = false;
+        return;
+      }
+
       if (!dragging) return;
       dragging = false;
 
@@ -559,16 +577,28 @@ ball.addEventListener('click', function(e) {
     }
 
     if (roleSendBtn) {
-      roleSendBtn.addEventListener('click', sendRoleMessage);
+      roleSendBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sendRoleMessage();
+      });
     }
 
     if (roleStopBtn) {
-      roleStopBtn.addEventListener('click', function() {
+      roleStopBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         stopRoleTyping();
       });
     }
 
     if (roleInput) {
+      roleInput.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+      roleInput.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+      }, { passive: true });
+
       roleInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
@@ -599,21 +629,51 @@ ball.addEventListener('click', function(e) {
       if (heartColor && saved.heart) heartColor.value = saved.heart;
     }
 
-    if (paletteBtn && palette) {
-      paletteBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
+    function togglePalette(forceShow) {
+      if (!palette) return;
+      if (typeof forceShow === 'boolean') {
+        palette.classList.toggle('hidden', !forceShow);
+      } else {
         palette.classList.toggle('hidden');
+      }
+    }
+
+    if (paletteBtn) {
+      paletteBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePalette();
       });
 
-      document.addEventListener('click', function(e) {
-        if (!palette.contains(e.target) && e.target !== paletteBtn) {
-          palette.classList.add('hidden');
-        }
+      paletteBtn.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+      }, { passive: true });
+
+      paletteBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePalette();
+      }, { passive: false });
+    }
+
+    if (palette) {
+      palette.addEventListener('click', function(e) {
+        e.stopPropagation();
       });
+
+      palette.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+      }, { passive: true });
+
+      palette.addEventListener('touchend', function(e) {
+        e.stopPropagation();
+      }, { passive: true });
     }
 
     if (applyPaletteBtn) {
-      applyPaletteBtn.addEventListener('click', function() {
+      applyPaletteBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+
         var data = {
           outer: outerColor ? outerColor.value : '#1a1a1a',
           inner: innerColor ? innerColor.value : '#ffffff',
@@ -629,9 +689,20 @@ ball.addEventListener('click', function(e) {
         document.documentElement.style.setProperty('--panel-heart', data.heart);
 
         App.LS.set('panelPalette', data);
-        if (palette) palette.classList.add('hidden');
+        togglePalette(false);
       });
     }
+
+    document.addEventListener('click', function(e) {
+      if (!palette || palette.classList.contains('hidden')) return;
+      if (
+        (paletteBtn && paletteBtn.contains(e.target)) ||
+        palette.contains(e.target)
+      ) {
+        return;
+      }
+      togglePalette(false);
+    });
 
     loadPanelPalette();
     snapToPage(false);
