@@ -1540,3 +1540,21 @@ input[type="range"]::-webkit-slider-thumb {
     height: 108px;
   }
 }
+
+.page-tabs,
+.page-tab,
+.content-page,
+.role-chat-stage,
+.role-chat-frame,
+.role-chat-inner,
+.role-chat-inputbar,
+.role-chat-inputbar textarea,
+.role-chat-inputbar button {
+  position: relative;
+  z-index: 2;
+}
+
+.role-hearts,
+.role-frame-side {
+  pointer-events: none;
+}
