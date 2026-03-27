@@ -4,128 +4,267 @@
   var App = window.App;
   if (!App) return;
 
+  var FILES = [
+    {
+      key: 'html',
+      label: 'index.html',
+      storageKey: 'html',
+      textarea: '#sourceHtml',
+      sendCheckbox: '#sendHtmlToAI',
+      copyBtn: '#copySourceHtml',
+      saveBtn: '#saveSourceHtml',
+      clearBtn: '#clearSourceHtml',
+      block: 'source-html'
+    },
+    {
+      key: 'css',
+      label: 'style.css',
+      storageKey: 'css',
+      textarea: '#sourceCss',
+      sendCheckbox: '#sendCssToAI',
+      copyBtn: '#copySourceCss',
+      saveBtn: '#saveSourceCss',
+      clearBtn: '#clearSourceCss',
+      block: 'source-css'
+    },
+    {
+      key: 'coreJs',
+      label: 'script.js',
+      storageKey: 'coreJs',
+      textarea: '#sourceCoreJs',
+      sendCheckbox: '#sendCoreJsToAI',
+      copyBtn: '#copySourceCoreJs',
+      saveBtn: '#saveSourceCoreJs',
+      clearBtn: '#clearSourceCoreJs',
+      block: 'source-script-js'
+    },
+    {
+      key: 'themeJs',
+      label: 'theme.js',
+      storageKey: 'themeJs',
+      textarea: '#sourceThemeJs',
+      sendCheckbox: '#sendThemeJsToAI',
+      copyBtn: '#copySourceThemeJs',
+      saveBtn: '#saveSourceThemeJs',
+      clearBtn: '#clearSourceThemeJs',
+      block: 'source-theme-js'
+    },
+    {
+      key: 'fontJs',
+      label: 'font.js',
+      storageKey: 'fontJs',
+      textarea: '#sourceFontJs',
+      sendCheckbox: '#sendFontJsToAI',
+      copyBtn: '#copySourceFontJs',
+      saveBtn: '#saveSourceFontJs',
+      clearBtn: '#clearSourceFontJs',
+      block: 'source-font-js'
+    },
+    {
+      key: 'apiJs',
+      label: 'api.js',
+      storageKey: 'apiJs',
+      textarea: '#sourceApiJs',
+      sendCheckbox: '#sendApiJsToAI',
+      copyBtn: '#copySourceApiJs',
+      saveBtn: '#saveSourceApiJs',
+      clearBtn: '#clearSourceApiJs',
+      block: 'source-api-js'
+    },
+    {
+      key: 'sourceJs',
+      label: 'source.js',
+      storageKey: 'sourceJs',
+      textarea: '#sourceSourceJs',
+      sendCheckbox: '#sendSourceJsToAI',
+      copyBtn: '#copySourceSourceJs',
+      saveBtn: '#saveSourceSourceJs',
+      clearBtn: '#clearSourceSourceJs',
+      block: 'source-source-js'
+    },
+    {
+      key: 'bgJs',
+      label: 'bg.js',
+      storageKey: 'bgJs',
+      textarea: '#sourceBgJs',
+      sendCheckbox: '#sendBgJsToAI',
+      copyBtn: '#copySourceBgJs',
+      saveBtn: '#saveSourceBgJs',
+      clearBtn: '#clearSourceBgJs',
+      block: 'source-bg-js'
+    },
+    {
+      key: 'chatJs',
+      label: 'chat.js',
+      storageKey: 'chatJs',
+      textarea: '#sourceChatJs',
+      sendCheckbox: '#sendChatJsToAI',
+      copyBtn: '#copySourceChatJs',
+      saveBtn: '#saveSourceChatJs',
+      clearBtn: '#clearSourceChatJs',
+      block: 'source-chat-js'
+    }
+  ];
+
   var Source = {
-    sendFiles: {
-      html: false,
-      css: false,
-      js: false
-    },
-
-    aiDraft: {
-      html: '',
-      css: '',
-      js: '',
-      hasHtml: false,
-      hasCss: false,
-      hasJs: false
-    },
-
+    sendFiles: {},
+    aiDraft: {},
     sourcePreviewCache: {
       active: false,
       originalMain: '',
       originalDraftStyle: ''
     },
 
-    getSourceRepo: function() {
-      return App.LS.get('sourceRepo') || {
+    createEmptyRepo: function() {
+      return {
         html: '',
         css: '',
-        js: ''
+        coreJs: '',
+        themeJs: '',
+        fontJs: '',
+        apiJs: '',
+        sourceJs: '',
+        bgJs: '',
+        chatJs: ''
       };
     },
 
-    setSourceRepo: function(repo) {
-      App.LS.set('sourceRepo', {
-        html: repo.html || '',
-        css: repo.css || '',
-        js: repo.js || ''
+    createEmptyDraft: function() {
+      return {
+        html: '',
+        css: '',
+        coreJs: '',
+        themeJs: '',
+        fontJs: '',
+        apiJs: '',
+        sourceJs: '',
+        bgJs: '',
+        chatJs: '',
+        hasHtml: false,
+        hasCss: false,
+        hasCoreJs: false,
+        hasThemeJs: false,
+        hasFontJs: false,
+        hasApiJs: false,
+        hasSourceJs: false,
+        hasBgJs: false,
+        hasChatJs: false
+      };
+    },
+
+    getSourceRepo: function() {
+      var repo = App.LS.get('sourceRepo') || {};
+      var base = Source.createEmptyRepo();
+      Object.keys(base).forEach(function(k) {
+        if (typeof repo[k] === 'string') base[k] = repo[k];
       });
+      return base;
+    },
+
+    setSourceRepo: function(repo) {
+      var base = Source.createEmptyRepo();
+      Object.keys(base).forEach(function(k) {
+        base[k] = repo[k] || '';
+      });
+      App.LS.set('sourceRepo', base);
     },
 
     restoreSourceRepo: function() {
       var repo = Source.getSourceRepo();
-      if (App.$('#sourceHtml')) App.$('#sourceHtml').value = repo.html || '';
-      if (App.$('#sourceCss')) App.$('#sourceCss').value = repo.css || '';
-      if (App.$('#sourceJs')) App.$('#sourceJs').value = repo.js || '';
 
-      if (App.$('#sendHtmlToAI')) App.$('#sendHtmlToAI').checked = !!Source.sendFiles.html;
-      if (App.$('#sendCssToAI')) App.$('#sendCssToAI').checked = !!Source.sendFiles.css;
-      if (App.$('#sendJsToAI')) App.$('#sendJsToAI').checked = !!Source.sendFiles.js;
+      FILES.forEach(function(file) {
+        var ta = App.$(file.textarea);
+        var cb = App.$(file.sendCheckbox);
+        if (ta) ta.value = repo[file.storageKey] || '';
+        if (cb) cb.checked = !!Source.sendFiles[file.storageKey];
+      });
     },
 
     saveSendFiles: function() {
-      Source.sendFiles = {
-        html: App.$('#sendHtmlToAI') ? App.$('#sendHtmlToAI').checked : false,
-        css: App.$('#sendCssToAI') ? App.$('#sendCssToAI').checked : false,
-        js: App.$('#sendJsToAI') ? App.$('#sendJsToAI').checked : false
-      };
-      App.LS.set('sendFiles', Source.sendFiles);
+      var map = {};
+      FILES.forEach(function(file) {
+        var cb = App.$(file.sendCheckbox);
+        map[file.storageKey] = !!(cb && cb.checked);
+      });
+      Source.sendFiles = map;
+      App.LS.set('sendFiles', map);
     },
 
-    saveSourceField: function(type) {
+    saveSourceField: function(storageKey) {
       var repo = Source.getSourceRepo();
-      if (type === 'html' && App.$('#sourceHtml')) repo.html = App.$('#sourceHtml').value;
-      if (type === 'css' && App.$('#sourceCss')) repo.css = App.$('#sourceCss').value;
-      if (type === 'js' && App.$('#sourceJs')) repo.js = App.$('#sourceJs').value;
+      var file = FILES.find(function(f) { return f.storageKey === storageKey; });
+      if (!file) return;
+
+      var ta = App.$(file.textarea);
+      repo[storageKey] = ta ? ta.value : '';
       Source.setSourceRepo(repo);
-      App.showToast(type + ' 已保存');
+      App.showToast(file.label + ' 已保存');
     },
 
-    clearSourceField: function(type) {
+    clearSourceField: function(storageKey) {
       var repo = Source.getSourceRepo();
-      if (type === 'html') {
-        repo.html = '';
-        if (App.$('#sourceHtml')) App.$('#sourceHtml').value = '';
-      }
-      if (type === 'css') {
-        repo.css = '';
-        if (App.$('#sourceCss')) App.$('#sourceCss').value = '';
-      }
-      if (type === 'js') {
-        repo.js = '';
-        if (App.$('#sourceJs')) App.$('#sourceJs').value = '';
-      }
+      var file = FILES.find(function(f) { return f.storageKey === storageKey; });
+      if (!file) return;
+
+      repo[storageKey] = '';
+      var ta = App.$(file.textarea);
+      if (ta) ta.value = '';
+
       Source.setSourceRepo(repo);
-      App.showToast(type + ' 已清空');
+      App.showToast(file.label + ' 已清空');
     },
 
-    copySourceField: function(type) {
-      var text = '';
-      if (type === 'html' && App.$('#sourceHtml')) text = App.$('#sourceHtml').value;
-      if (type === 'css' && App.$('#sourceCss')) text = App.$('#sourceCss').value;
-      if (type === 'js' && App.$('#sourceJs')) text = App.$('#sourceJs').value;
+    copySourceField: function(storageKey) {
+      var file = FILES.find(function(f) { return f.storageKey === storageKey; });
+      if (!file) return;
+
+      var ta = App.$(file.textarea);
+      var text = ta ? ta.value : '';
 
       App.copyText(text || '').then(function() {
-        App.showToast(type + ' 已复制');
+        App.showToast(file.label + ' 已复制');
       }).catch(function() {
         App.showToast('复制失败');
       });
     },
 
-    updateSourceRepoFile: function(type, content) {
+    updateSourceRepoFile: function(storageKey, content) {
       var repo = Source.getSourceRepo();
-      if (type === 'html') {
-        repo.html = content;
-        if (App.$('#sourceHtml')) App.$('#sourceHtml').value = content;
-      }
-      if (type === 'css') {
-        repo.css = content;
-        if (App.$('#sourceCss')) App.$('#sourceCss').value = content;
-      }
-      if (type === 'js') {
-        repo.js = content;
-        if (App.$('#sourceJs')) App.$('#sourceJs').value = content;
-      }
+      var file = FILES.find(function(f) { return f.storageKey === storageKey; });
+      if (!file) return;
+
+      repo[storageKey] = content;
+      var ta = App.$(file.textarea);
+      if (ta) ta.value = content;
       Source.setSourceRepo(repo);
+    },
+
+    getDraftFlagName: function(storageKey) {
+      var map = {
+        html: 'hasHtml',
+        css: 'hasCss',
+        coreJs: 'hasCoreJs',
+        themeJs: 'hasThemeJs',
+        fontJs: 'hasFontJs',
+        apiJs: 'hasApiJs',
+        sourceJs: 'hasSourceJs',
+        bgJs: 'hasBgJs',
+        chatJs: 'hasChatJs'
+      };
+      return map[storageKey];
     },
 
     updateDraftStatus: function() {
       var names = [];
-      if (Source.aiDraft.hasHtml) names.push('html');
-      if (Source.aiDraft.hasCss) names.push('css');
-      if (Source.aiDraft.hasJs) names.push('js');
-      if (App.$('#sourceAiDraftStatus')) {
-        App.$('#sourceAiDraftStatus').textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
+
+      FILES.forEach(function(file) {
+        var flag = Source.getDraftFlagName(file.storageKey);
+        if (Source.aiDraft[flag]) names.push(file.label);
+      });
+
+      var status = App.$('#sourceAiDraftStatus');
+      if (status) {
+        status.textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
       }
     },
 
@@ -135,53 +274,29 @@
     },
 
     clearDraft: function() {
-      Source.aiDraft = {
-        html: '',
-        css: '',
-        js: '',
-        hasHtml: false,
-        hasCss: false,
-        hasJs: false
-      };
+      Source.aiDraft = Source.createEmptyDraft();
       Source.saveDraft();
     },
 
     applyReplyToDraft: function(reply) {
-      var match;
       var accepted = false;
 
-      if (Source.sendFiles.html) {
-        var htmlReg = /```source-html\n?([\s\S]*?)```/g;
-        while ((match = htmlReg.exec(reply)) !== null) {
-          Source.aiDraft.html = match[1].trim();
-          Source.aiDraft.hasHtml = true;
-          accepted = true;
-        }
-      } else if (/```source-html\n?[\s\S]*?```/g.test(reply)) {
-        App.showToast('已拦截未授权的 index.html 改写');
-      }
+      FILES.forEach(function(file) {
+        var reg = new RegExp('```' + file.block + '\\n?([\\s\\S]*?)```', 'g');
+        var unauthorizedReg = new RegExp('```' + file.block + '\\n?[\\s\\S]*?```', 'g');
+        var match;
+        var flag = Source.getDraftFlagName(file.storageKey);
 
-      if (Source.sendFiles.css) {
-        var cssReg = /```source-css\n?([\s\S]*?)```/g;
-        while ((match = cssReg.exec(reply)) !== null) {
-          Source.aiDraft.css = match[1].trim();
-          Source.aiDraft.hasCss = true;
-          accepted = true;
+        if (Source.sendFiles[file.storageKey]) {
+          while ((match = reg.exec(reply)) !== null) {
+            Source.aiDraft[file.storageKey] = match[1].trim();
+            Source.aiDraft[flag] = true;
+            accepted = true;
+          }
+        } else if (unauthorizedReg.test(reply)) {
+          App.showToast('已拦截未授权的 ' + file.label + ' 改写');
         }
-      } else if (/```source-css\n?[\s\S]*?```/g.test(reply)) {
-        App.showToast('已拦截未授权的 style.css 改写');
-      }
-
-      if (Source.sendFiles.js) {
-        var jsReg = /```source-js\n?([\s\S]*?)```/g;
-        while ((match = jsReg.exec(reply)) !== null) {
-          Source.aiDraft.js = match[1].trim();
-          Source.aiDraft.hasJs = true;
-          accepted = true;
-        }
-      } else if (/```source-js\n?[\s\S]*?```/g.test(reply)) {
-        App.showToast('已拦截未授权的 script.js 改写');
-      }
+      });
 
       if (accepted) {
         Source.saveDraft();
@@ -193,19 +308,15 @@
       var repo = Source.getSourceRepo();
       var parts = [];
       var allowed = [];
+      var formats = [];
 
-      if (Source.sendFiles.html && repo.html) {
-        parts.push('[index.html]\n' + repo.html);
-        allowed.push('html');
-      }
-      if (Source.sendFiles.css && repo.css) {
-        parts.push('[style.css]\n' + repo.css);
-        allowed.push('css');
-      }
-      if (Source.sendFiles.js && repo.js) {
-        parts.push('[script.js]\n' + repo.js);
-        allowed.push('js');
-      }
+      FILES.forEach(function(file) {
+        if (Source.sendFiles[file.storageKey] && repo[file.storageKey]) {
+          parts.push('[' + file.label + ']\n' + repo[file.storageKey]);
+          allowed.push(file.label);
+          formats.push('```' + file.block + '\n完整 ' + file.label + '\n```');
+        }
+      });
 
       if (!parts.length) return '';
 
@@ -213,19 +324,18 @@
         parts.join('\n\n') +
         '\n\n你只能修改这些被发送的文件：' + allowed.join(', ') + '。\n' +
         '没有被发送的文件，你绝对不能返回对应的 source 代码块。\n' +
-        '如果用户只发送了 html 和 css，你绝对不能返回 source-js。\n' +
-        '如果用户只发送了 js，你绝对不能返回 source-html 或 source-css。\n' +
-        '请优先返回以下格式：\n' +
-        (Source.sendFiles.html ? '```source-html\n完整 index.html\n```\n' : '') +
-        (Source.sendFiles.css ? '```source-css\n完整 style.css\n```\n' : '') +
-        (Source.sendFiles.js ? '```source-js\n完整 script.js\n```\n' : '');
+        '请严格使用与文件一一对应的代码块名称返回完整文件内容。\n' +
+        '允许的返回格式如下：\n' +
+        formats.join('\n');
     },
 
     cleanReplyForDisplay: function(reply) {
-      var cleaned = reply
-        .replace(/```source-html\n?[\s\S]*?```/g, '[AI 提交了 index.html 草稿]')
-        .replace(/```source-css\n?[\s\S]*?```/g, '[AI 提交了 style.css 草稿]')
-        .replace(/```source-js\n?[\s\S]*?```/g, '[AI 提交了 script.js 草稿]');
+      var cleaned = reply;
+
+      FILES.forEach(function(file) {
+        var reg = new RegExp('```' + file.block + '\\n?[\\s\\S]*?```', 'g');
+        cleaned = cleaned.replace(reg, '[AI 提交了 ' + file.label + ' 草稿]');
+      });
 
       if (cleaned.length > 1200) {
         cleaned = cleaned.slice(0, 1200) + '\n\n[回复过长，已折叠显示]';
@@ -250,7 +360,13 @@
     },
 
     previewDraft: function() {
-      if (!Source.aiDraft.hasHtml && !Source.aiDraft.hasCss && !Source.aiDraft.hasJs) {
+      var hasAnyDraft = false;
+      FILES.forEach(function(file) {
+        var flag = Source.getDraftFlagName(file.storageKey);
+        if (Source.aiDraft[flag]) hasAnyDraft = true;
+      });
+
+      if (!hasAnyDraft) {
         App.showToast('暂无可预览的草稿');
         return;
       }
@@ -271,8 +387,16 @@
         styleEl.textContent = Source.aiDraft.css;
       }
 
-      if (Source.aiDraft.hasJs) {
-        App.showToast('JS 草稿暂不自动预览');
+      if (
+        Source.aiDraft.hasCoreJs ||
+        Source.aiDraft.hasThemeJs ||
+        Source.aiDraft.hasFontJs ||
+        Source.aiDraft.hasApiJs ||
+        Source.aiDraft.hasSourceJs ||
+        Source.aiDraft.hasBgJs ||
+        Source.aiDraft.hasChatJs
+      ) {
+        App.showToast('JS 草稿暂不自动预览，HTML/CSS 已预览');
       } else {
         App.showToast('已预览草稿效果');
       }
@@ -294,14 +418,20 @@
     },
 
     saveDraftToSource: function() {
-      if (!Source.aiDraft.hasHtml && !Source.aiDraft.hasCss && !Source.aiDraft.hasJs) {
+      var hasAnyDraft = false;
+
+      FILES.forEach(function(file) {
+        var flag = Source.getDraftFlagName(file.storageKey);
+        if (Source.aiDraft[flag]) {
+          hasAnyDraft = true;
+          Source.updateSourceRepoFile(file.storageKey, Source.aiDraft[file.storageKey]);
+        }
+      });
+
+      if (!hasAnyDraft) {
         App.showToast('暂无可保存的草稿');
         return;
       }
-
-      if (Source.aiDraft.hasHtml) Source.updateSourceRepoFile('html', Source.aiDraft.html);
-      if (Source.aiDraft.hasCss) Source.updateSourceRepoFile('css', Source.aiDraft.css);
-      if (Source.aiDraft.hasJs) Source.updateSourceRepoFile('js', Source.aiDraft.js);
 
       Source.clearDraft();
       App.showToast('已保存 AI 修改');
@@ -313,33 +443,29 @@
       App.showToast('已丢弃 AI 修改');
     },
 
+    bindFileEvents: function(file) {
+      App.safeOn(file.sendCheckbox, 'change', function() {
+        Source.saveSendFiles();
+        App.showToast(this.checked ? ('已勾选 ' + file.label) : ('已取消 ' + file.label));
+      });
+
+      App.safeOn(file.copyBtn, 'click', function() {
+        Source.copySourceField(file.storageKey);
+      });
+
+      App.safeOn(file.saveBtn, 'click', function() {
+        Source.saveSourceField(file.storageKey);
+      });
+
+      App.safeOn(file.clearBtn, 'click', function() {
+        Source.clearSourceField(file.storageKey);
+      });
+    },
+
     bindEvents: function() {
-      App.safeOn('#sendHtmlToAI', 'change', function() {
-        Source.saveSendFiles();
-        App.showToast(this.checked ? '已勾选 index.html' : '已取消 index.html');
+      FILES.forEach(function(file) {
+        Source.bindFileEvents(file);
       });
-
-      App.safeOn('#sendCssToAI', 'change', function() {
-        Source.saveSendFiles();
-        App.showToast(this.checked ? '已勾选 style.css' : '已取消 style.css');
-      });
-
-      App.safeOn('#sendJsToAI', 'change', function() {
-        Source.saveSendFiles();
-        App.showToast(this.checked ? '已勾选 script.js' : '已取消 script.js');
-      });
-
-      App.safeOn('#copySourceHtml', 'click', function() { Source.copySourceField('html'); });
-      App.safeOn('#saveSourceHtml', 'click', function() { Source.saveSourceField('html'); });
-      App.safeOn('#clearSourceHtml', 'click', function() { Source.clearSourceField('html'); });
-
-      App.safeOn('#copySourceCss', 'click', function() { Source.copySourceField('css'); });
-      App.safeOn('#saveSourceCss', 'click', function() { Source.saveSourceField('css'); });
-      App.safeOn('#clearSourceCss', 'click', function() { Source.clearSourceField('css'); });
-
-      App.safeOn('#copySourceJs', 'click', function() { Source.copySourceField('js'); });
-      App.safeOn('#saveSourceJs', 'click', function() { Source.saveSourceField('js'); });
-      App.safeOn('#clearSourceJs', 'click', function() { Source.clearSourceField('js'); });
 
       App.safeOn('#previewAiDraftBtn', 'click', function() {
         Source.previewDraft();
@@ -354,21 +480,73 @@
       });
     },
 
-    init: function() {
-      Source.sendFiles = App.LS.get('sendFiles') || {
-        html: false,
-        css: false,
-        js: false
-      };
+    normalizeOldDraft: function(draft) {
+      var base = Source.createEmptyDraft();
+      draft = draft || {};
 
-      Source.aiDraft = App.LS.get('aiDraft') || {
-        html: '',
-        css: '',
-        js: '',
-        hasHtml: false,
-        hasCss: false,
-        hasJs: false
-      };
+      Object.keys(base).forEach(function(k) {
+        if (typeof draft[k] !== 'undefined') base[k] = draft[k];
+      });
+
+      return base;
+    },
+
+    normalizeOldSendFiles: function(data) {
+      var base = Source.createEmptyRepo();
+      var result = {};
+      Object.keys(base).forEach(function(k) {
+        result[k] = false;
+      });
+
+      data = data || {};
+
+      if (typeof data.html === 'boolean') result.html = data.html;
+      if (typeof data.css === 'boolean') result.css = data.css;
+      if (typeof data.js === 'boolean') result.coreJs = data.js;
+
+      if (typeof data.coreJs === 'boolean') result.coreJs = data.coreJs;
+      if (typeof data.themeJs === 'boolean') result.themeJs = data.themeJs;
+      if (typeof data.fontJs === 'boolean') result.fontJs = data.fontJs;
+      if (typeof data.apiJs === 'boolean') result.apiJs = data.apiJs;
+      if (typeof data.sourceJs === 'boolean') result.sourceJs = data.sourceJs;
+      if (typeof data.bgJs === 'boolean') result.bgJs = data.bgJs;
+      if (typeof data.chatJs === 'boolean') result.chatJs = data.chatJs;
+
+      return result;
+    },
+
+    normalizeOldRepo: function(repo) {
+      var base = Source.createEmptyRepo();
+      repo = repo || {};
+
+      if (typeof repo.html === 'string') base.html = repo.html;
+      if (typeof repo.css === 'string') base.css = repo.css;
+      if (typeof repo.js === 'string') base.coreJs = repo.js;
+
+      if (typeof repo.coreJs === 'string') base.coreJs = repo.coreJs;
+      if (typeof repo.themeJs === 'string') base.themeJs = repo.themeJs;
+      if (typeof repo.fontJs === 'string') base.fontJs = repo.fontJs;
+      if (typeof repo.apiJs === 'string') base.apiJs = repo.apiJs;
+      if (typeof repo.sourceJs === 'string') base.sourceJs = repo.sourceJs;
+      if (typeof repo.bgJs === 'string') base.bgJs = repo.bgJs;
+      if (typeof repo.chatJs === 'string') base.chatJs = repo.chatJs;
+
+      return base;
+    },
+
+    init: function() {
+      var oldSendFiles = App.LS.get('sendFiles') || {};
+      var oldDraft = App.LS.get('aiDraft') || {};
+      var oldRepo = App.LS.get('sourceRepo') || {};
+
+      Source.sendFiles = Source.normalizeOldSendFiles(oldSendFiles);
+      Source.aiDraft = Source.normalizeOldDraft(oldDraft);
+
+      var normalizedRepo = Source.normalizeOldRepo(oldRepo);
+      Source.setSourceRepo(normalizedRepo);
+
+      App.LS.set('sendFiles', Source.sendFiles);
+      App.LS.set('aiDraft', Source.aiDraft);
 
       App.source = Source;
       Source.restoreSourceRepo();
