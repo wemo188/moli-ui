@@ -2098,3 +2098,267 @@ input[type="range"]::-webkit-slider-thumb {
     height: 34px;
   }
 }
+
+/* =========================
+   第二页：手动重建版短对话面板
+========================= */
+.manual-chat-shell {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.manual-chat-outer {
+  position: relative;
+  width: 100%;
+  min-height: 72vh;
+  border: 4px solid #111111;
+  border-radius: 34px;
+  background: #ffffff;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 16px 14px;
+}
+
+/* 内层长方体对话面板 */
+.manual-chat-inner {
+  position: relative;
+  width: calc(100% - 48px);
+  min-height: 54vh;
+  border: 4px solid #111111;
+  border-radius: 28px;
+  background: #ffffff;
+  padding: 18px 16px 18px 16px;
+}
+
+/* 头部 */
+.manual-chat-header {
+  margin-bottom: 14px;
+}
+
+.manual-role-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1f2024;
+  margin-bottom: 4px;
+}
+
+.manual-role-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #68789a;
+}
+
+/* 文本区域 */
+.manual-chat-text-panel {
+  min-height: 40vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.manual-role-text {
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.95;
+  color: #252629;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 爱心 */
+.manual-heart {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #6d80b2;
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+.manual-heart::before,
+.manual-heart::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #6d80b2;
+  border-radius: 50%;
+}
+
+.manual-heart::before {
+  left: -8px;
+  top: 0;
+}
+
+.manual-heart::after {
+  left: 0;
+  top: -8px;
+}
+
+.manual-heart.heart-top {
+  right: 18px;
+  top: 14px;
+  transform: rotate(45deg) scale(1);
+}
+
+.manual-heart.heart-bottom-1 {
+  right: 20px;
+  bottom: 150px;
+  transform: rotate(45deg) scale(0.92);
+}
+
+.manual-heart.heart-bottom-2 {
+  right: 24px;
+  bottom: 122px;
+  transform: rotate(45deg) scale(0.72);
+}
+
+.manual-heart.heart-bottom-3 {
+  right: 18px;
+  bottom: 96px;
+  transform: rotate(45deg) scale(0.55);
+}
+
+/* 底部蓝色输入栏 */
+.manual-input-bar {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 4px solid #111111;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #7890c8 0%, #60719d 100%);
+}
+
+/* 左侧停止黑点 */
+.manual-stop-btn {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: #111111;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.18);
+}
+
+.manual-stop-btn:active {
+  transform: scale(0.92);
+}
+
+/* 输入框 */
+.manual-input-bar textarea {
+  flex: 1;
+  min-height: 22px;
+  max-height: 100px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #f7fbff;
+  font-size: 14px;
+  line-height: 1.55;
+  font-family: inherit;
+}
+
+.manual-input-bar textarea::placeholder {
+  color: rgba(247,251,255,0.74);
+}
+
+/* 右侧发送按钮：不显示文字，只显示箭头感 */
+.manual-send-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 3px solid #111111;
+  border-radius: 14px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.manual-send-btn span {
+  display: block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-left: 12px solid #57658a;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+
+.manual-send-btn:active {
+  transform: scale(0.96);
+  background: #eef3ff;
+}
+
+@media (max-width: 640px) {
+  .manual-chat-outer {
+    min-height: 72vh;
+    border-radius: 28px;
+    padding: 14px 12px 12px;
+  }
+
+  .manual-chat-inner {
+    width: calc(100% - 38px);
+    min-height: 52vh;
+    border-radius: 22px;
+    padding: 14px 12px;
+  }
+
+  .manual-role-name {
+    font-size: 18px;
+  }
+
+  .manual-role-text {
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .manual-input-bar {
+    min-height: 58px;
+    border-radius: 16px;
+    padding: 8px 10px;
+  }
+
+  .manual-send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .manual-send-btn span {
+    border-left-width: 10px;
+    border-top-width: 6px;
+    border-bottom-width: 6px;
+  }
+
+  .manual-heart.heart-top {
+    right: 14px;
+    top: 12px;
+  }
+
+  .manual-heart.heart-bottom-1 {
+    right: 16px;
+    bottom: 138px;
+  }
+
+  .manual-heart.heart-bottom-2 {
+    right: 20px;
+    bottom: 112px;
+  }
+
+  .manual-heart.heart-bottom-3 {
+    right: 14px;
+    bottom: 88px;
+  }
+}
