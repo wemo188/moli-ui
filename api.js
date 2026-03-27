@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
 
@@ -8,6 +7,9 @@
   var Api = {
     apiConfigs: [],
     activeApi: null,
+    eventsBound: false,
+    testingConnection: false,
+    fetchingModels: false,
 
     updateAiStatus: function() {
       var status = App.$('#aiStatus');
@@ -72,23 +74,29 @@
       }).join('');
     },
 
-    saveCurrentFormToConfigObject: function() {
-      var name = App.$('#apiName') ? App.$('#apiName').value.trim() : '';
-      var url = App.$('#apiUrl') ? App.$('#apiUrl').value.trim() : '';
-      var key = App.$('#apiKey') ? App.$('#apiKey').value.trim() : '';
-      var model = App.$('#apiModel') ? App.$('#apiModel').value.trim() : '';
+    setBtnLoading: function(selector, loadingText, busy) {
+      var btn = App.$(selector);
+      if (!btn) return;
 
-      if (!name || !url || !key || !model) return null;
+      if (!btn.dataset.originText) {
+        btn.dataset.originText = btn.textContent;
+      }
 
-      return {
-        name: name,
-        url: url,
-        key: key,
-        model: model
-      };
+      btn.disabled = !!busy;
+      btn.style.opacity = busy ? '0.65' : '';
+      btn.style.pointerEvents = busy ? 'none' : '';
+
+      if (busy) {
+        btn.textContent = loadingText;
+      } else {
+        btn.textContent = btn.dataset.originText || btn.textContent;
+      }
     },
 
     bindEvents: function() {
+      if (Api.eventsBound) return;
+      Api.eventsBound = true;
+
       window._useApi = function(i) {
         var cfg = Api.apiConfigs[i];
         if (!cfg) {
@@ -137,13 +145,19 @@
       };
 
       App.safeOn('#saveApiBtn', 'click', function() {
-        var config = Api.saveCurrentFormToConfigObject();
-        if (!config) {
+        var name = App.$('#apiName') ? App.$('#apiName').value.trim() : '';
+        var url = App.$('#apiUrl') ? App.$('#apiUrl').value.trim() : '';
+        var key = App.$('#apiKey') ? App.$('#apiKey').value.trim() : '';
+        var model = App.$('#apiModel') ? App.$('#apiModel').value.trim() : '';
+
+        if (!name || !url || !key || !model) {
           App.showToast('请填写所有字段', 2200);
           return;
         }
 
+        var config = { name: name, url: url, key: key, model: model };
         var existing = -1;
+
         for (var i = 0; i < Api.apiConfigs.length; i++) {
           if (Api.apiConfigs[i].name === config.name) {
             existing = i;
@@ -151,11 +165,8 @@
           }
         }
 
-        if (existing >= 0) {
-          Api.apiConfigs[existing] = config;
-        } else {
-          Api.apiConfigs.push(config);
-        }
+        if (existing >= 0) Api.apiConfigs[existing] = config;
+        else Api.apiConfigs.push(config);
 
         App.LS.set('apiConfigs', Api.apiConfigs);
         Api.renderSavedApis();
@@ -168,7 +179,12 @@
         inp.type = inp.type === 'password' ? 'text' : 'password';
       });
 
-      App.safeOn('#fetchModelsBtn', 'click', function() {
+      App.safeOn('#fetchModelsBtn', 'click', async function() {
+        if (Api.fetchingModels) {
+          App.showToast('正在获取模型，请稍候...');
+          return;
+        }
+
         var url = App.$('#apiUrl') ? App.$('#apiUrl').value.trim() : '';
         var key = App.$('#apiKey') ? App.$('#apiKey').value.trim() : '';
 
@@ -177,18 +193,22 @@
           return;
         }
 
+        Api.fetchingModels = true;
+        Api.setBtnLoading('#fetchModelsBtn', '获取中', true);
         App.showToast('正在获取模型列表...', 1800);
 
-        fetch(url.replace(/\/+$/, '') + '/models', {
-          headers: {
-            'Authorization': 'Bearer ' + key
+        try {
+          var response = await fetch(url.replace(/\/+$/, '') + '/models', {
+            headers: {
+              'Authorization': 'Bearer ' + key
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
           }
-        })
-        .then(function(r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
-        .then(function(data) {
+
+          var data = await response.json();
           var raw = data.data || data;
           var models = [];
 
@@ -222,13 +242,20 @@
           });
 
           App.showToast('已获取 ' + models.length + ' 个模型', 2200);
-        })
-        .catch(function(err) {
+        } catch (err) {
           App.showToast('获取模型失败: ' + err.message, 2600);
-        });
+        } finally {
+          Api.fetchingModels = false;
+          Api.setBtnLoading('#fetchModelsBtn', '获取中', false);
+        }
       });
 
-      App.safeOn('#testApiBtn', 'click', function() {
+      App.safeOn('#testApiBtn', 'click', async function() {
+        if (Api.testingConnection) {
+          App.showToast('正在测试连接，请稍候...');
+          return;
+        }
+
         var url = App.$('#apiUrl') ? App.$('#apiUrl').value.trim() : '';
         var key = App.$('#apiKey') ? App.$('#apiKey').value.trim() : '';
         var model = App.$('#apiModel') ? App.$('#apiModel').value.trim() : '';
@@ -238,31 +265,42 @@
           return;
         }
 
+        Api.testingConnection = true;
+        Api.setBtnLoading('#testApiBtn', '测试中', true);
         App.showToast('正在测试连接...', 1800);
 
-        fetch(url.replace(/\/+$/, '') + '/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + key
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [
-              { role: 'user', content: 'Hi' }
-            ]
-          })
-        })
-        .then(function(r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json().catch(function() { return {}; });
-        })
-        .then(function() {
-          App.showToast('连接成功', 2200);
-        })
-        .catch(function(err) {
-          App.showToast('连接失败: ' + err.message, 2800);
-        });
+        try {
+          var response = await fetch(url.replace(/\/+$/, '') + '/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + key
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                { role: 'user', content: 'Hi' }
+              ]
+            })
+          });
+
+          var data = await response.json().catch(function() { return {}; });
+
+          if (!response.ok) {
+            var msg =
+              (data && data.error && data.error.message) ||
+              (data && data.message) ||
+              ('HTTP ' + response.status);
+            throw new Error(msg);
+          }
+
+          App.showToast('连接成功', 2400);
+        } catch (err) {
+          App.showToast('连接失败: ' + err.message, 3200);
+        } finally {
+          Api.testingConnection = false;
+          Api.setBtnLoading('#testApiBtn', '测试中', false);
+        }
       });
     },
 
