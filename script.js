@@ -1193,11 +1193,6 @@
     copyBtn.type = 'button';
     copyBtn.textContent = '复制';
 
-    var editBtn = document.createElement('button');
-    editBtn.className = 'msg-tool-btn';
-    editBtn.type = 'button';
-    editBtn.textContent = '编辑';
-
     var rerollBtn = document.createElement('button');
     rerollBtn.className = 'msg-tool-btn';
     rerollBtn.type = 'button';
@@ -1210,7 +1205,6 @@
       : '1/1';
 
     tools.appendChild(copyBtn);
-    tools.appendChild(editBtn);
     tools.appendChild(rerollBtn);
     tools.appendChild(indicator);
 
@@ -1224,35 +1218,14 @@
       });
     });
 
-    editBtn.addEventListener('click', function() {
-      if (meta && meta.sourceMode) {
-        if ($('#sourceAiInput')) {
-          $('#sourceAiInput').value = meta.userText || '';
-          openPanel('sourcePanel');
-          showToast('已填入源码改写框');
-        }
-      } else {
-        if ($('#chatInput')) {
-          $('#chatInput').value = meta && meta.userText ? meta.userText : '';
-          openPanel('aiPanel');
-          showToast('已填入聊天输入框');
-        }
-      }
-    });
-
     rerollBtn.addEventListener('click', function() {
       if (!meta || !meta.userText) {
         showToast('缺少可重试内容');
         return;
       }
 
-      if (meta.sourceMode) {
-        if ($('#sourceAiInput')) $('#sourceAiInput').value = meta.userText;
-        sendSourceAiMessage(meta.userText, meta.rollGroupId);
-      } else {
-        if ($('#chatInput')) $('#chatInput').value = meta.userText;
-        sendNormalChatMessage(meta.userText, meta.rollGroupId);
-      }
+      if ($('#chatInput')) $('#chatInput').value = meta.userText;
+      sendNormalChatMessage(meta.userText, meta.rollGroupId);
     });
   }
 
@@ -1405,10 +1378,8 @@
       return;
     }
 
-    var sourceMode = !!opts.sourceMode;
     var replyDiv = opts.replyDiv || null;
-
-    var wrappedText = sourceMode ? buildSourceAiPrompt(userText) : userText;
+    var wrappedText = userText + buildSelectedSourcePrompt();
 
     var messages = [
       { role: 'system', content: SYSTEM_PROMPT }
@@ -1515,11 +1486,15 @@
         try {
           fullReply = await handleStreamResponse(function(tempReply) {
             if (replyDiv) {
-              var displayTemp = sourceMode ? cleanReplyForDisplay(tempReply) : tempReply;
+              var displayTemp = cleanReplyForDisplay(tempReply);
               replyDiv.innerHTML = esc(displayTemp).replace(/\n/g, '<br>');
             }
           });
         } catch (streamErr) {
+          if (streamErr.name === 'AbortError') {
+            currentAbortController = null;
+            throw streamErr;
+          }
           showToast('流式失败，自动切换普通模式');
           fullReply = await handleNormalResponse();
         }
@@ -1562,7 +1537,6 @@
 
     var meta = {
       userText: displayText,
-      sourceMode: false,
       rollGroupId: rollGroupId,
       rollIndex: rollIndex,
       rollCount: rollIndex
@@ -1572,15 +1546,17 @@
 
     try {
       var fullReply = await sendChatRequest(displayText, {
-        sourceMode: false,
         replyDiv: replyDiv
       });
+
+      var displayReply = cleanReplyForDisplay(fullReply);
+      applyReplyToDraft(fullReply);
 
       meta.rollCount = rollIndex;
       assistantRollMap[rollGroupId].push(fullReply);
 
       if (replyDiv) {
-        replyDiv.innerHTML = esc(fullReply).replace(/\n/g, '<br>');
+        replyDiv.innerHTML = esc(displayReply).replace(/\n/g, '<br>');
       }
 
       var allWraps = chatMessages.querySelectorAll('.chat-msg-wrap.assistant');
@@ -1594,12 +1570,16 @@
       chatHistory.push({
         role: 'assistant',
         content: fullReply,
-        displayContent: fullReply,
+        displayContent: displayReply,
         meta: meta
       });
       saveChatHistory();
       clearVisionImage();
     } catch (err) {
+      if (err.name === 'AbortError') {
+        showToast('已停止');
+        return;
+      }
       if (replyDiv) {
         replyDiv.innerHTML = '请求失败: ' + esc(err.message);
       }
@@ -1695,27 +1675,6 @@
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendNormalChatMessage();
-    }
-  });
-
-  safeOn('#sourceAiSendBtn', 'click', function() {
-    sendSourceAiMessage();
-  });
-
-  safeOn('#sourceAiInput', 'keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendSourceAiMessage();
-    }
-  });
-
-  safeOn('#sourceAiStopBtn', 'click', function() {
-    if (currentAbortController) {
-      currentAbortController.abort();
-      currentAbortController = null;
-      showToast('已停止');
-    } else {
-      showToast('当前没有进行中的请求');
     }
   });
 
