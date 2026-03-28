@@ -1,3 +1,4 @@
+
 :root {
   --bg-primary: #f0f6fb;
   --bg-secondary: #ffffff;
@@ -13,12 +14,6 @@
   --radius: 16px;
   --radius-sm: 10px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
-
-  --panel-outer: #1a1a1a;
-  --panel-inner: #ffffff;
-  --panel-line: #57658a;
-  --panel-bar: #6f9fc8;
-  --panel-heart: #6f9fc8;
 }
 
 * {
@@ -63,12 +58,12 @@ html, body {
 }
 
 /* =========================
-   悬浮小助手
+   悬浮球
 ========================= */
 .floating-ball {
   position: fixed;
-  right: 6px;
-  bottom: calc(12px + var(--safe-bottom));
+  right: 10px;
+  bottom: calc(20px + var(--safe-bottom));
   z-index: 9999;
   cursor: pointer;
   touch-action: none;
@@ -76,8 +71,8 @@ html, body {
 }
 
 .floating-ball.mascot-ball {
-  width: 200px;
-  height: 200px;
+  width: 80px;
+  height: 80px;
   border-radius: 0;
   background: transparent;
   border: none;
@@ -117,6 +112,10 @@ html, body {
   50% { transform: translateY(-3px); }
 }
 
+.mascot-img.breathing {
+  animation: mascotFloat 3s ease-in-out infinite;
+}
+
 @keyframes mascotWave {
   0% { transform: rotate(0deg); }
   20% { transform: rotate(-3deg); }
@@ -126,10 +125,18 @@ html, body {
   100% { transform: rotate(0deg); }
 }
 
+.mascot-img.waving {
+  animation: mascotWave 0.8s ease-in-out;
+}
+
 @keyframes mascotTilt {
   0% { transform: rotate(0deg); }
   50% { transform: rotate(-5deg) translateX(-2px); }
   100% { transform: rotate(0deg); }
+}
+
+.mascot-img.tilting {
+  animation: mascotTilt 1.2s ease-in-out;
 }
 
 @keyframes mascotBounce {
@@ -137,6 +144,10 @@ html, body {
   30% { transform: translateY(-8px) scale(1.05); }
   60% { transform: translateY(0) scale(0.97); }
   100% { transform: translateY(0) scale(1); }
+}
+
+.mascot-img.surprised {
+  animation: mascotBounce 0.6s ease-out;
 }
 
 @keyframes mascotHappy {
@@ -147,14 +158,12 @@ html, body {
   100% { transform: translateY(0) rotate(0); }
 }
 
-.mascot-img.breathing { animation: mascotFloat 3s ease-in-out infinite; }
-.mascot-img.waving { animation: mascotWave 0.8s ease-in-out; }
-.mascot-img.tilting { animation: mascotTilt 1.2s ease-in-out; }
-.mascot-img.surprised { animation: mascotBounce 0.6s ease-out; }
-.mascot-img.happy { animation: mascotHappy 0.8s ease-in-out; }
+.mascot-img.happy {
+  animation: mascotHappy 0.8s ease-in-out;
+}
 
 /* =========================
-   悬浮菜单
+   悬浮球菜单
 ========================= */
 .ball-menu {
   position: fixed;
@@ -214,7 +223,7 @@ html, body {
 }
 
 /* =========================
-   遮罩与弹层
+   遮罩 + 面板
 ========================= */
 .overlay {
   position: fixed;
@@ -331,7 +340,8 @@ html, body {
 }
 
 .form-group input:focus,
-.export-textarea:focus {
+.export-textarea:focus,
+.source-ai-input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
@@ -455,7 +465,7 @@ html, body {
 }
 
 /* =========================
-   已保存配置列表
+   已保存列表
 ========================= */
 .saved-list {
   display: flex;
@@ -519,7 +529,7 @@ html, body {
 .saved-item-actions .del-btn { color: #c44; }
 
 /* =========================
-   AI 面板
+   AI 状态
 ========================= */
 .ai-status {
   display: flex;
@@ -543,6 +553,9 @@ html, body {
 .status-dot.offline { background: #c44; }
 .status-dot.online { background: #5cb85c; }
 
+/* =========================
+   聊天
+========================= */
 .chat-messages {
   height: 280px;
   overflow-y: auto;
@@ -553,16 +566,6 @@ html, body {
   margin-bottom: 12px;
   padding: 4px;
 }
-
-.chat-msg-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.chat-msg-wrap.user { align-items: flex-end; }
-.chat-msg-wrap.assistant { align-items: flex-start; }
-.chat-msg-wrap.system { align-items: center; }
 
 .chat-msg {
   max-width: 88%;
@@ -598,32 +601,24 @@ html, body {
   border: 1.5px solid var(--border);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
-  position: relative;
 }
 
-.chat-msg.is-collapsible {
-  overflow: hidden;
-  max-height: 8.2em;
-  cursor: pointer;
+.chat-msg-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.chat-msg.is-collapsible::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 46px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), var(--bg-card));
-  pointer-events: none;
+.chat-msg-wrap.user {
+  align-items: flex-end;
 }
 
-.chat-msg.assistant.expanded {
-  max-height: none;
+.chat-msg-wrap.assistant {
+  align-items: flex-start;
 }
 
-.chat-msg.assistant.expanded::after {
-  display: none;
+.chat-msg-wrap.system {
+  align-items: center;
 }
 
 .msg-tools {
@@ -661,27 +656,6 @@ html, body {
   color: var(--text-muted);
   min-width: 34px;
   text-align: center;
-}
-
-.msg-expand-btn {
-  border: 1.5px solid var(--border);
-  background: var(--accent);
-  color: #fff;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.msg-expand-btn:active {
-  transform: scale(0.96);
-}
-
-.chat-toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-  align-items: center;
 }
 
 .chat-input-area {
@@ -728,7 +702,13 @@ html, body {
 .send-btn:active { transform: scale(0.9); }
 .send-btn svg { width: 18px; height: 18px; }
 
-/* 图片预览 */
+.chat-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
 .image-preview-box {
   margin-bottom: 12px;
   border: 1.5px solid var(--border);
@@ -758,7 +738,7 @@ html, body {
 }
 
 /* =========================
-   字体 / 上传 / 背景 / 主题
+   字体
 ========================= */
 .font-list {
   display: flex;
@@ -816,6 +796,9 @@ html, body {
   border-radius: 50%;
 }
 
+/* =========================
+   上传区域
+========================= */
 .upload-area {
   border: 2px dashed var(--border);
   border-radius: var(--radius);
@@ -880,6 +863,9 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
+/* =========================
+   主题
+========================= */
 .theme-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1036,7 +1022,9 @@ input[type="range"]::-webkit-slider-thumb {
   flex-wrap: wrap;
 }
 
-/* 勾选 */
+/* =========================
+   勾选框
+========================= */
 .source-check-label {
   display: flex;
   align-items: center;
@@ -1169,37 +1157,6 @@ input[type="range"]::-webkit-slider-thumb {
   animation: pulse 1.2s infinite;
 }
 
-/* 流式统计 */
-.msg-stream-stats {
-  font-size: 11px;
-  color: var(--text-muted);
-  padding: 4px 8px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  margin-top: 4px;
-  max-width: 88%;
-  font-family: monospace;
-  line-height: 1.4;
-  transition: opacity 0.3s;
-}
-
-.msg-stream-stats.streaming {
-  color: var(--accent-deep);
-  border-color: var(--accent);
-  animation: statsPulse 1.5s ease-in-out infinite;
-}
-
-.msg-stream-stats.done {
-  color: var(--text-muted);
-  animation: none;
-}
-
-@keyframes statsPulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-
 /* =========================
    整屏滑页
 ========================= */
@@ -1227,7 +1184,7 @@ input[type="range"]::-webkit-slider-thumb {
   min-height: 100vh;
   flex-shrink: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 34px 18px calc(34px + var(--safe-bottom));
   overflow: hidden;
@@ -1235,18 +1192,10 @@ input[type="range"]::-webkit-slider-thumb {
 
 .screen-page-inner {
   width: 100%;
-  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ★ 第一页专用：图片顶部对齐 + 纵向排列 */
-.screen-page-1 .screen-page-inner {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 0;
 }
 
 .screen-indicators {
@@ -1282,15 +1231,8 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 12px rgba(139,160,209,0.4);
 }
 
-.floating-ball.page-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.88);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
 /* =========================
-   第一页：图片 + 气泡 + 透明叠加
+   第一页：图片 + 气泡
 ========================= */
 .home-stage {
   position: relative;
@@ -1309,7 +1251,7 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-user-select: none;
 }
 
-/* 气泡容器：贴在图片白色区域内 */
+/* 气泡容器 */
 .home-bubbles {
   position: absolute;
   top: 14%;
@@ -1328,7 +1270,6 @@ input[type="range"]::-webkit-slider-thumb {
   display: none;
 }
 
-/* 单条气泡 */
 .home-bubble-item {
   padding: 10px 14px;
   background: #ffffff;
@@ -1374,13 +1315,13 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgba(255,255,255,0.15);
 }
 
-/* 透明文字层：贴在蓝条正中 */
+/* 透明文字层：蓝条正中 */
 .home-bar-overlay {
   position: absolute;
   bottom: 5.5%;
   left: 12%;
   right: 5%;
-  height: 7%;
+  height: 9%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1399,12 +1340,12 @@ input[type="range"]::-webkit-slider-thumb {
   text-align: center;
 }
 
-/* 编辑框：在图片下方，绝对定位不影响图片尺寸 */
+/* 编辑框：图片下方 */
 .home-edit-box {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -58px;
+  margin-top: 12px;
+  width: 100%;
+  max-width: 400px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1472,5 +1413,9 @@ input[type="range"]::-webkit-slider-thumb {
 
   .home-bar-text {
     font-size: 11px;
+  }
+
+  .screen-page {
+    padding: 28px 16px calc(30px + var(--safe-bottom));
   }
 }
