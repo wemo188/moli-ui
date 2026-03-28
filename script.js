@@ -615,6 +615,147 @@ ball.addEventListener('click', function(e) {
       }
     });
 
+    // === 角色创建 ===
+    var roleAvatarData = null;
+
+    App.safeOn('#appCreateRole', 'click', function() {
+      App.openPanel('roleCreatePanel');
+    });
+
+    App.safeOn('#roleAvatarUpload', 'click', function() {
+      var inp = App.$('#roleAvatarInput');
+      if (inp) inp.click();
+    });
+
+    App.safeOn('#roleAvatarInput', 'change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        roleAvatarData = ev.target.result;
+        var preview = App.$('#roleAvatarPreview');
+        if (preview) {
+          preview.innerHTML = '<img src="' + roleAvatarData + '" alt="avatar">';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    App.safeOn('#roleSaveBtn', 'click', function() {
+      var name = App.$('#roleNameInput') ? App.$('#roleNameInput').value.trim() : '';
+      var caller = App.$('#roleCallerInput') ? App.$('#roleCallerInput').value.trim() : '';
+      var persona = App.$('#rolePersonaInput') ? App.$('#rolePersonaInput').value.trim() : '';
+      var speech = App.$('#roleSpeechInput') ? App.$('#roleSpeechInput').value.trim() : '';
+      var backstory = App.$('#roleBackstoryInput') ? App.$('#roleBackstoryInput').value.trim() : '';
+      var greeting = App.$('#roleGreetingInput') ? App.$('#roleGreetingInput').value.trim() : '';
+
+      if (!name) {
+        App.showToast('請輸入角色名字');
+        return;
+      }
+
+      var roles = App.LS.get('savedRoles') || [];
+      var role = {
+        id: 'role-' + Date.now(),
+        name: name,
+        caller: caller,
+        persona: persona,
+        speech: speech,
+        backstory: backstory,
+        greeting: greeting,
+        avatar: roleAvatarData || ''
+      };
+
+      roles.push(role);
+      App.LS.set('savedRoles', roles);
+      renderSavedRoles();
+      App.showToast('角色已保存');
+
+      if (App.$('#roleNameInput')) App.$('#roleNameInput').value = '';
+      if (App.$('#roleCallerInput')) App.$('#roleCallerInput').value = '';
+      if (App.$('#rolePersonaInput')) App.$('#rolePersonaInput').value = '';
+      if (App.$('#roleSpeechInput')) App.$('#roleSpeechInput').value = '';
+      if (App.$('#roleBackstoryInput')) App.$('#roleBackstoryInput').value = '';
+      if (App.$('#roleGreetingInput')) App.$('#roleGreetingInput').value = '';
+      roleAvatarData = null;
+      var preview = App.$('#roleAvatarPreview');
+      if (preview) {
+        preview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      }
+    });
+
+    function renderSavedRoles() {
+      var container = App.$('#savedRolesList');
+      if (!container) return;
+
+      var roles = App.LS.get('savedRoles') || [];
+
+      if (!roles.length) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = roles.map(function(r, i) {
+        var avatarHtml = r.avatar
+          ? '<img src="' + App.esc(r.avatar) + '" alt="">'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+        return '<div class="role-card">' +
+          '<div class="role-card-avatar">' + avatarHtml + '</div>' +
+          '<div class="role-card-info">' +
+            '<div class="role-card-name">' + App.esc(r.name) + '</div>' +
+            '<div class="role-card-desc">' + App.esc(r.persona || r.speech || '') + '</div>' +
+          '</div>' +
+          '<div class="role-card-actions">' +
+            '<button class="role-use-btn" onclick="window._useRole(' + i + ')" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '</button>' +
+            '<button class="role-del-btn" onclick="window._delRole(' + i + ')" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    window._useRole = function(i) {
+      var roles = App.LS.get('savedRoles') || [];
+      var r = roles[i];
+      if (!r) return;
+
+      App.LS.set('activeRole', r);
+
+      var nameEl = App.$('#roleChatName');
+      var subEl = App.$('#roleChatSub');
+      if (nameEl) nameEl.textContent = r.name;
+      if (subEl) subEl.textContent = r.persona || '';
+
+      App.showToast('已選擇: ' + r.name);
+    };
+
+    window._delRole = function(i) {
+      var roles = App.LS.get('savedRoles') || [];
+      var removed = roles.splice(i, 1)[0];
+      App.LS.set('savedRoles', roles);
+
+      var active = App.LS.get('activeRole');
+      if (active && removed && active.id === removed.id) {
+        App.LS.remove('activeRole');
+      }
+
+      renderSavedRoles();
+      App.showToast('已刪除');
+    };
+
+    var activeRole = App.LS.get('activeRole');
+    if (activeRole) {
+      var nameEl = App.$('#roleChatName');
+      var subEl = App.$('#roleChatSub');
+      if (nameEl) nameEl.textContent = activeRole.name;
+      if (subEl) subEl.textContent = activeRole.persona || '';
+    }
+
+    renderSavedRoles();
     snapToPage(false);
   };
 
