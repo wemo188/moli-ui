@@ -609,58 +609,212 @@
 <div id="roleCreatePanel" class="panel hidden">
   <div class="panel-header">
     <h2>角色創建</h2>
-    <div class="panel-close" data-close="roleCreatePanel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn btn-outline btn-sm" id="roleImportBtn" type="button">导入</button>
+      <div class="panel-close" data-close="roleCreatePanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
     </div>
   </div>
   <div class="panel-body">
+    <input type="file" id="roleImportFile" accept=".json" hidden>
 
+    <!-- ═══════ 头像 ═══════ -->
     <div class="role-avatar-upload" id="roleAvatarUpload">
       <div class="role-avatar-preview" id="roleAvatarPreview">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
       </div>
       <input type="file" id="roleAvatarInput" accept="image/*" hidden>
     </div>
 
-    <div class="form-group">
-      <label>名字</label>
-      <input type="text" id="roleNameInput" placeholder="">
+    <!-- ═══════ 1. 基础信息 ═══════ -->
+    <div class="role-sec open">
+      <div class="role-sec-hd" data-toggle="rs-basic"><span>基础信息</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-basic">
+        <div class="form-group"><label>姓名</label><input type="text" id="r-name" placeholder="角色全名"></div>
+        <div class="form-group"><label>性别</label>
+          <select id="r-gender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option><option value="其他">其他</option></select>
+        </div>
+        <div class="form-group"><label>年龄</label><input type="text" id="r-age" placeholder="例如：18岁"></div>
+        <div class="form-group"><label>表面身份</label><input type="text" id="r-identity-surface" placeholder="别人眼中他/她是什么"></div>
+        <div class="form-group"><label>隐藏身份</label><input type="text" id="r-identity-hidden" placeholder="实际的秘密身份（可选）"></div>
+        <div class="form-group"><label>社会位置</label><input type="text" id="r-identity-social" placeholder="在所处环境中的地位"></div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>稱呼你</label>
-      <input type="text" id="roleCallerInput" placeholder="">
+    <!-- ═══════ 2. 外貌描写 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-appear"><span>外貌描写</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-appear">
+        <div class="form-group"><label>身高 / 体型 / 肤色</label><input type="text" id="r-build" placeholder="例如：185cm / 修长 / 冷白皮"></div>
+        <div class="form-group"><label>面部特征</label><textarea id="r-face" rows="3" class="role-ta" placeholder="眉眼、鼻唇、轮廓…"></textarea></div>
+        <div class="form-group"><label>发型与发色</label><input type="text" id="r-hair" placeholder=""></div>
+        <div class="form-group"><label>标志性特征</label><textarea id="r-marks" rows="2" class="role-ta" placeholder="疤痕、胎记、特殊瞳色…"></textarea></div>
+        <div class="form-group"><label>日常穿着风格</label><input type="text" id="r-clothing" placeholder=""></div>
+        <div class="form-group"><label>整体气质（一句话）</label><input type="text" id="r-aura" placeholder="例如：像在市井里摸爬滚打长大的"></div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>性格</label>
-      <input type="text" id="rolePersonaInput" placeholder="">
+    <!-- ═══════ 3. 性格内核 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-persona"><span>性格内核</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-persona">
+        <div class="form-group"><label>一句话概括性格底色</label><input type="text" id="r-persona-sum" placeholder="例如：桀骜不驯"></div>
+        <div class="form-group"><label>对大多数人的默认态度</label><input type="text" id="r-persona-default" placeholder="例如：敷衍、不在乎"></div>
+        <div class="form-group"><label>什么能让他/她破防？</label><input type="text" id="r-persona-break" placeholder="例如：有人伤害弟弟"></div>
+        <div class="form-group"><label>破防后的反应模式</label>
+          <select id="r-persona-breaktype">
+            <option value="">请选择</option>
+            <option value="暴怒爆发型">暴怒爆发型</option>
+            <option value="安静变冷型">安静变冷型</option>
+            <option value="压抑隐忍型">压抑隐忍型</option>
+            <option value="自定义">自定义</option>
+          </select>
+          <input type="text" id="r-persona-breakcustom" placeholder="自定义反应模式" class="role-mt8" style="display:none;">
+        </div>
+        <div class="form-group"><label>详细性格描写</label><textarea id="r-persona-detail" rows="5" class="role-ta" placeholder="自由发挥，越详细越好"></textarea></div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>說話風格</label>
-      <textarea id="roleSpeechInput" rows="3" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    <!-- ═══════ 4. 说话方式 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-speech"><span>说话方式</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-speech">
+        <div class="form-group"><label>语速和语气基调</label><input type="text" id="r-speech-tempo" placeholder="例如：不快，有一搭没一搭"></div>
+        <div class="form-group"><label>口头禅 / 常用词汇</label><input type="text" id="r-speech-catchphrase" placeholder="例如：嗯、哦、随你"></div>
+        <div class="form-group"><label>对陌生人说话</label><input type="text" id="r-speech-stranger" placeholder=""></div>
+        <div class="form-group"><label>对在乎的人说话</label><input type="text" id="r-speech-loved" placeholder=""></div>
+        <div class="form-group"><label>生气时说话</label><input type="text" id="r-speech-angry" placeholder=""></div>
+        <div class="form-group"><label>绝对不会说的话</label><textarea id="r-speech-never" rows="2" class="role-ta" placeholder="例如：绝不说讨好的话"></textarea></div>
+        <div class="form-group"><label>示范台词（2-3句代表性对白）</label><textarea id="r-speech-sample" rows="3" class="role-ta" placeholder="写几句最能体现说话风格的台词"></textarea></div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>背景故事</label>
-      <textarea id="roleBackstoryInput" rows="3" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    <!-- ═══════ 5. 行为模式 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-behavior"><span>行为模式</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-behavior">
+        <div class="form-group"><label>独处时的习惯</label><input type="text" id="r-beh-alone" placeholder=""></div>
+        <div class="form-group"><label>面对权威时</label><input type="text" id="r-beh-authority" placeholder=""></div>
+        <div class="form-group"><label>面对弱者时</label><input type="text" id="r-beh-weak" placeholder=""></div>
+        <div class="form-group"><label>遇到危险的第一反应</label>
+          <select id="r-beh-danger">
+            <option value="">请选择</option>
+            <option value="正面迎上">正面迎上</option>
+            <option value="冷静分析">冷静分析</option>
+            <option value="保护身边的人">保护身边的人</option>
+            <option value="自定义">自定义</option>
+          </select>
+          <input type="text" id="r-beh-dangercustom" placeholder="自定义" class="role-mt8" style="display:none;">
+        </div>
+        <div class="form-group"><label>反套路行为</label><textarea id="r-beh-antitrope" rows="3" class="role-ta" placeholder="这个角色绝对不会做的'小说常见桥段'是什么？"></textarea></div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>開場白</label>
-      <textarea id="roleGreetingInput" rows="2" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    <!-- ═══════ 6. 关系网 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-relations"><span>关系网</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-relations">
+        <div id="relationsContainer"></div>
+        <button class="btn btn-outline btn-sm" id="addRelationBtn" type="button" style="width:100%;margin-top:8px;">+ 添加关系人</button>
+      </div>
     </div>
 
-    <div class="btn-row" style="margin-top:16px;">
+    <!-- ═══════ 7. 过往经历 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-bg"><span>过往经历</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-bg">
+        <div class="form-group"><label>童年关键事件</label><textarea id="r-bg-childhood" rows="3" class="role-ta" placeholder=""></textarea></div>
+        <div class="form-group"><label>这些经历如何塑造了性格？</label><textarea id="r-bg-shaping" rows="3" class="role-ta" placeholder=""></textarea></div>
+        <div class="form-group"><label>最不愿被提起的事</label><input type="text" id="r-bg-taboo" placeholder=""></div>
+        <div class="form-group"><label>最珍视的记忆</label><input type="text" id="r-bg-precious" placeholder=""></div>
+      </div>
+    </div>
+
+    <!-- ═══════ 8. 内在冲突 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-conflict"><span>内在冲突</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-conflict">
+        <div class="form-group"><label>核心欲望（最想要什么）</label><input type="text" id="r-cf-desire" placeholder=""></div>
+        <div class="form-group"><label>核心恐惧（最害怕什么）</label><input type="text" id="r-cf-fear" placeholder=""></div>
+        <div class="form-group"><label>内心最大的矛盾</label><textarea id="r-cf-contradiction" rows="3" class="role-ta" placeholder=""></textarea></div>
+        <div class="form-group"><label>矛盾目前的状态</label>
+          <select id="r-cf-status">
+            <option value="">请选择</option>
+            <option value="仍在激烈挣扎中">仍在激烈挣扎中</option>
+            <option value="已有倾向">已有倾向（一边快赢了）</option>
+            <option value="已彻底崩塌">已彻底崩塌（一边完全胜出）</option>
+          </select>
+        </div>
+        <div class="form-group"><label>补充说明</label><textarea id="r-cf-elaboration" rows="2" class="role-ta" placeholder="哪边赢了？怎么赢的？"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ═══════ 9. 示例对话 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-examples"><span>示例对话</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-examples">
+        <p class="role-hint">建议至少覆盖3种不同场景（日常 / 冲突 / 亲密）</p>
+        <div id="examplesContainer"></div>
+        <button class="btn btn-outline btn-sm" id="addExampleBtn" type="button" style="width:100%;margin-top:8px;">+ 添加示例对话</button>
+      </div>
+    </div>
+
+    <!-- ═══════ 10. 开场白 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-greetings"><span>开场白</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-greetings">
+        <div id="greetingsContainer"></div>
+        <button class="btn btn-outline btn-sm" id="addGreetingBtn" type="button" style="width:100%;margin-top:8px;">+ 添加开场白</button>
+      </div>
+    </div>
+
+    <!-- ═══════ 11. 写作规则 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-rules"><span>写作规则</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-rules">
+        <div class="form-group"><label>叙事视角</label>
+          <select id="r-rule-pov">
+            <option value="第三人称">第三人称（他/她）</option>
+            <option value="第一人称">第一人称（我）</option>
+          </select>
+        </div>
+        <div class="form-group"><label>输出长度偏好</label>
+          <input type="range" id="r-rule-length" min="0" max="100" value="50">
+          <div class="role-range-labels"><span>简短</span><span>详尽</span></div>
+        </div>
+        <div class="form-group"><label>内容尺度</label>
+          <select id="r-rule-rating">
+            <option value="全年龄">全年龄</option>
+            <option value="轻微暧昧">轻微暧昧</option>
+            <option value="成人内容">成人内容</option>
+          </select>
+        </div>
+        <div class="form-group"><label>行为锚定规则</label><textarea id="r-rule-anchors" rows="4" class="role-ta" placeholder="在特定场景下必须 / 绝不做什么的硬性规则"></textarea></div>
+        <div class="form-group"><label>反套路规则</label><textarea id="r-rule-antitrope" rows="3" class="role-ta" placeholder="不允许出现的小说惯性套路"></textarea></div>
+        <div class="form-group"><label>后置指令（每轮注入）</label><textarea id="r-rule-post" rows="4" class="role-ta" placeholder="这段话会在每次AI生成回复前被自动注入"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ═══════ 12. 世界书 ═══════ -->
+    <div class="role-sec">
+      <div class="role-sec-hd" data-toggle="rs-lore"><span>世界书</span><span class="role-sec-arrow">▾</span></div>
+      <div class="role-sec-bd" id="rs-lore">
+        <p class="role-hint">当对话中出现关键词时，自动注入对应的背景信息</p>
+        <div id="loreContainer"></div>
+        <button class="btn btn-outline btn-sm" id="addLoreBtn" type="button" style="width:100%;margin-top:8px;">+ 添加条目</button>
+      </div>
+    </div>
+
+    <!-- ═══════ 底部按钮 ═══════ -->
+    <div class="btn-row" style="margin-top:20px;gap:8px;">
       <button class="btn btn-primary" id="roleSaveBtn" type="button" style="flex:1;">保存角色</button>
+      <button class="btn btn-outline" id="roleExportBtn" type="button">导出</button>
     </div>
 
     <div class="divider"></div>
-
     <div id="savedRolesList" class="saved-list"></div>
 
   </div>
