@@ -408,20 +408,12 @@ ball.addEventListener('click', function(e) {
   App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
-    var roleInput = App.$('#roleChatInput');
-    var roleSendBtn = App.$('#roleChatSendBtn');
-    var roleStopBtn = App.$('#roleChatStopBtn');
-    var roleText = App.$('#roleChatText');
     var floatingBall = App.$('#floatingBall');
-
-    var paletteBtn = App.$('#panelPaletteBtn');
-    var palette = App.$('#panelPalette');
-    var applyPaletteBtn = App.$('#applyPanelPaletteBtn');
-    var outerColor = App.$('#panelOuterColor');
-    var innerColor = App.$('#panelInnerColor');
-    var lineColor = App.$('#panelLineColor');
-    var barColor = App.$('#panelBarColor');
-    var heartColor = App.$('#panelHeartColor');
+    var barDot = App.$('#homeBarDot');
+    var barText = App.$('#homeBarText');
+    var editBox = App.$('#homeEditBox');
+    var editInput = App.$('#homeEditInput');
+    var editConfirm = App.$('#homeEditConfirm');
 
     if (!slider) return;
 
@@ -432,14 +424,12 @@ ball.addEventListener('click', function(e) {
     var baseX = 0;
     var dragging = false;
     var pageWidth = window.innerWidth;
-    var roleTypingTimer = null;
-    var roleIsTyping = false;
     var touchStartedOnInteractive = false;
 
     function isInteractiveTarget(target) {
       if (!target) return false;
       return !!target.closest(
-        '#roleChatInput, #roleChatSendBtn, #roleChatStopBtn, #panelPaletteBtn, #panelPalette, .panel-palette, .panel-palette-row, .panel-palette-actions, .manual-input-bar'
+        '#homeBarDot, #homeEditBox, #homeEditInput, #homeEditConfirm'
       );
     }
 
@@ -483,7 +473,6 @@ ball.addEventListener('click', function(e) {
 
     slider.addEventListener('touchstart', function(e) {
       if (!e.touches || !e.touches.length) return;
-
       touchStartedOnInteractive = isInteractiveTarget(e.target);
       if (touchStartedOnInteractive) return;
 
@@ -496,8 +485,7 @@ ball.addEventListener('click', function(e) {
     }, { passive: true });
 
     slider.addEventListener('touchmove', function(e) {
-      if (!dragging) return;
-      if (!e.touches || !e.touches.length) return;
+      if (!dragging || !e.touches || !e.touches.length) return;
 
       currentX = e.touches[0].clientX;
       var deltaX = currentX - startX;
@@ -536,175 +524,60 @@ ball.addEventListener('click', function(e) {
       snapToPage(false);
     });
 
-    function stopRoleTyping() {
-      if (roleTypingTimer) {
-        clearTimeout(roleTypingTimer);
-        roleTypingTimer = null;
-      }
-      roleIsTyping = false;
+    var savedBarText = App.LS.get('homeBarText');
+    if (savedBarText && barText) {
+      barText.textContent = savedBarText;
     }
 
-    function typeRoleText(fullText) {
-      stopRoleTyping();
-      if (!roleText) return;
-
-      roleText.textContent = '';
-      roleIsTyping = true;
-
-      var i = 0;
-      function step() {
-        if (!roleIsTyping) return;
-        roleText.textContent = fullText.slice(0, i);
-        i++;
-        if (i <= fullText.length) {
-          roleTypingTimer = setTimeout(step, 22);
-        } else {
-          roleIsTyping = false;
-          roleTypingTimer = null;
+    if (barDot) {
+      barDot.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (editBox) {
+          editBox.classList.toggle('hidden');
+          if (!editBox.classList.contains('hidden') && editInput) {
+            editInput.value = barText ? barText.textContent : '';
+            editInput.focus();
+          }
         }
-      }
-      step();
-    }
-
-    function sendRoleMessage() {
-      if (!roleInput || !roleText) return;
-      var text = roleInput.value.trim();
-      if (!text) return;
-
-      typeRoleText(text);
-      roleInput.value = '';
-      roleInput.style.height = '22px';
-    }
-
-    if (roleSendBtn) {
-      roleSendBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        sendRoleMessage();
       });
     }
 
-    if (roleStopBtn) {
-      roleStopBtn.addEventListener('click', function(e) {
+    if (editConfirm) {
+      editConfirm.addEventListener('click', function(e) {
         e.stopPropagation();
-        stopRoleTyping();
+        if (!editInput || !barText) return;
+        var val = editInput.value.trim();
+        if (val) {
+          barText.textContent = val;
+          App.LS.set('homeBarText', val);
+        }
+        if (editBox) editBox.classList.add('hidden');
       });
     }
 
-    if (roleInput) {
-      roleInput.addEventListener('click', function(e) {
+    if (editInput) {
+      editInput.addEventListener('click', function(e) {
         e.stopPropagation();
       });
 
-      roleInput.addEventListener('touchstart', function(e) {
+      editInput.addEventListener('touchstart', function(e) {
         e.stopPropagation();
       }, { passive: true });
 
-      roleInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
+      editInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
           e.preventDefault();
-          sendRoleMessage();
+          if (editConfirm) editConfirm.click();
         }
       });
-
-      roleInput.addEventListener('input', function() {
-        roleInput.style.height = 'auto';
-        roleInput.style.height = Math.min(roleInput.scrollHeight, 86) + 'px';
-      });
     }
 
-    function loadPanelPalette() {
-      var saved = App.LS.get('panelPalette');
-      if (!saved) return;
-
-      if (saved.outer) document.documentElement.style.setProperty('--panel-outer', saved.outer);
-      if (saved.inner) document.documentElement.style.setProperty('--panel-inner', saved.inner);
-      if (saved.line) document.documentElement.style.setProperty('--panel-line', saved.line);
-      if (saved.bar) document.documentElement.style.setProperty('--panel-bar', saved.bar);
-      if (saved.heart) document.documentElement.style.setProperty('--panel-heart', saved.heart);
-
-      if (outerColor && saved.outer) outerColor.value = saved.outer;
-      if (innerColor && saved.inner) innerColor.value = saved.inner;
-      if (lineColor && saved.line) lineColor.value = saved.line;
-      if (barColor && saved.bar) barColor.value = saved.bar;
-      if (heartColor && saved.heart) heartColor.value = saved.heart;
-    }
-
-    function togglePalette(forceShow) {
-      if (!palette) return;
-      if (typeof forceShow === 'boolean') {
-        palette.classList.toggle('hidden', !forceShow);
-      } else {
-        palette.classList.toggle('hidden');
+    document.addEventListener('click', function() {
+      if (editBox && !editBox.classList.contains('hidden')) {
+        editBox.classList.add('hidden');
       }
-    }
-
-    if (paletteBtn) {
-      paletteBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        togglePalette();
-      });
-
-      paletteBtn.addEventListener('touchstart', function(e) {
-        e.stopPropagation();
-      }, { passive: true });
-
-      paletteBtn.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        togglePalette();
-      }, { passive: false });
-    }
-
-    if (palette) {
-      palette.addEventListener('click', function(e) {
-        e.stopPropagation();
-      });
-
-      palette.addEventListener('touchstart', function(e) {
-        e.stopPropagation();
-      }, { passive: true });
-
-      palette.addEventListener('touchend', function(e) {
-        e.stopPropagation();
-      }, { passive: true });
-    }
-
-    if (applyPaletteBtn) {
-      applyPaletteBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-
-        var data = {
-          outer: outerColor ? outerColor.value : '#1a1a1a',
-          inner: innerColor ? innerColor.value : '#ffffff',
-          line: lineColor ? lineColor.value : '#57658a',
-          bar: barColor ? barColor.value : '#6f9fc8',
-          heart: heartColor ? heartColor.value : '#6f9fc8'
-        };
-
-        document.documentElement.style.setProperty('--panel-outer', data.outer);
-        document.documentElement.style.setProperty('--panel-inner', data.inner);
-        document.documentElement.style.setProperty('--panel-line', data.line);
-        document.documentElement.style.setProperty('--panel-bar', data.bar);
-        document.documentElement.style.setProperty('--panel-heart', data.heart);
-
-        App.LS.set('panelPalette', data);
-        togglePalette(false);
-      });
-    }
-
-    document.addEventListener('click', function(e) {
-      if (!palette || palette.classList.contains('hidden')) return;
-      if (
-        (paletteBtn && paletteBtn.contains(e.target)) ||
-        palette.contains(e.target)
-      ) {
-        return;
-      }
-      togglePalette(false);
     });
 
-    loadPanelPalette();
     snapToPage(false);
   };
 
