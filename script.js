@@ -405,7 +405,7 @@ ball.addEventListener('click', function(e) {
     });
   };
 
-  App.initMainPages = function() {
+    App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
     var floatingBall = App.$('#floatingBall');
@@ -414,6 +414,8 @@ ball.addEventListener('click', function(e) {
     var editBox = App.$('#homeEditBox');
     var editInput = App.$('#homeEditInput');
     var editConfirm = App.$('#homeEditConfirm');
+    var bubble = App.$('#homeBubble');
+    var bubbleText = App.$('#homeBubbleText');
 
     if (!slider) return;
 
@@ -425,6 +427,14 @@ ball.addEventListener('click', function(e) {
     var dragging = false;
     var pageWidth = window.innerWidth;
     var touchStartedOnInteractive = false;
+
+    var bubbleLines = [
+      'You stayed up late again, didn\'t you? Go to bed early tonight, I\'ll be right here when you wake up.',
+      'No matter how far apart we are, my heart is always by your side.',
+      'Every moment I spend with you is my favorite memory.'
+    ];
+    var bubbleIndex = 0;
+    var bubbleTimer = null;
 
     function isInteractiveTarget(target) {
       if (!target) return false;
@@ -523,6 +533,32 @@ ball.addEventListener('click', function(e) {
     window.addEventListener('resize', function() {
       snapToPage(false);
     });
+
+    function showBubble(text) {
+      if (!bubble || !bubbleText) return;
+
+      bubble.classList.remove('show');
+      bubble.classList.add('hide');
+
+      setTimeout(function() {
+        bubbleText.textContent = text;
+        bubble.classList.remove('hide');
+        bubble.classList.add('show');
+      }, 500);
+    }
+
+    function startBubbleLoop() {
+      showBubble(bubbleLines[0]);
+
+      bubbleTimer = setInterval(function() {
+        bubbleIndex = (bubbleIndex + 1) % bubbleLines.length;
+        showBubble(bubbleLines[bubbleIndex]);
+      }, 6000);
+    }
+
+    setTimeout(function() {
+      startBubbleLoop();
+    }, 800);
 
     var savedBarText = App.LS.get('homeBarText');
     if (savedBarText && barText) {
