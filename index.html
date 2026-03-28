@@ -41,72 +41,77 @@
 
 <section class="screen-page screen-page-2">
   <div class="screen-page-inner">
-    <div class="app-grid-page">
+    <div class="app-grid">
 
-      <div class="app-grid">
-        <div class="app-icon-item" id="openCreateRole">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-              <line x1="12" y1="11" x2="12" y2="17"/>
-              <line x1="9" y1="14" x2="15" y2="14"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">創建角色</span>
+      <div class="app-icon" id="appCreateRole">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #6f82b1, #4b5a8a);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+            <line x1="12" y1="11" x2="12" y2="17"/>
+            <line x1="9" y1="14" x2="15" y2="14"/>
+          </svg>
         </div>
+        <span class="app-icon-name">角色</span>
+      </div>
 
-        <div class="app-icon-item app-icon-disabled">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">角色對話</span>
+      <div class="app-icon" id="appGallery">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #7fb5d5, #5a8fb5);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="9" cy="9" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
         </div>
+        <span class="app-icon-name">相冊</span>
+      </div>
 
-        <div class="app-icon-item app-icon-disabled">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">角色列表</span>
+      <div class="app-icon" id="appDiary">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #c49ac5, #9b6f9c);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            <line x1="8" y1="7" x2="16" y2="7"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
         </div>
+        <span class="app-icon-name">日記</span>
+      </div>
 
-        <div class="app-icon-item app-icon-disabled">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20h9"/>
-              <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">編輯角色</span>
+      <div class="app-icon" id="appMusic">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #e8a0b4, #c47a90);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+          </svg>
         </div>
+        <span class="app-icon-name">音樂</span>
+      </div>
 
-        <div class="app-icon-item app-icon-disabled">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">記憶存檔</span>
+      <div class="app-icon" id="appCalendar">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #f0c27f, #d4a259);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+          </svg>
         </div>
+        <span class="app-icon-name">日曆</span>
+      </div>
 
-        <div class="app-icon-item app-icon-disabled">
-          <div class="app-icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </div>
-          <span class="app-icon-label">對話歷史</span>
+      <div class="app-icon" id="appMood">
+        <div class="app-icon-box" style="background: linear-gradient(135deg, #a8d8ea, #72b5d4);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
         </div>
+        <span class="app-icon-name">心情</span>
       </div>
 
     </div>
@@ -600,6 +605,66 @@
       <span class="msg-roll-indicator">1/1</span>
     </div>
   </template>
+
+<div id="roleCreatePanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>角色創建</h2>
+    <div class="panel-close" data-close="roleCreatePanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="panel-body">
+
+    <div class="role-avatar-upload" id="roleAvatarUpload">
+      <div class="role-avatar-preview" id="roleAvatarPreview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <input type="file" id="roleAvatarInput" accept="image/*" hidden>
+    </div>
+
+    <div class="form-group">
+      <label>名字</label>
+      <input type="text" id="roleNameInput" placeholder="">
+    </div>
+
+    <div class="form-group">
+      <label>稱呼你</label>
+      <input type="text" id="roleCallerInput" placeholder="">
+    </div>
+
+    <div class="form-group">
+      <label>性格</label>
+      <input type="text" id="rolePersonaInput" placeholder="">
+    </div>
+
+    <div class="form-group">
+      <label>說話風格</label>
+      <textarea id="roleSpeechInput" rows="3" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>背景故事</label>
+      <textarea id="roleBackstoryInput" rows="3" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>開場白</label>
+      <textarea id="roleGreetingInput" rows="2" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn btn-primary" id="roleSaveBtn" type="button" style="flex:1;">保存角色</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div id="savedRolesList" class="saved-list"></div>
+
+  </div>
+</div>
 
   <div id="toast" class="toast hidden"></div>
 
