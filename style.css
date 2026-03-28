@@ -1283,7 +1283,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* =========================
-   第一页：图片 + 像素气泡 + 蓝条
+   第一页：图片 + 透明叠加层
 ========================= */
 .home-stage {
   position: relative;
@@ -1347,39 +1347,37 @@ input[type="range"]::-webkit-slider-thumb {
   z-index: 1;
 }
 
-/* 蓝色长条 */
-.home-blue-bar {
+/* 透明按钮：贴在图片上黑点位置 */
+.home-dot-btn {
   position: absolute;
-  bottom: 6%;
+  bottom: 5.5%;
   left: 6%;
-  right: 6%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 48px;
-  padding: 0 14px;
-  background: linear-gradient(180deg, #7c94cc 0%, #6178a8 100%);
-  border: 4px solid #111111;
-  border-radius: 14px;
-}
-
-.home-bar-dot {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 50%;
-  background: #111111;
+  background: transparent;
   cursor: pointer;
-  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.1);
+  z-index: 10;
 }
 
-.home-bar-dot:active {
-  transform: scale(0.88);
+.home-dot-btn:active {
+  background: rgba(255,255,255,0.15);
+}
+
+/* 透明文字层：贴在图片蓝条上 */
+.home-bar-overlay {
+  position: absolute;
+  bottom: 4.5%;
+  left: 14%;
+  right: 6%;
+  height: 7%;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
 
 .home-bar-text {
-  flex: 1;
   font-size: 12px;
   font-weight: 700;
   color: #f2f6ff;
@@ -1390,10 +1388,10 @@ input[type="range"]::-webkit-slider-thumb {
   font-style: italic;
 }
 
-/* 编辑输入框 */
+/* 编辑弹出框 */
 .home-edit-box {
   position: absolute;
-  bottom: calc(6% + 56px);
+  bottom: calc(5.5% + 40px);
   left: 6%;
   right: 6%;
   display: flex;
@@ -1404,7 +1402,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 3px solid #111111;
   border-radius: 14px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.14);
-  z-index: 10;
+  z-index: 20;
 }
 
 .home-edit-box.hidden {
@@ -1457,20 +1455,12 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 13px;
   }
 
-  .home-blue-bar {
-    bottom: 5%;
-    left: 5%;
-    right: 5%;
-    height: 44px;
-    border-radius: 12px;
-  }
-
   .home-bar-text {
     font-size: 11px;
   }
 
   .home-edit-box {
-    bottom: calc(5% + 52px);
+    bottom: calc(5.5% + 36px);
     left: 5%;
     right: 5%;
   }
