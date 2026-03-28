@@ -1419,3 +1419,196 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 28px 16px calc(30px + var(--safe-bottom));
   }
 }
+
+/* =========================
+   第二页 APP 图标网格
+========================= */
+.app-grid {
+  width: 100%;
+  max-width: 400px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px 20px;
+  padding: 20px 10px;
+}
+
+.app-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.app-icon:active .app-icon-box {
+  transform: scale(0.9);
+}
+
+.app-icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+  transition: transform 0.12s ease;
+}
+
+.app-icon-box svg {
+  width: 30px;
+  height: 30px;
+}
+
+.app-icon-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* =========================
+   角色创建面板：头像上传
+========================= */
+.role-avatar-upload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.role-avatar-preview {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.role-avatar-preview:active {
+  transform: scale(0.94);
+}
+
+.role-avatar-preview svg {
+  width: 36px;
+  height: 36px;
+  color: var(--text-muted);
+}
+
+.role-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================
+   已保存角色卡片
+========================= */
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.role-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.role-card-avatar svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.role-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.role-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.role-card-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+}
+
+.role-card-actions button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.role-card-actions .role-use-btn { color: var(--accent-deep); }
+.role-card-actions .role-del-btn { color: #c44; }
+
+@media (max-width: 640px) {
+  .app-grid {
+    max-width: 100%;
+    gap: 22px 16px;
+    padding: 16px 6px;
+  }
+
+  .app-icon-box {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+  }
+
+  .app-icon-box svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .floating-ball.mascot-ball {
+    width: 180px;
+    height: 180px;
+  }
+}
