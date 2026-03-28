@@ -405,7 +405,7 @@ ball.addEventListener('click', function(e) {
     });
   };
 
-    App.initMainPages = function() {
+  App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
     var floatingBall = App.$('#floatingBall');
@@ -414,8 +414,7 @@ ball.addEventListener('click', function(e) {
     var editBox = App.$('#homeEditBox');
     var editInput = App.$('#homeEditInput');
     var editConfirm = App.$('#homeEditConfirm');
-    var bubble = App.$('#homeBubble');
-    var bubbleText = App.$('#homeBubbleText');
+    var bubblesContainer = App.$('#homeBubbles');
 
     if (!slider) return;
 
@@ -429,9 +428,9 @@ ball.addEventListener('click', function(e) {
     var touchStartedOnInteractive = false;
 
     var bubbleLines = [
-      'You stayed up late again, didn\'t you? Go to bed early tonight, I\'ll be right here when you wake up.',
-      'No matter how far apart we are, my heart is always by your side.',
-      'Every moment I spend with you is my favorite memory.'
+      '又熬夜了對吧？今晚早點睡，醒來的時候哥哥還在這裡。',
+      '不管隔得多遠，哥哥的心永遠都在妳身邊。',
+      '和妳在一起的每一刻，都是哥哥最珍貴的回憶。'
     ];
     var bubbleIndex = 0;
     var bubbleTimer = null;
@@ -534,31 +533,33 @@ ball.addEventListener('click', function(e) {
       snapToPage(false);
     });
 
-    function showBubble(text) {
-      if (!bubble || !bubbleText) return;
+    function addBubble(text) {
+      if (!bubblesContainer) return;
 
-      bubble.classList.remove('show');
-      bubble.classList.add('hide');
+      var div = document.createElement('div');
+      div.className = 'home-bubble-item';
+      div.textContent = text;
+      bubblesContainer.appendChild(div);
 
-      setTimeout(function() {
-        bubbleText.textContent = text;
-        bubble.classList.remove('hide');
-        bubble.classList.add('show');
-      }, 500);
+      bubblesContainer.scrollTop = bubblesContainer.scrollHeight;
     }
 
-    function startBubbleLoop() {
-      showBubble(bubbleLines[0]);
+    function startBubbleSequence() {
+      if (bubbleIndex >= bubbleLines.length) return;
 
-      bubbleTimer = setInterval(function() {
-        bubbleIndex = (bubbleIndex + 1) % bubbleLines.length;
-        showBubble(bubbleLines[bubbleIndex]);
-      }, 6000);
+      addBubble(bubbleLines[bubbleIndex]);
+      bubbleIndex++;
+
+      if (bubbleIndex < bubbleLines.length) {
+        bubbleTimer = setTimeout(function() {
+          startBubbleSequence();
+        }, 4000);
+      }
     }
 
     setTimeout(function() {
-      startBubbleLoop();
-    }, 800);
+      startBubbleSequence();
+    }, 1200);
 
     var savedBarText = App.LS.get('homeBarText');
     if (savedBarText && barText) {
