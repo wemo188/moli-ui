@@ -1283,7 +1283,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* =========================
-   第一页：图片 + 透明叠加层
+   第一页：图片 + 气泡 + 透明叠加
 ========================= */
 .home-stage {
   position: relative;
@@ -1301,59 +1301,60 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-user-select: none;
 }
 
-/* 像素风气泡 */
-.home-bubble {
+/* 气泡容器：贴在图片白色区域内 */
+.home-bubbles {
   position: absolute;
-  top: 18%;
-  left: 8%;
-  max-width: 72%;
-  padding: 14px 18px;
+  top: 14%;
+  left: 7%;
+  right: 22%;
+  bottom: 18%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px;
+}
+
+.home-bubbles::-webkit-scrollbar {
+  display: none;
+}
+
+/* 单条气泡 */
+.home-bubble-item {
+  padding: 10px 14px;
   background: #ffffff;
-  border: 4px solid #111111;
+  border: 3px solid #111111;
   color: #1e1f22;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.7;
   font-weight: 700;
+  border-radius: 0;
   image-rendering: pixelated;
   box-shadow:
-    4px 0 0 #111111,
-    -4px 0 0 #111111,
-    0 4px 0 #111111,
-    0 -4px 0 #111111;
+    3px 0 0 #111111,
+    -3px 0 0 #111111,
+    0 3px 0 #111111,
+    0 -3px 0 #111111;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: bubbleFadeIn 0.6s ease forwards;
 }
 
-.home-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -14px;
-  left: 24px;
-  width: 0;
-  height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 14px solid #111111;
+@keyframes bubbleFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.home-bubble::before {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 26px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid #ffffff;
-  z-index: 1;
-}
-
-/* 透明按钮：贴在图片上黑点位置 */
+/* 透明按钮：贴在图片黑点上 */
 .home-dot-btn {
   position: absolute;
-  bottom: 5.5%;
-  left: 6%;
-  width: 28px;
-  height: 28px;
+  bottom: 4.8%;
+  left: 5.5%;
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: 50%;
   background: transparent;
@@ -1365,15 +1366,16 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgba(255,255,255,0.15);
 }
 
-/* 透明文字层：贴在图片蓝条上 */
+/* 透明文字层：贴在蓝条正中 */
 .home-bar-overlay {
   position: absolute;
-  bottom: 4.5%;
-  left: 14%;
-  right: 6%;
-  height: 7%;
+  bottom: 3.2%;
+  left: 12%;
+  right: 5%;
+  height: 9%;
   display: flex;
   align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 
@@ -1386,14 +1388,12 @@ input[type="range"]::-webkit-slider-thumb {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-style: italic;
+  text-align: center;
 }
 
-/* 编辑弹出框 */
+/* 编辑框：在图片下方 */
 .home-edit-box {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 6%;
-  right: 6%;
+  margin-top: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1447,40 +1447,19 @@ input[type="range"]::-webkit-slider-thumb {
     max-width: 100%;
   }
 
-  .home-bubble {
-    top: 16%;
-    left: 7%;
-    max-width: 70%;
-    padding: 12px 14px;
-    font-size: 13px;
+  .home-bubbles {
+    top: 13%;
+    left: 6%;
+    right: 20%;
+    bottom: 17%;
+  }
+
+  .home-bubble-item {
+    font-size: 12px;
+    padding: 8px 12px;
   }
 
   .home-bar-text {
     font-size: 11px;
   }
-
-  .home-edit-box {
-    bottom: calc(100% + 8px);
-    left: 5%;
-    right: 5%;
-  }
 }
-
-/* 气泡浮现动画 */
-.home-bubble {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-  pointer-events: none;
-}
-
-.home-bubble.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.home-bubble.hide {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
