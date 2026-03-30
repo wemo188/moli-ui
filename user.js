@@ -7,6 +7,7 @@
   var User = {
 
     list: [],
+    avatarShape: 'rounded',
 
     empty: function() {
       return {
@@ -21,39 +22,31 @@
       };
     },
 
-    save: function() {
-      App.LS.set('userList', User.list);
-    },
-
+    save: function() { App.LS.set('userList', User.list); },
     load: function() {
       User.list = App.LS.get('userList') || [];
+      User.avatarShape = App.LS.get('userAvatarShape') || 'rounded';
     },
-
+    saveShape: function(shape) {
+      User.avatarShape = shape;
+      App.LS.set('userAvatarShape', shape);
+    },
     add: function(data) {
       data.id = 'user-' + Date.now();
       User.list.push(data);
       User.save();
       return data;
     },
-
     update: function(id, data) {
       for (var i = 0; i < User.list.length; i++) {
-        if (User.list[i].id === id) {
-          data.id = id;
-          User.list[i] = data;
-          break;
-        }
+        if (User.list[i].id === id) { data.id = id; User.list[i] = data; break; }
       }
       User.save();
     },
-
     remove: function(id) {
-      User.list = User.list.filter(function(u) {
-        return u.id !== id;
-      });
+      User.list = User.list.filter(function(u) { return u.id !== id; });
       User.save();
     },
-
     getById: function(id) {
       for (var i = 0; i < User.list.length; i++) {
         if (User.list[i].id === id) return User.list[i];
@@ -61,23 +54,33 @@
       return null;
     },
 
+    getShapeClass: function() {
+      switch (User.avatarShape) {
+        case 'circle': return 'avatar-circle';
+        case 'square': return 'avatar-square';
+        default: return 'avatar-rounded';
+      }
+    },
+
+    FIELDS: [
+      { section: '外貌描述', key: 'appearance', placeholder: '外貌描述...' },
+      { section: '性格特点', key: 'personality', placeholder: '性格描述...' },
+      { section: '背景信息', key: 'background', placeholder: '背景故事、设定...' }
+    ],
+
     openPanel: function() {
       User.renderListView();
       var panel = App.$('#userPanel');
       if (!panel) return;
       panel.classList.remove('hidden');
-      requestAnimationFrame(function() {
-        panel.classList.add('show');
-      });
+      requestAnimationFrame(function() { panel.classList.add('show'); });
     },
 
     closePanel: function() {
       var panel = App.$('#userPanel');
       if (!panel) return;
       panel.classList.remove('show');
-      setTimeout(function() {
-        panel.classList.add('hidden');
-      }, 350);
+      setTimeout(function() { panel.classList.add('hidden'); }, 350);
     },
 
     renderListView: function() {
@@ -94,15 +97,23 @@
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div class="fullpage-body" id="userListBody">' +
+        '<div class="fullpage-body" id="userListBody"></div>' +
+        '<div class="shape-selector">' +
+          '<span class="shape-label">头像框：</span>' +
+          '<button class="shape-btn' + (User.avatarShape === 'circle' ? ' active' : '') + '" data-shape="circle" type="button">圆形</button>' +
+          '<button class="shape-btn' + (User.avatarShape === 'rounded' ? ' active' : '') + '" data-shape="rounded" type="button">圆角</button>' +
+          '<button class="shape-btn' + (User.avatarShape === 'square' ? ' active' : '') + '" data-shape="square" type="button">方形</button>' +
         '</div>';
 
-      App.safeOn('#closeUserPanel', 'click', function() {
-        User.closePanel();
-      });
+      App.safeOn('#closeUserPanel', 'click', function() { User.closePanel(); });
+      App.safeOn('#addUserBtn', 'click', function() { User.renderEditView(null); });
 
-      App.safeOn('#addUserBtn', 'click', function() {
-        User.renderEditView(null);
+      panel.querySelectorAll('.shape-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          User.saveShape(btn.dataset.shape);
+          User.renderListView();
+          App.showToast('头像框已切换');
+        });
       });
 
       User.renderUserCards();
@@ -113,21 +124,22 @@
       if (!body) return;
 
       if (!User.list.length) {
-        body.innerHTML =
-          '<div class="empty-hint">还没有用户，点击右上角 + 创建</div>';
+        body.innerHTML = '<div class="empty-hint">还没有用户，点击右上角 + 创建</div>';
         return;
       }
 
+      var shapeClass = User.getShapeClass();
+
       body.innerHTML = User.list.map(function(u) {
         return '<div class="char-card" data-id="' + u.id + '">' +
-          '<div class="char-card-avatar">' +
+          '<div class="char-card-avatar ' + shapeClass + '">' +
             (u.avatar
               ? '<img src="' + u.avatar + '" alt="avatar">'
-              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
           '</div>' +
           '<div class="char-card-info">' +
             '<div class="char-card-name">' + App.esc(u.name || '未命名') + '</div>' +
-            '<div class="char-card-desc">' + App.esc(u.gender || '') + (u.age ? ' · ' + u.age : '') + '</div>' +
+            '<div class="char-card-desc">' + App.esc(u.gender || '') + (u.age ? ' · ' + App.esc(u.age) : '') + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
             '<button class="char-edit-btn" data-id="' + u.id + '" type="button">' +
@@ -164,6 +176,37 @@
 
       var u = id ? (User.getById(id) || User.empty()) : User.empty();
       var isNew = !id;
+      var editData = JSON.parse(JSON.stringify(u));
+
+      var fieldsHtml = '';
+
+      // 基础信息
+      fieldsHtml +=
+        '<div class="edit-section">' +
+          '<div class="edit-section-title">基础信息</div>' +
+          '<div class="edit-section-body">' +
+            '<div class="form-group"><label>姓名 / 昵称</label><input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="你的名字"></div>' +
+            '<div class="form-group"><label>年龄</label><input type="text" id="userAge" value="' + App.esc(u.age || '') + '" placeholder="你的年龄"></div>' +
+            '<div class="form-group"><label>性别</label><input type="text" id="userGender" value="' + App.esc(u.gender || '') + '" placeholder="你的性别"></div>' +
+          '</div>' +
+        '</div>';
+
+      // 可展开字段
+      User.FIELDS.forEach(function(f) {
+        var val = u[f.key] || '';
+        fieldsHtml +=
+          '<div class="edit-section">' +
+            '<div class="edit-section-header" data-field="' + f.key + '">' +
+              '<div class="edit-section-title">' + f.section + '</div>' +
+              '<div class="edit-section-expand">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+              '</div>' +
+            '</div>' +
+            '<div class="edit-section-body">' +
+              '<textarea class="form-textarea edit-field-ta" data-key="' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(val) + '</textarea>' +
+            '</div>' +
+          '</div>';
+      });
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -177,71 +220,75 @@
         '</div>' +
         '<div class="fullpage-body">' +
 
-          // 头像
-          '<div class="char-avatar-upload" id="userAvatarUpload">' +
+          '<div class="char-banner-upload" id="userBannerUpload">' +
             (u.avatar
-              ? '<img src="' + u.avatar + '" id="userAvatarPreview" alt="avatar">'
-              : '<div class="char-avatar-placeholder" id="userAvatarPreview">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-                  '<span>上传头像</span>' +
+              ? '<img src="' + u.avatar + '" id="userBannerPreview" alt="avatar">'
+              : '<div class="char-banner-placeholder" id="userBannerPreview">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
+                  '<span>上传用户图片</span>' +
                 '</div>') +
-            '<input type="file" id="userAvatarInput" accept="image/*" hidden>' +
+            '<input type="file" id="userBannerInput" accept="image/*" hidden>' +
           '</div>' +
 
-          '<div class="form-section-title">基础信息</div>' +
-          User.fieldGroup('姓名 / 昵称', 'userName', u.name, '你的名字') +
-          User.fieldGroup('年龄', 'userAge', u.age, '你的年龄') +
-          User.fieldGroup('性别', 'userGender', u.gender, '你的性别') +
-
-          '<div class="form-section-title">外貌描述</div>' +
-          User.textareaGroup('userAppearance', u.appearance, '外貌描述...') +
-
-          '<div class="form-section-title">性格特点</div>' +
-          User.textareaGroup('userPersonality', u.personality, '性格描述...') +
-
-          '<div class="form-section-title">背景信息</div>' +
-          User.textareaGroup('userBackground', u.background, '用户的背景故事、设定...') +
+          fieldsHtml +
 
         '</div>';
 
       // 头像上传
-      App.safeOn('#userAvatarUpload', 'click', function() {
-        App.$('#userAvatarInput').click();
+      App.safeOn('#userBannerUpload', 'click', function() {
+        App.$('#userBannerInput').click();
       });
 
-      App.safeOn('#userAvatarInput', 'change', function(e) {
+      App.safeOn('#userBannerInput', 'change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          u.avatar = ev.target.result;
-          var preview = App.$('#userAvatarPreview');
+          editData.avatar = ev.target.result;
+          var preview = App.$('#userBannerPreview');
           if (preview) {
             var img = document.createElement('img');
-            img.src = u.avatar;
-            img.id = 'userAvatarPreview';
+            img.src = editData.avatar;
+            img.id = 'userBannerPreview';
             preview.parentNode.replaceChild(img, preview);
           }
         };
         reader.readAsDataURL(file);
       });
 
-      // 返回列表
-      App.safeOn('#backToUserList', 'click', function() {
-        User.renderListView();
+      // 展开编辑
+      panel.querySelectorAll('.edit-section-expand').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var header = btn.closest('.edit-section-header');
+          if (!header) return;
+          var fieldKey = header.dataset.field;
+          var fieldConfig = User.FIELDS.find(function(f) { return f.key === fieldKey; });
+          if (!fieldConfig) return;
+
+          var ta = panel.querySelector('.edit-field-ta[data-key="' + fieldKey + '"]');
+          var currentVal = ta ? ta.value : '';
+
+          App.character.openFieldEditor(fieldConfig.section, currentVal, function(newVal) {
+            if (ta) ta.value = newVal;
+          });
+        });
       });
 
-      // 保存
+      App.safeOn('#backToUserList', 'click', function() { User.renderListView(); });
+
       App.safeOn('#saveUserBtn', 'click', function() {
         var data = {
-          avatar: u.avatar || '',
+          avatar: editData.avatar || u.avatar || '',
           name: App.$('#userName') ? App.$('#userName').value.trim() : '',
           age: App.$('#userAge') ? App.$('#userAge').value.trim() : '',
-          gender: App.$('#userGender') ? App.$('#userGender').value.trim() : '',
-          appearance: App.$('#userAppearance') ? App.$('#userAppearance').value.trim() : '',
-          personality: App.$('#userPersonality') ? App.$('#userPersonality').value.trim() : '',
-          background: App.$('#userBackground') ? App.$('#userBackground').value.trim() : ''
+          gender: App.$('#userGender') ? App.$('#userGender').value.trim() : ''
         };
+
+        User.FIELDS.forEach(function(f) {
+          var ta = panel.querySelector('.edit-field-ta[data-key="' + f.key + '"]');
+          data[f.key] = ta ? ta.value.trim() : '';
+        });
 
         if (!data.name) {
           App.showToast('请填写用户名称');
@@ -260,37 +307,17 @@
       });
     },
 
-    fieldGroup: function(label, id, value, placeholder) {
-      return '<div class="form-group">' +
-        (label ? '<label>' + label + '</label>' : '') +
-        '<input type="text" id="' + id + '" value="' + App.esc(value || '') + '" placeholder="' + placeholder + '">' +
-      '</div>';
-    },
-
-    textareaGroup: function(id, value, placeholder) {
-      return '<div class="form-group">' +
-        '<textarea id="' + id + '" class="form-textarea" placeholder="' + placeholder + '" rows="4">' + App.esc(value || '') + '</textarea>' +
-      '</div>';
-    },
-
     bindEvents: function() {
-      App.safeOn('#openUserBtn', 'click', function() {
-        User.openPanel();
-      });
+      App.safeOn('#openUserBtn', 'click', function() { User.openPanel(); });
 
-      // 长按图标换照片
       var pressTimer = null;
       var iconEl = App.$('#openUserBtn');
       if (iconEl) {
         iconEl.addEventListener('touchstart', function() {
-          pressTimer = setTimeout(function() {
-            App.$('#userIconInput').click();
-          }, 600);
+          pressTimer = setTimeout(function() { App.$('#userIconInput').click(); }, 600);
         }, { passive: true });
-
-        iconEl.addEventListener('touchend', function() {
-          clearTimeout(pressTimer);
-        }, { passive: true });
+        iconEl.addEventListener('touchend', function() { clearTimeout(pressTimer); }, { passive: true });
+        iconEl.addEventListener('touchmove', function() { clearTimeout(pressTimer); }, { passive: true });
       }
 
       App.safeOn('#userIconInput', 'change', function(e) {
@@ -300,7 +327,7 @@
         reader.onload = function(ev) {
           var imgEl = App.$('#userIconImg');
           if (!imgEl) return;
-          imgEl.innerHTML = '<img src="' + ev.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:18px;">';
+          imgEl.innerHTML = '<img src="' + ev.target.result + '">';
           App.LS.set('userIconImg', ev.target.result);
         };
         reader.readAsDataURL(file);
@@ -310,16 +337,12 @@
     init: function() {
       User.load();
 
-      // 恢复图标图片
       var savedIcon = App.LS.get('userIconImg');
       if (savedIcon) {
         var imgEl = App.$('#userIconImg');
-        if (imgEl) {
-          imgEl.innerHTML = '<img src="' + savedIcon + '" style="width:100%;height:100%;object-fit:cover;border-radius:18px;">';
-        }
+        if (imgEl) imgEl.innerHTML = '<img src="' + savedIcon + '">';
       }
 
-      // 创建全屏面板容器
       if (!App.$('#userPanel')) {
         var panel = document.createElement('div');
         panel.id = 'userPanel';
