@@ -338,9 +338,7 @@ html, body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group input:focus,
-.export-textarea:focus,
-.source-ai-input:focus {
+.form-group input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
@@ -464,7 +462,7 @@ html, body {
 }
 
 /* =========================
-   已保存列表
+   已保存列表（API配置用）
 ========================= */
 .saved-list {
   display: flex;
@@ -526,215 +524,6 @@ html, body {
 .saved-item-actions .use-btn { color: var(--accent-deep); }
 .saved-item-actions .edit-btn { color: #666; }
 .saved-item-actions .del-btn { color: #c44; }
-
-/* =========================
-   AI 状态
-========================= */
-.ai-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.status-dot.offline { background: #c44; }
-.status-dot.online { background: #5cb85c; }
-
-/* =========================
-   聊天
-========================= */
-.chat-messages {
-  height: 280px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
-  padding: 4px;
-}
-
-.chat-msg {
-  max-width: 88%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 13.5px;
-  line-height: 1.55;
-  word-break: break-word;
-}
-
-.chat-msg.system {
-  align-self: center;
-  max-width: 100%;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  color: var(--text-secondary);
-  font-size: 12px;
-  text-align: center;
-  border-radius: 10px;
-}
-
-.chat-msg.user {
-  align-self: flex-end;
-  background: var(--accent);
-  border: 1.5px solid var(--border);
-  color: #fff;
-  border-bottom-right-radius: 4px;
-}
-
-.chat-msg.assistant {
-  align-self: flex-start;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  color: var(--text-primary);
-  border-bottom-left-radius: 4px;
-}
-
-.chat-msg-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.chat-msg-wrap.user {
-  align-items: flex-end;
-}
-
-.chat-msg-wrap.assistant {
-  align-items: flex-start;
-}
-
-.chat-msg-wrap.system {
-  align-items: center;
-}
-
-.msg-tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  max-width: 88%;
-}
-
-.chat-msg-wrap.user .msg-tools {
-  justify-content: flex-end;
-}
-
-.chat-msg-wrap.assistant .msg-tools {
-  justify-content: flex-start;
-}
-
-.msg-tool-btn {
-  border: 1.5px solid var(--border);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.msg-tool-btn:active {
-  transform: scale(0.96);
-}
-
-.msg-roll-indicator {
-  font-size: 11px;
-  color: var(--text-muted);
-  min-width: 34px;
-  text-align: center;
-}
-
-.chat-input-area {
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.chat-input-area textarea {
-  flex: 1;
-  padding: 10px 14px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  color: var(--text-primary);
-  font-size: 14px;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-  line-height: 1.4;
-  max-height: 100px;
-}
-
-.chat-input-area textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
-}
-
-.send-btn {
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  background: var(--accent);
-  border: 1.5px solid var(--border);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #fff;
-  transition: transform 0.15s;
-}
-
-.send-btn:active { transform: scale(0.9); }
-.send-btn svg { width: 18px; height: 18px; }
-
-.chat-toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
-.image-preview-box {
-  margin-bottom: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--bg-card);
-}
-
-.image-preview-box.hidden { display: none; }
-
-.image-preview-box img {
-  width: 100%;
-  max-height: 180px;
-  object-fit: cover;
-  display: block;
-}
-
-.remove-image-btn {
-  width: 100%;
-  border: none;
-  background: var(--bg-primary);
-  color: #c44;
-  padding: 10px;
-  font-size: 13px;
-  cursor: pointer;
-  border-top: 1px solid var(--border-light);
-}
 
 /* =========================
    字体
@@ -945,178 +734,6 @@ input[type="range"]::-webkit-slider-thumb {
 .color-group input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
 
 /* =========================
-   源码仓
-========================= */
-.export-section {
-  margin-bottom: 18px;
-}
-
-.export-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.export-section-header > span {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-deep);
-}
-
-.export-textarea {
-  width: 100%;
-  height: 140px;
-  padding: 10px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-size: 11px;
-  font-family: monospace;
-  resize: vertical;
-  outline: none;
-  line-height: 1.4;
-}
-
-.source-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.source-ai-box {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-card);
-  padding: 12px;
-  margin-bottom: 18px;
-}
-
-.source-ai-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.source-ai-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.source-ai-status {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.source-ai-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-/* =========================
-   勾选框
-========================= */
-.source-check-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-primary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.source-check-label input[type="checkbox"] {
-  display: none;
-}
-
-.source-check-ui {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-card);
-  position: relative;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.source-check-label input[type="checkbox"]:checked + .source-check-ui {
-  background: var(--accent);
-  border-color: var(--border);
-}
-
-.source-check-label input[type="checkbox"]:checked + .source-check-ui::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 1px;
-  width: 3px;
-  height: 7px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.source-send-check {
-  padding: 4px 8px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg-card);
-}
-
-.stream-check-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-  font-size: 12px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.stream-check-label input[type="checkbox"] {
-  display: none;
-}
-
-.stream-check-ui {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-card);
-  position: relative;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.stream-check-label input[type="checkbox"]:checked + .stream-check-ui {
-  background: var(--accent);
-  border-color: var(--border);
-}
-
-.stream-check-label input[type="checkbox"]:checked + .stream-check-ui::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 1px;
-  width: 3px;
-  height: 7px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-/* =========================
    Toast
 ========================= */
 .toast {
@@ -1144,16 +761,6 @@ input[type="range"]::-webkit-slider-thumb {
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-.loading-dots::after {
-  content: '...';
-  animation: pulse 1.2s infinite;
 }
 
 /* =========================
@@ -1236,7 +843,9 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* 第二页 app 图标网格 */
+/* =========================
+   第二页 app 图标
+========================= */
 .app-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1294,7 +903,9 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 500;
 }
 
-/* 全屏面板 */
+/* =========================
+   全屏面板（角色/用户）
+========================= */
 .fullpage-panel {
   position: fixed;
   inset: 0;
@@ -1373,7 +984,9 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 16px 20px calc(40px + var(--safe-bottom));
 }
 
-/* 角色/用户卡片 */
+/* =========================
+   角色/用户卡片
+========================= */
 .char-card {
   display: flex;
   align-items: center;
@@ -1448,7 +1061,9 @@ input[type="range"]::-webkit-slider-thumb {
 .char-edit-btn svg { width: 15px; height: 15px; color: var(--accent-deep); }
 .char-del-btn svg { width: 15px; height: 15px; color: #c44; }
 
-/* 头像上传 */
+/* =========================
+   头像上传
+========================= */
 .char-avatar-upload {
   width: 100px;
   height: 100px;
@@ -1487,7 +1102,9 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text-muted);
 }
 
-/* 表单分区标题 */
+/* =========================
+   表单扩展
+========================= */
 .form-section-title {
   font-size: 12px;
   font-weight: 600;
@@ -1497,21 +1114,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom: 1px solid var(--border-light);
 }
 
-/* 表单 textarea */
-.form-textarea {
-  width: 100%;
-  padding: 10px 14px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-size: 14px;
-  resize: vertical;
-  outline: none;
-  font-family: inherit;
-  line-height: 1.5;
-}
-
+.form-textarea,
 .form-textarea-sm {
   width: 100%;
   padding: 10px 14px;
@@ -1532,7 +1135,6 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
 
-/* select */
 .form-select {
   width: 100%;
   padding: 10px 14px;
@@ -1545,11 +1147,9 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 
-/* 空状态 */
 .empty-hint {
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
   padding: 60px 20px;
 }
-
