@@ -19,7 +19,8 @@
       '如果只发送了 html 和 css，你绝不能返回 source-js。\n' +
       '如果只发送了 js，你绝不能返回 source-html 或 source-css。\n' +
       '如果用户是在美化，优先修改 css；如果是结构，优先修改 html；如果是逻辑，优先修改 js。\n' +
-      '不要伪造功能，不要额外创建假按钮。',
+      '不要伪造功能，不要额外创建假按钮。\n' +
+      '返回修改后的完整文件内容，使用对应的 source 代码块格式。',
 
     estimateTokens: function(text) {
       if (!text) return 0;
@@ -460,8 +461,12 @@
           startTime: startTime
         });
 
+        // 核心改动：AI 返回后直接替换源码仓 + 即时生效
+        if (App.source) {
+          App.source.applyReplyToLive(fullReply);
+        }
+
         var displayReply = App.source ? App.source.cleanReplyForDisplay(fullReply) : fullReply;
-        if (App.source) App.source.applyReplyToDraft(fullReply);
 
         Chat.assistantRollMap[rollGroupId].push(fullReply);
         meta.rollCount = Chat.assistantRollMap[rollGroupId].length;
