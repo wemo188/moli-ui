@@ -108,12 +108,6 @@
 
   var Source = {
     sendFiles: {},
-    aiDraft: {},
-    sourcePreviewCache: {
-      active: false,
-      originalMain: '',
-      originalDraftStyle: ''
-    },
 
     createEmptyRepo: function() {
       return {
@@ -126,29 +120,6 @@
         sourceJs: '',
         bgJs: '',
         chatJs: ''
-      };
-    },
-
-    createEmptyDraft: function() {
-      return {
-        html: '',
-        css: '',
-        coreJs: '',
-        themeJs: '',
-        fontJs: '',
-        apiJs: '',
-        sourceJs: '',
-        bgJs: '',
-        chatJs: '',
-        hasHtml: false,
-        hasCss: false,
-        hasCoreJs: false,
-        hasThemeJs: false,
-        hasFontJs: false,
-        hasApiJs: false,
-        hasSourceJs: false,
-        hasBgJs: false,
-        hasChatJs: false
       };
     },
 
@@ -228,79 +199,109 @@
       });
     },
 
-    updateSourceRepoFile: function(storageKey, content) {
-      var repo = Source.getSourceRepo();
-      var file = FILES.find(function(f) { return f.storageKey === storageKey; });
-      if (!file) return;
+    // ========= 即时生效：核心方法 =========
 
-      repo[storageKey] = content;
-      var ta = App.$(file.textarea);
-      if (ta) ta.value = content;
-      Source.setSourceRepo(repo);
+    extractBodyInner: function(html) {
+      var bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) return bodyMatch[1];
+      return html;
     },
 
-    getDraftFlagName: function(storageKey) {
-      var map = {
-        html: 'hasHtml',
-        css: 'hasCss',
-        coreJs: 'hasCoreJs',
-        themeJs: 'hasThemeJs',
-        fontJs: 'hasFontJs',
-        apiJs: 'hasApiJs',
-        sourceJs: 'hasSourceJs',
-        bgJs: 'hasBgJs',
-        chatJs: 'hasChatJs'
-      };
-      return map[storageKey];
+    ensureLiveStyleEl: function() {
+      var el = document.getElementById('ai-live-style');
+      if (!el) {
+        el = document.createElement('style');
+        el.id = 'ai-live-style';
+        document.head.appendChild(el);
+      }
+      return el;
     },
 
-    updateDraftStatus: function() {
-      var names = [];
+    applyHtmlLive: function(htmlCode) {
+      var main = App.$('#mainContent');
+      if (!main) return;
+      main.innerHTML = Source.extractBodyInner(htmlCode);
+    },
 
-      FILES.forEach(function(file) {
-        var flag = Source.getDraftFlagName(file.storageKey);
-        if (Source.aiDraft[flag]) names.push(file.label);
-      });
+    applyCssLive: function(cssCode) {
+      var styleEl = Source.ensureLiveStyleEl();
+      styleEl.textContent = cssCode;
+    },
 
-      var status = App.$('#sourceAiDraftStatus');
-      if (status) {
-        status.textContent = names.length ? ('草稿: ' + names.join(' / ')) : '暂无草稿';
+    applyJsLive: function(jsCode) {
+      try {
+        var script = document.createElement('script');
+        script.textContent = jsCode;
+        document.body.appendChild(script);
+      } catch (e) {
+        App.showToast('JS 执行出错: ' + e.message);
       }
     },
 
-    saveDraft: function() {
-      App.LS.set('aiDraft', Source.aiDraft);
-      Source.updateDraftStatus();
+    applyCodeLive: function(storageKey, code) {
+      if (storageKey === 'html') {
+        Source.applyHtmlLive(code);
+      } else if (storageKey === 'css') {
+        Source.applyCssLive(code);
+      } else {
+        // 所有 JS 文件都直接执行
+        Source.applyJsLive(code);
+      }
     },
 
-    clearDraft: function() {
-      Source.aiDraft = Source.createEmptyDraft();
-      Source.saveDraft();
-    },
+    // ========= AI 返回处理：直接替换 + 即时生效 =========
 
-    applyReplyToDraft: function(reply) {
-      var accepted = false;
+    applyReplyToLive: function(reply) {
+      var applied = [];
 
       FILES.forEach(function(file) {
         var reg = new RegExp('```' + file.block + '\\n?([\\s\\S]*?)```', 'g');
         var unauthorizedReg = new RegExp('```' + file.block + '\\n?[\\s\\S]*?```', 'g');
         var match;
-        var flag = Source.getDraftFlagName(file.storageKey);
 
         if (Source.sendFiles[file.storageKey]) {
           while ((match = reg.exec(reply)) !== null) {
-            Source.aiDraft[file.storageKey] = match[1].trim();
-            Source.aiDraft[flag] = true;
-            accepted = true;
+            var code = match[1].trim();
+
+            // 1. 替换源码仓文本框
+            var ta = App.$(file.textarea);
+            if (ta) ta.value = code;
+
+            // 2. 即时在页面上生效
+            Source.applyCodeLive(file.storageKey, code);
+
+            applied.push(file.label);
           }
         } else if (unauthorizedReg.test(reply)) {
           App.showToast('已拦截未授权的 ' + file.label + ' 改写');
         }
       });
 
-      if (accepted) {
-        Source.saveDraft();
-        App.showToast('AI 草稿已生成');
+      if (applied.length) {
+        App.showToast('已即时应用: ' + applied.join(', ') + '  (不满意请刷新页面)');
+      }
+    },
+
+    // ========= 一键保存：把当前文本框内容写入 localStorage =========
+
+    saveAllToStorage: function() {
+      var repo = Source.createEmptyRepo();
+      var saved = [];
+
+      FILES.forEach(function(file) {
+        var ta = App.$(file.textarea);
+        if (ta && ta.value.trim()) {
+          repo[file.storageKey] = ta.value;
+          saved.push(file.label);
+        }
+      });
+
+      Source.setSourceRepo(repo);
+
+      if (saved.length) {
+        App.showToast('已保存: ' + saved.join(', '));
+      } else {
+        App.showToast('源码仓为空，无需保存');
       }
     },
 
@@ -334,113 +335,13 @@
 
       FILES.forEach(function(file) {
         var reg = new RegExp('```' + file.block + '\\n?[\\s\\S]*?```', 'g');
-        cleaned = cleaned.replace(reg, '[AI 提交了 ' + file.label + ' 草稿]');
+        cleaned = cleaned.replace(reg, '[AI 已修改 ' + file.label + ']');
       });
 
       if (cleaned.length > 1200) {
         cleaned = cleaned.slice(0, 1200) + '\n\n[回复过长，已折叠显示]';
       }
       return cleaned;
-    },
-
-    extractBodyInner: function(html) {
-      var bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      if (bodyMatch) return bodyMatch[1];
-      return html;
-    },
-
-    ensureDraftStyleEl: function() {
-      var el = document.getElementById('draft-preview-style');
-      if (!el) {
-        el = document.createElement('style');
-        el.id = 'draft-preview-style';
-        document.head.appendChild(el);
-      }
-      return el;
-    },
-
-    previewDraft: function() {
-      var hasAnyDraft = false;
-      FILES.forEach(function(file) {
-        var flag = Source.getDraftFlagName(file.storageKey);
-        if (Source.aiDraft[flag]) hasAnyDraft = true;
-      });
-
-      if (!hasAnyDraft) {
-        App.showToast('暂无可预览的草稿');
-        return;
-      }
-
-      if (!Source.sourcePreviewCache.active) {
-        Source.sourcePreviewCache.originalMain = App.$('#mainContent') ? App.$('#mainContent').innerHTML : '';
-        var existingDraftStyle = document.getElementById('draft-preview-style');
-        Source.sourcePreviewCache.originalDraftStyle = existingDraftStyle ? existingDraftStyle.textContent : '';
-        Source.sourcePreviewCache.active = true;
-      }
-
-      if (Source.aiDraft.hasHtml && App.$('#mainContent')) {
-        App.$('#mainContent').innerHTML = Source.extractBodyInner(Source.aiDraft.html);
-      }
-
-      if (Source.aiDraft.hasCss) {
-        var styleEl = Source.ensureDraftStyleEl();
-        styleEl.textContent = Source.aiDraft.css;
-      }
-
-      if (
-        Source.aiDraft.hasCoreJs ||
-        Source.aiDraft.hasThemeJs ||
-        Source.aiDraft.hasFontJs ||
-        Source.aiDraft.hasApiJs ||
-        Source.aiDraft.hasSourceJs ||
-        Source.aiDraft.hasBgJs ||
-        Source.aiDraft.hasChatJs
-      ) {
-        App.showToast('JS 草稿暂不自动预览，HTML/CSS 已预览');
-      } else {
-        App.showToast('已预览草稿效果');
-      }
-    },
-
-    discardDraftPreview: function() {
-      if (!Source.sourcePreviewCache.active) return;
-
-      if (App.$('#mainContent')) {
-        App.$('#mainContent').innerHTML = Source.sourcePreviewCache.originalMain || '';
-      }
-
-      var styleEl = document.getElementById('draft-preview-style');
-      if (styleEl) {
-        styleEl.textContent = Source.sourcePreviewCache.originalDraftStyle || '';
-      }
-
-      Source.sourcePreviewCache.active = false;
-    },
-
-    saveDraftToSource: function() {
-      var hasAnyDraft = false;
-
-      FILES.forEach(function(file) {
-        var flag = Source.getDraftFlagName(file.storageKey);
-        if (Source.aiDraft[flag]) {
-          hasAnyDraft = true;
-          Source.updateSourceRepoFile(file.storageKey, Source.aiDraft[file.storageKey]);
-        }
-      });
-
-      if (!hasAnyDraft) {
-        App.showToast('暂无可保存的草稿');
-        return;
-      }
-
-      Source.clearDraft();
-      App.showToast('已保存 AI 修改');
-    },
-
-    discardDraftAll: function() {
-      Source.discardDraftPreview();
-      Source.clearDraft();
-      App.showToast('已丢弃 AI 修改');
     },
 
     bindFileEvents: function(file) {
@@ -467,28 +368,22 @@
         Source.bindFileEvents(file);
       });
 
-      App.safeOn('#previewAiDraftBtn', 'click', function() {
-        Source.previewDraft();
-      });
-
+      // 一键保存：把文本框内容持久化到 localStorage
       App.safeOn('#saveAiDraftBtn', 'click', function() {
-        Source.saveDraftToSource();
+        Source.saveAllToStorage();
       });
 
+      // 丢弃修改：直接刷新页面，从 localStorage 恢复
       App.safeOn('#discardAiDraftBtn', 'click', function() {
-        Source.discardDraftAll();
-      });
-    },
-
-    normalizeOldDraft: function(draft) {
-      var base = Source.createEmptyDraft();
-      draft = draft || {};
-
-      Object.keys(base).forEach(function(k) {
-        if (typeof draft[k] !== 'undefined') base[k] = draft[k];
+        if (confirm('确定要丢弃修改吗？页面将刷新并恢复到上次保存的版本。')) {
+          location.reload();
+        }
       });
 
-      return base;
+      // 预览按钮也改为提示
+      App.safeOn('#previewAiDraftBtn', 'click', function() {
+        App.showToast('AI 修改已自动即时生效，不满意请刷新页面');
+      });
     },
 
     normalizeOldSendFiles: function(data) {
@@ -536,21 +431,20 @@
 
     init: function() {
       var oldSendFiles = App.LS.get('sendFiles') || {};
-      var oldDraft = App.LS.get('aiDraft') || {};
       var oldRepo = App.LS.get('sourceRepo') || {};
 
       Source.sendFiles = Source.normalizeOldSendFiles(oldSendFiles);
-      Source.aiDraft = Source.normalizeOldDraft(oldDraft);
 
       var normalizedRepo = Source.normalizeOldRepo(oldRepo);
       Source.setSourceRepo(normalizedRepo);
 
       App.LS.set('sendFiles', Source.sendFiles);
-      App.LS.set('aiDraft', Source.aiDraft);
+
+      // 清除旧的草稿数据
+      App.LS.remove('aiDraft');
 
       App.source = Source;
       Source.restoreSourceRepo();
-      Source.updateDraftStatus();
       Source.bindEvents();
     }
   };
