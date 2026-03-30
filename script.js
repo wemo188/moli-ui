@@ -202,12 +202,12 @@
     document.addEventListener('touchend', function(e) {
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
-  e.preventDefault();
-  if (App.mascot && typeof App.mascot.onTap === 'function') {
-    App.mascot.onTap();
-  }
-  App.toggleMenu();
-}else {
+        e.preventDefault();
+        if (App.mascot && typeof App.mascot.onTap === 'function') {
+          App.mascot.onTap();
+        }
+        App.toggleMenu();
+      } else {
         var rect = App.getBallRect();
         App.LS.set('floatingBallPos', {
           left: rect.left,
@@ -218,14 +218,14 @@
       App.state.hasMoved = false;
     }, { passive: false });
 
-ball.addEventListener('click', function(e) {
-  e.preventDefault();
-  if (App.mascot && typeof App.mascot.onTap === 'function') {
-    App.mascot.onTap();
-  }
-  if ('ontouchstart' in window) return;
-  App.toggleMenu();
-});
+    ball.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (App.mascot && typeof App.mascot.onTap === 'function') {
+        App.mascot.onTap();
+      }
+      if ('ontouchstart' in window) return;
+      App.toggleMenu();
+    });
 
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function() {
@@ -250,151 +250,151 @@ ball.addEventListener('click', function(e) {
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
     }
-    
-  // ========= 动画 =========
-  App.mascot = {
-    img: App.$('#mascotImg'),
-    sprites: {
-      idle:     'https://iili.io/qZ5NWvf.png',
-      blink:    'https://iili.io/qZDVJbs.md.png',
-      wave:     'https://iili.io/qZDtY6x.md.png',
-      tiltA:    'https://iili.io/qZbJDCP.md.png',
-      tiltB:    'https://iili.io/qZbBqba.md.png',
-      surprise: 'https://iili.io/qZbIihX.md.png',
-      happy:    'https://iili.io/qZb5EJf.md.png'
-    },
-    currentState: 'idle',
-    animLock: false,
-    blinkTimer: null,
-    idleTimer: null,
 
-    preload: function() {
-      var self = this;
-      Object.keys(self.sprites).forEach(function(key) {
-        var img = new Image();
-        img.src = self.sprites[key];
-      });
-    },
+    // ========= 小公仔动画 =========
+    App.mascot = {
+      img: App.$('#mascotImg'),
+      sprites: {
+        idle:     'https://iili.io/qZ5NWvf.png',
+        blink:    'https://iili.io/qZDVJbs.md.png',
+        wave:     'https://iili.io/qZDtY6x.md.png',
+        tiltA:    'https://iili.io/qZbJDCP.md.png',
+        tiltB:    'https://iili.io/qZbBqba.md.png',
+        surprise: 'https://iili.io/qZbIihX.md.png',
+        happy:    'https://iili.io/qZb5EJf.md.png'
+      },
+      currentState: 'idle',
+      animLock: false,
+      blinkTimer: null,
+      idleTimer: null,
 
-    setSprite: function(key) {
-      if (!this.img || !this.sprites[key]) return;
-      this.img.src = this.sprites[key];
-      this.currentState = key;
-    },
+      preload: function() {
+        var self = this;
+        Object.keys(self.sprites).forEach(function(key) {
+          var img = new Image();
+          img.src = self.sprites[key];
+        });
+      },
 
-    clearAnimClass: function() {
-      if (!this.img) return;
-      this.img.classList.remove('breathing', 'waving', 'tilting', 'surprised', 'happy');
-    },
+      setSprite: function(key) {
+        if (!this.img || !this.sprites[key]) return;
+        this.img.src = this.sprites[key];
+        this.currentState = key;
+      },
 
-    goIdle: function() {
-      this.setSprite('idle');
-      this.clearAnimClass();
-      this.img.classList.add('breathing');
-      this.animLock = false;
-    },
+      clearAnimClass: function() {
+        if (!this.img) return;
+        this.img.classList.remove('breathing', 'waving', 'tilting', 'surprised', 'happy');
+      },
 
-    doBlink: function() {
-      var self = this;
-      if (self.animLock) return;
+      goIdle: function() {
+        this.setSprite('idle');
+        this.clearAnimClass();
+        this.img.classList.add('breathing');
+        this.animLock = false;
+      },
 
-      self.setSprite('blink');
-      setTimeout(function() {
-        if (self.currentState === 'blink') {
-          self.setSprite('idle');
+      doBlink: function() {
+        var self = this;
+        if (self.animLock) return;
+
+        self.setSprite('blink');
+        setTimeout(function() {
+          if (self.currentState === 'blink') {
+            self.setSprite('idle');
+          }
+        }, 180);
+      },
+
+      doAction: function(action) {
+        var self = this;
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+
+        switch (action) {
+          case 'wave':
+            self.setSprite('wave');
+            self.img.classList.add('waving');
+            setTimeout(function() { self.goIdle(); }, 1200);
+            break;
+
+          case 'tilt':
+            var tiltKey = Math.random() > 0.5 ? 'tiltA' : 'tiltB';
+            self.setSprite(tiltKey);
+            self.img.classList.add('tilting');
+            setTimeout(function() { self.goIdle(); }, 1600);
+            break;
+
+          case 'surprise':
+            self.setSprite('surprise');
+            self.img.classList.add('surprised');
+            setTimeout(function() { self.goIdle(); }, 1200);
+            break;
+
+          case 'happy':
+            self.setSprite('happy');
+            self.img.classList.add('happy');
+            setTimeout(function() { self.goIdle(); }, 1400);
+            break;
+
+          default:
+            self.goIdle();
         }
-      }, 180);
-    },
+      },
 
-    doAction: function(action) {
-      var self = this;
-      if (self.animLock) return;
-      self.animLock = true;
-      self.clearAnimClass();
+      startBlinkLoop: function() {
+        var self = this;
+        function scheduleBlink() {
+          var delay = 2500 + Math.random() * 4000;
+          self.blinkTimer = setTimeout(function() {
+            if (!self.animLock) {
+              self.doBlink();
+            }
+            scheduleBlink();
+          }, delay);
+        }
+        scheduleBlink();
+      },
 
-      switch (action) {
-        case 'wave':
-          self.setSprite('wave');
-          self.img.classList.add('waving');
-          setTimeout(function() { self.goIdle(); }, 1200);
-          break;
+      startIdleActions: function() {
+        var self = this;
+        var actions = ['wave', 'tilt', 'surprise', 'happy'];
 
-        case 'tilt':
-          var tiltKey = Math.random() > 0.5 ? 'tiltA' : 'tiltB';
-          self.setSprite(tiltKey);
-          self.img.classList.add('tilting');
-          setTimeout(function() { self.goIdle(); }, 1600);
-          break;
+        function scheduleAction() {
+          var delay = 8000 + Math.random() * 15000;
+          self.idleTimer = setTimeout(function() {
+            if (!self.animLock) {
+              var pick = actions[Math.floor(Math.random() * actions.length)];
+              self.doAction(pick);
+            }
+            scheduleAction();
+          }, delay);
+        }
+        scheduleAction();
+      },
 
-        case 'surprise':
-          self.setSprite('surprise');
-          self.img.classList.add('surprised');
-          setTimeout(function() { self.goIdle(); }, 1200);
-          break;
+      onTap: function() {
+        var actions = ['wave', 'happy', 'surprise', 'tilt'];
+        var pick = actions[Math.floor(Math.random() * actions.length)];
+        this.doAction(pick);
+      },
 
-        case 'happy':
-          self.setSprite('happy');
-          self.img.classList.add('happy');
-          setTimeout(function() { self.goIdle(); }, 1400);
-          break;
-
-        default:
-          self.goIdle();
+      init: function() {
+        if (!this.img) return;
+        this.preload();
+        this.goIdle();
+        this.startBlinkLoop();
+        this.startIdleActions();
       }
-    },
+    };
 
-    startBlinkLoop: function() {
-      var self = this;
-      function scheduleBlink() {
-        var delay = 2500 + Math.random() * 4000;
-        self.blinkTimer = setTimeout(function() {
-          if (!self.animLock) {
-            self.doBlink();
-          }
-          scheduleBlink();
-        }, delay);
-      }
-      scheduleBlink();
-    },
+    App.mascot.init();
 
-    startIdleActions: function() {
-      var self = this;
-      var actions = ['wave', 'tilt', 'surprise', 'happy'];
-
-      function scheduleAction() {
-        var delay = 8000 + Math.random() * 15000;
-        self.idleTimer = setTimeout(function() {
-          if (!self.animLock) {
-            var pick = actions[Math.floor(Math.random() * actions.length)];
-            self.doAction(pick);
-          }
-          scheduleAction();
-        }, delay);
-      }
-      scheduleAction();
-    },
-
-    onTap: function() {
-      var actions = ['wave', 'happy', 'surprise', 'tilt'];
-      var pick = actions[Math.floor(Math.random() * actions.length)];
-      this.doAction(pick);
-    },
-
-    init: function() {
-      if (!this.img) return;
-      this.preload();
-      this.goIdle();
-      this.startBlinkLoop();
-      this.startIdleActions();
-    }
+    setTimeout(function() {
+      if (App.mascot) App.mascot.doAction('wave');
+    }, 1000);
   };
-
-  App.mascot.init();
-  
-  setTimeout(function() {
-  if (App.mascot) App.mascot.doAction('wave');
-}, 1000);
-};
 
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
@@ -409,12 +409,6 @@ ball.addEventListener('click', function(e) {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
     var floatingBall = App.$('#floatingBall');
-    var barDot = App.$('#homeBarDot');
-    var barText = App.$('#homeBarText');
-    var editBox = App.$('#homeEditBox');
-    var editInput = App.$('#homeEditInput');
-    var editConfirm = App.$('#homeEditConfirm');
-    var bubblesContainer = App.$('#homeBubbles');
 
     if (!slider) return;
 
@@ -427,19 +421,9 @@ ball.addEventListener('click', function(e) {
     var pageWidth = window.innerWidth;
     var touchStartedOnInteractive = false;
 
-    var bubbleLines = [
-      '又熬夜了對吧？今晚早點睡，醒來的時候哥哥還在這裡。',
-      '不管隔得多遠，哥哥的心永遠都在妳身邊。',
-      '和妳在一起的每一刻，都是哥哥最珍貴的回憶。'
-    ];
-    var bubbleIndex = 0;
-    var bubbleTimer = null;
-
     function isInteractiveTarget(target) {
       if (!target) return false;
-      return !!target.closest(
-        '#homeBarDot, #homeEditBox, #homeEditInput, #homeEditConfirm'
-      );
+      return !!target.closest('input, textarea, button, a, select, [contenteditable]');
     }
 
     function setBallVisibility() {
@@ -533,229 +517,6 @@ ball.addEventListener('click', function(e) {
       snapToPage(false);
     });
 
-    function addBubble(text) {
-      if (!bubblesContainer) return;
-
-      var div = document.createElement('div');
-      div.className = 'home-bubble-item';
-      div.textContent = text;
-      bubblesContainer.appendChild(div);
-
-      bubblesContainer.scrollTop = bubblesContainer.scrollHeight;
-    }
-
-    function startBubbleSequence() {
-      if (bubbleIndex >= bubbleLines.length) return;
-
-      addBubble(bubbleLines[bubbleIndex]);
-      bubbleIndex++;
-
-      if (bubbleIndex < bubbleLines.length) {
-        bubbleTimer = setTimeout(function() {
-          startBubbleSequence();
-        }, 4000);
-      }
-    }
-
-    setTimeout(function() {
-      startBubbleSequence();
-    }, 1200);
-
-    var savedBarText = App.LS.get('homeBarText');
-    if (savedBarText && barText) {
-      barText.textContent = savedBarText;
-    }
-
-    if (barDot) {
-      barDot.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (editBox) {
-          editBox.classList.toggle('hidden');
-          if (!editBox.classList.contains('hidden') && editInput) {
-            editInput.value = barText ? barText.textContent : '';
-            editInput.focus();
-          }
-        }
-      });
-    }
-
-    if (editConfirm) {
-      editConfirm.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (!editInput || !barText) return;
-        var val = editInput.value.trim();
-        if (val) {
-          barText.textContent = val;
-          App.LS.set('homeBarText', val);
-        }
-        if (editBox) editBox.classList.add('hidden');
-      });
-    }
-
-    if (editInput) {
-      editInput.addEventListener('click', function(e) {
-        e.stopPropagation();
-      });
-
-      editInput.addEventListener('touchstart', function(e) {
-        e.stopPropagation();
-      }, { passive: true });
-
-      editInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          if (editConfirm) editConfirm.click();
-        }
-      });
-    }
-
-    document.addEventListener('click', function() {
-      if (editBox && !editBox.classList.contains('hidden')) {
-        editBox.classList.add('hidden');
-      }
-    });
-
-    // === 角色创建 ===
-    var roleAvatarData = null;
-
-    App.safeOn('#appCreateRole', 'click', function() {
-      App.openPanel('roleCreatePanel');
-    });
-
-    App.safeOn('#roleAvatarUpload', 'click', function() {
-      var inp = App.$('#roleAvatarInput');
-      if (inp) inp.click();
-    });
-
-    App.safeOn('#roleAvatarInput', 'change', function(e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        roleAvatarData = ev.target.result;
-        var preview = App.$('#roleAvatarPreview');
-        if (preview) {
-          preview.innerHTML = '<img src="' + roleAvatarData + '" alt="avatar">';
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    App.safeOn('#roleSaveBtn', 'click', function() {
-      var name = App.$('#roleNameInput') ? App.$('#roleNameInput').value.trim() : '';
-      var caller = App.$('#roleCallerInput') ? App.$('#roleCallerInput').value.trim() : '';
-      var persona = App.$('#rolePersonaInput') ? App.$('#rolePersonaInput').value.trim() : '';
-      var speech = App.$('#roleSpeechInput') ? App.$('#roleSpeechInput').value.trim() : '';
-      var backstory = App.$('#roleBackstoryInput') ? App.$('#roleBackstoryInput').value.trim() : '';
-      var greeting = App.$('#roleGreetingInput') ? App.$('#roleGreetingInput').value.trim() : '';
-
-      if (!name) {
-        App.showToast('請輸入角色名字');
-        return;
-      }
-
-      var roles = App.LS.get('savedRoles') || [];
-      var role = {
-        id: 'role-' + Date.now(),
-        name: name,
-        caller: caller,
-        persona: persona,
-        speech: speech,
-        backstory: backstory,
-        greeting: greeting,
-        avatar: roleAvatarData || ''
-      };
-
-      roles.push(role);
-      App.LS.set('savedRoles', roles);
-      renderSavedRoles();
-      App.showToast('角色已保存');
-
-      if (App.$('#roleNameInput')) App.$('#roleNameInput').value = '';
-      if (App.$('#roleCallerInput')) App.$('#roleCallerInput').value = '';
-      if (App.$('#rolePersonaInput')) App.$('#rolePersonaInput').value = '';
-      if (App.$('#roleSpeechInput')) App.$('#roleSpeechInput').value = '';
-      if (App.$('#roleBackstoryInput')) App.$('#roleBackstoryInput').value = '';
-      if (App.$('#roleGreetingInput')) App.$('#roleGreetingInput').value = '';
-      roleAvatarData = null;
-      var preview = App.$('#roleAvatarPreview');
-      if (preview) {
-        preview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-      }
-    });
-
-    function renderSavedRoles() {
-      var container = App.$('#savedRolesList');
-      if (!container) return;
-
-      var roles = App.LS.get('savedRoles') || [];
-
-      if (!roles.length) {
-        container.innerHTML = '';
-        return;
-      }
-
-      container.innerHTML = roles.map(function(r, i) {
-        var avatarHtml = r.avatar
-          ? '<img src="' + App.esc(r.avatar) + '" alt="">'
-          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-
-        return '<div class="role-card">' +
-          '<div class="role-card-avatar">' + avatarHtml + '</div>' +
-          '<div class="role-card-info">' +
-            '<div class="role-card-name">' + App.esc(r.name) + '</div>' +
-            '<div class="role-card-desc">' + App.esc(r.persona || r.speech || '') + '</div>' +
-          '</div>' +
-          '<div class="role-card-actions">' +
-            '<button class="role-use-btn" onclick="window._useRole(' + i + ')" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' +
-            '</button>' +
-            '<button class="role-del-btn" onclick="window._delRole(' + i + ')" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    window._useRole = function(i) {
-      var roles = App.LS.get('savedRoles') || [];
-      var r = roles[i];
-      if (!r) return;
-
-      App.LS.set('activeRole', r);
-
-      var nameEl = App.$('#roleChatName');
-      var subEl = App.$('#roleChatSub');
-      if (nameEl) nameEl.textContent = r.name;
-      if (subEl) subEl.textContent = r.persona || '';
-
-      App.showToast('已選擇: ' + r.name);
-    };
-
-    window._delRole = function(i) {
-      var roles = App.LS.get('savedRoles') || [];
-      var removed = roles.splice(i, 1)[0];
-      App.LS.set('savedRoles', roles);
-
-      var active = App.LS.get('activeRole');
-      if (active && removed && active.id === removed.id) {
-        App.LS.remove('activeRole');
-      }
-
-      renderSavedRoles();
-      App.showToast('已刪除');
-    };
-
-    var activeRole = App.LS.get('activeRole');
-    if (activeRole) {
-      var nameEl = App.$('#roleChatName');
-      var subEl = App.$('#roleChatSub');
-      if (nameEl) nameEl.textContent = activeRole.name;
-      if (subEl) subEl.textContent = activeRole.persona || '';
-    }
-
-    renderSavedRoles();
     snapToPage(false);
   };
 
