@@ -66,8 +66,6 @@
     ball: null,
     ballMenuEl: null,
     overlay: null,
-    chatMessages: null,
-    chatInput: null,
     currentPanelEl: null,
     menuOpen: false,
     isDragging: false,
@@ -76,8 +74,7 @@
     startY: 0,
     origX: 0,
     origY: 0,
-    lastToggleTime: 0,
-    currentAbortController: null
+    lastToggleTime: 0
   };
 
   App.modules = App.modules || {};
@@ -243,6 +240,13 @@
       App.closePanel();
     });
 
+    // 重置所有设置
+    App.safeOn('#clearAllBtn', 'click', function() {
+      if (!confirm('确定要重置所有设置吗？')) return;
+      localStorage.clear();
+      location.reload();
+    });
+
     var savedBallPos = App.LS.get('floatingBallPos');
     if (savedBallPos) {
       ball.style.left = savedBallPos.left + 'px';
@@ -297,7 +301,6 @@
       doBlink: function() {
         var self = this;
         if (self.animLock) return;
-
         self.setSprite('blink');
         setTimeout(function() {
           if (self.currentState === 'blink') {
@@ -318,26 +321,22 @@
             self.img.classList.add('waving');
             setTimeout(function() { self.goIdle(); }, 1200);
             break;
-
           case 'tilt':
             var tiltKey = Math.random() > 0.5 ? 'tiltA' : 'tiltB';
             self.setSprite(tiltKey);
             self.img.classList.add('tilting');
             setTimeout(function() { self.goIdle(); }, 1600);
             break;
-
           case 'surprise':
             self.setSprite('surprise');
             self.img.classList.add('surprised');
             setTimeout(function() { self.goIdle(); }, 1200);
             break;
-
           case 'happy':
             self.setSprite('happy');
             self.img.classList.add('happy');
             setTimeout(function() { self.goIdle(); }, 1400);
             break;
-
           default:
             self.goIdle();
         }
@@ -348,9 +347,7 @@
         function scheduleBlink() {
           var delay = 2500 + Math.random() * 4000;
           self.blinkTimer = setTimeout(function() {
-            if (!self.animLock) {
-              self.doBlink();
-            }
+            if (!self.animLock) self.doBlink();
             scheduleBlink();
           }, delay);
         }
@@ -360,7 +357,6 @@
       startIdleActions: function() {
         var self = this;
         var actions = ['wave', 'tilt', 'surprise', 'happy'];
-
         function scheduleAction() {
           var delay = 8000 + Math.random() * 15000;
           self.idleTimer = setTimeout(function() {
@@ -400,7 +396,11 @@
     Object.keys(App.modules).forEach(function(name) {
       var mod = App.modules[name];
       if (mod && typeof mod.init === 'function') {
-        mod.init();
+        try {
+          mod.init();
+        } catch (e) {
+          console.warn('模块 ' + name + ' 初始化失败:', e);
+        }
       }
     });
   };
@@ -423,7 +423,7 @@
 
     function isInteractiveTarget(target) {
       if (!target) return false;
-      return !!target.closest('input, textarea, button, a, select, [contenteditable]');
+      return !!target.closest('input, textarea, button, a, select, [contenteditable], .app-icon');
     }
 
     function setBallVisibility() {
@@ -524,11 +524,9 @@
     App.state.ball = App.$('#floatingBall');
     App.state.ballMenuEl = App.$('#ballMenu');
     App.state.overlay = App.$('#overlay');
-    App.state.chatMessages = App.$('#chatMessages');
-    App.state.chatInput = App.$('#chatInput');
 
     if (!App.state.ball || !App.state.ballMenuEl || !App.state.overlay) {
-      alert('页面缺少核心元素：floatingBall / ballMenu / overlay');
+      console.warn('页面缺少核心元素');
       return;
     }
 
