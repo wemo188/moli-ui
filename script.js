@@ -247,41 +247,6 @@
       location.reload();
     });
 
-    // 美化图标
-    App.safeOn('#customizeIconBtn', 'click', function() {
-      App.closeMenu();
-      var input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.style.display = 'none';
-      document.body.appendChild(input);
-
-      input.addEventListener('change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var mascotImg = App.$('#mascotImg');
-          if (mascotImg) {
-            mascotImg.src = ev.target.result;
-            App.mascot.sprites.idle = ev.target.result;
-            App.mascot.sprites.blink = ev.target.result;
-            App.mascot.sprites.wave = ev.target.result;
-            App.mascot.sprites.tiltA = ev.target.result;
-            App.mascot.sprites.tiltB = ev.target.result;
-            App.mascot.sprites.surprise = ev.target.result;
-            App.mascot.sprites.happy = ev.target.result;
-          }
-          App.LS.set('customMascotImg', ev.target.result);
-          App.showToast('图标已更新');
-        };
-        reader.readAsDataURL(file);
-        document.body.removeChild(input);
-      });
-
-      input.click();
-    });
-
     var savedBallPos = App.LS.get('floatingBallPos');
     if (savedBallPos) {
       ball.style.left = savedBallPos.left + 'px';
@@ -421,22 +386,6 @@
     };
 
     App.mascot.init();
-
-    // 恢复自定义图标
-    var savedMascot = App.LS.get('customMascotImg');
-    if (savedMascot) {
-      var mascotImg = App.$('#mascotImg');
-      if (mascotImg) {
-        mascotImg.src = savedMascot;
-        App.mascot.sprites.idle = savedMascot;
-        App.mascot.sprites.blink = savedMascot;
-        App.mascot.sprites.wave = savedMascot;
-        App.mascot.sprites.tiltA = savedMascot;
-        App.mascot.sprites.tiltB = savedMascot;
-        App.mascot.sprites.surprise = savedMascot;
-        App.mascot.sprites.happy = savedMascot;
-      }
-    }
 
     setTimeout(function() {
       if (App.mascot) App.mascot.doAction('wave');
