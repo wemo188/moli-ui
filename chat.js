@@ -292,7 +292,7 @@
               '<span>正则</span>' +
             '</div>' +
             '<div class="chat-right-item" data-action="css">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.1 2.5-.3C13.6 20 13 18.1 13 16c0-3.3 2.7-6 6-6 1 0 2 .3 2.8.7.1-.6.2-1.1.2-1.7 0-5-3.6-9.3-8.5-9.9L12 2z"/><circle cx="7.5" cy="11.5" r="1.5"/><circle cx="12" cy="7.5" r="1.5"/><circle cx="16.5" cy="11.5" r="1.5"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>' +
               '<span>CSS 渲染</span>' +
             '</div>' +
             '<div class="chat-right-item" data-action="api">' +
@@ -369,11 +369,11 @@
         Chat.sendMessage();
       });
 
-      // 右侧菜单项
-      panel.querySelectorAll('.chat-right-item').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+      // 右侧菜单项 - 全部用 toast 占位，不跳转其他面板
+      panel.querySelectorAll('.chat-right-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
           e.stopPropagation();
-          var action = btn.dataset.action;
+          var action = item.dataset.action;
           Chat.closeSidebars();
           App.showToast(action + ' 功能开发中');
         });
