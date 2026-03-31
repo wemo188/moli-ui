@@ -517,6 +517,193 @@
       snapToPage(false);
     });
 
+    // ========= 图标拖拽 + 长按换图 =========
+    (function() {
+      var grid = App.$('#appGrid');
+      if (!grid) return;
+
+      var icons = grid.querySelectorAll('.app-icon');
+      var dragEl = null;
+      var longPressTimer = null;
+      var longPressed = false;
+      var iconTouchMoved = false;
+
+      function saveIconOrder() {
+        var order = [];
+        grid.querySelectorAll('.app-icon').forEach(function(icon) {
+          order.push(icon.dataset.icon);
+        });
+        App.LS.set('iconOrder', order);
+      }
+
+      function restoreIconOrder() {
+        var order = App.LS.get('iconOrder');
+        if (!order || !order.length) return;
+
+        var iconMap = {};
+        grid.querySelectorAll('.app-icon').forEach(function(icon) {
+          iconMap[icon.dataset.icon] = icon;
+        });
+
+        order.forEach(function(key) {
+          if (iconMap[key]) {
+            grid.appendChild(iconMap[key]);
+          }
+        });
+      }
+
+      function restoreIconImages() {
+        icons.forEach(function(icon) {
+          var key = icon.dataset.icon;
+          var saved = App.LS.get('iconImg_' + key);
+          if (saved) {
+            var imgEl = icon.querySelector('.app-icon-img');
+            if (imgEl) {
+              imgEl.innerHTML = '<img src="' + saved + '">';
+            }
+          }
+        });
+      }
+
+      function showLongPressMenu(icon, x, y) {
+        var old = App.$('#iconLongPressMenu');
+        if (old) old.remove();
+
+        var menu = document.createElement('div');
+        menu.id = 'iconLongPressMenu';
+        menu.className = 'icon-longpress-menu';
+        menu.innerHTML =
+          '<div class="icon-longpress-menu-item" id="iconMenuChangeImg">更换图标图片</div>' +
+          '<div class="icon-longpress-menu-item" id="iconMenuResetImg">恢复默认图标</div>';
+
+        menu.style.left = Math.min(x, window.innerWidth - 160) + 'px';
+        menu.style.top = Math.min(y, window.innerHeight - 100) + 'px';
+
+        document.body.appendChild(menu);
+
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.hidden = true;
+        document.body.appendChild(fileInput);
+
+        App.safeOn('#iconMenuChangeImg', 'click', function() {
+          fileInput.click();
+          menu.remove();
+        });
+
+        fileInput.addEventListener('change', function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var imgEl = icon.querySelector('.app-icon-img');
+            if (imgEl) {
+              imgEl.innerHTML = '<img src="' + ev.target.result + '">';
+            }
+            App.LS.set('iconImg_' + icon.dataset.icon, ev.target.result);
+          };
+          reader.readAsDataURL(file);
+          fileInput.remove();
+        });
+
+        App.safeOn('#iconMenuResetImg', 'click', function() {
+          App.LS.remove('iconImg_' + icon.dataset.icon);
+          location.reload();
+          menu.remove();
+        });
+
+        setTimeout(function() {
+          function dismissMenu(e) {
+            if (!menu.contains(e.target)) {
+              menu.remove();
+              document.removeEventListener('touchstart', dismissMenu);
+              document.removeEventListener('click', dismissMenu);
+            }
+          }
+          document.addEventListener('touchstart', dismissMenu, { passive: true });
+          document.addEventListener('click', dismissMenu);
+        }, 100);
+      }
+
+      icons.forEach(function(icon) {
+        icon.addEventListener('touchstart', function(e) {
+          iconTouchMoved = false;
+          longPressed = false;
+
+          var touch = e.touches[0];
+
+          longPressTimer = setTimeout(function() {
+            longPressed = true;
+            showLongPressMenu(icon, touch.clientX, touch.clientY);
+          }, 500);
+        }, { passive: true });
+
+        icon.addEventListener('touchmove', function() {
+          iconTouchMoved = true;
+          clearTimeout(longPressTimer);
+        }, { passive: true });
+
+        icon.addEventListener('touchend', function(e) {
+          clearTimeout(longPressTimer);
+
+          if (longPressed) {
+            e.preventDefault();
+            longPressed = false;
+            return;
+          }
+        }, { passive: false });
+
+        // 拖拽排序
+        icon.setAttribute('draggable', 'true');
+
+        icon.addEventListener('dragstart', function(e) {
+          dragEl = icon;
+          icon.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        icon.addEventListener('dragend', function() {
+          icon.classList.remove('dragging');
+          grid.querySelectorAll('.app-icon').forEach(function(i) {
+            i.classList.remove('drag-over');
+          });
+          dragEl = null;
+          saveIconOrder();
+        });
+
+        icon.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          if (dragEl && dragEl !== icon) {
+            icon.classList.add('drag-over');
+          }
+        });
+
+        icon.addEventListener('dragleave', function() {
+          icon.classList.remove('drag-over');
+        });
+
+        icon.addEventListener('drop', function(e) {
+          e.preventDefault();
+          icon.classList.remove('drag-over');
+          if (!dragEl || dragEl === icon) return;
+
+          var allIcons = Array.from(grid.querySelectorAll('.app-icon'));
+          var fromIdx = allIcons.indexOf(dragEl);
+          var toIdx = allIcons.indexOf(icon);
+
+          if (fromIdx < toIdx) {
+            grid.insertBefore(dragEl, icon.nextSibling);
+          } else {
+            grid.insertBefore(dragEl, icon);
+          }
+        });
+      });
+
+      restoreIconOrder();
+      restoreIconImages();
+    })();
+
     snapToPage(false);
   };
 
