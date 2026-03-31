@@ -1,5 +1,5 @@
 /* =========================
-   聊天界面
+   聊天头部
 ========================= */
 .chat-header {
   display: flex;
@@ -30,6 +30,9 @@
 
 .chat-icon-btn svg { width: 20px; height: 20px; }
 
+/* =========================
+   聊天主体
+========================= */
 .chat-body {
   flex: 1;
   display: flex;
@@ -50,21 +53,16 @@
 
 .chat-msg {
   display: flex;
-  animation: slideIn 0.3s ease;
+  animation: chatSlideIn 0.3s ease;
 }
 
-@keyframes slideIn {
+@keyframes chatSlideIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.chat-msg-user {
-  justify-content: flex-end;
-}
-
-.chat-msg-char {
-  justify-content: flex-start;
-}
+.chat-msg-user { justify-content: flex-end; }
+.chat-msg-char { justify-content: flex-start; }
 
 .chat-msg-content {
   max-width: 75%;
@@ -131,13 +129,9 @@
   outline: none;
   font-family: inherit;
   line-height: 1.5;
-  -webkit-overflow-scrolling: touch;
 }
 
-.chat-textarea:focus {
-  border-color: var(--accent);
-}
-
+.chat-textarea:focus { border-color: var(--accent); }
 .chat-textarea::placeholder { color: var(--text-muted); }
 
 .chat-send-btn {
@@ -159,13 +153,12 @@
 .chat-send-btn svg { width: 18px; height: 18px; }
 
 /* =========================
-   侧边栏
+   侧边栏通用
 ========================= */
 .chat-sidebar {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 260px;
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
@@ -175,23 +168,21 @@
 
 .chat-sidebar-left {
   left: 0;
+  width: 260px;
   border-right: 1.5px solid var(--border);
   transform: translateX(0);
 }
 
-.chat-sidebar-left.hidden {
-  transform: translateX(-100%);
-}
+.chat-sidebar-left.hidden { transform: translateX(-100%); }
 
 .chat-sidebar-right {
   right: 0;
+  width: 200px;
   border-left: 1.5px solid var(--border);
   transform: translateX(0);
 }
 
-.chat-sidebar-right.hidden {
-  transform: translateX(100%);
-}
+.chat-sidebar-right.hidden { transform: translateX(100%); }
 
 .chat-sidebar-header {
   display: flex;
@@ -227,19 +218,24 @@
 
 .chat-sidebar-add-btn svg { width: 16px; height: 16px; }
 
-/* 右侧用户头像区 */
-.chat-sidebar-user-header {
+/* =========================
+   右侧栏 - 用户区
+========================= */
+.chat-right-user {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 16px 16px;
+  padding: 20px 12px 14px;
   border-bottom: 1.5px solid var(--border);
+  cursor: pointer;
   flex-shrink: 0;
 }
 
-.chat-sidebar-user-avatar {
-  width: 64px;
-  height: 64px;
+.chat-right-user:active { background: var(--bg-primary); }
+
+.chat-right-avatar {
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--bg-primary);
   border: 2px solid var(--border);
@@ -247,46 +243,64 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: transform 0.15s;
+  margin-bottom: 8px;
 }
 
-.chat-sidebar-user-avatar:active { transform: scale(0.93); }
-
-.chat-sidebar-user-avatar img {
+.chat-right-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.chat-sidebar-user-avatar svg {
-  width: 28px;
-  height: 28px;
+.chat-right-avatar svg {
+  width: 24px;
+  height: 24px;
   color: var(--text-muted);
 }
 
-.chat-sidebar-user-name {
-  font-size: 14px;
+.chat-right-username {
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-/* 右侧菜单项 */
-.chat-sidebar-item {
+/* =========================
+   右侧栏 - 菜单列表（一行一个）
+========================= */
+.chat-right-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-right-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 14px 16px;
-  font-size: 14px;
-  color: var(--text-primary);
   cursor: pointer;
   border-bottom: 1px solid var(--border-light);
   transition: background 0.15s;
+  color: var(--text-primary);
 }
 
-.chat-sidebar-item:active {
+.chat-right-item:active {
   background: var(--bg-primary);
 }
 
-/* 对话列表 */
+.chat-right-item svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-deep);
+  flex-shrink: 0;
+}
+
+.chat-right-item span {
+  font-size: 13px;
+}
+
+/* =========================
+   对话列表
+========================= */
 .conv-item {
   display: flex;
   align-items: center;
@@ -326,13 +340,14 @@
   cursor: pointer;
   color: var(--text-muted);
   font-size: 18px;
-  line-height: 1;
   flex-shrink: 0;
 }
 
 .conv-del-btn:active { color: #c44; }
 
-/* 遮罩 */
+/* =========================
+   聊天遮罩
+========================= */
 .chat-overlay {
   position: absolute;
   inset: 0;
@@ -347,7 +362,91 @@
 }
 
 /* =========================
-   用户选择 / 角色选择
+   用户切换弹窗
+========================= */
+.chat-user-switcher {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-user-switcher-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.chat-user-switcher-body {
+  position: relative;
+  width: 260px;
+  max-height: 400px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.chat-user-switcher-title {
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1.5px solid var(--border);
+}
+
+.chat-user-switcher-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s;
+}
+
+.chat-user-switcher-item:last-child { border-bottom: none; }
+.chat-user-switcher-item:active { background: var(--bg-primary); }
+
+.chat-user-switcher-item.active {
+  background: rgba(173, 205, 234, 0.15);
+}
+
+.chat-user-switcher-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chat-user-switcher-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-user-switcher-avatar svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.chat-user-switcher-item span {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+/* =========================
+   角色/用户选择
 ========================= */
 .user-select-list,
 .char-select-list {
@@ -421,89 +520,3 @@
   color: var(--text-muted);
   margin-top: 2px;
 }
-
-/* =========================
-   右侧栏紧凑图标
-========================= */
-.chat-right-user {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 12px 14px;
-  border-bottom: 1.5px solid var(--border);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.chat-right-user:active {
-  background: var(--bg-primary);
-}
-
-.chat-right-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--bg-primary);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.chat-right-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.chat-right-avatar svg {
-  width: 24px;
-  height: 24px;
-  color: var(--text-muted);
-}
-
-.chat-right-username {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.chat-right-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-  padding: 12px 8px;
-}
-
-.chat-right-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 48px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--accent-deep);
-  transition: all 0.15s;
-}
-
-.chat-right-btn:active {
-  background: var(--accent);
-  color: #fff;
-  transform: scale(0.93);
-}
-
-.chat-right-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.chat-sidebar-right {
-  width: 140px;
-}
-
