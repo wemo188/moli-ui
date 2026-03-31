@@ -476,6 +476,58 @@
     }, { passive: true });
 
     window.addEventListener('resize', function() {
+    
+          // ========= 全屏面板手动划屏返回 =========
+    (function() {
+      var startX = 0;
+      var startY = 0;
+      var dragging = false;
+
+      document.addEventListener('touchstart', function(e) {
+        var panel = App.$('.fullpage-panel.show');
+        if (!panel) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        dragging = true;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!dragging) return;
+        var panel = App.$('.fullpage-panel.show');
+        if (!panel) return;
+
+        var currentX = e.touches[0].clientX;
+        var currentY = e.touches[0].clientY;
+        var dx = currentX - startX;
+        var dy = currentY - startY;
+
+        if (Math.abs(dx) > Math.abs(dy) && dx > 30) {
+          e.preventDefault();
+          var progress = Math.min(dx / window.innerWidth, 1);
+          panel.style.transform = 'translateX(' + (progress * 100) + '%)';
+          panel.style.opacity = 1 - progress * 0.3;
+        }
+      }, { passive: false });
+
+      document.addEventListener('touchend', function(e) {
+        if (!dragging) return;
+        dragging = false;
+
+        var panel = App.$('.fullpage-panel.show');
+        if (!panel) return;
+
+        var currentX = e.changedTouches[0].clientX;
+        var dx = currentX - startX;
+
+        if (dx > window.innerWidth * 0.2) {
+          App.closePanel();
+        } else {
+          panel.style.transform = 'translateX(0)';
+          panel.style.opacity = '1';
+        }
+      }, { passive: true });
+    })();
+
       snapToPage(false);
     });
 
