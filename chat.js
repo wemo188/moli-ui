@@ -173,6 +173,9 @@
 
       var userShapeClass = Chat.getShapeClass(user.avatarShape);
       var charName = (char.basicInfo || '').split('\n')[0] || '角色';
+      var userAvatarHtml = user.avatar
+        ? '<img src="' + user.avatar + '" alt="">'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
 
       panel.innerHTML =
         '<div class="fullpage-header chat-header">' +
@@ -191,11 +194,11 @@
           '<div class="chat-messages" id="chatMessages"></div>' +
           '<div class="chat-input-area">' +
             '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '</button>' +
             '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
             '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
             '</button>' +
           '</div>' +
         '</div>' +
@@ -209,67 +212,81 @@
           '<div class="chat-sidebar-body" id="convListBody"></div>' +
         '</div>' +
         '<div class="chat-sidebar chat-sidebar-right hidden" id="chatSidebarRight">' +
-          '<div class="chat-sidebar-user-header">' +
-            '<div class="chat-sidebar-user-avatar ' + userShapeClass + '" id="switchUserBtn">' +
-              (user.avatar
-                ? '<img src="' + user.avatar + '" alt="">'
-                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
-            '</div>' +
-            '<div class="chat-sidebar-user-name">' + App.esc(user.name || '') + '</div>' +
+          '<div class="chat-right-user" id="switchUserArea">' +
+            '<div class="chat-right-avatar ' + userShapeClass + '">' + userAvatarHtml + '</div>' +
+            '<div class="chat-right-username">' + App.esc(user.name || '') + '</div>' +
           '</div>' +
-          '<div class="chat-sidebar-body">' +
-            '<div class="chat-sidebar-item" data-action="scene">场景</div>' +
-            '<div class="chat-sidebar-item" data-action="worldbook">世界书</div>' +
-            '<div class="chat-sidebar-item" data-action="preset">预设</div>' +
-            '<div class="chat-sidebar-item" data-action="regex">正则</div>' +
-            '<div class="chat-sidebar-item" data-action="css">CSS 全局渲染</div>' +
-            '<div class="chat-sidebar-item" data-action="api">API 切换</div>' +
+          '<div class="chat-right-actions">' +
+            '<button class="chat-right-btn" data-action="scene" title="场景">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+            '</button>' +
+            '<button class="chat-right-btn" data-action="worldbook" title="世界书">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+            '</button>' +
+            '<button class="chat-right-btn" data-action="preset" title="预设">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
+            '</button>' +
+            '<button class="chat-right-btn" data-action="regex" title="正则">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>' +
+            '</button>' +
+            '<button class="chat-right-btn" data-action="css" title="CSS渲染">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>' +
+            '</button>' +
+            '<button class="chat-right-btn" data-action="api" title="API切换">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
+            '</button>' +
           '</div>' +
         '</div>' +
         '<div class="chat-overlay hidden" id="chatOverlay"></div>';
 
-      // 返回角色选择
+      // 返回
       App.safeOn('#backToCharSelect', 'click', function() {
         Chat.renderCharacterSelect();
       });
 
-      // 爱心 - 左侧对话列表
+      // 爱心 左侧
       App.safeOn('#chatConvBtn', 'click', function() {
         var left = App.$('#chatSidebarLeft');
         var right = App.$('#chatSidebarRight');
         var overlay = App.$('#chatOverlay');
         if (right) right.classList.add('hidden');
         if (left && overlay) {
-          var opening = left.classList.contains('hidden');
+          var isHidden = left.classList.contains('hidden');
           left.classList.toggle('hidden');
-          overlay.classList.toggle('hidden', !opening);
-          if (opening) Chat.renderConvList();
+          overlay.classList.toggle('hidden', !isHidden);
+          if (isHidden) Chat.renderConvList();
         }
       });
 
-      // 三个点 - 右侧菜单
+      // 三个点 右侧
       App.safeOn('#chatMenuBtn', 'click', function() {
         var left = App.$('#chatSidebarLeft');
         var right = App.$('#chatSidebarRight');
         var overlay = App.$('#chatOverlay');
         if (left) left.classList.add('hidden');
         if (right && overlay) {
-          var opening = right.classList.contains('hidden');
+          var isHidden = right.classList.contains('hidden');
           right.classList.toggle('hidden');
-          overlay.classList.toggle('hidden', !opening);
+          overlay.classList.toggle('hidden', !isHidden);
         }
       });
 
-      // 点击遮罩收起所有侧边栏
+      // 遮罩收起
       App.safeOn('#chatOverlay', 'click', function() {
         Chat.closeSidebars();
       });
 
-      // 点击用户头像切换身份
-      App.safeOn('#switchUserBtn', 'click', function() {
-        Chat.closeSidebars();
-        if (App.user) App.user.openPanel();
-      });
+      // 点击用户头像切换身份 - 用事件委托避免冲突
+      var switchArea = panel.querySelector('#switchUserArea');
+      if (switchArea) {
+        switchArea.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Chat.closeSidebars();
+          setTimeout(function() {
+            if (App.user) App.user.openPanel();
+          }, 300);
+        });
+      }
 
       // 新建对话
       App.safeOn('#addConvBtn', 'click', function() {
@@ -290,18 +307,23 @@
         Chat.sendMessage();
       });
 
-      // 右侧菜单项
-      panel.querySelectorAll('.chat-sidebar-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var action = item.dataset.action;
+      // 右侧图标按钮
+      panel.querySelectorAll('.chat-right-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var action = btn.dataset.action;
           Chat.closeSidebars();
-          if (action === 'worldbook' && App.worldbook) {
-            App.worldbook.openPanel();
-          } else if (action === 'api') {
-            App.openPanel('apiPanel');
-          } else {
-            App.showToast(action + ' 功能开发中');
-          }
+          setTimeout(function() {
+            if (action === 'worldbook' && App.worldbook) {
+              App.worldbook.openPanel();
+            } else if (action === 'preset' && App.preset) {
+              App.preset.openPanel();
+            } else if (action === 'api') {
+              App.openPanel('apiPanel');
+            } else {
+              App.showToast(action + ' 功能开发中');
+            }
+          }, 300);
         });
       });
 
@@ -351,6 +373,7 @@
               Chat.currentConversationId = newConv.id;
             }
           }
+          Chat.closeSidebars();
           Chat.renderChatView();
         });
       });
