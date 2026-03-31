@@ -153,3 +153,25 @@
 }
 
 .field-card-textarea::placeholder { color: var(--text-muted); }
+
+.user-active-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.15s;
+}
+
+.user-active-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.char-card.user-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(173, 205, 234, 0.2);
+}
