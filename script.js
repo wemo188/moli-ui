@@ -240,7 +240,6 @@
       App.closePanel();
     });
 
-    // 重置所有设置
     App.safeOn('#clearAllBtn', 'click', function() {
       if (!confirm('确定要重置所有设置吗？')) return;
       localStorage.clear();
@@ -419,12 +418,6 @@
     var baseX = 0;
     var dragging = false;
     var pageWidth = window.innerWidth;
-    var touchStartedOnInteractive = false;
-
-    function isInteractiveTarget(target) {
-      if (!target) return false;
-      return !!target.closest('input, textarea, button, a, select, [contenteditable], .app-icon');
-    }
 
     function setBallVisibility() {
       if (!floatingBall) return;
@@ -466,8 +459,6 @@
 
     slider.addEventListener('touchstart', function(e) {
       if (!e.touches || !e.touches.length) return;
-      touchStartedOnInteractive = isInteractiveTarget(e.target);
-      if (touchStartedOnInteractive) return;
 
       startX = e.touches[0].clientX;
       currentX = startX;
@@ -482,6 +473,10 @@
 
       currentX = e.touches[0].clientX;
       var deltaX = currentX - startX;
+
+      // 如果水平移动不够，不算滑页
+      if (Math.abs(deltaX) < 10) return;
+
       var nextX = baseX + deltaX;
 
       var maxLeft = -(totalPages - 1) * pageWidth;
@@ -494,11 +489,6 @@
     }, { passive: true });
 
     slider.addEventListener('touchend', function() {
-      if (touchStartedOnInteractive) {
-        touchStartedOnInteractive = false;
-        return;
-      }
-
       if (!dragging) return;
       dragging = false;
 
@@ -517,44 +507,15 @@
       snapToPage(false);
     });
 
-    // ========= 图标拖拽 + 长按换图 =========
+    // ========= 图标长按换图 =========
     (function() {
       var grid = App.$('#appGrid');
       if (!grid) return;
 
-      var icons = grid.querySelectorAll('.app-icon');
-      var dragEl = null;
-      var longPressTimer = null;
-      var longPressed = false;
-      var iconTouchMoved = false;
-
-      function saveIconOrder() {
-        var order = [];
-        grid.querySelectorAll('.app-icon').forEach(function(icon) {
-          order.push(icon.dataset.icon);
-        });
-        App.LS.set('iconOrder', order);
-      }
-
-      function restoreIconOrder() {
-        var order = App.LS.get('iconOrder');
-        if (!order || !order.length) return;
-
-        var iconMap = {};
-        grid.querySelectorAll('.app-icon').forEach(function(icon) {
-          iconMap[icon.dataset.icon] = icon;
-        });
-
-        order.forEach(function(key) {
-          if (iconMap[key]) {
-            grid.appendChild(iconMap[key]);
-          }
-        });
-      }
-
       function restoreIconImages() {
-        icons.forEach(function(icon) {
+        grid.querySelectorAll('.app-icon').forEach(function(icon) {
           var key = icon.dataset.icon;
+          if (!key) return;
           var saved = App.LS.get('iconImg_' + key);
           if (saved) {
             var imgEl = icon.querySelector('.app-icon-img');
@@ -609,13 +570,13 @@
 
         App.safeOn('#iconMenuResetImg', 'click', function() {
           App.LS.remove('iconImg_' + icon.dataset.icon);
-          location.reload();
           menu.remove();
+          location.reload();
         });
 
         setTimeout(function() {
           function dismissMenu(e) {
-            if (!menu.contains(e.target)) {
+            if (menu.parentNode && !menu.contains(e.target)) {
               menu.remove();
               document.removeEventListener('touchstart', dismissMenu);
               document.removeEventListener('click', dismissMenu);
@@ -626,21 +587,24 @@
         }, 100);
       }
 
-      icons.forEach(function(icon) {
-        icon.addEventListener('touchstart', function(e) {
-          iconTouchMoved = false;
-          longPressed = false;
+      grid.querySelectorAll('.app-icon').forEach(function(icon) {
+        var longPressTimer = null;
+        var longPressed = false;
+        var touchMoved = false;
 
+        icon.addEventListener('touchstart', function(e) {
+          touchMoved = false;
+          longPressed = false;
           var touch = e.touches[0];
 
           longPressTimer = setTimeout(function() {
             longPressed = true;
             showLongPressMenu(icon, touch.clientX, touch.clientY);
-          }, 500);
+          }, 600);
         }, { passive: true });
 
         icon.addEventListener('touchmove', function() {
-          iconTouchMoved = true;
+          touchMoved = true;
           clearTimeout(longPressTimer);
         }, { passive: true });
 
@@ -652,57 +616,17 @@
             longPressed = false;
             return;
           }
+
+          // 没有长按也没有移动 = 正常点击
+          if (!touchMoved && !longPressed) {
+            // 让 click 事件正常触发
+          }
         }, { passive: false });
-
-        // 拖拽排序
-        icon.setAttribute('draggable', 'true');
-
-        icon.addEventListener('dragstart', function(e) {
-          dragEl = icon;
-          icon.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-        });
-
-        icon.addEventListener('dragend', function() {
-          icon.classList.remove('dragging');
-          grid.querySelectorAll('.app-icon').forEach(function(i) {
-            i.classList.remove('drag-over');
-          });
-          dragEl = null;
-          saveIconOrder();
-        });
-
-        icon.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          if (dragEl && dragEl !== icon) {
-            icon.classList.add('drag-over');
-          }
-        });
-
-        icon.addEventListener('dragleave', function() {
-          icon.classList.remove('drag-over');
-        });
-
-        icon.addEventListener('drop', function(e) {
-          e.preventDefault();
-          icon.classList.remove('drag-over');
-          if (!dragEl || dragEl === icon) return;
-
-          var allIcons = Array.from(grid.querySelectorAll('.app-icon'));
-          var fromIdx = allIcons.indexOf(dragEl);
-          var toIdx = allIcons.indexOf(icon);
-
-          if (fromIdx < toIdx) {
-            grid.insertBefore(dragEl, icon.nextSibling);
-          } else {
-            grid.insertBefore(dragEl, icon);
-          }
-        });
       });
 
-      restoreIconOrder();
       restoreIconImages();
     })();
+
     snapToPage(false);
   };
 
