@@ -1,37 +1,37 @@
+
 (function() {
   'use strict';
 
   var App = window.App;
   if (!App) return;
 
+  var FIELDS = [
+    { key: 'basicInfo', label: '基础信息', placeholder: '姓名、年龄、身份、职业等基本设定...' },
+    { key: 'appearance', label: '外貌气质', placeholder: '外貌、体型、气质描述...' },
+    { key: 'backstory', label: '背景故事', placeholder: '角色的背景故事...' },
+    { key: 'speechStyle', label: '说话方式', placeholder: '语气、习惯用语、说话风格...' },
+    { key: 'behaviorRules', label: '行为准则', placeholder: '角色遵循的行为规则...' },
+    { key: 'personalityTraits', label: '性格特点', placeholder: '性格描述...' },
+    { key: 'coreSupplement', label: '核心补充', placeholder: '其他核心设定补充...' },
+    { key: 'callUser', label: '对 user 的称呼', placeholder: '角色如何称呼 user...' },
+    { key: 'relationshipToUser', label: '对 user 的态度', placeholder: '角色对用户的态度、关系...' },
+    { key: 'relationshipChange', label: '对 user 的变化', placeholder: '随着互动深入，态度如何变化...' },
+    { key: 'sexualExperience', label: '性经验', placeholder: '相关设定描述...' },
+    { key: 'forbiddenBehaviors', label: '禁止', placeholder: '绝对不允许出现的行为...' },
+    { key: 'dialogExamples', label: '对话示例', placeholder: 'user: ...\nchar: ...' },
+    { key: 'opening', label: '开场白', placeholder: '角色在对话开始时说的第一句话...' },
+    { key: 'postInstruction', label: '后置指令', placeholder: '每次回复末尾附加的指令...' }
+  ];
+
   var Character = {
 
     list: [],
-    avatarShape: 'rounded',
+    editingAvatar: null,
 
     empty: function() {
-      return {
-        id: '',
-        name: '',
-        age: '',
-        identity: '',
-        appearance: '',
-        backstory: '',
-        personalityTraits: '',
-        speechStyle: '',
-        behaviorRules: '',
-        coreExtra: '',
-        callUser: '',
-        relationshipToUser: '',
-        relationshipChange: '',
-        sexualExperience: '',
-        forbiddenBehaviors: '',
-        narrativePerson: '第二人称',
-        dialogExamples: '',
-        opening: '',
-        postInstruction: '',
-        avatar: ''
-      };
+      var obj = { id: '', avatar: '', avatarShape: 'circle' };
+      FIELDS.forEach(function(f) { obj[f.key] = ''; });
+      return obj;
     },
 
     save: function() {
@@ -40,12 +40,6 @@
 
     load: function() {
       Character.list = App.LS.get('characterList') || [];
-      Character.avatarShape = App.LS.get('characterAvatarShape') || 'rounded';
-    },
-
-    saveShape: function(shape) {
-      Character.avatarShape = shape;
-      App.LS.set('characterAvatarShape', shape);
     },
 
     add: function(data) {
@@ -78,60 +72,26 @@
       return null;
     },
 
-    getShapeClass: function() {
-      switch (Character.avatarShape) {
-        case 'circle': return 'avatar-circle';
-        case 'square': return 'avatar-square';
-        default: return 'avatar-rounded';
-      }
+    getShapeClass: function(shape) {
+      if (shape === 'square') return 'shape-square';
+      if (shape === 'rounded') return 'shape-rounded';
+      return 'shape-circle';
     },
 
-    // ========= 全屏编辑器 =========
-    openFieldEditor: function(title, currentValue, onSave) {
-      var editor = App.$('#fieldEditorPanel');
-      if (!editor) {
-        editor = document.createElement('div');
-        editor.id = 'fieldEditorPanel';
-        editor.className = 'fullpage-panel hidden';
-        document.body.appendChild(editor);
-      }
+    getNextShape: function(shape) {
+      if (shape === 'circle') return 'square';
+      if (shape === 'square') return 'rounded';
+      return 'circle';
+    },
 
-      editor.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="fieldEditorBack">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>' + App.esc(title) + '</h2>' +
-          '<button class="fullpage-action-btn" id="fieldEditorSave" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="fullpage-body field-editor-body">' +
-          '<textarea id="fieldEditorTextarea" class="field-editor-textarea" placeholder="输入内容...">' + App.esc(currentValue || '') + '</textarea>' +
-        '</div>';
-
-      editor.classList.remove('hidden');
-      requestAnimationFrame(function() {
-        editor.classList.add('show');
-        var ta = App.$('#fieldEditorTextarea');
-        if (ta) ta.focus();
-      });
-
-      App.safeOn('#fieldEditorBack', 'click', function() {
-        editor.classList.remove('show');
-        setTimeout(function() { editor.classList.add('hidden'); }, 350);
-      });
-
-      App.safeOn('#fieldEditorSave', 'click', function() {
-        var val = App.$('#fieldEditorTextarea').value;
-        if (onSave) onSave(val);
-        editor.classList.remove('show');
-        setTimeout(function() { editor.classList.add('hidden'); }, 350);
-        App.showToast('已保存');
-      });
+    getShapeLabel: function(shape) {
+      if (shape === 'circle') return '圆形';
+      if (shape === 'square') return '方形';
+      return '圆角方形';
     },
 
     // ========= 面板 =========
+
     openPanel: function() {
       Character.renderListView();
       var panel = App.$('#characterPanel');
@@ -151,8 +111,6 @@
       var panel = App.$('#characterPanel');
       if (!panel) return;
 
-      var shapeClass = Character.getShapeClass();
-
       panel.innerHTML =
         '<div class="fullpage-header">' +
           '<div class="fullpage-back" id="closeCharacterPanel">' +
@@ -163,30 +121,14 @@
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div class="fullpage-body" id="characterListBody">' +
-        '</div>' +
-        '<div class="shape-selector">' +
-          '<span class="shape-label">头像框：</span>' +
-          '<button class="shape-btn' + (Character.avatarShape === 'circle' ? ' active' : '') + '" data-shape="circle" type="button">圆形</button>' +
-          '<button class="shape-btn' + (Character.avatarShape === 'rounded' ? ' active' : '') + '" data-shape="rounded" type="button">圆角</button>' +
-          '<button class="shape-btn' + (Character.avatarShape === 'square' ? ' active' : '') + '" data-shape="square" type="button">方形</button>' +
-        '</div>';
+        '<div class="fullpage-body" id="characterListBody"></div>';
 
       App.safeOn('#closeCharacterPanel', 'click', function() { Character.closePanel(); });
       App.safeOn('#addCharacterBtn', 'click', function() { Character.renderEditView(null); });
-
-      panel.querySelectorAll('.shape-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          Character.saveShape(btn.dataset.shape);
-          Character.renderListView();
-          App.showToast('头像框已切换');
-        });
-      });
-
-      Character.renderCharacterCards();
+      Character.renderCards();
     },
 
-    renderCharacterCards: function() {
+    renderCards: function() {
       var body = App.$('#characterListBody');
       if (!body) return;
 
@@ -195,18 +137,17 @@
         return;
       }
 
-      var shapeClass = Character.getShapeClass();
-
       body.innerHTML = Character.list.map(function(c) {
+        var shapeClass = Character.getShapeClass(c.avatarShape);
+        var name = c.basicInfo ? c.basicInfo.split('\n')[0].slice(0, 20) : '未命名';
         return '<div class="char-card" data-id="' + c.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '">' +
             (c.avatar
-              ? '<img src="' + c.avatar + '" alt="avatar">'
+              ? '<img src="' + c.avatar + '" alt="">'
               : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
           '</div>' +
           '<div class="char-card-info">' +
-            '<div class="char-card-name">' + App.esc(c.name || '未命名') + '</div>' +
-            '<div class="char-card-desc">' + App.esc(c.identity || '') + (c.age ? ' · ' + App.esc(c.age) : '') + '</div>' +
+            '<div class="char-card-name">' + App.esc(name) + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
             '<button class="char-edit-btn" data-id="' + c.id + '" type="button">' +
@@ -229,31 +170,13 @@
       body.querySelectorAll('.char-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定删除这个角色？')) return;
+          if (!confirm('确定删除？')) return;
           Character.remove(btn.dataset.id);
-          Character.renderCharacterCards();
+          Character.renderCards();
           App.showToast('已删除');
         });
       });
     },
-
-    // ========= 编辑字段配置 =========
-    FIELDS: [
-      { section: '外貌气质', key: 'appearance', placeholder: '外貌、气质、着装...' },
-      { section: '背景故事', key: 'backstory', placeholder: '角色的背景故事...' },
-      { section: '说话方式', key: 'speechStyle', placeholder: '说话风格、语气、习惯用语...' },
-      { section: '行为准则', key: 'behaviorRules', placeholder: '行为准则和习惯...' },
-      { section: '性格特点', key: 'personalityTraits', placeholder: '性格特征...' },
-      { section: '核心补充', key: 'coreExtra', placeholder: '其他补充信息...' },
-      { section: '对 user 的称呼', key: 'callUser', placeholder: '角色如何称呼 user' },
-      { section: '对 user 的态度', key: 'relationshipToUser', placeholder: '角色对用户的态度...' },
-      { section: '对 user 的变化', key: 'relationshipChange', placeholder: '随剧情推进的关系变化...' },
-      { section: '性经验', key: 'sexualExperience', placeholder: '相关描述...' },
-      { section: '禁止行为', key: 'forbiddenBehaviors', placeholder: '绝对不允许出现的行为...' },
-      { section: '对话示例', key: 'dialogExamples', placeholder: 'user: ...\nchar: ...' },
-      { section: '开场白', key: 'opening', placeholder: '角色第一句话...' },
-      { section: '后置指令', key: 'postInstruction', placeholder: '每次回复末尾附加的指令...' }
-    ],
 
     renderEditView: function(id) {
       var panel = App.$('#characterPanel');
@@ -261,51 +184,21 @@
 
       var c = id ? (Character.getById(id) || Character.empty()) : Character.empty();
       var isNew = !id;
-      var editData = JSON.parse(JSON.stringify(c));
+      Character.editingAvatar = c.avatar || '';
 
-      var fieldsHtml = '';
+      var shapeClass = Character.getShapeClass(c.avatarShape);
 
-      // 基础信息
-      fieldsHtml +=
-        '<div class="edit-section">' +
-          '<div class="edit-section-title">基础信息</div>' +
-          '<div class="edit-section-body">' +
-            '<div class="form-group"><label>姓名</label><input type="text" id="charName" value="' + App.esc(c.name || '') + '" placeholder="角色姓名"></div>' +
-            '<div class="form-group"><label>年龄</label><input type="text" id="charAge" value="' + App.esc(c.age || '') + '" placeholder="角色年龄"></div>' +
-            '<div class="form-group"><label>身份</label><input type="text" id="charIdentity" value="' + App.esc(c.identity || '') + '" placeholder="身份/职业"></div>' +
+      var fieldsHtml = FIELDS.map(function(f) {
+        return '<div class="field-card">' +
+          '<div class="field-card-header">' +
+            '<span class="field-card-label">' + f.label + '</span>' +
+            '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+            '</button>' +
           '</div>' +
+          '<textarea id="charField_' + f.key + '" class="field-card-textarea" placeholder="' + f.placeholder + '" rows="3">' + App.esc(c[f.key] || '') + '</textarea>' +
         '</div>';
-
-      // 行文人称
-      fieldsHtml +=
-        '<div class="edit-section">' +
-          '<div class="edit-section-title">行文人称</div>' +
-          '<div class="edit-section-body">' +
-            '<select id="charNarrativePerson" class="form-select">' +
-              '<option value="第一人称"' + (c.narrativePerson === '第一人称' ? ' selected' : '') + '>第一人称（我）</option>' +
-              '<option value="第二人称"' + (c.narrativePerson === '第二人称' ? ' selected' : '') + '>第二人称（你）</option>' +
-              '<option value="第三人称"' + (c.narrativePerson === '第三人称' ? ' selected' : '') + '>第三人称（他/她）</option>' +
-            '</select>' +
-          '</div>' +
-        '</div>';
-
-      // 可展开字段
-      Character.FIELDS.forEach(function(f) {
-        var val = c[f.key] || '';
-        var preview = val.length > 40 ? val.slice(0, 40) + '...' : val;
-        fieldsHtml +=
-          '<div class="edit-section">' +
-            '<div class="edit-section-header" data-field="' + f.key + '">' +
-              '<div class="edit-section-title">' + f.section + '</div>' +
-              '<div class="edit-section-expand">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</div>' +
-            '</div>' +
-            '<div class="edit-section-body">' +
-              '<textarea class="form-textarea edit-field-ta" data-key="' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(val) + '</textarea>' +
-            '</div>' +
-          '</div>';
-      });
+      }).join('');
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -314,63 +207,76 @@
           '</div>' +
           '<h2>' + (isNew ? '新建角色' : '编辑角色') + '</h2>' +
           '<button class="fullpage-action-btn" id="saveCharacterBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="fullpage-body">' +
-
-          // 大头像
-          '<div class="char-banner-upload" id="charBannerUpload">' +
-            (c.avatar
-              ? '<img src="' + c.avatar + '" id="charBannerPreview" alt="avatar">'
-              : '<div class="char-banner-placeholder" id="charBannerPreview">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
-                  '<span>上传角色图片</span>' +
-                '</div>') +
-            '<input type="file" id="charBannerInput" accept="image/*" hidden>' +
+          '<div class="char-avatar-section">' +
+            '<div class="char-avatar-upload ' + shapeClass + '" id="charAvatarUpload">' +
+              (c.avatar
+                ? '<img src="' + c.avatar + '" id="charAvatarPreview" alt="">'
+                : '<div class="char-avatar-placeholder" id="charAvatarPreview">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' +
+                    '<span>上传头像</span>' +
+                  '</div>') +
+              '<input type="file" id="charAvatarInput" accept="image/*" hidden>' +
+            '</div>' +
+            '<button class="avatar-shape-btn" id="charShapeBtn" type="button">' +
+              Character.getShapeLabel(c.avatarShape || 'circle') +
+            '</button>' +
           '</div>' +
-
           fieldsHtml +
-
         '</div>';
 
-      // 头像上传
-      App.safeOn('#charBannerUpload', 'click', function() {
-        App.$('#charBannerInput').click();
+      // 头像上传 - 点击头像
+      App.safeOn('#charAvatarUpload', 'click', function() {
+        App.$('#charAvatarInput').click();
       });
 
-      App.safeOn('#charBannerInput', 'change', function(e) {
+      App.safeOn('#charAvatarInput', 'change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          editData.avatar = ev.target.result;
-          var preview = App.$('#charBannerPreview');
+          Character.editingAvatar = ev.target.result;
+          var preview = App.$('#charAvatarPreview');
           if (preview) {
-            var img = document.createElement('img');
-            img.src = editData.avatar;
-            img.id = 'charBannerPreview';
-            img.alt = 'avatar';
-            preview.parentNode.replaceChild(img, preview);
+            if (preview.tagName === 'IMG') {
+              preview.src = Character.editingAvatar;
+            } else {
+              var img = document.createElement('img');
+              img.src = Character.editingAvatar;
+              img.id = 'charAvatarPreview';
+              preview.parentNode.replaceChild(img, preview);
+            }
           }
         };
         reader.readAsDataURL(file);
       });
 
-      // 展开编辑按钮
-      panel.querySelectorAll('.edit-section-expand').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var header = btn.closest('.edit-section-header');
-          if (!header) return;
-          var fieldKey = header.dataset.field;
-          var fieldConfig = Character.FIELDS.find(function(f) { return f.key === fieldKey; });
-          if (!fieldConfig) return;
+      // 头像形状切换
+      var currentShape = c.avatarShape || 'circle';
+      App.safeOn('#charShapeBtn', 'click', function(e) {
+        e.stopPropagation();
+        currentShape = Character.getNextShape(currentShape);
+        var uploadEl = App.$('#charAvatarUpload');
+        if (uploadEl) {
+          uploadEl.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
+          uploadEl.classList.add(Character.getShapeClass(currentShape));
+        }
+        this.textContent = Character.getShapeLabel(currentShape);
+        c.avatarShape = currentShape;
+      });
 
-          var ta = panel.querySelector('.edit-field-ta[data-key="' + fieldKey + '"]');
+      // 放大编辑
+      panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var fieldKey = btn.dataset.field;
+          var field = FIELDS.find(function(f) { return f.key === fieldKey; });
+          if (!field) return;
+          var ta = App.$('#charField_' + fieldKey);
           var currentVal = ta ? ta.value : '';
-
-          Character.openFieldEditor(fieldConfig.section, currentVal, function(newVal) {
+          Character.openExpandEditor(field, currentVal, function(newVal) {
             if (ta) ta.value = newVal;
           });
         });
@@ -384,20 +290,17 @@
       // 保存
       App.safeOn('#saveCharacterBtn', 'click', function() {
         var data = {
-          avatar: editData.avatar || c.avatar || '',
-          name: App.$('#charName') ? App.$('#charName').value.trim() : '',
-          age: App.$('#charAge') ? App.$('#charAge').value.trim() : '',
-          identity: App.$('#charIdentity') ? App.$('#charIdentity').value.trim() : '',
-          narrativePerson: App.$('#charNarrativePerson') ? App.$('#charNarrativePerson').value : '第二人称'
+          avatar: Character.editingAvatar || '',
+          avatarShape: currentShape
         };
 
-        Character.FIELDS.forEach(function(f) {
-          var ta = panel.querySelector('.edit-field-ta[data-key="' + f.key + '"]');
+        FIELDS.forEach(function(f) {
+          var ta = App.$('#charField_' + f.key);
           data[f.key] = ta ? ta.value.trim() : '';
         });
 
-        if (!data.name) {
-          App.showToast('请填写角色姓名');
+        if (!data.basicInfo) {
+          App.showToast('请填写基础信息');
           return;
         }
 
@@ -413,46 +316,69 @@
       });
     },
 
+    // ========= 放大编辑器 =========
+
+    openExpandEditor: function(field, currentVal, onSave) {
+      var existing = App.$('#expandEditor');
+      if (existing) existing.remove();
+
+      var editor = document.createElement('div');
+      editor.id = 'expandEditor';
+      editor.className = 'expand-editor';
+      editor.innerHTML =
+        '<div class="expand-editor-header">' +
+          '<div class="fullpage-back" id="expandEditorBack">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+          '</div>' +
+          '<h2>' + field.label + '</h2>' +
+          '<button class="fullpage-action-btn" id="expandEditorSave" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="expand-editor-body">' +
+          '<textarea id="expandEditorTextarea" class="expand-editor-textarea" placeholder="' + field.placeholder + '">' + App.esc(currentVal || '') + '</textarea>' +
+        '</div>';
+
+      document.body.appendChild(editor);
+
+      requestAnimationFrame(function() {
+        editor.classList.add('show');
+        var ta = App.$('#expandEditorTextarea');
+        if (ta) ta.focus();
+      });
+
+      App.safeOn('#expandEditorBack', 'click', function() {
+        Character.closeExpandEditor();
+      });
+
+      App.safeOn('#expandEditorSave', 'click', function() {
+        var ta = App.$('#expandEditorTextarea');
+        var val = ta ? ta.value : '';
+        if (onSave) onSave(val);
+        Character.closeExpandEditor();
+        App.showToast(field.label + ' 已更新');
+      });
+    },
+
+    closeExpandEditor: function() {
+      var editor = App.$('#expandEditor');
+      if (!editor) return;
+      editor.classList.remove('show');
+      setTimeout(function() {
+        if (editor.parentNode) editor.parentNode.removeChild(editor);
+      }, 350);
+    },
+
+    // ========= 事件绑定 =========
+
     bindEvents: function() {
       App.safeOn('#openCharacterBtn', 'click', function() {
         Character.openPanel();
-      });
-
-      // 长按换图标
-      var pressTimer = null;
-      var iconEl = App.$('#openCharacterBtn');
-      if (iconEl) {
-        iconEl.addEventListener('touchstart', function() {
-          pressTimer = setTimeout(function() {
-            App.$('#characterIconInput').click();
-          }, 600);
-        }, { passive: true });
-        iconEl.addEventListener('touchend', function() { clearTimeout(pressTimer); }, { passive: true });
-        iconEl.addEventListener('touchmove', function() { clearTimeout(pressTimer); }, { passive: true });
-      }
-
-      App.safeOn('#characterIconInput', 'change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var imgEl = App.$('#characterIconImg');
-          if (!imgEl) return;
-          imgEl.innerHTML = '<img src="' + ev.target.result + '">';
-          App.LS.set('characterIconImg', ev.target.result);
-        };
-        reader.readAsDataURL(file);
       });
     },
 
     init: function() {
       Character.load();
-
-      var savedIcon = App.LS.get('characterIconImg');
-      if (savedIcon) {
-        var imgEl = App.$('#characterIconImg');
-        if (imgEl) imgEl.innerHTML = '<img src="' + savedIcon + '">';
-      }
 
       if (!App.$('#characterPanel')) {
         var panel = document.createElement('div');
