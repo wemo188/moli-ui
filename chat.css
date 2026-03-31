@@ -344,5 +344,139 @@
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+  
+  .chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-deep);
+}
+
+.chat-icon-btn svg { width: 20px; height: 20px; }
+
+.chat-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 99;
+  transition: opacity 0.2s;
+}
+
+.chat-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-sidebar-user-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.chat-sidebar-user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.chat-sidebar-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-sidebar-user-avatar svg {
+  width: 28px;
+  height: 28px;
+  color: var(--text-muted);
+}
+
+.chat-sidebar-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chat-sidebar-add-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+}
+
+.chat-sidebar-add-btn svg { width: 16px; height: 16px; }
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.conv-item:active {
+  background: var(--bg-primary);
+}
+
+.conv-item.active {
+  background: rgba(173, 205, 234, 0.2);
+  border-left-color: var(--accent);
+}
+
+.conv-item-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-del-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.conv-del-btn:active { color: #c44; }
+
+  
 }
 
