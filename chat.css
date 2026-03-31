@@ -1,0 +1,44 @@
+/* =========================
+   聊天界面
+========================= */
+.chat-header-right {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-menu-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-deep);
+}
+
+.chat-menu-btn svg { width: 20px; height: 20px; }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-msg {
+  display: flex;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg-user {
+  justify-content: flex-end;
