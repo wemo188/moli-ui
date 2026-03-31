@@ -1,501 +1,635 @@
-(function() {
-  'use strict';
+/* =========================
+   聊天头部
+========================= */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 54px 12px 12px;
+  background: linear-gradient(180deg, var(--bg-secondary) 80%, transparent);
+  position: relative;
+  z-index: 10;
+}
 
-  var App = window.App;
-  if (!App) return;
+.chat-header h2 {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
 
-  var Chat = {
+.chat-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(173, 205, 234, 0.15);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--accent-deep);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
 
-    currentUserId: null,
-    currentCharacterId: null,
-    currentConversationId: null,
-    conversations: [],
+.chat-icon-btn:active {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(0.9);
+}
 
-    save: function() {
-      App.LS.set('conversations', Chat.conversations);
-    },
+.chat-icon-btn svg { width: 17px; height: 17px; }
 
-    load: function() {
-      Chat.conversations = App.LS.get('conversations') || [];
-    },
+/* =========================
+   聊天主体
+========================= */
+.chat-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-primary);
+}
 
-    createConversation: function(userId, charId) {
-      var conv = {
-        id: 'conv-' + Date.now(),
-        userId: userId,
-        characterId: charId,
-        title: '新对话',
-        messages: [],
-        createdAt: Date.now()
-      };
-      Chat.conversations.push(conv);
-      Chat.save();
-      return conv;
-    },
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    getConversations: function(userId, charId) {
-      return Chat.conversations.filter(function(c) {
-        return c.userId === userId && c.characterId === charId;
-      });
-    },
+.chat-msg {
+  display: flex;
+  animation: chatSlideIn 0.35s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
 
-    getCurrentConversation: function() {
-      for (var i = 0; i < Chat.conversations.length; i++) {
-        if (Chat.conversations[i].id === Chat.currentConversationId) {
-          return Chat.conversations[i];
-        }
-      }
-      return null;
-    },
+@keyframes chatSlideIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-    deleteConversation: function(id) {
-      Chat.conversations = Chat.conversations.filter(function(c) { return c.id !== id; });
-      Chat.save();
-    },
+.chat-msg-user { justify-content: flex-end; }
+.chat-msg-char { justify-content: flex-start; }
 
-    closeSidebars: function() {
-      var left = App.$('#chatSidebarLeft');
-      var right = App.$('#chatSidebarRight');
-      var overlay = App.$('#chatOverlay');
-      if (left) left.classList.add('hidden');
-      if (right) right.classList.add('hidden');
-      if (overlay) overlay.classList.add('hidden');
-    },
+.chat-msg-content {
+  max-width: 78%;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
 
-    openPanel: function() {
-      var user = App.user ? App.user.getActiveUser() : null;
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
+.chat-msg-user .chat-msg-content {
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  border-radius: 16px 4px 16px 16px;
+  box-shadow: 0 2px 8px rgba(138, 184, 222, 0.3);
+}
 
-      if (!user) {
-        panel.innerHTML =
-          '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="closeChatPanel">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '</div>' +
-            '<h2>聊天</h2>' +
-          '</div>' +
-          '<div class="fullpage-body">' +
-            '<div class="empty-hint">请先在用户页面启用一个身份</div>' +
-          '</div>';
-        panel.classList.remove('hidden');
-        requestAnimationFrame(function() { panel.classList.add('show'); });
-        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-        return;
-      }
+.chat-msg-char .chat-msg-content {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 1px 4px var(--shadow);
+}
 
-      Chat.currentUserId = user.id;
-      panel.classList.remove('hidden');
-      requestAnimationFrame(function() { panel.classList.add('show'); });
-      Chat.renderCharacterSelect();
-    },
+/* =========================
+   输入区
+========================= */
+.chat-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px calc(10px + var(--safe-bottom));
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
 
-    closePanel: function() {
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
-      panel.classList.remove('show');
-      setTimeout(function() { panel.classList.add('hidden'); }, 350);
-    },
+.chat-action-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(173, 205, 234, 0.12);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--accent-deep);
+  transition: all 0.15s;
+}
 
-    renderCharacterSelect: function() {
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
+.chat-action-btn:active {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(0.9);
+}
 
-      var chars = App.character ? App.character.list : [];
+.chat-action-btn svg { width: 18px; height: 18px; }
 
-      if (!chars.length) {
-        panel.innerHTML =
-          '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="closeChatPanel">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '</div>' +
-            '<h2>选择角色</h2>' +
-          '</div>' +
-          '<div class="fullpage-body">' +
-            '<div class="empty-hint">请先创建角色</div>' +
-          '</div>';
-        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-        return;
-      }
+.chat-textarea {
+  flex: 1;
+  min-height: 34px;
+  max-height: 100px;
+  padding: 7px 14px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-light);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-      panel.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="closeChatPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>选择角色</h2>' +
-        '</div>' +
-        '<div class="fullpage-body">' +
-          '<div class="char-select-list">' +
-            chars.map(function(c) {
-              var shapeClass = Chat.getShapeClass(c.avatarShape);
-              return '<div class="char-select-card" data-id="' + c.id + '">' +
-                '<div class="char-select-avatar ' + shapeClass + '">' +
-                  (c.avatar
-                    ? '<img src="' + c.avatar + '" alt="">'
-                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
-                '</div>' +
-                '<div class="char-select-info">' +
-                  '<div class="char-select-name">' + App.esc((c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名') + '</div>' +
-                '</div>' +
-              '</div>';
-            }).join('') +
-          '</div>' +
-        '</div>';
+.chat-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(173, 205, 234, 0.2);
+}
 
-      App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
+.chat-textarea::placeholder { color: var(--text-muted); }
 
-      panel.querySelectorAll('.char-select-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          Chat.currentCharacterId = card.dataset.id;
-          Chat.load();
-          var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-          if (!convs.length) {
-            var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
-            Chat.currentConversationId = newConv.id;
-          } else {
-            Chat.currentConversationId = convs[convs.length - 1].id;
-          }
-          Chat.renderChatView();
-        });
-      });
-    },
+.chat-send-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(138, 184, 222, 0.35);
+}
 
-    showUserSwitcher: function() {
-      var users = App.user ? App.user.list : [];
-      if (!users.length) return;
+.chat-send-btn:active {
+  transform: scale(0.88);
+  box-shadow: 0 1px 4px rgba(138, 184, 222, 0.3);
+}
 
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
+.chat-send-btn svg { width: 16px; height: 16px; }
 
-      var old = panel.querySelector('#chatUserSwitcher');
-      if (old) old.remove();
+/* =========================
+   侧边栏通用
+========================= */
+.chat-sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
 
-      var switcher = document.createElement('div');
-      switcher.id = 'chatUserSwitcher';
-      switcher.className = 'chat-user-switcher';
-      switcher.innerHTML =
-        '<div class="chat-user-switcher-mask"></div>' +
-        '<div class="chat-user-switcher-body">' +
-          '<div class="chat-user-switcher-title">切换身份</div>' +
-          users.map(function(u) {
-            var isActive = u.id === Chat.currentUserId;
-            return '<div class="chat-user-switcher-item' + (isActive ? ' active' : '') + '" data-id="' + u.id + '">' +
-              '<div class="chat-user-switcher-avatar">' +
-                (u.avatar
-                  ? '<img src="' + u.avatar + '" alt="">'
-                  : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
-              '</div>' +
-              '<span>' + App.esc(u.name || '未命名') + '</span>' +
-            '</div>';
-          }).join('') +
-        '</div>';
+.chat-sidebar-left {
+  left: 0;
+  width: 220px;
+  border-right: 1px solid var(--border-light);
+  transform: translateX(0);
+}
 
-      panel.appendChild(switcher);
+.chat-sidebar-left.hidden { transform: translateX(-100%); }
 
-      switcher.querySelector('.chat-user-switcher-mask').addEventListener('click', function() {
-        switcher.remove();
-      });
+.chat-sidebar-right {
+  right: 0;
+  width: 160px;
+  border-left: 1px solid var(--border-light);
+  transform: translateX(0);
+}
 
-      switcher.querySelectorAll('.chat-user-switcher-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var newUserId = item.dataset.id;
-          if (newUserId !== Chat.currentUserId) {
-            Chat.currentUserId = newUserId;
-            App.user.setActive(newUserId);
-            Chat.load();
-            var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-            if (!convs.length) {
-              var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
-              Chat.currentConversationId = newConv.id;
-            } else {
-              Chat.currentConversationId = convs[convs.length - 1].id;
-            }
-            App.showToast('已切换');
-          }
-          switcher.remove();
-          Chat.renderChatView();
-        });
-      });
-    },
+.chat-sidebar-right.hidden { transform: translateX(100%); }
 
-    renderChatView: function() {
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
+.chat-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
 
-      var user = App.user ? App.user.getById(Chat.currentUserId) : null;
-      var char = App.character ? App.character.getById(Chat.currentCharacterId) : null;
-      var conv = Chat.getCurrentConversation();
+.chat-sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-      if (!user || !char || !conv) return;
+.chat-sidebar-add-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(138, 184, 222, 0.3);
+  transition: transform 0.15s;
+}
 
-      var userShapeClass = Chat.getShapeClass(user.avatarShape);
-      var charName = (char.basicInfo || '').split('\n')[0] || '角色';
-      var userAvatarHtml = user.avatar
-        ? '<img src="' + user.avatar + '" alt="">'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+.chat-sidebar-add-btn:active { transform: scale(0.88); }
+.chat-sidebar-add-btn svg { width: 14px; height: 14px; }
 
-      panel.innerHTML =
-        '<div class="fullpage-header chat-header">' +
-          '<div class="fullpage-back" id="backToCharSelect">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<button class="chat-icon-btn" id="chatConvBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
-          '</button>' +
-          '<h2>' + App.esc(charName) + '</h2>' +
-          '<button class="chat-icon-btn" id="chatMenuBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="chat-body">' +
-          '<div class="chat-messages" id="chatMessages"></div>' +
-          '<div class="chat-input-area">' +
-            '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
-            '</button>' +
-            '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
-            '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
-        '<div class="chat-sidebar chat-sidebar-left hidden" id="chatSidebarLeft">' +
-          '<div class="chat-sidebar-header">' +
-            '<span>对话列表</span>' +
-            '<button class="chat-sidebar-add-btn" id="addConvBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
-            '</button>' +
-          '</div>' +
-          '<div class="chat-sidebar-body" id="convListBody"></div>' +
-        '</div>' +
-        '<div class="chat-sidebar chat-sidebar-right hidden" id="chatSidebarRight">' +
-          '<div class="chat-right-user" id="switchUserArea">' +
-            '<div class="chat-right-avatar ' + userShapeClass + '">' + userAvatarHtml + '</div>' +
-            '<div class="chat-right-username">' + App.esc(user.name || '') + '</div>' +
-          '</div>' +
-          '<div class="chat-right-list">' +
-            '<div class="chat-right-item" data-action="scene">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-              '<span>场景</span>' +
-            '</div>' +
-            '<div class="chat-right-item" data-action="worldbook">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-              '<span>世界书</span>' +
-            '</div>' +
-            '<div class="chat-right-item" data-action="preset">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
-              '<span>预设</span>' +
-            '</div>' +
-            '<div class="chat-right-item" data-action="regex">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>' +
-              '<span>正则</span>' +
-            '</div>' +
-            '<div class="chat-right-item" data-action="css">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>' +
-              '<span>CSS 渲染</span>' +
-            '</div>' +
-            '<div class="chat-right-item" data-action="api">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
-              '<span>API</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="chat-overlay hidden" id="chatOverlay"></div>';
+/* =========================
+   右侧栏 - 用户区
+========================= */
+.chat-right-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 10px 12px;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
 
-      // 返回
-      App.safeOn('#backToCharSelect', 'click', function() {
-        Chat.renderCharacterSelect();
-      });
+.chat-right-user:active {
+  background: rgba(173, 205, 234, 0.12);
+}
 
-      // 爱心 左侧
-      App.safeOn('#chatConvBtn', 'click', function() {
-        var left = App.$('#chatSidebarLeft');
-        var right = App.$('#chatSidebarRight');
-        var overlay = App.$('#chatOverlay');
-        if (right) right.classList.add('hidden');
-        if (left && overlay) {
-          var isHidden = left.classList.contains('hidden');
-          left.classList.toggle('hidden');
-          overlay.classList.toggle('hidden', !isHidden);
-          if (isHidden) Chat.renderConvList();
-        }
-      });
+.chat-right-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 8px rgba(138, 184, 222, 0.25);
+}
 
-      // 三个点 右侧
-      App.safeOn('#chatMenuBtn', 'click', function() {
-        var left = App.$('#chatSidebarLeft');
-        var right = App.$('#chatSidebarRight');
-        var overlay = App.$('#chatOverlay');
-        if (left) left.classList.add('hidden');
-        if (right && overlay) {
-          var isHidden = right.classList.contains('hidden');
-          right.classList.toggle('hidden');
-          overlay.classList.toggle('hidden', !isHidden);
-        }
-      });
+.chat-right-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-      // 遮罩收起
-      App.safeOn('#chatOverlay', 'click', function() {
-        Chat.closeSidebars();
-      });
+.chat-right-avatar svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
 
-      // 点击用户区域弹出切换器
-      var switchArea = panel.querySelector('#switchUserArea');
-      if (switchArea) {
-        switchArea.addEventListener('click', function(e) {
-          e.stopPropagation();
-          Chat.closeSidebars();
-          Chat.showUserSwitcher();
-        });
-      }
+.chat-right-username {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
 
-      // 新建对话
-      App.safeOn('#addConvBtn', 'click', function() {
-        var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
-        Chat.currentConversationId = newConv.id;
-        Chat.closeSidebars();
-        Chat.renderChatView();
-        App.showToast('新对话已创建');
-      });
+/* =========================
+   右侧栏 - 菜单列表
+========================= */
+.chat-right-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+}
 
-      // 上传
-      App.safeOn('#chatUploadBtn', 'click', function() {
-        App.showToast('上传功能开发中');
-      });
+.chat-right-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-primary);
+  position: relative;
+}
 
-      // 发送
-      App.safeOn('#chatSendBtn', 'click', function() {
-        Chat.sendMessage();
-      });
+.chat-right-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: var(--border-light);
+}
 
-      // 右侧菜单项 - 全部用 toast 占位，不跳转其他面板
-      panel.querySelectorAll('.chat-right-item').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var action = item.dataset.action;
-          Chat.closeSidebars();
-          App.showToast(action + ' 功能开发中');
-        });
-      });
+.chat-right-item:last-child::after { display: none; }
 
-      Chat.renderMessages();
-      Chat.renderConvList();
-    },
+.chat-right-item:active {
+  background: rgba(173, 205, 234, 0.15);
+}
 
-    renderConvList: function() {
-      var body = App.$('#convListBody');
-      if (!body) return;
+.chat-right-item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-deep);
+  flex-shrink: 0;
+}
 
-      var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+.chat-right-item span {
+  font-size: 12px;
+  font-weight: 500;
+}
 
-      if (!convs.length) {
-        body.innerHTML = '<div class="empty-hint">暂无对话</div>';
-        return;
-      }
+/* =========================
+   对话列表
+========================= */
+.conv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  position: relative;
+}
 
-      body.innerHTML = convs.map(function(c) {
-        var isActive = c.id === Chat.currentConversationId;
-        return '<div class="conv-item' + (isActive ? ' active' : '') + '" data-id="' + c.id + '">' +
-          '<div class="conv-item-title">' + App.esc(c.title) + '</div>' +
-          '<button class="conv-del-btn" data-id="' + c.id + '" type="button">×</button>' +
-        '</div>';
-      }).join('');
+.conv-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: var(--border-light);
+}
 
-      body.querySelectorAll('.conv-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          Chat.currentConversationId = item.dataset.id;
-          Chat.closeSidebars();
-          Chat.renderChatView();
-        });
-      });
+.conv-item:last-child::after { display: none; }
+.conv-item:active { background: var(--bg-primary); }
 
-      body.querySelectorAll('.conv-del-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (!confirm('确定删除这个对话？')) return;
-          var delId = btn.dataset.id;
-          Chat.deleteConversation(delId);
-          if (Chat.currentConversationId === delId) {
-            var remaining = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-            if (remaining.length) {
-              Chat.currentConversationId = remaining[remaining.length - 1].id;
-            } else {
-              var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
-              Chat.currentConversationId = newConv.id;
-            }
-          }
-          Chat.closeSidebars();
-          Chat.renderChatView();
-        });
-      });
-    },
+.conv-item.active {
+  background: rgba(173, 205, 234, 0.12);
+  border-left-color: var(--accent);
+}
 
-    renderMessages: function() {
-      var container = App.$('#chatMessages');
-      if (!container) return;
+.conv-item-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 6px;
+}
 
-      var conv = Chat.getCurrentConversation();
-      if (!conv || !conv.messages || !conv.messages.length) {
-        container.innerHTML = '<div class="empty-hint">开始对话吧</div>';
-        return;
-      }
+.conv-del-btn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 16px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
 
-      container.innerHTML = conv.messages.map(function(msg) {
-        var isUser = msg.role === 'user';
-        return '<div class="chat-msg' + (isUser ? ' chat-msg-user' : ' chat-msg-char') + '">' +
-          '<div class="chat-msg-content">' + App.esc(msg.content) + '</div>' +
-        '</div>';
-      }).join('');
+.conv-del-btn:active {
+  color: #c44;
+  background: rgba(220, 70, 70, 0.1);
+}
 
-      container.scrollTop = container.scrollHeight;
-    },
+/* =========================
+   聊天遮罩
+========================= */
+.chat-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 150;
+  transition: opacity 0.3s;
+}
 
-    sendMessage: function() {
-      var input = App.$('#chatInput');
-      if (!input) return;
-      var text = input.value.trim();
-      if (!text) return;
+.chat-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
-      var conv = Chat.getCurrentConversation();
-      if (!conv) return;
+/* =========================
+   用户切换弹窗
+========================= */
+.chat-user-switcher {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: switcherFadeIn 0.2s ease;
+}
 
-      conv.messages.push({ role: 'user', content: text });
-      input.value = '';
-      Chat.save();
-      Chat.renderMessages();
+@keyframes switcherFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-      setTimeout(function() {
-        conv.messages.push({ role: 'assistant', content: '这是一条测试回复。' });
-        Chat.save();
-        Chat.renderMessages();
-      }, 500);
-    },
+.chat-user-switcher-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
 
-    getShapeClass: function(shape) {
-      if (shape === 'square') return 'shape-square';
-      if (shape === 'rounded') return 'shape-rounded';
-      return 'shape-circle';
-    },
+.chat-user-switcher-body {
+  position: relative;
+  width: 240px;
+  max-height: 360px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  animation: switcherPopIn 0.3s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
 
-    bindEvents: function() {
-      App.safeOn('#openChatBtn', 'click', function() {
-        Chat.openPanel();
-      });
-    },
+@keyframes switcherPopIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
 
-    init: function() {
-      Chat.load();
-      if (!App.$('#chatPanel')) {
-        var panel = document.createElement('div');
-        panel.id = 'chatPanel';
-        panel.className = 'fullpage-panel hidden';
-        document.body.appendChild(panel);
-      }
-      App.chat = Chat;
-      Chat.bindEvents();
-    }
-  };
+.chat-user-switcher-title {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  text-align: center;
+}
 
-  App.register('chat', Chat);
-})();
+.chat-user-switcher-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.chat-user-switcher-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: var(--border-light);
+}
+
+.chat-user-switcher-item:last-child::after { display: none; }
+.chat-user-switcher-item:active { background: var(--bg-primary); }
+
+.chat-user-switcher-item.active {
+  background: rgba(173, 205, 234, 0.15);
+}
+
+.chat-user-switcher-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+}
+
+.chat-user-switcher-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chat-user-switcher-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-user-switcher-avatar svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.chat-user-switcher-item span {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* =========================
+   角色/用户选择
+========================= */
+.user-select-list,
+.char-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-select-card,
+.char-select-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.user-select-card:active,
+.char-select-card:active {
+  transform: scale(0.97);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.user-select-card:active *,
+.char-select-card:active * { color: #fff; }
+
+.user-select-avatar,
+.char-select-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-select-avatar img,
+.char-select-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-select-avatar svg,
+.char-select-avatar svg {
+  width: 22px;
+  height: 22px;
+  color: var(--text-muted);
+}
+
+.user-select-info,
+.char-select-info { flex: 1; min-width: 0; }
+
+.user-select-name,
+.char-select-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-select-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
