@@ -703,7 +703,6 @@
       restoreIconOrder();
       restoreIconImages();
     })();
-
     snapToPage(false);
   };
 
