@@ -1,0 +1,155 @@
+/* =========================
+   角色/用户卡片
+========================= */
+.char-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.char-card-avatar {
+  width: 52px;
+  height: 52px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.char-card-avatar:active { transform: scale(0.9); }
+.char-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.char-card-avatar svg { width: 24px; height: 24px; color: var(--text-muted); }
+
+.char-card-info { flex: 1; min-width: 0; }
+.char-card-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.char-card-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.char-card-actions { display: flex; gap: 8px; }
+
+.char-edit-btn,
+.char-del-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.char-edit-btn svg { width: 15px; height: 15px; color: var(--accent-deep); }
+.char-del-btn svg { width: 15px; height: 15px; color: #c44; }
+
+/* =========================
+   头像形状
+========================= */
+.shape-circle { border-radius: 50%; }
+.shape-square { border-radius: 4px; }
+.shape-rounded { border-radius: 14px; }
+
+/* =========================
+   头像上传
+========================= */
+.char-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.char-avatar-upload {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.char-avatar-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.char-avatar-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.char-avatar-placeholder svg { width: 32px; height: 32px; color: var(--text-muted); }
+.char-avatar-placeholder span { font-size: 11px; color: var(--text-muted); }
+
+/* =========================
+   字段卡片（角色编辑用）
+========================= */
+.field-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.field-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 0;
+}
+
+.field-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.field-expand-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.field-expand-btn:active { color: var(--accent-deep); }
+.field-expand-btn svg { width: 16px; height: 16px; }
+
+.field-card-textarea {
+  width: 100%;
+  padding: 8px 14px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.field-card-textarea::placeholder { color: var(--text-muted); }
