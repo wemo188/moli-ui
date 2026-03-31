@@ -1,0 +1,196 @@
+/* =========================
+   世界书
+========================= */
+.wb-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+
+.wb-tab {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.wb-tab.active {
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.wb-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1.5px;
+  left: 20%;
+  right: 20%;
+  height: 2.5px;
+  background: var(--accent-deep);
+  border-radius: 2px;
+}
+
+.wb-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  transition: opacity 0.2s;
+}
+
+.wb-card.wb-disabled { opacity: 0.45; }
+
+.wb-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.wb-card-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.wb-type-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.wb-type-global {
+  background: rgba(130, 180, 230, 0.2);
+  color: var(--accent-deep);
+}
+
+.wb-type-keyword {
+  background: rgba(180, 140, 220, 0.2);
+  color: #8a5cb8;
+}
+
+.wb-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wb-card-keywords {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.wb-card-preview {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wb-edit-btn,
+.wb-del-btn {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.wb-del-btn {
+  color: #c44;
+  border-color: rgba(220,70,70,0.3);
+}
+
+.wb-order-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* 开关 */
+.wb-toggle-btn {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.wb-toggle-btn.active { background: var(--accent); }
+
+.wb-toggle-dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.wb-toggle-btn.active .wb-toggle-dot {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+/* 类型切换 */
+.wb-type-switch {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.wb-type-opt {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  border: none;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.wb-type-opt.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
