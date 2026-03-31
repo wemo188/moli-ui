@@ -1333,4 +1333,218 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
 }
 
+/* =========================
+   头像形状
+========================= */
+.shape-circle {
+  border-radius: 50%;
+}
+
+.shape-square {
+  border-radius: 0;
+}
+
+.shape-rounded {
+  border-radius: 18px;
+}
+
+.char-card-avatar.shape-square { border-radius: 4px; }
+.char-card-avatar.shape-rounded { border-radius: 14px; }
+
+/* =========================
+   头像区域
+========================= */
+.char-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.avatar-shape-btn {
+  padding: 6px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.avatar-shape-btn:active {
+  transform: scale(0.95);
+  background: var(--accent);
+  color: #fff;
+}
+
+/* =========================
+   字段卡片
+========================= */
+.field-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.field-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 0;
+}
+
+.field-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.field-expand-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.field-expand-btn:active {
+  color: var(--accent-deep);
+}
+
+.field-expand-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.field-card-textarea {
+  width: 100%;
+  padding: 8px 14px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.field-card-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* =========================
+   放大编辑器
+========================= */
+.expand-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s;
+}
+
+.expand-editor.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.expand-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 54px 20px 14px;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+
+.expand-editor-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+}
+
+.expand-editor-body {
+  flex: 1;
+  padding: 16px 20px calc(40px + var(--safe-bottom));
+  overflow-y: auto;
+}
+
+.expand-editor-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 15px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.expand-editor-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(173,205,234,0.25);
+}
+
+/* =========================
+   图标拖拽
+========================= */
+.app-icon.dragging {
+  opacity: 0.6;
+  transform: scale(1.1);
+  z-index: 100;
+}
+
+.app-icon.drag-over {
+  transform: scale(0.9);
+  opacity: 0.5;
+}
+
+/* =========================
+   长按菜单
+========================= */
+.icon-longpress-menu {
+  position: fixed;
+  z-index: 10002;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  min-width: 140px;
+}
+
+.icon-longpress-menu-item {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.icon-longpress-menu-item:active {
+  background: var(--accent);
+  color: #fff;
+}
+
 
