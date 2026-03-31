@@ -1,3 +1,5 @@
+
+
 (function() {
   'use strict';
 
@@ -91,7 +93,6 @@
     var rect = App.getBallRect();
     var menu = App.state.ballMenuEl;
     menu.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-
     if (rect.left + rect.width / 2 < window.innerWidth / 2) {
       menu.style.left = rect.left + 'px';
       menu.style.right = 'auto';
@@ -130,19 +131,16 @@
   };
 
   App.openPanel = function(id) {
+    if (!id) return;
     App.closeMenu();
-
     if (App.state.currentPanelEl && App.state.currentPanelEl.id !== id) {
       App.state.currentPanelEl.classList.remove('show');
       App.state.currentPanelEl.classList.add('hidden');
     }
-
     App.state.currentPanelEl = App.$('#' + id);
     if (!App.state.currentPanelEl) return;
-
     App.state.overlay.classList.remove('hidden');
     App.state.currentPanelEl.classList.remove('hidden');
-
     requestAnimationFrame(function() {
       App.state.overlay.classList.add('show');
       App.state.currentPanelEl.classList.add('show');
@@ -153,13 +151,11 @@
     if (!App.state.currentPanelEl) return;
     App.state.overlay.classList.remove('show');
     App.state.currentPanelEl.classList.remove('show');
-
     var p = App.state.currentPanelEl;
     setTimeout(function() {
       App.state.overlay.classList.add('hidden');
       p.classList.add('hidden');
     }, 350);
-
     App.state.currentPanelEl = null;
   };
 
@@ -183,13 +179,10 @@
       var t = e.touches[0];
       var dx = t.clientX - App.state.startX;
       var dy = t.clientY - App.state.startY;
-
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) App.state.hasMoved = true;
       if (!App.state.hasMoved) return;
-
       var nx = Math.max(0, Math.min(window.innerWidth - 200, App.state.origX + dx));
       var ny = Math.max(0, Math.min(window.innerHeight - 200, App.state.origY + dy));
-
       ball.style.left = nx + 'px';
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
@@ -206,10 +199,7 @@
         App.toggleMenu();
       } else {
         var rect = App.getBallRect();
-        App.LS.set('floatingBallPos', {
-          left: rect.left,
-          top: rect.top
-        });
+        App.LS.set('floatingBallPos', { left: rect.left, top: rect.top });
       }
       App.state.isDragging = false;
       App.state.hasMoved = false;
@@ -226,7 +216,10 @@
 
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function() {
-        App.openPanel(item.dataset.panel);
+        var panelId = item.dataset.panel;
+        if (panelId) {
+          App.openPanel(panelId);
+        }
       });
     });
 
@@ -278,42 +271,34 @@
           img.src = self.sprites[key];
         });
       },
-
       setSprite: function(key) {
         if (!this.img || !this.sprites[key]) return;
         this.img.src = this.sprites[key];
         this.currentState = key;
       },
-
       clearAnimClass: function() {
         if (!this.img) return;
         this.img.classList.remove('breathing', 'waving', 'tilting', 'surprised', 'happy');
       },
-
       goIdle: function() {
         this.setSprite('idle');
         this.clearAnimClass();
         this.img.classList.add('breathing');
         this.animLock = false;
       },
-
       doBlink: function() {
         var self = this;
         if (self.animLock) return;
         self.setSprite('blink');
         setTimeout(function() {
-          if (self.currentState === 'blink') {
-            self.setSprite('idle');
-          }
+          if (self.currentState === 'blink') self.setSprite('idle');
         }, 180);
       },
-
       doAction: function(action) {
         var self = this;
         if (self.animLock) return;
         self.animLock = true;
         self.clearAnimClass();
-
         switch (action) {
           case 'wave':
             self.setSprite('wave');
@@ -321,8 +306,7 @@
             setTimeout(function() { self.goIdle(); }, 1200);
             break;
           case 'tilt':
-            var tiltKey = Math.random() > 0.5 ? 'tiltA' : 'tiltB';
-            self.setSprite(tiltKey);
+            self.setSprite(Math.random() > 0.5 ? 'tiltA' : 'tiltB');
             self.img.classList.add('tilting');
             setTimeout(function() { self.goIdle(); }, 1600);
             break;
@@ -340,41 +324,33 @@
             self.goIdle();
         }
       },
-
       startBlinkLoop: function() {
         var self = this;
-        function scheduleBlink() {
-          var delay = 2500 + Math.random() * 4000;
+        function go() {
           self.blinkTimer = setTimeout(function() {
             if (!self.animLock) self.doBlink();
-            scheduleBlink();
-          }, delay);
+            go();
+          }, 2500 + Math.random() * 4000);
         }
-        scheduleBlink();
+        go();
       },
-
       startIdleActions: function() {
         var self = this;
-        var actions = ['wave', 'tilt', 'surprise', 'happy'];
-        function scheduleAction() {
-          var delay = 8000 + Math.random() * 15000;
+        var acts = ['wave', 'tilt', 'surprise', 'happy'];
+        function go() {
           self.idleTimer = setTimeout(function() {
             if (!self.animLock) {
-              var pick = actions[Math.floor(Math.random() * actions.length)];
-              self.doAction(pick);
+              self.doAction(acts[Math.floor(Math.random() * acts.length)]);
             }
-            scheduleAction();
-          }, delay);
+            go();
+          }, 8000 + Math.random() * 15000);
         }
-        scheduleAction();
+        go();
       },
-
       onTap: function() {
-        var actions = ['wave', 'happy', 'surprise', 'tilt'];
-        var pick = actions[Math.floor(Math.random() * actions.length)];
-        this.doAction(pick);
+        var acts = ['wave', 'happy', 'surprise', 'tilt'];
+        this.doAction(acts[Math.floor(Math.random() * acts.length)]);
       },
-
       init: function() {
         if (!this.img) return;
         this.preload();
@@ -385,7 +361,6 @@
     };
 
     App.mascot.init();
-
     setTimeout(function() {
       if (App.mascot) App.mascot.doAction('wave');
     }, 1000);
@@ -395,9 +370,7 @@
     Object.keys(App.modules).forEach(function(name) {
       var mod = App.modules[name];
       if (mod && typeof mod.init === 'function') {
-        try {
-          mod.init();
-        } catch (e) {
+        try { mod.init(); } catch (e) {
           console.warn('模块 ' + name + ' 初始化失败:', e);
         }
       }
@@ -440,13 +413,11 @@
     function snapToPage(animate) {
       pageWidth = window.innerWidth;
       var targetX = -currentPage * pageWidth;
-
       if (animate) {
         slider.style.transition = 'transform 0.42s cubic-bezier(0.22, 0.8, 0.2, 1)';
       } else {
         slider.style.transition = 'none';
       }
-
       slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
       updateDots();
       setBallVisibility();
@@ -462,7 +433,6 @@
 
     slider.addEventListener('touchstart', function(e) {
       if (!e.touches || !e.touches.length) return;
-
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
       currentX = startX;
@@ -476,56 +446,40 @@
 
     slider.addEventListener('touchmove', function(e) {
       if (!dragging || !e.touches || !e.touches.length) return;
-
       currentX = e.touches[0].clientX;
       var currentY = e.touches[0].clientY;
       var dx = Math.abs(currentX - startX);
       var dy = Math.abs(currentY - startY);
-
       if (!directionLocked && (dx > 8 || dy > 8)) {
         directionLocked = true;
         isHorizontal = dx > dy;
       }
-
       if (!directionLocked || !isHorizontal) return;
-
       e.preventDefault();
-
       var deltaX = currentX - startX;
       var nextX = baseX + deltaX;
-
       var maxLeft = -(totalPages - 1) * pageWidth;
-      var minLeft = 0;
-
-      if (nextX > minLeft) nextX = minLeft + (nextX - minLeft) * 0.28;
+      if (nextX > 0) nextX = nextX * 0.28;
       if (nextX < maxLeft) nextX = maxLeft + (nextX - maxLeft) * 0.28;
-
       slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
     }, { passive: false });
 
     slider.addEventListener('touchend', function() {
       if (!dragging) return;
       dragging = false;
-
       if (!isHorizontal) return;
-
       var deltaX = currentX - startX;
       var threshold = pageWidth * 0.16;
-
       if (Math.abs(deltaX) > threshold) {
         if (deltaX < 0 && currentPage < totalPages - 1) currentPage += 1;
         else if (deltaX > 0 && currentPage > 0) currentPage -= 1;
       }
-
       snapToPage(true);
     }, { passive: true });
 
     window.addEventListener('resize', function() {
       snapToPage(false);
     });
-
-    snapToPage(false);
-  };
 
     // ========= 图标长按换图 =========
     (function() {
@@ -539,9 +493,7 @@
           var saved = App.LS.get('iconImg_' + key);
           if (saved) {
             var imgEl = icon.querySelector('.app-icon-img');
-            if (imgEl) {
-              imgEl.innerHTML = '<img src="' + saved + '">';
-            }
+            if (imgEl) imgEl.innerHTML = '<img src="' + saved + '">';
           }
         });
       }
@@ -556,10 +508,8 @@
         menu.innerHTML =
           '<div class="icon-longpress-menu-item" id="iconMenuChangeImg">更换图标图片</div>' +
           '<div class="icon-longpress-menu-item" id="iconMenuResetImg">恢复默认图标</div>';
-
         menu.style.left = Math.min(x, window.innerWidth - 160) + 'px';
         menu.style.top = Math.min(y, window.innerHeight - 100) + 'px';
-
         document.body.appendChild(menu);
 
         var fileInput = document.createElement('input');
@@ -579,9 +529,7 @@
           var reader = new FileReader();
           reader.onload = function(ev) {
             var imgEl = icon.querySelector('.app-icon-img');
-            if (imgEl) {
-              imgEl.innerHTML = '<img src="' + ev.target.result + '">';
-            }
+            if (imgEl) imgEl.innerHTML = '<img src="' + ev.target.result + '">';
             App.LS.set('iconImg_' + icon.dataset.icon, ev.target.result);
           };
           reader.readAsDataURL(file);
@@ -595,51 +543,43 @@
         });
 
         setTimeout(function() {
-          function dismissMenu(e) {
+          function dismiss(e) {
             if (menu.parentNode && !menu.contains(e.target)) {
               menu.remove();
-              document.removeEventListener('touchstart', dismissMenu);
-              document.removeEventListener('click', dismissMenu);
+              document.removeEventListener('touchstart', dismiss);
+              document.removeEventListener('click', dismiss);
             }
           }
-          document.addEventListener('touchstart', dismissMenu, { passive: true });
-          document.addEventListener('click', dismissMenu);
+          document.addEventListener('touchstart', dismiss, { passive: true });
+          document.addEventListener('click', dismiss);
         }, 100);
       }
 
       grid.querySelectorAll('.app-icon').forEach(function(icon) {
-        var longPressTimer = null;
-        var longPressed = false;
-        var touchMoved = false;
+        var timer = null;
+        var pressed = false;
+        var moved = false;
 
         icon.addEventListener('touchstart', function(e) {
-          touchMoved = false;
-          longPressed = false;
+          moved = false;
+          pressed = false;
           var touch = e.touches[0];
-
-          longPressTimer = setTimeout(function() {
-            longPressed = true;
+          timer = setTimeout(function() {
+            pressed = true;
             showLongPressMenu(icon, touch.clientX, touch.clientY);
           }, 600);
         }, { passive: true });
 
         icon.addEventListener('touchmove', function() {
-          touchMoved = true;
-          clearTimeout(longPressTimer);
+          moved = true;
+          clearTimeout(timer);
         }, { passive: true });
 
         icon.addEventListener('touchend', function(e) {
-          clearTimeout(longPressTimer);
-
-          if (longPressed) {
+          clearTimeout(timer);
+          if (pressed) {
             e.preventDefault();
-            longPressed = false;
-            return;
-          }
-
-          // 没有长按也没有移动 = 正常点击
-          if (!touchMoved && !longPressed) {
-            // 让 click 事件正常触发
+            pressed = false;
           }
         }, { passive: false });
       });
