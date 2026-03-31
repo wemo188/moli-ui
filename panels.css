@@ -159,7 +159,7 @@
 .form-group input[type="number"] {
   width: 100%;
   padding: 10px 14px;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -176,7 +176,7 @@
 .form-textarea {
   width: 100%;
   padding: 10px 14px;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -195,7 +195,7 @@
 .form-select {
   width: 100%;
   padding: 10px 14px;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -215,7 +215,7 @@
   width: 42px;
   height: 42px;
   flex-shrink: 0;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   display: flex;
@@ -246,7 +246,7 @@
   margin-left: -1px;
   border: 1.5px solid var(--border);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--bg-primary);
+  background: var(--bg-card);
 }
 
 .textarea-expand-row {
@@ -390,7 +390,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
 }
@@ -415,7 +415,7 @@
 
 .saved-item-actions button svg { width: 15px; height: 15px; }
 .saved-item-actions .use-btn { color: var(--accent-deep); }
-.saved-item-actions .edit-btn { color: #666; }
+.saved-item-actions .edit-btn { color: var(--text-secondary); }
 .saved-item-actions .del-btn { color: #c44; }
 
 /* =========================
@@ -567,6 +567,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.15s;
   position: relative;
+  background: var(--bg-card);
 }
 
 .theme-card:active { transform: scale(0.96); }
@@ -581,8 +582,8 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1.5px solid rgba(128,128,128,0.3);
 }
 
-.theme-card-name { font-size: 12px; font-weight: 600; }
-.theme-card-desc { font-size: 10px; margin-top: 2px; opacity: 0.6; }
+.theme-card-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.theme-card-desc { font-size: 10px; margin-top: 2px; color: var(--text-muted); }
 
 .theme-card-del {
   position: absolute;
@@ -628,3 +629,487 @@ input[type="range"]::-webkit-slider-thumb {
 
 .color-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
 .color-group input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+
+/* =========================
+   空状态
+========================= */
+.empty-hint {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* =========================
+   角色卡片
+========================= */
+.char-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.char-card-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.char-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.char-card-avatar svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+}
+
+.char-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.char-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.char-card-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.char-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.char-edit-btn,
+.char-del-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.char-edit-btn svg { width: 15px; height: 15px; color: var(--accent-deep); }
+.char-del-btn svg { width: 15px; height: 15px; color: #c44; }
+
+.user-active-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.user-active-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-deep);
+}
+
+.user-active {
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* 头像形状 */
+.shape-circle { border-radius: 50% !important; }
+.shape-square { border-radius: 8px !important; }
+.shape-rounded { border-radius: 24px !important; }
+
+/* 头像上传区 */
+.avatar-upload-area {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.avatar-upload-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload-area svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+}
+
+.avatar-upload-area span {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.avatar-upload-area:active { border-color: var(--accent); }
+
+/* 头像行 */
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.avatar-row-info {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* =========================
+   世界书
+========================= */
+.wb-entry-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.wb-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.wb-entry-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wb-entry-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  margin-right: 8px;
+  background: var(--bg-primary);
+}
+
+.wb-entry-badge.global {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-deep);
+}
+
+.wb-entry-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.wb-entry-actions button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wb-entry-actions button svg { width: 13px; height: 13px; }
+.wb-entry-actions .wb-edit-btn { color: var(--accent-deep); }
+.wb-entry-actions .wb-del-btn { color: #c44; }
+
+.wb-entry-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.wb-entry-body.hidden { display: none; }
+
+.wb-keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.wb-keyword-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-secondary);
+}
+
+/* =========================
+   预设
+========================= */
+.preset-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.preset-card.active {
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.preset-card-info { flex: 1; min-width: 0; }
+
+.preset-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preset-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preset-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.preset-use-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.preset-use-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-deep);
+}
+
+.preset-edit-btn,
+.preset-del-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preset-edit-btn svg { width: 13px; height: 13px; color: var(--accent-deep); }
+.preset-del-btn svg { width: 13px; height: 13px; color: #c44; }
+
+/* =========================
+   正则
+========================= */
+.regex-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.regex-card.disabled {
+  opacity: 0.5;
+}
+
+.regex-card-info { flex: 1; min-width: 0; }
+
+.regex-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.regex-card-pattern {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.regex-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.regex-toggle-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.regex-toggle-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-deep);
+}
+
+.regex-edit-btn,
+.regex-del-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.regex-edit-btn svg { width: 13px; height: 13px; color: var(--accent-deep); }
+.regex-del-btn svg { width: 13px; height: 13px; color: #c44; }
+
+/* =========================
+   开关
+========================= */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-label {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--border-light);
+  border: 1.5px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggle-switch.on {
+  background: var(--accent);
+  border-color: var(--accent-deep);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.toggle-switch.on::after {
+  transform: translateX(18px);
+}
+
+/* =========================
+   分组标题
+========================= */
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 20px 0 10px;
+}
+
+.section-title:first-child { margin-top: 0; }
