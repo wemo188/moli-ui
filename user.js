@@ -61,6 +61,19 @@
       return null;
     },
 
+    setActive: function(id) {
+      App.LS.set('activeUserId', id);
+    },
+
+    getActive: function() {
+      return App.LS.get('activeUserId');
+    },
+
+    getActiveUser: function() {
+      var id = User.getActive();
+      return id ? User.getById(id) : null;
+    },
+
     getShapeClass: function(shape) {
       if (shape === 'square') return 'shape-square';
       if (shape === 'rounded') return 'shape-rounded';
@@ -118,9 +131,12 @@
         return;
       }
 
+      var activeId = User.getActive();
+
       body.innerHTML = User.list.map(function(u) {
         var shapeClass = User.getShapeClass(u.avatarShape);
-        return '<div class="char-card" data-id="' + u.id + '">' +
+        var isActive = u.id === activeId;
+        return '<div class="char-card' + (isActive ? ' user-active' : '') + '" data-id="' + u.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + u.id + '" data-role="shapeToggle">' +
             (u.avatar
               ? '<img src="' + u.avatar + '" alt="">'
@@ -131,6 +147,9 @@
             '<div class="char-card-desc">' + App.esc(u.gender || '') + (u.age ? ' · ' + u.age : '') + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
+            '<button class="user-active-btn' + (isActive ? ' active' : '') + '" data-id="' + u.id + '" type="button">' +
+              (isActive ? '已启用' : '启用') +
+            '</button>' +
             '<button class="char-edit-btn" data-id="' + u.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
             '</button>' +
@@ -140,6 +159,16 @@
           '</div>' +
         '</div>';
       }).join('');
+
+      // 启用按钮
+      body.querySelectorAll('.user-active-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          User.setActive(btn.dataset.id);
+          User.renderCards();
+          App.showToast('已启用');
+        });
+      });
 
       // 点击头像切换形状
       body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(avatarEl) {
@@ -166,8 +195,13 @@
       body.querySelectorAll('.char-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
+          var id = btn.dataset.id;
+          if (id === User.getActive()) {
+            App.showToast('无法删除已启用的用户');
+            return;
+          }
           if (!confirm('确定删除？')) return;
-          User.remove(btn.dataset.id);
+          User.remove(id);
           User.renderCards();
           App.showToast('已删除');
         });
