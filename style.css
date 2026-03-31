@@ -1549,27 +1549,40 @@ input[type="range"]::-webkit-slider-thumb {
 
 .input-expand-row {
   display: flex;
-  gap: 8px;
+  gap: 0;
   align-items: center;
 }
 
 .input-expand-row input {
   flex: 1;
+  min-width: 0;
 }
 
 .textarea-expand-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
+  position: relative;
 }
 
 .textarea-expand-row textarea {
-  flex: 1;
+  width: 100%;
+  padding-right: 36px;
 }
 
-.textarea-expand-row .field-expand-btn,
+.textarea-expand-row .field-expand-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
 .input-expand-row .field-expand-btn {
   flex-shrink: 0;
-  margin-top: 2px;
+  width: 42px;
+  height: 42px;
+  margin-left: -1px;
+  border: 1.5px solid var(--border);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--bg-primary);
 }
 
+.input-expand-row input {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
