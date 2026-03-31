@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
 
@@ -84,14 +83,6 @@
       return 'circle';
     },
 
-    getShapeLabel: function(shape) {
-      if (shape === 'circle') return '圆形';
-      if (shape === 'square') return '方形';
-      return '圆角方形';
-    },
-
-    // ========= 面板 =========
-
     openPanel: function() {
       Character.renderListView();
       var panel = App.$('#characterPanel');
@@ -141,7 +132,7 @@
         var shapeClass = Character.getShapeClass(c.avatarShape);
         var name = c.basicInfo ? c.basicInfo.split('\n')[0].slice(0, 20) : '未命名';
         return '<div class="char-card" data-id="' + c.id + '">' +
-          '<div class="char-card-avatar ' + shapeClass + '">' +
+          '<div class="char-card-avatar ' + shapeClass + '" data-id="' + c.id + '" data-role="shapeToggle">' +
             (c.avatar
               ? '<img src="' + c.avatar + '" alt="">'
               : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
@@ -159,6 +150,21 @@
           '</div>' +
         '</div>';
       }).join('');
+
+      // 点击头像切换形状
+      body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(avatarEl) {
+        avatarEl.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var id = avatarEl.dataset.id;
+          var c = Character.getById(id);
+          if (!c) return;
+          c.avatarShape = Character.getNextShape(c.avatarShape || 'circle');
+          Character.save();
+          avatarEl.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
+          avatarEl.classList.add(Character.getShapeClass(c.avatarShape));
+          App.showToast(c.avatarShape === 'circle' ? '圆形' : c.avatarShape === 'square' ? '方形' : '圆角方形');
+        });
+      });
 
       body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -186,8 +192,6 @@
       var isNew = !id;
       Character.editingAvatar = c.avatar || '';
 
-      var shapeClass = Character.getShapeClass(c.avatarShape);
-
       var fieldsHtml = FIELDS.map(function(f) {
         return '<div class="field-card">' +
           '<div class="field-card-header">' +
@@ -212,7 +216,7 @@
         '</div>' +
         '<div class="fullpage-body">' +
           '<div class="char-avatar-section">' +
-            '<div class="char-avatar-upload ' + shapeClass + '" id="charAvatarUpload">' +
+            '<div class="char-avatar-upload" id="charAvatarUpload">' +
               (c.avatar
                 ? '<img src="' + c.avatar + '" id="charAvatarPreview" alt="">'
                 : '<div class="char-avatar-placeholder" id="charAvatarPreview">' +
@@ -221,14 +225,10 @@
                   '</div>') +
               '<input type="file" id="charAvatarInput" accept="image/*" hidden>' +
             '</div>' +
-            '<button class="avatar-shape-btn" id="charShapeBtn" type="button">' +
-              Character.getShapeLabel(c.avatarShape || 'circle') +
-            '</button>' +
           '</div>' +
           fieldsHtml +
         '</div>';
 
-      // 头像上传 - 点击头像
       App.safeOn('#charAvatarUpload', 'click', function() {
         App.$('#charAvatarInput').click();
       });
@@ -254,21 +254,6 @@
         reader.readAsDataURL(file);
       });
 
-      // 头像形状切换
-      var currentShape = c.avatarShape || 'circle';
-      App.safeOn('#charShapeBtn', 'click', function(e) {
-        e.stopPropagation();
-        currentShape = Character.getNextShape(currentShape);
-        var uploadEl = App.$('#charAvatarUpload');
-        if (uploadEl) {
-          uploadEl.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
-          uploadEl.classList.add(Character.getShapeClass(currentShape));
-        }
-        this.textContent = Character.getShapeLabel(currentShape);
-        c.avatarShape = currentShape;
-      });
-
-      // 放大编辑
       panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var fieldKey = btn.dataset.field;
@@ -282,16 +267,14 @@
         });
       });
 
-      // 返回
       App.safeOn('#backToCharList', 'click', function() {
         Character.renderListView();
       });
 
-      // 保存
       App.safeOn('#saveCharacterBtn', 'click', function() {
         var data = {
           avatar: Character.editingAvatar || '',
-          avatarShape: currentShape
+          avatarShape: c.avatarShape || 'circle'
         };
 
         FIELDS.forEach(function(f) {
@@ -315,8 +298,6 @@
         Character.renderListView();
       });
     },
-
-    // ========= 放大编辑器 =========
 
     openExpandEditor: function(field, currentVal, onSave) {
       var existing = App.$('#expandEditor');
@@ -369,8 +350,6 @@
       }, 350);
     },
 
-    // ========= 事件绑定 =========
-
     bindEvents: function() {
       App.safeOn('#openCharacterBtn', 'click', function() {
         Character.openPanel();
@@ -379,14 +358,12 @@
 
     init: function() {
       Character.load();
-
       if (!App.$('#characterPanel')) {
         var panel = document.createElement('div');
         panel.id = 'characterPanel';
         panel.className = 'fullpage-panel hidden';
         document.body.appendChild(panel);
       }
-
       App.character = Character;
       Character.bindEvents();
     }
