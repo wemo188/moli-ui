@@ -414,9 +414,12 @@
     var currentPage = 0;
     var totalPages = 2;
     var startX = 0;
+    var startY = 0;
     var currentX = 0;
     var baseX = 0;
     var dragging = false;
+    var directionLocked = false;
+    var isHorizontal = false;
     var pageWidth = window.innerWidth;
 
     function setBallVisibility() {
@@ -461,10 +464,13 @@
       if (!e.touches || !e.touches.length) return;
 
       startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
       currentX = startX;
       pageWidth = window.innerWidth;
       baseX = -currentPage * pageWidth;
       dragging = true;
+      directionLocked = false;
+      isHorizontal = false;
       slider.style.transition = 'none';
     }, { passive: true });
 
@@ -472,11 +478,20 @@
       if (!dragging || !e.touches || !e.touches.length) return;
 
       currentX = e.touches[0].clientX;
+      var currentY = e.touches[0].clientY;
+      var dx = Math.abs(currentX - startX);
+      var dy = Math.abs(currentY - startY);
+
+      if (!directionLocked && (dx > 8 || dy > 8)) {
+        directionLocked = true;
+        isHorizontal = dx > dy;
+      }
+
+      if (!directionLocked || !isHorizontal) return;
+
+      e.preventDefault();
+
       var deltaX = currentX - startX;
-
-      // 如果水平移动不够，不算滑页
-      if (Math.abs(deltaX) < 10) return;
-
       var nextX = baseX + deltaX;
 
       var maxLeft = -(totalPages - 1) * pageWidth;
@@ -486,11 +501,13 @@
       if (nextX < maxLeft) nextX = maxLeft + (nextX - maxLeft) * 0.28;
 
       slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
-    }, { passive: true });
+    }, { passive: false });
 
     slider.addEventListener('touchend', function() {
       if (!dragging) return;
       dragging = false;
+
+      if (!isHorizontal) return;
 
       var deltaX = currentX - startX;
       var threshold = pageWidth * 0.16;
@@ -506,6 +523,9 @@
     window.addEventListener('resize', function() {
       snapToPage(false);
     });
+
+    snapToPage(false);
+  };
 
     // ========= 图标长按换图 =========
     (function() {
