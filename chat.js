@@ -8,35 +8,75 @@
 
     currentUserId: null,
     currentCharacterId: null,
+    currentConversationId: null,
+    conversations: [],
     messages: [],
-    isStreaming: false,
-
-    empty: function() {
-      return {
-        id: 'chat-' + Date.now(),
-        userId: '',
-        characterId: '',
-        messages: [],
-        createdAt: Date.now()
-      };
-    },
 
     save: function() {
-      var key = 'chat_' + Chat.currentUserId + '_' + Chat.currentCharacterId;
-      App.LS.set(key, Chat.messages);
+      App.LS.set('conversations', Chat.conversations);
     },
 
     load: function() {
-      if (!Chat.currentUserId || !Chat.currentCharacterId) {
-        Chat.messages = [];
-        return;
+      Chat.conversations = App.LS.get('conversations') || [];
+    },
+
+    createConversation: function(userId, charId) {
+      var conv = {
+        id: 'conv-' + Date.now(),
+        userId: userId,
+        characterId: charId,
+        title: '新对话',
+        messages: [],
+        createdAt: Date.now()
+      };
+      Chat.conversations.push(conv);
+      Chat.save();
+      return conv;
+    },
+
+    getConversations: function(userId, charId) {
+      return Chat.conversations.filter(function(c) {
+        return c.userId === userId && c.characterId === charId;
+      });
+    },
+
+    getCurrentConversation: function() {
+      for (var i = 0; i < Chat.conversations.length; i++) {
+        if (Chat.conversations[i].id === Chat.currentConversationId) {
+          return Chat.conversations[i];
+        }
       }
-      var key = 'chat_' + Chat.currentUserId + '_' + Chat.currentCharacterId;
-      Chat.messages = App.LS.get(key) || [];
+      return null;
+    },
+
+    deleteConversation: function(id) {
+      Chat.conversations = Chat.conversations.filter(function(c) { return c.id !== id; });
+      Chat.save();
     },
 
     openPanel: function() {
-      Chat.renderUserSelect();
+      var user = App.user ? App.user.getActiveUser() : null;
+      if (!user) {
+        var panel = App.$('#chatPanel');
+        if (!panel) return;
+        panel.innerHTML =
+          '<div class="fullpage-header">' +
+            '<div class="fullpage-back" id="closeChatPanel">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '</div>' +
+            '<h2>聊天</h2>' +
+          '</div>' +
+          '<div class="fullpage-body">' +
+            '<div class="empty-hint">请先在用户页面启用一个身份</div>' +
+          '</div>';
+        panel.classList.remove('hidden');
+        requestAnimationFrame(function() { panel.classList.add('show'); });
+        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
+        return;
+      }
+
+      Chat.currentUserId = user.id;
+      Chat.renderCharacterSelect();
       var panel = App.$('#chatPanel');
       if (!panel) return;
       panel.classList.remove('hidden');
@@ -50,62 +90,6 @@
       setTimeout(function() { panel.classList.add('hidden'); }, 350);
     },
 
-    renderUserSelect: function() {
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
-
-      var users = App.user ? App.user.list : [];
-
-      if (!users.length) {
-        panel.innerHTML =
-          '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="closeChatPanel">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '</div>' +
-            '<h2>聊天</h2>' +
-          '</div>' +
-          '<div class="fullpage-body">' +
-            '<div class="empty-hint">请先创建用户身份</div>' +
-          '</div>';
-        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-        return;
-      }
-
-      panel.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="closeChatPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>选择身份</h2>' +
-        '</div>' +
-        '<div class="fullpage-body">' +
-          '<div class="user-select-list">' +
-            users.map(function(u) {
-              return '<div class="user-select-card" data-id="' + u.id + '">' +
-                '<div class="user-select-avatar">' +
-                  (u.avatar
-                    ? '<img src="' + u.avatar + '" alt="">'
-                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
-                '</div>' +
-                '<div class="user-select-info">' +
-                  '<div class="user-select-name">' + App.esc(u.name || '未命名') + '</div>' +
-                  '<div class="user-select-desc">' + App.esc(u.gender || '') + (u.age ? ' · ' + u.age : '') + '</div>' +
-                '</div>' +
-              '</div>';
-            }).join('') +
-          '</div>' +
-        '</div>';
-
-      App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-
-      panel.querySelectorAll('.user-select-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          Chat.currentUserId = card.dataset.id;
-          Chat.renderCharacterSelect();
-        });
-      });
-    },
-
     renderCharacterSelect: function() {
       var panel = App.$('#chatPanel');
       if (!panel) return;
@@ -115,7 +99,7 @@
       if (!chars.length) {
         panel.innerHTML =
           '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="backToUserSelect">' +
+            '<div class="fullpage-back" id="closeChatPanel">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
             '</div>' +
             '<h2>选择角色</h2>' +
@@ -123,13 +107,13 @@
           '<div class="fullpage-body">' +
             '<div class="empty-hint">请先创建角色</div>' +
           '</div>';
-        App.safeOn('#backToUserSelect', 'click', function() { Chat.renderUserSelect(); });
+        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
         return;
       }
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="backToUserSelect">' +
+          '<div class="fullpage-back" id="closeChatPanel">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>选择角色</h2>' +
@@ -145,19 +129,28 @@
                     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
                 '</div>' +
                 '<div class="char-select-info">' +
-                  '<div class="char-select-name">' + App.esc((c.basicInfo || '').split('\n')[0].slice(0, 20)) + '</div>' +
+                  '<div class="char-select-name">' + App.esc((c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名') + '</div>' +
                 '</div>' +
               '</div>';
             }).join('') +
           '</div>' +
         '</div>';
 
-      App.safeOn('#backToUserSelect', 'click', function() { Chat.renderUserSelect(); });
+      App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
 
       panel.querySelectorAll('.char-select-card').forEach(function(card) {
         card.addEventListener('click', function() {
           Chat.currentCharacterId = card.dataset.id;
           Chat.load();
+          
+          var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+          if (!convs.length) {
+            var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
+            Chat.currentConversationId = newConv.id;
+          } else {
+            Chat.currentConversationId = convs[convs.length - 1].id;
+          }
+          
           Chat.renderChatView();
         });
       });
@@ -165,21 +158,27 @@
 
     renderChatView: function() {
       var panel = App.$('#chatPanel');
-            if (!panel) return;
+      if (!panel) return;
 
       var user = App.user ? App.user.getById(Chat.currentUserId) : null;
       var char = App.character ? App.character.getById(Chat.currentCharacterId) : null;
+      var conv = Chat.getCurrentConversation();
 
-      if (!user || !char) return;
+      if (!user || !char || !conv) return;
+
+      var userShapeClass = Chat.getShapeClass(user.avatarShape);
 
       panel.innerHTML =
-        '<div class="fullpage-header">' +
+        '<div class="fullpage-header chat-header">' +
           '<div class="fullpage-back" id="backToCharSelect">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
-          '<h2>' + App.esc(char.basicInfo ? char.basicInfo.split('\n')[0] : '角色') + '</h2>' +
+          '<h2>' + App.esc((char.basicInfo || '').split('\n')[0] || '角色') + '</h2>' +
           '<div class="chat-header-right">' +
-            '<button class="chat-menu-btn" id="chatMenuBtn" type="button">' +
+            '<button class="chat-icon-btn" id="chatConvBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+            '</button>' +
+            '<button class="chat-icon-btn" id="chatMenuBtn" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>' +
             '</button>' +
           '</div>' +
@@ -187,7 +186,7 @@
         '<div class="chat-messages" id="chatMessages"></div>' +
         '<div class="chat-input-area">' +
           '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
           '</button>' +
           '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
           '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
@@ -195,13 +194,24 @@
           '</button>' +
         '</div>' +
         '<div class="chat-sidebar chat-sidebar-left hidden" id="chatSidebarLeft">' +
-          '<div class="chat-sidebar-header">角色列表</div>' +
-          '<div class="chat-sidebar-body" id="charListInSidebar"></div>' +
+          '<div class="chat-sidebar-header">' +
+            '<span>对话列表</span>' +
+            '<button class="chat-sidebar-add-btn" id="addConvBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<div class="chat-sidebar-body" id="convListBody"></div>' +
         '</div>' +
         '<div class="chat-sidebar chat-sidebar-right hidden" id="chatSidebarRight">' +
-          '<div class="chat-sidebar-header">选项</div>' +
+          '<div class="chat-sidebar-user-header">' +
+            '<div class="chat-sidebar-user-avatar ' + userShapeClass + '" id="switchUserBtn">' +
+              (user.avatar
+                ? '<img src="' + user.avatar + '" alt="">'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+            '</div>' +
+            '<div class="chat-sidebar-user-name">' + App.esc(user.name) + '</div>' +
+          '</div>' +
           '<div class="chat-sidebar-body">' +
-            '<div class="chat-sidebar-item" data-action="user">用户</div>' +
             '<div class="chat-sidebar-item" data-action="scene">场景</div>' +
             '<div class="chat-sidebar-item" data-action="worldbook">世界书</div>' +
             '<div class="chat-sidebar-item" data-action="preset">预设</div>' +
@@ -209,15 +219,50 @@
             '<div class="chat-sidebar-item" data-action="css">CSS 全局渲染</div>' +
             '<div class="chat-sidebar-item" data-action="api">API 切换</div>' +
           '</div>' +
-        '</div>';
+        '</div>' +
+        '<div class="chat-overlay hidden" id="chatOverlay"></div>';
 
       App.safeOn('#backToCharSelect', 'click', function() {
         Chat.renderCharacterSelect();
       });
 
+      App.safeOn('#chatConvBtn', 'click', function() {
+        var sidebar = App.$('#chatSidebarLeft');
+        var overlay = App.$('#chatOverlay');
+        if (sidebar && overlay) {
+          sidebar.classList.toggle('hidden');
+          overlay.classList.toggle('hidden');
+        }
+        Chat.renderConvList();
+      });
+
       App.safeOn('#chatMenuBtn', 'click', function() {
         var sidebar = App.$('#chatSidebarRight');
-        if (sidebar) sidebar.classList.toggle('hidden');
+        var overlay = App.$('#chatOverlay');
+        if (sidebar && overlay) {
+          sidebar.classList.toggle('hidden');
+          overlay.classList.toggle('hidden');
+        }
+      });
+
+      App.safeOn('#chatOverlay', 'click', function() {
+        var leftSidebar = App.$('#chatSidebarLeft');
+        var rightSidebar = App.$('#chatSidebarRight');
+        var overlay = App.$('#chatOverlay');
+        if (leftSidebar) leftSidebar.classList.add('hidden');
+        if (rightSidebar) rightSidebar.classList.add('hidden');
+        if (overlay) overlay.classList.add('hidden');
+      });
+
+      App.safeOn('#switchUserBtn', 'click', function() {
+        if (App.user) App.user.openPanel();
+      });
+
+      App.safeOn('#addConvBtn', 'click', function() {
+        var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
+        Chat.currentConversationId = newConv.id;
+        Chat.renderChatView();
+        App.showToast('新对话已创建');
       });
 
       App.safeOn('#chatUploadBtn', 'click', function() {
@@ -232,49 +277,60 @@
       panel.querySelectorAll('.chat-sidebar-item').forEach(function(item) {
         item.addEventListener('click', function() {
           var action = item.dataset.action;
-          App.showToast(action + ' 功能开发中');
+          if (action === 'worldbook' && App.worldbook) {
+            App.worldbook.openPanel();
+          } else if (action === 'api' && App.api) {
+            App.openPanel('apiPanel');
+          } else {
+            App.showToast(action + ' 功能开发中');
+          }
         });
       });
 
-      // 左侧角色列表
-      Chat.renderCharListInSidebar();
-
-      // 自动滚到底部
-      setTimeout(function() {
-        var msgs = App.$('#chatMessages');
-        if (msgs) msgs.scrollTop = msgs.scrollHeight;
-      }, 100);
-
       Chat.renderMessages();
+      Chat.renderConvList();
     },
 
-    renderCharListInSidebar: function() {
-      var body = App.$('#charListInSidebar');
+    renderConvList: function() {
+      var body = App.$('#convListBody');
       if (!body) return;
 
-      var chars = App.character ? App.character.list : [];
-      body.innerHTML = chars.map(function(c) {
-        var shapeClass = Chat.getShapeClass(c.avatarShape);
-        var isActive = c.id === Chat.currentCharacterId;
-        return '<div class="char-sidebar-item' + (isActive ? ' active' : '') + '" data-id="' + c.id + '">' +
-          '<div class="char-sidebar-avatar ' + shapeClass + '">' +
-            (c.avatar
-              ? '<img src="' + c.avatar + '" alt="">'
-              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
-          '</div>' +
-          '<div class="char-sidebar-name">' + App.esc((c.basicInfo || '').split('\n')[0].slice(0, 12)) + '</div>' +
+      var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+
+      if (!convs.length) {
+        body.innerHTML = '<div class="empty-hint">暂无对话</div>';
+        return;
+      }
+
+      body.innerHTML = convs.map(function(c) {
+        var isActive = c.id === Chat.currentConversationId;
+        return '<div class="conv-item' + (isActive ? ' active' : '') + '" data-id="' + c.id + '">' +
+          '<div class="conv-item-title">' + App.esc(c.title) + '</div>' +
+          '<button class="conv-del-btn" data-id="' + c.id + '" type="button">×</button>' +
         '</div>';
       }).join('');
 
-      body.querySelectorAll('.char-sidebar-item').forEach(function(item) {
+      body.querySelectorAll('.conv-item').forEach(function(item) {
         item.addEventListener('click', function() {
-          var id = item.dataset.id;
-          if (id === Chat.currentCharacterId) {
-            App.character.renderEditView(id);
-            return;
+          Chat.currentConversationId = item.dataset.id;
+          Chat.renderChatView();
+        });
+      });
+
+      body.querySelectorAll('.conv-del-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('确定删除这个对话？')) return;
+          Chat.deleteConversation(btn.dataset.id);
+          if (Chat.currentConversationId === btn.dataset.id) {
+            var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+            if (convs.length) {
+              Chat.currentConversationId = convs[convs.length - 1].id;
+            } else {
+              var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
+              Chat.currentConversationId = newConv.id;
+            }
           }
-          Chat.currentCharacterId = id;
-          Chat.load();
           Chat.renderChatView();
         });
       });
@@ -284,7 +340,13 @@
       var container = App.$('#chatMessages');
       if (!container) return;
 
-      container.innerHTML = Chat.messages.map(function(msg, idx) {
+      var conv = Chat.getCurrentConversation();
+      if (!conv || !conv.messages || !conv.messages.length) {
+        container.innerHTML = '<div class="empty-hint">开始对话吧</div>';
+        return;
+      }
+
+      container.innerHTML = conv.messages.map(function(msg) {
         var isUser = msg.role === 'user';
         return '<div class="chat-msg' + (isUser ? ' chat-msg-user' : ' chat-msg-char') + '">' +
           '<div class="chat-msg-content">' + App.esc(msg.content) + '</div>' +
@@ -301,23 +363,26 @@
       var text = input.value.trim();
       if (!text) return;
 
-      Chat.messages.push({
+      var conv = Chat.getCurrentConversation();
+      if (!conv) return;
+
+      conv.messages.push({
         role: 'user',
         content: text
       });
 
       input.value = '';
-      Chat.renderMessages();
       Chat.save();
+      Chat.renderMessages();
 
-      // 模拟 AI 回复（暂时）
+      // 模拟 AI 回复
       setTimeout(function() {
-        Chat.messages.push({
+        conv.messages.push({
           role: 'assistant',
           content: '这是一条测试回复。'
         });
-        Chat.renderMessages();
         Chat.save();
+        Chat.renderMessages();
       }, 500);
     },
 
@@ -334,6 +399,8 @@
     },
 
     init: function() {
+      Chat.load();
+
       if (!App.$('#chatPanel')) {
         var panel = document.createElement('div');
         panel.id = 'chatPanel';
