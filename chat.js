@@ -161,6 +161,64 @@
       });
     },
 
+    showUserSwitcher: function() {
+      var users = App.user ? App.user.list : [];
+      if (!users.length) return;
+
+      var panel = App.$('#chatPanel');
+      if (!panel) return;
+
+      var old = panel.querySelector('#chatUserSwitcher');
+      if (old) old.remove();
+
+      var switcher = document.createElement('div');
+      switcher.id = 'chatUserSwitcher';
+      switcher.className = 'chat-user-switcher';
+      switcher.innerHTML =
+        '<div class="chat-user-switcher-mask"></div>' +
+        '<div class="chat-user-switcher-body">' +
+          '<div class="chat-user-switcher-title">切换身份</div>' +
+          users.map(function(u) {
+            var isActive = u.id === Chat.currentUserId;
+            return '<div class="chat-user-switcher-item' + (isActive ? ' active' : '') + '" data-id="' + u.id + '">' +
+              '<div class="chat-user-switcher-avatar">' +
+                (u.avatar
+                  ? '<img src="' + u.avatar + '" alt="">'
+                  : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+              '</div>' +
+              '<span>' + App.esc(u.name || '未命名') + '</span>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+
+      panel.appendChild(switcher);
+
+      switcher.querySelector('.chat-user-switcher-mask').addEventListener('click', function() {
+        switcher.remove();
+      });
+
+      switcher.querySelectorAll('.chat-user-switcher-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          var newUserId = item.dataset.id;
+          if (newUserId !== Chat.currentUserId) {
+            Chat.currentUserId = newUserId;
+            App.user.setActive(newUserId);
+            Chat.load();
+            var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+            if (!convs.length) {
+              var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
+              Chat.currentConversationId = newConv.id;
+            } else {
+              Chat.currentConversationId = convs[convs.length - 1].id;
+            }
+            App.showToast('已切换');
+          }
+          switcher.remove();
+          Chat.renderChatView();
+        });
+      });
+    },
+
     renderChatView: function() {
       var panel = App.$('#chatPanel');
       if (!panel) return;
@@ -216,25 +274,31 @@
             '<div class="chat-right-avatar ' + userShapeClass + '">' + userAvatarHtml + '</div>' +
             '<div class="chat-right-username">' + App.esc(user.name || '') + '</div>' +
           '</div>' +
-          '<div class="chat-right-actions">' +
-            '<button class="chat-right-btn" data-action="scene" title="场景">' +
+          '<div class="chat-right-list">' +
+            '<div class="chat-right-item" data-action="scene">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-            '</button>' +
-            '<button class="chat-right-btn" data-action="worldbook" title="世界书">' +
+              '<span>场景</span>' +
+            '</div>' +
+            '<div class="chat-right-item" data-action="worldbook">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-            '</button>' +
-            '<button class="chat-right-btn" data-action="preset" title="预设">' +
+              '<span>世界书</span>' +
+            '</div>' +
+            '<div class="chat-right-item" data-action="preset">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
-            '</button>' +
-            '<button class="chat-right-btn" data-action="regex" title="正则">' +
+              '<span>预设</span>' +
+            '</div>' +
+            '<div class="chat-right-item" data-action="regex">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>' +
-            '</button>' +
-            '<button class="chat-right-btn" data-action="css" title="CSS渲染">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>' +
-            '</button>' +
-            '<button class="chat-right-btn" data-action="api" title="API切换">' +
+              '<span>正则</span>' +
+            '</div>' +
+            '<div class="chat-right-item" data-action="css">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>' +
+              '<span>CSS 渲染</span>' +
+            '</div>' +
+            '<div class="chat-right-item" data-action="api">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
-            '</button>' +
+              '<span>API</span>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         '<div class="chat-overlay hidden" id="chatOverlay"></div>';
@@ -276,15 +340,13 @@
         Chat.closeSidebars();
       });
 
-      // 点击用户头像切换身份 - 用事件委托避免冲突
+      // 点击用户区域弹出切换器
       var switchArea = panel.querySelector('#switchUserArea');
       if (switchArea) {
         switchArea.addEventListener('click', function(e) {
           e.stopPropagation();
           Chat.closeSidebars();
-          setTimeout(function() {
-            if (App.user) App.user.openPanel();
-          }, 300);
+          Chat.showUserSwitcher();
         });
       }
 
@@ -307,23 +369,13 @@
         Chat.sendMessage();
       });
 
-      // 右侧图标按钮
-      panel.querySelectorAll('.chat-right-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+      // 右侧菜单项 - 全部用 toast 占位，不跳转其他面板
+      panel.querySelectorAll('.chat-right-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
           e.stopPropagation();
-          var action = btn.dataset.action;
+          var action = item.dataset.action;
           Chat.closeSidebars();
-          setTimeout(function() {
-            if (action === 'worldbook' && App.worldbook) {
-              App.worldbook.openPanel();
-            } else if (action === 'preset' && App.preset) {
-              App.preset.openPanel();
-            } else if (action === 'api') {
-              App.openPanel('apiPanel');
-            } else {
-              App.showToast(action + ' 功能开发中');
-            }
-          }, 300);
+          App.showToast(action + ' 功能开发中');
         });
       });
 
@@ -365,9 +417,9 @@
           var delId = btn.dataset.id;
           Chat.deleteConversation(delId);
           if (Chat.currentConversationId === delId) {
-            var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-            if (convs.length) {
-              Chat.currentConversationId = convs[convs.length - 1].id;
+            var remaining = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
+            if (remaining.length) {
+              Chat.currentConversationId = remaining[remaining.length - 1].id;
             } else {
               var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
               Chat.currentConversationId = newConv.id;
