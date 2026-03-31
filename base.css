@@ -1,3 +1,12 @@
+html {
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  overscroll-behavior-x: none;
+}
+
 :root {
   --bg-primary: #f0f6fb;
   --bg-secondary: #ffffff;
