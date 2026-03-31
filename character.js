@@ -18,7 +18,7 @@
     { key: 'sexualExperience', label: '性经验', placeholder: '相关设定描述...' },
     { key: 'forbiddenBehaviors', label: '禁止', placeholder: '绝对不允许出现的行为...' },
     { key: 'dialogExamples', label: '对话示例', placeholder: 'user: ...\nchar: ...' },
-    { key: 'opening', label: '开场白', placeholder: '角色在对话开始时说的第一句话...' },
+    { key: 'openings', label: '开场白（每行一个）', placeholder: '开场白1\n开场白2\n开场白3...' },
     { key: 'postInstruction', label: '后置指令', placeholder: '每次回复末尾附加的指令...' }
   ];
 
