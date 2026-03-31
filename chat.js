@@ -10,7 +10,6 @@
     currentCharacterId: null,
     currentConversationId: null,
     conversations: [],
-    messages: [],
 
     save: function() {
       App.LS.set('conversations', Chat.conversations);
@@ -54,11 +53,21 @@
       Chat.save();
     },
 
+    closeSidebars: function() {
+      var left = App.$('#chatSidebarLeft');
+      var right = App.$('#chatSidebarRight');
+      var overlay = App.$('#chatOverlay');
+      if (left) left.classList.add('hidden');
+      if (right) right.classList.add('hidden');
+      if (overlay) overlay.classList.add('hidden');
+    },
+
     openPanel: function() {
       var user = App.user ? App.user.getActiveUser() : null;
+      var panel = App.$('#chatPanel');
+      if (!panel) return;
+
       if (!user) {
-        var panel = App.$('#chatPanel');
-        if (!panel) return;
         panel.innerHTML =
           '<div class="fullpage-header">' +
             '<div class="fullpage-back" id="closeChatPanel">' +
@@ -76,11 +85,9 @@
       }
 
       Chat.currentUserId = user.id;
-      Chat.renderCharacterSelect();
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
       panel.classList.remove('hidden');
       requestAnimationFrame(function() { panel.classList.add('show'); });
+      Chat.renderCharacterSelect();
     },
 
     closePanel: function() {
@@ -142,7 +149,6 @@
         card.addEventListener('click', function() {
           Chat.currentCharacterId = card.dataset.id;
           Chat.load();
-          
           var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
           if (!convs.length) {
             var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
@@ -150,7 +156,6 @@
           } else {
             Chat.currentConversationId = convs[convs.length - 1].id;
           }
-          
           Chat.renderChatView();
         });
       });
@@ -167,31 +172,32 @@
       if (!user || !char || !conv) return;
 
       var userShapeClass = Chat.getShapeClass(user.avatarShape);
+      var charName = (char.basicInfo || '').split('\n')[0] || '角色';
 
       panel.innerHTML =
         '<div class="fullpage-header chat-header">' +
           '<div class="fullpage-back" id="backToCharSelect">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
-          '<h2>' + App.esc((char.basicInfo || '').split('\n')[0] || '角色') + '</h2>' +
-          '<div class="chat-header-right">' +
-            '<button class="chat-icon-btn" id="chatConvBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '<button class="chat-icon-btn" id="chatConvBtn" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '</button>' +
+          '<h2>' + App.esc(charName) + '</h2>' +
+          '<button class="chat-icon-btn" id="chatMenuBtn" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="chat-body">' +
+          '<div class="chat-messages" id="chatMessages"></div>' +
+          '<div class="chat-input-area">' +
+            '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '</button>' +
-            '<button class="chat-icon-btn" id="chatMenuBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>' +
+            '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
+            '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
             '</button>' +
           '</div>' +
-        '</div>' +
-        '<div class="chat-messages" id="chatMessages"></div>' +
-        '<div class="chat-input-area">' +
-          '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
-          '</button>' +
-          '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
-          '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
-          '</button>' +
         '</div>' +
         '<div class="chat-sidebar chat-sidebar-left hidden" id="chatSidebarLeft">' +
           '<div class="chat-sidebar-header">' +
@@ -209,7 +215,7 @@
                 ? '<img src="' + user.avatar + '" alt="">'
                 : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
             '</div>' +
-            '<div class="chat-sidebar-user-name">' + App.esc(user.name) + '</div>' +
+            '<div class="chat-sidebar-user-name">' + App.esc(user.name || '') + '</div>' +
           '</div>' +
           '<div class="chat-sidebar-body">' +
             '<div class="chat-sidebar-item" data-action="scene">场景</div>' +
@@ -222,53 +228,64 @@
         '</div>' +
         '<div class="chat-overlay hidden" id="chatOverlay"></div>';
 
+      // 返回角色选择
       App.safeOn('#backToCharSelect', 'click', function() {
         Chat.renderCharacterSelect();
       });
 
+      // 爱心 - 左侧对话列表
       App.safeOn('#chatConvBtn', 'click', function() {
-        var sidebar = App.$('#chatSidebarLeft');
+        var left = App.$('#chatSidebarLeft');
+        var right = App.$('#chatSidebarRight');
         var overlay = App.$('#chatOverlay');
-        if (sidebar && overlay) {
-          sidebar.classList.toggle('hidden');
-          overlay.classList.toggle('hidden');
+        if (right) right.classList.add('hidden');
+        if (left && overlay) {
+          var opening = left.classList.contains('hidden');
+          left.classList.toggle('hidden');
+          overlay.classList.toggle('hidden', !opening);
+          if (opening) Chat.renderConvList();
         }
-        Chat.renderConvList();
       });
 
+      // 三个点 - 右侧菜单
       App.safeOn('#chatMenuBtn', 'click', function() {
-        var sidebar = App.$('#chatSidebarRight');
+        var left = App.$('#chatSidebarLeft');
+        var right = App.$('#chatSidebarRight');
         var overlay = App.$('#chatOverlay');
-        if (sidebar && overlay) {
-          sidebar.classList.toggle('hidden');
-          overlay.classList.toggle('hidden');
+        if (left) left.classList.add('hidden');
+        if (right && overlay) {
+          var opening = right.classList.contains('hidden');
+          right.classList.toggle('hidden');
+          overlay.classList.toggle('hidden', !opening);
         }
       });
 
+      // 点击遮罩收起所有侧边栏
       App.safeOn('#chatOverlay', 'click', function() {
-        var leftSidebar = App.$('#chatSidebarLeft');
-        var rightSidebar = App.$('#chatSidebarRight');
-        var overlay = App.$('#chatOverlay');
-        if (leftSidebar) leftSidebar.classList.add('hidden');
-        if (rightSidebar) rightSidebar.classList.add('hidden');
-        if (overlay) overlay.classList.add('hidden');
+        Chat.closeSidebars();
       });
 
+      // 点击用户头像切换身份
       App.safeOn('#switchUserBtn', 'click', function() {
+        Chat.closeSidebars();
         if (App.user) App.user.openPanel();
       });
 
+      // 新建对话
       App.safeOn('#addConvBtn', 'click', function() {
         var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
         Chat.currentConversationId = newConv.id;
+        Chat.closeSidebars();
         Chat.renderChatView();
         App.showToast('新对话已创建');
       });
 
+      // 上传
       App.safeOn('#chatUploadBtn', 'click', function() {
         App.showToast('上传功能开发中');
       });
 
+      // 发送
       App.safeOn('#chatSendBtn', 'click', function() {
         Chat.sendMessage();
       });
@@ -277,9 +294,10 @@
       panel.querySelectorAll('.chat-sidebar-item').forEach(function(item) {
         item.addEventListener('click', function() {
           var action = item.dataset.action;
+          Chat.closeSidebars();
           if (action === 'worldbook' && App.worldbook) {
             App.worldbook.openPanel();
-          } else if (action === 'api' && App.api) {
+          } else if (action === 'api') {
             App.openPanel('apiPanel');
           } else {
             App.showToast(action + ' 功能开发中');
@@ -313,6 +331,7 @@
       body.querySelectorAll('.conv-item').forEach(function(item) {
         item.addEventListener('click', function() {
           Chat.currentConversationId = item.dataset.id;
+          Chat.closeSidebars();
           Chat.renderChatView();
         });
       });
@@ -321,8 +340,9 @@
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除这个对话？')) return;
-          Chat.deleteConversation(btn.dataset.id);
-          if (Chat.currentConversationId === btn.dataset.id) {
+          var delId = btn.dataset.id;
+          Chat.deleteConversation(delId);
+          if (Chat.currentConversationId === delId) {
             var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
             if (convs.length) {
               Chat.currentConversationId = convs[convs.length - 1].id;
@@ -359,28 +379,19 @@
     sendMessage: function() {
       var input = App.$('#chatInput');
       if (!input) return;
-
       var text = input.value.trim();
       if (!text) return;
 
       var conv = Chat.getCurrentConversation();
       if (!conv) return;
 
-      conv.messages.push({
-        role: 'user',
-        content: text
-      });
-
+      conv.messages.push({ role: 'user', content: text });
       input.value = '';
       Chat.save();
       Chat.renderMessages();
 
-      // 模拟 AI 回复
       setTimeout(function() {
-        conv.messages.push({
-          role: 'assistant',
-          content: '这是一条测试回复。'
-        });
+        conv.messages.push({ role: 'assistant', content: '这是一条测试回复。' });
         Chat.save();
         Chat.renderMessages();
       }, 500);
@@ -400,14 +411,12 @@
 
     init: function() {
       Chat.load();
-
       if (!App.$('#chatPanel')) {
         var panel = document.createElement('div');
         panel.id = 'chatPanel';
         panel.className = 'fullpage-panel hidden';
         document.body.appendChild(panel);
       }
-
       App.chat = Chat;
       Chat.bindEvents();
     }
