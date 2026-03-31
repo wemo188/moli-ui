@@ -477,57 +477,77 @@
 
     window.addEventListener('resize', function() {
     
-          // ========= 全屏面板手动划屏返回 =========
-    (function() {
+(function() {
       var startX = 0;
       var startY = 0;
       var dragging = false;
+      var isHorizontal = false;
 
       document.addEventListener('touchstart', function(e) {
-        var panel = App.$('.fullpage-panel.show');
+        var panel = document.querySelector('.fullpage-panel.show');
         if (!panel) return;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
+        
+        // 只在面板边缘 50px 内才启用划屏返回
+        var touch = e.touches[0];
+        if (touch.clientX > 50) return;
+        
+        startX = touch.clientX;
+        startY = touch.clientY;
         dragging = true;
+        isHorizontal = false;
       }, { passive: true });
 
       document.addEventListener('touchmove', function(e) {
         if (!dragging) return;
-        var panel = App.$('.fullpage-panel.show');
+        var panel = document.querySelector('.fullpage-panel.show');
         if (!panel) return;
 
-        var currentX = e.touches[0].clientX;
-        var currentY = e.touches[0].clientY;
-        var dx = currentX - startX;
-        var dy = currentY - startY;
+        var touch = e.touches[0];
+        var dx = touch.clientX - startX;
+        var dy = touch.clientY - startY;
 
-        if (Math.abs(dx) > Math.abs(dy) && dx > 30) {
+        if (!isHorizontal && Math.abs(dx) > 10) {
+          isHorizontal = Math.abs(dx) > Math.abs(dy);
+        }
+
+        if (isHorizontal && dx > 0) {
           e.preventDefault();
           var progress = Math.min(dx / window.innerWidth, 1);
+          panel.style.transition = 'none';
           panel.style.transform = 'translateX(' + (progress * 100) + '%)';
           panel.style.opacity = 1 - progress * 0.3;
         }
       }, { passive: false });
 
-      document.addEventListener('touchend', function(e) {
+      document.addEventListener('touchend', function() {
         if (!dragging) return;
         dragging = false;
 
-        var panel = App.$('.fullpage-panel.show');
+        var panel = document.querySelector('.fullpage-panel.show');
         if (!panel) return;
 
-        var currentX = e.changedTouches[0].clientX;
-        var dx = currentX - startX;
+        var dx = event.changedTouches[0].clientX - startX;
 
-        if (dx > window.innerWidth * 0.2) {
-          App.closePanel();
+        panel.style.transition = '';
+
+        if (dx > window.innerWidth * 0.3) {
+          // 关闭面板
+          if (App.character && panel.id === 'characterPanel') {
+            App.character.closePanel();
+          } else if (App.user && panel.id === 'userPanel') {
+            App.user.closePanel();
+          } else if (App.worldbook && panel.id === 'worldBookPanel') {
+            App.worldbook.closePanel();
+          } else if (App.chat && panel.id === 'chatPanel') {
+            App.chat.closePanel();
+          }
         } else {
-          panel.style.transform = 'translateX(0)';
-          panel.style.opacity = '1';
+          panel.style.transform = '';
+          panel.style.opacity = '';
         }
       }, { passive: true });
     })();
-
+    
       snapToPage(false);
     });
 
