@@ -1,20 +1,25 @@
 /* =========================
-   角色/用户卡片
+   角色卡片列表
 ========================= */
 .char-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px;
+  gap: 12px;
+  padding: 12px 14px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
+
+.char-card:active { background: var(--bg-primary); }
 
 .char-card-avatar {
   width: 52px;
   height: 52px;
+  border-radius: 50%;
   background: var(--bg-primary);
   border: 1.5px solid var(--border);
   display: flex;
@@ -23,214 +28,146 @@
   overflow: hidden;
   flex-shrink: 0;
   cursor: pointer;
-  transition: transform 0.15s;
 }
 
-.char-card-avatar:active { transform: scale(0.9); }
 .char-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .char-card-avatar svg { width: 24px; height: 24px; color: var(--text-muted); }
 
 .char-card-info { flex: 1; min-width: 0; }
-.char-card-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-.char-card-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-.char-card-actions { display: flex; gap: 8px; }
+.char-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.char-card-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.char-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
 
 .char-edit-btn,
 .char-del-btn {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .char-edit-btn svg { width: 15px; height: 15px; color: var(--accent-deep); }
 .char-del-btn svg { width: 15px; height: 15px; color: #c44; }
 
-/* =========================
-   头像形状
-========================= */
-.shape-circle { border-radius: 50%; }
-.shape-square { border-radius: 4px; }
-.shape-rounded { border-radius: 14px; }
+/* 头像形状 */
+.shape-circle { border-radius: 50% !important; }
+.shape-square { border-radius: 8px !important; }
+.shape-rounded { border-radius: 24px !important; }
 
 /* =========================
    头像上传
 ========================= */
-.char-avatar-section {
+.avatar-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
-.char-avatar-upload {
-  width: 100px;
-  height: 100px;
+.avatar-upload-area {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  cursor: pointer;
-  overflow: hidden;
+  background: var(--bg-card);
   border: 2px dashed var(--border);
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.char-avatar-upload img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.char-avatar-placeholder {
-  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-}
-
-.char-avatar-placeholder svg { width: 32px; height: 32px; color: var(--text-muted); }
-.char-avatar-placeholder span { font-size: 11px; color: var(--text-muted); }
-
-/* =========================
-   字段卡片（角色编辑用）
-========================= */
-.field-card {
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-
-.field-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px 0;
-}
-
-.field-card-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent-deep);
-}
-
-.field-expand-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
   cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-upload-area:active { border-color: var(--accent); }
+.avatar-upload-area img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-upload-area svg { width: 24px; height: 24px; color: var(--text-muted); }
+.avatar-upload-area span { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+.avatar-row-info {
+  flex: 1;
+  font-size: 12px;
   color: var(--text-muted);
-  transition: color 0.15s;
-}
-
-.field-expand-btn:active { color: var(--accent-deep); }
-.field-expand-btn svg { width: 16px; height: 16px; }
-
-.field-card-textarea {
-  width: 100%;
-  padding: 8px 14px 10px;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 13px;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-  line-height: 1.5;
-}
-
-.field-card-textarea::placeholder { color: var(--text-muted); }
-
-.user-active-btn {
-  padding: 4px 12px;
-  font-size: 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  cursor: pointer;
-  color: var(--text-primary);
-  transition: all 0.15s;
-}
-
-.user-active-btn.active {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
-.char-card.user-active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(173, 205, 234, 0.2);
+  line-height: 1.6;
 }
 
 /* =========================
-   分组标题
-========================= */
-.char-group-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent-deep);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 16px 0 8px;
-  border-bottom: 1.5px solid var(--border-light);
-  margin-bottom: 12px;
-}
-
-.char-group-title:first-child {
-  padding-top: 0;
-}
-
-/* =========================
-   字段卡片
+   字段卡片（编辑页）
 ========================= */
 .field-card {
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  margin-bottom: 12px;
-  overflow: hidden;
+  margin-bottom: 16px;
 }
 
-.field-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 10px 14px 0;
-}
-
-.field-card-label-row {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.field-card-top {
+  margin-bottom: 6px;
 }
 
 .field-card-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--accent-deep);
+  color: var(--text-primary);
 }
 
 .field-card-hint {
   font-size: 10px;
   color: var(--text-muted);
-  font-weight: 400;
+  margin-top: 2px;
 }
 
+.field-card-body {
+  position: relative;
+}
+
+.field-card-textarea {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.field-card-textarea:focus {
+  border-color: var(--accent);
+}
+
+.field-card-textarea::placeholder { color: var(--text-muted); }
+
 .field-expand-btn {
+  position: absolute;
+  right: 6px;
+  top: 6px;
   width: 28px;
   height: 28px;
   display: flex;
@@ -240,25 +177,33 @@
   border: none;
   cursor: pointer;
   color: var(--text-muted);
-  flex-shrink: 0;
   transition: color 0.15s;
 }
 
 .field-expand-btn:active { color: var(--accent-deep); }
 .field-expand-btn svg { width: 16px; height: 16px; }
 
-.field-card-textarea {
-  width: 100%;
-  padding: 8px 14px 10px;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 13px;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-  line-height: 1.5;
+/* =========================
+   用户启用按钮
+========================= */
+.user-active-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.field-card-textarea::placeholder { color: var(--text-muted); }
+.user-active-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-deep);
+}
 
+.char-card.user-active {
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 2px var(--accent);
+}
