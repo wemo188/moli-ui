@@ -1,54 +1,16 @@
 /* =========================
-   世界书
+   世界书卡片
 ========================= */
-.wb-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1.5px solid var(--border);
-  flex-shrink: 0;
-  background: var(--bg-secondary);
-}
-
-.wb-tab {
-  flex: 1;
-  padding: 10px 0;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-  position: relative;
-}
-
-.wb-tab.active {
-  color: var(--accent-deep);
-  font-weight: 600;
-}
-
-.wb-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1.5px;
-  left: 20%;
-  right: 20%;
-  height: 2.5px;
-  background: var(--accent-deep);
-  border-radius: 2px;
-}
-
 .wb-card {
   background: var(--bg-card);
   border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 14px;
   margin-bottom: 10px;
   transition: opacity 0.2s;
 }
 
-.wb-card.wb-disabled { opacity: 0.45; }
+.wb-card.wb-disabled { opacity: 0.4; }
 
 .wb-card-top {
   display: flex;
@@ -61,25 +23,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
   min-width: 0;
-}
-
-.wb-type-badge {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.wb-type-global {
-  background: rgba(130, 180, 230, 0.2);
-  color: var(--accent-deep);
-}
-
-.wb-type-keyword {
-  background: rgba(180, 140, 220, 0.2);
-  color: #8a5cb8;
 }
 
 .wb-card-name {
@@ -91,9 +36,49 @@
   text-overflow: ellipsis;
 }
 
+.wb-card-tags {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.wb-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wb-tag-perm {
+  background: var(--accent);
+  color: var(--bg-secondary);
+  border: 1px solid var(--accent-deep);
+}
+
+.wb-tag-kw {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.wb-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.wb-card-pos {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 .wb-card-keywords {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--accent-deep);
   margin-bottom: 6px;
   word-break: break-all;
 }
@@ -111,8 +96,7 @@
 
 .wb-card-actions {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .wb-edit-btn,
@@ -120,77 +104,81 @@
   font-size: 12px;
   padding: 4px 12px;
   border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  background: var(--bg-primary);
   cursor: pointer;
   color: var(--text-primary);
+  transition: all 0.15s;
 }
 
-.wb-del-btn {
-  color: #c44;
-  border-color: rgba(220,70,70,0.3);
-}
+.wb-edit-btn:active { background: var(--accent); color: var(--bg-secondary); }
+.wb-del-btn { color: #c44; border-color: rgba(220,70,70,0.3); }
+.wb-del-btn:active { background: rgba(220,70,70,0.15); }
 
-.wb-order-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: auto;
-}
-
-/* 开关 */
-.wb-toggle-btn {
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.wb-toggle-btn.active { background: var(--accent); }
-
-.wb-toggle-dot {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  transition: transform 0.2s, background 0.2s;
-}
-
-.wb-toggle-btn.active .wb-toggle-dot {
-  transform: translateX(20px);
-  background: #fff;
-}
-
-/* 类型切换 */
-.wb-type-switch {
+/* =========================
+   编辑页 开关行
+========================= */
+.wb-toggle-row {
   display: flex;
   gap: 0;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
+  margin-bottom: 16px;
   overflow: hidden;
 }
 
-.wb-type-opt {
+.wb-toggle-item {
   flex: 1;
-  padding: 10px;
-  text-align: center;
-  font-size: 13px;
-  border: none;
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-card);
 }
 
-.wb-type-opt.active {
-  background: var(--accent);
-  color: #fff;
+.wb-toggle-item:first-child {
+  border-right: 1px solid var(--border-light);
+}
+
+.wb-toggle-item span {
+  font-size: 13px;
   font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* =========================
+   开关（通用）
+========================= */
+.toggle-switch {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--border-light);
+  border: 1.5px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggle-switch.on {
+  background: var(--accent);
+  border-color: var(--accent-deep);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.toggle-switch.on::after {
+  transform: translateX(18px);
 }
