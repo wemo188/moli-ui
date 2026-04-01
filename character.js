@@ -5,7 +5,7 @@
 
   var Character = {
     FIELDS: [
-      { key: 'basicInfo', label: '基础信息', placeholder: '名字、身份、种族、年龄、外貌、穿着...' },
+      { key: 'basicInfo', label: '基础信息', placeholder: '身份、种族、年龄、外貌、穿着...' },
       { key: 'inner', label: '核心内在', placeholder: '性格核心、价值观、信念...' },
       { key: 'background', label: '背景补充', placeholder: '过去经历、重要事件...' },
       { key: 'speechBehavior', label: '说话方式与行为处事', placeholder: '语气、口头禅、行事风格...' },
@@ -33,6 +33,7 @@
     empty: function() {
       var obj = {
         id: 'char-' + Date.now(),
+        name: '',
         avatar: '',
         avatarShape: 'circle'
       };
@@ -97,7 +98,7 @@
 
       body.innerHTML = Character.list.map(function(c) {
         var shapeClass = Character.getShapeClass(c.avatarShape);
-        var name = (c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名';
+        var displayName = c.name || (c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名';
         var desc = (c.inner || '').slice(0, 30) || '';
         return '<div class="char-card" data-id="' + c.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + c.id + '" data-role="shapeToggle">' +
@@ -106,7 +107,7 @@
               : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
           '</div>' +
           '<div class="char-card-info">' +
-            '<div class="char-card-name">' + App.esc(name) + '</div>' +
+            '<div class="char-card-name">' + App.esc(displayName) + '</div>' +
             '<div class="char-card-desc">' + App.esc(desc) + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
@@ -120,7 +121,6 @@
         '</div>';
       }).join('');
 
-      // 点击卡片空白处进聊天
       body.querySelectorAll('.char-card').forEach(function(card) {
         card.addEventListener('click', function(e) {
           if (e.target.closest('.char-edit-btn') || e.target.closest('.char-del-btn') || e.target.closest('[data-role="shapeToggle"]')) return;
@@ -130,7 +130,6 @@
         });
       });
 
-      // 头像形状
       body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(el) {
         el.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -143,7 +142,6 @@
         });
       });
 
-      // 编辑
       body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -151,7 +149,6 @@
         });
       });
 
-      // 删除
       body.querySelectorAll('.char-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -171,20 +168,31 @@
       var c = isNew ? Character.empty() : Character.getById(id);
       if (!c) return;
 
-      var fieldsHtml = Character.FIELDS.map(function(f) {
-        return '<div class="field-card">' +
-          '<div class="field-card-top">' +
-            '<div class="field-card-label">' + f.label + '</div>' +
-            (f.hint ? '<div class="field-card-hint">' + f.hint + '</div>' : '') +
-          '</div>' +
-          '<div class="field-card-body">' +
-            '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(c[f.key] || '') + '</textarea>' +
-            '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-            '</button>' +
-          '</div>' +
+      var fieldsHtml = '';
+
+      // 名称
+      fieldsHtml +=
+        '<div class="form-group">' +
+          '<label>名称</label>' +
+          '<input type="text" id="charName" value="' + App.esc(c.name || '') + '" placeholder="角色名字">' +
         '</div>';
-      }).join('');
+
+      // 其他字段
+      Character.FIELDS.forEach(function(f) {
+        fieldsHtml +=
+          '<div class="field-card">' +
+            '<div class="field-card-top">' +
+              '<div class="field-card-label">' + f.label + '</div>' +
+              (f.hint ? '<div class="field-card-hint">' + f.hint + '</div>' : '') +
+            '</div>' +
+            '<div class="field-card-body">' +
+              '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(c[f.key] || '') + '</textarea>' +
+              '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+      });
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -222,8 +230,10 @@
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          c.avatar = ev.target.result;
-          App.$('#charAvatarUpload').innerHTML = '<img src="' + ev.target.result + '" alt="">';
+          App.cropImage(ev.target.result, function(croppedData) {
+            c.avatar = croppedData;
+            App.$('#charAvatarUpload').innerHTML = '<img src="' + croppedData + '" alt="">';
+          });
         };
         reader.readAsDataURL(file);
       });
@@ -231,6 +241,8 @@
       App.safeOn('#backToCharList', 'click', function() { Character.renderCards(); });
 
       App.safeOn('#saveCharBtn', 'click', function() {
+        var name = App.$('#charName') ? App.$('#charName').value.trim() : '';
+        c.name = name;
         Character.FIELDS.forEach(function(f) {
           var el = App.$('#field_' + f.key);
           if (el) c[f.key] = el.value;
@@ -241,7 +253,6 @@
         App.showToast(isNew ? '角色已创建' : '已保存');
       });
 
-      // 放大编辑
       panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var key = btn.dataset.field;
