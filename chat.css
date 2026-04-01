@@ -543,3 +543,22 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+/* =========================
+   打字动画
+========================= */
+.typing-dot {
+  animation: typingBlink 1s infinite;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+@keyframes typingBlink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.chat-msg-content em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
