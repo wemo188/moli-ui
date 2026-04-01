@@ -1,11 +1,9 @@
 (function() {
   'use strict';
-
   var App = window.App;
   if (!App) return;
 
   var Chat = {
-
     currentUserId: null,
     currentCharacterId: null,
     currentConversationId: null,
@@ -14,11 +12,9 @@
     save: function() {
       App.LS.set('conversations', Chat.conversations);
     },
-
     load: function() {
       Chat.conversations = App.LS.get('conversations') || [];
     },
-
     createConversation: function(userId, charId) {
       var conv = {
         id: 'conv-' + Date.now(),
@@ -32,27 +28,21 @@
       Chat.save();
       return conv;
     },
-
     getConversations: function(userId, charId) {
       return Chat.conversations.filter(function(c) {
         return c.userId === userId && c.characterId === charId;
       });
     },
-
     getCurrentConversation: function() {
       for (var i = 0; i < Chat.conversations.length; i++) {
-        if (Chat.conversations[i].id === Chat.currentConversationId) {
-          return Chat.conversations[i];
-        }
+        if (Chat.conversations[i].id === Chat.currentConversationId) return Chat.conversations[i];
       }
       return null;
     },
-
     deleteConversation: function(id) {
       Chat.conversations = Chat.conversations.filter(function(c) { return c.id !== id; });
       Chat.save();
     },
-
     closeSidebars: function() {
       var left = App.$('#chatSidebarLeft');
       var right = App.$('#chatSidebarRight');
@@ -62,32 +52,31 @@
       if (overlay) overlay.classList.add('hidden');
     },
 
-    openPanel: function() {
+    // 从角色列表直接进入聊天
+    startChat: function(charId) {
       var user = App.user ? App.user.getActiveUser() : null;
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
-
       if (!user) {
-        panel.innerHTML =
-          '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="closeChatPanel">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '</div>' +
-            '<h2>聊天</h2>' +
-          '</div>' +
-          '<div class="fullpage-body">' +
-            '<div class="empty-hint">请先在用户页面启用一个身份</div>' +
-          '</div>';
-        panel.classList.remove('hidden');
-        requestAnimationFrame(function() { panel.classList.add('show'); });
-        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
+        App.showToast('请先启用一个用户身份');
         return;
       }
 
       Chat.currentUserId = user.id;
+      Chat.currentCharacterId = charId;
+      Chat.load();
+
+      var convs = Chat.getConversations(Chat.currentUserId, charId);
+      if (!convs.length) {
+        var newConv = Chat.createConversation(Chat.currentUserId, charId);
+        Chat.currentConversationId = newConv.id;
+      } else {
+        Chat.currentConversationId = convs[convs.length - 1].id;
+      }
+
+      var panel = App.$('#chatPanel');
+      if (!panel) return;
       panel.classList.remove('hidden');
       requestAnimationFrame(function() { panel.classList.add('show'); });
-      Chat.renderCharacterSelect();
+      Chat.renderChatView();
     },
 
     closePanel: function() {
@@ -95,70 +84,6 @@
       if (!panel) return;
       panel.classList.remove('show');
       setTimeout(function() { panel.classList.add('hidden'); }, 350);
-    },
-
-    renderCharacterSelect: function() {
-      var panel = App.$('#chatPanel');
-      if (!panel) return;
-
-      var chars = App.character ? App.character.list : [];
-
-      if (!chars.length) {
-        panel.innerHTML =
-          '<div class="fullpage-header">' +
-            '<div class="fullpage-back" id="closeChatPanel">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '</div>' +
-            '<h2>选择角色</h2>' +
-          '</div>' +
-          '<div class="fullpage-body">' +
-            '<div class="empty-hint">请先创建角色</div>' +
-          '</div>';
-        App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-        return;
-      }
-
-      panel.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="closeChatPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>选择角色</h2>' +
-        '</div>' +
-        '<div class="fullpage-body">' +
-          '<div class="char-select-list">' +
-            chars.map(function(c) {
-              var shapeClass = Chat.getShapeClass(c.avatarShape);
-              return '<div class="char-select-card" data-id="' + c.id + '">' +
-                '<div class="char-select-avatar ' + shapeClass + '">' +
-                  (c.avatar
-                    ? '<img src="' + c.avatar + '" alt="">'
-                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
-                '</div>' +
-                '<div class="char-select-info">' +
-                  '<div class="char-select-name">' + App.esc((c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名') + '</div>' +
-                '</div>' +
-              '</div>';
-            }).join('') +
-          '</div>' +
-        '</div>';
-
-      App.safeOn('#closeChatPanel', 'click', function() { Chat.closePanel(); });
-
-      panel.querySelectorAll('.char-select-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          Chat.currentCharacterId = card.dataset.id;
-          Chat.load();
-          var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-          if (!convs.length) {
-            var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
-            Chat.currentConversationId = newConv.id;
-          } else {
-            Chat.currentConversationId = convs[convs.length - 1].id;
-          }
-          Chat.renderChatView();
-        });
-      });
     },
 
     showUserSwitcher: function() {
@@ -199,10 +124,10 @@
 
       switcher.querySelectorAll('.chat-user-switcher-item').forEach(function(item) {
         item.addEventListener('click', function() {
-          var newUserId = item.dataset.id;
-          if (newUserId !== Chat.currentUserId) {
-            Chat.currentUserId = newUserId;
-            App.user.setActive(newUserId);
+          var newId = item.dataset.id;
+          if (newId !== Chat.currentUserId) {
+            Chat.currentUserId = newId;
+            App.user.setActive(newId);
             Chat.load();
             var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
             if (!convs.length) {
@@ -226,7 +151,6 @@
       var user = App.user ? App.user.getById(Chat.currentUserId) : null;
       var char = App.character ? App.character.getById(Chat.currentCharacterId) : null;
       var conv = Chat.getCurrentConversation();
-
       if (!user || !char || !conv) return;
 
       var userShapeClass = Chat.getShapeClass(user.avatarShape);
@@ -237,7 +161,7 @@
 
       panel.innerHTML =
         '<div class="fullpage-header chat-header">' +
-          '<div class="fullpage-back" id="backToCharSelect">' +
+          '<div class="fullpage-back" id="chatBackBtn">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<button class="chat-icon-btn" id="chatConvBtn" type="button">' +
@@ -303,9 +227,9 @@
         '</div>' +
         '<div class="chat-overlay hidden" id="chatOverlay"></div>';
 
-      // 返回
-      App.safeOn('#backToCharSelect', 'click', function() {
-        Chat.renderCharacterSelect();
+      // 返回角色列表
+      App.safeOn('#chatBackBtn', 'click', function() {
+        Chat.closePanel();
       });
 
       // 爱心 左侧
@@ -335,12 +259,8 @@
         }
       });
 
-      // 遮罩收起
-      App.safeOn('#chatOverlay', 'click', function() {
-        Chat.closeSidebars();
-      });
+      App.safeOn('#chatOverlay', 'click', function() { Chat.closeSidebars(); });
 
-      // 点击用户区域弹出切换器
       var switchArea = panel.querySelector('#switchUserArea');
       if (switchArea) {
         switchArea.addEventListener('click', function(e) {
@@ -350,7 +270,6 @@
         });
       }
 
-      // 新建对话
       App.safeOn('#addConvBtn', 'click', function() {
         var newConv = Chat.createConversation(Chat.currentUserId, Chat.currentCharacterId);
         Chat.currentConversationId = newConv.id;
@@ -359,23 +278,17 @@
         App.showToast('新对话已创建');
       });
 
-      // 上传
       App.safeOn('#chatUploadBtn', 'click', function() {
         App.showToast('上传功能开发中');
       });
 
-      // 发送
-      App.safeOn('#chatSendBtn', 'click', function() {
-        Chat.sendMessage();
-      });
+      App.safeOn('#chatSendBtn', 'click', function() { Chat.sendMessage(); });
 
-      // 右侧菜单项 - 全部用 toast 占位，不跳转其他面板
       panel.querySelectorAll('.chat-right-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.stopPropagation();
-          var action = item.dataset.action;
           Chat.closeSidebars();
-          App.showToast(action + ' 功能开发中');
+          App.showToast(item.dataset.action + ' 功能开发中');
         });
       });
 
@@ -386,14 +299,11 @@
     renderConvList: function() {
       var body = App.$('#convListBody');
       if (!body) return;
-
       var convs = Chat.getConversations(Chat.currentUserId, Chat.currentCharacterId);
-
       if (!convs.length) {
         body.innerHTML = '<div class="empty-hint">暂无对话</div>';
         return;
       }
-
       body.innerHTML = convs.map(function(c) {
         var isActive = c.id === Chat.currentConversationId;
         return '<div class="conv-item' + (isActive ? ' active' : '') + '" data-id="' + c.id + '">' +
@@ -413,7 +323,7 @@
       body.querySelectorAll('.conv-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定删除这个对话？')) return;
+          if (!confirm('确定删除？')) return;
           var delId = btn.dataset.id;
           Chat.deleteConversation(delId);
           if (Chat.currentConversationId === delId) {
@@ -434,20 +344,17 @@
     renderMessages: function() {
       var container = App.$('#chatMessages');
       if (!container) return;
-
       var conv = Chat.getCurrentConversation();
       if (!conv || !conv.messages || !conv.messages.length) {
         container.innerHTML = '<div class="empty-hint">开始对话吧</div>';
         return;
       }
-
       container.innerHTML = conv.messages.map(function(msg) {
         var isUser = msg.role === 'user';
         return '<div class="chat-msg' + (isUser ? ' chat-msg-user' : ' chat-msg-char') + '">' +
           '<div class="chat-msg-content">' + App.esc(msg.content) + '</div>' +
         '</div>';
       }).join('');
-
       container.scrollTop = container.scrollHeight;
     },
 
@@ -456,15 +363,12 @@
       if (!input) return;
       var text = input.value.trim();
       if (!text) return;
-
       var conv = Chat.getCurrentConversation();
       if (!conv) return;
-
       conv.messages.push({ role: 'user', content: text });
       input.value = '';
       Chat.save();
       Chat.renderMessages();
-
       setTimeout(function() {
         conv.messages.push({ role: 'assistant', content: '这是一条测试回复。' });
         Chat.save();
@@ -478,12 +382,6 @@
       return 'shape-circle';
     },
 
-    bindEvents: function() {
-      App.safeOn('#openChatBtn', 'click', function() {
-        Chat.openPanel();
-      });
-    },
-
     init: function() {
       Chat.load();
       if (!App.$('#chatPanel')) {
@@ -493,7 +391,6 @@
         document.body.appendChild(panel);
       }
       App.chat = Chat;
-      Chat.bindEvents();
     }
   };
 
