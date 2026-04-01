@@ -9,18 +9,22 @@
     list: [],
     editingAvatar: null,
 
+    FIELDS: [
+      { key: 'basicInfo', label: '基础信息', placeholder: '名字、年龄、性别、身份...' },
+      { key: 'appearance', label: '外貌描述', placeholder: '外貌、穿着、气质...' },
+      { key: 'personality', label: '性格特点', placeholder: '性格、说话方式、行为习惯...' },
+      { key: 'background', label: '背景信息', placeholder: '背景故事、经历、设定...' }
+    ],
+
     empty: function() {
-      return {
+      var obj = {
         id: '',
         name: '',
-        age: '',
-        gender: '',
-        appearance: '',
-        personality: '',
-        background: '',
         avatar: '',
         avatarShape: 'circle'
       };
+      User.FIELDS.forEach(function(f) { obj[f.key] = ''; });
+      return obj;
     },
 
     save: function() {
@@ -136,6 +140,7 @@
       body.innerHTML = User.list.map(function(u) {
         var shapeClass = User.getShapeClass(u.avatarShape);
         var isActive = u.id === activeId;
+        var displayName = (u.name || (u.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名');
         return '<div class="char-card' + (isActive ? ' user-active' : '') + '" data-id="' + u.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + u.id + '" data-role="shapeToggle">' +
             (u.avatar
@@ -143,8 +148,8 @@
               : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
           '</div>' +
           '<div class="char-card-info">' +
-            '<div class="char-card-name">' + App.esc(u.name || '未命名') + '</div>' +
-            '<div class="char-card-desc">' + App.esc(u.gender || '') + (u.age ? ' · ' + u.age : '') + '</div>' +
+            '<div class="char-card-name">' + App.esc(displayName) + '</div>' +
+            '<div class="char-card-desc">' + App.esc((u.personality || '').slice(0, 30)) + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
             '<button class="user-active-btn' + (isActive ? ' active' : '') + '" data-id="' + u.id + '" type="button">' +
@@ -160,7 +165,7 @@
         '</div>';
       }).join('');
 
-      // 启用按钮
+      // 启用
       body.querySelectorAll('.user-active-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -170,21 +175,20 @@
         });
       });
 
-      // 点击头像切换形状
-      body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(avatarEl) {
-        avatarEl.addEventListener('click', function(e) {
+      // 头像形状
+      body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
           e.stopPropagation();
-          var id = avatarEl.dataset.id;
-          var u = User.getById(id);
+          var u = User.getById(el.dataset.id);
           if (!u) return;
           u.avatarShape = User.getNextShape(u.avatarShape || 'circle');
           User.save();
-          avatarEl.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
-          avatarEl.classList.add(User.getShapeClass(u.avatarShape));
-          App.showToast(u.avatarShape === 'circle' ? '圆形' : u.avatarShape === 'square' ? '方形' : '圆角方形');
+          el.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
+          el.classList.add(User.getShapeClass(u.avatarShape));
         });
       });
 
+      // 编辑
       body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -192,6 +196,7 @@
         });
       });
 
+      // 删除
       body.querySelectorAll('.char-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -212,9 +217,40 @@
       var panel = App.$('#userPanel');
       if (!panel) return;
 
-      var u = id ? (User.getById(id) || User.empty()) : User.empty();
       var isNew = !id;
+      var u = isNew ? User.empty() : User.getById(id);
+      if (!u) return;
       User.editingAvatar = u.avatar || '';
+
+      var fieldsHtml = '';
+
+      // 名称单独一行
+      fieldsHtml +=
+        '<div class="field-card">' +
+          '<div class="field-card-top">' +
+            '<div class="field-card-label">名称</div>' +
+            '<div class="field-card-hint">用于显示在列表和聊天中</div>' +
+          '</div>' +
+          '<div class="field-card-body">' +
+            '<input type="text" class="field-card-input" id="userName" value="' + App.esc(u.name || '') + '" placeholder="给这个身份起个名字">' +
+          '</div>' +
+        '</div>';
+
+      // 其他大文本框
+      User.FIELDS.forEach(function(f) {
+        fieldsHtml +=
+          '<div class="field-card">' +
+            '<div class="field-card-top">' +
+              '<div class="field-card-label">' + f.label + '</div>' +
+            '</div>' +
+            '<div class="field-card-body">' +
+              '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(u[f.key] || '') + '</textarea>' +
+              '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+      });
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -227,143 +263,83 @@
           '</button>' +
         '</div>' +
         '<div class="fullpage-body">' +
-
-          '<div class="char-avatar-section">' +
-            '<div class="char-avatar-upload" id="userAvatarUpload">' +
+          '<div class="avatar-row">' +
+            '<div class="avatar-upload-area" id="userAvatarUpload">' +
               (u.avatar
-                ? '<img src="' + u.avatar + '" id="userAvatarPreview" alt="">'
-                : '<div class="char-avatar-placeholder" id="userAvatarPreview">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-                    '<span>上传头像</span>' +
-                  '</div>') +
-              '<input type="file" id="userAvatarInput" accept="image/*" hidden>' +
+                ? '<img src="' + u.avatar + '" alt="">'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>上传头像</span>') +
             '</div>' +
+            '<div class="avatar-row-info">点击上传头像<br>点击列表中的头像可切换形状</div>' +
           '</div>' +
-
-          '<div class="form-group">' +
-            '<label>姓名 / 昵称</label>' +
-            '<input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="你的名字">' +
-          '</div>' +
-
-          '<div class="form-group">' +
-            '<label>年龄</label>' +
-            '<input type="text" id="userAge" value="' + App.esc(u.age || '') + '" placeholder="你的年龄">' +
-          '</div>' +
-
-          '<div class="form-group">' +
-            '<label>性别</label>' +
-            '<input type="text" id="userGender" value="' + App.esc(u.gender || '') + '" placeholder="你的性别">' +
-          '</div>' +
-
-          '<div class="form-group">' +
-            '<label>外貌描述</label>' +
-            '<div class="textarea-expand-row">' +
-              '<textarea id="userAppearance" class="form-textarea" placeholder="外貌描述..." rows="3">' + App.esc(u.appearance || '') + '</textarea>' +
-              '<button class="field-expand-btn" data-target="userAppearance" data-label="外貌描述" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="form-group">' +
-            '<label>性格特点</label>' +
-            '<div class="textarea-expand-row">' +
-              '<textarea id="userPersonality" class="form-textarea" placeholder="性格描述..." rows="3">' + App.esc(u.personality || '') + '</textarea>' +
-              '<button class="field-expand-btn" data-target="userPersonality" data-label="性格特点" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="form-group">' +
-            '<label>背景信息</label>' +
-            '<div class="textarea-expand-row">' +
-              '<textarea id="userBackground" class="form-textarea" placeholder="用户的背景故事、设定..." rows="3">' + App.esc(u.background || '') + '</textarea>' +
-              '<button class="field-expand-btn" data-target="userBackground" data-label="背景信息" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>' +
-
+          fieldsHtml +
         '</div>';
 
       // 头像上传
-      App.safeOn('#userAvatarUpload', 'click', function() {
-        App.$('#userAvatarInput').click();
-      });
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.hidden = true;
+      panel.appendChild(fileInput);
 
-      App.safeOn('#userAvatarInput', 'change', function(e) {
+      App.safeOn('#userAvatarUpload', 'click', function() { fileInput.click(); });
+
+      fileInput.addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
           User.editingAvatar = ev.target.result;
-          var preview = App.$('#userAvatarPreview');
-          if (preview) {
-            if (preview.tagName === 'IMG') {
-              preview.src = User.editingAvatar;
-            } else {
-              var img = document.createElement('img');
-              img.src = User.editingAvatar;
-              img.id = 'userAvatarPreview';
-              preview.parentNode.replaceChild(img, preview);
-            }
-          }
+          App.$('#userAvatarUpload').innerHTML = '<img src="' + ev.target.result + '" alt="">';
         };
         reader.readAsDataURL(file);
       });
 
-      // 放大编辑按钮
-      panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var targetId = btn.dataset.target;
-          var label = btn.dataset.label;
-          var el = App.$('#' + targetId);
-          if (!el) return;
-          var currentVal = el.value || '';
-          User.openExpandEditor(label, el.placeholder || '', currentVal, function(newVal) {
-            el.value = newVal;
-          });
-        });
-      });
-
       // 返回
-      App.safeOn('#backToUserList', 'click', function() {
-        User.renderListView();
-      });
+      App.safeOn('#backToUserList', 'click', function() { User.renderListView(); });
 
       // 保存
       App.safeOn('#saveUserBtn', 'click', function() {
-        var data = {
-          avatar: User.editingAvatar || '',
-          avatarShape: u.avatarShape || 'circle',
-          name: (App.$('#userName') ? App.$('#userName').value.trim() : ''),
-          age: (App.$('#userAge') ? App.$('#userAge').value.trim() : ''),
-          gender: (App.$('#userGender') ? App.$('#userGender').value.trim() : ''),
-          appearance: (App.$('#userAppearance') ? App.$('#userAppearance').value.trim() : ''),
-          personality: (App.$('#userPersonality') ? App.$('#userPersonality').value.trim() : ''),
-          background: (App.$('#userBackground') ? App.$('#userBackground').value.trim() : '')
-        };
-
-        if (!data.name) {
-          App.showToast('请填写用户名称');
+        var name = App.$('#userName') ? App.$('#userName').value.trim() : '';
+        if (!name) {
+          App.showToast('请填写名称');
           return;
         }
 
+        u.name = name;
+        u.avatar = User.editingAvatar || '';
+
+        User.FIELDS.forEach(function(f) {
+          var el = App.$('#field_' + f.key);
+          if (el) u[f.key] = el.value;
+        });
+
         if (isNew) {
-          User.add(data);
+          User.add(u);
           App.showToast('用户已创建');
         } else {
-          User.update(id, data);
-          App.showToast('用户已保存');
+          User.update(id, u);
+          App.showToast('已保存');
         }
 
         User.renderListView();
       });
+
+      // 放大编辑
+      panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var key = btn.dataset.field;
+          var textarea = App.$('#field_' + key);
+          if (!textarea) return;
+          var label = '';
+          for (var i = 0; i < User.FIELDS.length; i++) {
+            if (User.FIELDS[i].key === key) { label = User.FIELDS[i].label; break; }
+          }
+          User.openExpandEditor(label || key, textarea);
+        });
+      });
     },
 
-    openExpandEditor: function(label, placeholder, currentVal, onSave) {
+    openExpandEditor: function(title, sourceTextarea) {
       var existing = App.$('#expandEditor');
       if (existing) existing.remove();
 
@@ -375,43 +351,26 @@
           '<div class="fullpage-back" id="expandEditorBack">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
-          '<h2>' + label + '</h2>' +
-          '<button class="fullpage-action-btn" id="expandEditorSave" type="button">' +
+          '<h2>' + App.esc(title) + '</h2>' +
+          '<button class="fullpage-action-btn" id="expandEditorDone" type="button">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="expand-editor-body">' +
-          '<textarea id="expandEditorTextarea" class="expand-editor-textarea" placeholder="' + placeholder + '">' + App.esc(currentVal || '') + '</textarea>' +
+          '<textarea class="expand-editor-textarea" id="expandTextarea">' + App.esc(sourceTextarea.value) + '</textarea>' +
         '</div>';
 
       document.body.appendChild(editor);
+      requestAnimationFrame(function() { editor.classList.add('show'); });
 
-      requestAnimationFrame(function() {
-        editor.classList.add('show');
-        var ta = App.$('#expandEditorTextarea');
-        if (ta) ta.focus();
-      });
+      function closeEditor() {
+        sourceTextarea.value = App.$('#expandTextarea').value;
+        editor.classList.remove('show');
+        setTimeout(function() { editor.remove(); }, 350);
+      }
 
-      App.safeOn('#expandEditorBack', 'click', function() {
-        User.closeExpandEditor();
-      });
-
-      App.safeOn('#expandEditorSave', 'click', function() {
-        var ta = App.$('#expandEditorTextarea');
-        var val = ta ? ta.value : '';
-        if (onSave) onSave(val);
-        User.closeExpandEditor();
-        App.showToast(label + ' 已更新');
-      });
-    },
-
-    closeExpandEditor: function() {
-      var editor = App.$('#expandEditor');
-      if (!editor) return;
-      editor.classList.remove('show');
-      setTimeout(function() {
-        if (editor.parentNode) editor.parentNode.removeChild(editor);
-      }, 350);
+      App.safeOn('#expandEditorBack', 'click', closeEditor);
+      App.safeOn('#expandEditorDone', 'click', closeEditor);
     },
 
     bindEvents: function() {
