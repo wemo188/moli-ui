@@ -207,3 +207,25 @@
   border-color: var(--accent-deep);
   box-shadow: 0 0 0 2px var(--accent);
 }
+
+/* =========================
+   名称输入框（用户编辑页）
+========================= */
+.field-card-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.field-card-input:focus {
+  border-color: var(--accent);
+}
+
+.field-card-input::placeholder { color: var(--text-muted); }
+
