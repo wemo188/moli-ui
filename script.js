@@ -62,6 +62,182 @@
     });
   };
 
+  App.cropImage = function(src, callback) {
+    var overlay = document.createElement('div');
+    overlay.className = 'crop-overlay';
+
+    overlay.innerHTML =
+      '<div class="crop-container">' +
+        '<div class="crop-header">' +
+          '<button class="crop-cancel" type="button">取消</button>' +
+          '<span>裁剪头像</span>' +
+          '<button class="crop-confirm" type="button">确定</button>' +
+        '</div>' +
+        '<div class="crop-workspace">' +
+          '<canvas id="cropCanvas"></canvas>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var canvas = overlay.querySelector('#cropCanvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+
+    var crop = { x: 0, y: 0, size: 0 };
+    var scale = 1;
+    var dragging = false;
+    var startX = 0, startY = 0;
+
+    img.onload = function() {
+      var workspace = overlay.querySelector('.crop-workspace');
+      var maxW = workspace.clientWidth;
+      var maxH = workspace.clientHeight;
+
+      scale = Math.min(maxW / img.width, maxH / img.height, 1);
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+
+      crop.size = Math.min(canvas.width, canvas.height) * 0.7;
+      crop.x = (canvas.width - crop.size) / 2;
+      crop.y = (canvas.height - crop.size) / 2;
+
+      draw();
+    };
+
+    img.src = src;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.clearRect(crop.x, crop.y, crop.size, crop.size);
+      ctx.drawImage(img,
+        crop.x / scale, crop.y / scale, crop.size / scale, crop.size / scale,
+        crop.x, crop.y, crop.size, crop.size
+      );
+
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(crop.x, crop.y, crop.size, crop.size);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      var third = crop.size / 3;
+      ctx.beginPath();
+      ctx.moveTo(crop.x + third, crop.y);
+      ctx.lineTo(crop.x + third, crop.y + crop.size);
+      ctx.moveTo(crop.x + third * 2, crop.y);
+      ctx.lineTo(crop.x + third * 2, crop.y + crop.size);
+      ctx.moveTo(crop.x, crop.y + third);
+      ctx.lineTo(crop.x + crop.size, crop.y + third);
+      ctx.moveTo(crop.x, crop.y + third * 2);
+      ctx.lineTo(crop.x + crop.size, crop.y + third * 2);
+      ctx.stroke();
+    }
+
+    function getPos(e) {
+      var t = e.touches ? e.touches[0] : e;
+      var rect = canvas.getBoundingClientRect();
+      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+
+    canvas.addEventListener('mousedown', onStart);
+    canvas.addEventListener('touchstart', onStart, { passive: false });
+
+    function onStart(e) {
+      if (e.touches && e.touches.length > 1) return;
+      e.preventDefault();
+      var p = getPos(e);
+      dragging = true;
+      startX = p.x - crop.x;
+      startY = p.y - crop.y;
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('touchend', onEnd);
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      if (e.touches && e.touches.length > 1) return;
+      e.preventDefault();
+      var p = getPos(e);
+      crop.x = Math.max(0, Math.min(canvas.width - crop.size, p.x - startX));
+      crop.y = Math.max(0, Math.min(canvas.height - crop.size, p.y - startY));
+      draw();
+    }
+
+    function onEnd() {
+      dragging = false;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+    }
+
+    // 双指缩放裁剪框
+    var lastDist = 0;
+    canvas.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        lastDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        var dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        var diff = dist - lastDist;
+        var newSize = crop.size + diff;
+        var minSize = 50;
+        var maxSize = Math.min(canvas.width, canvas.height);
+        newSize = Math.max(minSize, Math.min(maxSize, newSize));
+
+        var cx = crop.x + crop.size / 2;
+        var cy = crop.y + crop.size / 2;
+        crop.size = newSize;
+        crop.x = Math.max(0, Math.min(canvas.width - crop.size, cx - crop.size / 2));
+        crop.y = Math.max(0, Math.min(canvas.height - crop.size, cy - crop.size / 2));
+
+        lastDist = dist;
+        draw();
+      }
+    }, { passive: false });
+
+    // 取消
+    overlay.querySelector('.crop-cancel').addEventListener('click', function() {
+      overlay.remove();
+    });
+
+    // 确定
+    overlay.querySelector('.crop-confirm').addEventListener('click', function() {
+      var output = document.createElement('canvas');
+      var outSize = 256;
+      output.width = outSize;
+      output.height = outSize;
+      var outCtx = output.getContext('2d');
+      outCtx.drawImage(img,
+        crop.x / scale, crop.y / scale, crop.size / scale, crop.size / scale,
+        0, 0, outSize, outSize
+      );
+      var data = output.toDataURL('image/jpeg', 0.85);
+      overlay.remove();
+      callback(data);
+    });
+  };
+
   App.state = {
     ball: null,
     ballMenuEl: null,
