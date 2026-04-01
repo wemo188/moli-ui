@@ -7,13 +7,12 @@
   var User = {
 
     list: [],
-    editingAvatar: null,
+    editingAvatar: '',
 
     FIELDS: [
-      { key: 'basicInfo', label: '基础信息', placeholder: '名字、年龄、性别、身份...' },
-      { key: 'appearance', label: '外貌描述', placeholder: '外貌、穿着、气质...' },
-      { key: 'personality', label: '性格特点', placeholder: '性格、说话方式、行为习惯...' },
-      { key: 'background', label: '背景信息', placeholder: '背景故事、经历、设定...' }
+      { key: 'basicInfo', label: '基础信息', placeholder: '名字、年龄、性别、身份、外貌...' },
+      { key: 'hobbies', label: '习惯爱好', placeholder: '日常习惯、兴趣爱好...' },
+      { key: 'background', label: '背景补充', placeholder: '背景故事、经历、与角色的关系...' }
     ],
 
     empty: function() {
@@ -27,13 +26,8 @@
       return obj;
     },
 
-    save: function() {
-      App.LS.set('userList', User.list);
-    },
-
-    load: function() {
-      User.list = App.LS.get('userList') || [];
-    },
+    save: function() { App.LS.set('userList', User.list); },
+    load: function() { User.list = App.LS.get('userList') || []; },
 
     add: function(data) {
       data.id = 'user-' + Date.now();
@@ -44,11 +38,7 @@
 
     update: function(id, data) {
       for (var i = 0; i < User.list.length; i++) {
-        if (User.list[i].id === id) {
-          data.id = id;
-          User.list[i] = data;
-          break;
-        }
+        if (User.list[i].id === id) { data.id = id; User.list[i] = data; break; }
       }
       User.save();
     },
@@ -65,14 +55,8 @@
       return null;
     },
 
-    setActive: function(id) {
-      App.LS.set('activeUserId', id);
-    },
-
-    getActive: function() {
-      return App.LS.get('activeUserId');
-    },
-
+    setActive: function(id) { App.LS.set('activeUserId', id); },
+    getActive: function() { return App.LS.get('activeUserId'); },
     getActiveUser: function() {
       var id = User.getActive();
       return id ? User.getById(id) : null;
@@ -83,7 +67,6 @@
       if (shape === 'rounded') return 'shape-rounded';
       return 'shape-circle';
     },
-
     getNextShape: function(shape) {
       if (shape === 'circle') return 'square';
       if (shape === 'square') return 'rounded';
@@ -140,7 +123,7 @@
       body.innerHTML = User.list.map(function(u) {
         var shapeClass = User.getShapeClass(u.avatarShape);
         var isActive = u.id === activeId;
-        var displayName = (u.name || (u.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名');
+        var displayName = u.name || '未命名';
         return '<div class="char-card' + (isActive ? ' user-active' : '') + '" data-id="' + u.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + u.id + '" data-role="shapeToggle">' +
             (u.avatar
@@ -149,7 +132,7 @@
           '</div>' +
           '<div class="char-card-info">' +
             '<div class="char-card-name">' + App.esc(displayName) + '</div>' +
-            '<div class="char-card-desc">' + App.esc((u.personality || '').slice(0, 30)) + '</div>' +
+            '<div class="char-card-desc">' + App.esc((u.basicInfo || '').slice(0, 30)) + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
             '<button class="user-active-btn' + (isActive ? ' active' : '') + '" data-id="' + u.id + '" type="button">' +
@@ -165,7 +148,6 @@
         '</div>';
       }).join('');
 
-      // 启用
       body.querySelectorAll('.user-active-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -175,7 +157,6 @@
         });
       });
 
-      // 头像形状
       body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(el) {
         el.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -188,7 +169,6 @@
         });
       });
 
-      // 编辑
       body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -196,17 +176,15 @@
         });
       });
 
-      // 删除
       body.querySelectorAll('.char-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var id = btn.dataset.id;
-          if (id === User.getActive()) {
+          if (btn.dataset.id === User.getActive()) {
             App.showToast('无法删除已启用的用户');
             return;
           }
           if (!confirm('确定删除？')) return;
-          User.remove(id);
+          User.remove(btn.dataset.id);
           User.renderCards();
           App.showToast('已删除');
         });
@@ -224,19 +202,14 @@
 
       var fieldsHtml = '';
 
-      // 名称单独一行
+      // 名称
       fieldsHtml +=
-        '<div class="field-card">' +
-          '<div class="field-card-top">' +
-            '<div class="field-card-label">名称</div>' +
-            '<div class="field-card-hint">用于显示在列表和聊天中</div>' +
-          '</div>' +
-          '<div class="field-card-body">' +
-            '<input type="text" class="field-card-input" id="userName" value="' + App.esc(u.name || '') + '" placeholder="给这个身份起个名字">' +
-          '</div>' +
+        '<div class="form-group">' +
+          '<label>名称</label>' +
+          '<input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="给这个身份起个名字">' +
         '</div>';
 
-      // 其他大文本框
+      // 文本框字段
       User.FIELDS.forEach(function(f) {
         fieldsHtml +=
           '<div class="field-card">' +
@@ -274,7 +247,6 @@
           fieldsHtml +
         '</div>';
 
-      // 头像上传
       var fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
@@ -288,23 +260,22 @@
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          User.editingAvatar = ev.target.result;
-          App.$('#userAvatarUpload').innerHTML = '<img src="' + ev.target.result + '" alt="">';
+          App.cropImage(ev.target.result, function(croppedData) {
+            User.editingAvatar = croppedData;
+            App.$('#userAvatarUpload').innerHTML = '<img src="' + croppedData + '" alt="">';
+          });
         };
         reader.readAsDataURL(file);
       });
 
-      // 返回
       App.safeOn('#backToUserList', 'click', function() { User.renderListView(); });
 
-      // 保存
       App.safeOn('#saveUserBtn', 'click', function() {
         var name = App.$('#userName') ? App.$('#userName').value.trim() : '';
         if (!name) {
           App.showToast('请填写名称');
           return;
         }
-
         u.name = name;
         u.avatar = User.editingAvatar || '';
 
@@ -320,11 +291,9 @@
           User.update(id, u);
           App.showToast('已保存');
         }
-
         User.renderListView();
       });
 
-      // 放大编辑
       panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var key = btn.dataset.field;
@@ -374,9 +343,7 @@
     },
 
     bindEvents: function() {
-      App.safeOn('#openUserBtn', 'click', function() {
-        User.openPanel();
-      });
+      App.safeOn('#openUserBtn', 'click', function() { User.openPanel(); });
     },
 
     init: function() {
