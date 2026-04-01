@@ -4,43 +4,16 @@
   if (!App) return;
 
   var Character = {
-    GROUPS: [
-      {
-        title: '完整档案',
-        fields: [
-          { key: 'basicInfo', label: '基础信息', placeholder: '名字、身份、种族、年龄...' },
-          { key: 'appearance', label: '整体形象', placeholder: '外貌、穿着、气质...' },
-          { key: 'inner', label: '核心内在', placeholder: '性格核心、价值观、信念...' },
-          { key: 'background', label: '背景补充', placeholder: '过去经历、重要事件...' },
-          { key: 'speechStyle', label: '说话方式', placeholder: '语气、口头禅、说话习惯...' },
-          { key: 'behavior', label: '行为处事', placeholder: '行事风格、决策方式...' },
-          { key: 'hobbies', label: '习惯爱好', placeholder: '日常习惯、兴趣爱好...' },
-          { key: 'sexExperience', label: '性经验', placeholder: '经验程度、偏好、态度...' }
-        ]
-      },
-      {
-        title: '面对 {{user}}',
-        fields: [
-          { key: 'callUser', label: '对user的称呼', placeholder: '怎么称呼user...' },
-          { key: 'attitudeUser', label: '对user的态度', placeholder: '对user的态度和关系...' },
-          { key: 'thoughtUser', label: '对user的想法', placeholder: '内心怎么看待user...' }
-        ]
-      },
-      {
-        title: '高级定义',
-        fields: [
-          { key: 'personalityTags', label: '性格特点', placeholder: '傲娇、毒舌、口是心非...', hint: '简洁关键词密集，AI 注意力权重高' },
-          { key: 'postInstruction', label: '后置指令', placeholder: '每轮强制提醒的规则...', hint: '防止 AI 跑偏，每轮末尾重复' }
-        ]
-      },
-      {
-        title: '对话设定',
-        fields: [
-          { key: 'openings', label: '开场白', placeholder: '每行一个开场白\n开场白1\n开场白2...', hint: '多个开场白可在聊天中滑动选择' },
-          { key: 'scenario', label: '场景', placeholder: '当前场景描述...' },
-          { key: 'dialogExamples', label: '对话示例', placeholder: '<START>\n{{user}}: 你好\n{{char}}: ...', hint: '给 AI 看的范本，按此风格回复' }
-        ]
-      }
+    FIELDS: [
+      { key: 'basicInfo', label: '基础信息', placeholder: '名字、身份、种族、年龄、外貌、穿着...' },
+      { key: 'inner', label: '核心内在', placeholder: '性格核心、价值观、信念...' },
+      { key: 'background', label: '背景补充', placeholder: '过去经历、重要事件...' },
+      { key: 'speechBehavior', label: '说话方式与行为处事', placeholder: '语气、口头禅、行事风格...' },
+      { key: 'hobbyAndSex', label: '习惯爱好与性', placeholder: '日常习惯、兴趣爱好、性经验与偏好...' },
+      { key: 'relationUser', label: '与user的关系', placeholder: '怎么称呼user、对user的态度和想法...' },
+      { key: 'openings', label: '开场白', placeholder: '每行一个开场白\n开场白1\n开场白2...', hint: '多个开场白可在聊天中滑动选择' },
+      { key: 'dialogExamples', label: '示例对话', placeholder: '<START>\n{{user}}: 你好\n{{char}}: ...', hint: '给 AI 看的范本' },
+      { key: 'postInstruction', label: '后置指令', placeholder: '每轮强制提醒的规则...', hint: '每轮末尾重复，防止 AI 跑偏' }
     ],
 
     list: [],
@@ -57,20 +30,13 @@
       }
       return null;
     },
-    getAllFieldKeys: function() {
-      var keys = [];
-      Character.GROUPS.forEach(function(g) {
-        g.fields.forEach(function(f) { keys.push(f.key); });
-      });
-      return keys;
-    },
     empty: function() {
       var obj = {
         id: 'char-' + Date.now(),
         avatar: '',
         avatarShape: 'circle'
       };
-      Character.getAllFieldKeys().forEach(function(k) { obj[k] = ''; });
+      Character.FIELDS.forEach(function(f) { obj[f.key] = ''; });
       return obj;
     },
     remove: function(id) {
@@ -132,7 +98,7 @@
       body.innerHTML = Character.list.map(function(c) {
         var shapeClass = Character.getShapeClass(c.avatarShape);
         var name = (c.basicInfo || '').split('\n')[0].slice(0, 20) || '未命名';
-        var desc = c.personalityTags || (c.inner || '').slice(0, 30) || '';
+        var desc = (c.inner || '').slice(0, 30) || '';
         return '<div class="char-card" data-id="' + c.id + '">' +
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + c.id + '" data-role="shapeToggle">' +
             (c.avatar
@@ -154,18 +120,17 @@
         '</div>';
       }).join('');
 
-      // 点击卡片空白处 → 进入聊天
+      // 点击卡片空白处进聊天
       body.querySelectorAll('.char-card').forEach(function(card) {
         card.addEventListener('click', function(e) {
           if (e.target.closest('.char-edit-btn') || e.target.closest('.char-del-btn') || e.target.closest('[data-role="shapeToggle"]')) return;
-          var charId = card.dataset.id;
           if (App.chat && App.chat.startChat) {
-            App.chat.startChat(charId);
+            App.chat.startChat(card.dataset.id);
           }
         });
       });
 
-      // 头像形状切换
+      // 头像形状
       body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(el) {
         el.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -206,27 +171,20 @@
       var c = isNew ? Character.empty() : Character.getById(id);
       if (!c) return;
 
-      var fieldsHtml = '';
-
-      Character.GROUPS.forEach(function(group) {
-        fieldsHtml += '<div class="char-group-title">' + group.title + '</div>';
-
-        group.fields.forEach(function(f) {
-          fieldsHtml +=
-            '<div class="field-card">' +
-              '<div class="field-card-header">' +
-                '<div class="field-card-label-row">' +
-                  '<span class="field-card-label">' + f.label + '</span>' +
-                  (f.hint ? '<span class="field-card-hint">' + f.hint + '</span>' : '') +
-                '</div>' +
-                '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-                '</button>' +
-              '</div>' +
-              '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(c[f.key] || '') + '</textarea>' +
-            '</div>';
-        });
-      });
+      var fieldsHtml = Character.FIELDS.map(function(f) {
+        return '<div class="field-card">' +
+          '<div class="field-card-top">' +
+            '<div class="field-card-label">' + f.label + '</div>' +
+            (f.hint ? '<div class="field-card-hint">' + f.hint + '</div>' : '') +
+          '</div>' +
+          '<div class="field-card-body">' +
+            '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(c[f.key] || '') + '</textarea>' +
+            '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -270,14 +228,12 @@
         reader.readAsDataURL(file);
       });
 
-      // 返回
       App.safeOn('#backToCharList', 'click', function() { Character.renderCards(); });
 
-      // 保存
       App.safeOn('#saveCharBtn', 'click', function() {
-        Character.getAllFieldKeys().forEach(function(k) {
-          var el = App.$('#field_' + k);
-          if (el) c[k] = el.value;
+        Character.FIELDS.forEach(function(f) {
+          var el = App.$('#field_' + f.key);
+          if (el) c[f.key] = el.value;
         });
         if (isNew) Character.list.push(c);
         Character.save();
@@ -292,11 +248,9 @@
           var textarea = App.$('#field_' + key);
           if (!textarea) return;
           var label = '';
-          Character.GROUPS.forEach(function(g) {
-            g.fields.forEach(function(f) {
-              if (f.key === key) label = f.label;
-            });
-          });
+          for (var i = 0; i < Character.FIELDS.length; i++) {
+            if (Character.FIELDS[i].key === key) { label = Character.FIELDS[i].label; break; }
+          }
           Character.openExpandEditor(label || key, textarea);
         });
       });
@@ -336,14 +290,13 @@
       App.safeOn('#expandEditorDone', 'click', closeEditor);
     },
 
-    // 拼接角色资料发给 AI（不含标签，只有内容）
     buildPrompt: function(charId) {
       var c = Character.getById(charId);
       if (!c) return '';
       var parts = [];
-      Character.getAllFieldKeys().forEach(function(k) {
-        if (k === 'openings' || k === 'postInstruction' || k === 'dialogExamples') return;
-        if (c[k] && c[k].trim()) parts.push(c[k].trim());
+      Character.FIELDS.forEach(function(f) {
+        if (f.key === 'openings' || f.key === 'postInstruction' || f.key === 'dialogExamples') return;
+        if (c[f.key] && c[f.key].trim()) parts.push(c[f.key].trim());
       });
       return parts.join('\n\n');
     },
