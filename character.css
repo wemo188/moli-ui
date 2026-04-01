@@ -175,3 +175,90 @@
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(173, 205, 234, 0.2);
 }
+
+/* =========================
+   分组标题
+========================= */
+.char-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 16px 0 8px;
+  border-bottom: 1.5px solid var(--border-light);
+  margin-bottom: 12px;
+}
+
+.char-group-title:first-child {
+  padding-top: 0;
+}
+
+/* =========================
+   字段卡片
+========================= */
+.field-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.field-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 10px 14px 0;
+}
+
+.field-card-label-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.field-card-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.field-expand-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.field-expand-btn:active { color: var(--accent-deep); }
+.field-expand-btn svg { width: 16px; height: 16px; }
+
+.field-card-textarea {
+  width: 100%;
+  padding: 8px 14px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.field-card-textarea::placeholder { color: var(--text-muted); }
+
