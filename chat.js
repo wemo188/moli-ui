@@ -155,7 +155,7 @@
       var userName = user.name || '用户';
       var messages = [];
 
-      // ---------- 系统指令（硬编码） ----------
+      // 系统指令
       var sysPrompt =
         '你是一个沉浸式角色扮演AI。你必须严格遵守以下规则：\n' +
         '1. 你扮演的角色是「' + charName + '」，你必须始终以该角色的身份回应，不得跳出角色。\n' +
@@ -167,15 +167,15 @@
         '7. 你的每次回复都必须推进剧情，保持叙事节奏，描写细腻生动。\n' +
         '8. 涉及亲密或性场景时，你必须以角色性格自然回应，注重感官细节（触觉、听觉、嗅觉、视觉），有节奏感地推进，不要一步到位，不要使用过于粗俗的词汇。\n' +
         '9. 始终保持角色的说话方式、性格特征和行为模式的一致性。\n' +
-        '10. 回复长度不少于用户规定的字数。';
+        '10. 回复长度不少于200字。';
 
       messages.push({ role: 'system', content: sysPrompt });
 
-      // ---------- 世界书（常驻 + 关键词匹配，位置=角色定义前） ----------
+      // 世界书（角色定义前）
       var wbBeforeChar = Chat.getWorldBookEntries('before-char', userText, conv.messages);
       if (wbBeforeChar) messages.push({ role: 'system', content: wbBeforeChar });
 
-      // ---------- 角色资料 ----------
+      // 角色资料
       var charParts = [];
       var charFields = App.character.FIELDS;
       for (var i = 0; i < charFields.length; i++) {
@@ -184,61 +184,61 @@
         if (char[f.key] && char[f.key].trim()) charParts.push(char[f.key].trim());
       }
       if (charParts.length) {
-        messages.push({ role: 'system', content: '【角色设定 - ' + charName + '】\n' + charParts.join('\n\n') });
+        messages.push({ role: 'system', content: '【' + charName + '】\n' + charParts.join('\n\n') });
       }
 
-      // ---------- 世界书（角色定义后） ----------
+      // 世界书（角色定义后）
       var wbAfterChar = Chat.getWorldBookEntries('after-char', userText, conv.messages);
       if (wbAfterChar) messages.push({ role: 'system', content: wbAfterChar });
 
-      // ---------- 用户资料 ----------
+      // 用户资料
       var userParts = [];
       if (App.user.FIELDS) {
-        App.user.FIELDS.forEach(function(f) {
-          if (user[f.key] && user[f.key].trim()) userParts.push(user[f.key].trim());
+        App.user.FIELDS.forEach(function(uf) {
+          if (user[uf.key] && user[uf.key].trim()) userParts.push(user[uf.key].trim());
         });
       }
       if (userParts.length) {
-        messages.push({ role: 'system', content: '【用户设定 - ' + userName + '】\n' + userParts.join('\n\n') });
+        messages.push({ role: 'system', content: '【' + userName + '】\n' + userParts.join('\n\n') });
       }
 
-      // ---------- 世界书（示例对话前） ----------
+      // 世界书（示例对话前）
       var wbBeforeExample = Chat.getWorldBookEntries('before-example', userText, conv.messages);
       if (wbBeforeExample) messages.push({ role: 'system', content: wbBeforeExample });
 
-      // ---------- 示例对话 ----------
+      // 示例对话
       if (char.dialogExamples && char.dialogExamples.trim()) {
         var examples = char.dialogExamples.trim()
           .replace(/\{\{user\}\}/gi, userName)
           .replace(/\{\{char\}\}/gi, charName);
-        messages.push({ role: 'system', content: '【对话示例】\n' + examples });
+        messages.push({ role: 'system', content: examples });
       }
 
-      // ---------- 世界书（示例对话后） ----------
+      // 世界书（示例对话后）
       var wbAfterExample = Chat.getWorldBookEntries('after-example', userText, conv.messages);
       if (wbAfterExample) messages.push({ role: 'system', content: wbAfterExample });
 
-      // ---------- 历史消息（最近20条） ----------
-      var history = conv.messages.slice(-20);
-      for (var h = 0; h < history.length; h++) {
+      // 历史消息（排除最后一条 user，因为会单独加）
+      var historyMsgs = conv.messages.slice(0, -1).slice(-20);
+      for (var h = 0; h < historyMsgs.length; h++) {
         messages.push({
-          role: history[h].role === 'user' ? 'user' : 'assistant',
-          content: history[h].content
+          role: historyMsgs[h].role === 'user' ? 'user' : 'assistant',
+          content: historyMsgs[h].content
         });
       }
 
-      // ---------- 世界书（精确深度插入） ----------
+      // 世界书（精确深度）
       Chat.insertDepthEntries(messages, userText, conv.messages);
 
-      // ---------- 后置指令 ----------
+      // 后置指令
       if (char.postInstruction && char.postInstruction.trim()) {
         var postContent = char.postInstruction.trim()
           .replace(/\{\{user\}\}/gi, userName)
           .replace(/\{\{char\}\}/gi, charName);
-        messages.push({ role: 'system', content: '【重要提醒】\n' + postContent });
+        messages.push({ role: 'system', content: postContent });
       }
 
-      // ---------- 当前用户消息 ----------
+      // 当前用户消息
       messages.push({ role: 'user', content: userText });
 
       return messages;
@@ -252,7 +252,7 @@
       if (history && history.length) {
         var recent = history.slice(-10);
         for (var i = 0; i < recent.length; i++) {
-          allText += recent[i].content + '\n';
+          allText += (recent[i].content || '') + '\n';
         }
       }
       allText = allText.toLowerCase();
@@ -263,9 +263,7 @@
 
         var shouldInclude = false;
 
-        if (e.permanent) {
-          shouldInclude = true;
-        }
+        if (e.permanent) shouldInclude = true;
 
         if (e.useKeyword && e.keywords && e.keywords.trim()) {
           var kws = e.keywords.split(',');
@@ -278,9 +276,7 @@
           }
         }
 
-        if (!e.permanent && !e.useKeyword) {
-          shouldInclude = true;
-        }
+        if (!e.permanent && !e.useKeyword) shouldInclude = true;
 
         if (shouldInclude && e.content && e.content.trim()) {
           parts.push(e.content.trim());
@@ -297,7 +293,7 @@
       if (history && history.length) {
         var recent = history.slice(-10);
         for (var i = 0; i < recent.length; i++) {
-          allText += recent[i].content + '\n';
+          allText += (recent[i].content || '') + '\n';
         }
       }
       allText = allText.toLowerCase();
@@ -363,12 +359,13 @@
       return response;
     },
 
-    // ========= 流式读取 =========
-    readStream: async function(response, onChunk, onDone) {
+    // ========= 流式读取（直接更新 replyDiv） =========
+    readStream: async function(response, replyDiv) {
       var reader = response.body.getReader();
       var decoder = new TextDecoder();
       var buffer = '';
       var fullText = '';
+      var container = App.$('#chatMessages');
 
       while (true) {
         var result = await reader.read();
@@ -389,13 +386,16 @@
             var delta = json.choices && json.choices[0] && json.choices[0].delta;
             if (delta && delta.content) {
               fullText += delta.content;
-              onChunk(fullText);
+              if (replyDiv) {
+                replyDiv.innerHTML = App.esc(fullText).replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+              }
+              if (container) container.scrollTop = container.scrollHeight;
             }
           } catch (e) {}
         }
       }
 
-      onDone(fullText);
+      return fullText;
     },
 
     // ========= 发送消息 =========
@@ -419,14 +419,18 @@
       // 添加用户消息
       conv.messages.push({ role: 'user', content: text });
       input.value = '';
-      Chat.save();
-      Chat.renderMessages();
 
       // 更新对话标题
       if (conv.messages.length === 1) {
         conv.title = text.slice(0, 20);
-        Chat.save();
       }
+
+      // 构建 API 消息
+      var apiMessages = Chat.buildMessages(text);
+
+      // 添加占位 AI 消息
+      var aiMsg = { role: 'assistant', content: '' };
+      conv.messages.push(aiMsg);
 
       Chat.isSending = true;
       var sendBtn = App.$('#chatSendBtn');
@@ -435,44 +439,26 @@
         sendBtn.style.opacity = '0.5';
       }
 
-      // 添加占位 AI 消息
-      var aiMsg = { role: 'assistant', content: '' };
-      conv.messages.push(aiMsg);
-      Chat.save();
+      // 渲染消息列表，拿到 replyDiv 引用
       Chat.renderMessages();
+      var container = App.$('#chatMessages');
+      var allCharMsgs = container.querySelectorAll('.chat-msg-char .chat-msg-content');
+      var replyDiv = allCharMsgs[allCharMsgs.length - 1];
 
       try {
-        var apiMessages = Chat.buildMessages(text);
-        // 移除最后一条 user（buildMessages 已经加了）
-        // 同时去掉占位的空 assistant
-        // buildMessages 使用的 conv.messages 里已经包含了 user 和空 assistant
-        // 但 buildMessages 会自己加 userText，所以需要让 history 不包含最后的 user 和空 assistant
-        // 重新构建：把 conv.messages 最后两条（user + 空assistant）去掉再构建
-        conv.messages.pop(); // 去掉空 assistant
-        conv.messages.pop(); // 去掉 user
-        apiMessages = Chat.buildMessages(text);
-        conv.messages.push({ role: 'user', content: text }); // 加回来
-        conv.messages.push(aiMsg); // 加回来
-
         var response = await Chat.callApi(apiMessages);
+        var fullText = await Chat.readStream(response, replyDiv);
 
-        await Chat.readStream(response,
-          function onChunk(fullText) {
-            aiMsg.content = fullText;
-            Chat.renderMessages();
-          },
-          function onDone(fullText) {
-            aiMsg.content = fullText || '（AI 未返回内容）';
-            Chat.save();
-            Chat.renderMessages();
-          }
-        );
+        aiMsg.content = fullText || '（AI 未返回内容）';
+        Chat.save();
 
       } catch (err) {
         aiMsg.content = '⚠️ 请求失败: ' + err.message;
+        if (replyDiv) {
+          replyDiv.innerHTML = App.esc(aiMsg.content);
+        }
         Chat.save();
-        Chat.renderMessages();
-        App.showToast('发送失败: ' + err.message);
+        App.showToast('发送失败');
       } finally {
         Chat.isSending = false;
         if (sendBtn) {
@@ -514,7 +500,7 @@
           '<div class="chat-messages" id="chatMessages"></div>' +
           '<div class="chat-input-area">' +
             '<button class="chat-action-btn" id="chatUploadBtn" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
+                            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '</button>' +
             '<textarea id="chatInput" class="chat-textarea" placeholder="输入消息..." rows="1"></textarea>' +
             '<button class="chat-send-btn" id="chatSendBtn" type="button">' +
@@ -617,14 +603,6 @@
 
       App.safeOn('#chatSendBtn', 'click', function() { Chat.sendMessage(); });
 
-      // 回车发送
-      App.safeOn('#chatInput', 'keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          Chat.sendMessage();
-        }
-      });
-
       panel.querySelectorAll('.chat-right-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -682,7 +660,7 @@
       });
     },
 
-        renderMessages: function() {
+    renderMessages: function() {
       var container = App.$('#chatMessages');
       if (!container) return;
       var conv = Chat.getCurrentConversation();
@@ -692,29 +670,18 @@
       }
       container.innerHTML = conv.messages.map(function(msg) {
         var isUser = msg.role === 'user';
+        var content = msg.content || '';
         var displayHtml;
-        if (!msg.content && Chat.isSending && !isUser) {
+        if (!content && Chat.isSending && !isUser) {
           displayHtml = '<span class="typing-dot">●●●</span>';
         } else {
-          displayHtml = Chat.formatContent(msg.content || '');
+          displayHtml = App.esc(content).replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
         }
         return '<div class="chat-msg' + (isUser ? ' chat-msg-user' : ' chat-msg-char') + '">' +
           '<div class="chat-msg-content">' + displayHtml + '</div>' +
         '</div>';
       }).join('');
       container.scrollTop = container.scrollHeight;
-    },
-
-
-    formatContent: function(text) {
-      if (!text) return '';
-      // 转义 HTML
-      text = App.esc(text);
-      // 简单 markdown：*斜体* → <em>
-      text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      // 换行
-      text = text.replace(/\n/g, '<br>');
-      return text;
     },
 
     getShapeClass: function(shape) {
