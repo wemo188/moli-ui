@@ -682,7 +682,7 @@
       });
     },
 
-    renderMessages: function() {
+        renderMessages: function() {
       var container = App.$('#chatMessages');
       if (!container) return;
       var conv = Chat.getCurrentConversation();
@@ -692,13 +692,19 @@
       }
       container.innerHTML = conv.messages.map(function(msg) {
         var isUser = msg.role === 'user';
-        var content = msg.content || (Chat.isSending && !isUser ? '<span class="typing-dot">●●●</span>' : '');
+        var displayHtml;
+        if (!msg.content && Chat.isSending && !isUser) {
+          displayHtml = '<span class="typing-dot">●●●</span>';
+        } else {
+          displayHtml = Chat.formatContent(msg.content || '');
+        }
         return '<div class="chat-msg' + (isUser ? ' chat-msg-user' : ' chat-msg-char') + '">' +
-          '<div class="chat-msg-content">' + Chat.formatContent(content) + '</div>' +
+          '<div class="chat-msg-content">' + displayHtml + '</div>' +
         '</div>';
       }).join('');
       container.scrollTop = container.scrollHeight;
     },
+
 
     formatContent: function(text) {
       if (!text) return '';
