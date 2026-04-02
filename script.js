@@ -450,8 +450,14 @@
     });
 
     // ========= 菜单项点击 =========
+        // ========= 菜单项点击 =========
     App.$$('.ball-menu-item').forEach(function(item) {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        ballTapCount = 0;
+        pageTapCount = 0;
+        clearTimeout(ballTapTimer);
+        clearTimeout(pageTapTimer);
         var panelId = item.dataset.panel;
         if (panelId) {
           App.openPanel(panelId);
