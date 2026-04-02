@@ -337,22 +337,25 @@
     var ball = App.state.ball;
     if (!ball) return;
 
-    var tapCount = 0;
-    var tapTimer = null;
+    var ballTapCount = 0;
+    var ballTapTimer = null;
+    var pageTapCount = 0;
+    var pageTapTimer = null;
     var ballVisible = true;
 
     function hideBall() {
       ball.style.display = 'none';
       ballVisible = false;
-      tapCount = 0;
+      ballTapCount = 0;
     }
 
     function showBall() {
       ball.style.display = '';
       ballVisible = true;
-      tapCount = 0;
+      pageTapCount = 0;
     }
 
+    // ========= 悬浮球拖拽 =========
     ball.addEventListener('touchstart', function(e) {
       var t = e.touches[0];
       var rect = App.getBallRect();
@@ -383,25 +386,20 @@
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
         e.preventDefault();
-        tapCount++;
-        clearTimeout(tapTimer);
+        ballTapCount++;
+        clearTimeout(ballTapTimer);
 
-        if (tapCount === 1) {
-          tapTimer = setTimeout(function() {
-            tapCount = 0;
-            if (App.mascot && typeof App.mascot.onTap === 'function') {
-              App.mascot.onTap();
-            }
-            App.toggleMenu();
-          }, 300);
-        } else if (tapCount === 2) {
-          clearTimeout(tapTimer);
+        if (ballTapCount === 2) {
           if (ballVisible) {
             hideBall();
           } else {
             showBall();
           }
-          tapCount = 0;
+          ballTapCount = 0;
+        } else {
+          ballTapTimer = setTimeout(function() {
+            ballTapCount = 0;
+          }, 400);
         }
       } else {
         var rect = App.getBallRect();
@@ -411,31 +409,47 @@
       App.state.hasMoved = false;
     }, { passive: false });
 
+    // ========= 悬浮球点击（桌面） =========
     ball.addEventListener('click', function(e) {
-      e.preventDefault();
+      e.stopPropagation();
       if ('ontouchstart' in window) return;
-      tapCount++;
-      clearTimeout(tapTimer);
+      
+      ballTapCount++;
+      clearTimeout(ballTapTimer);
 
-      if (tapCount === 1) {
-        tapTimer = setTimeout(function() {
-          tapCount = 0;
-          if (App.mascot && typeof App.mascot.onTap === 'function') {
-            App.mascot.onTap();
-          }
-          App.toggleMenu();
-        }, 300);
-      } else if (tapCount === 2) {
-        clearTimeout(tapTimer);
+      if (ballTapCount === 2) {
         if (ballVisible) {
           hideBall();
         } else {
           showBall();
         }
-        tapCount = 0;
+        ballTapCount = 0;
+      } else {
+        ballTapTimer = setTimeout(function() {
+          ballTapCount = 0;
+        }, 400);
       }
     });
 
+    // ========= 页面任意空白处点击，双击显示隐藏的球 =========
+    document.addEventListener('click', function(e) {
+      if (ballVisible) return;
+      if (e.target === ball || ball.contains(e.target)) return;
+
+      pageTapCount++;
+      clearTimeout(pageTapTimer);
+
+      if (pageTapCount === 2) {
+        showBall();
+        pageTapCount = 0;
+      } else {
+        pageTapTimer = setTimeout(function() {
+          pageTapCount = 0;
+        }, 400);
+      }
+    });
+
+    // ========= 菜单项点击 =========
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var panelId = item.dataset.panel;
