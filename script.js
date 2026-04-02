@@ -424,14 +424,14 @@
     // ========= 小公仔动画 =========
     App.mascot = {
       img: App.$('#mascotImg'),
-      sprites: {
-        idle:     'https://iili.io/qZ5NWvf.png',
-        blink:    'https://iili.io/qZDVJbs.md.png',
-        wave:     'https://iili.io/qZDtY6x.md.png',
-        tiltA:    'https://iili.io/qZbJDCP.md.png',
-        tiltB:    'https://iili.io/qZbBqba.md.png',
-        surprise: 'https://iili.io/qZbIihX.md.png',
-        happy:    'https://iili.io/qZb5EJf.md.png'
+            sprites: {
+        idle:     'https://iili.io/BCNJ1rN.md.png',
+        blink:    'https://iili.io/BCNq0t1.md.png',
+        wave:     'https://iili.io/BCNTk67.md.png',
+        tiltA:    'https://iili.io/BCNYtFp.md.png',
+        tiltB:    'https://iili.io/BCNYtFp.md.png',
+        surprise: 'https://iili.io/BCNG4gj.md.png',
+        happy:    'https://iili.io/BCNG4gj.md.png'
       },
       currentState: 'idle',
       animLock: false,
