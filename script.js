@@ -630,15 +630,6 @@
     var isHorizontal = false;
     var pageWidth = window.innerWidth;
 
-    function setBallVisibility() {
-      if (!floatingBall) return;
-      if (currentPage === 0) {
-        floatingBall.classList.remove('page-hidden');
-      } else {
-        floatingBall.classList.add('page-hidden');
-      }
-    }
-
     function updateDots() {
       dots.forEach(function(dot, idx) {
         dot.classList.toggle('active', idx === currentPage);
@@ -655,7 +646,6 @@
       }
       slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
       updateDots();
-      setBallVisibility();
     }
 
     dots.forEach(function(dot) {
