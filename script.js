@@ -337,6 +337,22 @@
     var ball = App.state.ball;
     if (!ball) return;
 
+    var tapCount = 0;
+    var tapTimer = null;
+    var ballVisible = true;
+
+    function hideBall() {
+      ball.style.display = 'none';
+      ballVisible = false;
+      tapCount = 0;
+    }
+
+    function showBall() {
+      ball.style.display = '';
+      ballVisible = true;
+      tapCount = 0;
+    }
+
     ball.addEventListener('touchstart', function(e) {
       var t = e.touches[0];
       var rect = App.getBallRect();
@@ -367,10 +383,26 @@
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
         e.preventDefault();
-        if (App.mascot && typeof App.mascot.onTap === 'function') {
-          App.mascot.onTap();
+        tapCount++;
+        clearTimeout(tapTimer);
+
+        if (tapCount === 1) {
+          tapTimer = setTimeout(function() {
+            tapCount = 0;
+            if (App.mascot && typeof App.mascot.onTap === 'function') {
+              App.mascot.onTap();
+            }
+            App.toggleMenu();
+          }, 300);
+        } else if (tapCount === 2) {
+          clearTimeout(tapTimer);
+          if (ballVisible) {
+            hideBall();
+          } else {
+            showBall();
+          }
+          tapCount = 0;
         }
-        App.toggleMenu();
       } else {
         var rect = App.getBallRect();
         App.LS.set('floatingBallPos', { left: rect.left, top: rect.top });
@@ -381,11 +413,27 @@
 
     ball.addEventListener('click', function(e) {
       e.preventDefault();
-      if (App.mascot && typeof App.mascot.onTap === 'function') {
-        App.mascot.onTap();
-      }
       if ('ontouchstart' in window) return;
-      App.toggleMenu();
+      tapCount++;
+      clearTimeout(tapTimer);
+
+      if (tapCount === 1) {
+        tapTimer = setTimeout(function() {
+          tapCount = 0;
+          if (App.mascot && typeof App.mascot.onTap === 'function') {
+            App.mascot.onTap();
+          }
+          App.toggleMenu();
+        }, 300);
+      } else if (tapCount === 2) {
+        clearTimeout(tapTimer);
+        if (ballVisible) {
+          hideBall();
+        } else {
+          showBall();
+        }
+        tapCount = 0;
+      }
     });
 
     App.$$('.ball-menu-item').forEach(function(item) {
@@ -424,8 +472,8 @@
     // ========= 小公仔动画 =========
     App.mascot = {
       img: App.$('#mascotImg'),
-            sprites: {
-        idle:     'https://iili.io/BCNG4gj.md.png',
+      sprites: {
+        idle:     'https://iili.io/BCNJ1rN.md.png',
         blink:    'https://iili.io/BCNq0t1.md.png',
         wave:     'https://iili.io/BCNTk67.md.png',
         tiltA:    'https://iili.io/BCNYtFp.md.png',
