@@ -487,11 +487,10 @@
     App.mascot = {
       img: App.$('#mascotImg'),
       sprites: {
-        idle:     'https://iili.io/BCNG4gj.md.png',
+        idle:     'https://iili.io/BCNJ1rN.md.png',
         blink:    'https://iili.io/BCNq0t1.md.png',
         wave:     'https://iili.io/BCNTk67.md.png',
         tiltA:    'https://iili.io/BCNYtFp.md.png',
-        surprise: 'https://iili.io/BCNG4gj.md.png',
         happy:    'https://iili.io/BCNG4gj.md.png'
       },
       currentState: 'idle',
