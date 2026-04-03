@@ -449,7 +449,6 @@
       }
     });
 
-    // ========= 菜单项点击 =========
         // ========= 菜单项点击 =========
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function(e) {
@@ -458,9 +457,12 @@
         pageTapCount = 0;
         clearTimeout(ballTapTimer);
         clearTimeout(pageTapTimer);
+        
         var panelId = item.dataset.panel;
         if (panelId) {
-          App.openPanel(panelId);
+          setTimeout(function() {
+            App.openPanel(panelId);
+          }, 100);
         }
       });
     });
