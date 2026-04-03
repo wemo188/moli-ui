@@ -5,15 +5,16 @@
   if (!App) return;
 
   var User = {
+    FIELDS: [
+      {
+        key: 'profile',
+        label: '用户档案',
+        placeholder: '填写用户相关的基础信息、习惯爱好、背景补充等全部内容...'
+      }
+    ],
 
     list: [],
     editingAvatar: '',
-
-    FIELDS: [
-      { key: 'basicInfo', label: '基础信息', placeholder: '名字、年龄、性别、身份、外貌...' },
-      { key: 'hobbies', label: '习惯爱好', placeholder: '日常习惯、兴趣爱好...' },
-      { key: 'background', label: '背景补充', placeholder: '背景故事、经历、与角色的关系...' }
-    ],
 
     empty: function() {
       var obj = {
@@ -38,7 +39,11 @@
 
     update: function(id, data) {
       for (var i = 0; i < User.list.length; i++) {
-        if (User.list[i].id === id) { data.id = id; User.list[i] = data; break; }
+        if (User.list[i].id === id) {
+          data.id = id;
+          User.list[i] = data;
+          break;
+        }
       }
       User.save();
     },
@@ -78,7 +83,7 @@
       var panel = App.$('#userPanel');
       if (!panel) return;
       panel.classList.remove('hidden');
-      requestAnimationFrame(function() { panel.classList.add('show'); });
+      setTimeout(function() { panel.classList.add('show'); }, 20);
     },
 
     closePanel: function() {
@@ -95,11 +100,13 @@
       panel.innerHTML =
         '<div class="fullpage-header">' +
           '<div class="fullpage-back" id="closeUserPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>用户</h2>' +
           '<button class="fullpage-action-btn" id="addUserBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<path d="M12 5v14M5 12h14"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="fullpage-body" id="userListBody"></div>';
@@ -128,21 +135,24 @@
           '<div class="char-card-avatar ' + shapeClass + '" data-id="' + u.id + '" data-role="shapeToggle">' +
             (u.avatar
               ? '<img src="' + u.avatar + '" alt="">'
-              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
+                '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
           '</div>' +
           '<div class="char-card-info">' +
             '<div class="char-card-name">' + App.esc(displayName) + '</div>' +
-            '<div class="char-card-desc">' + App.esc((u.basicInfo || '').slice(0, 30)) + '</div>' +
+            '<div class="char-card-desc">' + App.esc((u.profile || '').slice(0, 30)) + '</div>' +
           '</div>' +
           '<div class="char-card-actions">' +
             '<button class="user-active-btn' + (isActive ? ' active' : '') + '" data-id="' + u.id + '" type="button">' +
               (isActive ? '已启用' : '启用') +
             '</button>' +
             '<button class="char-edit-btn" data-id="' + u.id + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
             '</button>' +
             '<button class="char-del-btn" data-id="' + u.id + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
             '</button>' +
           '</div>' +
         '</div>';
@@ -202,47 +212,49 @@
 
       var fieldsHtml = '';
 
-      // 名称
+      // 名称输入框
       fieldsHtml +=
         '<div class="form-group">' +
           '<label>名称</label>' +
-          '<input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="给这个身份起个名字">' +
+          '<input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="身份名称">' +
         '</div>';
 
-      // 文本框字段
-      User.FIELDS.forEach(function(f) {
-        fieldsHtml +=
-          '<div class="field-card">' +
-            '<div class="field-card-top">' +
-              '<div class="field-card-label">' + f.label + '</div>' +
-            '</div>' +
-            '<div class="field-card-body">' +
-              '<textarea class="field-card-textarea" id="field_' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + App.esc(u[f.key] || '') + '</textarea>' +
-              '<button class="field-expand-btn" data-field="' + f.key + '" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>';
-      });
+      // 用户档案大文本框
+      fieldsHtml +=
+        '<div class="field-card">' +
+          '<div class="field-card-top">' +
+            '<div class="field-card-label">用户档案</div>' +
+          '</div>' +
+          '<div class="field-card-body">' +
+            '<textarea class="field-card-textarea" id="field_profile" placeholder="填写用户的全部信息..." rows="12">' + App.esc(u.profile || '') + '</textarea>' +
+            '<button class="field-expand-btn" data-field="profile" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+              '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
           '<div class="fullpage-back" id="backToUserList">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>' + (isNew ? '新建用户' : '编辑用户') + '</h2>' +
           '<button class="fullpage-action-btn" id="saveUserBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="fullpage-body">' +
           '<div class="avatar-row">' +
             '<div class="avatar-upload-area" id="userAvatarUpload">' +
-              (u.avatar
-                ? '<img src="' + u.avatar + '" alt="">'
-                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>上传头像</span>') +
+              (u.avatar ?
+                '<img src="' + u.avatar + '" alt="">' :
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
+                '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>上传头像</span>') +
             '</div>' +
-            '<div class="avatar-row-info">点击上传头像<br>点击列表中的头像可切换形状</div>' +
+            '<div class="avatar-row-info">点击上传头像<br>点击列表中的头像切换形状</div>' +
           '</div>' +
           fieldsHtml +
         '</div>';
@@ -260,10 +272,8 @@
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          App.cropImage(ev.target.result, function(croppedData) {
-            User.editingAvatar = croppedData;
-            App.$('#userAvatarUpload').innerHTML = '<img src="' + croppedData + '" alt="">';
-          });
+          u.avatar = ev.target.result;
+          App.$('#userAvatarUpload').innerHTML = '<img src="' + ev.target.result + '" alt="">';
         };
         reader.readAsDataURL(file);
       });
@@ -271,19 +281,12 @@
       App.safeOn('#backToUserList', 'click', function() { User.renderListView(); });
 
       App.safeOn('#saveUserBtn', 'click', function() {
-        var name = App.$('#userName') ? App.$('#userName').value.trim() : '';
-        if (!name) {
-          App.showToast('请填写名称');
-          return;
-        }
-        u.name = name;
-        u.avatar = User.editingAvatar || '';
-
+        var nameInput = App.$('#userName');
+        u.name = nameInput ? nameInput.value.trim() : '';
         User.FIELDS.forEach(function(f) {
           var el = App.$('#field_' + f.key);
           if (el) u[f.key] = el.value;
         });
-
         if (isNew) {
           User.add(u);
           App.showToast('用户已创建');
@@ -301,7 +304,10 @@
           if (!textarea) return;
           var label = '';
           for (var i = 0; i < User.FIELDS.length; i++) {
-            if (User.FIELDS[i].key === key) { label = User.FIELDS[i].label; break; }
+            if (User.FIELDS[i].key === key) {
+              label = User.FIELDS[i].label;
+              break;
+            }
           }
           User.openExpandEditor(label || key, textarea);
         });
@@ -318,11 +324,13 @@
       editor.innerHTML =
         '<div class="expand-editor-header">' +
           '<div class="fullpage-back" id="expandEditorBack">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>' + App.esc(title) + '</h2>' +
           '<button class="fullpage-action-btn" id="expandEditorDone" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="expand-editor-body">' +
@@ -330,20 +338,16 @@
         '</div>';
 
       document.body.appendChild(editor);
-      requestAnimationFrame(function() { editor.classList.add('show'); });
+      setTimeout(function() { editor.classList.add('show'); }, 20);
 
       function closeEditor() {
         sourceTextarea.value = App.$('#expandTextarea').value;
         editor.classList.remove('show');
-        setTimeout(function() { editor.remove(); }, 350);
+        setTimeout(function() { editor.remove(); }, 300);
       }
 
       App.safeOn('#expandEditorBack', 'click', closeEditor);
       App.safeOn('#expandEditorDone', 'click', closeEditor);
-    },
-
-    bindEvents: function() {
-      App.safeOn('#openUserBtn', 'click', function() { User.openPanel(); });
     },
 
     init: function() {
@@ -355,7 +359,6 @@
         document.body.appendChild(panel);
       }
       App.user = User;
-      User.bindEvents();
     }
   };
 
