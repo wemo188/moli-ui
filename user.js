@@ -360,7 +360,6 @@
       }
       App.user = User;
     }
-  };
 
   App.register('user', User);
 })();
