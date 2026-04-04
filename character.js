@@ -263,13 +263,15 @@
 
       App.safeOn('#charAvatarUpload', 'click', function() { fileInput.click(); });
 
-            fileInput.addEventListener('change', function(e) {
+                  fileInput.addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          c.avatar = ev.target.result;
-          App.$('#charAvatarUpload').innerHTML = '<img src="' + c.avatar + '" alt="">';
+          App.cropImage(ev.target.result, function(cropped) {
+            c.avatar = cropped;
+            App.$('#charAvatarUpload').innerHTML = '<img src="' + cropped + '" alt="">';
+          });
         };
         reader.readAsDataURL(file);
       });
