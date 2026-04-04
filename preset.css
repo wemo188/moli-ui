@@ -127,7 +127,6 @@
   flex-shrink: 0;
 }
 
-/* 铅笔 - 跟角色/用户统一 */
 .sortable-card-actions .sortable-edit-btn {
   width: 30px;
   height: 30px;
@@ -152,7 +151,6 @@
   height: 14px;
 }
 
-/* 垃圾箱 - 跟角色/用户统一 */
 .sortable-card-actions .sortable-del-btn {
   width: 30px;
   height: 30px;
@@ -177,42 +175,6 @@
   height: 14px;
 }
 
-/* 列表页小开关 - 黑色边框 */
-.toggle-sm {
-  width: 34px;
-  height: 18px;
-  border-radius: 9px;
-  border: 1.5px solid var(--border);
-  background: var(--bg-card);
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.toggle-sm.on {
-  background: var(--accent-deep);
-  border-color: var(--border);
-}
-
-.toggle-sm::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  transition: transform 0.2s, background 0.2s;
-}
-
-.toggle-sm.on::after {
-  transform: translateX(15px);
-  background: #fff;
-}
-
-/* 隐藏用 */
 .form-group.field-hidden {
   display: none;
 }
