@@ -263,7 +263,7 @@
 
       App.safeOn('#charAvatarUpload', 'click', function() { fileInput.click(); });
 
-      fileInput.addEventListener('change', function(e) {
+            fileInput.addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
