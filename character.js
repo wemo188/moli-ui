@@ -71,9 +71,8 @@
     openPanel: function() {
       var panel = App.$('#characterPanel');
       if (!panel) return;
-      this.renderCards();
+      Character.renderCards();
       panel.classList.remove('hidden');
-      // 用 setTimeout保证DOM渲染顺序，避免动画冲突
       setTimeout(function() { panel.classList.add('show'); }, 20);
     },
 
@@ -190,14 +189,12 @@
 
       var fieldsHtml = '';
 
-      // 名称输入框
       fieldsHtml +=
         '<div class="form-group">' +
           '<label>名称</label>' +
           '<input type="text" id="charName" value="' + App.esc(c.name || '') + '" placeholder="角色名称">' +
         '</div>';
 
-      // 角色档案大文本框
       fieldsHtml +=
         '<div class="field-card">' +
           '<div class="field-card-top">' +
@@ -271,7 +268,6 @@
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          // 如有裁剪功能，这里可以调用
           c.avatar = ev.target.result;
           App.$('#charAvatarUpload').innerHTML = '<img src="' + c.avatar + '" alt="">';
         };
@@ -355,7 +351,11 @@
         document.body.appendChild(panel);
       }
       App.character = Character;
+      App.safeOn('#openCharacterBtn', 'click', function() {
+        Character.openPanel();
+      });
     }
+  };
 
   App.register('character', Character);
 })();
