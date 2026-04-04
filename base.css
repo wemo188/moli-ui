@@ -408,3 +408,476 @@ html, body {
     padding: 28px 16px calc(30px + var(--safe-bottom));
   }
 }
+
+/* ==========================================================
+   灰白磨砂主题覆盖
+========================================================== */
+
+/* --- 全局 --- */
+[data-theme="frost-gray"] {
+  --radius: 14px;
+  --radius-sm: 11px;
+}
+
+/* --- 图标磨砂 --- */
+[data-theme="frost-gray"] .app-icon-img {
+  background: rgba(120, 120, 128, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+}
+
+[data-theme="frost-gray"] .app-icon-img svg {
+  color: #86868b;
+}
+
+[data-theme="frost-gray"] .app-icon-label {
+  color: #6e6e73;
+}
+
+/* --- 悬浮球菜单 --- */
+[data-theme="frost-gray"] .ball-menu-item {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+}
+
+[data-theme="frost-gray"] .ball-menu-item:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="frost-gray"] .ball-menu-item svg {
+  color: #86868b;
+}
+
+/* --- 半屏面板 --- */
+[data-theme="frost-gray"] .panel {
+  background: rgba(242, 242, 247, 0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="frost-gray"] .panel-header {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="frost-gray"] .panel-close {
+  background: rgba(120, 120, 128, 0.08);
+  border: none;
+}
+
+[data-theme="frost-gray"] .panel-close svg {
+  color: #aeaeb2;
+}
+
+/* --- 全屏面板 --- */
+[data-theme="frost-gray"] .fullpage-panel {
+  background: #f5f5f7;
+}
+
+[data-theme="frost-gray"] .fullpage-header {
+  background: rgba(245, 245, 247, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="frost-gray"] .fullpage-back svg {
+  color: #86868b;
+}
+
+[data-theme="frost-gray"] .fullpage-action-btn svg {
+  color: #86868b;
+}
+
+/* --- 表单 --- */
+[data-theme="frost-gray"] .form-group input[type="text"],
+[data-theme="frost-gray"] .form-group input[type="password"],
+[data-theme="frost-gray"] .form-group input[type="number"],
+[data-theme="frost-gray"] .form-group textarea,
+[data-theme="frost-gray"] .form-group select,
+[data-theme="frost-gray"] .form-textarea {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .form-group input:focus,
+[data-theme="frost-gray"] .form-group textarea:focus,
+[data-theme="frost-gray"] .form-group select:focus,
+[data-theme="frost-gray"] .form-textarea:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="frost-gray"] .form-group label {
+  color: #86868b;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+[data-theme="frost-gray"] .icon-btn {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+[data-theme="frost-gray"] .icon-btn svg {
+  color: #86868b;
+}
+
+/* --- 按钮 --- */
+[data-theme="frost-gray"] .btn-primary {
+  background: #1d1d1f;
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+[data-theme="frost-gray"] .btn-primary:active {
+  background: #48484a;
+}
+
+[data-theme="frost-gray"] .btn-outline {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  color: #1d1d1f;
+}
+
+[data-theme="frost-gray"] .btn-outline:active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="frost-gray"] .btn-danger {
+  background: #ff3b30;
+  border-radius: 10px;
+}
+
+/* --- 分割线 --- */
+[data-theme="frost-gray"] .divider {
+  height: 0.5px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* --- 字段卡片 --- */
+[data-theme="frost-gray"] .field-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .field-card-top {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+  background: transparent;
+}
+
+[data-theme="frost-gray"] .field-card-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+[data-theme="frost-gray"] .field-expand-btn {
+  background: rgba(120, 120, 128, 0.06);
+  border: none;
+  border-radius: 8px;
+}
+
+[data-theme="frost-gray"] .field-expand-btn svg {
+  color: #aeaeb2;
+}
+
+/* --- 头像区域 --- */
+[data-theme="frost-gray"] .avatar-row {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .avatar-upload-area {
+  background: rgba(120, 120, 128, 0.06);
+  border: 1.5px dashed rgba(0, 0, 0, 0.1);
+}
+
+/* --- 开关 --- */
+[data-theme="frost-gray"] .toggle-switch {
+  background: rgba(120, 120, 128, 0.16);
+  border: none;
+  border-radius: 16px;
+}
+
+[data-theme="frost-gray"] .toggle-switch.on {
+  background: #34c759;
+  border: none;
+}
+
+[data-theme="frost-gray"] .toggle-switch::after {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 角色/用户 卡片 --- */
+[data-theme="frost-gray"] .char-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .char-card:active {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .char-card.user-active {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="frost-gray"] .char-card-avatar {
+  background: rgba(120, 120, 128, 0.06);
+}
+
+[data-theme="frost-gray"] .char-edit-btn {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #86868b;
+  border-radius: 8px;
+}
+
+[data-theme="frost-gray"] .char-edit-btn:active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="frost-gray"] .char-del-btn {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #ff3b30;
+  border-radius: 8px;
+}
+
+[data-theme="frost-gray"] .char-del-btn:active {
+  background: rgba(255, 59, 48, 0.05);
+}
+
+[data-theme="frost-gray"] .user-active-btn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: 16px;
+  color: #86868b;
+}
+
+[data-theme="frost-gray"] .user-active-btn.active {
+  background: #1d1d1f;
+  border-color: #1d1d1f;
+  color: #fff;
+}
+
+/* --- 可排序卡片 --- */
+[data-theme="frost-gray"] .sortable-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="frost-gray"] .sortable-card.sortable-dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="frost-gray"] .sortable-placeholder {
+  border: 1.5px dashed rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+[data-theme="frost-gray"] .sortable-drag-handle {
+  color: #d1d1d6;
+}
+
+[data-theme="frost-gray"] .sortable-card-pos {
+  color: #86868b;
+  background: rgba(120, 120, 128, 0.08);
+}
+
+[data-theme="frost-gray"] .sortable-edit-btn {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #86868b;
+  border-radius: 8px;
+}
+
+[data-theme="frost-gray"] .sortable-edit-btn:active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="frost-gray"] .sortable-del-btn {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #ff3b30;
+  border-radius: 8px;
+}
+
+[data-theme="frost-gray"] .sortable-del-btn:active {
+  background: rgba(255, 59, 48, 0.05);
+}
+
+/* --- 世界书标签 --- */
+[data-theme="frost-gray"] .wb-tag-perm {
+  background: rgba(52, 199, 89, 0.08);
+  color: #34c759;
+}
+
+[data-theme="frost-gray"] .wb-tag-kw {
+  background: rgba(255, 149, 0, 0.08);
+  color: #ff9500;
+}
+
+/* --- 世界书编辑开关行 --- */
+[data-theme="frost-gray"] .wb-toggle-row {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+}
+
+[data-theme="frost-gray"] .wb-toggle-item + .wb-toggle-item {
+  border-left: 0.5px solid rgba(0, 0, 0, 0.05);
+}
+
+/* --- Toast --- */
+[data-theme="frost-gray"] .toast {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* --- 底部指示器 --- */
+[data-theme="frost-gray"] .screen-indicators {
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+[data-theme="frost-gray"] .screen-dot {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="frost-gray"] .screen-dot.active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* --- 上传区域 --- */
+[data-theme="frost-gray"] .upload-area {
+  border: 1.5px dashed rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+[data-theme="frost-gray"] .upload-area:active {
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+/* --- 颜色选择器 --- */
+[data-theme="frost-gray"] .color-group input[type="color"] {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+/* --- Range 滑块 --- */
+[data-theme="frost-gray"] .form-group input[type="range"] {
+  background: rgba(120, 120, 128, 0.16);
+  border-radius: 3px;
+  height: 4px;
+}
+
+[data-theme="frost-gray"] .form-group input[type="range"]::-webkit-slider-thumb {
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  width: 22px;
+  height: 22px;
+}
+
+/* --- 展开编辑器 --- */
+[data-theme="frost-gray"] .expand-editor {
+  background: #f5f5f7;
+}
+
+[data-theme="frost-gray"] .expand-editor-header {
+  background: rgba(245, 245, 247, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="frost-gray"] .expand-editor-textarea {
+  background: #ffffff;
+}
+
+/* --- 模型列表 --- */
+[data-theme="frost-gray"] .model-list {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+[data-theme="frost-gray"] .model-list-item {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="frost-gray"] .model-list-item:active {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* --- 遮罩 --- */
+[data-theme="frost-gray"] .overlay {
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* --- 长按菜单 --- */
+[data-theme="frost-gray"] .icon-longpress-menu {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+[data-theme="frost-gray"] .icon-longpress-menu-item + .icon-longpress-menu-item {
+  border-top: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="frost-gray"] .icon-longpress-menu-item:active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* --- 背景预览 --- */
+[data-theme="frost-gray"] .bg-preview {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+}
+
+/* --- 裁剪 --- */
+[data-theme="frost-gray"] .crop-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+
+
