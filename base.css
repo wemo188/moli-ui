@@ -68,7 +68,7 @@ html, body {
   position: fixed;
   right: 10px;
   bottom: calc(20px + var(--safe-bottom));
-  z-index: 9999;
+  z-index: 99999;
   cursor: pointer;
   touch-action: none;
   transition: transform 0.2s;
@@ -144,7 +144,7 @@ html, body {
 ========================= */
 .ball-menu {
   position: fixed;
-  z-index: 9998;
+  z-index: 99998;
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
