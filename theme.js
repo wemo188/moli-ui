@@ -43,6 +43,24 @@
         }
       },
       {
+        id: 'mist-blue',
+        name: '雾蓝',
+        desc: '雾蓝柔光',
+        vars: {
+          '--bg-primary': '#eef3f9',
+          '--bg-secondary': '#f6f9fc',
+          '--bg-card': 'rgba(255, 255, 255, 0.82)',
+          '--accent': '#4f79a6',
+          '--accent-deep': '#3d6490',
+          '--text-primary': '#1f2b38',
+          '--text-secondary': '#4a5d72',
+          '--text-muted': '#8a9bb0',
+          '--border': 'rgba(79, 121, 166, 0.18)',
+          '--border-light': 'rgba(126, 163, 201, 0.12)',
+          '--shadow': 'rgba(20, 35, 55, 0.06)'
+        }
+      },
+      {
         id: 'mono-blueblack',
         name: '机能蓝黑',
         desc: '蓝主黑边',
