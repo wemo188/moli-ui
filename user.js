@@ -264,13 +264,15 @@
 
       App.safeOn('#userAvatarUpload', 'click', function() { fileInput.click(); });
 
-      fileInput.addEventListener('change', function(e) {
+            fileInput.addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          u.avatar = ev.target.result;
-          App.$('#userAvatarUpload').innerHTML = '<img src="' + ev.target.result + '" alt="">';
+          App.cropImage(ev.target.result, function(cropped) {
+            u.avatar = cropped;
+            App.$('#userAvatarUpload').innerHTML = '<img src="' + cropped + '" alt="">';
+          });
         };
         reader.readAsDataURL(file);
       });
