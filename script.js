@@ -180,7 +180,6 @@
       document.removeEventListener('touchend', onEnd);
     }
 
-    // 双指缩放裁剪框
     var lastDist = 0;
     canvas.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
@@ -216,12 +215,10 @@
       }
     }, { passive: false });
 
-    // 取消
     overlay.querySelector('.crop-cancel').addEventListener('click', function() {
       overlay.remove();
     });
 
-    // 确定
     overlay.querySelector('.crop-confirm').addEventListener('click', function() {
       var output = document.createElement('canvas');
       var outSize = 256;
@@ -345,6 +342,7 @@
 
     function hideBall() {
       ball.style.display = 'none';
+      App.closeMenu();
       ballVisible = false;
       ballTapCount = 0;
     }
@@ -374,8 +372,8 @@
       var dy = t.clientY - App.state.startY;
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) App.state.hasMoved = true;
       if (!App.state.hasMoved) return;
-      var nx = Math.max(0, Math.min(window.innerWidth - 200, App.state.origX + dx));
-      var ny = Math.max(0, Math.min(window.innerHeight - 200, App.state.origY + dy));
+      var nx = Math.max(0, Math.min(window.innerWidth - 150, App.state.origX + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - 150, App.state.origY + dy));
       ball.style.left = nx + 'px';
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
@@ -390,16 +388,17 @@
         clearTimeout(ballTapTimer);
 
         if (ballTapCount === 2) {
-          if (ballVisible) {
-            hideBall();
-          } else {
-            showBall();
-          }
+          hideBall();
           ballTapCount = 0;
         } else {
           ballTapTimer = setTimeout(function() {
+            // 单击：触发动画 + 菜单
+            if (App.mascot && typeof App.mascot.onTap === 'function') {
+              App.mascot.onTap();
+            }
+            App.toggleMenu();
             ballTapCount = 0;
-          }, 400);
+          }, 350);
         }
       } else {
         var rect = App.getBallRect();
@@ -413,27 +412,45 @@
     ball.addEventListener('click', function(e) {
       e.stopPropagation();
       if ('ontouchstart' in window) return;
-      
+
       ballTapCount++;
       clearTimeout(ballTapTimer);
 
       if (ballTapCount === 2) {
-        if (ballVisible) {
-          hideBall();
-        } else {
-          showBall();
-        }
+        hideBall();
         ballTapCount = 0;
       } else {
         ballTapTimer = setTimeout(function() {
+          if (App.mascot && typeof App.mascot.onTap === 'function') {
+            App.mascot.onTap();
+          }
+          App.toggleMenu();
           ballTapCount = 0;
-        }, 400);
+        }, 350);
       }
     });
 
-    // ========= 页面任意空白处点击，双击显示隐藏的球 =========
+    // ========= 页面任意空白处双击显示球 =========
+    document.addEventListener('touchend', function(e) {
+      if (ballVisible) return;
+      if (e.target === ball || ball.contains(e.target)) return;
+
+      pageTapCount++;
+      clearTimeout(pageTapTimer);
+
+      if (pageTapCount === 2) {
+        showBall();
+        pageTapCount = 0;
+      } else {
+        pageTapTimer = setTimeout(function() {
+          pageTapCount = 0;
+        }, 400);
+      }
+    }, { passive: true });
+
     document.addEventListener('click', function(e) {
       if (ballVisible) return;
+      if ('ontouchstart' in window) return;
       if (e.target === ball || ball.contains(e.target)) return;
 
       pageTapCount++;
@@ -533,7 +550,6 @@
       doBlink: function() {
         var self = this;
         if (self.animLock) return;
-        // 托腮闭眼 → 托腮睁眼 → 回到看手机
         self.setSprite('blink');
         setTimeout(function() {
           self.setSprite('blinkOpen');
@@ -549,12 +565,10 @@
         self.clearAnimClass();
         switch (action) {
           case 'switchHand':
-            // 切换单手/双手看手机
             self.setSprite('idleAlt');
             setTimeout(function() { self.goIdle(); }, 3000);
             break;
           case 'lookUp':
-            // 抬头看你
             self.setSprite('lookUp');
             setTimeout(function() {
               self.setSprite('putAway');
@@ -562,7 +576,6 @@
             }, 1500);
             break;
           case 'smile':
-            // 收起手机 → 扬起微笑
             self.setSprite('putAway');
             setTimeout(function() {
               self.setSprite('smile');
@@ -571,7 +584,6 @@
             }, 600);
             break;
           case 'wave':
-            // 收起手机 → 抬手打招呼 → 笑意爽朗
             self.setSprite('putAway');
             setTimeout(function() {
               self.setSprite('wave');
@@ -583,7 +595,6 @@
             }, 500);
             break;
           case 'rest':
-            // 收起手机闭眼
             self.setSprite('putAwayBlink');
             setTimeout(function() {
               self.setSprite('putAway');
@@ -634,6 +645,7 @@
     setTimeout(function() {
       if (App.mascot) App.mascot.doAction('wave');
     }, 1000);
+  };
 
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
@@ -649,7 +661,6 @@
   App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
-    var floatingBall = App.$('#floatingBall');
 
     if (!slider) return;
 
