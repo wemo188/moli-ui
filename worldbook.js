@@ -119,14 +119,12 @@
             '<div class="sortable-card-desc">' + App.esc((e.content || '').slice(0, 60)) + '</div>' +
           '</div>' +
           '<div class="sortable-card-actions">' +
-            '<button class="wb-toggle" data-id="' + e.id + '" type="button">' +
-              '<div class="toggle-switch' + (e.enabled ? ' on' : '') + '"></div>' +
-            '</button>' +
-            '<button class="char-edit-btn" data-id="' + e.id + '" type="button">' +
+                        '<div class="toggle-sm' + (e.enabled ? ' on' : '') + '" data-id="' + e.id + '" data-role="toggle"></div>' +
+            '<button class="sortable-edit-btn" data-id="' + e.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
               '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
             '</button>' +
-            '<button class="char-del-btn" data-id="' + e.id + '" type="button">' +
+            '<button class="sortable-del-btn" data-id="' + e.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
               '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
             '</button>' +
@@ -134,10 +132,10 @@
         '</div>';
       }).join('');
 
-      body.querySelectorAll('.wb-toggle').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+      body.querySelectorAll('[data-role="toggle"]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
           e.stopPropagation();
-          var entry = WB.getById(btn.dataset.id);
+          var entry = WB.getById(el.dataset.id);
           if (!entry) return;
           entry.enabled = !entry.enabled;
           WB.save();
@@ -145,14 +143,14 @@
         });
       });
 
-      body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
+      body.querySelectorAll('.sortable-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           WB.renderEditView(btn.dataset.id);
         });
       });
 
-      body.querySelectorAll('.char-del-btn').forEach(function(btn) {
+      body.querySelectorAll('.sortable-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
@@ -176,6 +174,8 @@
       var posOptions = WB.POSITIONS.map(function(p) {
         return '<option value="' + p.value + '"' + (e.position === p.value ? ' selected' : '') + '>' + p.label + '</option>';
       }).join('');
+
+      var isDepth = e.position === 'depth';
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -217,7 +217,7 @@
             '</div>' +
           '</div>' +
 
-          '<div class="form-group' + (e.useKeyword ? '' : ' hidden') + '" id="wbKeywordsGroup">' +
+          '<div class="form-group' + (e.useKeyword ? '' : ' field-hidden') + '" id="wbKeywordsGroup">' +
             '<label>关键词（逗号分隔）</label>' +
             '<input type="text" id="wbKeywords" value="' + App.esc(e.keywords || '') + '" placeholder="关键词1, 关键词2...">' +
           '</div>' +
@@ -227,7 +227,7 @@
             '<select class="form-select" id="wbPosition">' + posOptions + '</select>' +
           '</div>' +
 
-          '<div class="form-group' + (e.position === 'depth' ? '' : ' hidden') + '" id="wbDepthGroup">' +
+          '<div class="form-group' + (isDepth ? '' : ' field-hidden') + '" id="wbDepthGroup">' +
             '<label>深度值（0 = 最底部）</label>' +
             '<input type="number" id="wbDepth" value="' + (e.depth || 0) + '" min="0" max="100">' +
           '</div>' +
@@ -252,12 +252,22 @@
       App.safeOn('#wbKeywordToggle', 'click', function() {
         kwState = !kwState;
         App.$('#wbKeywordToggle').classList.toggle('on', kwState);
-        App.$('#wbKeywordsGroup').classList.toggle('hidden', !kwState);
+        var group = App.$('#wbKeywordsGroup');
+        if (kwState) {
+          group.classList.remove('field-hidden');
+        } else {
+          group.classList.add('field-hidden');
+        }
       });
 
       App.safeOn('#wbPosition', 'change', function() {
         var val = App.$('#wbPosition').value;
-        App.$('#wbDepthGroup').classList.toggle('hidden', val !== 'depth');
+        var group = App.$('#wbDepthGroup');
+        if (val === 'depth') {
+          group.classList.remove('field-hidden');
+        } else {
+          group.classList.add('field-hidden');
+        }
       });
 
       App.safeOn('#saveWBBtn', 'click', function() {
@@ -273,7 +283,7 @@
         e.useKeyword = kwState;
         e.keywords = App.$('#wbKeywords') ? App.$('#wbKeywords').value.trim() : '';
         e.position = App.$('#wbPosition').value;
-        e.depth = parseInt(App.$('#wbDepth') ? App.$('#wbDepth').value : '0', 10) || 0;
+        e.depth = e.position === 'depth' ? (parseInt(App.$('#wbDepth') ? App.$('#wbDepth').value : '0', 10) || 0) : 0;
 
         if (isNew) {
           e.enabled = true;
