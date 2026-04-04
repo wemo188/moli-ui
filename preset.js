@@ -4,6 +4,14 @@
   if (!App) return;
 
   var Preset = {
+    POSITIONS: [
+      { value: 'before-char', label: '角色定义前' },
+      { value: 'after-char', label: '角色定义后' },
+      { value: 'before-example', label: '对话示例前' },
+      { value: 'after-example', label: '对话示例后' },
+      { value: 'depth', label: '精确深度' }
+    ],
+
     list: [],
 
     load: function() {
@@ -23,11 +31,8 @@
         id: 'preset-' + Date.now(),
         name: '',
         systemPrompt: '',
-        temperature: 0.85,
-        maxTokens: 2048,
-        topP: 1,
-        frequencyPenalty: 0,
-        presencePenalty: 0,
+        position: 'before-char',
+        depth: 0,
         enabled: false
       };
     },
@@ -36,14 +41,7 @@
       Preset.save();
     },
     getActive: function() {
-      for (var i = 0; i < Preset.list.length; i++) {
-        if (Preset.list[i].enabled) return Preset.list[i];
-      }
-      return null;
-    },
-    setActive: function(id) {
-      Preset.list.forEach(function(p) { p.enabled = (p.id === id); });
-      Preset.save();
+      return Preset.list.filter(function(p) { return p.enabled; });
     },
 
     openPanel: function() {
@@ -77,32 +75,45 @@
             '<path d="M12 5v14M5 12h14"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div class="fullpage-body" id="presetListBody"></div>';
+        '<div class="fullpage-body sortable-list" id="presetListBody"></div>';
 
       App.safeOn('#closePresetPanel', 'click', function() { Preset.closePanel(); });
       App.safeOn('#addPresetBtn', 'click', function() { Preset.renderEditView(null); });
 
+      Preset.renderCards();
+    },
+
+    renderCards: function() {
       var body = App.$('#presetListBody');
+      if (!body) return;
 
       if (!Preset.list.length) {
         body.innerHTML = '<div class="empty-hint">还没有预设，点击右上角 + 创建</div>';
         return;
       }
 
-      body.innerHTML = Preset.list.map(function(p) {
-        return '<div class="char-card' + (p.enabled ? ' user-active' : '') + '" data-id="' + p.id + '">' +
-          '<div class="char-card-info" style="flex:1">' +
-            '<div class="char-card-name">' + App.esc(p.name || '未命名') + '</div>' +
-            '<div class="char-card-desc">' +
-              'T:' + p.temperature + ' / MaxTk:' + p.maxTokens + ' / TopP:' + p.topP +
-            '</div>' +
-            '<div class="char-card-desc" style="margin-top:2px;color:var(--text-muted)">' +
-              App.esc((p.systemPrompt || '').slice(0, 40)) +
-            '</div>' +
+      body.innerHTML = Preset.list.map(function(p, idx) {
+        var posLabel = '';
+        for (var i = 0; i < Preset.POSITIONS.length; i++) {
+          if (Preset.POSITIONS[i].value === p.position) { posLabel = Preset.POSITIONS[i].label; break; }
+        }
+        if (p.position === 'depth') posLabel += ' ' + (p.depth || 0);
+
+        return '<div class="sortable-card" data-id="' + p.id + '" data-idx="' + idx + '">' +
+          '<div class="sortable-drag-handle">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></svg>' +
           '</div>' +
-          '<div class="char-card-actions">' +
-            '<button class="user-active-btn' + (p.enabled ? ' active' : '') + '" data-id="' + p.id + '" type="button">' +
-              (p.enabled ? '已启用' : '启用') +
+          '<div class="sortable-card-body">' +
+            '<div class="sortable-card-top">' +
+              '<div class="sortable-card-name">' + App.esc(p.name || '未命名') + '</div>' +
+              '<span class="sortable-card-pos">' + posLabel + '</span>' +
+            '</div>' +
+            '<div class="sortable-card-desc">' + App.esc((p.systemPrompt || '').slice(0, 50)) + '</div>' +
+          '</div>' +
+          '<div class="sortable-card-actions">' +
+            '<button class="wb-toggle" data-id="' + p.id + '" type="button">' +
+              '<div class="toggle-switch' + (p.enabled ? ' on' : '') + '"></div>' +
             '</button>' +
             '<button class="char-edit-btn" data-id="' + p.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
@@ -116,12 +127,14 @@
         '</div>';
       }).join('');
 
-      body.querySelectorAll('.user-active-btn').forEach(function(btn) {
+      body.querySelectorAll('.wb-toggle').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          Preset.setActive(btn.dataset.id);
-          Preset.renderList();
-          App.showToast('已启用');
+          var entry = Preset.getById(btn.dataset.id);
+          if (!entry) return;
+          entry.enabled = !entry.enabled;
+          Preset.save();
+          Preset.renderCards();
         });
       });
 
@@ -137,10 +150,12 @@
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
           Preset.remove(btn.dataset.id);
-          Preset.renderList();
+          Preset.renderCards();
           App.showToast('已删除');
         });
       });
+
+      Preset.initSortable(body, Preset.list, function() { Preset.save(); Preset.renderCards(); });
     },
 
     renderEditView: function(id) {
@@ -150,6 +165,10 @@
       var isNew = !id;
       var p = isNew ? Preset.empty() : Preset.getById(id);
       if (!p) return;
+
+      var posOptions = Preset.POSITIONS.map(function(pos) {
+        return '<option value="' + pos.value + '"' + (p.position === pos.value ? ' selected' : '') + '>' + pos.label + '</option>';
+      }).join('');
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -175,7 +194,7 @@
               '<div class="field-card-label">系统指令</div>' +
             '</div>' +
             '<div class="field-card-body">' +
-              '<textarea class="field-card-textarea" id="presetSystemPrompt" rows="8" placeholder="自定义系统指令，会覆盖默认的角色扮演指令...">' + App.esc(p.systemPrompt || '') + '</textarea>' +
+              '<textarea class="field-card-textarea" id="presetSystemPrompt" rows="10" placeholder="自定义系统指令...">' + App.esc(p.systemPrompt || '') + '</textarea>' +
               '<button class="field-expand-btn" id="presetExpandBtn" type="button">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
                 '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
@@ -183,83 +202,31 @@
             '</div>' +
           '</div>' +
 
-          '<div class="preset-param-group">' +
-            '<div class="preset-param">' +
-              '<div class="preset-param-header">' +
-                '<label>Temperature</label>' +
-                '<span class="preset-param-value" id="tempVal">' + p.temperature + '</span>' +
-              '</div>' +
-              '<input type="range" id="presetTemp" min="0" max="2" step="0.05" value="' + p.temperature + '">' +
-              '<div class="preset-param-range"><span>0</span><span>2</span></div>' +
-            '</div>' +
+          '<div class="form-group">' +
+            '<label>排列位置</label>' +
+            '<select class="form-select" id="presetPosition">' + posOptions + '</select>' +
+          '</div>' +
 
-            '<div class="preset-param">' +
-              '<div class="preset-param-header">' +
-                '<label>Max Tokens</label>' +
-                '<span class="preset-param-value" id="maxTkVal">' + p.maxTokens + '</span>' +
-              '</div>' +
-              '<input type="range" id="presetMaxTokens" min="256" max="8192" step="256" value="' + p.maxTokens + '">' +
-              '<div class="preset-param-range"><span>256</span><span>8192</span></div>' +
-            '</div>' +
-
-            '<div class="preset-param">' +
-              '<div class="preset-param-header">' +
-                '<label>Top P</label>' +
-                '<span class="preset-param-value" id="topPVal">' + p.topP + '</span>' +
-              '</div>' +
-              '<input type="range" id="presetTopP" min="0" max="1" step="0.05" value="' + p.topP + '">' +
-              '<div class="preset-param-range"><span>0</span><span>1</span></div>' +
-            '</div>' +
-
-            '<div class="preset-param">' +
-              '<div class="preset-param-header">' +
-                '<label>Frequency Penalty</label>' +
-                '<span class="preset-param-value" id="freqVal">' + p.frequencyPenalty + '</span>' +
-              '</div>' +
-              '<input type="range" id="presetFreq" min="0" max="2" step="0.05" value="' + p.frequencyPenalty + '">' +
-              '<div class="preset-param-range"><span>0</span><span>2</span></div>' +
-            '</div>' +
-
-            '<div class="preset-param">' +
-              '<div class="preset-param-header">' +
-                '<label>Presence Penalty</label>' +
-                '<span class="preset-param-value" id="presVal">' + p.presencePenalty + '</span>' +
-              '</div>' +
-              '<input type="range" id="presetPres" min="0" max="2" step="0.05" value="' + p.presencePenalty + '">' +
-              '<div class="preset-param-range"><span>0</span><span>2</span></div>' +
-            '</div>' +
+          '<div class="form-group' + (p.position === 'depth' ? '' : ' hidden') + '" id="presetDepthGroup">' +
+            '<label>深度值（0 = 最底部）</label>' +
+            '<input type="number" id="presetDepth" value="' + (p.depth || 0) + '" min="0" max="100">' +
           '</div>' +
 
         '</div>';
 
-      // 滑块实时更新数值
-      App.safeOn('#presetTemp', 'input', function() {
-        App.$('#tempVal').textContent = App.$('#presetTemp').value;
-      });
-      App.safeOn('#presetMaxTokens', 'input', function() {
-        App.$('#maxTkVal').textContent = App.$('#presetMaxTokens').value;
-      });
-      App.safeOn('#presetTopP', 'input', function() {
-        App.$('#topPVal').textContent = App.$('#presetTopP').value;
-      });
-      App.safeOn('#presetFreq', 'input', function() {
-        App.$('#freqVal').textContent = App.$('#presetFreq').value;
-      });
-      App.safeOn('#presetPres', 'input', function() {
-        App.$('#presVal').textContent = App.$('#presetPres').value;
+      App.safeOn('#presetPosition', 'change', function() {
+        var val = App.$('#presetPosition').value;
+        App.$('#presetDepthGroup').classList.toggle('hidden', val !== 'depth');
       });
 
-      // 展开编辑器
       App.safeOn('#presetExpandBtn', 'click', function() {
         var textarea = App.$('#presetSystemPrompt');
         if (!textarea) return;
         Preset.openExpandEditor('系统指令', textarea);
       });
 
-      // 返回
       App.safeOn('#backToPresetList', 'click', function() { Preset.renderList(); });
 
-      // 保存
       App.safeOn('#savePresetBtn', 'click', function() {
         var name = App.$('#presetName').value.trim();
         if (!name) {
@@ -269,11 +236,8 @@
 
         p.name = name;
         p.systemPrompt = App.$('#presetSystemPrompt').value;
-        p.temperature = parseFloat(App.$('#presetTemp').value);
-        p.maxTokens = parseInt(App.$('#presetMaxTokens').value, 10);
-        p.topP = parseFloat(App.$('#presetTopP').value);
-        p.frequencyPenalty = parseFloat(App.$('#presetFreq').value);
-        p.presencePenalty = parseFloat(App.$('#presetPres').value);
+        p.position = App.$('#presetPosition').value;
+        p.depth = parseInt(App.$('#presetDepth') ? App.$('#presetDepth').value : '0', 10) || 0;
 
         if (isNew) Preset.list.push(p);
         Preset.save();
@@ -316,6 +280,103 @@
 
       App.safeOn('#expandEditorBack', 'click', closeEditor);
       App.safeOn('#expandEditorDone', 'click', closeEditor);
+    },
+
+    initSortable: function(container, list, onDone) {
+      var dragEl = null;
+      var dragIdx = -1;
+      var placeholder = null;
+      var startY = 0;
+      var offsetY = 0;
+      var cards = [];
+
+      container.querySelectorAll('.sortable-drag-handle').forEach(function(handle) {
+        handle.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var card = handle.closest('.sortable-card');
+          if (!card) return;
+
+          dragEl = card;
+          dragIdx = parseInt(card.dataset.idx, 10);
+          cards = Array.from(container.querySelectorAll('.sortable-card'));
+
+          var rect = card.getBoundingClientRect();
+          var t = e.touches[0];
+          startY = t.clientY;
+          offsetY = t.clientY - rect.top;
+
+          placeholder = document.createElement('div');
+          placeholder.className = 'sortable-placeholder';
+          placeholder.style.height = rect.height + 'px';
+          card.parentNode.insertBefore(placeholder, card);
+
+          card.classList.add('sortable-dragging');
+          card.style.position = 'fixed';
+          card.style.left = rect.left + 'px';
+          card.style.top = (t.clientY - offsetY) + 'px';
+          card.style.width = rect.width + 'px';
+          card.style.zIndex = '99999';
+
+          document.addEventListener('touchmove', onMove, { passive: false });
+          document.addEventListener('touchend', onEnd);
+        }, { passive: false });
+      });
+
+      function onMove(e) {
+        if (!dragEl) return;
+        e.preventDefault();
+        var t = e.touches[0];
+        dragEl.style.top = (t.clientY - offsetY) + 'px';
+
+        var siblings = Array.from(container.querySelectorAll('.sortable-card:not(.sortable-dragging)'));
+        var inserted = false;
+        for (var i = 0; i < siblings.length; i++) {
+          var rect = siblings[i].getBoundingClientRect();
+          var mid = rect.top + rect.height / 2;
+          if (t.clientY < mid) {
+            container.insertBefore(placeholder, siblings[i]);
+            inserted = true;
+            break;
+          }
+        }
+        if (!inserted) {
+          container.appendChild(placeholder);
+        }
+      }
+
+      function onEnd() {
+        if (!dragEl) return;
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onEnd);
+
+        var allCards = Array.from(container.querySelectorAll('.sortable-card:not(.sortable-dragging), .sortable-placeholder'));
+        var newIdx = 0;
+        for (var i = 0; i < allCards.length; i++) {
+          if (allCards[i] === placeholder) { newIdx = i; break; }
+        }
+
+        if (placeholder && placeholder.parentNode) {
+          placeholder.parentNode.replaceChild(dragEl, placeholder);
+        }
+
+        dragEl.classList.remove('sortable-dragging');
+        dragEl.style.position = '';
+        dragEl.style.left = '';
+        dragEl.style.top = '';
+        dragEl.style.width = '';
+        dragEl.style.zIndex = '';
+
+        if (dragIdx !== newIdx && dragIdx >= 0 && newIdx >= 0) {
+          var item = list.splice(dragIdx, 1)[0];
+          list.splice(newIdx, 0, item);
+          onDone();
+        }
+
+        dragEl = null;
+        placeholder = null;
+        dragIdx = -1;
+      }
     },
 
     init: function() {
