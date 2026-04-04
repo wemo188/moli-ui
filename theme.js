@@ -25,57 +25,21 @@
         }
       },
       {
-        id: 'dark',
-        name: '暗夜',
-        desc: '深色护眼',
+        id: 'frost-gray',
+        name: '灰白磨砂',
+        desc: '柔和磨砂质感',
         vars: {
-          '--bg-primary': '#0f1114',
-          '--bg-secondary': '#1a1d22',
-          '--bg-card': '#22262d',
-          '--accent': '#5b9bd5',
-          '--accent-deep': '#3a7cc2',
-          '--text-primary': '#e0e4ea',
-          '--text-secondary': '#8e95a3',
-          '--text-muted': '#555d6b',
-          '--border': '#2e333b',
-          '--border-light': 'rgba(91,155,213,0.15)',
-          '--shadow': 'rgba(0,0,0,0.3)'
-        }
-      },
-      {
-        id: 'sakura',
-        name: '樱花',
-        desc: '柔和粉白',
-        vars: {
-          '--bg-primary': '#fdf2f4',
-          '--bg-secondary': '#ffffff',
+          '--bg-primary': '#f2f2f7',
+          '--bg-secondary': '#e5e5ea',
           '--bg-card': '#ffffff',
-          '--accent': '#e8a0b4',
-          '--accent-deep': '#d4819a',
-          '--text-primary': '#2d1f24',
-          '--text-secondary': '#7a5a63',
-          '--text-muted': '#b09098',
-          '--border': '#2d1f24',
-          '--border-light': 'rgba(232,160,180,0.3)',
-          '--shadow': 'rgba(232,160,180,0.12)'
-        }
-      },
-      {
-        id: 'midnight',
-        name: '午夜蓝',
-        desc: '深蓝沉稳',
-        vars: {
-          '--bg-primary': '#0c1525',
-          '--bg-secondary': '#111d32',
-          '--bg-card': '#172740',
-          '--accent': '#adcdea',
-          '--accent-deep': '#8ab8de',
-          '--text-primary': '#dbe8ff',
-          '--text-secondary': '#7a9ab5',
-          '--text-muted': '#4a6680',
-          '--border': '#223550',
-          '--border-light': 'rgba(173,205,234,0.15)',
-          '--shadow': 'rgba(0,0,0,0.3)'
+          '--accent': '#636366',
+          '--accent-deep': '#48484a',
+          '--text-primary': '#1c1c1e',
+          '--text-secondary': '#3a3a3c',
+          '--text-muted': '#aeaeb2',
+          '--border': 'rgba(60, 60, 67, 0.29)',
+          '--border-light': 'rgba(60, 60, 67, 0.08)',
+          '--shadow': 'rgba(0, 0, 0, 0.04)'
         }
       },
       {
@@ -243,7 +207,7 @@
           '--accent': App.$('#colorAccent').value,
           '--accent-deep': App.$('#colorAccentDeep').value,
           '--text-primary': App.$('#colorText').value,
-          '--text-secondary': App.$('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
+          '--text-secondary': '#555555',
           '--text-muted': '#999999',
           '--border': App.$('#colorBorder').value,
           '--border-light': 'rgba(173, 205, 234, 0.3)',
@@ -277,6 +241,12 @@
     init: function() {
       Theme.customThemes = App.LS.get('customThemes') || [];
       Theme.currentThemeId = App.LS.get('currentThemeId') || 'blue-white';
+
+      // 如果之前选的是被删掉的主题，回退到蓝白
+      if (!Theme.findThemeById(Theme.currentThemeId)) {
+        Theme.currentThemeId = 'blue-white';
+        App.LS.set('currentThemeId', 'blue-white');
+      }
 
       Theme.renderThemeList();
       var savedThemeVars = App.LS.get('themeVars');
