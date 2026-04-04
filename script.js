@@ -330,6 +330,7 @@
     App.state.currentPanelEl = null;
   };
 
+  // ========= 悬浮球初始化 =========
   App.initFloatingBall = function() {
     var ball = App.state.ball;
     if (!ball) return;
@@ -353,7 +354,7 @@
       pageTapCount = 0;
     }
 
-    // ========= 悬浮球拖拽 =========
+    // 悬浮球拖拽
     ball.addEventListener('touchstart', function(e) {
       var t = e.touches[0];
       var rect = App.getBallRect();
@@ -407,7 +408,7 @@
       App.state.hasMoved = false;
     }, { passive: false });
 
-    // ========= 悬浮球点击（桌面） =========
+    // 悬浮球点击（桌面）
     ball.addEventListener('click', function(e) {
       e.stopPropagation();
       if ('ontouchstart' in window) return;
@@ -429,7 +430,7 @@
       }
     });
 
-    // ========= 页面任意空白处双击显示球 =========
+    // 页面任意空白处双击显示球
     document.addEventListener('touchend', function(e) {
       if (ballVisible) return;
       if (e.target === ball || ball.contains(e.target)) return;
@@ -465,7 +466,7 @@
       }
     });
 
-    // ========= 菜单项点击 =========
+    // 菜单项点击
     App.$$('.ball-menu-item').forEach(function(item) {
       item.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -504,7 +505,7 @@
       ball.style.bottom = 'auto';
     }
 
-    // ========= 小公仔动画 =========
+    // 小公仔动画
     App.mascot = {
       img: App.$('#mascotImg'),
       sprites: {
@@ -560,12 +561,9 @@
             setTimeout(function() { self.goIdle(); }, 2000);
             break;
           case 'wave':
-            self.setSprite('wave');
+            self.setSprite('waveHappy');
             self.img.classList.add('waving');
-            setTimeout(function() {
-              self.setSprite('waveHappy');
-              setTimeout(function() { self.goIdle(); }, 1200);
-            }, 800);
+            setTimeout(function() { self.goIdle(); }, 1500);
             break;
           default:
             self.goIdle();
@@ -613,6 +611,7 @@
     }, 1000);
   };
 
+  // ========= 模块初始化 =========
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
       var mod = App.modules[name];
@@ -624,6 +623,7 @@
     });
   };
 
+  // ========= 主页面滑动 =========
   App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
@@ -717,7 +717,7 @@
       snapToPage(false);
     });
 
-    // ========= 图标长按换图 =========
+    // 图标长按换图
     (function() {
       var grid = App.$('#appGrid');
       if (!grid) return;
@@ -826,6 +826,7 @@
     snapToPage(false);
   };
 
+  // ========= 总初始化 =========
   App.init = function() {
     App.state.ball = App.$('#floatingBall');
     App.state.ballMenuEl = App.$('#ballMenu');
