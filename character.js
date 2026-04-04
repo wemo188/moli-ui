@@ -356,7 +356,6 @@
       }
       App.character = Character;
     }
-  };
 
   App.register('character', Character);
 })();
