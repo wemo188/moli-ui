@@ -392,7 +392,6 @@
           ballTapCount = 0;
         } else {
           ballTapTimer = setTimeout(function() {
-            // 单击：触发动画 + 菜单
             if (App.mascot && typeof App.mascot.onTap === 'function') {
               App.mascot.onTap();
             }
@@ -613,6 +612,7 @@
     setTimeout(function() {
       if (App.mascot) App.mascot.doAction('wave');
     }, 1000);
+  };
 
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
