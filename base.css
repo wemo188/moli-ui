@@ -75,8 +75,8 @@ html, body {
 }
 
 .floating-ball.mascot-ball {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border-radius: 0;
   background: transparent;
   border: none;
@@ -88,8 +88,8 @@ html, body {
 }
 
 .mascot-img {
-  width: 100%;
-  height: auto;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
@@ -98,13 +98,6 @@ html, body {
 
 .floating-ball:active { transform: scale(0.92); }
 .floating-ball.active { transform: scale(1.05); }
-
-.floating-ball.page-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.88);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
 
 @keyframes mascotFloat {
   0%, 100% { transform: translateY(0); }
