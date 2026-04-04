@@ -148,18 +148,40 @@
   color: #fff;
 }
 
+.sortable-card-actions .sortable-edit-btn,
+.sortable-card-actions .sortable-del-btn {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sortable-card-actions .sortable-edit-btn:active,
+.sortable-card-actions .sortable-del-btn:active {
+  background: var(--accent);
+  color: #fff;
+}
+
 .sortable-card-actions .sortable-edit-btn svg,
 .sortable-card-actions .sortable-del-btn svg {
   width: 14px;
   height: 14px;
 }
 
-/* 列表页小开关 */
+/* 小开关也加边框 */
 .toggle-sm {
   width: 34px;
   height: 18px;
   border-radius: 9px;
-  background: var(--text-muted);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
   position: relative;
   cursor: pointer;
   transition: background 0.2s;
@@ -168,18 +190,24 @@
 
 .toggle-sm.on {
   background: var(--accent-deep);
+  border-color: var(--accent-deep);
 }
 
 .toggle-sm::after {
   content: '';
   position: absolute;
-  top: 2px;
+  top: 1px;
   left: 2px;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggle-sm.on::after {
+  transform: translateX(15px);
   background: #fff;
-  transition: transform 0.2s;
 }
 
 .toggle-sm.on::after {
