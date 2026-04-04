@@ -509,10 +509,10 @@
     App.mascot = {
       img: App.$('#mascotImg'),
       sprites: {
-        idle:         'https://iili.io/BzMciI1.md.png',
-        idleAlt:      'https://iili.io/BzMclXn.md.png',
-        blink:        'https://iili.io/BzG2yy7.md.png',
-        blinkOpen:    'https://iili.io/BzG0E2R.md.png',
+        idle:         'https://iili.io/BzG2yy7.md.png',
+        idleAlt:      'https://iili.io/BzG0E2R.md.png',
+        blink:        'https://iili.io/BzMciI1.md.png',
+        blinkOpen:    'https://iili.io/BzMclXn.md.png',
         lookUp:       'https://iili.io/BzGpxP2.md.png',
         putAway:      'https://iili.io/BzMi2Jj.md.png',
         putAwayBlink: 'https://iili.io/BzW0ys1.md.png',
