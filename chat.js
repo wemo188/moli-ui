@@ -151,7 +151,7 @@
       var conv = Chat.getCurrentConversation();
       if (!char || !user || !conv) return [];
 
-      var charName = char.name || (char.basicInfo || '').split('\n')[0] || '角色';
+      var charName = char.name || (char.profile || '').split('\n')[0] || '角色';
       var userName = user.name || '用户';
       var messages = [];
 
@@ -478,7 +478,7 @@
       if (!user || !char || !conv) return;
 
       var userShapeClass = Chat.getShapeClass(user.avatarShape);
-      var charName = char.name || (char.basicInfo || '').split('\n')[0] || '角色';
+      var charName = char.name || (char.profile || '').split('\n')[0] || '角色';
       var userAvatarHtml = user.avatar
         ? '<img src="' + user.avatar + '" alt="">'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
