@@ -5,11 +5,8 @@
 
   var Preset = {
     POSITIONS: [
-      { value: 'before-char', label: '角色定义前' },
-      { value: 'after-char', label: '角色定义后' },
-      { value: 'before-example', label: '对话示例前' },
-      { value: 'after-example', label: '对话示例后' },
-      { value: 'depth', label: '精确深度' }
+      { value: 'relative', label: '相对' },
+      { value: 'depth', label: '深度' }
     ],
 
     list: [],
@@ -31,7 +28,7 @@
         id: 'preset-' + Date.now(),
         name: '',
         systemPrompt: '',
-        position: 'before-char',
+        position: 'relative',
         depth: 0,
         enabled: false
       };
@@ -93,11 +90,7 @@
       }
 
       body.innerHTML = Preset.list.map(function(p, idx) {
-        var posLabel = '';
-        for (var i = 0; i < Preset.POSITIONS.length; i++) {
-          if (Preset.POSITIONS[i].value === p.position) { posLabel = Preset.POSITIONS[i].label; break; }
-        }
-        if (p.position === 'depth') posLabel += ' ' + (p.depth || 0);
+        var posLabel = p.position === 'depth' ? '深度 ' + (p.depth || 0) : '相对';
 
         return '<div class="sortable-card" data-id="' + p.id + '" data-idx="' + idx + '">' +
           '<div class="sortable-drag-handle">' +
