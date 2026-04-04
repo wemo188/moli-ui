@@ -123,16 +123,16 @@
 .sortable-card-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
-.sortable-card-actions .char-edit-btn,
-.sortable-card-actions .char-del-btn {
+.sortable-card-actions .sortable-edit-btn,
+.sortable-card-actions .sortable-del-btn {
   width: 30px;
   height: 30px;
-  border: none;
-  background: none;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
@@ -142,13 +142,51 @@
   justify-content: center;
 }
 
-.sortable-card-actions .char-edit-btn:active,
-.sortable-card-actions .char-del-btn:active {
-  background: var(--border-light);
+.sortable-card-actions .sortable-edit-btn:active,
+.sortable-card-actions .sortable-del-btn:active {
+  background: var(--accent);
+  color: #fff;
 }
 
-.sortable-card-actions .char-edit-btn svg,
-.sortable-card-actions .char-del-btn svg {
-  width: 16px;
-  height: 16px;
+.sortable-card-actions .sortable-edit-btn svg,
+.sortable-card-actions .sortable-del-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 列表页小开关 */
+.toggle-sm {
+  width: 34px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--text-muted);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-sm.on {
+  background: var(--accent-deep);
+}
+
+.toggle-sm::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+.toggle-sm.on::after {
+  transform: translateX(16px);
+}
+
+/* 隐藏用 */
+.form-group.field-hidden {
+  display: none;
 }
