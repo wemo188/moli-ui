@@ -1,69 +1,154 @@
 /* =========================
-   预设参数
+   可排序卡片通用样式
 ========================= */
-.preset-param-group {
+.sortable-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 10px;
 }
 
-.preset-param {
+.sortable-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 14px 16px;
+  padding: 10px 10px 10px 4px;
+  transition: opacity 0.2s, box-shadow 0.2s;
 }
 
-.preset-param-header {
+.sortable-card.wb-disabled {
+  opacity: 0.45;
+}
+
+.sortable-card.sortable-dragging {
+  opacity: 0.85;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  border-color: var(--accent-deep);
+}
+
+.sortable-placeholder {
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  background: rgba(173, 205, 234, 0.1);
+  transition: height 0.15s;
+}
+
+.sortable-drag-handle {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: center;
+  width: 24px;
+  min-width: 24px;
+  height: 40px;
+  cursor: grab;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.preset-param-header label {
-  font-size: 13px;
+.sortable-drag-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sortable-drag-handle:active {
+  color: var(--accent-deep);
+}
+
+.sortable-card-body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sortable-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sortable-card-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sortable-card-name {
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.preset-param-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--accent-deep);
-  min-width: 40px;
-  text-align: right;
-}
-
-.preset-param input[type="range"] {
-  width: 100%;
-  height: 4px;
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--border-light);
-  border-radius: 2px;
-  outline: none;
-}
-
-.preset-param input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--accent-deep);
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-  cursor: pointer;
-}
-
-.preset-param-range {
+.sortable-card-tags {
   display: flex;
-  justify-content: space-between;
-  margin-top: 4px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-.preset-param-range span {
+.sortable-card-pos {
+  font-size: 11px;
+  color: var(--accent-deep);
+  background: rgba(173, 205, 234, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sortable-card-keywords {
   font-size: 11px;
   color: var(--text-muted);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sortable-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sortable-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sortable-card-actions .char-edit-btn,
+.sortable-card-actions .char-del-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sortable-card-actions .char-edit-btn:active,
+.sortable-card-actions .char-del-btn:active {
+  background: var(--border-light);
+}
+
+.sortable-card-actions .char-edit-btn svg,
+.sortable-card-actions .char-del-btn svg {
+  width: 16px;
+  height: 16px;
 }
