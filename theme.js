@@ -27,19 +27,19 @@
       {
         id: 'frost-gray',
         name: '灰白磨砂',
-        desc: '柔和磨砂质感',
+        desc: '简约磨砂',
         vars: {
-          '--bg-primary': '#f2f2f7',
-          '--bg-secondary': '#e5e5ea',
-          '--bg-card': '#ffffff',
-          '--accent': '#636366',
-          '--accent-deep': '#48484a',
-          '--text-primary': '#1c1c1e',
-          '--text-secondary': '#3a3a3c',
+          '--bg-primary': '#ffffff',
+          '--bg-secondary': '#f5f5f7',
+          '--bg-card': 'rgba(255, 255, 255, 0.72)',
+          '--accent': '#86868b',
+          '--accent-deep': '#6e6e73',
+          '--text-primary': '#1d1d1f',
+          '--text-secondary': '#6e6e73',
           '--text-muted': '#aeaeb2',
-          '--border': 'rgba(60, 60, 67, 0.29)',
-          '--border-light': 'rgba(60, 60, 67, 0.08)',
-          '--shadow': 'rgba(0, 0, 0, 0.04)'
+          '--border': 'rgba(0, 0, 0, 0.1)',
+          '--border-light': 'rgba(0, 0, 0, 0.04)',
+          '--shadow': 'rgba(0, 0, 0, 0.03)'
         }
       },
       {
@@ -106,6 +106,8 @@
       Theme.applyThemeVars(theme.vars);
       App.LS.set('themeVars', theme.vars);
       Theme.updateColorInputs(theme.vars);
+      document.documentElement.setAttribute('data-theme', id);
+      App.LS.set('dataTheme', id);
       Theme.renderThemeList();
       App.showToast('已切换: ' + theme.name);
     },
@@ -189,6 +191,7 @@
         App.LS.set('themeVars', vars);
         Theme.currentThemeId = 'custom-temp';
         App.LS.set('currentThemeId', 'custom-temp');
+        document.documentElement.setAttribute('data-theme', 'custom');
         Theme.renderThemeList();
         App.showToast('配色已应用');
       });
@@ -227,6 +230,7 @@
         App.LS.set('currentThemeId', id);
         App.LS.set('themeVars', vars);
         Theme.applyThemeVars(vars);
+        document.documentElement.setAttribute('data-theme', 'custom');
         if (App.$('#customThemeName')) App.$('#customThemeName').value = '';
         Theme.renderThemeList();
         App.showToast('主题已保存');
@@ -242,11 +246,13 @@
       Theme.customThemes = App.LS.get('customThemes') || [];
       Theme.currentThemeId = App.LS.get('currentThemeId') || 'blue-white';
 
-      // 如果之前选的是被删掉的主题，回退到蓝白
       if (!Theme.findThemeById(Theme.currentThemeId)) {
         Theme.currentThemeId = 'blue-white';
         App.LS.set('currentThemeId', 'blue-white');
       }
+
+      var savedDataTheme = App.LS.get('dataTheme') || Theme.currentThemeId;
+      document.documentElement.setAttribute('data-theme', savedDataTheme);
 
       Theme.renderThemeList();
       var savedThemeVars = App.LS.get('themeVars');
