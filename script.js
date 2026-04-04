@@ -508,144 +508,200 @@
     // ========= 小公仔动画 =========
     App.mascot = {
       img: App.$('#mascotImg'),
-      sprites: {
-        idle:         'https://iili.io/BzG2yy7.md.png',
-        idleAlt:      'https://iili.io/BzG0E2R.md.png',
-        blink:        'https://iili.io/BzMciI1.md.png',
-        blinkOpen:    'https://iili.io/BzMclXn.md.png',
-        lookUp:       'https://iili.io/BzGpxP2.md.png',
-        putAway:      'https://iili.io/BzMi2Jj.md.png',
-        putAwayBlink: 'https://iili.io/BzW0ys1.md.png',
-        smile:        'https://iili.io/BzV3a9V.md.png',
-        wave:         'https://iili.io/BzVxlNj.md.png',
-        waveHappy:    'https://iili.io/BzVxcAb.md.png'
-      },
-      currentState: 'idle',
+      sprites: [   
+        'https://iili.io/BzG0E2R.md.png',  // 0 托腮闭眼
+        'https://iili.io/BzG2yy7.md.png',  // 1 托腮睁眼
+        'https://iili.io/BzMciI1.md.png',  // 2 单手低头看手机
+        'https://iili.io/BzMclXn.md.png',  // 3 低头双手玩手机
+        'https://iili.io/BzGpxP2.md.png',  // 4 手拿手机抬头看你
+        'https://iili.io/BzMi2Jj.md.png',  // 5 收起手机看你
+        'https://iili.io/BzW0ys1.md.png',  // 6 收起手机闭眼
+        'https://iili.io/BzV3a9V.md.png',  // 7 扬起微笑
+        'https://iili.io/BzVxlNj.md.png',  // 8 抬手打招呼
+        'https://iili.io/BzVxcAb.md.png'   // 9 抬手打招呼笑意爽朗
+      ],
+      currentFrame: 2,
       animLock: false,
-      blinkTimer: null,
       idleTimer: null,
 
       preload: function() {
         var self = this;
-        Object.keys(self.sprites).forEach(function(key) {
+        self.sprites.forEach(function(src) {
           var img = new Image();
-          img.src = self.sprites[key];
+          img.src = src;
         });
       },
-      setSprite: function(key) {
-        if (!this.img || !this.sprites[key]) return;
-        this.img.src = this.sprites[key];
-        this.currentState = key;
+      setFrame: function(idx) {
+        if (!this.img || !this.sprites[idx]) return;
+        this.img.src = this.sprites[idx];
+        this.currentFrame = idx;
       },
       clearAnimClass: function() {
         if (!this.img) return;
-        this.img.classList.remove('breathing', 'waving', 'tilting', 'surprised', 'happy');
+        this.img.classList.remove('breathing', 'waving', 'happy');
       },
       goIdle: function() {
-        this.setSprite('idle');
+        this.setFrame(2);
         this.clearAnimClass();
         this.img.classList.add('breathing');
         this.animLock = false;
       },
+
+      // 动作1：眨眼（托腮闭眼→托腮睁眼→回到看手机）
       doBlink: function() {
         var self = this;
         if (self.animLock) return;
-        self.setSprite('blink');
+        self.setFrame(0);
         setTimeout(function() {
-          self.setSprite('blinkOpen');
+          self.setFrame(1);
           setTimeout(function() {
-            if (self.currentState === 'blinkOpen') self.goIdle();
-          }, 300);
+            self.goIdle();
+          }, 400);
         }, 200);
       },
-      doAction: function(action) {
+
+      // 动作2：换手玩手机（单手→双手→单手）
+      doSwitchHand: function() {
         var self = this;
         if (self.animLock) return;
         self.animLock = true;
         self.clearAnimClass();
-        switch (action) {
-          case 'switchHand':
-            self.setSprite('idleAlt');
-            setTimeout(function() { self.goIdle(); }, 3000);
-            break;
-          case 'lookUp':
-            self.setSprite('lookUp');
-            setTimeout(function() {
-              self.setSprite('putAway');
-              setTimeout(function() { self.goIdle(); }, 1500);
-            }, 1500);
-            break;
-          case 'smile':
-            self.setSprite('putAway');
-            setTimeout(function() {
-              self.setSprite('smile');
-              self.img.classList.add('happy');
-              setTimeout(function() { self.goIdle(); }, 2000);
-            }, 600);
-            break;
-          case 'wave':
-            self.setSprite('putAway');
-            setTimeout(function() {
-              self.setSprite('wave');
-              self.img.classList.add('waving');
-              setTimeout(function() {
-                self.setSprite('waveHappy');
-                setTimeout(function() { self.goIdle(); }, 1200);
-              }, 800);
-            }, 500);
-            break;
-          case 'rest':
-            self.setSprite('putAwayBlink');
-            setTimeout(function() {
-              self.setSprite('putAway');
-              setTimeout(function() { self.goIdle(); }, 1000);
-            }, 2000);
-            break;
-          default:
-            self.goIdle();
-        }
+        self.setFrame(3);
+        setTimeout(function() { self.goIdle(); }, 3000);
       },
-      startBlinkLoop: function() {
+
+      // 动作3：抬头看你（单手看手机→抬头看你→收起手机看你→回到看手机）
+      doLookUp: function() {
         var self = this;
-        function go() {
-          self.blinkTimer = setTimeout(function() {
-            if (!self.animLock) self.doBlink();
-            go();
-          }, 3000 + Math.random() * 5000);
-        }
-        go();
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+        self.setFrame(4);
+        setTimeout(function() {
+          self.setFrame(5);
+          setTimeout(function() { self.goIdle(); }, 1500);
+        }, 1500);
       },
+
+      // 动作4：闭眼休息（收起手机看你→收起手机闭眼→回到看手机）
+      doRest: function() {
+        var self = this;
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+        self.setFrame(5);
+        setTimeout(function() {
+          self.setFrame(6);
+          setTimeout(function() {
+            self.setFrame(5);
+            setTimeout(function() { self.goIdle(); }, 800);
+          }, 2000);
+        }, 500);
+      },
+
+      // 动作5：微笑（收起手机看你→扬起微笑→回到看手机）
+      doSmile: function() {
+        var self = this;
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+        self.setFrame(5);
+        setTimeout(function() {
+          self.setFrame(7);
+          self.img.classList.add('happy');
+          setTimeout(function() { self.goIdle(); }, 2000);
+        }, 500);
+      },
+
+      // 动作6：完整打招呼序列（抬头→收起手机→抬手打招呼→笑意爽朗→回到看手机）
+      doWave: function() {
+        var self = this;
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+        self.setFrame(4);
+        setTimeout(function() {
+          self.setFrame(5);
+          setTimeout(function() {
+            self.setFrame(8);
+            self.img.classList.add('waving');
+            setTimeout(function() {
+              self.clearAnimClass();
+              self.setFrame(9);
+              self.img.classList.add('happy');
+              setTimeout(function() { self.goIdle(); }, 1200);
+            }, 1000);
+          }, 500);
+        }, 500);
+      },
+
+      // 动作7：完整序列（按你发的顺序全部播一遍）
+      doFullSequence: function() {
+        var self = this;
+        if (self.animLock) return;
+        self.animLock = true;
+        self.clearAnimClass();
+        var frames = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        var delays = [400, 400, 800, 800, 800, 800, 1000, 800, 800, 1200];
+        var idx = 0;
+        function next() {
+          if (idx >= frames.length) {
+            self.goIdle();
+            return;
+          }
+          self.setFrame(frames[idx]);
+          var d = delays[idx];
+          idx++;
+          setTimeout(next, d);
+        }
+        next();
+      },
+
       startIdleActions: function() {
         var self = this;
-        var acts = ['switchHand', 'lookUp', 'smile', 'wave', 'rest'];
+        var acts = ['blink', 'switchHand', 'lookUp', 'rest', 'smile', 'wave'];
         function go() {
           self.idleTimer = setTimeout(function() {
             if (!self.animLock) {
-              self.doAction(acts[Math.floor(Math.random() * acts.length)]);
+              var pick = acts[Math.floor(Math.random() * acts.length)];
+              switch (pick) {
+                case 'blink': self.doBlink(); break;
+                case 'switchHand': self.doSwitchHand(); break;
+                case 'lookUp': self.doLookUp(); break;
+                case 'rest': self.doRest(); break;
+                case 'smile': self.doSmile(); break;
+                case 'wave': self.doWave(); break;
+              }
             }
             go();
-          }, 10000 + Math.random() * 15000);
+          }, 5000 + Math.random() * 10000);
         }
         go();
       },
+
       onTap: function() {
-        var acts = ['wave', 'smile', 'lookUp'];
-        this.doAction(acts[Math.floor(Math.random() * acts.length)]);
+        var acts = ['wave', 'smile', 'lookUp', 'fullSequence'];
+        var pick = acts[Math.floor(Math.random() * acts.length)];
+        switch (pick) {
+          case 'wave': this.doWave(); break;
+          case 'smile': this.doSmile(); break;
+          case 'lookUp': this.doLookUp(); break;
+          case 'fullSequence': this.doFullSequence(); break;
+        }
       },
+
       init: function() {
         if (!this.img) return;
         this.preload();
         this.goIdle();
-        this.startBlinkLoop();
         this.startIdleActions();
       }
     };
 
     App.mascot.init();
     setTimeout(function() {
-      if (App.mascot) App.mascot.doAction('wave');
+      if (App.mascot) App.mascot.doWave();
     }, 1000);
-  };
 
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
