@@ -127,55 +127,57 @@
   flex-shrink: 0;
 }
 
-.sortable-card-actions .sortable-edit-btn,
-.sortable-card-actions .sortable-del-btn {
+/* 铅笔 - 蓝色 */
+.sortable-card-actions .sortable-edit-btn {
   width: 30px;
   height: 30px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--accent-deep);
   background: var(--bg-card);
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
-  color: var(--text-muted);
+  color: var(--accent-deep);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sortable-card-actions .sortable-edit-btn:active,
-.sortable-card-actions .sortable-del-btn:active {
-  background: var(--accent);
+.sortable-card-actions .sortable-edit-btn:active {
+  background: var(--accent-deep);
   color: #fff;
 }
 
-.sortable-card-actions .sortable-edit-btn,
+.sortable-card-actions .sortable-edit-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 垃圾箱 - 红色 */
 .sortable-card-actions .sortable-del-btn {
   width: 30px;
   height: 30px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid #e74c3c;
   background: var(--bg-card);
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
-  color: var(--text-primary);
+  color: #e74c3c;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sortable-card-actions .sortable-edit-btn:active,
 .sortable-card-actions .sortable-del-btn:active {
-  background: var(--accent);
+  background: #e74c3c;
   color: #fff;
 }
 
-.sortable-card-actions .sortable-edit-btn svg,
 .sortable-card-actions .sortable-del-btn svg {
   width: 14px;
   height: 14px;
 }
 
-/* 小开关也加边框 */
+/* 列表页小开关 */
 .toggle-sm {
   width: 34px;
   height: 18px;
@@ -208,10 +210,6 @@
 .toggle-sm.on::after {
   transform: translateX(15px);
   background: #fff;
-}
-
-.toggle-sm.on::after {
-  transform: translateX(16px);
 }
 
 /* 隐藏用 */
