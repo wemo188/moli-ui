@@ -511,7 +511,6 @@
         idle:      'https://iili.io/BzMi2Jj.md.png',
         blink:     'https://iili.io/BzW0ys1.md.png',
         smile:     'https://iili.io/BzV3a9V.md.png',
-        wave:      'https://iili.io/BzVxlNj.md.png',
         waveHappy: 'https://iili.io/BzVxcAb.md.png'
       },
       currentState: 'idle',
