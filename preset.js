@@ -112,14 +112,12 @@
             '<div class="sortable-card-desc">' + App.esc((p.systemPrompt || '').slice(0, 50)) + '</div>' +
           '</div>' +
           '<div class="sortable-card-actions">' +
-            '<button class="wb-toggle" data-id="' + p.id + '" type="button">' +
-              '<div class="toggle-switch' + (p.enabled ? ' on' : '') + '"></div>' +
-            '</button>' +
-            '<button class="char-edit-btn" data-id="' + p.id + '" type="button">' +
+            '<div class="toggle-sm' + (p.enabled ? ' on' : '') + '" data-id="' + p.id + '" data-role="toggle"></div>' +
+            '<button class="sortable-edit-btn" data-id="' + p.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
               '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
             '</button>' +
-            '<button class="char-del-btn" data-id="' + p.id + '" type="button">' +
+            '<button class="sortable-del-btn" data-id="' + p.id + '" type="button">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
               '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
             '</button>' +
@@ -127,10 +125,10 @@
         '</div>';
       }).join('');
 
-      body.querySelectorAll('.wb-toggle').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+      body.querySelectorAll('[data-role="toggle"]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
           e.stopPropagation();
-          var entry = Preset.getById(btn.dataset.id);
+          var entry = Preset.getById(el.dataset.id);
           if (!entry) return;
           entry.enabled = !entry.enabled;
           Preset.save();
@@ -138,14 +136,14 @@
         });
       });
 
-      body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
+      body.querySelectorAll('.sortable-edit-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           Preset.renderEditView(btn.dataset.id);
         });
       });
 
-      body.querySelectorAll('.char-del-btn').forEach(function(btn) {
+      body.querySelectorAll('.sortable-del-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
@@ -169,6 +167,8 @@
       var posOptions = Preset.POSITIONS.map(function(pos) {
         return '<option value="' + pos.value + '"' + (p.position === pos.value ? ' selected' : '') + '>' + pos.label + '</option>';
       }).join('');
+
+      var isDepth = p.position === 'depth';
 
       panel.innerHTML =
         '<div class="fullpage-header">' +
@@ -207,7 +207,7 @@
             '<select class="form-select" id="presetPosition">' + posOptions + '</select>' +
           '</div>' +
 
-          '<div class="form-group' + (p.position === 'depth' ? '' : ' hidden') + '" id="presetDepthGroup">' +
+          '<div class="form-group' + (isDepth ? '' : ' field-hidden') + '" id="presetDepthGroup">' +
             '<label>深度值（0 = 最底部）</label>' +
             '<input type="number" id="presetDepth" value="' + (p.depth || 0) + '" min="0" max="100">' +
           '</div>' +
@@ -216,7 +216,12 @@
 
       App.safeOn('#presetPosition', 'change', function() {
         var val = App.$('#presetPosition').value;
-        App.$('#presetDepthGroup').classList.toggle('hidden', val !== 'depth');
+        var group = App.$('#presetDepthGroup');
+        if (val === 'depth') {
+          group.classList.remove('field-hidden');
+        } else {
+          group.classList.add('field-hidden');
+        }
       });
 
       App.safeOn('#presetExpandBtn', 'click', function() {
@@ -237,7 +242,7 @@
         p.name = name;
         p.systemPrompt = App.$('#presetSystemPrompt').value;
         p.position = App.$('#presetPosition').value;
-        p.depth = parseInt(App.$('#presetDepth') ? App.$('#presetDepth').value : '0', 10) || 0;
+        p.depth = p.position === 'depth' ? (parseInt(App.$('#presetDepth').value, 10) || 0) : 0;
 
         if (isNew) Preset.list.push(p);
         Preset.save();
@@ -286,9 +291,7 @@
       var dragEl = null;
       var dragIdx = -1;
       var placeholder = null;
-      var startY = 0;
       var offsetY = 0;
-      var cards = [];
 
       container.querySelectorAll('.sortable-drag-handle').forEach(function(handle) {
         handle.addEventListener('touchstart', function(e) {
@@ -299,11 +302,9 @@
 
           dragEl = card;
           dragIdx = parseInt(card.dataset.idx, 10);
-          cards = Array.from(container.querySelectorAll('.sortable-card'));
 
           var rect = card.getBoundingClientRect();
           var t = e.touches[0];
-          startY = t.clientY;
           offsetY = t.clientY - rect.top;
 
           placeholder = document.createElement('div');
@@ -350,10 +351,10 @@
         document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onEnd);
 
-        var allCards = Array.from(container.querySelectorAll('.sortable-card:not(.sortable-dragging), .sortable-placeholder'));
+        var allItems = Array.from(container.querySelectorAll('.sortable-card:not(.sortable-dragging), .sortable-placeholder'));
         var newIdx = 0;
-        for (var i = 0; i < allCards.length; i++) {
-          if (allCards[i] === placeholder) { newIdx = i; break; }
+        for (var i = 0; i < allItems.length; i++) {
+          if (allItems[i] === placeholder) { newIdx = i; break; }
         }
 
         if (placeholder && placeholder.parentNode) {
