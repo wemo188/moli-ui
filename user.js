@@ -1,6 +1,5 @@
 (function() {
   'use strict';
-
   var App = window.App;
   if (!App) return;
 
@@ -212,14 +211,12 @@
 
       var fieldsHtml = '';
 
-      // 名称输入框
       fieldsHtml +=
         '<div class="form-group">' +
           '<label>名称</label>' +
           '<input type="text" id="userName" value="' + App.esc(u.name || '') + '" placeholder="身份名称">' +
         '</div>';
 
-      // 用户档案大文本框
       fieldsHtml +=
         '<div class="field-card">' +
           '<div class="field-card-top">' +
@@ -359,7 +356,11 @@
         document.body.appendChild(panel);
       }
       App.user = User;
+      App.safeOn('#openUserBtn', 'click', function() {
+        User.openPanel();
+      });
     }
+  };
 
   App.register('user', User);
 })();
