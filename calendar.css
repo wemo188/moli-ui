@@ -343,6 +343,9 @@
 /* =========================
    日程时间线
 ========================= */
+/* =========================
+   日程时间线
+========================= */
 .cal-schedule-date {
   font-size: 14px;
   color: #999;
@@ -355,50 +358,47 @@
   flex-direction: column;
   gap: 0;
   position: relative;
+  padding-left: 54px;
 }
 
-/* 中间竖线 */
+/* 中间竖线 - 紧贴左边 */
 .cal-schedule-list::before {
   content: '';
   position: absolute;
-  left: 62px;
+  left: 49px;
   top: 0;
   bottom: 0;
   width: 1.5px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.04));
+  background: linear-gradient(180deg, rgba(79,121,166,0.2), rgba(79,121,166,0.06));
 }
 
 .cal-schedule-item {
   display: flex;
   align-items: flex-start;
   gap: 0;
-  padding: 14px 0;
+  padding: 12px 0;
   position: relative;
 }
 
-.cal-schedule-item + .cal-schedule-item {
-  border-top: none;
-}
-
-/* 左边时间 */
+/* 左边时间 - 绝对定位到竖线左边 */
 .cal-schedule-time {
-  width: 50px;
-  font-size: 13px;
+  position: absolute;
+  right: calc(100% + 16px);
+  top: 12px;
+  font-size: 12px;
   font-weight: 600;
   color: #1a1a1a;
-  text-align: right;
-  flex-shrink: 0;
-  padding-top: 2px;
+  white-space: nowrap;
   line-height: 1;
+  text-align: right;
 }
 
-/* 中间圆点 */
+/* 圆点 */
 .cal-schedule-dot-line {
-  width: 24px;
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-  padding-top: 2px;
+  position: absolute;
+  left: -5px;
+  top: 10px;
+  z-index: 1;
 }
 
 .cal-schedule-dot-circle {
@@ -407,8 +407,6 @@
   border-radius: 50%;
   background: #fff;
   border: 2px solid #4f79a6;
-  position: relative;
-  z-index: 1;
 }
 
 /* 右边内容 */
@@ -419,7 +417,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  padding-left: 4px;
+  padding-left: 16px;
 }
 
 .cal-schedule-content {
@@ -435,7 +433,6 @@
   display: flex;
   gap: 4px;
   flex-shrink: 0;
-  padding-top: 0;
 }
 
 .cal-sm-btn {
@@ -480,3 +477,12 @@
   padding: 50px 20px;
 }
 
+/* =========================
+   时间输入框缩短
+========================= */
+.cal-form-group input[type="time"] {
+  width: 140px;
+}
+
+
+  
