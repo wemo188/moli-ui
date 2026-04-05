@@ -25,39 +25,57 @@
         }
       },
       {
-        id: 'frost-gray',
-        name: '灰白磨砂',
-        desc: '简约磨砂',
+        id: 'dark',
+        name: '暗夜',
+        desc: '深色护眼',
         vars: {
-          '--bg-primary': '#ffffff',
-          '--bg-secondary': '#f5f5f7',
-          '--bg-card': 'rgba(255, 255, 255, 0.72)',
-          '--accent': '#86868b',
-          '--accent-deep': '#6e6e73',
-          '--text-primary': '#1d1d1f',
-          '--text-secondary': '#6e6e73',
-          '--text-muted': '#aeaeb2',
-          '--border': 'rgba(0, 0, 0, 0.1)',
-          '--border-light': 'rgba(0, 0, 0, 0.04)',
-          '--shadow': 'rgba(0, 0, 0, 0.03)'
+          '--bg-primary': '#0f1114',
+          '--bg-secondary': '#1a1d22',
+          '--bg-card': '#22262d',
+          '--accent': '#5b9bd5',
+          '--accent-deep': '#3a7cc2',
+          '--text-primary': '#e0e4ea',
+          '--text-secondary': '#8e95a3',
+          '--text-muted': '#555d6b',
+          '--border': '#2e333b',
+          '--border-light': 'rgba(91,155,213,0.15)',
+          '--shadow': 'rgba(0,0,0,0.3)'
         }
       },
       {
-        id: 'mist-blue',
-        name: '雾蓝',
-        desc: '雾蓝柔光',
+        id: 'sakura',
+        name: '樱花',
+        desc: '柔和粉白',
         vars: {
-          '--bg-primary': '#eef3f9',
-          '--bg-secondary': '#f6f9fc',
-          '--bg-card': 'rgba(255, 255, 255, 0.82)',
-          '--accent': '#4f79a6',
-          '--accent-deep': '#3d6490',
-          '--text-primary': '#1f2b38',
-          '--text-secondary': '#4a5d72',
-          '--text-muted': '#8a9bb0',
-          '--border': 'rgba(79, 121, 166, 0.18)',
-          '--border-light': 'rgba(126, 163, 201, 0.12)',
-          '--shadow': 'rgba(20, 35, 55, 0.06)'
+          '--bg-primary': '#fdf2f4',
+          '--bg-secondary': '#ffffff',
+          '--bg-card': '#ffffff',
+          '--accent': '#e8a0b4',
+          '--accent-deep': '#d4819a',
+          '--text-primary': '#2d1f24',
+          '--text-secondary': '#7a5a63',
+          '--text-muted': '#b09098',
+          '--border': '#2d1f24',
+          '--border-light': 'rgba(232,160,180,0.3)',
+          '--shadow': 'rgba(232,160,180,0.12)'
+        }
+      },
+      {
+        id: 'midnight',
+        name: '午夜蓝',
+        desc: '深蓝沉稳',
+        vars: {
+          '--bg-primary': '#0c1525',
+          '--bg-secondary': '#111d32',
+          '--bg-card': '#172740',
+          '--accent': '#adcdea',
+          '--accent-deep': '#8ab8de',
+          '--text-primary': '#dbe8ff',
+          '--text-secondary': '#7a9ab5',
+          '--text-muted': '#4a6680',
+          '--border': '#223550',
+          '--border-light': 'rgba(173,205,234,0.15)',
+          '--shadow': 'rgba(0,0,0,0.3)'
         }
       },
       {
@@ -124,8 +142,6 @@
       Theme.applyThemeVars(theme.vars);
       App.LS.set('themeVars', theme.vars);
       Theme.updateColorInputs(theme.vars);
-      document.documentElement.setAttribute('data-theme', id);
-      App.LS.set('dataTheme', id);
       Theme.renderThemeList();
       App.showToast('已切换: ' + theme.name);
     },
@@ -209,7 +225,6 @@
         App.LS.set('themeVars', vars);
         Theme.currentThemeId = 'custom-temp';
         App.LS.set('currentThemeId', 'custom-temp');
-        document.documentElement.setAttribute('data-theme', 'custom');
         Theme.renderThemeList();
         App.showToast('配色已应用');
       });
@@ -228,7 +243,7 @@
           '--accent': App.$('#colorAccent').value,
           '--accent-deep': App.$('#colorAccentDeep').value,
           '--text-primary': App.$('#colorText').value,
-          '--text-secondary': '#555555',
+          '--text-secondary': App.$('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
           '--text-muted': '#999999',
           '--border': App.$('#colorBorder').value,
           '--border-light': 'rgba(173, 205, 234, 0.3)',
@@ -248,7 +263,6 @@
         App.LS.set('currentThemeId', id);
         App.LS.set('themeVars', vars);
         Theme.applyThemeVars(vars);
-        document.documentElement.setAttribute('data-theme', 'custom');
         if (App.$('#customThemeName')) App.$('#customThemeName').value = '';
         Theme.renderThemeList();
         App.showToast('主题已保存');
@@ -263,14 +277,6 @@
     init: function() {
       Theme.customThemes = App.LS.get('customThemes') || [];
       Theme.currentThemeId = App.LS.get('currentThemeId') || 'blue-white';
-
-      if (!Theme.findThemeById(Theme.currentThemeId)) {
-        Theme.currentThemeId = 'blue-white';
-        App.LS.set('currentThemeId', 'blue-white');
-      }
-
-      var savedDataTheme = App.LS.get('dataTheme') || Theme.currentThemeId;
-      document.documentElement.setAttribute('data-theme', savedDataTheme);
 
       Theme.renderThemeList();
       var savedThemeVars = App.LS.get('themeVars');
