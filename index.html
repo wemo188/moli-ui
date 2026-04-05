@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="worldbook.css">
   <link rel="stylesheet" href="chat.css">
   <link rel="stylesheet" href="preset.css">
+  <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
 
@@ -22,34 +23,10 @@
   <div id="pageSlider" class="page-slider">
 
     <section class="screen-page screen-page-1">
-      <div class="screen-page-inner">
-        <div class="home-top-row">
-          <!-- 天气 -->
-          <div class="home-weather" id="weatherCard">
-            <div class="weather-icon" id="weatherIcon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                <circle cx="12" cy="12" r="5"/>
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-              </svg>
-            </div>
-            <div class="weather-info">
-              <div class="weather-temp" id="weatherTemp">--°</div>
-              <div class="weather-desc" id="weatherDesc">获取中...</div>
-            </div>
-          </div>
-          <!-- 日历 -->
-          <div class="home-calendar" id="calendarCard">
-            <div class="calendar-month" id="calMonth"></div>
-            <div class="calendar-day" id="calDay"></div>
-            <div class="calendar-weekday" id="calWeekday"></div>
-          </div>
-        </div>
-
-        <div class="home-greeting" id="homeGreeting"></div>
-
-        <div class="home-mini-cal" id="miniCal"></div>
-      </div>
-    </section>
+  <div class="screen-page-inner">
+    <div class="cal-row" id="calendarWeatherRow"></div>
+  </div>
+</section>
 
     <section class="screen-page screen-page-2">
       <div class="screen-page-inner">
@@ -125,7 +102,7 @@
 <div id="bgLayer" class="bg-layer"></div>
 
 <div id="floatingBall" class="floating-ball mascot-ball">
-  <img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false">
+<img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false">
 </div>
 
 <div id="ballMenu" class="ball-menu hidden">
@@ -343,5 +320,6 @@
 <script src="worldbook.js"></script>
 <script src="preset.js"></script>
 <script src="chat.js"></script>
+<script src="calendar.js"></script>
 </body>
 </html>
