@@ -99,7 +99,7 @@
     },
 
     // ========= 渲染主页卡片 =========
-    render: function() {
+        render: function() {
       var container = App.$('#calendarWeatherRow');
       if (!container) return;
 
@@ -114,6 +114,15 @@
       var descText = Cal.weather ? Cal.weather.desc : '点击设置';
       var humidText = Cal.weather ? '湿度 ' + Cal.weather.humidity + '%' : '';
 
+      // 日程预览
+      var schedulePreview = '';
+      if (scheduleCount > 0) {
+        schedulePreview = todaySchedule.map(function(item) {
+          var t = item.time ? item.time + ' ' : '';
+          return t + item.content;
+        }).join('\n');
+      }
+
       container.innerHTML =
         '<div class="cal-card" id="weatherCardTap">' +
           '<div class="cal-card-inner">' +
@@ -127,14 +136,20 @@
             '<div class="cal-month">' + month + '月</div>' +
             '<div class="cal-day">' + date + '</div>' +
             '<div class="cal-weekday">' + weekday + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cal-card" id="scheduleCardTap">' +
+          '<div class="cal-card-inner">' +
+            '<div class="cal-schedule-label">今日行程</div>' +
             (scheduleCount > 0
-              ? '<div class="cal-schedule-dot">' + scheduleCount + '条行程</div>'
-              : '') +
+              ? '<div class="cal-schedule-preview">' + App.esc(schedulePreview) + '</div>'
+              : '<div class="cal-schedule-none">暂无</div>') +
           '</div>' +
         '</div>';
 
       App.safeOn('#weatherCardTap', 'click', function() { Cal.openWeatherPanel(); });
       App.safeOn('#dateCardTap', 'click', function() { Cal.openSchedulePanel(); });
+      App.safeOn('#scheduleCardTap', 'click', function() { Cal.openSchedulePanel(); });
     },
 
     // ========= 天气面板 =========
