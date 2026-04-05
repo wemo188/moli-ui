@@ -115,14 +115,14 @@
       var humidText = Cal.weather ? '湿度 ' + Cal.weather.humidity + '%' : '';
 
       container.innerHTML =
-        '<div class="cal-card cal-weather-card" id="weatherCardTap">' +
+        '<div class="cal-card" id="weatherCardTap">' +
           '<div class="cal-card-inner">' +
             '<div class="cal-temp">' + tempText + '</div>' +
             '<div class="cal-desc">' + descText + '</div>' +
             '<div class="cal-humid">' + humidText + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="cal-card cal-date-card" id="dateCardTap">' +
+        '<div class="cal-card" id="dateCardTap">' +
           '<div class="cal-card-inner">' +
             '<div class="cal-month">' + month + '月</div>' +
             '<div class="cal-day">' + date + '</div>' +
@@ -145,7 +145,7 @@
       panel.innerHTML =
         '<div class="cal-panel-header">' +
           '<div class="cal-panel-back" id="closeCalPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>天气</h2>' +
@@ -165,7 +165,7 @@
             '<div class="cal-input-row">' +
               '<input type="text" class="cal-input" id="calCityInput" placeholder="输入城市名，如：深圳、北京...">' +
               '<button class="cal-icon-btn" id="calSearchCityBtn" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
                 '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>' +
               '</button>' +
             '</div>' +
@@ -241,12 +241,12 @@
       panel.innerHTML =
         '<div class="cal-panel-header">' +
           '<div class="cal-panel-back" id="closeCalPanel2">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>今日行程</h2>' +
           '<button class="cal-panel-action" id="addScheduleBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<path d="M12 5v14M5 12h14"/></svg>' +
           '</button>' +
         '</div>' +
@@ -278,16 +278,21 @@
       container.innerHTML = list.map(function(item, idx) {
         return '<div class="cal-schedule-item">' +
           '<div class="cal-schedule-time">' + App.esc(item.time || '') + '</div>' +
-          '<div class="cal-schedule-content">' + App.esc(item.content || '') + '</div>' +
-          '<div class="cal-schedule-actions">' +
-            '<button class="cal-sm-btn cal-sm-edit" data-idx="' + idx + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-              '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
-            '</button>' +
-            '<button class="cal-sm-btn cal-sm-del" data-idx="' + idx + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-              '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
-            '</button>' +
+          '<div class="cal-schedule-dot-line">' +
+            '<div class="cal-schedule-dot-circle"></div>' +
+          '</div>' +
+          '<div class="cal-schedule-right">' +
+            '<div class="cal-schedule-content">' + App.esc(item.content || '') + '</div>' +
+            '<div class="cal-schedule-actions">' +
+              '<button class="cal-sm-btn cal-sm-edit" data-idx="' + idx + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
+              '</button>' +
+              '<button class="cal-sm-btn cal-sm-del" data-idx="' + idx + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>' +
+              '</button>' +
+            '</div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -322,12 +327,12 @@
       panel.innerHTML =
         '<div class="cal-panel-header">' +
           '<div class="cal-panel-back" id="backToSchedule">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
           '</div>' +
           '<h2>' + (isNew ? '添加行程' : '编辑行程') + '</h2>' +
           '<button class="cal-panel-action" id="saveScheduleBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div>' +
