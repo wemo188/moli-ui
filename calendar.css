@@ -4,23 +4,25 @@
 .cal-row {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 40px;
   width: 100%;
   padding: 60px 20px 0;
 }
 
 .cal-card {
-  width: 140px;
+  width: 130px;
   flex-shrink: 0;
   position: relative;
   border-radius: 14px;
-  padding: 16px 14px;
+  padding: 18px 14px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.18s;
-  min-height: 90px;
+  min-height: 95px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 
   background: linear-gradient(180deg, rgba(255,255,255,.44), rgba(240,248,255,.22));
   border: 1px solid rgba(220,235,255,.55);
@@ -59,6 +61,9 @@
   position: relative;
   z-index: 1;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* 天气 */
@@ -284,6 +289,11 @@
   color: #666;
 }
 
+/* 时间输入框缩短 */
+.cal-form-group input[type="time"] {
+  width: 130px;
+}
+
 /* =========================
    面板内按钮
 ========================= */
@@ -345,9 +355,6 @@
 /* =========================
    日程时间线
 ========================= */
-/* =========================
-   日程时间线
-========================= */
 .cal-schedule-date {
   font-size: 14px;
   color: #999;
@@ -360,47 +367,37 @@
   flex-direction: column;
   gap: 0;
   position: relative;
-  padding-left: 54px;
-}
-
-/* 中间竖线 - 紧贴左边 */
-.cal-schedule-list::before {
-  content: '';
-  position: absolute;
-  left: 49px;
-  top: 0;
-  bottom: 0;
-  width: 1.5px;
-  background: linear-gradient(180deg, rgba(79,121,166,0.2), rgba(79,121,166,0.06));
 }
 
 .cal-schedule-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0;
-  padding: 12px 0;
+  padding: 16px 0;
   position: relative;
+  min-height: 48px;
 }
 
-/* 左边时间 - 绝对定位到竖线左边 */
+/* 左边时间 */
 .cal-schedule-time {
-  position: absolute;
-  right: calc(100% + 16px);
-  top: 12px;
-  font-size: 12px;
+  width: 46px;
+  font-size: 13px;
   font-weight: 600;
   color: #1a1a1a;
-  white-space: nowrap;
-  line-height: 1;
   text-align: right;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
-/* 圆点 */
+/* 中间圆点+线 */
 .cal-schedule-dot-line {
-  position: absolute;
-  left: -5px;
-  top: 10px;
-  z-index: 1;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  align-self: stretch;
 }
 
 .cal-schedule-dot-circle {
@@ -409,6 +406,36 @@
   border-radius: 50%;
   background: #fff;
   border: 2px solid #4f79a6;
+  position: relative;
+  z-index: 2;
+}
+
+/* 竖线 */
+.cal-schedule-dot-line::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(79, 121, 166, 0.15);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* 第一条隐藏上半线 */
+.cal-schedule-item:first-child .cal-schedule-dot-line::before {
+  top: 50%;
+}
+
+/* 最后一条隐藏下半线 */
+.cal-schedule-item:last-child .cal-schedule-dot-line::before {
+  bottom: 50%;
+}
+
+/* 只有一条时不显示线 */
+.cal-schedule-item:only-child .cal-schedule-dot-line::before {
+  display: none;
 }
 
 /* 右边内容 */
@@ -416,17 +443,17 @@
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-left: 16px;
+  padding-left: 6px;
 }
 
 .cal-schedule-content {
   flex: 1;
   font-size: 14px;
   color: #333;
-  line-height: 1.5;
+  line-height: 1.4;
   min-width: 0;
   word-break: break-word;
 }
@@ -478,13 +505,3 @@
   font-size: 13px;
   padding: 50px 20px;
 }
-
-/* =========================
-   时间输入框缩短
-========================= */
-.cal-form-group input[type="time"] {
-  width: 140px;
-}
-
-
-  
