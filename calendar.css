@@ -3,13 +3,15 @@
 ========================= */
 .cal-row {
   display: flex;
-  gap: 12px;
+  justify-content: center;
+  gap: 24px;
   width: 100%;
-  padding: 60px 4px 0;
+  padding: 60px 20px 0;
 }
 
 .cal-card {
-  flex: 1;
+  width: 140px;
+  flex-shrink: 0;
   position: relative;
   border-radius: 14px;
   padding: 16px 14px;
