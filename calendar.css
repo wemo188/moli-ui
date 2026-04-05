@@ -341,63 +341,111 @@
 }
 
 /* =========================
-   日程列表
+   日程时间线
 ========================= */
 .cal-schedule-date {
   font-size: 14px;
   color: #999;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   font-weight: 500;
 }
 
 .cal-schedule-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
+  position: relative;
+}
+
+/* 中间竖线 */
+.cal-schedule-list::before {
+  content: '';
+  position: absolute;
+  left: 62px;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.04));
 }
 
 .cal-schedule-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: #f8f8f8;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: 12px;
+  align-items: flex-start;
+  gap: 0;
+  padding: 14px 0;
+  position: relative;
 }
 
+.cal-schedule-item + .cal-schedule-item {
+  border-top: none;
+}
+
+/* 左边时间 */
 .cal-schedule-time {
-  font-size: 15px;
-  font-weight: 700;
+  width: 50px;
+  font-size: 13px;
+  font-weight: 600;
   color: #1a1a1a;
-  min-width: 50px;
+  text-align: right;
   flex-shrink: 0;
+  padding-top: 2px;
+  line-height: 1;
+}
+
+/* 中间圆点 */
+.cal-schedule-dot-line {
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.cal-schedule-dot-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4f79a6;
+  position: relative;
+  z-index: 1;
+}
+
+/* 右边内容 */
+.cal-schedule-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 4px;
 }
 
 .cal-schedule-content {
   flex: 1;
   font-size: 14px;
-  color: #555;
+  color: #333;
+  line-height: 1.5;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
 }
 
 .cal-schedule-actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
+  padding-top: 0;
 }
 
 .cal-sm-btn {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fff;
   cursor: pointer;
   padding: 0;
-  border-radius: 8px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -405,8 +453,8 @@
 }
 
 .cal-sm-btn svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
 .cal-sm-edit {
@@ -431,3 +479,4 @@
   font-size: 13px;
   padding: 50px 20px;
 }
+
