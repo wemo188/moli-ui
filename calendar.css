@@ -1,0 +1,236 @@
+/* =========================
+   天气 + 日历 卡片行
+========================= */
+.cal-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.cal-card {
+  flex: 1;
+  border-radius: 18px;
+  padding: 18px 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+}
+
+.cal-card:active {
+  transform: scale(0.97);
+}
+
+.cal-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+/* 天气卡片 - 蓝色渐变透明 */
+.cal-weather-card {
+  background: linear-gradient(135deg,
+    rgba(173, 216, 255, 0.35),
+    rgba(135, 190, 245, 0.2),
+    rgba(200, 225, 255, 0.15));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(173, 216, 255, 0.25);
+  box-shadow:
+    0 4px 16px rgba(100, 160, 220, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.cal-weather-card::before {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 50%);
+}
+
+/* 日历卡片 - 蓝色渐变透明 */
+.cal-date-card {
+  background: linear-gradient(135deg,
+    rgba(173, 216, 255, 0.35),
+    rgba(135, 190, 245, 0.2),
+    rgba(200, 225, 255, 0.15));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(173, 216, 255, 0.25);
+  box-shadow:
+    0 4px 16px rgba(100, 160, 220, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.cal-date-card::before {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 50%);
+}
+
+.cal-card-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* 天气内容 */
+.cal-temp {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.cal-desc {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.cal-humid {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* 日历内容 */
+.cal-month {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.cal-day {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.cal-weekday {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.cal-schedule-dot {
+  font-size: 11px;
+  color: rgba(59, 130, 246, 0.8);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* =========================
+   天气设置面板
+========================= */
+.cal-setting-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.cal-setting-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.cal-setting-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cal-weather-detail {
+  margin-top: 20px;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.cal-detail-row + .cal-detail-row {
+  border-top: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+
+.cal-detail-row span:first-child {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.cal-detail-row span:last-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* =========================
+   日程面板
+========================= */
+.cal-schedule-date {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+.cal-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cal-schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  border-radius: 12px;
+}
+
+.cal-schedule-time {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 50px;
+  flex-shrink: 0;
+}
+
+.cal-schedule-content {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-secondary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal-schedule-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
