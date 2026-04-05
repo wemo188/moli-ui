@@ -5,72 +5,40 @@
   display: flex;
   gap: 12px;
   width: 100%;
-  margin-bottom: 14px;
+  padding: 0 4px;
 }
 
 .cal-card {
   flex: 1;
-  border-radius: 18px;
-  padding: 18px 16px;
+  border-radius: 20px;
+  padding: 20px 18px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: transform 0.18s;
-  min-height: 110px;
+  min-height: 120px;
   display: flex;
   align-items: center;
 }
 
 .cal-card:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
-.cal-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  pointer-events: none;
-}
-
-/* 天气卡片 - 蓝色渐变透明 */
-.cal-weather-card {
-  background: linear-gradient(135deg,
-    rgba(173, 216, 255, 0.35),
-    rgba(135, 190, 245, 0.2),
-    rgba(200, 225, 255, 0.15));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(173, 216, 255, 0.25);
-  box-shadow:
-    0 4px 16px rgba(100, 160, 220, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.cal-weather-card::before {
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    transparent 50%);
-}
-
-/* 日历卡片 - 蓝色渐变透明 */
+/* 蓝色磨砂渐变 */
+.cal-weather-card,
 .cal-date-card {
-  background: linear-gradient(135deg,
-    rgba(173, 216, 255, 0.35),
-    rgba(135, 190, 245, 0.2),
-    rgba(200, 225, 255, 0.15));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(173, 216, 255, 0.25);
+  background: linear-gradient(145deg,
+    rgba(160, 200, 240, 0.28),
+    rgba(130, 180, 230, 0.18),
+    rgba(180, 210, 245, 0.12));
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid rgba(180, 210, 240, 0.2);
   box-shadow:
-    0 4px 16px rgba(100, 160, 220, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.cal-date-card::before {
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    transparent 50%);
+    0 2px 12px rgba(100, 160, 220, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .cal-card-inner {
@@ -79,11 +47,11 @@
   width: 100%;
 }
 
-/* 天气内容 */
+/* 天气 */
 .cal-temp {
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1a1a1a;
   line-height: 1;
   letter-spacing: -1px;
 }
@@ -91,27 +59,27 @@
 .cal-desc {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-secondary);
-  margin-top: 6px;
+  color: #444;
+  margin-top: 8px;
 }
 
 .cal-humid {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #888;
   margin-top: 4px;
 }
 
-/* 日历内容 */
+/* 日历 */
 .cal-month {
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #888;
 }
 
 .cal-day {
-  font-size: 42px;
+  font-size: 44px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1a1a1a;
   line-height: 1;
   letter-spacing: -1px;
 }
@@ -119,79 +87,255 @@
 .cal-weekday {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-secondary);
-  margin-top: 4px;
+  color: #444;
+  margin-top: 6px;
 }
 
 .cal-schedule-dot {
   font-size: 11px;
-  color: rgba(59, 130, 246, 0.8);
-  margin-top: 6px;
+  color: #5b8fb9;
+  margin-top: 8px;
   font-weight: 600;
 }
 
 /* =========================
-   天气设置面板
+   面板（独立黑白风格，不受主题影响）
 ========================= */
-.cal-setting-card {
+.cal-panel-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 14px 16px;
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
-  border-radius: 12px;
-  margin-bottom: 16px;
+  gap: 12px;
+  background: #fafafa;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.cal-setting-label {
-  font-size: 14px;
-  color: var(--text-secondary);
+.cal-panel-header h2 {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
-.cal-setting-value {
+.cal-panel-back {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.cal-panel-back:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.cal-panel-back svg {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.cal-panel-action {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.cal-panel-action:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.cal-panel-action svg {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.cal-panel-right {
+  width: 36px;
+}
+
+.cal-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 16px;
+  background: #ffffff;
+}
+
+/* 面板覆盖全屏面板背景 */
+#calPanel.fullpage-panel {
+  background: #ffffff;
+}
+
+/* =========================
+   面板内表单（独立样式）
+========================= */
+.cal-form-group {
+  margin-bottom: 18px;
+}
+
+.cal-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999;
+  margin-bottom: 6px;
+}
+
+.cal-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.cal-input:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.cal-input::placeholder {
+  color: #ccc;
+}
+
+.cal-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.cal-textarea:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.cal-textarea::placeholder {
+  color: #ccc;
+}
+
+.cal-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cal-input-row .cal-input {
+  flex: 1;
+}
+
+.cal-icon-btn {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cal-icon-btn:active {
+  background: #eee;
+}
+
+.cal-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+/* =========================
+   面板内按钮
+========================= */
+.cal-btn {
+  width: 100%;
+  padding: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+  margin-top: 4px;
 }
 
-.cal-weather-detail {
-  margin-top: 20px;
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+.cal-btn:active {
+  opacity: 0.7;
+}
+
+.cal-btn-dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* =========================
+   面板内信息卡片
+========================= */
+.cal-info-card {
+  background: #f8f8f8;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 12px;
   overflow: hidden;
+  margin-bottom: 18px;
 }
 
-.cal-detail-row {
+.cal-info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 13px 16px;
 }
 
-.cal-detail-row + .cal-detail-row {
+.cal-info-row + .cal-info-row {
   border-top: 0.5px solid rgba(0, 0, 0, 0.04);
 }
 
-.cal-detail-row span:first-child {
+.cal-info-label {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #888;
 }
 
-.cal-detail-row span:last-child {
+.cal-info-value {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1a1a1a;
 }
 
 /* =========================
-   日程面板
+   日程列表
 ========================= */
 .cal-schedule-date {
   font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 14px;
+  color: #999;
+  margin-bottom: 16px;
   font-weight: 500;
 }
 
@@ -205,16 +349,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 14px;
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  padding: 14px;
+  background: #f8f8f8;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 12px;
 }
 
 .cal-schedule-time {
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1a1a1a;
   min-width: 50px;
   flex-shrink: 0;
 }
@@ -222,7 +366,7 @@
 .cal-schedule-content {
   flex: 1;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #555;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -233,4 +377,46 @@
   display: flex;
   gap: 6px;
   flex-shrink: 0;
+}
+
+.cal-sm-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.cal-sm-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.cal-sm-edit {
+  color: #666;
+}
+
+.cal-sm-edit:active {
+  background: #f0f0f0;
+}
+
+.cal-sm-del {
+  color: #ff3b30;
+}
+
+.cal-sm-del:active {
+  background: rgba(255, 59, 48, 0.06);
+}
+
+.cal-empty {
+  text-align: center;
+  color: #ccc;
+  font-size: 13px;
+  padding: 50px 20px;
 }
