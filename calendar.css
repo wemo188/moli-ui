@@ -1,24 +1,24 @@
 /* =========================
-   天气 + 日历 卡片行
+   天气 + 日历 + 日程 卡片行
 ========================= */
 .cal-row {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 14px;
   width: 100%;
-  padding: 60px 20px 0;
+  padding: 60px 16px 0;
 }
 
 .cal-card {
-  width: 130px;
+  width: 105px;
   flex-shrink: 0;
   position: relative;
   border-radius: 14px;
-  padding: 18px 14px;
+  padding: 14px 10px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.18s;
-  min-height: 95px;
+  min-height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,7 +68,7 @@
 
 /* 天气 */
 .cal-temp {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: #1f2b38;
   line-height: 1;
@@ -76,27 +76,27 @@
 }
 
 .cal-desc {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #3a4a5c;
-  margin-top: 6px;
+  margin-top: 5px;
 }
 
 .cal-humid {
-  font-size: 11px;
+  font-size: 10px;
   color: #6a7a8c;
   margin-top: 3px;
 }
 
 /* 日历 */
 .cal-month {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: #6a7a8c;
 }
 
 .cal-day {
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 700;
   color: #1f2b38;
   line-height: 1;
@@ -104,10 +104,38 @@
 }
 
 .cal-weekday {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #3a4a5c;
   margin-top: 4px;
+}
+
+/* 日程卡片 */
+.cal-schedule-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #6a7a8c;
+  margin-bottom: 4px;
+}
+
+.cal-schedule-preview {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f2b38;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+.cal-schedule-none {
+  font-size: 13px;
+  color: #aab4c0;
+  font-weight: 400;
 }
 
 .cal-schedule-dot {
@@ -371,7 +399,7 @@
 
 .cal-schedule-item {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 0;
   padding: 16px 0;
   position: relative;
@@ -387,6 +415,9 @@
   text-align: right;
   flex-shrink: 0;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* 中间圆点+线 */
@@ -397,7 +428,6 @@
   justify-content: center;
   flex-shrink: 0;
   position: relative;
-  align-self: stretch;
 }
 
 .cal-schedule-dot-circle {
