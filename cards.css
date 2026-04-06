@@ -111,17 +111,16 @@
 #bx-2 .bx-av-back .bx-back-txt { position: relative; z-index: 1; }
 
 #bx-2 .bx-name-bar {
-  width: 100%; text-align: center;
-  position: relative; z-index: 5;
-  margin-top: -40px;
-  padding: calc(18px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
-  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-  border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
+  width: 100%; text-align: center; margin-top: calc(8px * var(--S));
+  position: relative; padding: calc(4px * var(--S)) 0 0;
   cursor: pointer;
 }
-#bx-2 .bx-name-bar::before { display: none; }
-#bx-2 .bx-name { font-size: calc(14px * var(--S)); font-weight: 600; color: #fff; letter-spacing: calc(3px * var(--S)); min-height: 18px; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
-#bx-2 .bx-sub { font-size: calc(10px * var(--S)); color: rgba(255,255,255,0.85); margin-top: calc(2px * var(--S)); letter-spacing: calc(1px * var(--S)); min-height: 14px; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+#bx-2 .bx-name-bar::before {
+  content: ""; position: absolute; top: 0; left: 15%; right: 15%; height: calc(1.5px * var(--S));
+  background: linear-gradient(90deg, transparent, var(--border-c), transparent); border-radius: 999px;
+}
+#bx-2 .bx-name { font-size: calc(14px * var(--S)); font-weight: 600; color: var(--INK); letter-spacing: calc(3px * var(--S)); }
+#bx-2 .bx-sub { font-size: calc(10px * var(--S)); color: var(--LABEL_C); margin-top: calc(2px * var(--S)); letter-spacing: calc(1px * var(--S)); }
 
 /* ====== bx-1 右卡片（丝带款） ====== */
 #bx-1 {
@@ -222,17 +221,16 @@
 #bx-1 .bx-av-back .bx-back-txt { position: relative; z-index: 1; }
 
 #bx-1 .bx-name-bar {
-  width: 100%; text-align: center;
-  position: relative; z-index: 5;
-  margin-top: -40px;
-  padding: calc(18px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
-  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-  border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
+  width: 100%; text-align: center; margin-top: calc(8px * var(--S));
+  position: relative; padding: calc(4px * var(--S)) 0 0;
   cursor: pointer;
 }
-#bx-1 .bx-name-bar::before { display: none; }
-#bx-1 .bx-name { font-size: calc(14px * var(--S)); font-weight: 600; color: #fff; letter-spacing: calc(3px * var(--S)); min-height: 18px; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
-#bx-1 .bx-sub { font-size: calc(10px * var(--S)); color: rgba(255,255,255,0.85); margin-top: calc(2px * var(--S)); letter-spacing: calc(1px * var(--S)); min-height: 14px; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+#bx-1 .bx-name-bar::before {
+  content: ""; position: absolute; top: 0; left: 15%; right: 15%; height: calc(1.5px * var(--S));
+  background: linear-gradient(90deg, transparent, var(--border-c), transparent); border-radius: 999px;
+}
+#bx-1 .bx-name { font-size: calc(14px * var(--S)); font-weight: 600; color: var(--INK); letter-spacing: calc(3px * var(--S)); }
+#bx-1 .bx-sub { font-size: calc(10px * var(--S)); color: var(--LABEL_C); margin-top: calc(2px * var(--S)); letter-spacing: calc(1px * var(--S)); }
 
 /* ====== 空头像占位 ====== */
 .bx-av-placeholder {
