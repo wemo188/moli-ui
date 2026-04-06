@@ -4,7 +4,7 @@
 .card-row {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 30px;
   padding: 10px 20px 0;
   width: 100%;
 }
@@ -25,7 +25,7 @@
 #bx-2 {
   --S: 1;
   --W0: 200px;
-  --CARD_H0: 260px;
+  --CARD_H0: 240px;
   --PAD0: 8px;
   --INK: #4a5a75;
   --THEME: #bbd3ef;
@@ -126,7 +126,7 @@
 #bx-1 {
   --S: 1;
   --W0: 200px;
-  --CARD_H0: 260px;
+  --CARD_H0: 240px;
   --PAD0: 8px;
   --INK: #4a5a75;
   --BLUE: #8ca3c2;
