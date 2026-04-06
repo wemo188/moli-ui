@@ -425,6 +425,7 @@
   cursor: default;
 }
 
+/* 今天：黑底白字 */
 .cal-day-cell.cal-day-today {
   background: #1a1a1a;
 }
@@ -433,16 +434,22 @@
   color: #fff;
 }
 
+/* 选中其他日子：灰底黑字 */
 .cal-day-cell.cal-day-selected {
-  background: #1a1a1a;
+  background: rgba(0,0,0,0.08);
 }
 
 .cal-day-cell.cal-day-selected .cal-day-num {
-  color: #fff;
+  color: #1a1a1a;
 }
 
-.cal-day-cell.cal-day-selected .cal-day-dot {
-  background: #8bb8e0;
+/* 选中的如果正好是今天：保持黑底 */
+.cal-day-cell.cal-day-today.cal-day-selected {
+  background: #1a1a1a;
+}
+
+.cal-day-cell.cal-day-today.cal-day-selected .cal-day-num {
+  color: #fff;
 }
 
 .cal-day-num {
@@ -466,6 +473,7 @@
   color: #fff;
 }
 
+/* 小蓝点 */
 .cal-day-dot {
   width: 4px;
   height: 4px;
@@ -474,6 +482,14 @@
 }
 
 .cal-day-cell.cal-day-today .cal-day-dot {
+  background: #8bb8e0;
+}
+
+.cal-day-cell.cal-day-selected .cal-day-dot {
+  background: #4f79a6;
+}
+
+.cal-day-cell.cal-day-today.cal-day-selected .cal-day-dot {
   background: #8bb8e0;
 }
 
@@ -630,4 +646,122 @@
 
 .cal-type-opt:active {
   opacity: 0.8;
+}
+
+/* =========================
+   行程时间线
+========================= */
+.cal-schedule-date {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.cal-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.cal-schedule-item {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  position: relative;
+  min-height: 56px;
+}
+
+.cal-schedule-time {
+  width: 46px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.cal-schedule-dot-line {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cal-schedule-dot-line::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 50%;
+  width: 1.5px;
+  background: rgba(79, 121, 166, 0.2);
+  transform: translateX(-50%);
+}
+
+.cal-schedule-dot-line::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(79, 121, 166, 0.2);
+  transform: translateX(-50%);
+}
+
+.cal-schedule-item:first-child .cal-schedule-dot-line::before {
+  display: none;
+}
+
+.cal-schedule-item:last-child .cal-schedule-dot-line::after {
+  display: none;
+}
+
+.cal-schedule-item:only-child .cal-schedule-dot-line::before,
+.cal-schedule-item:only-child .cal-schedule-dot-line::after {
+  display: none;
+}
+
+.cal-schedule-dot-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4f79a6;
+  position: relative;
+  z-index: 2;
+}
+
+.cal-schedule-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 6px;
+}
+
+.cal-schedule-content {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.cal-schedule-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
 }
