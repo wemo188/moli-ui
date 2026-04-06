@@ -574,9 +574,14 @@
             '<input type="time" class="cal-input cal-input-time" id="memoTime" value="' + App.esc(memo.time || '') + '">' +
           '</div>' +
 
+                    '<div class="cal-form-group">' +
+            '<label class="cal-form-label">中文</label>' +
+            '<textarea class="cal-textarea" id="memoContent" rows="3" placeholder="中文内容...">' + App.esc(memo.content || '') + '</textarea>' +
+          '</div>' +
+
           '<div class="cal-form-group">' +
-            '<label class="cal-form-label">内容</label>' +
-            '<textarea class="cal-textarea" id="memoContent" rows="4" placeholder="记录内容...">' + App.esc(memo.content || '') + '</textarea>' +
+            '<label class="cal-form-label">English（贴纸上显示，点击可切换中文）</label>' +
+            '<textarea class="cal-textarea" id="memoTextEn" rows="2" placeholder="English..." style="font-family:Dancing Script,cursive;font-size:16px;">' + App.esc(memo.textEn || '') + '</textarea>' +
           '</div>' +
 
         '</div>';
@@ -597,10 +602,12 @@
         var content = App.$('#memoContent').value.trim();
         if (!content) { App.showToast('请输入内容'); return; }
 
+                var textEn = App.$('#memoTextEn').value.trim();
         var newMemo = {
           type: currentType,
           time: App.$('#memoTime').value || '',
-          content: content
+          content: content,
+          textEn: textEn
         };
 
         if (isNew) {
