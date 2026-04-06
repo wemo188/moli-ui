@@ -4,21 +4,13 @@
 .card-row {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  padding: 10px 20px 0;
+  gap: var(--card-gap, 24px);
+  padding: var(--card-padding, 10px 20px 0);
   width: 100%;
 }
 
 .card-row .bx-w {
   margin: 0 !important;
-  flex: 1;
-  min-width: 0;
-  max-width: none !important;
-}
-
-.card-row #bx-2,
-.card-row #bx-1 {
-  max-width: none;
 }
 
 /* ====== bx-2 左卡片（标签款） ====== */
