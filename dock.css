@@ -8,7 +8,7 @@
   transform: translateX(-50%);
   z-index: 900;
   border-radius: 28px;
-  padding: 20px 45px;
+  padding: 20px 40px;
   display: flex;
   gap: 16px;
   background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(240,248,255,.7));
