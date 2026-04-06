@@ -22,99 +22,119 @@
       var container = App.$('#cardRow');
       if (!container) return;
 
-      container.innerHTML =
-        Cards.buildCard('left') +
-        Cards.buildCard('right');
+      var L = Cards.data.left;
+      var R = Cards.data.right;
 
-      Cards.bindEvents();
-    },
-
-    buildCard: function(side) {
-      var d = Cards.data[side];
-      var hasImg = d.avatar ? ' has-img' : '';
-      var bgStyle = d.avatar ? ' style="background-image:url(\'' + App.esc(d.avatar) + '\')"' : '';
-
-      // 装饰区域
-      var decoHtml = '';
-      if (side === 'left') {
-        // 右上角标签
-        if (d.tag1 || d.tag2) {
-          decoHtml = '<div class="pc-tag-wrap">';
-          if (d.tag1) decoHtml += '<div class="pc-tag pc-tag1">' + App.esc(d.tag1) + '</div>';
-          if (d.tag2) decoHtml += '<div class="pc-tag pc-tag2">' + App.esc(d.tag2) + '</div>';
-          decoHtml += '</div>';
-        }
-      } else {
-        // 左侧丝带
-        if (d.tag1 || d.tag2) {
-          decoHtml = '<div class="pc-ribbon-wrap">';
-          if (d.tag1) decoHtml += '<div class="pc-ribbon pc-ribbon1">' + App.esc(d.tag1) + '</div>';
-          if (d.tag2) decoHtml += '<div class="pc-ribbon pc-ribbon2">' + App.esc(d.tag2) + '</div>';
-          decoHtml += '</div>';
-        }
+      // bx-2 左卡片（标签款）
+      var leftTagHtml = '';
+      if (L.tag1 || L.tag2) {
+        leftTagHtml = '<div class="bx-tag-wrap">';
+        if (L.tag1) leftTagHtml += '<div class="bx-tag bx-tag1">' + App.esc(L.tag1) + '</div>';
+        if (L.tag2) leftTagHtml += '<div class="bx-tag bx-tag2">' + App.esc(L.tag2) + '</div>';
+        leftTagHtml += '</div>';
       }
 
-      return '<div class="profile-card" data-side="' + side + '">' +
-        '<div class="pc-outer">' +
-          '<div class="pc-inner">' +
+      var leftFrontHtml = L.avatar
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(L.avatar) + '\')"></div>'
+        : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
-            decoHtml +
+      // bx-1 右卡片（丝带款）
+      var rightRibbonHtml = '';
+      if (R.tag1 || R.tag2) {
+        rightRibbonHtml = '<div class="bx-side-ribbon">';
+        if (R.tag1) rightRibbonHtml += '<div class="bx-ribbon-tab r1">' + App.esc(R.tag1) + '</div>';
+        if (R.tag2) rightRibbonHtml += '<div class="bx-ribbon-tab r2">' + App.esc(R.tag2) + '</div>';
+        rightRibbonHtml += '</div>';
+      }
 
-            '<div class="pc-avatar-box">' +
-              '<div class="pc-avatar-inner" id="pcFlip_' + side + '">' +
-                '<div class="pc-front' + hasImg + '" id="pcFront_' + side + '"' + bgStyle + '>' +
-                  '<div class="pc-front-placeholder">' +
-                    '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' +
-                    '<span>点击设置</span>' +
+      var rightFrontHtml = R.avatar
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(R.avatar) + '\')"></div>'
+        : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
+
+      container.innerHTML =
+        // 左卡片 bx-2
+        '<div class="bx-w" id="bx-2" data-side="left">' +
+          '<input type="checkbox" id="bx-fav2" class="bx-cb">' +
+          leftTagHtml +
+          '<div class="bx-cw">' +
+            '<div class="bx-cd">' +
+              '<label for="bx-fav2" class="bx-av-box" title="点击翻转">' +
+                '<div class="bx-av-inner">' +
+                  leftFrontHtml +
+                  '<div class="bx-av-back">' +
+                    '<div class="bx-lines"></div>' +
+                    '<div class="bx-back-txt">' + (L.backText || '') + '</div>' +
                   '</div>' +
                 '</div>' +
-                '<div class="pc-back">' +
-                  '<div class="pc-back-lines"></div>' +
-                  '<div class="pc-back-text" id="pcBackText_' + side + '">' + App.esc(d.backText || '') + '</div>' +
-                '</div>' +
+              '</label>' +
+              '<div class="bx-name-bar">' +
+                '<div class="bx-name">' + App.esc(L.name || '') + '</div>' +
+                '<div class="bx-sub">' + App.esc(L.sub || '') + '</div>' +
               '</div>' +
             '</div>' +
-
-            '<div class="pc-name-bar">' +
-              '<div class="pc-name" id="pcName_' + side + '">' + App.esc(d.name || '') + '</div>' +
-              '<div class="pc-sub" id="pcSub_' + side + '">' + App.esc(d.sub || '') + '</div>' +
-            '</div>' +
-
           '</div>' +
         '</div>' +
-      '</div>';
+
+        // 右卡片 bx-1
+        '<div class="bx-w" id="bx-1" data-side="right">' +
+          '<input type="checkbox" id="bx-fav1" class="bx-cb">' +
+          '<div class="bx-cw">' +
+            '<div class="bx-cd">' +
+              rightRibbonHtml +
+              '<label for="bx-fav1" class="bx-av-box" title="点击翻转">' +
+                '<div class="bx-av-inner">' +
+                  rightFrontHtml +
+                  '<div class="bx-av-back">' +
+                    '<div class="bx-lines"></div>' +
+                    '<div class="bx-back-txt">' + (R.backText || '') + '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</label>' +
+              '<div class="bx-name-bar">' +
+                '<div class="bx-name">' + App.esc(R.name || '') + '</div>' +
+                '<div class="bx-sub">' + App.esc(R.sub || '') + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      // checkbox唯一ID
+      Cards.initFlip();
+      // 长按编辑
+      Cards.bindLongPress();
+      // 无头像时点击打开编辑
+      Cards.bindEmptyClick();
     },
 
-    bindEvents: function() {
-      // 点击头像区域
-      document.querySelectorAll('.pc-avatar-box').forEach(function(box) {
-        box.addEventListener('click', function() {
-          var card = box.closest('.profile-card');
-          var side = card.dataset.side;
-          var inner = App.$('#pcFlip_' + side);
-
-          if (inner.classList.contains('flipped')) {
-            inner.classList.remove('flipped');
-          } else {
-            var d = Cards.data[side];
-            if (!d.avatar) {
-              Cards.openEdit(side);
-            } else {
-              inner.classList.add('flipped');
-            }
-          }
+    initFlip: function() {
+      document.querySelectorAll('#cardRow .bx-w').forEach(function(c) {
+        var uid = Math.random().toString(36).slice(2, 8);
+        c.querySelectorAll('input[id]').forEach(function(inp) {
+          var oldId = inp.id, newId = oldId + '_' + uid;
+          inp.id = newId;
+          c.querySelectorAll('label[for="' + oldId + '"]').forEach(function(lbl) {
+            lbl.setAttribute('for', newId);
+          });
         });
       });
+    },
 
-      // 长按打开编辑
-      document.querySelectorAll('.profile-card').forEach(function(card) {
+    bindLongPress: function() {
+      document.querySelectorAll('#cardRow .bx-w').forEach(function(card) {
         var timer = null;
-        card.addEventListener('touchstart', function() {
+        card.addEventListener('touchstart', function(e) {
           timer = setTimeout(function() {
             timer = null;
+            e.preventDefault();
+            // 阻止翻转
+            var cb = card.querySelector('.bx-cb');
+            if (cb) {
+              var was = cb.checked;
+              setTimeout(function() { cb.checked = was; }, 10);
+            }
             Cards.openEdit(card.dataset.side);
           }, 600);
-        });
+        }, { passive: false });
         card.addEventListener('touchend', function() {
           if (timer) { clearTimeout(timer); timer = null; }
         });
@@ -124,9 +144,25 @@
       });
     },
 
+    bindEmptyClick: function() {
+      document.querySelectorAll('#cardRow .bx-av-placeholder').forEach(function(ph) {
+        ph.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var card = ph.closest('.bx-w');
+          // 阻止checkbox触发
+          var cb = card.querySelector('.bx-cb');
+          if (cb) cb.checked = false;
+          Cards.openEdit(card.dataset.side);
+        });
+      });
+    },
+
     openEdit: function(side) {
       var d = Cards.data[side];
       var decoLabel = side === 'left' ? '标签' : '丝带';
+      var decoPlaceholder1 = side === 'left' ? '如：♡ 可可爱爱' : '如：♦ 剑 修';
+      var decoPlaceholder2 = side === 'left' ? '如：✦ 糖星人' : '如：✦ 客 卿';
 
       var old = App.$('#pcEditOverlay');
       if (old) old.remove();
@@ -136,7 +172,7 @@
       overlay.className = 'pc-edit-overlay';
       overlay.innerHTML =
         '<div class="pc-edit-panel">' +
-          '<div class="pc-edit-title">编辑卡片</div>' +
+          '<div class="pc-edit-title">编辑' + (side === 'left' ? '左' : '右') + '卡片</div>' +
 
           '<div class="pc-edit-group">' +
             '<label class="pc-edit-label">头像（URL 或上传）</label>' +
@@ -162,16 +198,16 @@
           '<div class="pc-edit-row2">' +
             '<div class="pc-edit-group">' +
               '<label class="pc-edit-label">' + decoLabel + ' 1</label>' +
-              '<input type="text" class="pc-edit-input" id="pcEditTag1" placeholder="如：♡ 可可爱爱" value="' + App.esc(d.tag1 || '') + '">' +
+              '<input type="text" class="pc-edit-input" id="pcEditTag1" placeholder="' + decoPlaceholder1 + '" value="' + App.esc(d.tag1 || '') + '">' +
             '</div>' +
             '<div class="pc-edit-group">' +
               '<label class="pc-edit-label">' + decoLabel + ' 2</label>' +
-              '<input type="text" class="pc-edit-input" id="pcEditTag2" placeholder="如：✦ 糖星人" value="' + App.esc(d.tag2 || '') + '">' +
+              '<input type="text" class="pc-edit-input" id="pcEditTag2" placeholder="' + decoPlaceholder2 + '" value="' + App.esc(d.tag2 || '') + '">' +
             '</div>' +
           '</div>' +
 
           '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">背面内容（翻转后显示）</label>' +
+            '<label class="pc-edit-label">背面内容（翻转后显示，支持HTML）</label>' +
             '<textarea class="pc-edit-textarea" id="pcEditBack" rows="4" placeholder="写点什么...">' + App.esc(d.backText || '') + '</textarea>' +
           '</div>' +
 
@@ -183,7 +219,6 @@
 
       document.body.appendChild(overlay);
 
-      // 文件上传
       App.$('#pcEditFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -194,7 +229,6 @@
         reader.readAsDataURL(file);
       });
 
-      // 保存
       App.$('#pcEditSaveBtn').addEventListener('click', function() {
         Cards.data[side] = {
           avatar: App.$('#pcEditAvatar').value.trim(),
@@ -210,12 +244,10 @@
         App.showToast('已保存');
       });
 
-      // 取消
       App.$('#pcEditCancelBtn').addEventListener('click', function() {
         overlay.remove();
       });
 
-      // 点击遮罩关闭
       overlay.addEventListener('click', function(e) {
         if (e.target === overlay) overlay.remove();
       });
