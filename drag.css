@@ -1,20 +1,3 @@
-/* 拖拽幽灵 */
-.drag-ghost {
-  position: fixed !important;
-  z-index: 99999 !important;
-  pointer-events: none !important;
-  opacity: 0.85;
-  transform: scale(1.1);
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.3));
-  will-change: left, top;
-}
-
-/* 原位占位 */
-.drag-placeholder {
-  opacity: 0.15 !important;
-  animation: none !important;
-}
-
 /* 抖动 */
 @keyframes iconWiggle {
   0% { transform: rotate(0deg); }
@@ -24,11 +7,7 @@
 }
 
 .drag-mode {
-  animation: iconWiggle 0.25s ease-in-out infinite;
-}
-
-.drag-mode.drag-placeholder {
-  animation: none;
+  animation: iconWiggle 0.25s ease-in-out infinite !important;
 }
 
 /* 完成按钮 */
