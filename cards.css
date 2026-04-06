@@ -19,7 +19,8 @@
   --LABEL_C: #6a8caf;
   --border-c: rgba(187,211,239,.8);
   --LINE_C: rgba(140,163,194,.45);
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   max-width: 165px;
   user-select: none;
   position: relative;
@@ -134,6 +135,7 @@
 .pc-avatar-box {
   width: 100%;
   aspect-ratio: 3 / 4;
+  min-height: 180px;
   perspective: 1000px;
   cursor: pointer;
   display: block;
