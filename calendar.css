@@ -414,7 +414,7 @@
   cursor: pointer;
   position: relative;
   transition: background 0.15s;
-  gap: 2px;
+  gap: 4px;
 }
 
 .cal-day-cell:active {
