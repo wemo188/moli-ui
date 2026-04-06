@@ -3,7 +3,7 @@
 ========================= */
 .cal-bar {
   width: 100%;
-  padding: 16px 14px 0;
+  padding: 10px 14px 0;
 }
 
 .cal-bar-card {
@@ -42,30 +42,6 @@
   pointer-events: none;
   mix-blend-mode: screen;
   opacity: .9;
-}
-
-@keyframes calShine {
-  0% { transform: translateX(-170%) skewX(-18deg); opacity: 0 }
-  10% { opacity: .55 }
-  60% { opacity: .35 }
-  100% { transform: translateX(260%) skewX(-18deg); opacity: 0 }
-}
-
-.cal-bar-shine {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.cal-bar-shine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 46%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
-  transform: skewX(-18deg);
-  animation: calShine 6.2s linear infinite;
 }
 
 .cal-bar-row {
