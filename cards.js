@@ -34,11 +34,9 @@
         leftTagHtml += '</div>';
       }
 
-      // 左卡片名字条（在照片上）
-      var leftNameBar = '<div class="bx-name-bar"><div class="bx-name">' + App.esc(L.name || '') + '</div><div class="bx-sub">' + App.esc(L.sub || '') + '</div></div>';
-
+      // 左卡片头像
       var leftFrontHtml = L.avatar
-        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(L.avatar) + '\')">' + leftNameBar + '</div>'
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(L.avatar) + '\')"></div>'
         : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
       // 右卡片丝带
@@ -50,14 +48,13 @@
         rightRibbonHtml += '</div>';
       }
 
-      // 右卡片名字条（在照片上）
-      var rightNameBar = '<div class="bx-name-bar"><div class="bx-name">' + App.esc(R.name || '') + '</div><div class="bx-sub">' + App.esc(R.sub || '') + '</div></div>';
-
+      // 右卡片头像
       var rightFrontHtml = R.avatar
-        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(R.avatar) + '\')">' + rightNameBar + '</div>'
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(R.avatar) + '\')"></div>'
         : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
       container.innerHTML =
+        // 左卡片 bx-2（标签款）
         '<div class="bx-w" id="bx-2" data-side="left">' +
           '<input type="checkbox" id="bx-fav2" class="bx-cb">' +
           leftTagHtml +
@@ -72,10 +69,15 @@
                   '</div>' +
                 '</div>' +
               '</label>' +
+              '<div class="bx-name-bar">' +
+                '<div class="bx-name">' + App.esc(L.name || '') + '</div>' +
+                '<div class="bx-sub">' + App.esc(L.sub || '') + '</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
 
+        // 右卡片 bx-1（丝带款）
         '<div class="bx-w" id="bx-1" data-side="right">' +
           '<input type="checkbox" id="bx-fav1" class="bx-cb">' +
           '<div class="bx-cw">' +
@@ -90,6 +92,10 @@
                   '</div>' +
                 '</div>' +
               '</label>' +
+              '<div class="bx-name-bar">' +
+                '<div class="bx-name">' + App.esc(R.name || '') + '</div>' +
+                '<div class="bx-sub">' + App.esc(R.sub || '') + '</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>';
