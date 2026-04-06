@@ -34,7 +34,7 @@
   width: 65px;
   height: 65px;
   border-radius: 15px;
-  background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(240,248,255,.5));
+  background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(240,248,255,.65));
   border: 1px solid rgba(220,235,255,.55);
   box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
