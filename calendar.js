@@ -443,12 +443,13 @@
       var dateStr = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日 ' + Cal.WEEKDAYS[dateObj.getDay()];
 
       var allMemos = Cal.getMemosForDate(dateKey);
-      var memos = [];
-      for (var i = 0; i < allMemos.length; i++) {
-        if (allMemos[i].type === 'important' || allMemos[i].type === 'char') {
-          memos.push({ memo: allMemos[i], idx: i });
-        }
-      }
+var memos = [];
+for (var i = 0; i < allMemos.length; i++) {
+  var t = allMemos[i].type || 'schedule';
+  if (t !== 'schedule') {
+    memos.push({ memo: allMemos[i], idx: i });
+  }
+}
 
       var html = '<div class="cal-selected-date-title">' + dateStr + '</div>';
 
