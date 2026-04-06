@@ -413,22 +413,6 @@
       setTimeout(function() { panel.classList.add('hidden'); }, 350);
     },
 
-    // ========= Dock栏事件 =========
-    initDock: function() {
-      App.safeOn('#dockMine', 'click', function() {
-        App.showToast('我的 - 开发中');
-      });
-      App.safeOn('#dockLong', 'click', function() {
-        App.showToast('长剧情 - 开发中');
-      });
-      App.safeOn('#dockShort', 'click', function() {
-        App.showToast('短对话 - 开发中');
-      });
-      App.safeOn('#dockCheck', 'click', function() {
-        App.showToast('查岗 - 开发中');
-      });
-    },
-
     // ========= 自动刷新 =========
     startAutoRefresh: function() {
       setInterval(function() {
@@ -447,7 +431,7 @@
       }, 60 * 1000);
     },
 
-    init: function() {
+        init: function() {
       Cal.load();
 
       if (!App.$('#calPanel')) {
@@ -458,7 +442,6 @@
       }
 
       Cal.render();
-      Cal.initDock();
 
       if (Cal.city && Cal.weather) {
         var age = Date.now() - (Cal.weather.time || 0);
