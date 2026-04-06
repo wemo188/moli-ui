@@ -403,14 +403,12 @@
         if (dayOfWeek === 0) classes += ' cal-day-sunday';
         if (dayOfWeek === 6) classes += ' cal-day-saturday';
 
-        var hasMemos = false;
+                var hasMemos = Cal.hasMemosForDate(dateKey);
         var hasImportant = false;
-        var memos = Cal.getMemosForDate(dateKey);
-        for (var m = 0; m < memos.length; m++) {
-          var mt = memos[m].type || 'schedule';
-          if (mt === 'important' || mt === 'char') {
-            hasMemos = true;
-            if (mt === 'important') hasImportant = true;
+        if (hasMemos) {
+          var memos = Cal.getMemosForDate(dateKey);
+          for (var m = 0; m < memos.length; m++) {
+            if (memos[m].type === 'important') { hasImportant = true; break; }
           }
         }
 
