@@ -37,32 +37,19 @@ body.drag-active {
   user-select: none !important;
 }
 
-/* 空格占位 */
-.grid-spacer {
-  pointer-events: auto;
-  visibility: visible;
-}
-
-.grid-spacer .app-icon-img,
-.grid-spacer .app-icon-label {
-  display: none;
-}
-
-/* 编辑模式下空位显示虚线框 */
-body.drag-edit-active .grid-spacer {
-  border: 2px dashed rgba(0,0,0,0.08);
-  border-radius: 16px;
-  min-height: 70px;
-}
-
-/* 完成按钮 */
-.drag-done-btn {
+/* 按钮组 */
+.drag-done-wrap {
   position: fixed;
   top: env(safe-area-inset-top, 10px);
   right: 16px;
   z-index: 99998;
-  padding: 8px 22px;
   margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.drag-done-btn {
+  padding: 8px 22px;
   background: rgba(0,0,0,0.8);
   color: #fff;
   border: none;
@@ -78,5 +65,23 @@ body.drag-edit-active .grid-spacer {
 }
 
 .drag-done-btn:active {
+  opacity: 0.7;
+}
+
+.drag-reset-btn {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  -webkit-touch-callout: none;
+}
+
+.drag-reset-btn:active {
   opacity: 0.7;
 }
