@@ -8,7 +8,7 @@
   padding: 16px 14px 0;
 }
 
-  .cal-card {
+.cal-card {
   flex: 0 0 auto;  /* 取消自动伸缩 */
   position: relative;
   border-radius: 14px;
