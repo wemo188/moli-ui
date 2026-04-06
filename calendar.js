@@ -490,7 +490,8 @@
     openEditMemo: function(dateKey, idx) {
       var isNew = idx < 0;
       var list = Cal.getMemosForDate(dateKey);
-      var memo = isNew ? { type: 'schedule', time: '', content: '' } : list[idx];
+      var memo = isNew ? { type: 'important', time: '', content: '' } : list[idx];
+
 
       var panel = App.$('#calPanel');
       if (!panel) return;
@@ -515,7 +516,6 @@
           '<div class="cal-form-group">' +
             '<label class="cal-form-label">类型</label>' +
             '<div class="cal-type-switch" id="memoTypeSwitch">' +
-              '<button class="cal-type-opt' + (memo.type === 'schedule' ? ' active' : '') + '" data-type="schedule" type="button">行程</button>' +
               '<button class="cal-type-opt' + (memo.type === 'important' ? ' active' : '') + '" data-type="important" type="button">重要日子</button>' +
               '<button class="cal-type-opt' + (memo.type === 'char' ? ' active' : '') + '" data-type="char" type="button">角色记录</button>' +
             '</div>' +
