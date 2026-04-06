@@ -4,7 +4,6 @@
 .cal-row {
   display: flex;
   gap: 15px;
-  width: 100%;
   padding: 16px 14px 0;
 }
 
