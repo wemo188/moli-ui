@@ -407,9 +407,10 @@
         var hasImportant = false;
         var memos = Cal.getMemosForDate(dateKey);
         for (var m = 0; m < memos.length; m++) {
-          if (memos[m].type === 'important' || memos[m].type === 'char') {
+          var mt = memos[m].type || 'schedule';
+          if (mt === 'important' || mt === 'char') {
             hasMemos = true;
-            if (memos[m].type === 'important') hasImportant = true;
+            if (mt === 'important') hasImportant = true;
           }
         }
 
@@ -443,13 +444,13 @@
       var dateStr = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日 ' + Cal.WEEKDAYS[dateObj.getDay()];
 
       var allMemos = Cal.getMemosForDate(dateKey);
-var memos = [];
-for (var i = 0; i < allMemos.length; i++) {
-  var t = allMemos[i].type || 'schedule';
-  if (t !== 'schedule') {
-    memos.push({ memo: allMemos[i], idx: i });
-  }
-}
+      var memos = [];
+      for (var i = 0; i < allMemos.length; i++) {
+        var t = allMemos[i].type || 'schedule';
+        if (t !== 'schedule') {
+          memos.push({ memo: allMemos[i], idx: i });
+        }
+      }
 
       var html = '<div class="cal-selected-date-title">' + dateStr + '</div>';
 
@@ -465,6 +466,7 @@ for (var i = 0; i < allMemos.length; i++) {
 
           return '<div class="cal-memo-card">' +
             '<span class="cal-memo-type ' + typeClass + '">' + typeLabel + '</span>' +
+            (memo.time ? '<span style="font-size:12px;color:#999;flex-shrink:0;">' + App.esc(memo.time) + '</span>' : '') +
             '<div class="cal-memo-text">' + App.esc(memo.content || '') + '</div>' +
             '<div class="cal-memo-actions">' +
               '<button class="cal-sm-btn cal-sm-edit" data-idx="' + idx + '" type="button">' +
@@ -535,6 +537,11 @@ for (var i = 0; i < allMemos.length; i++) {
             '</div>' +
           '</div>' +
 
+          '<div class="cal-form-group" id="memoTimeGroup">' +
+            '<label class="cal-form-label">时间</label>' +
+            '<input type="time" class="cal-input cal-input-time" id="memoTime" value="' + App.esc(memo.time || '') + '">' +
+          '</div>' +
+
           '<div class="cal-form-group">' +
             '<label class="cal-form-label">内容</label>' +
             '<textarea class="cal-textarea" id="memoContent" rows="4" placeholder="记录内容...">' + App.esc(memo.content || '') + '</textarea>' +
@@ -560,7 +567,7 @@ for (var i = 0; i < allMemos.length; i++) {
 
         var newMemo = {
           type: currentType,
-          time: '',
+          time: App.$('#memoTime').value || '',
           content: content
         };
 
