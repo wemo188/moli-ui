@@ -10,6 +10,8 @@
 
 .cal-card {
   flex: 1;
+  .cal-card {
+  flex: 0 0 auto;  /* 取消自动伸缩 */
   position: relative;
   border-radius: 14px;
   padding: 14px 10px;
