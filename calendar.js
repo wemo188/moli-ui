@@ -101,8 +101,14 @@
 
     getScheduleSummary: function() {
       var list = Cal.getSchedule(Cal.todayKey());
-      if (!list.length) return '今日无外出行程。';
-      return '今日行程:\n' + list.map(function(item) {
+      var items = [];
+      for (var i = 0; i < list.length; i++) {
+        if (!list[i].type || list[i].type === 'schedule') {
+          items.push(list[i]);
+        }
+      }
+      if (!items.length) return '今日无外出行程。';
+      return '今日行程:\n' + items.map(function(item) {
         return (item.time || '') + ' ' + (item.content || '');
       }).join('\n');
     },
@@ -120,13 +126,14 @@
       var mins = String(now.getMinutes()).padStart(2, '0');
       var secs = String(now.getSeconds()).padStart(2, '0');
 
-      var todaySchedule = Cal.getSchedule(Cal.todayKey());
-      var scheduleCount = todaySchedule.length;
+      var todayList = Cal.getSchedule(Cal.todayKey());
+      var scheduleCount = 0;
+      for (var i = 0; i < todayList.length; i++) {
+        if (!todayList[i].type || todayList[i].type === 'schedule') scheduleCount++;
+      }
 
       var tempText = Cal.weather ? Cal.weather.temp + '°' : '--°';
       var descText = Cal.weather ? Cal.weather.desc : '未设置';
-      var humidText = Cal.weather ? '湿度' + Cal.weather.humidity + '%' : '';
-
       var scheduleText = scheduleCount > 0 ? scheduleCount + '条' : '暂无';
 
       container.innerHTML =
@@ -171,7 +178,7 @@
 
       App.safeOn('#weatherCardTap', 'click', function() { Cal.openWeatherPanel(); });
       App.safeOn('#dateCardTap', 'click', function() { Cal.openSchedulePanel(); });
-      App.safeOn('#scheduleCardTap', 'click', function() { Cal.openSchedulePanel(); });
+      App.safeOn('#scheduleCardTap', 'click', function() { Cal.openTodaySchedule(); });
 
       if (Cal._timeTimer) clearInterval(Cal._timeTimer);
       Cal._timeTimer = setInterval(function() {
@@ -275,7 +282,7 @@
       });
     },
 
-    // ========= 月历面板 =========
+    // ========= 月历面板（日历 → 重要日子 + 角色记录）=========
     _viewYear: 0,
     _viewMonth: 0,
     _selectedDate: '',
@@ -396,12 +403,13 @@
         if (dayOfWeek === 0) classes += ' cal-day-sunday';
         if (dayOfWeek === 6) classes += ' cal-day-saturday';
 
-        var hasMemos = Cal.hasMemosForDate(dateKey);
+        var hasMemos = false;
         var hasImportant = false;
-        if (hasMemos) {
-          var memos = Cal.getMemosForDate(dateKey);
-          for (var m = 0; m < memos.length; m++) {
-            if (memos[m].type === 'important') { hasImportant = true; break; }
+        var memos = Cal.getMemosForDate(dateKey);
+        for (var m = 0; m < memos.length; m++) {
+          if (memos[m].type === 'important' || memos[m].type === 'char') {
+            hasMemos = true;
+            if (memos[m].type === 'important') hasImportant = true;
           }
         }
 
@@ -434,22 +442,28 @@
       var dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
       var dateStr = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日 ' + Cal.WEEKDAYS[dateObj.getDay()];
 
-      var memos = Cal.getMemosForDate(dateKey);
+      var allMemos = Cal.getMemosForDate(dateKey);
+      var memos = [];
+      for (var i = 0; i < allMemos.length; i++) {
+        if (allMemos[i].type === 'important' || allMemos[i].type === 'char') {
+          memos.push({ memo: allMemos[i], idx: i });
+        }
+      }
 
       var html = '<div class="cal-selected-date-title">' + dateStr + '</div>';
 
       if (!memos.length) {
         html += '<div class="cal-empty">暂无记录，点击右上角 + 添加</div>';
       } else {
-        html += memos.map(function(memo, idx) {
-          var typeClass = 'cal-memo-type-schedule';
-          var typeLabel = '行程';
-          if (memo.type === 'important') { typeClass = 'cal-memo-type-important'; typeLabel = '重要'; }
+        html += memos.map(function(s) {
+          var memo = s.memo;
+          var idx = s.idx;
+          var typeClass = 'cal-memo-type-important';
+          var typeLabel = '重要';
           if (memo.type === 'char') { typeClass = 'cal-memo-type-char'; typeLabel = '角色'; }
 
           return '<div class="cal-memo-card">' +
             '<span class="cal-memo-type ' + typeClass + '">' + typeLabel + '</span>' +
-            (memo.time ? '<span style="font-size:12px;color:#999;flex-shrink:0;">' + App.esc(memo.time) + '</span>' : '') +
             '<div class="cal-memo-text">' + App.esc(memo.content || '') + '</div>' +
             '<div class="cal-memo-actions">' +
               '<button class="cal-sm-btn cal-sm-edit" data-idx="' + idx + '" type="button">' +
@@ -492,7 +506,6 @@
       var list = Cal.getMemosForDate(dateKey);
       var memo = isNew ? { type: 'important', time: '', content: '' } : list[idx];
 
-
       var panel = App.$('#calPanel');
       if (!panel) return;
 
@@ -521,11 +534,6 @@
             '</div>' +
           '</div>' +
 
-          '<div class="cal-form-group" id="memoTimeGroup">' +
-            '<label class="cal-form-label">时间</label>' +
-            '<input type="time" class="cal-input cal-input-time" id="memoTime" value="' + App.esc(memo.time || '') + '">' +
-          '</div>' +
-
           '<div class="cal-form-group">' +
             '<label class="cal-form-label">内容</label>' +
             '<textarea class="cal-textarea" id="memoContent" rows="4" placeholder="记录内容...">' + App.esc(memo.content || '') + '</textarea>' +
@@ -533,25 +541,15 @@
 
         '</div>';
 
-      var currentType = memo.type || 'schedule';
+      var currentType = memo.type || 'important';
 
       App.$('#memoTypeSwitch').querySelectorAll('.cal-type-opt').forEach(function(btn) {
         btn.addEventListener('click', function() {
           App.$('#memoTypeSwitch').querySelectorAll('.cal-type-opt').forEach(function(b) { b.classList.remove('active'); });
           btn.classList.add('active');
           currentType = btn.dataset.type;
-          var timeGroup = App.$('#memoTimeGroup');
-          if (currentType === 'important') {
-            timeGroup.style.display = 'none';
-          } else {
-            timeGroup.style.display = '';
-          }
         });
       });
-
-      if (currentType === 'important') {
-        App.$('#memoTimeGroup').style.display = 'none';
-      }
 
       App.safeOn('#backToCal', 'click', function() { Cal.renderCalendarView(); });
 
@@ -561,7 +559,7 @@
 
         var newMemo = {
           type: currentType,
-          time: currentType !== 'important' ? App.$('#memoTime').value : '',
+          time: '',
           content: content
         };
 
@@ -578,6 +576,152 @@
       });
     },
 
+    // ========= 今日行程面板（行程图标点进来）=========
+    openTodaySchedule: function() {
+      var panel = App.$('#calPanel');
+      if (!panel) return;
+
+      var key = Cal.todayKey();
+      var now = new Date();
+      var dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 ' + Cal.WEEKDAYS[now.getDay()];
+
+      panel.innerHTML =
+        '<div class="cal-panel-header">' +
+          '<div class="cal-panel-back" id="closeSchedulePanel">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+          '</div>' +
+          '<h2>今日行程</h2>' +
+          '<button class="cal-panel-action" id="addScheduleBtn" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M12 5v14M5 12h14"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="cal-panel-body">' +
+          '<div class="cal-schedule-date">' + dateStr + '</div>' +
+          '<div id="todayScheduleList" class="cal-schedule-list"></div>' +
+        '</div>';
+
+      Cal.renderTodayScheduleList(key);
+
+      panel.classList.remove('hidden');
+      setTimeout(function() { panel.classList.add('show'); }, 20);
+
+      App.safeOn('#closeSchedulePanel', 'click', function() { Cal.closePanel(); });
+      App.safeOn('#addScheduleBtn', 'click', function() { Cal.openEditScheduleItem(key, -1); });
+    },
+
+    renderTodayScheduleList: function(key) {
+      var container = App.$('#todayScheduleList');
+      if (!container) return;
+
+      var list = Cal.getSchedule(key);
+      var scheduleItems = [];
+      for (var i = 0; i < list.length; i++) {
+        if (!list[i].type || list[i].type === 'schedule') {
+          scheduleItems.push({ item: list[i], idx: i });
+        }
+      }
+
+      if (!scheduleItems.length) {
+        container.innerHTML = '<div class="cal-empty">今日暂无外出行程</div>';
+        return;
+      }
+
+      container.innerHTML = scheduleItems.map(function(s) {
+        return '<div class="cal-schedule-item">' +
+          '<div class="cal-schedule-time">' + App.esc(s.item.time || '') + '</div>' +
+          '<div class="cal-schedule-dot-line">' +
+            '<div class="cal-schedule-dot-circle"></div>' +
+          '</div>' +
+          '<div class="cal-schedule-right">' +
+            '<div class="cal-schedule-content">' + App.esc(s.item.content || '') + '</div>' +
+            '<div class="cal-schedule-actions">' +
+              '<button class="cal-sm-btn cal-sm-edit" data-idx="' + s.idx + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
+              '</button>' +
+              '<button class="cal-sm-btn cal-sm-del" data-idx="' + s.idx + '" type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      container.querySelectorAll('.cal-sm-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Cal.openEditScheduleItem(key, parseInt(btn.dataset.idx, 10));
+        });
+      });
+
+      container.querySelectorAll('.cal-sm-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('删除这条行程？')) return;
+          Cal.removeMemo(key, parseInt(btn.dataset.idx, 10));
+          Cal.renderTodayScheduleList(key);
+          Cal.render();
+          App.showToast('已删除');
+        });
+      });
+    },
+
+    openEditScheduleItem: function(key, idx) {
+      var isNew = idx < 0;
+      var list = Cal.getSchedule(key);
+      var item = isNew ? { type: 'schedule', time: '', content: '' } : list[idx];
+
+      var panel = App.$('#calPanel');
+      if (!panel) return;
+
+      panel.innerHTML =
+        '<div class="cal-panel-header">' +
+          '<div class="cal-panel-back" id="backToTodaySchedule">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+          '</div>' +
+          '<h2>' + (isNew ? '添加行程' : '编辑行程') + '</h2>' +
+          '<button class="cal-panel-action" id="saveScheduleItemBtn" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<polyline points="20 6 9 17 4 12"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="cal-panel-body">' +
+          '<div class="cal-form-group">' +
+            '<label class="cal-form-label">时间</label>' +
+            '<input type="time" class="cal-input cal-input-time" id="scheduleItemTime" value="' + App.esc(item.time || '') + '">' +
+          '</div>' +
+          '<div class="cal-form-group">' +
+            '<label class="cal-form-label">行程内容</label>' +
+            '<textarea class="cal-textarea" id="scheduleItemContent" rows="4" placeholder="外出行程...">' + App.esc(item.content || '') + '</textarea>' +
+          '</div>' +
+        '</div>';
+
+      App.safeOn('#backToTodaySchedule', 'click', function() { Cal.openTodaySchedule(); });
+
+      App.safeOn('#saveScheduleItemBtn', 'click', function() {
+        var time = App.$('#scheduleItemTime').value;
+        var content = App.$('#scheduleItemContent').value.trim();
+        if (!content) { App.showToast('请输入行程内容'); return; }
+
+        var newItem = { type: 'schedule', time: time, content: content };
+        if (isNew) {
+          Cal.addMemo(key, newItem);
+        } else {
+          list[idx] = newItem;
+          Cal.setSchedule(key, list);
+        }
+
+        Cal.render();
+        Cal.openTodaySchedule();
+        App.showToast(isNew ? '已添加' : '已保存');
+      });
+    },
+
+    // ========= 关闭面板 =========
     closePanel: function() {
       var panel = App.$('#calPanel');
       if (!panel) return;
