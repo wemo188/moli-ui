@@ -306,7 +306,7 @@ html, body {
 .screen-dot.active {
   width: 14px;
   border-radius: 999px;
-  background: #fff;
+  background: #8ba0d1;
   box-shadow: 0 0 8px rgba(139,160,209,0.4);
 }
 
