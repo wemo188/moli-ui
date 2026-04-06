@@ -219,12 +219,23 @@
 
       document.body.appendChild(overlay);
 
-      App.$('#pcEditFile').addEventListener('change', function(e) {
+            App.$('#pcEditFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          App.$('#pcEditAvatar').value = ev.target.result;
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var max = 400;
+            var w = img.width, h = img.height;
+            if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+            else { if (h > max) { w = w * max / h; h = max; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            App.$('#pcEditAvatar').value = canvas.toDataURL('image/jpeg', 0.7);
+          };
+          img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
       });
