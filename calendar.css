@@ -10,7 +10,7 @@
   position: relative;
   border-radius: 18px;
   padding: 14px 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,.44), rgba(240,248,255,.22));
+  background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(240,248,255,.1));
   border: 1px solid rgba(220,235,255,.55);
   box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
@@ -42,30 +42,6 @@
   pointer-events: none;
   mix-blend-mode: screen;
   opacity: .9;
-}
-
-@keyframes calShine {
-  0% { transform: translateX(-170%) skewX(-18deg); opacity: 0 }
-  10% { opacity: .55 }
-  60% { opacity: .35 }
-  100% { transform: translateX(260%) skewX(-18deg); opacity: 0 }
-}
-
-.cal-bar-shine {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.cal-bar-shine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 46%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
-  transform: skewX(-18deg);
-  animation: calShine 6.2s linear infinite;
 }
 
 .cal-bar-row {
