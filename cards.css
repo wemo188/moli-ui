@@ -87,7 +87,7 @@
   border-radius: calc(8px * var(--S));
   box-shadow: none; border: none; box-sizing: border-box;
 }
-#bx-2 .bx-av-front { background-size: cover; background-position: center; transition: filter 0.2s ease, visibility 0s 0.3s; transform: rotateY(0deg); background-color: #e8edf2; position: relative; }
+#bx-2 .bx-av-front { background-size: cover; background-position: center; transition: filter 0.2s ease, visibility 0s 0.3s; transform: rotateY(0deg); background-color: #e8edf2; }
 #bx-2 .bx-av-front:hover { filter: brightness(1.06); }
 #bx-2 .bx-av-back { transform: rotateY(180deg); transition: visibility 0s 0.3s; }
 
@@ -111,10 +111,11 @@
 #bx-2 .bx-av-back .bx-back-txt { position: relative; z-index: 1; }
 
 #bx-2 .bx-name-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  text-align: center; z-index: 5;
-  padding: calc(20px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
-  background: linear-gradient(to top, rgba(0,0,0,0.45), transparent);
+  width: 100%; text-align: center;
+  position: relative; z-index: 5;
+  margin-top: -40px;
+  padding: calc(18px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
   border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
   cursor: pointer;
 }
@@ -197,7 +198,7 @@
   border-radius: calc(8px * var(--S));
   box-shadow: none; border: none; box-sizing: border-box;
 }
-#bx-1 .bx-av-front { background-size: cover; background-position: center; transition: filter 0.2s ease, visibility 0s 0.3s; transform: rotateY(0deg); background-color: #e8edf2; position: relative; }
+#bx-1 .bx-av-front { background-size: cover; background-position: center; transition: filter 0.2s ease, visibility 0s 0.3s; transform: rotateY(0deg); background-color: #e8edf2; }
 #bx-1 .bx-av-front:hover { filter: brightness(1.06); }
 #bx-1 .bx-av-back { transform: rotateY(180deg); transition: visibility 0s 0.3s; }
 
@@ -221,10 +222,11 @@
 #bx-1 .bx-av-back .bx-back-txt { position: relative; z-index: 1; }
 
 #bx-1 .bx-name-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  text-align: center; z-index: 5;
-  padding: calc(20px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
-  background: linear-gradient(to top, rgba(0,0,0,0.45), transparent);
+  width: 100%; text-align: center;
+  position: relative; z-index: 5;
+  margin-top: -40px;
+  padding: calc(18px * var(--S)) calc(8px * var(--S)) calc(8px * var(--S));
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
   border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
   cursor: pointer;
 }
