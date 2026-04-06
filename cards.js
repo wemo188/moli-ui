@@ -25,7 +25,7 @@
       var L = Cards.data.left;
       var R = Cards.data.right;
 
-      // bx-2 左卡片（标签款）
+      // 左卡片标签
       var leftTagHtml = '';
       if (L.tag1 || L.tag2) {
         leftTagHtml = '<div class="bx-tag-wrap">';
@@ -34,11 +34,14 @@
         leftTagHtml += '</div>';
       }
 
+      // 左卡片名字条（在照片上）
+      var leftNameBar = '<div class="bx-name-bar"><div class="bx-name">' + App.esc(L.name || '') + '</div><div class="bx-sub">' + App.esc(L.sub || '') + '</div></div>';
+
       var leftFrontHtml = L.avatar
-        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(L.avatar) + '\')"></div>'
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(L.avatar) + '\')">' + leftNameBar + '</div>'
         : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
-      // bx-1 右卡片（丝带款）
+      // 右卡片丝带
       var rightRibbonHtml = '';
       if (R.tag1 || R.tag2) {
         rightRibbonHtml = '<div class="bx-side-ribbon">';
@@ -47,12 +50,14 @@
         rightRibbonHtml += '</div>';
       }
 
+      // 右卡片名字条（在照片上）
+      var rightNameBar = '<div class="bx-name-bar"><div class="bx-name">' + App.esc(R.name || '') + '</div><div class="bx-sub">' + App.esc(R.sub || '') + '</div></div>';
+
       var rightFrontHtml = R.avatar
-        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(R.avatar) + '\')"></div>'
+        ? '<div class="bx-av-front" style="background-image:url(\'' + App.esc(R.avatar) + '\')">' + rightNameBar + '</div>'
         : '<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
       container.innerHTML =
-        // 左卡片 bx-2
         '<div class="bx-w" id="bx-2" data-side="left">' +
           '<input type="checkbox" id="bx-fav2" class="bx-cb">' +
           leftTagHtml +
@@ -67,15 +72,10 @@
                   '</div>' +
                 '</div>' +
               '</label>' +
-              '<div class="bx-name-bar">' +
-                '<div class="bx-name">' + App.esc(L.name || '') + '</div>' +
-                '<div class="bx-sub">' + App.esc(L.sub || '') + '</div>' +
-              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
 
-        // 右卡片 bx-1
         '<div class="bx-w" id="bx-1" data-side="right">' +
           '<input type="checkbox" id="bx-fav1" class="bx-cb">' +
           '<div class="bx-cw">' +
@@ -90,20 +90,12 @@
                   '</div>' +
                 '</div>' +
               '</label>' +
-              '<div class="bx-name-bar">' +
-                '<div class="bx-name">' + App.esc(R.name || '') + '</div>' +
-                '<div class="bx-sub">' + App.esc(R.sub || '') + '</div>' +
-              '</div>' +
             '</div>' +
           '</div>' +
         '</div>';
 
-      // checkbox唯一ID
       Cards.initFlip();
-      // 长按编辑
-      Cards.bindLongPress();
-      // 无头像时点击打开编辑
-      Cards.bindEmptyClick();
+      Cards.bindEdit();
     },
 
     initFlip: function() {
@@ -119,42 +111,30 @@
       });
     },
 
-    bindLongPress: function() {
+    bindEdit: function() {
       document.querySelectorAll('#cardRow .bx-w').forEach(function(card) {
-        var timer = null;
-        card.addEventListener('touchstart', function(e) {
-          timer = setTimeout(function() {
-            timer = null;
+        // 名字区域点击编辑
+        var nameBar = card.querySelector('.bx-name-bar');
+        if (nameBar) {
+          nameBar.addEventListener('click', function(e) {
             e.preventDefault();
-            // 阻止翻转
+            e.stopPropagation();
             var cb = card.querySelector('.bx-cb');
-            if (cb) {
-              var was = cb.checked;
-              setTimeout(function() { cb.checked = was; }, 10);
-            }
+            if (cb) { var was = cb.checked; setTimeout(function() { cb.checked = was; }, 10); }
             Cards.openEdit(card.dataset.side);
-          }, 600);
-        }, { passive: false });
-        card.addEventListener('touchend', function() {
-          if (timer) { clearTimeout(timer); timer = null; }
-        });
-        card.addEventListener('touchmove', function() {
-          if (timer) { clearTimeout(timer); timer = null; }
-        });
-      });
-    },
-
-    bindEmptyClick: function() {
-      document.querySelectorAll('#cardRow .bx-av-placeholder').forEach(function(ph) {
-        ph.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var card = ph.closest('.bx-w');
-          // 阻止checkbox触发
-          var cb = card.querySelector('.bx-cb');
-          if (cb) cb.checked = false;
-          Cards.openEdit(card.dataset.side);
-        });
+          });
+        }
+        // 无头像时点击编辑
+        var ph = card.querySelector('.bx-av-placeholder');
+        if (ph) {
+          ph.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var cb = card.querySelector('.bx-cb');
+            if (cb) cb.checked = false;
+            Cards.openEdit(card.dataset.side);
+          });
+        }
       });
     },
 
@@ -207,7 +187,7 @@
           '</div>' +
 
           '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">背面内容（翻转后显示，支持HTML）</label>' +
+            '<label class="pc-edit-label">背面内容（翻转后显示）</label>' +
             '<textarea class="pc-edit-textarea" id="pcEditBack" rows="4" placeholder="写点什么...">' + App.esc(d.backText || '') + '</textarea>' +
           '</div>' +
 
@@ -219,7 +199,8 @@
 
       document.body.appendChild(overlay);
 
-            App.$('#pcEditFile').addEventListener('change', function(e) {
+      // 上传图片压缩
+      App.$('#pcEditFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
@@ -240,6 +221,7 @@
         reader.readAsDataURL(file);
       });
 
+      // 保存
       App.$('#pcEditSaveBtn').addEventListener('click', function() {
         Cards.data[side] = {
           avatar: App.$('#pcEditAvatar').value.trim(),
@@ -255,10 +237,12 @@
         App.showToast('已保存');
       });
 
+      // 取消
       App.$('#pcEditCancelBtn').addEventListener('click', function() {
         overlay.remove();
       });
 
+      // 点击遮罩关闭
       overlay.addEventListener('click', function(e) {
         if (e.target === overlay) overlay.remove();
       });
