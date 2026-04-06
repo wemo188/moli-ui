@@ -10,7 +10,7 @@
   position: relative;
   border-radius: 18px;
   padding: 14px 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(240,248,255,.5));
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(240,248,255,.05));
   border: 1px solid rgba(220,235,255,.55);
   box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
