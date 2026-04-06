@@ -280,7 +280,7 @@ html, body {
 .screen-indicators {
   position: fixed;
   left: 50%;
-  bottom: calc(30px + var(--safe-bottom));
+  bottom: calc(10px + var(--safe-bottom));
   transform: translateX(-50%);
   z-index: 20;
   display: flex;
