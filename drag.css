@@ -1,3 +1,29 @@
+/* 编辑模式全局 */
+body.drag-edit-active {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+body.drag-edit-active .page-slider {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+body.drag-edit-active .page-slider-main {
+  overflow: hidden !important;
+}
+
+body.drag-edit-active .screen-page-inner {
+  overflow: hidden !important;
+}
+
+/* 拖拽中容器 */
+body.drag-active {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
 /* 抖动 */
 @keyframes iconWiggle {
   0% { transform: rotate(0deg); }
@@ -8,6 +34,9 @@
 
 .drag-mode {
   animation: iconWiggle 0.25s ease-in-out infinite !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
 }
 
 /* 完成按钮 */
@@ -18,7 +47,7 @@
   z-index: 99998;
   padding: 8px 22px;
   margin-top: 10px;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.8);
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -26,9 +55,10 @@
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  -webkit-touch-callout: none;
 }
 
 .drag-done-btn:active {
