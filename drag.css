@@ -1,0 +1,54 @@
+/* 拖拽幽灵 */
+.drag-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.85;
+  transform: scale(1.12);
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.25));
+}
+
+/* 原位占位 */
+.drag-placeholder {
+  opacity: 0.2 !important;
+  animation: none !important;
+}
+
+/* 抖动 */
+@keyframes iconWiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-2deg); }
+  75% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.drag-mode {
+  animation: iconWiggle 0.25s ease-in-out infinite;
+}
+
+/* 位置交换过渡 */
+#appGrid .app-icon {
+  transition: transform 0.15s ease;
+}
+
+/* 完成按钮 */
+.drag-done-btn {
+  position: fixed;
+  top: 50px;
+  right: 16px;
+  z-index: 9998;
+  padding: 8px 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.drag-done-btn:active {
+  opacity: 0.7;
+}
