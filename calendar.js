@@ -99,7 +99,7 @@
     },
 
     // ========= 渲染主页卡片 =========
-        render: function() {
+            render: function() {
       var container = App.$('#calendarWeatherRow');
       if (!container) return;
 
@@ -107,49 +107,68 @@
       var month = now.getMonth() + 1;
       var date = now.getDate();
       var weekday = Cal.WEEKDAYS[now.getDay()];
+      var hours = String(now.getHours()).padStart(2, '0');
+      var mins = String(now.getMinutes()).padStart(2, '0');
+
       var todaySchedule = Cal.getSchedule(Cal.todayKey());
       var scheduleCount = todaySchedule.length;
 
       var tempText = Cal.weather ? Cal.weather.temp + '°' : '--°';
-      var descText = Cal.weather ? Cal.weather.desc : '点击设置';
-      var humidText = Cal.weather ? '湿度 ' + Cal.weather.humidity + '%' : '';
+      var descText = Cal.weather ? Cal.weather.desc : '未设置';
+      var humidText = Cal.weather ? '湿度' + Cal.weather.humidity + '%' : '';
 
-      // 日程预览
-      var schedulePreview = '';
-      if (scheduleCount > 0) {
-        schedulePreview = todaySchedule.map(function(item) {
-          var t = item.time ? item.time + ' ' : '';
-          return t + item.content;
-        }).join('\n');
-      }
+      var scheduleText = scheduleCount > 0 ? scheduleCount + '条' : '暂无';
 
       container.innerHTML =
-        '<div class="cal-card" id="weatherCardTap">' +
-          '<div class="cal-card-inner">' +
-            '<div class="cal-temp">' + tempText + '</div>' +
-            '<div class="cal-desc">' + descText + '</div>' +
-            '<div class="cal-humid">' + humidText + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="cal-card" id="dateCardTap">' +
-          '<div class="cal-card-inner">' +
-            '<div class="cal-month">' + month + '月</div>' +
-            '<div class="cal-day">' + date + '</div>' +
-            '<div class="cal-weekday">' + weekday + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="cal-card" id="scheduleCardTap">' +
-          '<div class="cal-card-inner">' +
-            '<div class="cal-schedule-label">今日行程</div>' +
-            (scheduleCount > 0
-              ? '<div class="cal-schedule-preview">' + App.esc(schedulePreview) + '</div>'
-              : '<div class="cal-schedule-none">暂无</div>') +
+        '<div class="cal-bar-card">' +
+          '<div class="cal-bar-shine"></div>' +
+          '<div class="cal-bar-row">' +
+
+            '<div class="cal-bar-item" id="dateCardTap">' +
+              '<div class="cal-bar-badge">' +
+                '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="5.5"/><line x1="16" y1="2" x2="16" y2="5.5"/><line x1="7.5" y1="13" x2="10" y2="13"/><line x1="7.5" y1="17" x2="14" y2="17"/></svg>' +
+              '</div>' +
+              '<div class="cal-bar-text">' + month + '/' + date + '</div>' +
+              '<div class="cal-bar-sub">' + weekday + '</div>' +
+            '</div>' +
+
+            '<div class="cal-bar-item" id="timeDisplay">' +
+              '<div class="cal-bar-badge">' +
+                '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="12" x2="16.5" y2="15"/><circle cx="12" cy="12" r=".8" fill="#fff" stroke="none"/></svg>' +
+              '</div>' +
+              '<div class="cal-bar-text" id="timeText">' + hours + ':' + mins + '</div>' +
+            '</div>' +
+
+            '<div class="cal-bar-item" id="weatherCardTap">' +
+              '<div class="cal-bar-badge">' +
+                '<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2" stroke-width="1.7"/><line x1="9" y1="3.5" x2="9" y2="2"/><line x1="9" y1="15" x2="9" y2="16"/><line x1="3.5" y1="9" x2="2" y2="9"/><line x1="5.1" y1="5.1" x2="4" y2="4"/><line x1="12.9" y1="5.1" x2="14" y2="4"/><path d="M11 19.5H20A2.8 2.8 0 0 0 20 14A3.8 3.8 0 0 0 12.8 13.2A3 3 0 0 0 8.5 15.5A2.5 2.5 0 0 0 8.5 19.5Z" stroke-width="1.7"/></svg>' +
+              '</div>' +
+              '<div class="cal-bar-text">' + tempText + '</div>' +
+              '<div class="cal-bar-sub">' + descText + '</div>' +
+            '</div>' +
+
+            '<div class="cal-bar-item" id="scheduleCardTap">' +
+              '<div class="cal-bar-badge">' +
+                '<svg viewBox="0 0 24 24"><path d="M5 3H15L19 7V21H5Z"/><polyline points="15,3 15,7 19,7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14.5" x2="16" y2="14.5"/><line x1="8" y1="18" x2="13" y2="18"/></svg>' +
+              '</div>' +
+              '<div class="cal-bar-text">' + scheduleText + '</div>' +
+              '<div class="cal-bar-sub">行程</div>' +
+            '</div>' +
+
           '</div>' +
         '</div>';
 
       App.safeOn('#weatherCardTap', 'click', function() { Cal.openWeatherPanel(); });
       App.safeOn('#dateCardTap', 'click', function() { Cal.openSchedulePanel(); });
       App.safeOn('#scheduleCardTap', 'click', function() { Cal.openSchedulePanel(); });
+
+      // 时间实时更新
+      if (Cal._timeTimer) clearInterval(Cal._timeTimer);
+      Cal._timeTimer = setInterval(function() {
+        var t = new Date();
+        var el = App.$('#timeText');
+        if (el) el.textContent = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+      }, 10000);
     },
 
     // ========= 天气面板 =========
