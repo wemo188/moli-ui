@@ -8,8 +8,6 @@
   padding: 16px 14px 0;
 }
 
-.cal-card {
-  flex: 1;
   .cal-card {
   flex: 0 0 auto;  /* 取消自动伸缩 */
   position: relative;
