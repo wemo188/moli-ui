@@ -3,15 +3,13 @@
 ========================= */
 .cal-row {
   display: flex;
-  justify-content: center;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
-  padding: 60px 16px 0;
+  padding: 16px 14px 0;
 }
 
 .cal-card {
-  width: 105px;
-  flex-shrink: 0;
+  flex: 1;
   position: relative;
   border-radius: 14px;
   padding: 14px 10px;
@@ -401,9 +399,9 @@
   display: flex;
   align-items: stretch;
   gap: 0;
-  padding: 16px 0;
+  padding: 0;
   position: relative;
-  min-height: 48px;
+  min-height: 56px;
 }
 
 /* 左边时间 */
@@ -420,7 +418,7 @@
   justify-content: flex-end;
 }
 
-/* 中间圆点+线 */
+/* 中间圆点+线容器 */
 .cal-schedule-dot-line {
   width: 32px;
   display: flex;
@@ -430,6 +428,46 @@
   position: relative;
 }
 
+/* 竖线 - 用两段实现 */
+.cal-schedule-dot-line::before,
+.cal-schedule-dot-line::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 1.5px;
+  background: rgba(79, 121, 166, 0.2);
+  transform: translateX(-50%);
+}
+
+/* 上半段线 */
+.cal-schedule-dot-line::before {
+  top: 0;
+  bottom: 50%;
+}
+
+/* 下半段线 */
+.cal-schedule-dot-line::after {
+  top: 50%;
+  bottom: 0;
+}
+
+/* 第一条隐藏上半线 */
+.cal-schedule-item:first-child .cal-schedule-dot-line::before {
+  display: none;
+}
+
+/* 最后一条隐藏下半线 */
+.cal-schedule-item:last-child .cal-schedule-dot-line::after {
+  display: none;
+}
+
+/* 只有一条时都不显示 */
+.cal-schedule-item:only-child .cal-schedule-dot-line::before,
+.cal-schedule-item:only-child .cal-schedule-dot-line::after {
+  display: none;
+}
+
+/* 圆点 */
 .cal-schedule-dot-circle {
   width: 10px;
   height: 10px;
@@ -438,34 +476,6 @@
   border: 2px solid #4f79a6;
   position: relative;
   z-index: 2;
-}
-
-/* 竖线 */
-.cal-schedule-dot-line::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1.5px;
-  background: rgba(79, 121, 166, 0.15);
-  transform: translateX(-50%);
-  z-index: 1;
-}
-
-/* 第一条隐藏上半线 */
-.cal-schedule-item:first-child .cal-schedule-dot-line::before {
-  top: 50%;
-}
-
-/* 最后一条隐藏下半线 */
-.cal-schedule-item:last-child .cal-schedule-dot-line::before {
-  bottom: 50%;
-}
-
-/* 只有一条时不显示线 */
-.cal-schedule-item:only-child .cal-schedule-dot-line::before {
-  display: none;
 }
 
 /* 右边内容 */
