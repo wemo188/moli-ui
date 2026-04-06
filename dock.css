@@ -11,7 +11,7 @@
   padding: 20px 40px;
   display: flex;
   gap: 16px;
-  background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(240,248,255,.7));
+  background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(240,248,255,.3));
 }
 
 .dock-item {
