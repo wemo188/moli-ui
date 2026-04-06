@@ -4,7 +4,7 @@
 .card-row {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 30px;
   padding: 10px 20px 0;
   width: 100%;
 }
@@ -17,8 +17,8 @@
 /* ====== bx-2 左卡片（标签款） ====== */
 #bx-2 {
   --S: 1;
-  --W0: 100px;
-  --CARD_H0: 100px;
+  --W0: 200px;
+  --CARD_H0: 200px;
   --PAD0: 8px;
   --INK: #4a5a75;
   --THEME: #bbd3ef;
@@ -118,8 +118,8 @@
 /* ====== bx-1 右卡片（丝带款） ====== */
 #bx-1 {
   --S: 1;
-  --W0: 100px;
-  --CARD_H0: 100px;
+  --W0: 200px;
+  --CARD_H0: 200px;
   --PAD0: 8px;
   --INK: #4a5a75;
   --BLUE: #8ca3c2;
