@@ -1,67 +1,47 @@
-body.drag-edit-active {
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-}
-
-body.drag-edit-active .page-slider {
-  overflow: hidden !important;
-  touch-action: none !important;
-}
-
-body.drag-edit-active .page-slider-main {
-  overflow: hidden !important;
-}
-
-body.drag-edit-active .screen-page-inner {
-  overflow: hidden !important;
-}
-
-body.drag-active {
-  overflow: hidden !important;
-  touch-action: none !important;
+/* 占位 */
+.drag-placeholder-box {
+  opacity: 0.15;
+  pointer-events: none;
 }
 
 /* 抖动 */
 @keyframes iconWiggle {
   0% { transform: rotate(0deg); }
-  25% { transform: rotate(-2.5deg); }
-  75% { transform: rotate(2.5deg); }
+  25% { transform: rotate(-2deg); }
+  75% { transform: rotate(2deg); }
   100% { transform: rotate(0deg); }
 }
 
 .drag-mode {
-  animation: iconWiggle 0.25s ease-in-out infinite !important;
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
+  animation: iconWiggle 0.25s ease-in-out infinite;
 }
 
-/* 按钮组 */
+/* 拖拽时禁止页面交互 */
+.drag-active {
+  overflow: hidden;
+}
+
+/* 完成/重置 按钮 */
 .drag-done-wrap {
   position: fixed;
-  top: env(safe-area-inset-top, 10px);
+  top: 50px;
   right: 16px;
-  z-index: 99998;
-  margin-top: 10px;
+  z-index: 9998;
   display: flex;
   gap: 8px;
 }
 
 .drag-done-btn {
-  padding: 8px 22px;
-  background: rgba(0,0,0,0.8);
+  padding: 8px 20px;
+  background: #1a1a1a;
   color: #fff;
   border: none;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  -webkit-touch-callout: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .drag-done-btn:active {
@@ -71,15 +51,14 @@ body.drag-active {
 .drag-reset-btn {
   padding: 8px 16px;
   background: rgba(255,255,255,0.9);
-  color: #333;
-  border: none;
+  color: #666;
+  border: 1px solid rgba(0,0,0,0.1);
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-  -webkit-touch-callout: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .drag-reset-btn:active {
