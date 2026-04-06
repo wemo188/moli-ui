@@ -99,7 +99,7 @@
     },
 
     // ========= 渲染主页卡片 =========
-            render: function() {
+    render: function() {
       var container = App.$('#calendarWeatherRow');
       if (!container) return;
 
@@ -109,6 +109,7 @@
       var weekday = Cal.WEEKDAYS[now.getDay()];
       var hours = String(now.getHours()).padStart(2, '0');
       var mins = String(now.getMinutes()).padStart(2, '0');
+      var secs = String(now.getSeconds()).padStart(2, '0');
 
       var todaySchedule = Cal.getSchedule(Cal.todayKey());
       var scheduleCount = todaySchedule.length;
@@ -137,6 +138,7 @@
                 '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="12" x2="16.5" y2="15"/><circle cx="12" cy="12" r=".8" fill="#fff" stroke="none"/></svg>' +
               '</div>' +
               '<div class="cal-bar-text" id="timeText">' + hours + ':' + mins + '</div>' +
+              '<div class="cal-bar-sub" id="secText">' + secs + '</div>' +
             '</div>' +
 
             '<div class="cal-bar-item" id="weatherCardTap">' +
@@ -162,13 +164,15 @@
       App.safeOn('#dateCardTap', 'click', function() { Cal.openSchedulePanel(); });
       App.safeOn('#scheduleCardTap', 'click', function() { Cal.openSchedulePanel(); });
 
-      // 时间实时更新
+      // 时间+秒钟实时更新
       if (Cal._timeTimer) clearInterval(Cal._timeTimer);
       Cal._timeTimer = setInterval(function() {
         var t = new Date();
         var el = App.$('#timeText');
+        var se = App.$('#secText');
         if (el) el.textContent = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
-      }, 10000);
+        if (se) se.textContent = String(t.getSeconds()).padStart(2, '0');
+      }, 1000);
     },
 
     // ========= 天气面板 =========
@@ -373,7 +377,7 @@
         '<div class="cal-panel-body">' +
           '<div class="cal-form-group">' +
             '<label class="cal-form-label">时间</label>' +
-            '<input type="time" class="cal-input" id="scheduleTime" value="' + App.esc(item.time || '') + '">' +
+            '<input type="time" class="cal-input cal-input-time" id="scheduleTime" value="' + App.esc(item.time || '') + '">' +
           '</div>' +
           '<div class="cal-form-group">' +
             '<label class="cal-form-label">行程内容</label>' +
@@ -409,6 +413,22 @@
       setTimeout(function() { panel.classList.add('hidden'); }, 350);
     },
 
+    // ========= Dock栏事件 =========
+    initDock: function() {
+      App.safeOn('#dockMine', 'click', function() {
+        App.showToast('我的 - 开发中');
+      });
+      App.safeOn('#dockLong', 'click', function() {
+        App.showToast('长剧情 - 开发中');
+      });
+      App.safeOn('#dockShort', 'click', function() {
+        App.showToast('短对话 - 开发中');
+      });
+      App.safeOn('#dockCheck', 'click', function() {
+        App.showToast('查岗 - 开发中');
+      });
+    },
+
     // ========= 自动刷新 =========
     startAutoRefresh: function() {
       setInterval(function() {
@@ -438,6 +458,7 @@
       }
 
       Cal.render();
+      Cal.initDock();
 
       if (Cal.city && Cal.weather) {
         var age = Date.now() - (Cal.weather.time || 0);
