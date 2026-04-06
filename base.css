@@ -280,22 +280,22 @@ html, body {
 .screen-indicators {
   position: fixed;
   left: 50%;
-  bottom: calc(14px + var(--safe-bottom));
+  bottom: calc(90px + var(--safe-bottom));
   transform: translateX(-50%);
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 5px;
+  padding: 4px 8px;
   border-radius: 999px;
-  background: rgba(20,20,24,0.38);
+  background: rgba(20,20,24,0.28);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .screen-dot {
-  width: 10px;
-  height: 10px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   border: none;
   background: rgba(255,255,255,0.35);
@@ -304,10 +304,10 @@ html, body {
 }
 
 .screen-dot.active {
-  width: 24px;
+  width: 14px;
   border-radius: 999px;
   background: #8ba0d1;
-  box-shadow: 0 0 12px rgba(139,160,209,0.4);
+  box-shadow: 0 0 8px rgba(139,160,209,0.4);
 }
 
 /* =========================
