@@ -5,17 +5,15 @@
 
   var Drag = {
     _editMode: false,
-    _timer: null,
     _dragging: false,
     _dragEl: null,
     _ghost: null,
-    _startX: 0,
-    _startY: 0,
     _offsetX: 0,
     _offsetY: 0,
-    _sourceContainer: null,
-    _sourceSelector: '',
-    _lastSwapTime: 0,
+    _container: null,
+    _selector: '',
+    _lastSwap: 0,
+    _touchId: null,
 
     load: function() {
       Drag._appOrder = App.LS.get('iconOrder') || [];
@@ -32,11 +30,11 @@
       Drag._applyTo('#dockBar', '.dock-item', Drag._dockOrder);
     },
 
-    _applyTo: function(containerSel, itemSel, order) {
-      var c = document.querySelector(containerSel);
+    _applyTo: function(cSel, iSel, order) {
+      var c = document.querySelector(cSel);
       if (!c || !order.length) return;
       var map = {};
-      c.querySelectorAll(itemSel).forEach(function(el) {
+      c.querySelectorAll(iSel).forEach(function(el) {
         if (el.id) map[el.id] = el;
       });
       order.forEach(function(id) {
@@ -44,209 +42,222 @@
       });
     },
 
-    saveCurrentOrder: function() {
-      Drag._appOrder = Drag._getIds('#appGrid', '.app-icon');
-      Drag._dockOrder = Drag._getIds('#dockBar', '.dock-item');
+    saveOrder: function() {
+      var g = document.querySelector('#appGrid');
+      var d = document.querySelector('#dockBar');
+      Drag._appOrder = [];
+      Drag._dockOrder = [];
+      if (g) g.querySelectorAll('.app-icon').forEach(function(el) { if (el.id) Drag._appOrder.push(el.id); });
+      if (d) d.querySelectorAll('.dock-item').forEach(function(el) { if (el.id) Drag._dockOrder.push(el.id); });
       Drag.save();
     },
 
-    _getIds: function(containerSel, itemSel) {
-      var c = document.querySelector(containerSel);
-      if (!c) return [];
-      var ids = [];
-      c.querySelectorAll(itemSel).forEach(function(el) {
-        if (el.id) ids.push(el.id);
-      });
-      return ids;
-    },
-
-    // ========= 编辑模式 =========
-    enterEditMode: function() {
+    // ====== 编辑模式 ======
+    enterEdit: function() {
       if (Drag._editMode) return;
       Drag._editMode = true;
+      document.body.classList.add('drag-edit-active');
 
       document.querySelectorAll('#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w').forEach(function(el) {
         el.classList.add('drag-mode');
       });
 
+      // 禁用页面滑动
+      if (App.pageSlider && App.pageSlider.disable) {
+        App.pageSlider.disable();
+      }
+
       if (navigator.vibrate) navigator.vibrate(30);
-      Drag.showDoneBtn();
-      App.showToast('编辑模式：拖拽换位置');
+      Drag._showDone();
+      App.showToast('拖拽换位 · 点击完成退出');
     },
 
-    exitEditMode: function() {
+    exitEdit: function() {
       if (!Drag._editMode) return;
       Drag._editMode = false;
+      document.body.classList.remove('drag-edit-active');
 
       document.querySelectorAll('.drag-mode').forEach(function(el) {
         el.classList.remove('drag-mode');
       });
 
+      // 恢复页面滑动
+      if (App.pageSlider && App.pageSlider.enable) {
+        App.pageSlider.enable();
+      }
+
       var btn = App.$('#dragDoneBtn');
       if (btn) btn.remove();
     },
 
-    showDoneBtn: function() {
+    _showDone: function() {
       var old = App.$('#dragDoneBtn');
       if (old) old.remove();
-
       var btn = document.createElement('button');
       btn.id = 'dragDoneBtn';
       btn.className = 'drag-done-btn';
       btn.textContent = '完成';
-      btn.addEventListener('click', function(e) {
+      btn.addEventListener('touchend', function(e) {
+        e.preventDefault();
         e.stopPropagation();
-        Drag.exitEditMode();
+        Drag.exitEdit();
       });
       document.body.appendChild(btn);
     },
 
-    // ========= 工具 =========
-    getCenter: function(el) {
-      var r = el.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-    },
-
-    findClosest: function(x, y) {
-      var container = Drag._sourceContainer;
-      var selector = Drag._sourceSelector;
-      if (!container) return null;
-      var items = container.querySelectorAll(selector);
-      var closest = null;
-      var minDist = Infinity;
-      for (var i = 0; i < items.length; i++) {
-        var el = items[i];
-        if (el === Drag._dragEl) continue;
-        var c = Drag.getCenter(el);
-        var d = Math.abs(x - c.x) + Math.abs(y - c.y);
-        if (d < minDist) {
-          minDist = d;
-          closest = el;
-        }
-      }
-      return closest;
-    },
-
-    // ========= 拖拽 =========
-    startDrag: function(el, container, selector, touchX, touchY) {
+    // ====== 拖拽 ======
+    startDrag: function(el, container, selector, tx, ty) {
       Drag._dragging = true;
       Drag._dragEl = el;
-      Drag._sourceContainer = container;
-      Drag._sourceSelector = selector;
+      Drag._container = container;
+      Drag._selector = selector;
+      document.body.classList.add('drag-active');
 
-      var rect = el.getBoundingClientRect();
-      Drag._offsetX = touchX - rect.left;
-      Drag._offsetY = touchY - rect.top;
+      var r = el.getBoundingClientRect();
+      Drag._offsetX = tx - r.left;
+      Drag._offsetY = ty - r.top;
 
-      // 幽灵：复制节点保留样式
       var ghost = el.cloneNode(true);
+      ghost.id = '';
       ghost.style.cssText =
-        'position:fixed!important;z-index:99999!important;pointer-events:none!important;' +
-        'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
-        'left:' + rect.left + 'px;top:' + rect.top + 'px;' +
-        'opacity:0.85;transform:scale(1.08);' +
-        'filter:drop-shadow(0 10px 20px rgba(0,0,0,0.3));' +
-        'will-change:left,top;transition:none;animation:none;margin:0;';
+        'position:fixed;z-index:99999;pointer-events:none;margin:0;' +
+        'width:' + r.width + 'px;height:' + r.height + 'px;' +
+        'left:' + r.left + 'px;top:' + r.top + 'px;' +
+        'opacity:0.88;transform:scale(1.08);' +
+        'filter:drop-shadow(0 8px 20px rgba(0,0,0,0.35));' +
+        'animation:none;transition:none;';
       document.body.appendChild(ghost);
       Drag._ghost = ghost;
 
-      el.style.opacity = '0.15';
+      el.style.opacity = '0.12';
       el.style.animation = 'none';
 
-      if (navigator.vibrate) navigator.vibrate(15);
+      if (navigator.vibrate) navigator.vibrate(12);
     },
 
-    moveDrag: function(touchX, touchY) {
-      if (!Drag._ghost || !Drag._dragEl) return;
+    moveDrag: function(tx, ty) {
+      if (!Drag._ghost) return;
+      Drag._ghost.style.left = (tx - Drag._offsetX) + 'px';
+      Drag._ghost.style.top = (ty - Drag._offsetY) + 'px';
 
-      Drag._ghost.style.left = (touchX - Drag._offsetX) + 'px';
-      Drag._ghost.style.top = (touchY - Drag._offsetY) + 'px';
-
-      // 限制交换频率
       var now = Date.now();
-      if (now - Drag._lastSwapTime < 150) return;
+      if (now - Drag._lastSwap < 180) return;
 
-      var target = Drag.findClosest(touchX, touchY);
-      if (!target || target === Drag._dragEl) return;
-
-      var container = Drag._sourceContainer;
-      var allItems = Array.from(container.querySelectorAll(Drag._sourceSelector));
-      var fromIdx = allItems.indexOf(Drag._dragEl);
-      var toIdx = allItems.indexOf(target);
-      if (fromIdx === -1 || toIdx === -1) return;
-
-      // 交换位置
-      if (fromIdx < toIdx) {
-        container.insertBefore(Drag._dragEl, target.nextElementSibling);
-      } else {
-        container.insertBefore(Drag._dragEl, target);
+      var best = null, bestDist = Infinity;
+      var items = Drag._container.querySelectorAll(Drag._selector);
+      for (var i = 0; i < items.length; i++) {
+        if (items[i] === Drag._dragEl) continue;
+        var r = items[i].getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var cy = r.top + r.height / 2;
+        var dist = Math.abs(tx - cx) + Math.abs(ty - cy);
+        if (dist < bestDist) { bestDist = dist; best = items[i]; }
       }
 
-      Drag._lastSwapTime = now;
+      if (!best) return;
+
+      var allItems = Array.from(items);
+      var fi = allItems.indexOf(Drag._dragEl);
+      var ti = allItems.indexOf(best);
+      if (fi === ti || fi === -1 || ti === -1) return;
+
+      if (fi < ti) {
+        Drag._container.insertBefore(Drag._dragEl, best.nextElementSibling);
+      } else {
+        Drag._container.insertBefore(Drag._dragEl, best);
+      }
+      Drag._lastSwap = now;
     },
 
     endDrag: function() {
-      // 移除幽灵
-      if (Drag._ghost) {
-        Drag._ghost.remove();
-        Drag._ghost = null;
-      }
-
-      // 恢复原图标
+      document.body.classList.remove('drag-active');
+      if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
       if (Drag._dragEl) {
         Drag._dragEl.style.opacity = '';
         Drag._dragEl.style.animation = '';
-        Drag._dragEl.classList.add('drag-mode');
+        if (Drag._editMode) Drag._dragEl.classList.add('drag-mode');
         Drag._dragEl = null;
       }
-
-      Drag._sourceContainer = null;
-      Drag._sourceSelector = '';
+      Drag._container = null;
+      Drag._selector = '';
       Drag._dragging = false;
-
-      // 保存新顺序
-      Drag.saveCurrentOrder();
+      Drag.saveOrder();
     },
 
-    // ========= 绑定 =========
-    bindContainer: function(containerSel, itemSel) {
-      var container = document.querySelector(containerSel);
-      if (!container) return;
+    // ====== 全局touch接管 ======
+    _allContainers: [],
+
+    _findItem: function(target) {
+      for (var i = 0; i < Drag._allContainers.length; i++) {
+        var c = Drag._allContainers[i];
+        var item = target.closest(c.selector);
+        if (item && c.el.contains(item)) {
+          return { item: item, container: c.el, selector: c.selector };
+        }
+      }
+      return null;
+    },
+
+    bindAll: function() {
+      var pairs = [
+        { sel: '#appGrid', item: '.app-icon' },
+        { sel: '#dockBar', item: '.dock-item' },
+        { sel: '#cardRow', item: '.bx-w' }
+      ];
+
+      Drag._allContainers = [];
+      pairs.forEach(function(p) {
+        var el = document.querySelector(p.sel);
+        if (el) Drag._allContainers.push({ el: el, selector: p.item });
+      });
 
       var pressTimer = null;
-      var pressItem = null;
-      var startX = 0;
-      var startY = 0;
-      var moved = false;
+      var startX = 0, startY = 0;
+      var pressTarget = null;
 
-      container.addEventListener('touchstart', function(e) {
-        var item = e.target.closest(itemSel);
-        if (!item) return;
+      // 全局touch事件
+      document.addEventListener('touchstart', function(e) {
+        if (e.target.closest('.drag-done-btn')) return;
+        if (e.target.closest('.pc-edit-overlay')) return;
+        if (e.target.closest('.panel')) return;
+        if (e.target.closest('.fullpage-panel')) return;
+        if (e.target.closest('.ball-menu')) return;
+
+        var found = Drag._findItem(e.target);
+        if (!found) return;
 
         var touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
-        moved = false;
-        pressItem = item;
+        Drag._touchId = touch.identifier;
+        pressTarget = found;
 
         if (Drag._editMode) {
-          // 编辑模式：短按开始拖
+          // 编辑模式：立即准备拖
           pressTimer = setTimeout(function() {
             pressTimer = null;
-            Drag.startDrag(item, container, itemSel, touch.clientX, touch.clientY);
-          }, 100);
+            Drag.startDrag(found.item, found.container, found.selector, touch.clientX, touch.clientY);
+          }, 80);
         } else {
-          // 正常模式：长按进入编辑
+          // 长按进入编辑
           pressTimer = setTimeout(function() {
             pressTimer = null;
-            e.preventDefault();
-            Drag.enterEditMode();
+            Drag.enterEdit();
           }, 500);
         }
-      }, { passive: false });
+      }, { passive: true });
 
-      container.addEventListener('touchmove', function(e) {
-        var touch = e.touches[0];
+      document.addEventListener('touchmove', function(e) {
+        // 找到正确的touch
+        var touch = null;
+        for (var i = 0; i < e.touches.length; i++) {
+          if (e.touches[i].identifier === Drag._touchId) {
+            touch = e.touches[i];
+            break;
+          }
+        }
+        if (!touch) return;
+
         var dx = Math.abs(touch.clientX - startX);
         var dy = Math.abs(touch.clientY - startY);
 
@@ -254,60 +265,59 @@
           clearTimeout(pressTimer);
           pressTimer = null;
 
-          // 编辑模式下移动了就立即开始拖
-          if (Drag._editMode && pressItem && !Drag._dragging) {
-            Drag.startDrag(pressItem, container, itemSel, touch.clientX, touch.clientY);
+          // 编辑模式，手指动了就立即开始拖
+          if (Drag._editMode && pressTarget && !Drag._dragging) {
+            Drag.startDrag(pressTarget.item, pressTarget.container, pressTarget.selector, touch.clientX, touch.clientY);
           }
         }
 
         if (Drag._dragging) {
           e.preventDefault();
-          moved = true;
           Drag.moveDrag(touch.clientX, touch.clientY);
         }
       }, { passive: false });
 
-      container.addEventListener('touchend', function(e) {
+      document.addEventListener('touchend', function(e) {
         if (pressTimer) {
           clearTimeout(pressTimer);
           pressTimer = null;
         }
-        pressItem = null;
+        pressTarget = null;
+        Drag._touchId = null;
 
         if (Drag._dragging) {
           Drag.endDrag();
-          if (moved) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      document.addEventListener('touchcancel', function() {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+        pressTarget = null;
+        Drag._touchId = null;
+
+        if (Drag._dragging) {
+          Drag.endDrag();
         }
       });
 
-      container.addEventListener('touchcancel', function() {
-        if (pressTimer) {
-          clearTimeout(pressTimer);
-          pressTimer = null;
-        }
-        pressItem = null;
-
-        if (Drag._dragging) {
-          Drag.endDrag();
+      // 阻止编辑模式下iOS的callout
+      document.addEventListener('contextmenu', function(e) {
+        if (Drag._editMode || Drag._dragging) {
+          e.preventDefault();
         }
       });
     },
 
     init: function() {
       Drag.load();
-
-      // 等DOM就绪后应用顺序
       setTimeout(function() {
         Drag.applyOrder();
-      }, 100);
-
-      // 绑定所有容器
-      Drag.bindContainer('#appGrid', '.app-icon');
-      Drag.bindContainer('#dockBar', '.dock-item');
-      Drag.bindContainer('#cardRow', '.bx-w');
+        Drag.bindAll();
+      }, 200);
     }
   };
 
