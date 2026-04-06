@@ -3,11 +3,6 @@
   var App = window.App;
   if (!App) return;
 
-  // grid总格数（3列x3行=9格，可改）
-  var GRID_COLS = 3;
-  var GRID_ROWS = 3;
-  var GRID_TOTAL = GRID_COLS * GRID_ROWS;
-
   var Drag = {
     _editMode: false,
     _dragging: false,
@@ -15,100 +10,61 @@
     _ghost: null,
     _offsetX: 0,
     _offsetY: 0,
-    _container: null,
-    _selector: '',
-    _lastSwap: 0,
     _touchId: null,
+    _positions: {},
 
     load: function() {
-      Drag._appOrder = App.LS.get('iconOrder') || [];
+      Drag._positions = App.LS.get('dragPositions') || {};
       Drag._dockOrder = App.LS.get('dockOrder') || [];
     },
 
     save: function() {
-      App.LS.set('iconOrder', Drag._appOrder);
+      App.LS.set('dragPositions', Drag._positions);
       App.LS.set('dockOrder', Drag._dockOrder);
     },
 
-    // ====== 占位格子 ======
-    fillGrid: function() {
-      var grid = document.querySelector('#appGrid');
-      if (!grid) return;
+    // ====== 应用保存的位置 ======
+    applyPositions: function() {
+      Object.keys(Drag._positions).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var pos = Drag._positions[id];
+        var parent = el.parentElement;
+        if (!parent) return;
 
-      // 清除旧占位
-      grid.querySelectorAll('.grid-spacer').forEach(function(s) { s.remove(); });
+        // 让父容器支持绝对定位
+        var pStyle = getComputedStyle(parent);
+        if (pStyle.position === 'static') {
+          parent.style.position = 'relative';
+        }
 
-      // 当前图标数
-      var icons = grid.querySelectorAll('.app-icon');
-      var count = icons.length;
-
-      // 补齐到GRID_TOTAL
-      var need = GRID_TOTAL - count;
-      for (var i = 0; i < need; i++) {
-        var spacer = document.createElement('div');
-        spacer.className = 'app-icon grid-spacer';
-        spacer.dataset.spacer = 'true';
-        grid.appendChild(spacer);
-      }
+        el.style.position = 'absolute';
+        el.style.left = pos.x + 'px';
+        el.style.top = pos.y + 'px';
+        el.style.zIndex = '2';
+      });
     },
 
-    // ====== 顺序 ======
-    applyOrder: function() {
-      Drag._applyTo('#appGrid', '.app-icon:not(.grid-spacer)', Drag._appOrder);
-      Drag._applyTo('#dockBar', '.dock-item', Drag._dockOrder);
-    },
-
-    _applyTo: function(cSel, iSel, order) {
-      var c = document.querySelector(cSel);
-      if (!c || !order.length) return;
+    // dock保持flex排列
+    applyDockOrder: function() {
+      var dock = document.querySelector('#dockBar');
+      if (!dock || !Drag._dockOrder.length) return;
       var map = {};
-      c.querySelectorAll(iSel).forEach(function(el) {
+      dock.querySelectorAll('.dock-item').forEach(function(el) {
         if (el.id) map[el.id] = el;
       });
-
-      // 按保存的顺序重排，包括空位标记
-      order.forEach(function(id) {
-        if (id === '__spacer__') {
-          // 插入占位
-          var spacer = document.createElement('div');
-          spacer.className = 'app-icon grid-spacer';
-          spacer.dataset.spacer = 'true';
-          c.appendChild(spacer);
-        } else if (map[id]) {
-          c.appendChild(map[id]);
-          delete map[id];
-        }
-      });
-
-      // 剩余未排序的追加
-      Object.keys(map).forEach(function(id) {
-        c.appendChild(map[id]);
+      Drag._dockOrder.forEach(function(id) {
+        if (map[id]) dock.appendChild(map[id]);
       });
     },
 
-    saveOrder: function() {
-      var g = document.querySelector('#appGrid');
-      var d = document.querySelector('#dockBar');
-      Drag._appOrder = [];
+    saveDockOrder: function() {
+      var dock = document.querySelector('#dockBar');
+      if (!dock) return;
       Drag._dockOrder = [];
-
-      if (g) {
-        g.querySelectorAll('.app-icon').forEach(function(el) {
-          if (el.classList.contains('grid-spacer')) {
-            Drag._appOrder.push('__spacer__');
-          } else if (el.id) {
-            Drag._appOrder.push(el.id);
-          }
-        });
-      }
-
-      if (d) {
-        d.querySelectorAll('.dock-item').forEach(function(el) {
-          if (el.id) Drag._dockOrder.push(el.id);
-        });
-      }
-
-      Drag.save();
+      dock.querySelectorAll('.dock-item').forEach(function(el) {
+        if (el.id) Drag._dockOrder.push(el.id);
+      });
     },
 
     // ====== 编辑模式 ======
@@ -117,9 +73,8 @@
       Drag._editMode = true;
       document.body.classList.add('drag-edit-active');
 
-      Drag.fillGrid();
-
-      document.querySelectorAll('#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w').forEach(function(el) {
+      // 所有可拖拽的元素抖动
+      Drag._getAllDraggables().forEach(function(el) {
         el.classList.add('drag-mode');
       });
 
@@ -129,7 +84,7 @@
 
       if (navigator.vibrate) navigator.vibrate(30);
       Drag._showDone();
-      App.showToast('拖拽换位 · 点击完成退出');
+      App.showToast('拖拽到任意位置 · 点完成退出');
     },
 
     exitEdit: function() {
@@ -141,9 +96,6 @@
         el.classList.remove('drag-mode');
       });
 
-      // 清除末尾连续空位（保留中间的）
-      Drag._trimSpacers();
-
       if (App.pageSlider && App.pageSlider.enable) {
         App.pageSlider.enable();
       }
@@ -151,44 +103,59 @@
       var btn = App.$('#dragDoneBtn');
       if (btn) btn.remove();
 
-      Drag.saveOrder();
-    },
-
-    _trimSpacers: function() {
-      var grid = document.querySelector('#appGrid');
-      if (!grid) return;
-      // 从末尾删除连续的spacer
-      var children = Array.from(grid.children);
-      for (var i = children.length - 1; i >= 0; i--) {
-        if (children[i].classList.contains('grid-spacer')) {
-          children[i].remove();
-        } else {
-          break;
-        }
-      }
+      Drag.save();
     },
 
     _showDone: function() {
       var old = App.$('#dragDoneBtn');
       if (old) old.remove();
-      var btn = document.createElement('button');
-      btn.id = 'dragDoneBtn';
-      btn.className = 'drag-done-btn';
-      btn.textContent = '完成';
-      btn.addEventListener('touchend', function(e) {
+
+      var wrap = document.createElement('div');
+      wrap.id = 'dragDoneBtn';
+      wrap.className = 'drag-done-wrap';
+      wrap.innerHTML =
+        '<button class="drag-done-btn" type="button">完成</button>' +
+        '<button class="drag-reset-btn" type="button">重置位置</button>';
+      document.body.appendChild(wrap);
+
+      wrap.querySelector('.drag-done-btn').addEventListener('touchend', function(e) {
         e.preventDefault();
         e.stopPropagation();
         Drag.exitEdit();
       });
-      document.body.appendChild(btn);
+
+      wrap.querySelector('.drag-reset-btn').addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        Drag.resetAll();
+      });
+    },
+
+    resetAll: function() {
+      Drag._positions = {};
+      Drag.save();
+
+      // 清除所有绝对定位
+      Drag._getAllDraggables().forEach(function(el) {
+        el.style.position = '';
+        el.style.left = '';
+        el.style.top = '';
+        el.style.zIndex = '';
+      });
+
+      App.showToast('已重置');
+    },
+
+    _getAllDraggables: function() {
+      return Array.from(document.querySelectorAll(
+        '#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w, .cal-bar, .screen-page-1 .cal-bar'
+      ));
     },
 
     // ====== 拖拽 ======
-    startDrag: function(el, container, selector, tx, ty) {
+    startDrag: function(el, tx, ty) {
       Drag._dragging = true;
       Drag._dragEl = el;
-      Drag._container = container;
-      Drag._selector = selector;
       document.body.classList.add('drag-active');
 
       var r = el.getBoundingClientRect();
@@ -217,105 +184,115 @@
       if (!Drag._ghost) return;
       Drag._ghost.style.left = (tx - Drag._offsetX) + 'px';
       Drag._ghost.style.top = (ty - Drag._offsetY) + 'px';
-
-      var now = Date.now();
-      if (now - Drag._lastSwap < 180) return;
-
-      // 找最近的（包括spacer）
-      var items = Drag._container.querySelectorAll(Drag._selector);
-      var best = null, bestDist = Infinity;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i] === Drag._dragEl) continue;
-        var r = items[i].getBoundingClientRect();
-        // 只考虑可见的
-        if (r.width === 0 && r.height === 0) continue;
-        var cx = r.left + r.width / 2;
-        var cy = r.top + r.height / 2;
-        var dist = Math.abs(tx - cx) + Math.abs(ty - cy);
-        if (dist < bestDist) { bestDist = dist; best = items[i]; }
-      }
-
-      if (!best || best === Drag._dragEl) return;
-
-      var allItems = Array.from(items);
-      var fi = allItems.indexOf(Drag._dragEl);
-      var ti = allItems.indexOf(best);
-      if (fi === ti || fi === -1 || ti === -1) return;
-
-      if (fi < ti) {
-        Drag._container.insertBefore(Drag._dragEl, best.nextElementSibling);
-      } else {
-        Drag._container.insertBefore(Drag._dragEl, best);
-      }
-      Drag._lastSwap = now;
     },
 
-    endDrag: function() {
+    endDrag: function(tx, ty) {
       document.body.classList.remove('drag-active');
+
+      var el = Drag._dragEl;
+
+      if (Drag._ghost && el) {
+        // 计算相对父容器的位置
+        var parent = el.parentElement;
+        if (parent) {
+          var pRect = parent.getBoundingClientRect();
+          var pStyle = getComputedStyle(parent);
+          if (pStyle.position === 'static') {
+            parent.style.position = 'relative';
+          }
+
+          var newX = tx - Drag._offsetX - pRect.left;
+          var newY = ty - Drag._offsetY - pRect.top;
+
+          // dock内用交换不用自由定位
+          if (el.closest('#dockBar')) {
+            Drag._dockSwap(el, tx, ty);
+          } else {
+            el.style.position = 'absolute';
+            el.style.left = newX + 'px';
+            el.style.top = newY + 'px';
+            el.style.zIndex = '2';
+
+            // 保存位置
+            if (el.id) {
+              Drag._positions[el.id] = { x: newX, y: newY };
+            }
+          }
+        }
+      }
+
       if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
-      if (Drag._dragEl) {
-        Drag._dragEl.style.opacity = '';
-        Drag._dragEl.style.animation = '';
-        if (Drag._editMode) Drag._dragEl.classList.add('drag-mode');
+      if (el) {
+        el.style.opacity = '';
+        el.style.animation = '';
+        if (Drag._editMode) el.classList.add('drag-mode');
         Drag._dragEl = null;
       }
-      Drag._container = null;
-      Drag._selector = '';
+
       Drag._dragging = false;
-      Drag.saveOrder();
+      Drag.save();
+    },
+
+    _dockSwap: function(el, tx, ty) {
+      var dock = document.querySelector('#dockBar');
+      if (!dock) return;
+      var items = dock.querySelectorAll('.dock-item');
+      var best = null, bestDist = Infinity;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i] === el) continue;
+        var r = items[i].getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var cy = r.top + r.height / 2;
+        var d = Math.abs(tx - cx) + Math.abs(ty - cy);
+        if (d < bestDist) { bestDist = d; best = items[i]; }
+      }
+      if (!best) return;
+      var allItems = Array.from(items);
+      var fi = allItems.indexOf(el);
+      var ti = allItems.indexOf(best);
+      if (fi < ti) {
+        dock.insertBefore(el, best.nextElementSibling);
+      } else {
+        dock.insertBefore(el, best);
+      }
+      Drag.saveDockOrder();
     },
 
     // ====== 全局touch ======
-    _allContainers: [],
-
-    _findItem: function(target) {
-      for (var i = 0; i < Drag._allContainers.length; i++) {
-        var c = Drag._allContainers[i];
-        var item = target.closest(c.selector);
-        if (item && c.el.contains(item)) {
-          return { item: item, container: c.el, selector: c.selector };
-        }
-      }
-      return null;
+    _isDraggable: function(target) {
+      return target.closest('.app-icon, .dock-item, .bx-w');
     },
 
     bindAll: function() {
-      var pairs = [
-        { sel: '#appGrid', item: '.app-icon' },
-        { sel: '#dockBar', item: '.dock-item' },
-        { sel: '#cardRow', item: '.bx-w' }
-      ];
-
-      Drag._allContainers = [];
-      pairs.forEach(function(p) {
-        var el = document.querySelector(p.sel);
-        if (el) Drag._allContainers.push({ el: el, selector: p.item });
-      });
-
       var pressTimer = null;
       var startX = 0, startY = 0;
-      var pressTarget = null;
+      var pressEl = null;
+      var lastTx = 0, lastTy = 0;
 
       document.addEventListener('touchstart', function(e) {
-        if (e.target.closest('.drag-done-btn')) return;
+        if (e.target.closest('.drag-done-wrap')) return;
+        if (e.target.closest('.drag-reset-btn')) return;
         if (e.target.closest('.pc-edit-overlay')) return;
         if (e.target.closest('.panel')) return;
         if (e.target.closest('.fullpage-panel')) return;
         if (e.target.closest('.ball-menu')) return;
+        if (e.target.closest('#floatingBall')) return;
 
-        var found = Drag._findItem(e.target);
-        if (!found) return;
+        var item = Drag._isDraggable(e.target);
+        if (!item) return;
 
         var touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
+        lastTx = startX;
+        lastTy = startY;
         Drag._touchId = touch.identifier;
-        pressTarget = found;
+        pressEl = item;
 
         if (Drag._editMode) {
           pressTimer = setTimeout(function() {
             pressTimer = null;
-            Drag.startDrag(found.item, found.container, found.selector, touch.clientX, touch.clientY);
+            Drag.startDrag(item, touch.clientX, touch.clientY);
           }, 80);
         } else {
           pressTimer = setTimeout(function() {
@@ -334,14 +311,17 @@
         }
         if (!touch) return;
 
+        lastTx = touch.clientX;
+        lastTy = touch.clientY;
+
         var dx = Math.abs(touch.clientX - startX);
         var dy = Math.abs(touch.clientY - startY);
 
         if (pressTimer && (dx > 6 || dy > 6)) {
           clearTimeout(pressTimer);
           pressTimer = null;
-          if (Drag._editMode && pressTarget && !Drag._dragging) {
-            Drag.startDrag(pressTarget.item, pressTarget.container, pressTarget.selector, touch.clientX, touch.clientY);
+          if (Drag._editMode && pressEl && !Drag._dragging) {
+            Drag.startDrag(pressEl, touch.clientX, touch.clientY);
           }
         }
 
@@ -353,19 +333,21 @@
 
       document.addEventListener('touchend', function(e) {
         if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        pressTarget = null;
-        Drag._touchId = null;
+
         if (Drag._dragging) {
-          Drag.endDrag();
+          Drag.endDrag(lastTx, lastTy);
           e.preventDefault();
         }
+
+        pressEl = null;
+        Drag._touchId = null;
       }, { passive: false });
 
       document.addEventListener('touchcancel', function() {
         if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        pressTarget = null;
+        if (Drag._dragging) Drag.endDrag(lastTx, lastTy);
+        pressEl = null;
         Drag._touchId = null;
-        if (Drag._dragging) Drag.endDrag();
       });
 
       document.addEventListener('contextmenu', function(e) {
@@ -376,8 +358,8 @@
     init: function() {
       Drag.load();
       setTimeout(function() {
-        Drag.applyOrder();
-        Drag.fillGrid();
+        Drag.applyPositions();
+        Drag.applyDockOrder();
         Drag.bindAll();
       }, 200);
     }
