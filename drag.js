@@ -3,6 +3,11 @@
   var App = window.App;
   if (!App) return;
 
+  // grid总格数（3列x3行=9格，可改）
+  var GRID_COLS = 3;
+  var GRID_ROWS = 3;
+  var GRID_TOTAL = GRID_COLS * GRID_ROWS;
+
   var Drag = {
     _editMode: false,
     _dragging: false,
@@ -25,8 +30,31 @@
       App.LS.set('dockOrder', Drag._dockOrder);
     },
 
+    // ====== 占位格子 ======
+    fillGrid: function() {
+      var grid = document.querySelector('#appGrid');
+      if (!grid) return;
+
+      // 清除旧占位
+      grid.querySelectorAll('.grid-spacer').forEach(function(s) { s.remove(); });
+
+      // 当前图标数
+      var icons = grid.querySelectorAll('.app-icon');
+      var count = icons.length;
+
+      // 补齐到GRID_TOTAL
+      var need = GRID_TOTAL - count;
+      for (var i = 0; i < need; i++) {
+        var spacer = document.createElement('div');
+        spacer.className = 'app-icon grid-spacer';
+        spacer.dataset.spacer = 'true';
+        grid.appendChild(spacer);
+      }
+    },
+
+    // ====== 顺序 ======
     applyOrder: function() {
-      Drag._applyTo('#appGrid', '.app-icon', Drag._appOrder);
+      Drag._applyTo('#appGrid', '.app-icon:not(.grid-spacer)', Drag._appOrder);
       Drag._applyTo('#dockBar', '.dock-item', Drag._dockOrder);
     },
 
@@ -37,8 +65,24 @@
       c.querySelectorAll(iSel).forEach(function(el) {
         if (el.id) map[el.id] = el;
       });
+
+      // 按保存的顺序重排，包括空位标记
       order.forEach(function(id) {
-        if (map[id]) c.appendChild(map[id]);
+        if (id === '__spacer__') {
+          // 插入占位
+          var spacer = document.createElement('div');
+          spacer.className = 'app-icon grid-spacer';
+          spacer.dataset.spacer = 'true';
+          c.appendChild(spacer);
+        } else if (map[id]) {
+          c.appendChild(map[id]);
+          delete map[id];
+        }
+      });
+
+      // 剩余未排序的追加
+      Object.keys(map).forEach(function(id) {
+        c.appendChild(map[id]);
       });
     },
 
@@ -47,8 +91,23 @@
       var d = document.querySelector('#dockBar');
       Drag._appOrder = [];
       Drag._dockOrder = [];
-      if (g) g.querySelectorAll('.app-icon').forEach(function(el) { if (el.id) Drag._appOrder.push(el.id); });
-      if (d) d.querySelectorAll('.dock-item').forEach(function(el) { if (el.id) Drag._dockOrder.push(el.id); });
+
+      if (g) {
+        g.querySelectorAll('.app-icon').forEach(function(el) {
+          if (el.classList.contains('grid-spacer')) {
+            Drag._appOrder.push('__spacer__');
+          } else if (el.id) {
+            Drag._appOrder.push(el.id);
+          }
+        });
+      }
+
+      if (d) {
+        d.querySelectorAll('.dock-item').forEach(function(el) {
+          if (el.id) Drag._dockOrder.push(el.id);
+        });
+      }
+
       Drag.save();
     },
 
@@ -58,11 +117,12 @@
       Drag._editMode = true;
       document.body.classList.add('drag-edit-active');
 
+      Drag.fillGrid();
+
       document.querySelectorAll('#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w').forEach(function(el) {
         el.classList.add('drag-mode');
       });
 
-      // 禁用页面滑动
       if (App.pageSlider && App.pageSlider.disable) {
         App.pageSlider.disable();
       }
@@ -81,13 +141,31 @@
         el.classList.remove('drag-mode');
       });
 
-      // 恢复页面滑动
+      // 清除末尾连续空位（保留中间的）
+      Drag._trimSpacers();
+
       if (App.pageSlider && App.pageSlider.enable) {
         App.pageSlider.enable();
       }
 
       var btn = App.$('#dragDoneBtn');
       if (btn) btn.remove();
+
+      Drag.saveOrder();
+    },
+
+    _trimSpacers: function() {
+      var grid = document.querySelector('#appGrid');
+      if (!grid) return;
+      // 从末尾删除连续的spacer
+      var children = Array.from(grid.children);
+      for (var i = children.length - 1; i >= 0; i--) {
+        if (children[i].classList.contains('grid-spacer')) {
+          children[i].remove();
+        } else {
+          break;
+        }
+      }
     },
 
     _showDone: function() {
@@ -143,18 +221,21 @@
       var now = Date.now();
       if (now - Drag._lastSwap < 180) return;
 
-      var best = null, bestDist = Infinity;
+      // 找最近的（包括spacer）
       var items = Drag._container.querySelectorAll(Drag._selector);
+      var best = null, bestDist = Infinity;
       for (var i = 0; i < items.length; i++) {
         if (items[i] === Drag._dragEl) continue;
         var r = items[i].getBoundingClientRect();
+        // 只考虑可见的
+        if (r.width === 0 && r.height === 0) continue;
         var cx = r.left + r.width / 2;
         var cy = r.top + r.height / 2;
         var dist = Math.abs(tx - cx) + Math.abs(ty - cy);
         if (dist < bestDist) { bestDist = dist; best = items[i]; }
       }
 
-      if (!best) return;
+      if (!best || best === Drag._dragEl) return;
 
       var allItems = Array.from(items);
       var fi = allItems.indexOf(Drag._dragEl);
@@ -184,7 +265,7 @@
       Drag.saveOrder();
     },
 
-    // ====== 全局touch接管 ======
+    // ====== 全局touch ======
     _allContainers: [],
 
     _findItem: function(target) {
@@ -215,7 +296,6 @@
       var startX = 0, startY = 0;
       var pressTarget = null;
 
-      // 全局touch事件
       document.addEventListener('touchstart', function(e) {
         if (e.target.closest('.drag-done-btn')) return;
         if (e.target.closest('.pc-edit-overlay')) return;
@@ -233,13 +313,11 @@
         pressTarget = found;
 
         if (Drag._editMode) {
-          // 编辑模式：立即准备拖
           pressTimer = setTimeout(function() {
             pressTimer = null;
             Drag.startDrag(found.item, found.container, found.selector, touch.clientX, touch.clientY);
           }, 80);
         } else {
-          // 长按进入编辑
           pressTimer = setTimeout(function() {
             pressTimer = null;
             Drag.enterEdit();
@@ -248,12 +326,10 @@
       }, { passive: true });
 
       document.addEventListener('touchmove', function(e) {
-        // 找到正确的touch
         var touch = null;
         for (var i = 0; i < e.touches.length; i++) {
           if (e.touches[i].identifier === Drag._touchId) {
-            touch = e.touches[i];
-            break;
+            touch = e.touches[i]; break;
           }
         }
         if (!touch) return;
@@ -264,8 +340,6 @@
         if (pressTimer && (dx > 6 || dy > 6)) {
           clearTimeout(pressTimer);
           pressTimer = null;
-
-          // 编辑模式，手指动了就立即开始拖
           if (Drag._editMode && pressTarget && !Drag._dragging) {
             Drag.startDrag(pressTarget.item, pressTarget.container, pressTarget.selector, touch.clientX, touch.clientY);
           }
@@ -278,13 +352,9 @@
       }, { passive: false });
 
       document.addEventListener('touchend', function(e) {
-        if (pressTimer) {
-          clearTimeout(pressTimer);
-          pressTimer = null;
-        }
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
         pressTarget = null;
         Drag._touchId = null;
-
         if (Drag._dragging) {
           Drag.endDrag();
           e.preventDefault();
@@ -292,23 +362,14 @@
       }, { passive: false });
 
       document.addEventListener('touchcancel', function() {
-        if (pressTimer) {
-          clearTimeout(pressTimer);
-          pressTimer = null;
-        }
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
         pressTarget = null;
         Drag._touchId = null;
-
-        if (Drag._dragging) {
-          Drag.endDrag();
-        }
+        if (Drag._dragging) Drag.endDrag();
       });
 
-      // 阻止编辑模式下iOS的callout
       document.addEventListener('contextmenu', function(e) {
-        if (Drag._editMode || Drag._dragging) {
-          e.preventDefault();
-        }
+        if (Drag._editMode || Drag._dragging) e.preventDefault();
       });
     },
 
@@ -316,6 +377,7 @@
       Drag.load();
       setTimeout(function() {
         Drag.applyOrder();
+        Drag.fillGrid();
         Drag.bindAll();
       }, 200);
     }
