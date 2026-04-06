@@ -12,6 +12,7 @@
     _offsetY: 0,
     _touchId: null,
     _positions: {},
+    _dockOrder: [],
 
     load: function() {
       Drag._positions = App.LS.get('dragPositions') || {};
@@ -32,7 +33,6 @@
         var parent = el.parentElement;
         if (!parent) return;
 
-        // 让父容器支持绝对定位
         var pStyle = getComputedStyle(parent);
         if (pStyle.position === 'static') {
           parent.style.position = 'relative';
@@ -45,7 +45,6 @@
       });
     },
 
-    // dock保持flex排列
     applyDockOrder: function() {
       var dock = document.querySelector('#dockBar');
       if (!dock || !Drag._dockOrder.length) return;
@@ -73,7 +72,6 @@
       Drag._editMode = true;
       document.body.classList.add('drag-edit-active');
 
-      // 所有可拖拽的元素抖动
       Drag._getAllDraggables().forEach(function(el) {
         el.classList.add('drag-mode');
       });
@@ -100,18 +98,18 @@
         App.pageSlider.enable();
       }
 
-      var btn = App.$('#dragDoneBtn');
+      var btn = App.$('#dragDoneWrap');
       if (btn) btn.remove();
 
       Drag.save();
     },
 
     _showDone: function() {
-      var old = App.$('#dragDoneBtn');
+      var old = App.$('#dragDoneWrap');
       if (old) old.remove();
 
       var wrap = document.createElement('div');
-      wrap.id = 'dragDoneBtn';
+      wrap.id = 'dragDoneWrap';
       wrap.className = 'drag-done-wrap';
       wrap.innerHTML =
         '<button class="drag-done-btn" type="button">完成</button>' +
@@ -135,7 +133,6 @@
       Drag._positions = {};
       Drag.save();
 
-      // 清除所有绝对定位
       Drag._getAllDraggables().forEach(function(el) {
         el.style.position = '';
         el.style.left = '';
@@ -148,7 +145,7 @@
 
     _getAllDraggables: function() {
       return Array.from(document.querySelectorAll(
-        '#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w, .cal-bar, .screen-page-1 .cal-bar'
+        '#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w'
       ));
     },
 
@@ -192,28 +189,26 @@
       var el = Drag._dragEl;
 
       if (Drag._ghost && el) {
-        // 计算相对父容器的位置
         var parent = el.parentElement;
         if (parent) {
-          var pRect = parent.getBoundingClientRect();
-          var pStyle = getComputedStyle(parent);
-          if (pStyle.position === 'static') {
-            parent.style.position = 'relative';
-          }
-
-          var newX = tx - Drag._offsetX - pRect.left;
-          var newY = ty - Drag._offsetY - pRect.top;
-
-          // dock内用交换不用自由定位
+          // dock用交换
           if (el.closest('#dockBar')) {
             Drag._dockSwap(el, tx, ty);
           } else {
+            var pRect = parent.getBoundingClientRect();
+            var pStyle = getComputedStyle(parent);
+            if (pStyle.position === 'static') {
+              parent.style.position = 'relative';
+            }
+
+            var newX = tx - Drag._offsetX - pRect.left;
+            var newY = ty - Drag._offsetY - pRect.top;
+
             el.style.position = 'absolute';
             el.style.left = newX + 'px';
             el.style.top = newY + 'px';
             el.style.zIndex = '2';
 
-            // 保存位置
             if (el.id) {
               Drag._positions[el.id] = { x: newX, y: newY };
             }
@@ -221,6 +216,7 @@
         }
       }
 
+      // 清理
       if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
       if (el) {
         el.style.opacity = '';
@@ -231,6 +227,18 @@
 
       Drag._dragging = false;
       Drag.save();
+    },
+
+    cancelDrag: function() {
+      document.body.classList.remove('drag-active');
+      if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
+      if (Drag._dragEl) {
+        Drag._dragEl.style.opacity = '';
+        Drag._dragEl.style.animation = '';
+        if (Drag._editMode) Drag._dragEl.classList.add('drag-mode');
+        Drag._dragEl = null;
+      }
+      Drag._dragging = false;
     },
 
     _dockSwap: function(el, tx, ty) {
@@ -258,20 +266,22 @@
       Drag.saveDockOrder();
     },
 
-    // ====== 全局touch ======
+    // ====== 是否可拖拽元素 ======
     _isDraggable: function(target) {
       return target.closest('.app-icon, .dock-item, .bx-w');
     },
 
+    // ====== 全局touch ======
     bindAll: function() {
       var pressTimer = null;
       var startX = 0, startY = 0;
       var pressEl = null;
       var lastTx = 0, lastTy = 0;
+      var dragStarted = false;
 
       document.addEventListener('touchstart', function(e) {
+        // 排除不参与的区域
         if (e.target.closest('.drag-done-wrap')) return;
-        if (e.target.closest('.drag-reset-btn')) return;
         if (e.target.closest('.pc-edit-overlay')) return;
         if (e.target.closest('.panel')) return;
         if (e.target.closest('.fullpage-panel')) return;
@@ -288,13 +298,10 @@
         lastTy = startY;
         Drag._touchId = touch.identifier;
         pressEl = item;
+        dragStarted = false;
 
-        if (Drag._editMode) {
-          pressTimer = setTimeout(function() {
-            pressTimer = null;
-            Drag.startDrag(item, touch.clientX, touch.clientY);
-          }, 80);
-        } else {
+        if (!Drag._editMode) {
+          // 非编辑模式：长按500ms进入编辑
           pressTimer = setTimeout(function() {
             pressTimer = null;
             Drag.enterEdit();
@@ -317,12 +324,16 @@
         var dx = Math.abs(touch.clientX - startX);
         var dy = Math.abs(touch.clientY - startY);
 
+        // 取消长按计时
         if (pressTimer && (dx > 6 || dy > 6)) {
           clearTimeout(pressTimer);
           pressTimer = null;
-          if (Drag._editMode && pressEl && !Drag._dragging) {
-            Drag.startDrag(pressEl, touch.clientX, touch.clientY);
-          }
+        }
+
+        // 编辑模式下，移动超过10px才开始拖拽
+        if (Drag._editMode && !Drag._dragging && pressEl && (dx > 10 || dy > 10)) {
+          dragStarted = true;
+          Drag.startDrag(pressEl, touch.clientX, touch.clientY);
         }
 
         if (Drag._dragging) {
@@ -340,13 +351,15 @@
         }
 
         pressEl = null;
+        dragStarted = false;
         Drag._touchId = null;
       }, { passive: false });
 
       document.addEventListener('touchcancel', function() {
         if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        if (Drag._dragging) Drag.endDrag(lastTx, lastTy);
+        if (Drag._dragging) Drag.cancelDrag();
         pressEl = null;
+        dragStarted = false;
         Drag._touchId = null;
       });
 
