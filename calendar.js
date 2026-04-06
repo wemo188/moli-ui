@@ -138,7 +138,6 @@
 
       container.innerHTML =
         '<div class="cal-bar-card">' +
-          '<div class="cal-bar-shine"></div>' +
           '<div class="cal-bar-row">' +
 
             '<div class="cal-bar-item" id="dateCardTap">' +
@@ -282,10 +281,11 @@
       });
     },
 
-    // ========= 月历面板（日历 → 重要日子 + 角色记录）=========
+    // ========= 月历面板 =========
     _viewYear: 0,
     _viewMonth: 0,
     _selectedDate: '',
+    _stickerPage: 0,
 
     openSchedulePanel: function() {
       var panel = App.$('#calPanel');
@@ -295,6 +295,7 @@
       Cal._viewYear = now.getFullYear();
       Cal._viewMonth = now.getMonth();
       Cal._selectedDate = Cal.todayKey();
+      Cal._stickerPage = 0;
 
       Cal.renderCalendarView();
 
@@ -350,7 +351,7 @@
 
           '<div class="cal-days-grid" id="calDaysGrid"></div>' +
 
-          '<div id="calSelectedSection"></div>' +
+          '<div class="cal-selected-section" id="calSelectedSection"></div>' +
 
         '</div>';
 
@@ -403,17 +404,9 @@
         if (dayOfWeek === 0) classes += ' cal-day-sunday';
         if (dayOfWeek === 6) classes += ' cal-day-saturday';
 
-                var hasMemos = Cal.hasMemosForDate(dateKey);
-        var hasImportant = false;
-        if (hasMemos) {
-          var memos = Cal.getMemosForDate(dateKey);
-          for (var m = 0; m < memos.length; m++) {
-            if (memos[m].type === 'important') { hasImportant = true; break; }
-          }
-        }
+        var hasMemos = Cal.hasMemosForDate(dateKey);
 
         html += '<div class="' + classes + '" data-date="' + dateKey + '">' +
-          (hasImportant ? '<div class="cal-important-badge"></div>' : '') +
           '<div class="cal-day-num">' + d + '</div>' +
           (hasMemos ? '<div class="cal-day-dot"></div>' : '') +
         '</div>';
@@ -424,6 +417,7 @@
       grid.querySelectorAll('.cal-day-cell:not(.cal-day-empty)').forEach(function(cell) {
         cell.addEventListener('click', function() {
           Cal._selectedDate = cell.dataset.date;
+          Cal._stickerPage = 0;
           Cal.renderDaysGrid();
           Cal.renderSelectedSection();
         });
@@ -453,55 +447,58 @@
       var html = '<div class="cal-selected-date-title">' + dateStr + '</div>';
 
       if (!memos.length) {
-        html += '<div class="cal-empty">暂无记录，点击右上角 + 添加</div>';
+        html += '<div class="cal-empty-dark">暂无记录，点击右上角 + 添加</div>';
       } else {
-        html += memos.map(function(s) {
-          var memo = s.memo;
-          var idx = s.idx;
-          var typeClass = 'cal-memo-type-important';
-          var typeLabel = '重要';
-          if (memo.type === 'char') { typeClass = 'cal-memo-type-char'; typeLabel = '角色'; }
+        var pageIdx = Cal._stickerPage;
+        if (pageIdx >= memos.length) { pageIdx = 0; Cal._stickerPage = 0; }
+        var memo = memos[pageIdx].memo;
+        var total = memos.length;
 
-          return '<div class="cal-memo-card">' +
-            '<span class="cal-memo-type ' + typeClass + '">' + typeLabel + '</span>' +
-            (memo.time ? '<span style="font-size:12px;color:#999;flex-shrink:0;">' + App.esc(memo.time) + '</span>' : '') +
-            '<div class="cal-memo-text">' + App.esc(memo.content || '') + '</div>' +
-            '<div class="cal-memo-actions">' +
-              '<button class="cal-sm-btn cal-sm-edit" data-idx="' + idx + '" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-                '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
-              '</button>' +
-              '<button class="cal-sm-btn cal-sm-del" data-idx="' + idx + '" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-                '<path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
-              '</button>' +
+        html +=
+          '<div class="sticker-wrap">' +
+            '<div class="sticker-paper" id="stickerPaper">' +
+              '<div class="torn-top"></div>' +
+              '<div class="torn-bottom"></div>' +
+              '<div class="torn-left"></div>' +
+              '<div class="torn-right"></div>' +
+              '<div class="paper-lines"></div>' +
+              '<div class="tape">' +
+                '<div class="tape-body">' +
+                  '<div class="tape-tear-l"></div>' +
+                  '<div class="tape-tear-r"></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="sticker-text-en">' + App.esc(memo.content || '') + '</div>' +
+              (memo.time ? '<div class="sticker-time">' + App.esc(memo.time) + '</div>' : '') +
+              (total > 1
+                ? '<div class="sticker-pager" id="stickerPager">' +
+                    '<span class="sticker-page-num">' + (pageIdx + 1) + ' / ' + total + '</span>' +
+                    '<span class="sticker-spade">♠</span>' +
+                  '</div>'
+                : '') +
             '</div>' +
           '</div>';
-        }).join('');
       }
 
       section.innerHTML = html;
 
-      section.querySelectorAll('.cal-sm-edit').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+      // 翻页
+      var pager = App.$('#stickerPager');
+      if (pager) {
+        pager.addEventListener('click', function(e) {
           e.stopPropagation();
-          Cal.openEditMemo(dateKey, parseInt(btn.dataset.idx, 10));
-        });
-      });
-
-      section.querySelectorAll('.cal-sm-del').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (!confirm('删除这条记录？')) return;
-          Cal.removeMemo(dateKey, parseInt(btn.dataset.idx, 10));
-          Cal.renderDaysGrid();
+          Cal._stickerPage = (Cal._stickerPage + 1) % memos.length;
           Cal.renderSelectedSection();
-          Cal.render();
-          App.showToast('已删除');
+          var p = App.$('#stickerPaper');
+          if (p) {
+            p.classList.add('turning');
+            setTimeout(function() { p.classList.remove('turning'); }, 350);
+          }
         });
-      });
+      }
     },
 
+    // ========= 添加/编辑记录 =========
     openEditMemo: function(dateKey, idx) {
       var isNew = idx < 0;
       var list = Cal.getMemosForDate(dateKey);
@@ -577,12 +574,13 @@
         }
 
         Cal.render();
+        Cal._stickerPage = 0;
         Cal.renderCalendarView();
         App.showToast(isNew ? '已添加' : '已保存');
       });
     },
 
-    // ========= 今日行程面板（行程图标点进来）=========
+    // ========= 今日行程面板 =========
     openTodaySchedule: function() {
       var panel = App.$('#calPanel');
       if (!panel) return;
