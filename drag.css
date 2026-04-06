@@ -1,4 +1,3 @@
-/* 编辑模式全局 */
 body.drag-edit-active {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
@@ -18,7 +17,6 @@ body.drag-edit-active .screen-page-inner {
   overflow: hidden !important;
 }
 
-/* 拖拽中容器 */
 body.drag-active {
   overflow: hidden !important;
   touch-action: none !important;
@@ -37,6 +35,24 @@ body.drag-active {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
+}
+
+/* 空格占位 */
+.grid-spacer {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.grid-spacer .app-icon-img,
+.grid-spacer .app-icon-label {
+  display: none;
+}
+
+/* 编辑模式下空位显示虚线框 */
+body.drag-edit-active .grid-spacer {
+  border: 2px dashed rgba(0,0,0,0.08);
+  border-radius: 16px;
+  min-height: 70px;
 }
 
 /* 完成按钮 */
