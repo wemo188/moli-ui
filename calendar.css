@@ -14,8 +14,6 @@
   border: 1px solid rgba(220,235,255,.55);
   box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
-  backdrop-filter: blur(11px);
-  -webkit-backdrop-filter: blur(11px);
 }
 
 .cal-bar-card::before {
