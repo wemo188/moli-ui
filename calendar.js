@@ -424,16 +424,12 @@
       });
     },
 
-    renderSelectedSection: function() {
+        renderSelectedSection: function() {
       var section = App.$('#calSelectedSection');
       if (!section) return;
 
       var dateKey = Cal._selectedDate;
       if (!dateKey) { section.innerHTML = ''; return; }
-
-      var parts = dateKey.split('-');
-      var dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      var dateStr = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日 ' + Cal.WEEKDAYS[dateObj.getDay()];
 
       var allMemos = Cal.getMemosForDate(dateKey);
       var memos = [];
@@ -444,7 +440,7 @@
         }
       }
 
-      var html = '<div class="cal-selected-date-title">' + dateStr + '</div>';
+      var html = '';
 
       if (!memos.length) {
         html += '<div class="cal-empty-dark">暂无记录，点击右上角 + 添加</div>';
@@ -452,7 +448,10 @@
         var pageIdx = Cal._stickerPage;
         if (pageIdx >= memos.length) { pageIdx = 0; Cal._stickerPage = 0; }
         var memo = memos[pageIdx].memo;
+        var idx = memos[pageIdx].idx;
         var total = memos.length;
+        var hasEn = memo.textEn && memo.textEn !== memo.content;
+        var displayText = hasEn ? App.esc(memo.textEn) : App.esc(memo.content || '');
 
         html +=
           '<div class="sticker-wrap">' +
@@ -468,7 +467,8 @@
                   '<div class="tape-tear-r"></div>' +
                 '</div>' +
               '</div>' +
-              '<div class="sticker-text-en">' + App.esc(memo.content || '') + '</div>' +
+              '<div class="sticker-text-en">' + displayText + '</div>' +
+              (hasEn ? '<div class="sticker-text-zh">' + App.esc(memo.content || '') + '</div>' : '') +
               (memo.time ? '<div class="sticker-time">' + App.esc(memo.time) + '</div>' : '') +
               (total > 1
                 ? '<div class="sticker-pager" id="stickerPager">' +
@@ -477,10 +477,31 @@
                   '</div>'
                 : '') +
             '</div>' +
+          '</div>' +
+          '<div class="sticker-actions">' +
+            '<button class="sticker-action-btn sticker-edit-btn" id="stickerEditBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
+              '<span>编辑</span>' +
+            '</button>' +
+            '<button class="sticker-action-btn sticker-del-btn" id="stickerDelBtn" type="button">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
+              '<span>删除</span>' +
+            '</button>' +
           '</div>';
       }
 
       section.innerHTML = html;
+
+      // 点击纸张切换中英文
+      var paper = App.$('#stickerPaper');
+      if (paper && memo && memo.textEn && memo.textEn !== memo.content) {
+        paper.addEventListener('click', function(e) {
+          if (e.target.closest('#stickerPager')) return;
+          paper.classList.toggle('show-zh');
+        });
+      }
 
       // 翻页
       var pager = App.$('#stickerPager');
@@ -496,6 +517,22 @@
           }
         });
       }
+
+      // 编辑
+      App.safeOn('#stickerEditBtn', 'click', function() {
+        Cal.openEditMemo(dateKey, memos[Cal._stickerPage].idx);
+      });
+
+      // 删除
+      App.safeOn('#stickerDelBtn', 'click', function() {
+        if (!confirm('删除这条记录？')) return;
+        Cal.removeMemo(dateKey, memos[Cal._stickerPage].idx);
+        Cal._stickerPage = 0;
+        Cal.renderDaysGrid();
+        Cal.renderSelectedSection();
+        Cal.render();
+        App.showToast('已删除');
+      });
     },
 
     // ========= 添加/编辑记录 =========
