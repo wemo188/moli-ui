@@ -5,9 +5,9 @@
   --S: 0.72;
   --W0: 420px;
   --wt-ink: #e8e8e8;
-  --wt-ink2: #c0c0c0;
-  --wt-ink3: #888;
-  --wt-ink4: #555;
+  --wt-ink2: rgba(232,232,232,0.75);
+  --wt-ink3: rgba(232,232,232,0.5);
+  --wt-ink4: rgba(232,232,232,0.3);
   --wt-line: rgba(255,255,255,.08);
   --wt-line2: rgba(255,255,255,.04);
   --wt-gold: rgba(255,255,255,.25);
@@ -25,12 +25,11 @@
   user-select: none;
   position: relative;
   z-index: 10;
-  cursor: grab;
 }
 
-.wt-card.dragging {
-  cursor: grabbing;
+.wt-card.wt-dragging {
   z-index: 9999;
+  opacity: 0.95;
 }
 
 .wt-cw {
@@ -44,7 +43,7 @@
   border-radius: calc(var(--wt-radius) * 1px);
 }
 
-/* 四角标记 */
+/* 四角 */
 .wt-card .vf-c {
   position: absolute; z-index: 5; pointer-events: none;
 }
@@ -75,7 +74,7 @@
   background: repeating-linear-gradient(90deg, transparent, transparent calc(50% - 1px), var(--wt-line2) calc(50% - 1px), var(--wt-line2) 50%);
 }
 
-/* 顶底装饰线 */
+/* 装饰线 */
 .wt-card .vf-hl {
   position: absolute; left: calc(30px * var(--S)); right: calc(30px * var(--S));
   height: calc(1px * var(--S));
@@ -85,17 +84,17 @@
 .wt-card .vf-hl.top { top: calc(12px * var(--S)); }
 .wt-card .vf-hl.bot { bottom: calc(12px * var(--S)); }
 
-/* 左右小标签 */
+/* 左右标签 */
 .wt-card .vf-lbl {
   position: absolute; z-index: 6;
-  font-size: calc(6px * var(--S)); color: var(--wt-ink4); font-weight: 600;
+  font-size: calc(6px * var(--S)); color: var(--wt-ink3); font-weight: 600;
   letter-spacing: calc(2.5px * var(--S)); text-transform: uppercase;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 .wt-card .vf-lbl:active { opacity: 0.5; }
 .wt-card .vf-lbl.lt { top: calc(7px * var(--S)); left: calc(12px * var(--S)); }
-.wt-card .vf-lbl.rt { bottom: calc(6px * var(--S)); right: calc(12px * var(--S)); cursor: default; }
+.wt-card .vf-lbl.rt { bottom: calc(6px * var(--S)); right: calc(12px * var(--S)); color: var(--wt-ink3); cursor: default; }
 
 /* 内容 */
 .wt-cd {
@@ -112,11 +111,12 @@
 .wt-l {
   text-align: center;
   flex-shrink: 0;
-  margin-right: calc(40px * var(--S));
+  margin-right: calc(50px * var(--S));
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
 }
-.wt-l:active { opacity: 0.7; }
+.wt-l:active { opacity: 0.6; }
 
 .wt-time {
   font-size: calc(40px * var(--S)); font-weight: 100; color: var(--wt-ink);
@@ -124,7 +124,7 @@
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.wt-colon { animation: none; opacity: 1; }
+.wt-colon { opacity: 1; }
 
 .wt-sec {
   font-size: calc(14px * var(--S)); color: var(--wt-ink3); font-weight: 200;
@@ -134,9 +134,7 @@
 .wt-tl {
   width: 100%; height: calc(1px * var(--S)); margin: calc(8px * var(--S)) 0;
   background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
-  position: relative;
 }
-.wt-tl::before { display: none; }
 
 .wt-date {
   font-size: calc(10px * var(--S)); color: var(--wt-ink2); font-weight: 300;
@@ -154,7 +152,7 @@
   width: calc(1px * var(--S));
   align-self: stretch;
   background: linear-gradient(180deg, transparent 5%, var(--wt-gold2) 30%, var(--wt-gold2) 70%, transparent 95%);
-  flex-shrink: 0; margin: 0; position: relative;
+  flex-shrink: 0; position: relative;
 }
 .wt-vd::before, .wt-vd::after {
   content: ""; position: absolute; left: 50%; transform: translateX(-50%);
@@ -170,8 +168,9 @@
   margin-left: calc(30px * var(--S));
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
 }
-.wt-r:active { opacity: 0.7; }
+.wt-r:active { opacity: 0.6; }
 
 .wt-temp {
   font-size: calc(36px * var(--S)); font-weight: 100; color: var(--wt-ink);
@@ -199,68 +198,65 @@
   border-right: calc(1px * var(--S)) solid var(--wt-gold);
 }
 
-/* ====== 调节面板 ====== */
-.wt-ctrl-overlay {
+/* ====== 调节浮窗 ====== */
+.wt-ctrl-wrap {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
+  z-index: 998;
+  width: 260px;
+  pointer-events: none;
 }
 
 .wt-ctrl-panel {
-  background: #fff;
-  border-radius: 20px 20px 0 0;
-  width: 100%;
-  max-width: 420px;
-  max-height: 75vh;
-  overflow-y: auto;
-  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  pointer-events: auto;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.06);
 }
 
 .wt-ctrl-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .wt-ctrl-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .wt-ctrl-row label {
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
-  min-width: 50px;
+  min-width: 36px;
   font-weight: 500;
 }
 
 .wt-ctrl-row input[type="range"] {
   flex: 1;
-  height: 4px;
+  height: 3px;
 }
 
 .wt-ctrl-row .wt-ctrl-val {
-  font-size: 12px;
+  font-size: 10px;
   color: #999;
-  min-width: 42px;
+  min-width: 34px;
   text-align: right;
   font-weight: 500;
 }
 
 .wt-ctrl-row input[type="color"] {
-  width: 36px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 2px;
   cursor: pointer;
 }
@@ -268,32 +264,31 @@
 .wt-ctrl-divider {
   height: 1px;
   background: rgba(0,0,0,0.06);
-  margin: 14px 0;
+  margin: 10px 0;
 }
 
 .wt-ctrl-section {
-  font-size: 11px;
+  font-size: 10px;
   color: #999;
   font-weight: 600;
   letter-spacing: 1px;
-  margin-bottom: 10px;
-  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 
 .wt-ctrl-btns {
   display: flex;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 6px;
+  margin-top: 12px;
 }
 
 .wt-ctrl-save {
   flex: 1;
-  padding: 12px;
+  padding: 9px;
   background: #1a1a1a;
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -301,12 +296,12 @@
 .wt-ctrl-save:active { opacity: 0.7; }
 
 .wt-ctrl-reset {
-  padding: 12px 16px;
+  padding: 9px 12px;
   background: #f5f5f5;
   color: #666;
   border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
