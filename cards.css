@@ -25,7 +25,7 @@
   --LABEL_C: #6a8caf;
   --border-c: rgba(187,211,239,.8);
   --LINE_C: rgba(187,211,239,.5);
-  width: 100%; max-width: calc(var(--W0) * var(--S));
+  width: calc(var(--W0) * var(--S));
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
@@ -68,7 +68,7 @@
 }
 
 #bx-2 .bx-av-box {
-  width: 100%; aspect-ratio: 3/4; max-height: calc(210px * var(--S));
+  width: 100%; height: calc(var(--CARD_H0) * var(--S));
   perspective: 1000px; cursor: pointer; display: block;
 }
 #bx-2 .bx-av-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
@@ -127,7 +127,7 @@
   --LABEL_C: #5c728a;
   --border-c: rgba(79,121,166,.55);
   --LINE_C: rgba(140,163,194,.45);
-  width: 100%; max-width: calc(var(--W0) * var(--S));
+  width: calc(var(--W0) * var(--S));
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
@@ -179,7 +179,7 @@
 }
 
 #bx-1 .bx-av-box {
-  width: 100%; aspect-ratio: 3/4; max-height: calc(210px * var(--S));
+  width: 100%; height: calc(var(--CARD_H0) * var(--S));
   perspective: 1000px; cursor: pointer; display: block;
 }
 #bx-1 .bx-av-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
