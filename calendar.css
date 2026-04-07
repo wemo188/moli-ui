@@ -23,9 +23,9 @@
   position: absolute;
   inset: -35%;
   background:
-    radial-gradient(closest-side, rgba(79,121,166,.38) 0%, transparent 62%),
-    radial-gradient(closest-side, rgba(126,163,201,.34) 0%, transparent 64%),
-    radial-gradient(closest-side, rgba(223,231,243,.18) 0%, transparent 66%);
+    radial-gradient(closest-side, rgba(79,121,166,.58) 0%, transparent 62%),
+    radial-gradient(closest-side, rgba(126,163,201,.40) 0%, transparent 64%),
+    radial-gradient(closest-side, rgba(223,231,243,.28) 0%, transparent 66%);
   filter: blur(14px);
   transform: rotate(-10deg);
   pointer-events: none;
