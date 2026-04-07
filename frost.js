@@ -9,8 +9,9 @@
     DEFAULTS: {
       mode: 'frost',
       hex: '#ffffff',
-      alpha: 0,
+      alpha: 25,
       blur: 12,
+      textColor: '#ffffff',
       text: ''
     },
 
@@ -23,6 +24,7 @@
         Frost.data.hex = saved.hex || d.hex;
         Frost.data.alpha = saved.alpha != null ? saved.alpha : d.alpha;
         Frost.data.blur = saved.blur != null ? saved.blur : d.blur;
+        Frost.data.textColor = saved.textColor || d.textColor;
         Frost.data.text = saved.text || '';
       } else {
         Frost.data = JSON.parse(JSON.stringify(d));
@@ -45,12 +47,11 @@
     applyToEl: function(el, data) {
       if (!el) return;
       var bg = Frost.buildBg(data);
-      var blurVal = Math.max(0, data.blur);
-      var filter = 'blur(' + blurVal + 'px)';
+      var blur = 'blur(' + data.blur + 'px)';
 
       el.style.background = bg;
-      el.style.backdropFilter = filter;
-      el.style.webkitBackdropFilter = filter;
+      el.style.backdropFilter = blur;
+      el.style.webkitBackdropFilter = blur;
 
       if (data.mode === 'glass') {
         el.style.borderColor = 'rgba(255,255,255,0.5)';
@@ -63,9 +64,11 @@
         el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
       }
 
-      el.innerHTML = data.text
-        ? '<div class="frost-card-text">' + App.esc(data.text) + '</div>'
-        : '';
+      if (data.text) {
+        el.innerHTML = '<div class="frost-card-text" style="color:' + (data.textColor || '#ffffff') + '">' + App.esc(data.text) + '</div>';
+      } else {
+        el.innerHTML = '';
+      }
     },
 
     apply: function() {
@@ -79,8 +82,8 @@
       var d = Frost.data;
 
       var presets = {
-        frost:    { blur: 12,  alpha: 0 },
-        gaussian: { blur: 80,  alpha: 0 },
+        frost:    { blur: 12,  alpha: 25 },
+        gaussian: { blur: 80,  alpha: 15 },
         glass:    { blur: 24,  alpha: 18 }
       };
 
@@ -113,9 +116,14 @@
           '<div class="pc-edit-group">' +
             '<label class="pc-edit-label">模糊度</label>' +
             '<div class="frost-slider-row">' +
-              '<input type="range" id="frostBlur" min="-200" max="200" value="' + d.blur + '">' +
+              '<input type="range" id="frostBlur" min="0" max="200" value="' + d.blur + '">' +
               '<span class="frost-slider-val" id="frostBlurVal">' + d.blur + 'px</span>' +
             '</div>' +
+          '</div>' +
+
+          '<div class="pc-edit-group">' +
+            '<label class="pc-edit-label">文字颜色</label>' +
+            '<input type="color" class="pc-edit-input" id="frostTextColor" value="' + (d.textColor || '#ffffff') + '" style="height:44px;padding:4px;">' +
           '</div>' +
 
           '<div class="pc-edit-group">' +
@@ -139,6 +147,7 @@
           hex: App.$('#frostHex').value,
           alpha: parseInt(App.$('#frostAlpha').value),
           blur: parseInt(App.$('#frostBlur').value),
+          textColor: App.$('#frostTextColor').value,
           text: App.$('#frostText').value.trim()
         };
       }
@@ -169,7 +178,7 @@
         });
       });
 
-      ['frostHex', 'frostAlpha', 'frostBlur'].forEach(function(id) {
+      ['frostHex', 'frostAlpha', 'frostBlur', 'frostTextColor', 'frostText'].forEach(function(id) {
         App.$('#' + id).addEventListener('input', preview);
       });
 
