@@ -330,6 +330,172 @@
     App.state.currentPanelEl = null;
   };
 
+  // ========= 悬浮球模式 =========
+  var BALL_DEFAULTS = {
+    mode: 'mascot',
+    ballImg: 'https://iili.io/B7m3lY7.md.png',
+    customImg: ''
+  };
+
+  App.ballConfig = null;
+
+  App.loadBallConfig = function() {
+    App.ballConfig = App.LS.get('ballConfig') || JSON.parse(JSON.stringify(BALL_DEFAULTS));
+  };
+
+  App.saveBallConfig = function() {
+    App.LS.set('ballConfig', App.ballConfig);
+  };
+
+  App.applyBallMode = function() {
+    var ball = App.state.ball;
+    var img = App.$('#mascotImg');
+    if (!ball || !img) return;
+
+    var config = App.ballConfig;
+
+    if (config.mode === 'ball') {
+      ball.classList.add('ball-mode');
+      ball.classList.remove('mascot-mode');
+
+      var src = config.customImg || config.ballImg;
+      img.src = src;
+      img.classList.remove('breathing', 'waving', 'happy');
+
+      // 停止公仔动画
+      if (App.mascot) {
+        clearTimeout(App.mascot.blinkTimer);
+        clearTimeout(App.mascot.idleTimer);
+        App.mascot.animLock = true;
+      }
+    } else {
+      ball.classList.remove('ball-mode');
+      ball.classList.add('mascot-mode');
+
+      // 恢复公仔
+      if (App.mascot) {
+        App.mascot.animLock = false;
+        App.mascot.goIdle();
+        App.mascot.startBlinkLoop();
+        App.mascot.startIdleActions();
+      }
+    }
+  };
+
+  App.toggleBallMode = function() {
+    var config = App.ballConfig;
+    config.mode = config.mode === 'mascot' ? 'ball' : 'mascot';
+    App.saveBallConfig();
+    App.applyBallMode();
+
+    var label = config.mode === 'mascot' ? '公仔模式' : '悬浮球模式';
+    App.showToast('已切换为' + label);
+    App.closeMenu();
+  };
+
+  App.openBallImgEdit = function() {
+    App.closeMenu();
+
+    var old = App.$('#ballImgOverlay');
+    if (old) old.remove();
+
+    var config = App.ballConfig;
+    var currentSrc = config.customImg || config.ballImg;
+
+    var overlay = document.createElement('div');
+    overlay.id = 'ballImgOverlay';
+    overlay.className = 'pc-edit-overlay';
+    overlay.innerHTML =
+      '<div class="pc-edit-panel">' +
+        '<div class="pc-edit-title">更换悬浮球形象</div>' +
+
+        '<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;margin:0 auto 16px;background:#f5f5f5;">' +
+          '<img id="ballImgPreview" src="' + App.esc(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
+        '</div>' +
+
+        '<div class="pc-edit-group">' +
+          '<label class="pc-edit-label">图片URL 或上传</label>' +
+          '<div style="display:flex;gap:8px;">' +
+            '<input type="text" class="pc-edit-input" id="ballImgUrl" placeholder="图片URL..." value="' + App.esc(config.customImg || '') + '" style="flex:1;">' +
+            '<label style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border:1px solid rgba(0,0,0,0.06);border-radius:10px;cursor:pointer;flex-shrink:0;" for="ballImgFile">' +
+              '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+            '</label>' +
+            '<input type="file" id="ballImgFile" accept="image/*" hidden>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="pc-edit-btns">' +
+          '<button class="pc-edit-save" id="ballImgSave" type="button">保存</button>' +
+          '<button class="pc-edit-cancel" id="ballImgCancel" type="button">取消</button>' +
+        '</div>' +
+
+        '<div style="text-align:center;margin-top:10px;">' +
+          '<button type="button" id="ballImgReset" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">恢复默认</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    // URL输入实时预览
+    App.$('#ballImgUrl').addEventListener('input', function() {
+      var v = this.value.trim();
+      if (v) App.$('#ballImgPreview').src = v;
+    });
+
+    // 上传图片
+    App.$('#ballImgFile').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var max = 200;
+          var w = img.width, h = img.height;
+          if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+          else { if (h > max) { w = w * max / h; h = max; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/jpeg', 0.7);
+          App.$('#ballImgUrl').value = compressed;
+          App.$('#ballImgPreview').src = compressed;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 保存
+    App.$('#ballImgSave').addEventListener('click', function() {
+      var url = App.$('#ballImgUrl').value.trim();
+      App.ballConfig.customImg = url;
+      App.saveBallConfig();
+      App.applyBallMode();
+      overlay.remove();
+      App.showToast('已保存');
+    });
+
+    // 取消
+    App.$('#ballImgCancel').addEventListener('click', function() {
+      overlay.remove();
+    });
+
+    // 恢复默认
+    App.$('#ballImgReset').addEventListener('click', function() {
+      App.ballConfig.customImg = '';
+      App.$('#ballImgUrl').value = '';
+      App.$('#ballImgPreview').src = App.ballConfig.ballImg;
+      App.saveBallConfig();
+      App.applyBallMode();
+      App.showToast('已恢复默认');
+    });
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.remove();
+    });
+  };
+
   // ========= 悬浮球初始化 =========
   App.initFloatingBall = function() {
     var ball = App.state.ball;
@@ -373,8 +539,9 @@
       var dy = t.clientY - App.state.startY;
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) App.state.hasMoved = true;
       if (!App.state.hasMoved) return;
-      var nx = Math.max(0, Math.min(window.innerWidth - 150, App.state.origX + dx));
-      var ny = Math.max(0, Math.min(window.innerHeight - 150, App.state.origY + dy));
+      var ballSize = ball.classList.contains('ball-mode') ? 48 : 150;
+      var nx = Math.max(0, Math.min(window.innerWidth - ballSize, App.state.origX + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - ballSize, App.state.origY + dy));
       ball.style.left = nx + 'px';
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
@@ -393,7 +560,7 @@
           ballTapCount = 0;
         } else {
           ballTapTimer = setTimeout(function() {
-            if (App.mascot && typeof App.mascot.onTap === 'function') {
+            if (App.ballConfig.mode === 'mascot' && App.mascot && typeof App.mascot.onTap === 'function') {
               App.mascot.onTap();
             }
             App.toggleMenu();
@@ -421,7 +588,7 @@
         ballTapCount = 0;
       } else {
         ballTapTimer = setTimeout(function() {
-          if (App.mascot && typeof App.mascot.onTap === 'function') {
+          if (App.ballConfig.mode === 'mascot' && App.mascot && typeof App.mascot.onTap === 'function') {
             App.mascot.onTap();
           }
           App.toggleMenu();
@@ -474,6 +641,19 @@
         pageTapCount = 0;
         clearTimeout(ballTapTimer);
         clearTimeout(pageTapTimer);
+
+        // 切换形象
+        if (item.id === 'ballModeToggle') {
+          App.toggleBallMode();
+          return;
+        }
+
+        // 更换图片
+        if (item.id === 'ballCustomImg') {
+          App.openBallImgEdit();
+          return;
+        }
+
         var panelId = item.dataset.panel;
         if (panelId) {
           App.openPanel(panelId);
@@ -571,6 +751,7 @@
       },
       startBlinkLoop: function() {
         var self = this;
+        clearTimeout(self.blinkTimer);
         function go() {
           self.blinkTimer = setTimeout(function() {
             if (!self.animLock) self.doBlink();
@@ -582,6 +763,7 @@
       startIdleActions: function() {
         var self = this;
         var acts = ['smile', 'wave'];
+        clearTimeout(self.idleTimer);
         function go() {
           self.idleTimer = setTimeout(function() {
             if (!self.animLock) {
@@ -606,9 +788,17 @@
     };
 
     App.mascot.init();
-    setTimeout(function() {
-      if (App.mascot) App.mascot.doAction('wave');
-    }, 1000);
+
+    // 加载悬浮球模式
+    App.loadBallConfig();
+    App.applyBallMode();
+
+    // 首次打开公仔挥手
+    if (App.ballConfig.mode === 'mascot') {
+      setTimeout(function() {
+        if (App.mascot) App.mascot.doAction('wave');
+      }, 1000);
+    }
   };
 
   // ========= 模块初始化 =========
