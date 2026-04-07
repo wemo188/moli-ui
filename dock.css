@@ -1,44 +1,52 @@
 /* =========================
-   底部 Dock 栏
+   底部 Dock 栏 - 苹果风格
 ========================= */
-.dock {
+.dock-bar {
   position: fixed;
-  bottom: calc(14px + env(safe-area-inset-bottom, 20px));
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 900;
-  border-radius: 28px;
-  padding: 12px 18px;
+  padding: 10px 20px calc(6px + env(safe-area-inset-bottom, 0px));
   display: flex;
-  gap: 14px;
+  justify-content: center;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(245, 248, 252, 0.65) 15%,
+    rgba(235, 240, 248, 0.82) 100%);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border-top: 0.5px solid rgba(200, 215, 230, 0.35);
+}
 
-  background: #ffffff;
-  box-shadow:
-    0 12px 40px rgba(0,0,0,0.10),
-    0 4px 12px rgba(0,0,0,0.06);
+.dock-bar-inner {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
 }
 
 .dock-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.dock-item:active .dock-icon {
+.dock-item:active .dock-icon-card {
   transform: scale(0.90);
 }
 
-.dock-icon {
+.dock-icon-card {
   position: relative;
-  width: 56px;
-  height: 56px;
-  border-radius: 15px;
+  height: 52px;
+  width: 52px;
+  border-radius: 14px;
   background: linear-gradient(180deg, rgba(255,255,255,.44), rgba(240,248,255,.22));
   border: 1px solid rgba(220,235,255,.55);
-  box-shadow: 0 14px 30px rgba(20,35,55,.14);
+  box-shadow: 0 8px 20px rgba(20,35,55,.12);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -46,19 +54,19 @@
   transition: transform 0.15s;
 }
 
-.dock-icon::before {
+.dock-icon-card::before {
   content: "";
   position: absolute;
   inset: -40%;
   background:
-    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.30), transparent 62%),
-    radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.25), transparent 64%),
-    radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.18), transparent 66%);
+    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.55), transparent 62%),
+    radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.35), transparent 64%),
+    radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.20), transparent 66%);
   transform: rotate(-10deg);
   pointer-events: none;
 }
 
-.dock-icon::after {
+.dock-icon-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -70,7 +78,7 @@
   opacity: .82;
 }
 
-.dock-icon svg {
+.dock-icon-card svg {
   position: relative;
   z-index: 2;
   width: 32px;
@@ -78,9 +86,10 @@
   filter: drop-shadow(0 2px 6px rgba(40,70,110,.18));
 }
 
-.dock-label {
-  font-size: 11px;
-  color: #1f2b38;
-  text-align: center;
+.dock-item-label {
+  font-size: 9px;
   font-weight: 500;
+  color: #3a4a5c;
+  text-align: center;
+  line-height: 1;
 }
