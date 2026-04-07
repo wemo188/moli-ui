@@ -9,11 +9,8 @@
     DEFAULTS: {
       mode: 'frost',
       hex: '#ffffff',
-      alpha: 25,
+      alpha: 0,
       blur: 12,
-      saturate: 100,
-      brightness: 100,
-      contrast: 100,
       text: ''
     },
 
@@ -26,9 +23,6 @@
         Frost.data.hex = saved.hex || d.hex;
         Frost.data.alpha = saved.alpha != null ? saved.alpha : d.alpha;
         Frost.data.blur = saved.blur != null ? saved.blur : d.blur;
-        Frost.data.saturate = saved.saturate != null ? saved.saturate : d.saturate;
-        Frost.data.brightness = saved.brightness != null ? saved.brightness : d.brightness;
-        Frost.data.contrast = saved.contrast != null ? saved.contrast : d.contrast;
         Frost.data.text = saved.text || '';
       } else {
         Frost.data = JSON.parse(JSON.stringify(d));
@@ -37,15 +31,6 @@
 
     save: function() {
       App.LS.set('frostCard', Frost.data);
-    },
-
-    buildFilter: function(data) {
-      var parts = [];
-      parts.push('blur(' + data.blur + 'px)');
-      if (data.saturate !== 100) parts.push('saturate(' + data.saturate + '%)');
-      if (data.brightness !== 100) parts.push('brightness(' + data.brightness + '%)');
-      if (data.contrast !== 100) parts.push('contrast(' + data.contrast + '%)');
-      return parts.join(' ');
     },
 
     buildBg: function(data) {
@@ -59,14 +44,14 @@
 
     applyToEl: function(el, data) {
       if (!el) return;
-      var filter = Frost.buildFilter(data);
       var bg = Frost.buildBg(data);
+      var blurVal = Math.max(0, data.blur);
+      var filter = 'blur(' + blurVal + 'px)';
 
       el.style.background = bg;
       el.style.backdropFilter = filter;
       el.style.webkitBackdropFilter = filter;
 
-      // 模式特殊处理
       if (data.mode === 'glass') {
         el.style.borderColor = 'rgba(255,255,255,0.5)';
         el.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.15)';
@@ -93,11 +78,10 @@
 
       var d = Frost.data;
 
-      // 各模式的预设
       var presets = {
-        frost:    { blur: 12,  saturate: 100, brightness: 100, contrast: 100, alpha: 25 },
-        gaussian: { blur: 80,  saturate: 100, brightness: 100, contrast: 100, alpha: 15 },
-        glass:    { blur: 24,  saturate: 180, brightness: 110, contrast: 90,  alpha: 18 }
+        frost:    { blur: 12,  alpha: 0 },
+        gaussian: { blur: 80,  alpha: 0 },
+        glass:    { blur: 24,  alpha: 18 }
       };
 
       var overlay = document.createElement('div');
@@ -129,32 +113,8 @@
           '<div class="pc-edit-group">' +
             '<label class="pc-edit-label">模糊度</label>' +
             '<div class="frost-slider-row">' +
-              '<input type="range" id="frostBlur" min="0" max="200" value="' + d.blur + '">' +
+              '<input type="range" id="frostBlur" min="-200" max="200" value="' + d.blur + '">' +
               '<span class="frost-slider-val" id="frostBlurVal">' + d.blur + 'px</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">饱和度</label>' +
-            '<div class="frost-slider-row">' +
-              '<input type="range" id="frostSaturate" min="0" max="300" value="' + d.saturate + '">' +
-              '<span class="frost-slider-val" id="frostSaturateVal">' + d.saturate + '%</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">亮度</label>' +
-            '<div class="frost-slider-row">' +
-              '<input type="range" id="frostBrightness" min="0" max="200" value="' + d.brightness + '">' +
-              '<span class="frost-slider-val" id="frostBrightnessVal">' + d.brightness + '%</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">对比度</label>' +
-            '<div class="frost-slider-row">' +
-              '<input type="range" id="frostContrast" min="0" max="200" value="' + d.contrast + '">' +
-              '<span class="frost-slider-val" id="frostContrastVal">' + d.contrast + '%</span>' +
             '</div>' +
           '</div>' +
 
@@ -179,9 +139,6 @@
           hex: App.$('#frostHex').value,
           alpha: parseInt(App.$('#frostAlpha').value),
           blur: parseInt(App.$('#frostBlur').value),
-          saturate: parseInt(App.$('#frostSaturate').value),
-          brightness: parseInt(App.$('#frostBrightness').value),
-          contrast: parseInt(App.$('#frostContrast').value),
           text: App.$('#frostText').value.trim()
         };
       }
@@ -189,9 +146,6 @@
       function updateLabels() {
         App.$('#frostAlphaVal').textContent = App.$('#frostAlpha').value + '%';
         App.$('#frostBlurVal').textContent = App.$('#frostBlur').value + 'px';
-        App.$('#frostSaturateVal').textContent = App.$('#frostSaturate').value + '%';
-        App.$('#frostBrightnessVal').textContent = App.$('#frostBrightness').value + '%';
-        App.$('#frostContrastVal').textContent = App.$('#frostContrast').value + '%';
       }
 
       function preview() {
@@ -202,14 +156,10 @@
       function setSliders(p) {
         App.$('#frostAlpha').value = p.alpha;
         App.$('#frostBlur').value = p.blur;
-        App.$('#frostSaturate').value = p.saturate;
-        App.$('#frostBrightness').value = p.brightness;
-        App.$('#frostContrast').value = p.contrast;
         updateLabels();
         preview();
       }
 
-      // 模式切换
       overlay.querySelectorAll('.frost-mode-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           overlay.querySelectorAll('.frost-mode-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -219,12 +169,10 @@
         });
       });
 
-      // 滑块实时预览
-      ['frostHex', 'frostAlpha', 'frostBlur', 'frostSaturate', 'frostBrightness', 'frostContrast'].forEach(function(id) {
+      ['frostHex', 'frostAlpha', 'frostBlur'].forEach(function(id) {
         App.$('#' + id).addEventListener('input', preview);
       });
 
-      // 保存
       App.$('#frostSaveBtn').addEventListener('click', function() {
         Frost.data = getCurrent();
         Frost.save();
@@ -233,7 +181,6 @@
         App.showToast('已保存');
       });
 
-      // 取消
       App.$('#frostCancelBtn').addEventListener('click', function() {
         Frost.apply();
         overlay.remove();
