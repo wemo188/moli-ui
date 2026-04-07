@@ -405,7 +405,7 @@
         '<div class="pc-edit-group">' +
           '<label class="pc-edit-label">模式</label>' +
           '<div style="display:flex;gap:8px;">' +
-            '<button type="button" class="ball-mode-btn' + (config.mode === 'mascot' ? ' active' : '') + '" data-mode="mascot" style="flex:1;padding:10px 0;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:1px solid rgba(0,0,0,0.08);' + (config.mode === 'mascot' ? 'background:#1a1a1a;color:#fff;border-color:#1a1a1a;' : 'background:#f5f5f5;color:#666;') + '">公仔</button>' +
+            '<button type="button" class="ball-mode-btn' + (config.mode === 'mascot' ? ' active' : '') + '" data-mode="mascot" style="flex:1;padding:10px 0;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:1px solid rgba(0,0,0,0.08);' + (config.mode === 'mascot' ? 'background:#1a1a1a;color:#fff;border-color:#1a1a1a;' : 'background:#f5f5f5;color:#666;') + '">小助手</button>' +
             '<button type="button" class="ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="flex:1;padding:10px 0;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:1px solid rgba(0,0,0,0.08);' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;border-color:#1a1a1a;' : 'background:#f5f5f5;color:#666;') + '">悬浮球</button>' +
           '</div>' +
         '</div>' +
@@ -505,7 +505,7 @@
       App.saveBallConfig();
       App.applyBallMode();
       overlay.remove();
-      var label = currentMode === 'mascot' ? '公仔模式' : '悬浮球模式';
+      var label = currentMode === 'mascot' ? '小助手模式' : '悬浮球模式';
       App.showToast('已保存 · ' + label);
     });
 
