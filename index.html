@@ -23,54 +23,58 @@
 </head>
 <body>
 
+<!-- ====== 背景层 ====== -->
+<div id="bgLayer" class="bg-layer"></div>
+
+<!-- ====== 主页面 ====== -->
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-      <section class="screen-page screen-page-1">
-  <div class="screen-page-inner">
-    <div class="wt-card" id="wtCard">
-      <div class="wt-cw">
-        <div class="vf-c tl"></div>
-        <div class="vf-c tr"></div>
-        <div class="vf-c bl"></div>
-        <div class="vf-c br"></div>
-        <div class="vf-grid"></div>
-        <div class="vf-hl top"></div>
-        <div class="vf-hl bot"></div>
-        <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
-        <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
+    <!-- 第一页 -->
+    <section class="screen-page screen-page-1">
+      <div class="screen-page-inner">
+        <div class="wt-card" id="wtCard">
+          <div class="wt-cw">
+            <div class="vf-c tl"></div>
+            <div class="vf-c tr"></div>
+            <div class="vf-c bl"></div>
+            <div class="vf-c br"></div>
+            <div class="vf-grid"></div>
+            <div class="vf-hl top"></div>
+            <div class="vf-hl bot"></div>
+            <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
+            <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
 
-        <div class="wt-cd">
-          <div class="wt-l" id="wtDateArea">
-            <div class="wt-time">
-              <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+            <div class="wt-cd">
+              <div class="wt-l" id="wtDateArea">
+                <div class="wt-time">
+                  <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+                </div>
+                <div class="wt-tl"></div>
+                <div class="wt-date">
+                  <span id="wt-fd">----年--月--日</span>
+                  <span class="wt-wk" id="wt-wk">---</span>
+                </div>
+              </div>
+              <div class="wt-vd"></div>
+              <div class="wt-r" id="wtWeatherArea">
+                <div class="wt-temp"><span id="wt-temp-val">--</span><span class="wt-deg">°C</span></div>
+                <div class="wt-desc" id="wt-desc-val">--</div>
+                <div class="wt-wl"></div>
+              </div>
             </div>
-            <div class="wt-tl"></div>
-            <div class="wt-date">
-              <span id="wt-fd">----年--月--日</span>
-              <span class="wt-wk" id="wt-wk">---</span>
-            </div>
-          </div>
-          <div class="wt-vd"></div>
-          <div class="wt-r" id="wtWeatherArea">
-            <div class="wt-temp"><span id="wt-temp-val">--</span><span class="wt-deg">°C</span></div>
-            <div class="wt-desc" id="wt-desc-val">--</div>
-            <div class="wt-wl"></div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="card-row" id="cardRow"></div>
-  </div>
-</section>
-
-    <section class="screen-page screen-page-2">
-<section class="screen-page screen-page-2">
-  <div class="screen-page-inner" style="position:relative;height:100%;">
-        <div class="frost-card" id="frostCard"></div>
         <div class="card-row" id="cardRow"></div>
-        <div class="app-grid" id="appGrid">
+      </div>
+    </section>
 
+    <!-- 第二页 -->
+    <section class="screen-page screen-page-2">
+      <div class="screen-page-inner" style="position:relative;height:100%;">
+        <div class="frost-card" id="frostCard"></div>
+
+        <div class="app-grid" id="appGrid">
           <div class="app-icon" id="openCharacterBtn" data-icon="character">
             <div class="app-icon-img" id="characterIconImg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -125,7 +129,6 @@
             </div>
             <div class="app-icon-label">正则</div>
           </div>
-
         </div>
       </div>
     </section>
@@ -137,6 +140,7 @@
   </div>
 </main>
 
+<!-- ====== 底部栏 ====== -->
 <div class="dock" id="dockBar">
   <div class="dock-item" id="dockMine">
     <div class="dock-icon"></div>
@@ -151,16 +155,13 @@
     <div class="dock-icon"></div>
   </div>
 </div>
-</div>
 
-</div>
-
-<div id="bgLayer" class="bg-layer"></div>
-
+<!-- ====== 悬浮球 ====== -->
 <div id="floatingBall" class="floating-ball mascot-ball">
-<img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false">
+  <img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false">
 </div>
 
+<!-- ====== 悬浮球菜单 ====== -->
 <div id="ballMenu" class="ball-menu hidden">
   <div class="ball-menu-item" data-panel="apiPanel">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -196,13 +197,22 @@
     </svg>
     <span>背景图片</span>
   </div>
-  
-<div class="ball-menu-item" id="ballSettings">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-  <span>悬浮球设置</span>
+
+  <div class="ball-menu-item" id="ballSettings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+    <span>悬浮球设置</span>
+  </div>
 </div>
 
+<!-- ====== 遮罩层 ====== -->
 <div id="overlay" class="overlay hidden"></div>
+
+<!-- ====== 所有面板（必须在main外面） ====== -->
 
 <!-- API 配置 -->
 <div id="apiPanel" class="panel hidden">
@@ -359,8 +369,40 @@
   </div>
 </div>
 
+<!-- 日历面板 -->
+<div id="calendarPanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>日历</h2>
+    <div class="panel-close" data-close="calendarPanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </div>
+  </div>
+  <div class="panel-body">
+    <p style="color:var(--text-muted);text-align:center;padding:40px 0;">日历功能开发中...</p>
+  </div>
+</div>
+
+<!-- 天气面板 -->
+<div id="weatherPanel" class="panel hidden">
+  <div class="panel-header">
+    <h2>天气</h2>
+    <div class="panel-close" data-close="weatherPanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </div>
+  </div>
+  <div class="panel-body">
+    <p style="color:var(--text-muted);text-align:center;padding:40px 0;">天气详情开发中...</p>
+  </div>
+</div>
+
+<!-- ====== Toast ====== -->
 <div id="toast" class="toast hidden"></div>
 
+<!-- ====== JS ====== -->
 <script src="script.js"></script>
 <script src="theme.js"></script>
 <script src="font.js"></script>
