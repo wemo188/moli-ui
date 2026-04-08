@@ -98,6 +98,8 @@
   user-select: none;
   -webkit-user-select: none;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .eden-card .eden-text {
