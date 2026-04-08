@@ -3,6 +3,9 @@
   var App = window.App;
   if (!App) return;
 
+  // ============================
+  //  磨砂卡片（第二页）
+  // ============================
   var Frost = {
     data: {},
 
@@ -31,28 +34,24 @@
       }
     },
 
-    save: function() {
-      App.LS.set('frostCard', Frost.data);
-    },
+    save: function() { App.LS.set('frostCard', Frost.data); },
 
     buildBg: function(data) {
       var hex = data.hex || '#ffffff';
-      var r = parseInt(hex.substr(1, 2), 16);
-      var g = parseInt(hex.substr(3, 2), 16);
-      var b = parseInt(hex.substr(5, 2), 16);
+      var r = parseInt(hex.substr(1,2),16);
+      var g = parseInt(hex.substr(3,2),16);
+      var b = parseInt(hex.substr(5,2),16);
       var a = (data.alpha || 0) / 100;
-      return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+      return 'rgba('+r+','+g+','+b+','+a+')';
     },
 
     applyToEl: function(el, data) {
       if (!el) return;
       var bg = Frost.buildBg(data);
-      var blur = 'blur(' + data.blur + 'px)';
-
+      var blur = 'blur('+data.blur+'px)';
       el.style.background = bg;
       el.style.backdropFilter = blur;
       el.style.webkitBackdropFilter = blur;
-
       if (data.mode === 'glass') {
         el.style.borderColor = 'rgba(255,255,255,0.5)';
         el.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.15)';
@@ -63,158 +62,321 @@
         el.style.borderColor = 'rgba(255,255,255,0.4)';
         el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
       }
-
       if (data.text) {
-        el.innerHTML = '<div class="frost-card-text" style="color:' + (data.textColor || '#ffffff') + '">' + App.esc(data.text) + '</div>';
+        el.innerHTML = '<div class="frost-card-text" style="color:'+(data.textColor||'#ffffff')+'">'+App.esc(data.text)+'</div>';
       } else {
         el.innerHTML = '';
       }
     },
 
-    apply: function() {
-      Frost.applyToEl(App.$('#frostCard'), Frost.data);
-    },
+    apply: function() { Frost.applyToEl(App.$('#frostCard'), Frost.data); },
 
     openEdit: function() {
       var old = App.$('#frostEditOverlay');
       if (old) old.remove();
-
       var d = Frost.data;
-
-      var presets = {
-        frost:    { blur: 12,  alpha: 25 },
-        gaussian: { blur: 80,  alpha: 15 },
-        glass:    { blur: 24,  alpha: 18 }
-      };
-
+      var presets = { frost:{blur:12,alpha:25}, gaussian:{blur:80,alpha:15}, glass:{blur:24,alpha:18} };
       var overlay = document.createElement('div');
       overlay.id = 'frostEditOverlay';
       overlay.className = 'pc-edit-overlay';
       overlay.innerHTML =
         '<div class="pc-edit-panel">' +
           '<div class="pc-edit-title">磨砂卡片设置</div>' +
-
           '<div class="frost-mode-switch">' +
-            '<button class="frost-mode-btn' + (d.mode === 'frost' ? ' active' : '') + '" data-mode="frost" type="button">磨砂</button>' +
-            '<button class="frost-mode-btn' + (d.mode === 'gaussian' ? ' active' : '') + '" data-mode="gaussian" type="button">高斯模糊</button>' +
-            '<button class="frost-mode-btn' + (d.mode === 'glass' ? ' active' : '') + '" data-mode="glass" type="button">毛玻璃</button>' +
+            '<button class="frost-mode-btn'+(d.mode==='frost'?' active':'')+'" data-mode="frost" type="button">磨砂</button>' +
+            '<button class="frost-mode-btn'+(d.mode==='gaussian'?' active':'')+'" data-mode="gaussian" type="button">高斯模糊</button>' +
+            '<button class="frost-mode-btn'+(d.mode==='glass'?' active':'')+'" data-mode="glass" type="button">毛玻璃</button>' +
+          '</div>' +
+          '<div class="pc-edit-group"><label class="pc-edit-label">背景颜色</label><input type="color" class="pc-edit-input" id="frostHex" value="'+(d.hex||'#ffffff')+'" style="height:44px;padding:4px;"></div>' +
+          '<div class="pc-edit-group"><label class="pc-edit-label">透明度</label><div class="frost-slider-row"><input type="range" id="frostAlpha" min="0" max="100" value="'+d.alpha+'"><span class="frost-slider-val" id="frostAlphaVal">'+d.alpha+'%</span></div></div>' +
+          '<div class="pc-edit-group"><label class="pc-edit-label">模糊度</label><div class="frost-slider-row"><input type="range" id="frostBlur" min="0" max="200" value="'+d.blur+'"><span class="frost-slider-val" id="frostBlurVal">'+d.blur+'px</span></div></div>' +
+          '<div class="pc-edit-group"><label class="pc-edit-label">文字颜色</label><input type="color" class="pc-edit-input" id="frostTextColor" value="'+(d.textColor||'#ffffff')+'" style="height:44px;padding:4px;"></div>' +
+          '<div class="pc-edit-group"><label class="pc-edit-label">文字（选填）</label><input type="text" class="pc-edit-input" id="frostText" placeholder="卡片上显示的文字..." value="'+App.esc(d.text||'')+'"></div>' +
+          '<div class="pc-edit-btns"><button class="pc-edit-save" id="frostSaveBtn" type="button">保存</button><button class="pc-edit-cancel" id="frostCancelBtn" type="button">取消</button></div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      var currentMode = d.mode || 'frost';
+      function getCurrent() {
+        return { mode:currentMode, hex:App.$('#frostHex').value, alpha:parseInt(App.$('#frostAlpha').value), blur:parseInt(App.$('#frostBlur').value), textColor:App.$('#frostTextColor').value, text:App.$('#frostText').value.trim() };
+      }
+      function updateLabels() { App.$('#frostAlphaVal').textContent=App.$('#frostAlpha').value+'%'; App.$('#frostBlurVal').textContent=App.$('#frostBlur').value+'px'; }
+      function preview() { updateLabels(); Frost.applyToEl(App.$('#frostCard'),getCurrent()); }
+      function setSliders(p) { App.$('#frostAlpha').value=p.alpha; App.$('#frostBlur').value=p.blur; updateLabels(); preview(); }
+      overlay.querySelectorAll('.frost-mode-btn').forEach(function(btn) {
+        btn.addEventListener('click',function(){ overlay.querySelectorAll('.frost-mode-btn').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); currentMode=btn.dataset.mode; setSliders(presets[currentMode]); });
+      });
+      ['frostHex','frostAlpha','frostBlur','frostTextColor','frostText'].forEach(function(id){ App.$('#'+id).addEventListener('input',preview); });
+      App.$('#frostSaveBtn').addEventListener('click',function(){ Frost.data=getCurrent(); Frost.save(); Frost.apply(); overlay.remove(); App.showToast('已保存'); });
+      App.$('#frostCancelBtn').addEventListener('click',function(){ Frost.apply(); overlay.remove(); });
+      overlay.addEventListener('click',function(e){ if(e.target===overlay){Frost.apply();overlay.remove();} });
+    },
+
+    init: function() {
+      Frost.load(); Frost.apply();
+      var el = App.$('#frostCard');
+      if (el) el.addEventListener('click',function(){Frost.openEdit();});
+    }
+  };
+
+  // ============================
+  //  伊甸文字卡片（第一页）
+  // ============================
+  var Eden = {
+    data: {},
+    customFont: null,
+
+    DEFAULTS: {
+      text: '— 你是我的伊甸塔 —',
+      fontSize: 32,
+      rotate: -4,
+      spacing: 6,
+      fontColor: '#ffffff',
+      fontUrl: ''
+    },
+
+    load: function() {
+      var saved = App.LS.get('edenCard');
+      var d = Eden.DEFAULTS;
+      if (saved) {
+        Eden.data.text = saved.text != null ? saved.text : d.text;
+        Eden.data.fontSize = saved.fontSize != null ? saved.fontSize : d.fontSize;
+        Eden.data.rotate = saved.rotate != null ? saved.rotate : d.rotate;
+        Eden.data.spacing = saved.spacing != null ? saved.spacing : d.spacing;
+        Eden.data.fontColor = saved.fontColor || d.fontColor;
+        Eden.data.fontUrl = saved.fontUrl || '';
+      } else {
+        Eden.data = JSON.parse(JSON.stringify(d));
+      }
+    },
+
+    save: function() { App.LS.set('edenCard', Eden.data); },
+
+    loadFont: function(url) {
+      if (!url) {
+        // 移除自定义字体，用全局
+        var textEl = App.$('#edenText');
+        if (textEl) textEl.style.fontFamily = '';
+        return;
+      }
+      if (Eden.customFont) {
+        // 已加载同一个就跳过
+        if (Eden._lastFontUrl === url) return;
+      }
+      Eden._lastFontUrl = url;
+      var font = new FontFace('EdenCustom', 'url(' + url + ')');
+      font.load().then(function(loaded) {
+        document.fonts.add(loaded);
+        Eden.customFont = loaded;
+        var textEl = App.$('#edenText');
+        if (textEl) textEl.style.fontFamily = "'EdenCustom', cursive";
+      }).catch(function() {
+        App.showToast('字体加载失败');
+      });
+    },
+
+    apply: function() {
+      var el = App.$('#edenText');
+      if (!el) return;
+      var d = Eden.data;
+      el.textContent = d.text || '';
+      el.style.fontSize = (d.fontSize || 32) + 'px';
+      el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
+      el.style.letterSpacing = (d.spacing || 0) + 'px';
+      el.style.color = d.fontColor || '#ffffff';
+      Eden.loadFont(d.fontUrl);
+    },
+
+    openEdit: function() {
+      var old = App.$('#edenCtrlWrap');
+      if (old) { old.remove(); return; }
+
+      var d = Eden.data;
+      var wrap = document.createElement('div');
+      wrap.id = 'edenCtrlWrap';
+      wrap.className = 'eden-ctrl-wrap';
+      wrap.innerHTML =
+        '<div class="eden-ctrl-panel">' +
+          '<div class="eden-ctrl-title">文字卡片</div>' +
+
+          '<div class="eden-ctrl-section">内容</div>' +
+
+          '<div class="eden-ctrl-row">' +
+            '<label>字体</label>' +
+            '<input type="text" id="edenFontUrl" placeholder="字体URL（留空用全局字体）" value="' + App.esc(d.fontUrl || '') + '">' +
+            '<label class="eden-font-upload-btn" for="edenFontFile">' +
+              '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+            '</label>' +
+            '<input type="file" id="edenFontFile" accept=".ttf,.otf,.woff,.woff2" hidden>' +
           '</div>' +
 
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">背景颜色</label>' +
-            '<input type="color" class="pc-edit-input" id="frostHex" value="' + (d.hex || '#ffffff') + '" style="height:44px;padding:4px;">' +
+          '<div class="eden-ctrl-row">' +
+            '<label>文字</label>' +
+            '<input type="text" id="edenTextInput" placeholder="输入显示的文字..." value="' + App.esc(d.text || '') + '">' +
           '</div>' +
 
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">透明度</label>' +
-            '<div class="frost-slider-row">' +
-              '<input type="range" id="frostAlpha" min="0" max="100" value="' + d.alpha + '">' +
-              '<span class="frost-slider-val" id="frostAlphaVal">' + d.alpha + '%</span>' +
-            '</div>' +
+          '<div class="eden-ctrl-divider"></div>' +
+          '<div class="eden-ctrl-section">样式</div>' +
+
+          '<div class="eden-ctrl-row">' +
+            '<label>字号</label>' +
+            '<input type="range" id="edenSize" min="14" max="60" value="' + (d.fontSize || 32) + '">' +
+            '<span class="eden-ctrl-val" id="edenSizeVal">' + (d.fontSize || 32) + 'px</span>' +
           '</div>' +
 
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">模糊度</label>' +
-            '<div class="frost-slider-row">' +
-              '<input type="range" id="frostBlur" min="0" max="200" value="' + d.blur + '">' +
-              '<span class="frost-slider-val" id="frostBlurVal">' + d.blur + 'px</span>' +
-            '</div>' +
+          '<div class="eden-ctrl-row">' +
+            '<label>倾斜</label>' +
+            '<input type="range" id="edenRotate" min="-20" max="20" value="' + (d.rotate || 0) + '">' +
+            '<span class="eden-ctrl-val" id="edenRotateVal">' + (d.rotate || 0) + '°</span>' +
           '</div>' +
 
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">文字颜色</label>' +
-            '<input type="color" class="pc-edit-input" id="frostTextColor" value="' + (d.textColor || '#ffffff') + '" style="height:44px;padding:4px;">' +
+          '<div class="eden-ctrl-row">' +
+            '<label>间距</label>' +
+            '<input type="range" id="edenSpacing" min="0" max="20" value="' + (d.spacing || 0) + '">' +
+            '<span class="eden-ctrl-val" id="edenSpacingVal">' + (d.spacing || 0) + 'px</span>' +
           '</div>' +
 
-          '<div class="pc-edit-group">' +
-            '<label class="pc-edit-label">文字（选填）</label>' +
-            '<input type="text" class="pc-edit-input" id="frostText" placeholder="卡片上显示的文字..." value="' + App.esc(d.text || '') + '">' +
+          '<div class="eden-ctrl-row">' +
+            '<label>字色</label>' +
+            '<input type="color" id="edenColor" value="' + (d.fontColor || '#ffffff') + '">' +
           '</div>' +
 
-          '<div class="pc-edit-btns">' +
-            '<button class="pc-edit-save" id="frostSaveBtn" type="button">保存</button>' +
-            '<button class="pc-edit-cancel" id="frostCancelBtn" type="button">取消</button>' +
+          '<div class="eden-ctrl-btns">' +
+            '<button class="eden-ctrl-save" id="edenSave" type="button">保存</button>' +
+            '<button class="eden-ctrl-reset" id="edenReset" type="button">重置</button>' +
           '</div>' +
         '</div>';
 
-      document.body.appendChild(overlay);
+      document.body.appendChild(wrap);
 
-      var currentMode = d.mode || 'frost';
+      // 阻止触摸传播
+      wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
+      wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-      function getCurrent() {
+      // 上传字体
+      App.$('#edenFontFile').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          // 转成blob url
+          var blob = new Blob([ev.target.result]);
+          var url = URL.createObjectURL(blob);
+          App.$('#edenFontUrl').value = '(已上传) ' + file.name;
+          App.$('#edenFontUrl').dataset.blobUrl = url;
+          Eden.loadFont(url);
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      function getCfg() {
+        var urlInput = App.$('#edenFontUrl');
+        var fontUrl = '';
+        if (urlInput.dataset.blobUrl) {
+          // 上传的字体用data URL重新存
+          fontUrl = urlInput.dataset.blobUrl;
+        } else {
+          fontUrl = urlInput.value.trim();
+          if (fontUrl.startsWith('(已上传)')) fontUrl = d.fontUrl || '';
+        }
         return {
-          mode: currentMode,
-          hex: App.$('#frostHex').value,
-          alpha: parseInt(App.$('#frostAlpha').value),
-          blur: parseInt(App.$('#frostBlur').value),
-          textColor: App.$('#frostTextColor').value,
-          text: App.$('#frostText').value.trim()
+          text: App.$('#edenTextInput').value,
+          fontSize: parseInt(App.$('#edenSize').value),
+          rotate: parseInt(App.$('#edenRotate').value),
+          spacing: parseInt(App.$('#edenSpacing').value),
+          fontColor: App.$('#edenColor').value,
+          fontUrl: fontUrl
         };
       }
 
       function updateLabels() {
-        App.$('#frostAlphaVal').textContent = App.$('#frostAlpha').value + '%';
-        App.$('#frostBlurVal').textContent = App.$('#frostBlur').value + 'px';
+        App.$('#edenSizeVal').textContent = App.$('#edenSize').value + 'px';
+        App.$('#edenRotateVal').textContent = App.$('#edenRotate').value + '°';
+        App.$('#edenSpacingVal').textContent = App.$('#edenSpacing').value + 'px';
       }
 
       function preview() {
         updateLabels();
-        Frost.applyToEl(App.$('#frostCard'), getCurrent());
+        var cfg = getCfg();
+        var el = App.$('#edenText');
+        if (!el) return;
+        el.textContent = cfg.text || '';
+        el.style.fontSize = cfg.fontSize + 'px';
+        el.style.transform = 'rotate(' + cfg.rotate + 'deg)';
+        el.style.letterSpacing = cfg.spacing + 'px';
+        el.style.color = cfg.fontColor;
       }
 
-      function setSliders(p) {
-        App.$('#frostAlpha').value = p.alpha;
-        App.$('#frostBlur').value = p.blur;
-        updateLabels();
-        preview();
-      }
-
-      overlay.querySelectorAll('.frost-mode-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          overlay.querySelectorAll('.frost-mode-btn').forEach(function(b) { b.classList.remove('active'); });
-          btn.classList.add('active');
-          currentMode = btn.dataset.mode;
-          setSliders(presets[currentMode]);
-        });
-      });
-
-      ['frostHex', 'frostAlpha', 'frostBlur', 'frostTextColor', 'frostText'].forEach(function(id) {
+      ['edenSize', 'edenRotate', 'edenSpacing', 'edenColor', 'edenTextInput'].forEach(function(id) {
         App.$('#' + id).addEventListener('input', preview);
       });
 
-      App.$('#frostSaveBtn').addEventListener('click', function() {
-        Frost.data = getCurrent();
-        Frost.save();
-        Frost.apply();
-        overlay.remove();
-        App.showToast('已保存');
-      });
-
-      App.$('#frostCancelBtn').addEventListener('click', function() {
-        Frost.apply();
-        overlay.remove();
-      });
-
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-          Frost.apply();
-          overlay.remove();
+      // URL输入后回车加载字体
+      App.$('#edenFontUrl').addEventListener('change', function() {
+        var url = this.value.trim();
+        if (url && !url.startsWith('(已上传)')) {
+          Eden.loadFont(url);
         }
       });
+
+      App.$('#edenSave').addEventListener('click', function() {
+        var cfg = getCfg();
+        // 如果是blob url，转成base64存储
+        if (cfg.fontUrl && cfg.fontUrl.startsWith('blob:')) {
+          fetch(cfg.fontUrl).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
+            var bytes = new Uint8Array(buf);
+            var binary = '';
+            for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            var base64 = 'data:font/ttf;base64,' + btoa(binary);
+            cfg.fontUrl = base64;
+            Eden.data = cfg; Eden.save(); Eden.apply();
+            wrap.remove(); App.showToast('已保存');
+          }).catch(function() {
+            Eden.data = cfg; Eden.save(); Eden.apply();
+            wrap.remove(); App.showToast('已保存');
+          });
+        } else {
+          Eden.data = cfg; Eden.save(); Eden.apply();
+          wrap.remove(); App.showToast('已保存');
+        }
+      });
+
+      App.$('#edenReset').addEventListener('click', function() {
+        Eden.data = JSON.parse(JSON.stringify(Eden.DEFAULTS));
+        Eden.save(); Eden.apply();
+        wrap.remove(); App.showToast('已重置');
+      });
+
+      // 点外面关闭
+      setTimeout(function() {
+        function dismiss(e) {
+          if (wrap.contains(e.target)) return;
+          var edenCard = App.$('#edenCard');
+          if (edenCard && edenCard.contains(e.target)) return;
+          wrap.remove();
+          document.removeEventListener('touchstart', dismiss, true);
+          document.removeEventListener('click', dismiss);
+        }
+        document.addEventListener('touchstart', dismiss, true);
+        document.addEventListener('click', dismiss);
+      }, 100);
     },
 
     init: function() {
-      Frost.load();
-      Frost.apply();
-
-      var el = App.$('#frostCard');
+      Eden.load();
+      Eden.apply();
+      var el = App.$('#edenCard');
       if (el) {
-        el.addEventListener('click', function() {
-          Frost.openEdit();
+        el.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Eden.openEdit();
         });
       }
     }
   };
 
+  // ============================
+  //  统一注册
+  // ============================
   App.register('frost', Frost);
+  App.register('eden', Eden);
 })();
