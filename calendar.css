@@ -4,23 +4,8 @@
    天气时钟卡片（新）
 ========================= */
 .wt-card {
-  --S: 0.72;
+  --S: 1;
   --W0: 420px;
-  --wt-ink: #e8e8e8;
-  --wt-ink2: rgba(232,232,232,0.75);
-  --wt-ink3: rgba(232,232,232,0.5);
-  --wt-ink4: rgba(232,232,232,0.3);
-  --wt-line: rgba(255,255,255,.08);
-  --wt-line2: rgba(255,255,255,.04);
-  --wt-gold: rgba(255,255,255,.25);
-  --wt-gold2: rgba(255,255,255,.12);
-  --wt-bg-alpha: 0;
-  --wt-bg-r: 255;
-  --wt-bg-g: 255;
-  --wt-bg-b: 255;
-  --wt-blur: 7;
-  --wt-radius: 16;
-  --wt-border-alpha: 0.15;
   width: 100%;
   max-width: calc(var(--W0) * var(--S));
   margin: 30px auto 10px;
