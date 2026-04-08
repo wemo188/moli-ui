@@ -107,7 +107,7 @@
   z-index: 998;
   width: 280px;
   left: 50%;
-  bottom: 80px;
+  top: 60px;
   transform: translateX(-50%);
   pointer-events: none;
 }
