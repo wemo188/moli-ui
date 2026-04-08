@@ -766,7 +766,7 @@ App.openWorkshop = function() {
     }
 
     if (item.id === 'ballWorkshop') {
-      App.openWorkshop();
+      if (App.workshop) App.workshop.open();
       return;
     }
 
