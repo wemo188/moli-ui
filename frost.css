@@ -87,18 +87,22 @@
 .eden-card {
   width: 100%;
   height: 150px;
+  min-height: 150px;
+  max-height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
 }
 
 .eden-card .eden-text {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 /* 编辑浮窗 */
