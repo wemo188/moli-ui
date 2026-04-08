@@ -333,11 +333,13 @@
     },
 
     // ====== 判断可拖拽元素 ======
-    _isDraggable: function(target) {
-      return target.closest('.app-icon') ||
-             target.closest('.dock-item') ||
-             target.closest('.bx-w');
-    },
+   _isDraggable: function(target) {
+  return target.closest('#edenCard') ||
+         target.closest('#wtCard') ||
+         target.closest('.app-icon') ||
+         target.closest('.dock-item') ||
+         target.closest('.bx-w');
+},
 
     // ====== 全局touch绑定 ======
     bindAll: function() {
