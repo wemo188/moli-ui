@@ -64,3 +64,8 @@
 .drag-reset-btn:active {
   opacity: 0.7;
 }
+
+.drag-mode-outline {
+  outline: 2px dashed rgba(255,255,255,0.5);
+  outline-offset: 4px;
+}
