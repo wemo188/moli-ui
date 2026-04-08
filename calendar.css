@@ -49,8 +49,9 @@
   position: absolute; z-index: 5; pointer-events: none;
 }
 .wt-card .vf-c::before, .wt-card .vf-c::after {
-  content: ""; position: absolute; background: var(--wt-gold);
+  content: ""; position: absolute; background: var(--wt-gold, rgba(255,255,255,.25));
 }
+
 .wt-card .vf-c.tl { top: calc(8px * var(--S)); left: calc(8px * var(--S)); }
 .wt-card .vf-c.tr { top: calc(8px * var(--S)); right: calc(8px * var(--S)); }
 .wt-card .vf-c.bl { bottom: calc(8px * var(--S)); left: calc(8px * var(--S)); }
