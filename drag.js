@@ -66,26 +66,40 @@
     },
 
     enterEdit: function() {
-      if (Drag._editMode) return;
-      Drag._editMode = true;
-      document.body.classList.add('drag-edit-active');
-      Drag._getAllDraggables().forEach(function(el) { el.classList.add('drag-mode'); });
-      if (App.pageSlider && App.pageSlider.disable) App.pageSlider.disable();
-      if (navigator.vibrate) navigator.vibrate(30);
-      Drag._showDone();
-      App.showToast('拖拽到任意位置 · 点完成退出');
-    },
+  if (Drag._editMode) return;
+  Drag._editMode = true;
+  document.body.classList.add('drag-edit-active');
 
-    exitEdit: function() {
-      if (!Drag._editMode) return;
-      Drag._editMode = false;
-      document.body.classList.remove('drag-edit-active');
-      document.querySelectorAll('.drag-mode').forEach(function(el) { el.classList.remove('drag-mode'); });
-      if (App.pageSlider && App.pageSlider.enable) App.pageSlider.enable();
-      var btn = App.$('#dragDoneWrap');
-      if (btn) btn.remove();
-      Drag.save();
-    },
+  Drag._getAllDraggables().forEach(function(el) {
+    // 大卡片不加抖动，只加边框提示可拖
+    if (el.id === 'wtCard' || el.id === 'edenCard') {
+      el.classList.add('drag-mode-outline');
+    } else {
+      el.classList.add('drag-mode');
+    }
+  });
+
+  if (App.pageSlider && App.pageSlider.disable) App.pageSlider.disable();
+  if (navigator.vibrate) navigator.vibrate(30);
+  Drag._showDone();
+  App.showToast('拖拽到任意位置 · 点完成退出');
+},
+
+exitEdit: function() {
+  if (!Drag._editMode) return;
+  Drag._editMode = false;
+  document.body.classList.remove('drag-edit-active');
+
+  document.querySelectorAll('.drag-mode, .drag-mode-outline').forEach(function(el) {
+    el.classList.remove('drag-mode');
+    el.classList.remove('drag-mode-outline');
+  });
+
+  if (App.pageSlider && App.pageSlider.enable) App.pageSlider.enable();
+  var btn = App.$('#dragDoneWrap');
+  if (btn) btn.remove();
+  Drag.save();
+},
 
     _showDone: function() {
       var old = App.$('#dragDoneWrap');
@@ -156,47 +170,53 @@
     },
 
     startDrag: function(el, tx, ty) {
-      Drag._dragging = true;
-      Drag._dragEl = el;
-      document.body.classList.add('drag-active');
+  Drag._dragging = true;
+  Drag._dragEl = el;
+  document.body.classList.add('drag-active');
 
-      var r = el.getBoundingClientRect();
-      Drag._offsetX = tx - r.left;
-      Drag._offsetY = ty - r.top;
+  var r = el.getBoundingClientRect();
+  Drag._offsetX = tx - r.left;
+  Drag._offsetY = ty - r.top;
 
-      Drag._origStyle = el.getAttribute('style') || '';
-      Drag._origParent = el.parentElement;
-      Drag._origNext = el.nextElementSibling;
+  Drag._origStyle = el.getAttribute('style') || '';
+  Drag._origParent = el.parentElement;
+  Drag._origNext = el.nextElementSibling;
 
-      // 创建占位，保持原来的空间不塌陷
-      var placeholder = document.createElement('div');
-      placeholder.className = 'drag-placeholder-box';
-      placeholder.style.width = r.width + 'px';
-      placeholder.style.height = r.height + 'px';
-      placeholder.style.flexShrink = '0';
-      // 如果原元素有margin-top，占位也要有
-      var computedStyle = getComputedStyle(el);
-      placeholder.style.marginTop = computedStyle.marginTop;
-      el.parentElement.insertBefore(placeholder, el);
-      Drag._placeholder = placeholder;
+  // 占位符完整复制原元素的空间
+  var cs = getComputedStyle(el);
+  var placeholder = document.createElement('div');
+  placeholder.className = 'drag-placeholder-box';
+  placeholder.style.width = cs.width;
+  placeholder.style.height = cs.height;
+  placeholder.style.minHeight = cs.minHeight;
+  placeholder.style.maxHeight = cs.maxHeight;
+  placeholder.style.marginTop = cs.marginTop;
+  placeholder.style.marginBottom = cs.marginBottom;
+  placeholder.style.marginLeft = cs.marginLeft;
+  placeholder.style.marginRight = cs.marginRight;
+  placeholder.style.flexShrink = '0';
+  placeholder.style.maxWidth = cs.maxWidth;
+  placeholder.style.boxSizing = 'border-box';
+  el.parentElement.insertBefore(placeholder, el);
+  Drag._placeholder = placeholder;
 
-      document.body.appendChild(el);
-      el.style.position = 'fixed';
-      el.style.left = r.left + 'px';
-      el.style.top = r.top + 'px';
-      el.style.width = r.width + 'px';
-      el.style.height = r.height + 'px';
-      el.style.zIndex = '99999';
-      el.style.margin = '0';
-      el.style.transition = 'none';
-      el.style.animation = 'none';
-      el.style.pointerEvents = 'none';
-      el.style.opacity = '0.92';
-      el.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,0.3))';
-      el.style.transform = 'scale(1.05)';
+  document.body.appendChild(el);
+  el.style.position = 'fixed';
+  el.style.left = r.left + 'px';
+  el.style.top = r.top + 'px';
+  el.style.width = r.width + 'px';
+  el.style.height = r.height + 'px';
+  el.style.zIndex = '99999';
+  el.style.margin = '0';
+  el.style.transition = 'none';
+  el.style.animation = 'none';
+  el.style.pointerEvents = 'none';
+  el.style.opacity = '0.92';
+  el.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,0.3))';
+  el.style.transform = 'scale(1.05)';
 
-      if (navigator.vibrate) navigator.vibrate(12);
-    },
+  if (navigator.vibrate) navigator.vibrate(12);
+},
 
     moveDrag: function(tx, ty) {
       if (!Drag._dragEl) return;
