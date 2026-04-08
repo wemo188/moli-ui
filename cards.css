@@ -24,7 +24,6 @@
   align-items: center;
   flex: 0 0 auto;
   width: 180px;
-  transform: translateY(-50px);
 }
 
 .card-right-col .bx-w {
@@ -415,4 +414,8 @@
 .bx-name.bx-name-placeholder,
 .bx-sub.bx-sub-placeholder {
   opacity: 0.25;
+}
+
+.card-right-col > #bx-1 {
+  margin-top: 0;
 }
