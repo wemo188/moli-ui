@@ -61,12 +61,13 @@
 
 .wt-card .vf-lbl {
   position: absolute; z-index: 6;
-  font-size: calc(6px * var(--S)); color: var(--wt-ink); font-weight: 600;
+  font-size: calc(8px * var(--S)); color: var(--wt-ink, #e8e8e8); font-weight: 600;
   letter-spacing: calc(2.5px * var(--S)); text-transform: uppercase;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  opacity: 0.4;
+  opacity: 0.5;
 }
+
 .wt-card .vf-lbl:active { opacity: 0.2; }
 .wt-card .vf-lbl.lt { top: calc(7px * var(--S)); left: calc(12px * var(--S)); }
 .wt-card .vf-lbl.rt { bottom: calc(6px * var(--S)); right: calc(12px * var(--S)); cursor: default; }
