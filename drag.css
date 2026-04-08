@@ -10,15 +10,6 @@
   100% { transform: rotate(0deg); }
 }
 
-.drag-mode {
-  animation: iconWiggle 0.25s ease-in-out infinite;
-}
-
-.drag-mode-outline {
-  outline: 2px dashed rgba(255,255,255,0.5);
-  outline-offset: 4px;
-}
-
 .drag-ghost {
   pointer-events: none !important;
 }
