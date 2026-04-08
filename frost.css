@@ -91,7 +91,11 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  z-index: 5;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
