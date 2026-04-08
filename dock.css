@@ -10,8 +10,8 @@
   border-radius: 28px;
   padding: 15px 35px;
   display: flex;
-  gap: 18px;
-  background: rgba(255,255,255,0.25);
+  gap: 20px;
+  background: rgba(255,255,255,0.01);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   box-shadow:
@@ -38,7 +38,7 @@
   height: 56px;
   border-radius: 15px;
   background: #fff;
-  border: 1px solid rgba(220,235,255,.9);
+  border: 1.3px solid rgba(220,235,255,.9);
   box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
   display: flex;
@@ -52,7 +52,7 @@
   position: absolute;
   inset: -40%;
   background:
-    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.30), transparent 62%),
+    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.45), transparent 62%),
     radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.25), transparent 64%),
     radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.18), transparent 66%);
   transform: rotate(-10deg);
