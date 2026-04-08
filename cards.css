@@ -24,7 +24,7 @@
   align-items: center;
   flex: 0 0 auto;
   width: 180px;
-  margin-top: -70px;
+  transform: translateY(-50px);
 }
 
 .card-right-col .bx-w {
