@@ -265,3 +265,82 @@
 }
 
 .eden-ctrl-reset:active { opacity: 0.7; }
+
+/* =========================
+   美化工坊
+========================= */
+.workshop-card {
+  position: fixed;
+  z-index: 997;
+  width: 220px;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  border: 1px solid rgba(0,0,0,0.06);
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  pointer-events: auto;
+}
+
+.workshop-card.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.workshop-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.workshop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 4px;
+}
+
+.workshop-item:last-child {
+  margin-bottom: 0;
+}
+
+.workshop-item:active {
+  background: rgba(0,0,0,0.04);
+}
+
+.workshop-item svg {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.workshop-item-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.workshop-item-desc {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+
