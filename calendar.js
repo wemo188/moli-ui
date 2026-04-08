@@ -65,8 +65,6 @@ var Cal={
     card.querySelectorAll('.wt-date,.wt-date span,.wt-wk').forEach(function(el){el.style.color=fc75;});
     card.querySelectorAll('.vf-lbl').forEach(function(el){el.style.color=fc40;});
     var coords=card.querySelector('#location-coords');if(coords)coords.style.color=fc50;
-
-    // 日程区域
     card.querySelectorAll('.wt-sched-text').forEach(function(el){el.style.color=fc75;});
 
     var lg='linear-gradient(90deg, transparent, '+lc08+', transparent)';
@@ -85,11 +83,7 @@ var Cal={
     var el=App.$('#location-coords');if(!el)return;
     if("geolocation" in navigator){
       navigator.geolocation.getCurrentPosition(
-        function(pos){
-          var lat=pos.coords.latitude,lon=pos.coords.longitude;
-          el.textContent=Math.abs(lat).toFixed(2)+'°'+(lat>=0?'N':'S')+' '+Math.abs(lon).toFixed(2)+'°'+(lon>=0?'E':'W');
-          Cal.applyCardConfig();
-        },
+        function(pos){var lat=pos.coords.latitude,lon=pos.coords.longitude;el.textContent=Math.abs(lat).toFixed(2)+'°'+(lat>=0?'N':'S')+' '+Math.abs(lon).toFixed(2)+'°'+(lon>=0?'E':'W');Cal.applyCardConfig();},
         function(){Cal.geoByIp(el);},
         {enableHighAccuracy:false,timeout:8000,maximumAge:300000}
       );
@@ -100,9 +94,8 @@ var Cal={
     fetch('https://ipapi.co/json/')
       .then(function(r){return r.json();})
       .then(function(d){
-        if(d&&d.latitude){
-          el.textContent=Math.abs(d.latitude).toFixed(2)+'°'+(d.latitude>=0?'N':'S')+' '+Math.abs(d.longitude).toFixed(2)+'°'+(d.longitude>=0?'E':'W');
-        } else el.textContent='--';
+        if(d&&d.latitude)el.textContent=Math.abs(d.latitude).toFixed(2)+'°'+(d.latitude>=0?'N':'S')+' '+Math.abs(d.longitude).toFixed(2)+'°'+(d.longitude>=0?'E':'W');
+        else el.textContent='--';
         Cal.applyCardConfig();
       }).catch(function(){el.textContent='--';});
   },
@@ -121,18 +114,17 @@ var Cal={
       }).catch(function(){if(callback)callback(null);});
   },
 
-  // 更新卡片上的日程显示
   updateCardSchedule:function(){
-  var el=App.$('#wt-schedule-val');if(!el)return;
-  var key=Cal.todayKey();
-  var list=Cal.schedules[key]||[];
-  var items=[];
-  for(var i=0;i<list.length;i++){if(!list[i].type||list[i].type==='schedule')items.push(list[i]);}
-  if(!items.length){el.textContent='暂无日程';}
-  else if(items.length===1){el.textContent=(items[0].time?items[0].time+' ':'')+items[0].content;}
-  else{el.textContent=items[0].content+' 等'+items.length+'项';}
-  Cal.applyCardConfig();
-},
+    var el=App.$('#wt-schedule-val');if(!el)return;
+    var key=Cal.todayKey();
+    var list=Cal.schedules[key]||[];
+    var items=[];
+    for(var i=0;i<list.length;i++){if(!list[i].type||list[i].type==='schedule')items.push(list[i]);}
+    if(!items.length)el.textContent='暂无日程';
+    else if(items.length===1)el.textContent=(items[0].time?items[0].time+' ':'')+items[0].content;
+    else el.textContent=items[0].content+' 等'+items.length+'项';
+    Cal.applyCardConfig();
+  },
 
   getSchedule:function(k){return Cal.schedules[k]||[];},
   setSchedule:function(k,l){Cal.schedules[k]=l;Cal.save();},
@@ -163,7 +155,9 @@ var Cal={
     card.addEventListener('touchmove',function(e){
       var t=e.touches[0];
       if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
-      if(!longPressed)return;moved=true;e.preventDefault();
+      if(!longPressed)return;moved=true;
+      e.preventDefault();
+      e.stopPropagation();
       Cal._dragOffsetX=startOX+t.clientX-startX;Cal._dragOffsetY=startOY+t.clientY-startY;
       card.style.transform='translate('+Cal._dragOffsetX+'px,'+Cal._dragOffsetY+'px)';
     },{passive:false});
@@ -185,7 +179,7 @@ var Cal={
     App.$('#wtcSave').addEventListener('click',function(){Cal.cardConfig=getCfg();Cal.saveCardConfig();Cal.applyCardConfig();wrap.remove();App.showToast('已保存');});
     App.$('#wtcReset').addEventListener('click',function(){
       App.LS.remove('wtCardConfig');Cal.cardConfig=JSON.parse(JSON.stringify(CARD_DEFAULTS));Cal.saveCardConfig();
-      var card=App.$('#wtCard');if(card){var cw=card.querySelector('.wt-cw');if(cw)cw.removeAttribute('style');card.querySelectorAll('.wt-time,.wt-time span,.wt-sec,.wt-sec span,.wt-date,.wt-date span,.wt-wk,.vf-lbl,.wt-tl,.wt-wl,.wt-vd,.vf-hl,#location-coords,.wt-sched-label,.wt-sched-text').forEach(function(el){el.removeAttribute('style');});}
+      var card=App.$('#wtCard');if(card){var cw=card.querySelector('.wt-cw');if(cw)cw.removeAttribute('style');card.querySelectorAll('.wt-time,.wt-time span,.wt-sec,.wt-sec span,.wt-date,.wt-date span,.wt-wk,.vf-lbl,.wt-tl,.wt-wl,.wt-vd,.vf-hl,#location-coords,.wt-sched-text').forEach(function(el){el.removeAttribute('style');});}
       Cal.applyCardConfig();Cal._dragOffsetX=0;Cal._dragOffsetY=0;App.LS.remove('wtCardPos');if(card)card.style.transform='';
       wrap.remove();App.showToast('已重置');
     });
