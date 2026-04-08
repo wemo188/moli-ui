@@ -298,7 +298,7 @@ html, body {
   height: 5px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,.8);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -307,7 +307,7 @@ html, body {
   width: 14px;
   border-radius: 999px;
   background: #8ba0d1;
-  box-shadow: 0 0 8px rgba(139,160,209,0.4);
+  box-shadow: 0 0 8px rgba(255,255,255,0.4);
 }
 
 /* =========================
