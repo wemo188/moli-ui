@@ -91,6 +91,8 @@
   align-items: center;
   justify-content: center;
   overflow: visible;
+  margin-top: auto;
+  margin-bottom: 80px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
