@@ -152,27 +152,21 @@
     save: function() { App.LS.set('edenCard', Eden.data); },
 
     loadFont: function(url) {
-      if (!url) {
-        // 移除自定义字体，用全局
-        var textEl = App.$('#edenText');
-        if (textEl) textEl.style.fontFamily = '';
-        return;
-      }
-      if (Eden.customFont) {
-        // 已加载同一个就跳过
-        if (Eden._lastFontUrl === url) return;
-      }
-      Eden._lastFontUrl = url;
-      var font = new FontFace('EdenCustom', 'url(' + url + ')');
-      font.load().then(function(loaded) {
-        document.fonts.add(loaded);
-        Eden.customFont = loaded;
-        var textEl = App.$('#edenText');
-        if (textEl) textEl.style.fontFamily = "'EdenCustom', cursive";
-      }).catch(function() {
-        App.showToast('字体加载失败');
-      });
-    },
+  if (!url) {
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = '';
+    return;
+  }
+  var fontName = 'EdenCustom_' + Math.abs(url.length * 31);
+  var font = new FontFace(fontName, 'url(' + url + ')');
+  font.load().then(function(loaded) {
+    document.fonts.add(loaded);
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
+  }).catch(function() {
+    // url加载失败，可能是base64太大被截断了，静默失败
+  });
+},
 
     apply: function() {
       var el = App.$('#edenText');
