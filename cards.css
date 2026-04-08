@@ -321,3 +321,18 @@
   font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
 }
 .pc-edit-cancel:active { opacity: 0.7; }
+
+.card-row .bx-w:nth-child(2) {
+  margin-top: 75px !important;
+}
+
+.bx-tag.bx-tag-placeholder,
+.bx-ribbon-tab.bx-ribbon-placeholder {
+  opacity: 0.35;
+}
+
+.bx-name.bx-name-placeholder,
+.bx-sub.bx-sub-placeholder {
+  opacity: 0.3;
+}
+
