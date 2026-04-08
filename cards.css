@@ -15,10 +15,6 @@
   flex: 0 0 auto;
 }
 
-.card-row .bx-w:nth-child(2) {
-  margin-top: 75px !important;
-}
-
 /* ====== bx-2 左卡片（标签款） ====== */
 #bx-2 {
   --S: 1;
@@ -334,5 +330,57 @@
 .bx-name.bx-name-placeholder,
 .bx-sub.bx-sub-placeholder {
   opacity: 0.3;
+}
+
+.card-right-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-top: 50px !important;
+}
+
+.card-right-col .bx-w {
+  margin: 0 !important;
+}
+
+.card-placeholder-icons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.card-ph-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1.3px solid rgba(220,235,255,.9);
+  box-shadow: 0 10px 24px rgba(20,35,55,.12);
+  overflow: hidden;
+}
+
+.card-ph-icon::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.45), transparent 62%),
+    radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.25), transparent 64%),
+    radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.18), transparent 66%);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.bx-tag.bx-tag-placeholder,
+.bx-ribbon-tab.bx-ribbon-placeholder {
+  opacity: 0.3;
+}
+
+.bx-name.bx-name-placeholder,
+.bx-sub.bx-sub-placeholder {
+  opacity: 0.25;
 }
 
