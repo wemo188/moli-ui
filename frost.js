@@ -313,26 +313,17 @@
       });
 
       App.$('#edenSave').addEventListener('click', function() {
-        var cfg = getCfg();
-        // 如果是blob url，转成base64存储
-        if (cfg.fontUrl && cfg.fontUrl.startsWith('blob:')) {
-          fetch(cfg.fontUrl).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
-            var bytes = new Uint8Array(buf);
-            var binary = '';
-            for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-            var base64 = 'data:font/ttf;base64,' + btoa(binary);
-            cfg.fontUrl = base64;
-            Eden.data = cfg; Eden.save(); Eden.apply();
-            wrap.remove(); App.showToast('已保存');
-          }).catch(function() {
-            Eden.data = cfg; Eden.save(); Eden.apply();
-            wrap.remove(); App.showToast('已保存');
-          });
-        } else {
-          Eden.data = cfg; Eden.save(); Eden.apply();
-          wrap.remove(); App.showToast('已保存');
-        }
-      });
+  var cfg = getCfg();
+  // blob url 刷新后失效，提示用户用URL
+  if (cfg.fontUrl && cfg.fontUrl.startsWith('blob:')) {
+    App.showToast('上传字体仅本次有效，建议填写在线URL');
+  }
+  Eden.data = cfg;
+  Eden.save();
+  Eden.apply();
+  wrap.remove();
+  App.showToast('已保存');
+});
 
       App.$('#edenReset').addEventListener('click', function() {
         Eden.data = JSON.parse(JSON.stringify(Eden.DEFAULTS));
