@@ -57,46 +57,44 @@ var Cards={
         '</div></div>'+
       '</div>'+
 
-      '<div class="card-right-col">'+
-        '<div class="card-placeholder-icons">'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-        '</div>'+
-        '<div class="bx-w" id="bx-1" data-side="right">'+
-          '<div class="bx-cw"><div class="bx-cd">'+
-            '<div class="bx-side-ribbon">'+
-              '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
-              '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
-            '</div>'+
-            '<div class="bx-av-box">'+rFront+'</div>'+
-            '<div class="bx-name-bar">'+
-              '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
-              '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
-            '</div>'+
-          '</div></div>'+
-        '</div>'+
+      '<div class="bx-w" id="bx-1" data-side="right">'+
+        '<div class="bx-cw"><div class="bx-cd">'+
+          '<div class="bx-side-ribbon">'+
+            '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
+            '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
+          '</div>'+
+          '<div class="bx-av-box">'+rFront+'</div>'+
+          '<div class="bx-name-bar">'+
+            '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
+            '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
+          '</div>'+
+        '</div></div>'+
+      '</div>'+
+
+      '<div class="card-placeholder-icons" id="phIcons">'+
+        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
       '</div>';
 
     Cards.bindEdit();
     Cards.applyDragOffsets();
     Cards.bindDrag();
+    Cards.positionIcons();
+  },
 
-    // 自动对齐右卡片到左卡片中间
+  positionIcons:function(){
     setTimeout(function(){
-      var left=App.$('#bx-2');
-      var rightCol=App.$('.card-right-col');
-      if(left&&rightCol){
-        var lh=left.offsetHeight;
-        var icons=rightCol.querySelector('.card-placeholder-icons');
-        var ih=icons?(icons.offsetHeight+12):0;
-        var offset=(lh/2)-ih;
-        if(offset>0){
-          rightCol.style.paddingTop=offset+'px';
-        } else {
-          rightCol.style.paddingTop='0';
-        }
-      }
-    },50);
+      var bx1=App.$('#bx-1');
+      var icons=App.$('#phIcons');
+      var row=App.$('#cardRow');
+      if(!bx1||!icons||!row)return;
+      var bx1Left=bx1.offsetLeft;
+      var bx1Width=bx1.offsetWidth;
+      var iconsWidth=icons.offsetWidth;
+      var iconsHeight=icons.offsetHeight;
+      icons.style.left=(bx1Left+bx1Width/2-iconsWidth/2)+'px';
+      icons.style.top=(bx1.offsetTop-iconsHeight-10)+'px';
+    },80);
   },
 
   bindEdit:function(){
@@ -137,10 +135,7 @@ var Cards={
 
       avBox.addEventListener('touchmove',function(e){
         var t=e.touches[0];
-        if(timer&&!longPressed){
-          if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}
-          return;
-        }
+        if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
         if(!longPressed)return;
         moved=true;
         e.preventDefault();
