@@ -22,33 +22,29 @@ var Cards={
     var container=App.$('#cardRow');if(!container)return;
     var L=Cards.data.left,R=Cards.data.right;
 
-    // 左标签
-    var lt1=L.tag1||'♡ 标签',lt2=L.tag2||'✦ 标签';
+    var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
     var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
 
-    // 左头像
     var lFront=L.avatar
       ?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>'
       :'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
-    // 左名字签名
     var lName=L.name||'角色名',lSub=L.sub||DEF_SUB_L;
-    var lNameC=L.name?'':' bx-name-placeholder',lSubC=(L.sub&&L.sub!==DEF_SUB_L)?'':(!L.sub?' bx-sub-placeholder':'');
+    var lNameC=L.name?'':' bx-name-placeholder';
+    var lSubC='';
 
-    // 右丝带
-    var rt1=R.tag1||'♦ 丝带',rt2=R.tag2||'✦ 丝带';
+    var rt1=R.tag1||'标签',rt2=R.tag2||'标签';
     var rt1C=R.tag1?'':' bx-ribbon-placeholder',rt2C=R.tag2?'':' bx-ribbon-placeholder';
 
-    // 右头像
     var rFront=R.avatar
       ?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>'
       :'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
 
     var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
-    var rNameC=R.name?'':' bx-name-placeholder',rSubC=(R.sub&&R.sub!==DEF_SUB_R)?'':(!R.sub?' bx-sub-placeholder':'');
+    var rNameC=R.name?'':' bx-name-placeholder';
+    var rSubC='';
 
     container.innerHTML=
-      // 左卡片
       '<div class="bx-w" id="bx-2" data-side="left">'+
         '<div class="bx-tag-wrap">'+
           '<div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div>'+
@@ -63,11 +59,10 @@ var Cards={
         '</div></div>'+
       '</div>'+
 
-      // 右侧包裹（占位图标 + 右卡片）
       '<div class="card-right-col">'+
         '<div class="card-placeholder-icons">'+
-          '<div class="card-ph-icon"></div>'+
-          '<div class="card-ph-icon"></div>'+
+          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
         '</div>'+
         '<div class="bx-w" id="bx-1" data-side="right">'+
           '<div class="bx-cw"><div class="bx-cd">'+
@@ -92,9 +87,9 @@ var Cards={
   bindEdit:function(){
     document.querySelectorAll('#cardRow .bx-w').forEach(function(card){
       var nameBar=card.querySelector('.bx-name-bar');
-      if(nameBar){nameBar.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();Cards.openEdit(card.dataset.side);});}
+      if(nameBar)nameBar.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();Cards.openEdit(card.dataset.side);});
       var ph=card.querySelector('.bx-av-placeholder');
-      if(ph){ph.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();Cards.openEdit(card.dataset.side);});}
+      if(ph)ph.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();Cards.openEdit(card.dataset.side);});
     });
   },
 
@@ -150,9 +145,7 @@ var Cards={
 
   openEdit:function(side){
     var d=Cards.data[side];
-    var decoLabel=side==='left'?'标签':'丝带';
-    var dp1=side==='left'?'如：♡ 可可爱爱':'如：♦ 剑 修';
-    var dp2=side==='left'?'如：✦ 糖星人':'如：✦ 客 卿';
+    var decoLabel='标签';
     var defSub=side==='left'?DEF_SUB_L:DEF_SUB_R;
 
     var old=App.$('#pcEditOverlay');if(old)old.remove();
@@ -161,9 +154,9 @@ var Cards={
       '<div class="pc-edit-panel">'+
         '<div class="pc-edit-title">编辑'+(side==='left'?'左':'右')+'卡片</div>'+
         '<div class="pc-edit-group"><label class="pc-edit-label">头像（URL 或上传）</label><div class="pc-edit-upload-row"><input type="text" class="pc-edit-input" id="pcEditAvatar" placeholder="图片URL..." value="'+App.esc(d.avatar||'')+'"><label class="pc-edit-file-btn" for="pcEditFile"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></label><input type="file" id="pcEditFile" accept="image/*" hidden></div></div>'+
-        '<div class="pc-edit-group"><label class="pc-edit-label">名字</label><input type="text" class="pc-edit-input" id="pcEditName" placeholder="角色名..." value="'+App.esc(d.name||'')+'"></div>'+
-        '<div class="pc-edit-group"><label class="pc-edit-label">签名</label><input type="text" class="pc-edit-input" id="pcEditSub" placeholder="一句话签名..." value="'+App.esc(d.sub||defSub)+'"></div>'+
-        '<div class="pc-edit-row2"><div class="pc-edit-group"><label class="pc-edit-label">'+decoLabel+' 1</label><input type="text" class="pc-edit-input" id="pcEditTag1" placeholder="'+dp1+'" value="'+App.esc(d.tag1||'')+'"></div><div class="pc-edit-group"><label class="pc-edit-label">'+decoLabel+' 2</label><input type="text" class="pc-edit-input" id="pcEditTag2" placeholder="'+dp2+'" value="'+App.esc(d.tag2||'')+'"></div></div>'+
+        '<div class="pc-edit-group"><label class="pc-edit-label">名字</label><input type="text" class="pc-edit-input" id="pcEditName" value="'+App.esc(d.name||'')+'"></div>'+
+        '<div class="pc-edit-group"><label class="pc-edit-label">签名</label><input type="text" class="pc-edit-input" id="pcEditSub" value="'+App.esc(d.sub||defSub)+'"></div>'+
+        '<div class="pc-edit-row2"><div class="pc-edit-group"><label class="pc-edit-label">'+decoLabel+' 1</label><input type="text" class="pc-edit-input" id="pcEditTag1" value="'+App.esc(d.tag1||'')+'"></div><div class="pc-edit-group"><label class="pc-edit-label">'+decoLabel+' 2</label><input type="text" class="pc-edit-input" id="pcEditTag2" value="'+App.esc(d.tag2||'')+'"></div></div>'+
         '<div class="pc-edit-btns"><button class="pc-edit-save" id="pcEditSaveBtn" type="button">保存</button><button class="pc-edit-cancel" id="pcEditCancelBtn" type="button">取消</button></div>'+
       '</div>';
     document.body.appendChild(overlay);
