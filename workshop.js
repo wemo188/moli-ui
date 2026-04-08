@@ -32,9 +32,15 @@
         '<div class="workshop-item" id="wsFrost">' +
           '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>' +
           '<div class="workshop-item-info"><div class="workshop-item-label">磨砂卡片</div><div class="workshop-item-desc">调节第二页磨砂效果</div></div>' +
+        '</div>' +
+
+        '<div style="height:1px;background:rgba(0,0,0,0.06);margin:8px 0;"></div>' +
+
+        '<div class="workshop-item" id="wsResetLayout">' +
+          '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>' +
+          '<div class="workshop-item-info"><div class="workshop-item-label">恢复布局</div><div class="workshop-item-desc">所有卡片回到默认位置</div></div>' +
         '</div>';
 
-      // 定位：球的左边或右边
       var ballCX = rect.left + rect.width / 2;
       if (ballCX > window.innerWidth / 2) {
         panel.style.right = (window.innerWidth - rect.left + 10) + 'px';
@@ -44,7 +50,7 @@
         panel.style.right = 'auto';
       }
 
-      var panelH = 240;
+      var panelH = 300;
       var panelTop = rect.top + rect.height / 2 - panelH / 2;
       if (panelTop < 10) panelTop = 10;
       if (panelTop + panelH > window.innerHeight - 10) panelTop = window.innerHeight - panelH - 10;
@@ -53,35 +59,29 @@
       document.body.appendChild(panel);
       requestAnimationFrame(function() { panel.classList.add('show'); });
 
-      // 阻止触摸传播到页面滑动
       panel.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       panel.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-      // 天气栏
       App.$('#wsWeather').addEventListener('click', function() {
         Workshop.close();
-        setTimeout(function() {
-          if (App.calendar) App.calendar.openCtrl();
-        }, 220);
+        setTimeout(function() { if (App.calendar) App.calendar.openCtrl(); }, 220);
       });
 
-      // 文字卡片
       App.$('#wsEden').addEventListener('click', function() {
         Workshop.close();
-        setTimeout(function() {
-          if (App.modules.eden) App.modules.eden.openEdit();
-        }, 220);
+        setTimeout(function() { if (App.modules.eden) App.modules.eden.openEdit(); }, 220);
       });
 
-      // 磨砂卡片
       App.$('#wsFrost').addEventListener('click', function() {
         Workshop.close();
-        setTimeout(function() {
-          if (App.modules.frost) App.modules.frost.openEdit();
-        }, 220);
+        setTimeout(function() { if (App.modules.frost) App.modules.frost.openEdit(); }, 220);
       });
 
-      // 点外面关闭
+      App.$('#wsResetLayout').addEventListener('click', function() {
+        Workshop.close();
+        setTimeout(function() { Workshop.resetAllLayout(); }, 220);
+      });
+
       setTimeout(function() {
         function dismiss(e) {
           if (panel.contains(e.target)) return;
@@ -101,9 +101,30 @@
       setTimeout(function() { if (panel.parentNode) panel.remove(); }, 220);
     },
 
-    init: function() {
-      // 以后可以在这里加载全局美化配置
-    }
+    resetAllLayout: function() {
+      // 天气卡片
+      App.LS.remove('wtCardPos');
+      if (App.calendar) {
+        App.calendar._dragOffsetX = 0;
+        App.calendar._dragOffsetY = 0;
+      }
+      var wtCard = App.$('#wtCard');
+      if (wtCard) wtCard.style.transform = '';
+
+      // 人物卡片
+      if (App.modules.cards) {
+        App.modules.cards.resetAllPositions();
+      }
+
+      // 伊甸文字卡片（如果有拖拽的话）
+      App.LS.remove('edenDragOffset');
+      var edenCard = App.$('#edenCard');
+      if (edenCard) edenCard.style.transform = '';
+
+      App.showToast('所有布局已恢复默认');
+    },
+
+    init: function() {}
   };
 
   App.workshop = Workshop;
