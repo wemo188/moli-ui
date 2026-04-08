@@ -54,35 +54,20 @@
       dock.querySelectorAll('.dock-item').forEach(function(el) { if (el.id) Drag._dockOrder.push(el.id); });
     },
 
-    // ====== 编辑模式 ======
     enterEdit: function() {
       if (Drag._editMode) return;
       Drag._editMode = true;
       document.body.classList.add('drag-edit-active');
-
-      Drag._getAllDraggables().forEach(function(el) {
-        // 只给小图标加抖动，大卡片加虚线提示
-        if (el.closest('.app-icon') || el.closest('.dock-item')) {
-          el.classList.add('drag-mode');
-        } else {
-          el.classList.add('drag-mode-outline');
-        }
-      });
-
       if (App.pageSlider && App.pageSlider.disable) App.pageSlider.disable();
       if (navigator.vibrate) navigator.vibrate(30);
       Drag._showDone();
-      App.showToast('拖拽到任意位置 · 点完成退出');
+      App.showToast('长按拖拽 · 点完成退出');
     },
 
     exitEdit: function() {
       if (!Drag._editMode) return;
       Drag._editMode = false;
       document.body.classList.remove('drag-edit-active');
-      document.querySelectorAll('.drag-mode, .drag-mode-outline').forEach(function(el) {
-        el.classList.remove('drag-mode');
-        el.classList.remove('drag-mode-outline');
-      });
       if (App.pageSlider && App.pageSlider.enable) App.pageSlider.enable();
       var btn = App.$('#dragDoneWrap');
       if (btn) btn.remove();
@@ -149,7 +134,6 @@
              target.closest('.dock-item');
     },
 
-    // ====== 幽灵拖拽（原元素不动） ======
     startDrag: function(el, tx, ty) {
       Drag._dragging = true;
       Drag._dragEl = el;
@@ -158,7 +142,6 @@
       Drag._offsetX = tx - r.left;
       Drag._offsetY = ty - r.top;
 
-      // 创建幽灵副本跟着手指
       var ghost = el.cloneNode(true);
       ghost.removeAttribute('id');
       ghost.classList.add('drag-ghost');
@@ -171,15 +154,11 @@
         'z-index:99999;' +
         'margin:0;' +
         'pointer-events:none;' +
-        'opacity:0.88;' +
-        'transform:scale(1.05);' +
+        'opacity:0.85;' +
         'filter:drop-shadow(0 12px 24px rgba(0,0,0,0.3));' +
         'transition:none;';
-            document.body.appendChild(ghost);
+      document.body.appendChild(ghost);
       Drag._ghost = ghost;
-
-      // 原元素半透明提示
-      el.style.opacity = '0.3';
 
       if (navigator.vibrate) navigator.vibrate(12);
     },
@@ -194,45 +173,24 @@
       var el = Drag._dragEl;
       if (!el) return;
 
-      // 移除幽灵
-      if (Drag._ghost) {
-        Drag._ghost.remove();
-        Drag._ghost = null;
-      }
-
-      // 恢复透明度
-      el.style.opacity = '';
+      if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
 
       var isDock = el.closest('#dockBar');
 
       if (isDock) {
         Drag._dockSwap(el, tx, ty);
       } else {
-        // 计算新位置
         var parent = el.parentElement;
         if (parent) {
           var pRect = parent.getBoundingClientRect();
           if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-
           var newX = tx - Drag._offsetX - pRect.left;
-          var newY = ty - Drag._offsetY - pRect.top;
-
+          var newY = tx - Drag._offsetY - pRect.top;
           el.style.position = 'absolute';
           el.style.left = newX + 'px';
           el.style.top = newY + 'px';
           el.style.zIndex = '2';
-
-          if (el.id) {
-            Drag._positions[el.id] = { x: newX, y: newY };
-          }
-        }
-      }
-
-      if (Drag._editMode) {
-        if (el.closest('.app-icon') || el.closest('.dock-item')) {
-          el.classList.add('drag-mode');
-        } else {
-          el.classList.add('drag-mode-outline');
+          if (el.id) Drag._positions[el.id] = { x: newX, y: newY };
         }
       }
 
@@ -242,18 +200,7 @@
     },
 
     cancelDrag: function() {
-      var el = Drag._dragEl;
       if (Drag._ghost) { Drag._ghost.remove(); Drag._ghost = null; }
-      if (el) {
-        el.style.opacity = '';
-        if (Drag._editMode) {
-          if (el.closest('.app-icon') || el.closest('.dock-item')) {
-            el.classList.add('drag-mode');
-          } else {
-            el.classList.add('drag-mode-outline');
-          }
-        }
-      }
       Drag._dragEl = null;
       Drag._dragging = false;
     },
@@ -280,7 +227,6 @@
       Drag.saveDockOrder();
     },
 
-    // ====== 全局touch ======
     bindAll: function() {
       var pressTimer = null;
       var startX = 0, startY = 0;
