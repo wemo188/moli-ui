@@ -271,7 +271,8 @@ html, body {
 
 .screen-page-inner {
   position: relative;
-  padding-bottom: 100px;
+  padding: 0 0 120px;
+  overflow: visible;
 }
 
 .screen-indicators {
