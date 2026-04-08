@@ -4,14 +4,19 @@
 .card-row {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   gap: 30px;
   padding: 10px 20px 0;
   width: 100%;
-  align-items: flex-start;
 }
 
-.card-row .bx-w {
+.card-row > .bx-w {
   margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+.card-row > .card-right-col {
+  margin-top: 75px;
   flex: 0 0 auto;
 }
 
@@ -337,7 +342,6 @@
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
-  margin-top: 50px !important;
 }
 
 .card-right-col .bx-w {
@@ -346,20 +350,30 @@
 
 .card-placeholder-icons {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   justify-content: center;
   margin-bottom: 12px;
 }
 
+.card-ph-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .card-ph-icon {
   position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 13px;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
   background: #fff;
   border: 1.3px solid rgba(220,235,255,.9);
-  box-shadow: 0 10px 24px rgba(20,35,55,.12);
+  box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-ph-icon::before {
@@ -374,6 +388,13 @@
   pointer-events: none;
 }
 
+.card-ph-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
 .bx-tag.bx-tag-placeholder,
 .bx-ribbon-tab.bx-ribbon-placeholder {
   opacity: 0.3;
@@ -383,4 +404,3 @@
 .bx-sub.bx-sub-placeholder {
   opacity: 0.25;
 }
-
