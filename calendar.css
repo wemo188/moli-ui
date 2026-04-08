@@ -14,20 +14,10 @@
   z-index: 10;
 }
 
-.wt-card.wt-dragging {
-  z-index: 9999;
-  opacity: 0.95;
-}
-
 .wt-cw {
   position: relative;
-  border: calc(1px * var(--S)) solid rgba(var(--wt-bg-r),var(--wt-bg-g),var(--wt-bg-b),var(--wt-border-alpha));
-  background: rgba(var(--wt-bg-r),var(--wt-bg-g),var(--wt-bg-b),var(--wt-bg-alpha));
-  backdrop-filter: blur(calc(var(--wt-blur) * 1px));
-  -webkit-backdrop-filter: blur(calc(var(--wt-blur) * 1px));
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   overflow: hidden;
-  border-radius: calc(var(--wt-radius) * 1px);
+  /* 背景、模糊、边框、圆角全部由JS设 */
 }
 
 .wt-card .vf-c {
