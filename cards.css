@@ -5,14 +5,17 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  flex-wrap: nowrap;
   gap: 14px;
-  padding: 10px 12px 0;
+  padding: 10px 8px 0;
   width: 100%;
+  overflow: visible;
 }
 
 .card-row > .bx-w {
   margin: 0 !important;
   flex: 0 0 auto;
+  width: 180px;
 }
 
 .card-right-col {
@@ -20,11 +23,12 @@
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
-  margin-top: 10px;
+  width: 180px;
 }
 
 .card-right-col .bx-w {
   margin: 0 !important;
+  width: 100%;
 }
 
 /* ====== bx-2 左卡片（标签款） ====== */
