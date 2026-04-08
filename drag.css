@@ -1,10 +1,8 @@
-/* 占位 */
 .drag-placeholder-box {
   opacity: 0.15;
   pointer-events: none;
 }
 
-/* 抖动 */
 @keyframes iconWiggle {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(-2deg); }
@@ -16,12 +14,19 @@
   animation: iconWiggle 0.25s ease-in-out infinite;
 }
 
-/* 拖拽时禁止页面交互 */
+.drag-mode-outline {
+  outline: 2px dashed rgba(255,255,255,0.5);
+  outline-offset: 4px;
+}
+
+.drag-ghost {
+  pointer-events: none !important;
+}
+
 .drag-active {
   overflow: hidden;
 }
 
-/* 完成/重置 按钮 */
 .drag-done-wrap {
   position: fixed;
   top: 50px;
@@ -43,10 +48,7 @@
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
-
-.drag-done-btn:active {
-  opacity: 0.7;
-}
+.drag-done-btn:active { opacity: 0.7; }
 
 .drag-reset-btn {
   padding: 8px 16px;
@@ -60,12 +62,4 @@
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
-.drag-reset-btn:active {
-  opacity: 0.7;
-}
-
-.drag-mode-outline {
-  outline: 2px dashed rgba(255,255,255,0.5);
-  outline-offset: 4px;
-}
+.drag-reset-btn:active { opacity: 0.7; }
