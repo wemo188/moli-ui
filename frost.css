@@ -90,13 +90,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  margin-top: auto;
-  padding-bottom: 20px;
+  overflow: visible;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-
 
 .eden-card:active {
   opacity: 0.7;
