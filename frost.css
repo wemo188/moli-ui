@@ -1,3 +1,6 @@
+/* =========================
+   磨砂卡片（第二页）
+========================= */
 .frost-card {
   margin: 0 20px 16px;
   padding: 24px;
@@ -77,3 +80,193 @@
   color: #999;
   font-weight: 500;
 }
+
+/* =========================
+   伊甸文字卡片（第一页）
+========================= */
+.eden-card {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.eden-card:active {
+  opacity: 0.7;
+}
+
+.eden-text {
+  font-size: 32px;
+  color: #fff;
+  letter-spacing: 6px;
+  transform: rotate(-4deg);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  white-space: nowrap;
+  line-height: 1.4;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+/* 编辑浮窗 */
+.eden-ctrl-wrap {
+  position: fixed;
+  z-index: 998;
+  width: 280px;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.eden-ctrl-panel {
+  pointer-events: auto;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.eden-ctrl-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.eden-ctrl-section {
+  font-size: 10px;
+  color: #999;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.eden-ctrl-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.06);
+  margin: 10px 0;
+}
+
+.eden-ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.eden-ctrl-row label {
+  font-size: 11px;
+  color: #666;
+  min-width: 36px;
+  font-weight: 500;
+}
+
+.eden-ctrl-row input[type="range"] {
+  flex: 1;
+  height: 3px;
+}
+
+.eden-ctrl-row .eden-ctrl-val {
+  font-size: 10px;
+  color: #999;
+  min-width: 34px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.eden-ctrl-row input[type="color"] {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.eden-ctrl-row input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+}
+
+.eden-ctrl-row input[type="text"]:focus {
+  border-color: rgba(0,0,0,0.15);
+}
+
+.eden-font-upload-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.eden-font-upload-btn:active {
+  background: #eee;
+}
+
+.eden-font-upload-btn svg {
+  width: 16px;
+  height: 16px;
+  color: #666;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.eden-ctrl-btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.eden-ctrl-save {
+  flex: 1;
+  padding: 9px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.eden-ctrl-save:active { opacity: 0.7; }
+
+.eden-ctrl-reset {
+  padding: 9px 12px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.eden-ctrl-reset:active { opacity: 0.7; }
