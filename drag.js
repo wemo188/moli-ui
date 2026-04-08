@@ -147,11 +147,11 @@
       App.showToast('已重置');
     },
 
-    _getAllDraggables: function() {
-      return Array.from(document.querySelectorAll(
-        '#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w'
-      ));
-    },
+   _getAllDraggables: function() {
+  return Array.from(document.querySelectorAll(
+    '#appGrid .app-icon, #dockBar .dock-item, #cardRow .bx-w, #edenCard, #wtCard'
+  ));
+},
 
     // ====== 拖拽核心 ======
     startDrag: function(el, tx, ty) {
