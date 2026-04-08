@@ -8,9 +8,9 @@
   transform: translateX(-50%);
   z-index: 900;
   border-radius: 28px;
-  padding: 15px 30px;
+  padding: 15px 35px;
   display: flex;
-  gap: 14px;
+  gap: 18px;
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
