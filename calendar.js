@@ -194,62 +194,10 @@
       }).join('\n');
     },
 
-    // ========= 卡片拖拽 =========
     initDrag: function() {
-      var card = App.$('#wtCard');
-      if (!card) return;
-      var savedPos = App.LS.get('wtCardPos');
-      if (savedPos) {
-        card.style.position = 'absolute';
-        card.style.left = savedPos.x + 'px';
-        card.style.top = savedPos.y + 'px';
-        card.style.margin = '0';
-      }
-      var startX, startY, origX, origY, moved, longPressed, timer;
-      card.addEventListener('touchstart', function(e) {
-        var t = e.touches[0];
-        var rect = card.getBoundingClientRect();
-        startX = t.clientX; startY = t.clientY;
-        origX = rect.left; origY = rect.top;
-        moved = false; longPressed = false;
-        timer = setTimeout(function() {
-          longPressed = true; Cal.isDragging = true;
-          card.classList.add('wt-dragging');
-          var parent = card.parentElement;
-          if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-          card.style.position = 'absolute'; card.style.margin = '0';
-          var pRect = parent.getBoundingClientRect();
-          card.style.left = (origX - pRect.left) + 'px';
-          card.style.top = (origY - pRect.top) + 'px';
-          if (navigator.vibrate) navigator.vibrate(15);
-        }, 400);
-      }, { passive: true });
-
-      document.addEventListener('touchmove', function(e) {
-        if (timer && !longPressed) {
-          var t = e.touches[0];
-          if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { clearTimeout(timer); timer = null; }
-          return;
-        }
-        if (!longPressed || !Cal.isDragging) return;
-        var t = e.touches[0];
-        var parent = card.parentElement;
-        if (!parent) return;
-        var pRect = parent.getBoundingClientRect();
-        card.style.left = (t.clientX - (startX - origX) - pRect.left) + 'px';
-        card.style.top = (t.clientY - (startY - origY) - pRect.top) + 'px';
-        moved = true;
-      }, { passive: true });
-
-      document.addEventListener('touchend', function() {
-        clearTimeout(timer); timer = null;
-        if (Cal.isDragging && moved) {
-          App.LS.set('wtCardPos', { x: parseInt(card.style.left), y: parseInt(card.style.top) });
-        }
-        card.classList.remove('wt-dragging');
-        Cal.isDragging = false; longPressed = false; moved = false;
-      });
-    },
+  // 已移除拖拽功能
+  App.LS.remove('wtCardPos');
+},
 
     // ========= 调节面板 =========
     openCtrl: function() {
