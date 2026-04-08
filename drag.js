@@ -134,18 +134,24 @@
     },
 
     resetAll: function() {
-      Drag._positions = {};
-      Drag.save();
+  Drag._positions = {};
+  Drag._dockOrder = [];
+  Drag.save();
 
-      Drag._getAllDraggables().forEach(function(el) {
-        el.style.position = '';
-        el.style.left = '';
-        el.style.top = '';
-        el.style.zIndex = '';
-      });
+  Drag._getAllDraggables().forEach(function(el) {
+    el.style.position = '';
+    el.style.left = '';
+    el.style.top = '';
+    el.style.zIndex = '';
+    el.style.margin = '';
+    el.style.transform = '';
+  });
 
-      App.showToast('已重置');
-    },
+  // 重新应用默认dock顺序
+  Drag.applyDockOrder();
+
+  App.showToast('已重置到默认布局');
+},
 
    _getAllDraggables: function() {
   return Array.from(document.querySelectorAll(
