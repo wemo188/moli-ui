@@ -38,7 +38,6 @@
       return { r: parseInt(hex.substr(1,2),16)||255, g: parseInt(hex.substr(3,2),16)||255, b: parseInt(hex.substr(5,2),16)||255 };
     },
 
-    // ========= 强制应用所有样式 =========
     applyCardConfig: function(cfg) {
       var card = App.$('#wtCard');
       if (!card) return;
@@ -56,82 +55,15 @@
       var fc40 = 'rgba('+frgb.r+','+frgb.g+','+frgb.b+',0.4)';
       var fc30 = 'rgba('+frgb.r+','+frgb.g+','+frgb.b+',0.3)';
 
-      var lc08 = 'rgba('+lrgb.r+','+lrgb.g+','+lrgb.b+',0.08)';
       var lc04 = 'rgba('+lrgb.r+','+lrgb.g+','+lrgb.b+',0.04)';
+      var lc08 = 'rgba('+lrgb.r+','+lrgb.g+','+lrgb.b+',0.08)';
       var lc12 = 'rgba('+lrgb.r+','+lrgb.g+','+lrgb.b+',0.12)';
       var lc25 = 'rgba('+lrgb.r+','+lrgb.g+','+lrgb.b+',0.25)';
 
       // 缩放
       card.style.setProperty('--S', s);
 
-      // 容器背景
-      var cw = card.querySelector('.wt-cw');
-      if (cw) {
-        cw.style.background = 'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+a+')';
-        cw.style.backdropFilter = 'blur('+(c.blur||7)+'px)';
-        cw.style.webkitBackdropFilter = 'blur('+(c.blur||7)+'px)';
-        cw.style.borderColor = 'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+ba+')';
-        cw.style.borderRadius = 'calc('+(c.radius||16)+'px * '+s+')';
-      }
-
-      // === 字体颜色：逐个强制 ===
-      var q = card.querySelector.bind(card);
-      var qa = card.querySelectorAll.bind(card);
-
-      // 时间
-      var hh = q('#wt-hh'); if (hh) hh.style.color = fc;
-      var mm = q('#wt-mm'); if (mm) mm.style.color = fc;
-      var colon = q('.wt-colon'); if (colon) colon.style.color = fc;
-      var timeEl = q('.wt-time'); if (timeEl) timeEl.style.color = fc;
-      // 秒
-      var ss = q('#wt-ss'); if (ss) ss.style.color = fc50;
-      var secEl = q('.wt-sec'); if (secEl) secEl.style.color = fc50;
-      // 日期
-      var fd = q('#wt-fd'); if (fd) fd.style.color = fc75;
-      var dateEl = q('.wt-date'); if (dateEl) dateEl.style.color = fc75;
-      // 星期
-      var wkEl = q('#wt-wk'); if (wkEl) wkEl.style.color = fc75;
-      // 温度
-      var tempVal = q('#wt-temp-val'); if (tempVal) tempVal.style.color = fc;
-      var tempEl = q('.wt-temp'); if (tempEl) tempEl.style.color = fc;
-      // 度号
-      qa('.wt-deg').forEach(function(el) { el.style.color = fc50; });
-      // 天气描述
-      var descVal = q('#wt-desc-val'); if (descVal) descVal.style.color = fc75;
-      var descEl = q('.wt-desc'); if (descEl) descEl.style.color = fc75;
-      // 经纬度
-      var coords = q('#location-coords'); if (coords) coords.style.color = fc50;
-
-      // 所有 .vf-lbl 标签
-      qa('.vf-lbl').forEach(function(el) { el.style.color = fc40; });
-
-      // === 线条颜色：逐个强制 ===
-      // 横线
-      qa('.wt-tl').forEach(function(el) {
-        el.style.background = 'linear-gradient(90deg, transparent, '+lc08+', transparent)';
-      });
-      qa('.wt-wl').forEach(function(el) {
-        el.style.background = 'linear-gradient(90deg, transparent, '+lc08+', transparent)';
-      });
-      // 竖分隔线
-      qa('.wt-vd').forEach(function(el) {
-        el.style.background = 'linear-gradient(180deg, transparent 5%, '+lc12+' 30%, '+lc12+' 70%, transparent 95%)';
-      });
-      // 装饰横线
-      qa('.vf-hl').forEach(function(el) {
-        el.style.background = 'linear-gradient(90deg, transparent, '+lc12+', transparent)';
-      });
-      // 四角标记
-      qa('.vf-c').forEach(function(el) {
-        el.style.setProperty('--corner-color', lc25);
-      });
-      // 网格
-      var grid = q('.vf-grid');
-      if (grid) {
-        grid.style.setProperty('--grid-color', lc04);
-      }
-
-      // CSS变量也设一份（给伪元素用）
+      // CSS变量（给伪元素用）
       card.style.setProperty('--wt-ink', fc);
       card.style.setProperty('--wt-ink2', fc75);
       card.style.setProperty('--wt-ink3', fc50);
@@ -140,9 +72,40 @@
       card.style.setProperty('--wt-line2', lc04);
       card.style.setProperty('--wt-gold', lc25);
       card.style.setProperty('--wt-gold2', lc12);
+
+      // 容器
+      var cw = card.querySelector('.wt-cw');
+      if (cw) {
+        cw.style.background = 'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+a+')';
+        cw.style.backdropFilter = 'blur('+(c.blur||7)+'px)';
+        cw.style.webkitBackdropFilter = 'blur('+(c.blur||7)+'px)';
+        cw.style.border = 'calc(1px * '+s+') solid rgba('+rgb.r+','+rgb.g+','+rgb.b+','+ba+')';
+        cw.style.borderRadius = (c.radius||16)*s + 'px';
+      }
+
+      // 字体颜色
+      card.querySelectorAll('.wt-time, .wt-time span').forEach(function(el) { el.style.color = fc; });
+      card.querySelectorAll('.wt-sec, .wt-sec span').forEach(function(el) { el.style.color = fc50; });
+      card.querySelectorAll('.wt-date, .wt-date span, .wt-wk').forEach(function(el) { el.style.color = fc75; });
+      card.querySelectorAll('.wt-temp, .wt-temp span:not(.wt-deg)').forEach(function(el) { el.style.color = fc; });
+      card.querySelectorAll('.wt-deg').forEach(function(el) { el.style.color = fc50; });
+      card.querySelectorAll('.wt-desc, .wt-desc span').forEach(function(el) { el.style.color = fc75; });
+      card.querySelectorAll('.vf-lbl').forEach(function(el) { el.style.color = fc40; });
+      var coords = card.querySelector('#location-coords');
+      if (coords) coords.style.color = fc50;
+
+      // 线条颜色
+      var lineGrad = 'linear-gradient(90deg, transparent, '+lc08+', transparent)';
+      card.querySelectorAll('.wt-tl').forEach(function(el) { el.style.background = lineGrad; });
+      card.querySelectorAll('.wt-wl').forEach(function(el) { el.style.background = lineGrad; });
+      card.querySelectorAll('.wt-vd').forEach(function(el) {
+        el.style.background = 'linear-gradient(180deg, transparent 5%, '+lc12+' 30%, '+lc12+' 70%, transparent 95%)';
+      });
+      card.querySelectorAll('.vf-hl').forEach(function(el) {
+        el.style.background = 'linear-gradient(90deg, transparent, '+lc12+', transparent)';
+      });
     },
 
-    // ========= 时钟 =========
     startClock: function() {
       function tick() {
         var d = new Date();
@@ -157,25 +120,17 @@
       tick(); setInterval(tick, 1000);
     },
 
-    // ========= 定位 =========
     initGeo: function() {
       var el = App.$('#location-coords');
       if (!el) return;
-
-      // 方法1：GPS
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           function(pos) {
             var lat = pos.coords.latitude;
             var lon = pos.coords.longitude;
-            var ns = lat >= 0 ? 'N' : 'S';
-            var ew = lon >= 0 ? 'E' : 'W';
-            el.textContent = Math.abs(lat).toFixed(2) + '°' + ns + ' ' + Math.abs(lon).toFixed(2) + '°' + ew;
+            el.textContent = Math.abs(lat).toFixed(2) + '°' + (lat>=0?'N':'S') + ' ' + Math.abs(lon).toFixed(2) + '°' + (lon>=0?'E':'W');
           },
-          function() {
-            // GPS失败，用IP
-            Cal.geoByIp(el);
-          },
+          function() { Cal.geoByIp(el); },
           { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
         );
       } else {
@@ -188,17 +143,12 @@
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d && d.lat) {
-            var ns = d.lat >= 0 ? 'N' : 'S';
-            var ew = d.lon >= 0 ? 'E' : 'W';
-            el.textContent = Math.abs(d.lat).toFixed(2) + '°' + ns + ' ' + Math.abs(d.lon).toFixed(2) + '°' + ew;
-          } else {
-            el.textContent = '定位不可用';
-          }
+            el.textContent = Math.abs(d.lat).toFixed(2) + '°' + (d.lat>=0?'N':'S') + ' ' + Math.abs(d.lon).toFixed(2) + '°' + (d.lon>=0?'E':'W');
+          } else { el.textContent = '定位不可用'; }
         })
         .catch(function() { el.textContent = '定位不可用'; });
     },
 
-    // ========= 天气 =========
     fetchWeather: function(city, callback) {
       if (!city) { if (callback) callback(null); return; }
       fetch('https://wttr.in/'+encodeURIComponent(city)+'?format=j1&lang=zh')
@@ -220,11 +170,9 @@
         if (el) el.textContent = Cal.weather.temp;
         if (desc) desc.textContent = Cal.weather.desc;
       }
-      // 刷新后重新应用颜色
       Cal.applyCardConfig();
     },
 
-    // ========= 日程 =========
     getSchedule: function(k) { return Cal.schedules[k] || []; },
     setSchedule: function(k, l) { Cal.schedules[k] = l; Cal.save(); },
     addMemo: function(k, m) { if (!Cal.schedules[k]) Cal.schedules[k] = []; Cal.schedules[k].push(m); Cal.save(); },
@@ -239,38 +187,51 @@
       return '今日行程:\n'+items.map(function(x){return (x.time||'')+' '+(x.content||'');}).join('\n');
     },
 
-    // ========= 卡片拖拽（仅天气卡片） =========
     initDrag: function() {
-      App.LS.remove('wtCardPos');
       var card = App.$('#wtCard');
       if (!card) return;
 
-      var startX, startY, origX, origY, isDragging = false, longPressed = false, timer;
+      var savedPos = App.LS.get('wtCardPos');
+      if (savedPos) {
+        var parent = card.parentElement;
+        if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+        card.style.position = 'absolute';
+        card.style.margin = '0';
+        card.style.left = savedPos.x + 'px';
+        card.style.top = savedPos.y + 'px';
+      }
+
+      var startX, startY, startLeft, startTop, longPressed, timer, moved;
 
       card.addEventListener('touchstart', function(e) {
-        // 排除控制器按钮
-        if (e.target.closest('.vf-lbl')) return;
-        if (e.target.closest('#wtSysBtn')) return;
-        if (e.target.closest('#wtDateArea')) return;
-        if (e.target.closest('#wtWeatherArea')) return;
+        if (e.target.closest('.vf-lbl') || e.target.closest('#wtSysBtn') ||
+            e.target.closest('#wtDateArea') || e.target.closest('#wtWeatherArea')) return;
 
         var t = e.touches[0];
-        var rect = card.getBoundingClientRect();
-        startX = t.clientX; startY = t.clientY;
-        origX = rect.left; origY = rect.top;
-        isDragging = false; longPressed = false;
+        startX = t.clientX;
+        startY = t.clientY;
+        longPressed = false;
+        moved = false;
 
         timer = setTimeout(function() {
           longPressed = true;
-          card.style.opacity = '0.9';
-          card.style.filter = 'drop-shadow(0 8px 20px rgba(0,0,0,0.25))';
           var parent = card.parentElement;
           if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-          card.style.position = 'absolute';
-          card.style.margin = '0';
-          var pRect = parent.getBoundingClientRect();
-          card.style.left = (origX - pRect.left) + 'px';
-          card.style.top = (origY - pRect.top) + 'px';
+
+          if (card.style.position !== 'absolute') {
+            var rect = card.getBoundingClientRect();
+            var pRect = parent.getBoundingClientRect();
+            card.style.position = 'absolute';
+            card.style.margin = '0';
+            card.style.left = (rect.left - pRect.left) + 'px';
+            card.style.top = (rect.top - pRect.top) + 'px';
+          }
+
+          startLeft = parseInt(card.style.left) || 0;
+          startTop = parseInt(card.style.top) || 0;
+          card.style.transition = 'none';
+          card.style.opacity = '0.9';
+          card.style.zIndex = '999';
           if (navigator.vibrate) navigator.vibrate(15);
         }, 500);
       }, { passive: true });
@@ -284,38 +245,24 @@
           return;
         }
         if (!longPressed) return;
-        isDragging = true;
+        moved = true;
         e.preventDefault();
-        var parent = card.parentElement;
-        if (!parent) return;
-        var pRect = parent.getBoundingClientRect();
-        card.style.left = (t.clientX - (startX - origX) - pRect.left) + 'px';
-        card.style.top = (t.clientY - (startY - origY) - pRect.top) + 'px';
+        card.style.left = (startLeft + t.clientX - startX) + 'px';
+        card.style.top = (startTop + t.clientY - startY) + 'px';
       }, { passive: false });
 
       card.addEventListener('touchend', function() {
         clearTimeout(timer); timer = null;
         card.style.opacity = '';
-        card.style.filter = '';
-        if (isDragging) {
+        card.style.transition = '';
+        card.style.zIndex = '10';
+        if (longPressed && moved) {
           App.LS.set('wtCardPos', { x: parseInt(card.style.left), y: parseInt(card.style.top) });
         }
-        isDragging = false; longPressed = false;
+        longPressed = false; moved = false;
       });
-
-      // 恢复保存的位置
-      var savedPos = App.LS.get('wtCardPos');
-      if (savedPos) {
-        var parent = card.parentElement;
-        if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-        card.style.position = 'absolute';
-        card.style.margin = '0';
-        card.style.left = savedPos.x + 'px';
-        card.style.top = savedPos.y + 'px';
-      }
     },
 
-    // ========= 调节面板 =========
     openCtrl: function() {
       var old = App.$('#wtCtrlWrap');
       if (old) { old.remove(); return; }
@@ -378,22 +325,18 @@
       });
 
       App.$('#wtcReset').addEventListener('click', function() {
+        App.LS.remove('wtCardConfig');
         Cal.cardConfig = JSON.parse(JSON.stringify(CARD_DEFAULTS));
         Cal.saveCardConfig();
-        // 清除所有内联颜色
         var card = App.$('#wtCard');
         if (card) {
-          card.querySelectorAll('*').forEach(function(el) {
-            el.style.color = '';
-            el.style.background = '';
-            el.style.backdropFilter = '';
-            el.style.webkitBackdropFilter = '';
-            el.style.borderColor = '';
-            el.style.borderRadius = '';
+          var cw = card.querySelector('.wt-cw');
+          if (cw) cw.removeAttribute('style');
+          card.querySelectorAll('.wt-time, .wt-time span, .wt-sec, .wt-sec span, .wt-date, .wt-date span, .wt-wk, .wt-temp, .wt-temp span, .wt-deg, .wt-desc, .wt-desc span, .vf-lbl, .wt-tl, .wt-wl, .wt-vd, .vf-hl, #location-coords').forEach(function(el) {
+            el.removeAttribute('style');
           });
         }
         Cal.applyCardConfig();
-        // 重置位置
         App.LS.remove('wtCardPos');
         if (card) { card.style.position=''; card.style.left=''; card.style.top=''; card.style.margin=''; }
         wrap.remove(); App.showToast('已重置');
@@ -411,7 +354,6 @@
       }, 100);
     },
 
-    // ========= 天气面板 =========
     openWeatherPanel: function() {
       var panel = App.$('#calPanel');
       if (!panel) return;
@@ -449,7 +391,6 @@
       });
     },
 
-    // ========= 月历面板 =========
     _viewYear: 0, _viewMonth: 0, _selectedDate: '', _stickerPage: 0,
 
     openSchedulePanel: function() {
