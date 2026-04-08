@@ -67,7 +67,6 @@ var Cal={
     var coords=card.querySelector('#location-coords');if(coords)coords.style.color=fc50;
 
     // 日程区域
-    card.querySelectorAll('.wt-sched-label').forEach(function(el){el.style.color=fc50;});
     card.querySelectorAll('.wt-sched-text').forEach(function(el){el.style.color=fc75;});
 
     var lg='linear-gradient(90deg, transparent, '+lc08+', transparent)';
@@ -124,16 +123,16 @@ var Cal={
 
   // 更新卡片上的日程显示
   updateCardSchedule:function(){
-    var el=App.$('#wt-schedule-val');if(!el)return;
-    var key=Cal.todayKey();
-    var list=Cal.schedules[key]||[];
-    var items=[];
-    for(var i=0;i<list.length;i++){if(!list[i].type||list[i].type==='schedule')items.push(list[i]);}
-    if(!items.length){el.textContent='暂无日程';}
-    else if(items.length===1){el.textContent=(items[0].time?items[0].time+' ':'')+items[0].content;}
-    else {el.textContent=items[0].content+' 等'+items.length+'项';}
-    Cal.applyCardConfig();
-  },
+  var el=App.$('#wt-schedule-val');if(!el)return;
+  var key=Cal.todayKey();
+  var list=Cal.schedules[key]||[];
+  var items=[];
+  for(var i=0;i<list.length;i++){if(!list[i].type||list[i].type==='schedule')items.push(list[i]);}
+  if(!items.length){el.textContent='暂无日程';}
+  else if(items.length===1){el.textContent=(items[0].time?items[0].time+' ':'')+items[0].content;}
+  else{el.textContent=items[0].content+' 等'+items.length+'项';}
+  Cal.applyCardConfig();
+},
 
   getSchedule:function(k){return Cal.schedules[k]||[];},
   setSchedule:function(k,l){Cal.schedules[k]=l;Cal.save();},
