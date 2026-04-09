@@ -21,8 +21,6 @@
 }
 
 .eden-card .eden-text {
-  display: inline-block;
-  width: auto;
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
