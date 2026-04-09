@@ -1,11 +1,11 @@
 /* =========================
    并排容器
 ========================= */
-.card-row｛
+.card-row {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gар: 30px;
+  gap: 30px;
   padding: 10px 0 0;
   width: 100%;
   margin-top: 20px;
