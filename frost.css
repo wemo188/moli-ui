@@ -82,17 +82,16 @@
 }
 
 /* =========================
-   文字卡片（第一页）
-========================= */
-.eden-card /* =========================
-   文字卡片（第一页）
+   文字卡片（第一页）- 最终版
 ========================= */
 .eden-card {
-  width: calc(100% - 40px);
-  margin: 0 20px 20px 20px;
+  width: calc(100% - 40px) !important;
+  max-width: calc(100% - 40px) !important;
+  margin: 0 20px 20px 20px !important;
   position: relative;
   z-index: 1;
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
 .eden-card.dragging {
@@ -104,7 +103,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   min-height: 120px;
   text-align: center;
   white-space: pre-wrap;
@@ -113,163 +113,135 @@
   line-height: 1.4;
   box-sizing: border-box;
   padding: 16px;
+  background: transparent;
 }
 
-/* 编辑浮窗 */
+/* 编辑面板样式 */
 .eden-ctrl-wrap {
   position: fixed;
-  z-index: 998;
-  width: 280px;
-  left: 50%;
-  top: 60px;
-  transform: translateX(-50%);
-  pointer-events: none;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
 }
 
 .eden-ctrl-panel {
-  pointer-events: auto;
+  width: 85%;
+  max-width: 320px;
+  max-height: 80vh;
+  overflow-y: auto;
   background: rgba(255,255,255,0.96);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 14px;
-  padding: 14px 16px;
+  border-radius: 20px;
+  padding: 20px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-  border: 1px solid rgba(0,0,0,0.06);
 }
 
 .eden-ctrl-title {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 .eden-ctrl-section {
-  font-size: 10px;
+  font-size: 11px;
   color: #999;
   font-weight: 600;
   letter-spacing: 1px;
-  margin-bottom: 8px;
+  margin: 12px 0 8px 0;
 }
 
 .eden-ctrl-divider {
   height: 1px;
   background: rgba(0,0,0,0.06);
-  margin: 10px 0;
+  margin: 12px 0;
 }
 
 .eden-ctrl-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .eden-ctrl-row label {
-  font-size: 11px;
+  font-size: 12px;
   color: #666;
-  min-width: 36px;
+  min-width: 60px;
   font-weight: 500;
 }
 
 .eden-ctrl-row input[type="range"] {
   flex: 1;
-  height: 3px;
+  height: 4px;
 }
 
-.eden-ctrl-row .eden-ctrl-val {
-  font-size: 10px;
-  color: #999;
-  min-width: 34px;
-  text-align: right;
-  font-weight: 500;
-}
-
-.eden-ctrl-row input[type="color"] {
-  width: 28px;
-  height: 28px;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 6px;
-  padding: 2px;
-  cursor: pointer;
-}
-
-.eden-ctrl-row input[type="text"] {
+.eden-ctrl-row input[type="text"],
+.eden-ctrl-row input[type="url"],
+.eden-ctrl-row textarea {
   flex: 1;
   padding: 8px 10px;
   font-size: 13px;
-  color: #1a1a1a;
-  background: #f5f5f5;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.08);
   border-radius: 8px;
-  outline: none;
+  background: #f5f5f5;
   font-family: inherit;
+  outline: none;
 }
 
-.eden-ctrl-row input[type="text"]:focus {
-  border-color: rgba(0,0,0,0.15);
-}
-
-.eden-font-upload-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  border: 1px solid rgba(0,0,0,0.06);
+.eden-ctrl-row input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0,0,0,0.08);
   border-radius: 8px;
-  cursor: pointer;
-  flex-shrink: 0;
+  padding: 4px;
 }
 
-.eden-font-upload-btn:active {
-  background: #eee;
-}
-
-.eden-font-upload-btn svg {
-  width: 16px;
-  height: 16px;
-  color: #666;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.eden-ctrl-row span {
+  min-width: 45px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
 }
 
 .eden-ctrl-btns {
   display: flex;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .eden-ctrl-save {
   flex: 1;
-  padding: 9px;
+  padding: 10px;
   background: #1a1a1a;
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
 }
 
-.eden-ctrl-save:active { opacity: 0.7; }
-
 .eden-ctrl-reset {
-  padding: 9px 12px;
+  flex: 1;
+  padding: 10px;
   background: #f5f5f5;
   color: #666;
   border: 1px solid rgba(0,0,0,0.06);
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: inherit;
 }
 
-.eden-ctrl-reset:active { opacity: 0.7; }
+.eden-ctrl-save:active, .eden-ctrl-reset:active {
+  opacity: 0.7;
+}
