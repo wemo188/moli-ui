@@ -2,11 +2,11 @@
    文字卡片（第一页）- 贴底部栏上方
 ========================= */
 .eden-card {
-  width: 380px;              /* 改成固定宽度 */
-  max-width: 90%;            /* 小屏幕时自适应 */
+  width: 380px;
+  max-width: 90%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center;     /* ✅ 已有，保持 */
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -17,6 +17,7 @@
   background: transparent;
   box-shadow: none;
   border: none;
+  margin: 0 auto;              /* 👈 添加：让卡片本身居中 */
 }
 
 .eden-card .eden-text {
@@ -25,7 +26,9 @@
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
-  text-align: center;  
+  text-align: center;
+  margin: 0 auto;              /* 👈 添加：让文字在卡片内居中 */
+  transform-origin: center;    /* 👈 添加：倾斜/缩放时以中心为基准 */
 }
 
 /* 拖拽时的样式 */
