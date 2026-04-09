@@ -4,6 +4,8 @@
 .eden-card {
   width: 380px;
   max-width: 90%;
+  height: 100px;
+  margin: 0 auto 80px;  
   display: flex;
   align-items: center;
   justify-content: center;     /* ✅ 已有，保持 */
