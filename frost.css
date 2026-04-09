@@ -107,8 +107,6 @@
   word-break: break-word;
   line-height: 1.4;
   box-sizing: border-box;
-  padding: 16px;
-  /* 临时边框，方便看清范围 */
   border: 1px solid red;
   overflow: auto;  /* 文字太多时可以滚动 */
 }
