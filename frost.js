@@ -129,7 +129,7 @@
       fontSize: 32,
       rotate: 0,
       spacing: 2,
-      fontColor: '#ffffff',
+      fontColor: '#000',
       fontUrl: '',
       fontBase64: ''
     },
