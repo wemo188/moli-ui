@@ -11,12 +11,26 @@
   margin-top: 20px;
 }
 
-/* ====== 独立出来的占位符 ====== */
-.card-placeholder-icons {
+.card-right-area {
+  width: 180px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;  /* 👈 新增 */
+}
+
+.card-right-area .card-placeholder-icons {
   display: flex;
   gap: 30px;
   justify-content: center;
-  margin: 40px 0 10px 0;  /* 上边距40px，下边距10px，可调整 */
+  margin-bottom: 10px;
+  position: relative;  /* 👈 新增 */
+  top: 40px;  /* 👈 新增，控制下移距离，可调整 */
+}
+
+.card-right-area #bx-1 {
+  width: 100%;
 }
 
 .card-ph-item {
