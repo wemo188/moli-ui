@@ -23,6 +23,9 @@
 
 .eden-card .eden-text {
   width: 100%;  
+  text-align: justify;
+  text-align-last: justify;
+  word-break: keep-all; 
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
