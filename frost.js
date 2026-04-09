@@ -168,19 +168,21 @@ var Eden = {
   save: function() { App.LS.set('edenCard', Eden.data); },
 
   loadFont: function(url) {
-    if (!url) {
-      var textEl = App.$('#edenText');
-      if (textEl) textEl.style.fontFamily = '';
-      return;
-    }
-    var fontName = 'EdenCustom_' + Math.abs(url.length * 31);
-    var font = new FontFace(fontName, 'url(' + url + ')');
-    font.load().then(function(loaded) {
-      document.fonts.add(loaded);
-      var textEl = App.$('#edenText');
-      if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
-    }).catch(function() {});
-  },
+  if (!url) {
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = '';
+    return;
+  }
+  var fontName = 'EdenCustom_' + Date.now();
+  var font = new FontFace(fontName, 'url(' + url + ')');
+  font.load().then(function(loaded) {
+    document.fonts.add(loaded);
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
+  }).catch(function(err) {
+    console.log('字体加载失败:', err);
+  });
+},
 
   apply: function() {
     var el = App.$('#edenCard');
@@ -367,19 +369,20 @@ var Eden = {
     wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
     wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-    // 上传字体
-    App.$('#edenFontFile').addEventListener('change', function(e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var blob = new Blob([ev.target.result]);
-        var url = URL.createObjectURL(blob);
-        App.$('#edenFontUrl').value = url;
-        Eden.loadFont(url);
-      };
-      reader.readAsArrayBuffer(file);
-    });
+    // 上传字体 - 修改这段
+App.$('#edenFontFile').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    // 转成 base64 而不是 blob url（这样刷新后还能保留）
+    var base64 = ev.target.result;
+    App.$('#edenFontUrl').value = base64;
+    // 立即加载预览
+    Eden.loadFont(base64);
+  };
+  reader.readAsDataURL(file);  // 用 readAsDataURL 而不是 readAsArrayBuffer
+});
 
     function getCfg() {
       return {
@@ -445,13 +448,14 @@ var Eden = {
     });
 
     App.$('#edenSave').addEventListener('click', function() {
-      var cfg = getCfg();
-      Eden.data = cfg;
-      Eden.save();
-      Eden.apply();
-      wrap.remove();
-      App.showToast('已保存');
-    });
+  var cfg = getCfg();
+  // 如果字体URL是base64，直接保存
+  Eden.data = cfg;
+  Eden.save();
+  Eden.apply();
+  wrap.remove();
+  App.showToast('已保存');
+});
 
     App.$('#edenReset').addEventListener('click', function() {
       Eden.data = JSON.parse(JSON.stringify(Eden.DEFAULTS));
