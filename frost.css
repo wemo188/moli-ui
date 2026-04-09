@@ -82,18 +82,15 @@
 }
 
 /* =========================
-   文字卡片（第一页）- 固定大小版
+   文字卡片（第一页）
 ========================= */
 .eden-card {
-  width: 100%;
-  height: 180px;  /* 固定高度，你可以调整这个值 */
-  margin: 0;
-  padding: 0;
+  width: calc(100% - 40px);
+  margin: 0 20px 20px 20px;
   position: relative;
   z-index: 1;
-  cursor: move;
+  cursor: default;
   -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;  /* 防止被压缩 */
 }
 
 .eden-card .eden-text {
@@ -101,18 +98,23 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;  /* 填满父容器 */
+  min-height: 120px;
   text-align: center;
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: break-word;
   line-height: 1.4;
   box-sizing: border-box;
-  overflow: auto;  /* 文字太多时可以滚动 */
+  padding: 16px;
+  overflow: auto;
 }
 
-/* 拖拽时的样式 */
+.eden-card.dragging {
+  cursor: grabbing;
+}
+
 .eden-card.dragging .eden-text {
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* 编辑浮窗 */
