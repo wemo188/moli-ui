@@ -20,6 +20,7 @@
 
     load: function() {
       var saved = App.LS.get('frostCard');
+      Frost.data = {};
       var d = Frost.DEFAULTS;
       if (saved) {
         Frost.data.mode = saved.mode || d.mode;
@@ -118,7 +119,7 @@
   };
 
   // ============================
-  //  文字卡片（第一页）- 修复字体版
+  //  文字卡片（第一页）
   // ============================
   var Eden = {
     data: {},
@@ -127,7 +128,7 @@
     DEFAULTS: {
       text: '你是我的伊甸塔',
       fontSize: 32,
-      rotate: 0,
+      rotate: -4,
       spacing: 6,
       fontColor: '#000',
       fontUrl: ''
@@ -150,35 +151,22 @@
 
     save: function() { App.LS.set('edenCard', Eden.data); },
 
-    // 修复后的字体加载函数
     loadFont: function(url) {
-      var textEl = App.$('#edenText');
-      if (!textEl) return;
-      
-      // 如果为空，恢复默认字体
-      if (!url) {
-        textEl.style.fontFamily = '';
-        return;
-      }
-      
-      // 判断是否是 URL（以 http:// 或 https:// 开头）
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        // 是 URL，加载字体
-        var fontName = 'EdenCustom_' + Date.now();
-        var font = new FontFace(fontName, 'url(' + url + ')');
-        font.load().then(function(loaded) {
-          document.fonts.add(loaded);
-          textEl.style.fontFamily = "'" + fontName + "', cursive";
-        }).catch(function(err) {
-          console.log('字体加载失败:', err);
-          // 加载失败时，尝试直接作为字体名使用
-          textEl.style.fontFamily = url + ', cursive';
-        });
-      } else {
-        // 不是 URL，直接作为字体名使用
-        textEl.style.fontFamily = url + ', cursive';
-      }
-    },
+  if (!url) {
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = '';
+    return;
+  }
+  var fontName = 'EdenCustom_' + Math.abs(url.length * 31);
+  var font = new FontFace(fontName, 'url(' + url + ')');
+  font.load().then(function(loaded) {
+    document.fonts.add(loaded);
+    var textEl = App.$('#edenText');
+    if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
+  }).catch(function() {
+    // url加载失败，可能是base64太大被截断了，静默失败
+  });
+},
 
     apply: function() {
       var el = App.$('#edenText');
@@ -189,7 +177,6 @@
       el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
       el.style.letterSpacing = (d.spacing || 0) + 'px';
       el.style.color = d.fontColor || '#ffffff';
-      // 调用修复后的字体加载函数
       Eden.loadFont(d.fontUrl);
     },
 
@@ -209,7 +196,7 @@
 
           '<div class="eden-ctrl-row">' +
             '<label>字体</label>' +
-            '<input type="text" id="edenFontUrl" placeholder="输入字体名称(如: Dancing Script) 或 字体URL" value="' + App.esc(d.fontUrl || '') + '">' +
+            '<input type="text" id="edenFontUrl" placeholder="字体URL（留空用全局字体）" value="' + App.esc(d.fontUrl || '') + '">' +
             '<label class="eden-font-upload-btn" for="edenFontFile">' +
               '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
             '</label>' +
@@ -255,30 +242,43 @@
 
       document.body.appendChild(wrap);
 
+      // 阻止触摸传播
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-      // 上传字体 - 转成 base64 永久保存
+      // 上传字体
       App.$('#edenFontFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          var base64 = ev.target.result;
-          App.$('#edenFontUrl').value = base64;
-          Eden.loadFont(base64);
+          // 转成blob url
+          var blob = new Blob([ev.target.result]);
+          var url = URL.createObjectURL(blob);
+          App.$('#edenFontUrl').value = '(已上传) ' + file.name;
+          App.$('#edenFontUrl').dataset.blobUrl = url;
+          Eden.loadFont(url);
         };
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
       });
 
       function getCfg() {
+        var urlInput = App.$('#edenFontUrl');
+        var fontUrl = '';
+        if (urlInput.dataset.blobUrl) {
+          // 上传的字体用data URL重新存
+          fontUrl = urlInput.dataset.blobUrl;
+        } else {
+          fontUrl = urlInput.value.trim();
+          if (fontUrl.startsWith('(已上传)')) fontUrl = d.fontUrl || '';
+        }
         return {
           text: App.$('#edenTextInput').value,
           fontSize: parseInt(App.$('#edenSize').value),
           rotate: parseInt(App.$('#edenRotate').value),
           spacing: parseInt(App.$('#edenSpacing').value),
           fontColor: App.$('#edenColor').value,
-          fontUrl: App.$('#edenFontUrl').value.trim()
+          fontUrl: fontUrl
         };
       }
 
@@ -298,41 +298,40 @@
         el.style.transform = 'rotate(' + cfg.rotate + 'deg)';
         el.style.letterSpacing = cfg.spacing + 'px';
         el.style.color = cfg.fontColor;
-        // 预览时也应用字体
-        if (cfg.fontUrl) {
-          if (cfg.fontUrl.startsWith('http://') || cfg.fontUrl.startsWith('https://')) {
-            // 异步加载可能来不及，先尝试直接设置
-            el.style.fontFamily = cfg.fontUrl + ', cursive';
-          } else {
-            el.style.fontFamily = cfg.fontUrl + ', cursive';
-          }
-        } else {
-          el.style.fontFamily = '';
-        }
       }
 
-      ['edenSize', 'edenRotate', 'edenSpacing', 'edenColor', 'edenTextInput', 'edenFontUrl'].forEach(function(id) {
-        var inputEl = App.$('#' + id);
-        if (inputEl) inputEl.addEventListener('input', preview);
+      ['edenSize', 'edenRotate', 'edenSpacing', 'edenColor', 'edenTextInput'].forEach(function(id) {
+        App.$('#' + id).addEventListener('input', preview);
+      });
+
+      // URL输入后回车加载字体
+      App.$('#edenFontUrl').addEventListener('change', function() {
+        var url = this.value.trim();
+        if (url && !url.startsWith('(已上传)')) {
+          Eden.loadFont(url);
+        }
       });
 
       App.$('#edenSave').addEventListener('click', function() {
-        var cfg = getCfg();
-        Eden.data = cfg;
-        Eden.save();
-        Eden.apply();
-        wrap.remove();
-        App.showToast('已保存');
-      });
+  var cfg = getCfg();
+  // blob url 刷新后失效，提示用户用URL
+  if (cfg.fontUrl && cfg.fontUrl.startsWith('blob:')) {
+    App.showToast('上传字体仅本次有效，建议填写在线URL');
+  }
+  Eden.data = cfg;
+  Eden.save();
+  Eden.apply();
+  wrap.remove();
+  App.showToast('已保存');
+});
 
       App.$('#edenReset').addEventListener('click', function() {
         Eden.data = JSON.parse(JSON.stringify(Eden.DEFAULTS));
-        Eden.save();
-        Eden.apply();
-        wrap.remove();
-        App.showToast('已重置');
+        Eden.save(); Eden.apply();
+        wrap.remove(); App.showToast('已重置');
       });
 
+      // 点外面关闭
       setTimeout(function() {
         function dismiss(e) {
           if (wrap.contains(e.target)) return;
