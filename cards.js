@@ -43,6 +43,7 @@ var Cards={
     var rNameC=R.name?'':' bx-name-placeholder';
 
     container.innerHTML=
+      // 左卡片
       '<div class="bx-w" id="bx-2" data-side="left">'+
         '<div class="bx-tag-wrap">'+
           '<div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div>'+
@@ -57,44 +58,30 @@ var Cards={
         '</div></div>'+
       '</div>'+
 
-      '<div class="bx-w" id="bx-1" data-side="right">'+
-        '<div class="bx-cw"><div class="bx-cd">'+
-          '<div class="bx-side-ribbon">'+
-            '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
-            '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
-          '</div>'+
-          '<div class="bx-av-box">'+rFront+'</div>'+
-          '<div class="bx-name-bar">'+
-            '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
-            '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
-          '</div>'+
-        '</div></div>'+
-      '</div>'+
-
-      '<div class="card-placeholder-icons" id="phIcons">'+
-        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+      // 右侧区域（占位图标 + 右卡片）
+      '<div class="card-right-area">'+
+        '<div class="card-placeholder-icons">'+
+          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+        '</div>'+
+        '<div class="bx-w" id="bx-1" data-side="right">'+
+          '<div class="bx-cw"><div class="bx-cd">'+
+            '<div class="bx-side-ribbon">'+
+              '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
+              '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
+            '</div>'+
+            '<div class="bx-av-box">'+rFront+'</div>'+
+            '<div class="bx-name-bar">'+
+              '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
+              '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
+            '</div>'+
+          '</div></div>'+
+        '</div>'+
       '</div>';
 
     Cards.bindEdit();
     Cards.applyDragOffsets();
     Cards.bindDrag();
-    Cards.positionIcons();
-  },
-
-  positionIcons:function(){
-    setTimeout(function(){
-      var bx1=App.$('#bx-1');
-      var icons=App.$('#phIcons');
-      var row=App.$('#cardRow');
-      if(!bx1||!icons||!row)return;
-      var bx1Left=bx1.offsetLeft;
-      var bx1Width=bx1.offsetWidth;
-      var iconsWidth=icons.offsetWidth;
-      var iconsHeight=icons.offsetHeight;
-      icons.style.left=(bx1Left+bx1Width/2-iconsWidth/2)+'px';
-      icons.style.top=(bx1.offsetTop-iconsHeight-10)+'px';
-    },80);
   },
 
   bindEdit:function(){
@@ -118,7 +105,6 @@ var Cards={
     ['bx-1','bx-2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var avBox=el.querySelector('.bx-av-box');if(!avBox)return;
-
       var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
 
       avBox.addEventListener('touchstart',function(e){
@@ -137,9 +123,7 @@ var Cards={
         var t=e.touches[0];
         if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
         if(!longPressed)return;
-        moved=true;
-        e.preventDefault();
-        e.stopPropagation();
+        moved=true;e.preventDefault();e.stopPropagation();
         var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
         el.style.transform='translate('+nx+'px,'+ny+'px)';
         Cards._dragOffsets[id]={x:nx,y:ny};
@@ -148,10 +132,7 @@ var Cards={
       avBox.addEventListener('touchend',function(e){
         clearTimeout(timer);timer=null;
         el.style.opacity='';el.style.transition='';el.style.zIndex='';
-        if(longPressed&&moved){
-          Cards.saveDrag();
-          e.stopPropagation();
-        }
+        if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
         longPressed=false;moved=false;
       });
     });
@@ -165,7 +146,6 @@ var Cards={
   openEdit:function(side){
     var d=Cards.data[side];
     var defSub=side==='left'?DEF_SUB_L:DEF_SUB_R;
-
     var old=App.$('#pcEditOverlay');if(old)old.remove();
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     overlay.innerHTML=
