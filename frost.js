@@ -136,6 +136,7 @@
       rotate: 0,
       spacing: 2,
       fontColor: '#000',
+      fontUrl: '',
       fontBase64: '',
       posX: 0,
       posY: 0
@@ -150,6 +151,7 @@
         Eden.data.rotate = saved.rotate != null ? saved.rotate : d.rotate;
         Eden.data.spacing = saved.spacing != null ? saved.spacing : d.spacing;
         Eden.data.fontColor = saved.fontColor || d.fontColor;
+        Eden.data.fontUrl = saved.fontUrl || '';
         Eden.data.fontBase64 = saved.fontBase64 || '';
         Eden.data.posX = saved.posX != null ? saved.posX : d.posX;
         Eden.data.posY = saved.posY != null ? saved.posY : d.posY;
@@ -166,24 +168,37 @@
       var el = App.$('#edenText');
       if (!el) return;
       
-      var base64 = Eden.data.fontBase64;
-      if (base64 && base64.startsWith('data:')) {
-        var fontName = 'MyFont_' + base64.length;
-        // 检查是否已加载
+      // 优先使用 base64（上传的字体）
+      if (Eden.data.fontBase64 && Eden.data.fontBase64.startsWith('data:')) {
+        var fontName = 'UploadFont_' + Eden.data.fontBase64.length;
         if (!document.fonts.check('12px "' + fontName + '"')) {
-          var font = new FontFace(fontName, 'url(' + base64 + ')');
+          var font = new FontFace(fontName, 'url(' + Eden.data.fontBase64 + ')');
           font.load().then(function(loaded) {
             document.fonts.add(loaded);
             el.style.fontFamily = "'" + fontName + "', cursive";
-          }).catch(function(e) {
-            console.log('字体加载失败', e);
-          });
+          }).catch(function() {});
         } else {
           el.style.fontFamily = "'" + fontName + "', cursive";
         }
-      } else {
-        el.style.fontFamily = '';
+        return;
       }
+      
+      // 其次使用 URL
+      if (Eden.data.fontUrl && Eden.data.fontUrl.trim() !== '') {
+        var urlName = 'UrlFont_' + Eden.data.fontUrl.length;
+        if (!document.fonts.check('12px "' + urlName + '"')) {
+          var urlFont = new FontFace(urlName, 'url(' + Eden.data.fontUrl + ')');
+          urlFont.load().then(function(loaded) {
+            document.fonts.add(loaded);
+            el.style.fontFamily = "'" + urlName + "', cursive";
+          }).catch(function() {});
+        } else {
+          el.style.fontFamily = "'" + urlName + "', cursive";
+        }
+        return;
+      }
+      
+      el.style.fontFamily = '';
     },
 
     apply: function() {
@@ -314,15 +329,28 @@
         '<div class="eden-ctrl-panel">' +
           '<div class="eden-ctrl-title">文字卡片设置</div>' +
 
+          '<div class="eden-ctrl-section">字体</div>' +
+
+          '<div class="eden-ctrl-row">' +
+            '<label>字体URL</label>' +
+            '<input type="text" id="edenFontUrl" placeholder="https://example.com/font.ttf" value="' + App.esc(d.fontUrl || '') + '" style="flex:1;">' +
+          '</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>上传字体</label>' +
             '<input type="file" id="edenFontFile" accept=".ttf,.otf,.woff,.woff2" style="flex:1;">' +
           '</div>' +
 
+          '<div class="eden-ctrl-divider"></div>' +
+          '<div class="eden-ctrl-section">内容</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>文字</label>' +
             '<textarea id="edenTextInput" rows="3" placeholder="输入文字..." style="flex:1; padding:8px; font-size:13px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#f5f5f5; font-family:inherit; resize:vertical;">' + App.esc(d.text || '') + '</textarea>' +
           '</div>' +
+
+          '<div class="eden-ctrl-divider"></div>' +
+          '<div class="eden-ctrl-section">样式</div>' +
 
           '<div class="eden-ctrl-row">' +
             '<label>字号</label>' +
@@ -355,7 +383,19 @@
 
       document.body.appendChild(wrap);
 
-      // 字体上传
+      // URL 字体
+      App.$('#edenFontUrl').addEventListener('change', function() {
+        var url = this.value.trim();
+        if (url) {
+          Eden.data.fontUrl = url;
+          Eden.data.fontBase64 = '';
+          Eden.save();
+          Eden.applyFont();
+          App.showToast('字体URL已保存');
+        }
+      });
+
+      // 上传字体
       App.$('#edenFontFile').addEventListener('change', async function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -365,19 +405,17 @@
         try {
           var base64 = await Eden.fileToBase64(file);
           
-          // 测试字体
           var testName = 'Test_' + Date.now();
           var testFont = new FontFace(testName, 'url(' + base64 + ')');
           await testFont.load();
           document.fonts.add(testFont);
           
-          // 保存
           Eden.data.fontBase64 = base64;
+          Eden.data.fontUrl = '';
           Eden.save();
-          
-          // 应用
           Eden.applyFont();
           
+          App.$('#edenFontUrl').value = '';
           App.showToast('字体已保存');
         } catch(err) {
           App.showToast('字体无效');
@@ -411,10 +449,8 @@
         Eden.data.rotate = parseInt(App.$('#edenRotate').value);
         Eden.data.spacing = parseInt(App.$('#edenSpacing').value);
         Eden.data.fontColor = App.$('#edenColor').value;
-        // fontBase64 保持不变
         Eden.save();
         
-        // 更新界面
         var el = App.$('#edenText');
         if (el) {
           el.textContent = Eden.data.text;
