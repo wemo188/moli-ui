@@ -182,23 +182,25 @@
     },
 
     applyBg: function() {
-      var card = App.$('#edenCard');
-      if (!card) return;
-      var d = Eden.data;
-      if (d.bgImage) {
-        var opacity = d.bgOpacity / 100;
-        card.style.backgroundImage = 'url(' + d.bgImage + ')';
-        card.style.backgroundSize = 'cover';
-        card.style.backgroundPosition = 'center';
-        card.style.backgroundRepeat = 'no-repeat';
-        card.style.backgroundColor = 'rgba(0,0,0,' + (1 - opacity) + ')';
-        card.style.backgroundBlendMode = 'multiply';
-      } else {
-        card.style.backgroundImage = '';
-        card.style.backgroundColor = '';
-        card.style.backgroundBlendMode = '';
-      }
-    },
+  var card = App.$('#edenCard');
+  if (!card) return;
+  var d = Eden.data;
+  if (d.bgImage) {
+    var opacity = d.bgOpacity / 100;  // 0-1，0=完全透明，1=完全不透明
+    card.style.backgroundImage = 'url(' + d.bgImage + ')';
+    card.style.backgroundSize = 'cover';
+    card.style.backgroundPosition = 'center';
+    card.style.backgroundRepeat = 'no-repeat';
+    // 用白色叠加，opacity 越高白色越少（图片越明显）
+    var whiteAmount = 1 - opacity;
+    card.style.backgroundColor = 'rgba(255,255,255,' + whiteAmount + ')';
+    card.style.backgroundBlendMode = 'lighten';
+  } else {
+    card.style.backgroundImage = '';
+    card.style.backgroundColor = '';
+    card.style.backgroundBlendMode = '';
+  }
+}
 
     apply: function() {
       var el = App.$('#edenText');
