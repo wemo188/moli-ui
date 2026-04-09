@@ -22,6 +22,7 @@
 }
 
 .eden-card .eden-text {
+  width: 100%;  
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
