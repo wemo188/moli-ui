@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap');
 
 /* =========================
@@ -11,30 +12,20 @@
   user-select: none;
   position: relative;
   z-index: 10;
-  flex-shrink: 0;
-  --wt-ink: #1a1a1a;
-  --wt-ink2: #1a1a1a;
-  --wt-ink3: #1a1a1a;
-  --wt-line: rgba(0,0,0,0.15);
-  --wt-line2: rgba(0,0,0,0.08);
-  --wt-gold: rgba(0,0,0,0.25);
-  --wt-gold2: rgba(0,0,0,0.3);
+  flex-shrink: 0;  /* 添加 */
 }
 
 .wt-cw {
   position: relative;
   overflow: hidden;
-  border-radius: 10px;  /* 圆角默认10px */
-  background: rgba(255,255,255,0);  /* 透明值0 */
-  backdrop-filter: blur(7px);  /* 模糊度7px */
-  -webkit-backdrop-filter: blur(7px);
+  /* 背景、模糊、边框、圆角全部由JS设 */
 }
 
 .wt-card .vf-c {
   position: absolute; z-index: 5; pointer-events: none;
 }
 .wt-card .vf-c::before, .wt-card .vf-c::after {
-  content: ""; position: absolute; background: var(--wt-gold);
+  content: ""; position: absolute; background: var(--wt-gold, rgba(0,0,0,.25));
 }
 
 .wt-card .vf-c.tl { top: calc(8px * var(--S)); left: calc(8px * var(--S)); }
@@ -53,17 +44,17 @@
 }
 .wt-card .vf-grid::before {
   content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent calc(100%/3 - 1px), var(--wt-line2) calc(100%/3 - 1px), var(--wt-line2) calc(100%/3));
+  background: repeating-linear-gradient(0deg, transparent, transparent calc(100%/3 - 1px), var(--wt-line2, rgba(0,0,0,0.08)) calc(100%/3 - 1px), var(--wt-line2, rgba(0,0,0,0.08)) calc(100%/3));
 }
 .wt-card .vf-grid::after {
   content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(90deg, transparent, transparent calc(50% - 1px), var(--wt-line2) calc(50% - 1px), var(--wt-line2) 50%);
+  background: repeating-linear-gradient(90deg, transparent, transparent calc(50% - 1px), var(--wt-line2, rgba(0,0,0,0.08)) calc(50% - 1px), var(--wt-line2, rgba(0,0,0,0.08)) 50%);
 }
 
 .wt-card .vf-hl {
   position: absolute; left: calc(30px * var(--S)); right: calc(30px * var(--S));
   height: calc(1px * var(--S));
-  background: linear-gradient(90deg, transparent, var(--wt-gold2), transparent);
+  background: linear-gradient(90deg, transparent, var(--wt-gold2, rgba(0,0,0,0.3)), transparent);
   z-index: 3; pointer-events: none;
 }
 .wt-card .vf-hl.top { top: calc(12px * var(--S)); }
@@ -71,7 +62,7 @@
 
 .wt-card .vf-lbl {
   position: absolute; z-index: 6;
-  font-size: calc(8px * var(--S)); color: var(--wt-ink); font-weight: 600;
+  font-size: calc(8px * var(--S)); color: var(--wt-ink, #1a1a1a); font-weight: 600;
   letter-spacing: calc(2.5px * var(--S)); text-transform: uppercase;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -106,7 +97,7 @@
 .wt-l:active { opacity: 0.6; }
 
 .wt-time {
-  font-size: calc(40px * var(--S)); font-weight: 100; color: var(--wt-ink);
+  font-size: calc(40px * var(--S)); font-weight: 100; color: var(--wt-ink, #1a1a1a);
   letter-spacing: calc(1px * var(--S));
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -114,17 +105,17 @@
 .wt-colon { opacity: 1; }
 
 .wt-sec {
-  font-size: calc(14px * var(--S)); color: var(--wt-ink3); font-weight: 200;
+  font-size: calc(14px * var(--S)); color: var(--wt-ink3, #666); font-weight: 200;
   margin-left: calc(2px * var(--S));
 }
 
 .wt-tl {
   width: 100%; height: calc(1px * var(--S)); margin: calc(8px * var(--S)) 0;
-  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
+  background: linear-gradient(90deg, transparent, var(--wt-line, rgba(0,0,0,0.15)), transparent);
 }
 
 .wt-date {
-  font-size: calc(10px * var(--S)); color: var(--wt-ink2); font-weight: 300;
+  font-size: calc(10px * var(--S)); color: var(--wt-ink2, #444); font-weight: 300;
   letter-spacing: calc(2px * var(--S));
   display: flex;
   align-items: center;
@@ -133,7 +124,7 @@
 }
 
 .wt-wk {
-  color: var(--wt-ink2);
+  color: var(--wt-ink2, #444);
   font-size: calc(10px * var(--S)); font-weight: 300;
   letter-spacing: calc(2px * var(--S));
 }
@@ -141,13 +132,13 @@
 .wt-vd {
   width: calc(1px * var(--S));
   align-self: stretch;
-  background: linear-gradient(180deg, transparent 5%, var(--wt-gold2) 30%, var(--wt-gold2) 70%, transparent 95%);
+  background: linear-gradient(180deg, transparent 5%, var(--wt-gold2, rgba(0,0,0,0.3)) 30%, var(--wt-gold2, rgba(0,0,0,0.3)) 70%, transparent 95%);
   flex-shrink: 0; position: relative;
 }
 .wt-vd::before, .wt-vd::after {
   content: ""; position: absolute; left: 50%; transform: translateX(-50%);
   width: calc(7px * var(--S)); height: calc(1px * var(--S));
-  background: var(--wt-gold);
+  background: var(--wt-gold, rgba(0,0,0,0.4));
 }
 .wt-vd::before { top: 0; }
 .wt-vd::after { bottom: 0; }
@@ -164,34 +155,34 @@
 .wt-r:active { opacity: 0.6; }
 
 .wt-temp {
-  font-size: calc(36px * var(--S)); font-weight: 100; color: var(--wt-ink);
+  font-size: calc(36px * var(--S)); font-weight: 100; color: var(--wt-ink, #1a1a1a);
   letter-spacing: calc(1px * var(--S)); line-height: 1;
 }
 .wt-deg {
   font-size: calc(15px * var(--S)); font-weight: 200;
-  color: var(--wt-ink3); vertical-align: super;
+  color: var(--wt-ink3, #666); vertical-align: super;
 }
 .wt-desc {
-  font-size: calc(10.5px * var(--S)); color: var(--wt-ink2);
+  font-size: calc(10.5px * var(--S)); color: var(--wt-ink2, #444);
   margin-top: calc(4px * var(--S));
   letter-spacing: calc(4px * var(--S)); font-weight: 300;
 }
 
 .wt-wl {
   width: 100%; height: calc(1px * var(--S)); margin: calc(8px * var(--S)) 0;
-  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
+  background: linear-gradient(90deg, transparent, var(--wt-line, rgba(0,0,0,0.15)), transparent);
   position: relative;
 }
 .wt-wl::before {
   content: ""; position: absolute; top: calc(-1px * var(--S)); left: 50%; transform: translateX(-50%);
   width: calc(6px * var(--S)); height: calc(3px * var(--S));
-  border-left: calc(1px * var(--S)) solid var(--wt-gold);
-  border-right: calc(1px * var(--S)) solid var(--wt-gold);
+  border-left: calc(1px * var(--S)) solid var(--wt-gold, rgba(0,0,0,0.4));
+  border-right: calc(1px * var(--S)) solid var(--wt-gold, rgba(0,0,0,0.4));
 }
 
 .wt-sched-text {
   font-size: calc(11px * var(--S));
-  color: var(--wt-ink2);
+  color: var(--wt-ink2, #444);
   letter-spacing: calc(2px * var(--S));
   font-weight: 300;
   max-width: calc(130px * var(--S));
