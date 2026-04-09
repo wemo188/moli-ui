@@ -14,7 +14,7 @@
       hex: '#ffffff',
       alpha: 25,
       blur: 12,
-      textColor: '#000',
+      textColor: '#ffffff',
       text: ''
     },
 
@@ -169,32 +169,38 @@
       var textEl = App.$('#edenText');
       if (!textEl) return;
       
-      var fontUrl = base64 || url;
-      if (!fontUrl) {
-        textEl.style.fontFamily = '';
-        return;
-      }
-      
-      var fontName = 'EdenCustom_' + Math.abs(fontUrl.length * 31);
-      
-      if (document.fonts.check('12px "' + fontName + '"')) {
-        textEl.style.fontFamily = "'" + fontName + "', cursive";
-        return;
-      }
-      
-      var font = new FontFace(fontName, 'url(' + fontUrl + ')');
-      font.load().then(function(loaded) {
-        document.fonts.add(loaded);
-        textEl.style.fontFamily = "'" + fontName + "', cursive";
-      }).catch(function() {
-        if (base64 && base64.startsWith('data:')) {
-          var font2 = new FontFace(fontName, 'url(' + base64 + ')');
-          font2.load().then(function(loaded2) {
-            document.fonts.add(loaded2);
+      // 优先使用 base64
+      if (base64 && base64.startsWith('data:')) {
+        var fontName = 'EdenFont_' + base64.length;
+        // 检查是否已加载
+        if (!document.fonts.check('12px "' + fontName + '"')) {
+          var font = new FontFace(fontName, 'url(' + base64 + ')');
+          font.load().then(function(loaded) {
+            document.fonts.add(loaded);
             textEl.style.fontFamily = "'" + fontName + "', cursive";
           }).catch(function() {});
+        } else {
+          textEl.style.fontFamily = "'" + fontName + "', cursive";
         }
-      });
+        return;
+      }
+      
+      // 使用 URL
+      if (url && url.trim() !== '') {
+        var fontName2 = 'EdenUrl_' + url.length;
+        if (!document.fonts.check('12px "' + fontName2 + '"')) {
+          var font2 = new FontFace(fontName2, 'url(' + url + ')');
+          font2.load().then(function(loaded) {
+            document.fonts.add(loaded);
+            textEl.style.fontFamily = "'" + fontName2 + "', cursive";
+          }).catch(function() {});
+        } else {
+          textEl.style.fontFamily = "'" + fontName2 + "', cursive";
+        }
+        return;
+      }
+      
+      textEl.style.fontFamily = '';
     },
 
     apply: function() {
@@ -210,12 +216,23 @@
       el.style.maxWidth = '100%';
       el.style.overflowWrap = 'break-word';
       
-      // 恢复位置
+      // 恢复位置（只应用位置，不重置其他样式）
       var card = App.$('#edenCard');
-      if (card && (d.posX || d.posY)) {
-        card.style.position = 'relative';
-        card.style.left = d.posX + 'px';
-        card.style.top = d.posY + 'px';
+      if (card) {
+        if (d.posX || d.posY) {
+          card.style.position = 'fixed';
+          card.style.left = d.posX + 'px';
+          card.style.top = d.posY + 'px';
+          card.style.width = 'calc(100% - 40px)';
+          card.style.margin = '0';
+        } else {
+          // 默认位置
+          card.style.position = 'relative';
+          card.style.left = '';
+          card.style.top = '';
+          card.style.margin = '0 20px 20px 20px';
+          card.style.width = 'calc(100% - 40px)';
+        }
       }
       
       Eden.loadFont(d.fontUrl, d.fontBase64);
@@ -250,6 +267,7 @@
         Eden.isDragging = true;
         card.style.transition = 'none';
         card.style.zIndex = '999';
+        card.classList.add('dragging');
         if (navigator.vibrate) navigator.vibrate(15);
       }, 500);
     },
@@ -308,6 +326,7 @@
         Eden.save();
         card.style.transition = '';
         card.style.zIndex = '';
+        card.classList.remove('dragging');
         e.stopPropagation();
       }
       
@@ -396,21 +415,26 @@
         
         try {
           var base64 = await Eden.fileToBase64(file);
-          var fontName = 'EdenFont_' + Date.now();
-          var font = new FontFace(fontName, 'url(' + base64 + ')');
-          await font.load();
-          document.fonts.add(font);
           
+          // 测试字体是否可用
+          var testFontName = 'TestFont_' + Date.now();
+          var testFont = new FontFace(testFontName, 'url(' + base64 + ')');
+          await testFont.load();
+          document.fonts.add(testFont);
+          
+          // 保存到数据
           Eden.data.fontBase64 = base64;
           Eden.data.fontUrl = '';
           Eden.save();
           
+          // 应用到当前
           var textEl = App.$('#edenText');
-          if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
+          if (textEl) textEl.style.fontFamily = "'" + testFontName + "', cursive";
           
           App.$('#edenFontUrl').value = '已上传: ' + file.name;
-          App.showToast('字体已保存');
+          App.showToast('字体已保存，刷新不会丢失');
         } catch(err) {
+          console.error(err);
           App.showToast('字体加载失败');
         }
       });
@@ -441,16 +465,30 @@
       App.$('#edenColor').addEventListener('input', preview);
       App.$('#edenTextInput').addEventListener('input', preview);
 
-      // 保存按钮
+      // 保存按钮 - 只保存文字样式，不重置位置
       App.$('#edenSave').addEventListener('click', function() {
         Eden.data.text = App.$('#edenTextInput').value;
         Eden.data.fontSize = parseInt(App.$('#edenSize').value);
         Eden.data.rotate = parseInt(App.$('#edenRotate').value);
         Eden.data.spacing = parseInt(App.$('#edenSpacing').value);
         Eden.data.fontColor = App.$('#edenColor').value;
+        // 注意：不修改 posX, posY, fontBase64, fontUrl
         
         Eden.save();
-        Eden.apply();
+        
+        // 只更新文字样式，不重新应用整个 apply（避免重置位置）
+        var el = App.$('#edenText');
+        if (el) {
+          el.textContent = Eden.data.text;
+          el.style.fontSize = Eden.data.fontSize + 'px';
+          el.style.transform = 'rotate(' + Eden.data.rotate + 'deg)';
+          el.style.letterSpacing = Eden.data.spacing + 'px';
+          el.style.color = Eden.data.fontColor;
+        }
+        
+        // 重新加载字体
+        Eden.loadFont(Eden.data.fontUrl, Eden.data.fontBase64);
+        
         wrap.remove();
         App.showToast('已保存');
       });
