@@ -58,25 +58,25 @@ var Cards={
         '</div></div>'+
       '</div>'+
 
-      // 右侧区域（占位图标 + 右卡片）
-      '<div class="card-right-area">'+
-        '<div class="card-placeholder-icons">'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-        '</div>'+
-        '<div class="bx-w" id="bx-1" data-side="right">'+
-          '<div class="bx-cw"><div class="bx-cd">'+
-            '<div class="bx-side-ribbon">'+
-              '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
-              '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
-            '</div>'+
-            '<div class="bx-av-box">'+rFront+'</div>'+
-            '<div class="bx-name-bar">'+
-              '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
-              '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
-            '</div>'+
-          '</div></div>'+
-        '</div>'+
+      // 占位符（独立出来，和右卡片分开）
+      '<div class="card-placeholder-icons">'+
+        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+        '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
+      '</div>'+
+
+      // 右卡片（独立出来）
+      '<div class="bx-w" id="bx-1" data-side="right">'+
+        '<div class="bx-cw"><div class="bx-cd">'+
+          '<div class="bx-side-ribbon">'+
+            '<div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div>'+
+            '<div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div>'+
+          '</div>'+
+          '<div class="bx-av-box">'+rFront+'</div>'+
+          '<div class="bx-name-bar">'+
+            '<div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div>'+
+            '<div class="bx-sub">'+App.esc(rSub)+'</div>'+
+          '</div>'+
+        '</div></div>'+
       '</div>';
 
     Cards.bindEdit();
