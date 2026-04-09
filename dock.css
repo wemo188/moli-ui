@@ -21,14 +21,12 @@
 
 .dock-item {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: center;  /* 垂直居中，不需要文字所以不用 column */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.dock-item:active .dock-icon {
+.dock-item:active .mk-card {
   transform: scale(0.90);
 }
 
