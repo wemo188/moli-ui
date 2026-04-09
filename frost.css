@@ -1,40 +1,39 @@
 /* =========================
-   第一页 - 强制覆盖布局
+   第一页 - 固定高度，无滚动条
 ========================= */
 .screen-page-1 {
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
+  overflow: hidden !important;  /* 禁止滚动条 */
+  height: 100vh !important;
 }
 
 .screen-page-1 .screen-page-inner {
-  display: block !important;  /* 改成 block，不用 flex */
-  min-height: 100vh !important;
-  padding: 20px 0 100px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;  /* 内容分散对齐 */
+  height: 100vh !important;
+  padding: 20px 0 80px 0 !important;
   box-sizing: border-box !important;
+  overflow: hidden !important;  /* 禁止滚动条 */
 }
 
-/* 时间栏固定宽度，不被拉伸 */
+/* 时间栏 - 宽度占满但保持内容居中 */
 .wt-card {
   width: 100% !important;
-  max-width: 420px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
   flex-shrink: 0 !important;
 }
 
-/* 角色卡片区域 */
+/* 角色卡片区域 - 宽度占满 */
 .card-row {
-  margin: 20px auto !important;
+  width: 100% !important;
   flex-shrink: 0 !important;
+  margin: 0 !important;
 }
 
-/* =========================
-   文字卡片（第一页）
-========================= */
+/* 文字卡片 - 宽度占满屏幕 */
 .eden-card {
-  width: calc(100% - 40px) !important;  /* 左右各留20px边距 */
-  margin: 20px auto !important;  /* 上下留白，水平居中 */
-  padding: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 20px !important;
   box-sizing: border-box !important;
   min-height: 120px !important;
   display: flex !important;
@@ -48,9 +47,8 @@
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  border-radius: 20px !important;
+  border-radius: 0 !important;
   flex-shrink: 0 !important;
-  clear: both !important;
 }
 
 .eden-card .eden-text {
@@ -73,7 +71,7 @@
 }
 
 /* =========================
-   磨砂卡片（第二页）
+   磨砂卡片（第二页）- 保持不变
 ========================= */
 .frost-card {
   margin: 0 20px 16px;
@@ -108,6 +106,7 @@
   word-break: break-word;
 }
 
+/* 以下编辑浮窗样式保持不变... */
 .frost-mode-switch {
   display: flex;
   gap: 6px;
@@ -157,20 +156,7 @@
   font-weight: 500;
 }
 
-/* 背景图片预览 */
-.frost-bg-preview {
-  width: 100%;
-  height: 60px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  margin-top: 8px;
-  border: 1px solid rgba(0,0,0,0.1);
-}
-
-/* =========================
-   编辑浮窗
-========================= */
+/* 编辑浮窗 */
 .eden-ctrl-wrap {
   position: fixed;
   z-index: 998;
