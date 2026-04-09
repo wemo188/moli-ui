@@ -2,7 +2,8 @@
    文字卡片（第一页）- 贴底部栏上方
 ========================= */
 .eden-card {
-  width: 100%;
+  width: 360px;              /* 改成固定宽度 */
+  max-width: 90%;            /* 小屏幕时自适应 */
   padding: 20px 16px 30px;
   display: flex;
   align-items: center;
@@ -16,10 +17,10 @@
   position: relative;
   z-index: 10;
   box-sizing: border-box;
-  background: transparent;  /* 完全透明背景 */
-  box-shadow: none;         /* 无阴影 */
-  backdrop-filter: none;    /* 无模糊 */
-  border: none;             /* 无边框 */
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  border: none;
 }
 
 .eden-card .eden-text {
