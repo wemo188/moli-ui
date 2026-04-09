@@ -135,11 +135,11 @@ var Eden = {
     fontSize: 32,
     rotate: 0,
     spacing: 2,
-    fontColor: '#ffffff',
+    fontColor: '#000',
     fontUrl: '',
     fontBase64: '',  // 新增：保存上传字体的 base64
-    borderWidth: 1,
-    borderColor: '#ff0000',
+    borderWidth: 0,
+    borderColor: '#fff',
     bgOpacity: 0
   },
 
