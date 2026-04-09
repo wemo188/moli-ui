@@ -26,7 +26,7 @@
   justify-content: center;
   margin-bottom: 10px;
   position: relative;  /* 👈 新增 */
-  top: 40px;  /* 👈 新增，控制下移距离，可调整 */
+  top: 20px;  /* 👈 新增，控制下移距离，可调整 */
 }
 
 .card-right-area #bx-1 {
