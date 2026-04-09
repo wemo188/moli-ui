@@ -2,33 +2,31 @@
    并排容器
 ========================= */
 .card-row {
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  flex-wrap: nowrap;
-  gap: 14px;
-  padding: 10px 8px 0;
+  gap: 10px;
+  padding: 10px 0 0;
   width: 100%;
-  overflow: visible;
 }
 
-.card-row > .bx-w {
-  margin: 0 !important;
-  flex: 0 0 auto;
+.card-right-area {
+  width: 180px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.card-row > #bx-1 {
-  margin-top: 110px;
-}
-
-/* ====== 占位图标 ====== */
-.card-placeholder-icons {
-  position: absolute;
+.card-right-area .card-placeholder-icons {
   display: flex;
   gap: 16px;
-  z-index: 5;
-  pointer-events: none;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.card-right-area #bx-1 {
+  width: 100%;
 }
 
 .card-ph-item {
@@ -93,6 +91,7 @@
   --border-c: rgba(187,211,239,.8);
   --LINE_C: rgba(187,211,239,.5);
   width: calc(var(--W0) * var(--S));
+  flex-shrink: 0;
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
@@ -102,7 +101,7 @@
   position: relative; padding: calc(3px * var(--S)); border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--THEME) 50%, #ced4da 100%);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.15), 0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
-  overflow: visible; transform-style: preserve-3d;
+  overflow: visible;
 }
 
 #bx-2 .bx-cd {
@@ -144,7 +143,6 @@
   background-size: cover; background-position: center;
   background-color: #e8edf2;
 }
-#bx-2 .bx-av-front:hover { filter: brightness(1.06); }
 
 #bx-2 .bx-name-bar {
   width: 100%; text-align: center; margin-top: calc(8px * var(--S));
@@ -180,7 +178,7 @@
   position: relative; padding: calc(3px * var(--S)); border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--BLUE) 50%, #ced4da 100%);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.18), 0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
-  overflow: visible; transform-style: preserve-3d;
+  overflow: visible;
 }
 
 #bx-1 .bx-cd {
@@ -231,7 +229,6 @@
   background-size: cover; background-position: center;
   background-color: #e8edf2;
 }
-#bx-1 .bx-av-front:hover { filter: brightness(1.06); }
 
 #bx-1 .bx-name-bar {
   width: 100%; text-align: center; margin-top: calc(8px * var(--S));
@@ -256,7 +253,7 @@
   gap: 6px;
   color: #b0bec5;
   background: #e8edf2;
-  border-radius: calc(8px * var(--S, 1));
+  border-radius: 8px;
 }
 .bx-av-placeholder svg {
   width: 36px; height: 36px;
@@ -293,14 +290,14 @@
   width: 100%; padding: 10px 12px; font-size: 14px;
   color: #1a1a1a; background: #f5f5f5;
   border: 1px solid rgba(0,0,0,0.06); border-radius: 10px;
-  outline: none; font-family: inherit;
+  outline: none; font-family: inherit; box-sizing: border-box;
 }
 .pc-edit-input:focus { border-color: rgba(0,0,0,0.15); }
 .pc-edit-textarea {
   width: 100%; padding: 10px 12px; font-size: 14px;
   color: #1a1a1a; background: #f5f5f5;
   border: 1px solid rgba(0,0,0,0.06); border-radius: 10px;
-  outline: none; font-family: inherit; resize: vertical; min-height: 80px;
+  outline: none; font-family: inherit; resize: vertical; min-height: 80px; box-sizing: border-box;
 }
 .pc-edit-textarea:focus { border-color: rgba(0,0,0,0.15); }
 
