@@ -123,14 +123,13 @@
   // ============================
   var Eden = {
     data: {},
-    customFont: null,
     dragStartX: 0,
     dragStartY: 0,
     initialLeft: 0,
     initialTop: 0,
     isDragging: false,
     longPressTimer: null,
-    hasMoved: false,
+    startTime: 0,
 
     DEFAULTS: {
       text: '你是我的伊甸塔',
@@ -238,13 +237,16 @@
       var touch = e.touches[0];
       Eden.dragStartX = touch.clientX;
       Eden.dragStartY = touch.clientY;
-      Eden.hasMoved = false;
       
+      // 获取当前实际位置（考虑 transform 和定位）
       var rect = card.getBoundingClientRect();
       Eden.initialLeft = rect.left;
       Eden.initialTop = rect.top;
       
-      // 长按500ms后启动拖拽
+      // 记录起始时间
+      Eden.startTime = Date.now();
+      
+      // 设置长按定时器（500ms）
       Eden.longPressTimer = setTimeout(function() {
         Eden.isDragging = true;
         card.classList.add('dragging');
@@ -253,19 +255,20 @@
     },
 
     onTouchMove: function(e) {
-      if (!Eden.longPressTimer) return;
-      
       var touch = e.touches[0];
       var deltaX = Math.abs(touch.clientX - Eden.dragStartX);
       var deltaY = Math.abs(touch.clientY - Eden.dragStartY);
       
-      // 如果移动超过10px，取消长按（认为是滚动而不是拖拽）
+      // 如果移动超过10px，取消长按（认为是滚动）
       if (deltaX > 10 || deltaY > 10) {
-        clearTimeout(Eden.longPressTimer);
-        Eden.longPressTimer = null;
+        if (Eden.longPressTimer) {
+          clearTimeout(Eden.longPressTimer);
+          Eden.longPressTimer = null;
+        }
         return;
       }
       
+      // 如果不是拖拽模式，不处理移动
       if (!Eden.isDragging) return;
       
       e.preventDefault();
@@ -274,51 +277,50 @@
       var card = App.$('#edenCard');
       if (!card) return;
       
+      // 计算新位置
       var newLeft = Eden.initialLeft + (touch.clientX - Eden.dragStartX);
       var newTop = Eden.initialTop + (touch.clientY - Eden.dragStartY);
       
-      card.style.position = 'fixed';
-      card.style.left = newLeft + 'px';
-      card.style.top = newTop + 'px';
-      card.style.width = 'calc(100% - 40px)';
-      card.style.margin = '0';
-      card.style.right = 'auto';
-      
-      Eden.hasMoved = true;
+      // 使用 transform 移动，不改变定位方式
+      card.style.transform = 'translate(' + newLeft + 'px, ' + newTop + 'px)';
     },
 
     onTouchEnd: function(e) {
-      clearTimeout(Eden.longPressTimer);
-      Eden.longPressTimer = null;
-      
-      var card = App.$('#edenCard');
-      if (card) {
-        card.classList.remove('dragging');
+      // 清除长按定时器
+      if (Eden.longPressTimer) {
+        clearTimeout(Eden.longPressTimer);
+        Eden.longPressTimer = null;
       }
       
-      if (Eden.isDragging && Eden.hasMoved) {
+      var card = App.$('#edenCard');
+      
+      // 如果是拖拽状态，保存位置
+      if (Eden.isDragging && card) {
+        card.classList.remove('dragging');
+        
+        // 获取当前位置
         var rect = card.getBoundingClientRect();
         Eden.data.position = { left: rect.left, top: rect.top };
         Eden.save();
         e.stopPropagation();
       }
       
+      // 重置状态
       Eden.isDragging = false;
-      Eden.hasMoved = false;
     },
 
     restorePosition: function() {
       var card = App.$('#edenCard');
       if (!card || !Eden.data.position) return;
       
-      card.style.position = 'fixed';
-      card.style.left = Eden.data.position.left + 'px';
-      card.style.top = Eden.data.position.top + 'px';
-      card.style.width = 'calc(100% - 40px)';
-      card.style.margin = '0';
+      // 恢复位置时使用 transform
+      card.style.transform = 'translate(' + Eden.data.position.left + 'px, ' + Eden.data.position.top + 'px)';
     },
 
     openEdit: function() {
+      // 如果是拖拽中，不打开编辑
+      if (Eden.isDragging) return;
+      
       var old = App.$('#edenCtrlWrap');
       if (old) { old.remove(); return; }
 
@@ -453,6 +455,7 @@
         Eden.data.rotate = parseInt(App.$('#edenRotate').value);
         Eden.data.spacing = parseInt(App.$('#edenSpacing').value);
         Eden.data.fontColor = App.$('#edenColor').value;
+        // 注意：fontUrl 和 fontBase64 保持不变
         
         Eden.save();
         Eden.apply();
