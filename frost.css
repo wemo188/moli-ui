@@ -4,32 +4,27 @@
 .eden-card {
   width: 380px;              /* 改成固定宽度 */
   max-width: 90%;            /* 小屏幕时自适应 */
-  padding: 20px 16px 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
-  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
   flex-shrink: 0;
   position: relative;
   z-index: 10;
-  box-sizing: border-box;
   background: transparent;
   box-shadow: none;
-  backdrop-filter: none;
   border: none;
 }
 
 .eden-card .eden-text {
-  max-width: 90%;
+  display: inline-block;
+  width: auto;
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
-  text-shadow: none;        /* 无文字阴影 */
-  background: transparent;
 }
 
 /* 拖拽时的样式 */
