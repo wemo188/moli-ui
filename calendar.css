@@ -7,7 +7,7 @@
   --S: 1;
   --W0: 420px;
   width: 100%;
-  max-width: calc(var(--W0) * var(--S));
+  max-width: 100%;
   margin: 30px auto 10px;
   user-select: none;
   position: relative;
