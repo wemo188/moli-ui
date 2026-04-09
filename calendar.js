@@ -5,7 +5,7 @@ var App=window.App;if(!App)return;
 var WK=['周日','周一','周二','周三','周四','周五','周六'];
 function pad(n){return n<10?'0'+n:''+n;}
 
-var CARD_DEFAULTS={scale:100,alpha:0,blur:7,radius:16,colorHex:'#ffffff',borderAlpha:15,fontColor:'#e8e8e8',lineColor:'#ffffff'};
+var CARD_DEFAULTS={scale:100,alpha:0,blur:7,radius:10,colorHex:'#ffffff',borderAlpha:15,fontColor:'#1a1a1a',lineColor:'#1a1a1a'};
 
 var Cal={
   weather:null,city:'',schedules:{},cardConfig:{},WEEKDAYS:WK,
