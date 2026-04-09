@@ -119,7 +119,7 @@
   };
 
   // ============================
-  //  文字卡片（第一页）
+  //  文字卡片（第一页）- 修复版
   // ============================
   var Eden = {
     data: {},
@@ -129,13 +129,15 @@
     initialLeft: 0,
     initialTop: 0,
     isDragging: false,
+    longPressTimer: null,
+    hasMoved: false,
 
     DEFAULTS: {
       text: '你是我的伊甸塔',
       fontSize: 32,
       rotate: 0,
       spacing: 2,
-      fontColor: '#000',
+      fontColor: '#ffffff',
       fontUrl: '',
       fontBase64: ''
     },
@@ -199,6 +201,9 @@
       el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
       el.style.letterSpacing = (d.spacing || 0) + 'px';
       el.style.color = d.fontColor || '#ffffff';
+      el.style.wordBreak = 'break-word';
+      el.style.maxWidth = '100%';
+      el.style.overflowWrap = 'break-word';
       Eden.loadFont(d.fontUrl, d.fontBase64);
     },
 
@@ -215,16 +220,16 @@
       var card = App.$('#edenCard');
       if (!card) return;
       
-      card.removeEventListener('touchstart', Eden.onDragStart);
-      card.removeEventListener('touchmove', Eden.onDragMove);
-      card.removeEventListener('touchend', Eden.onDragEnd);
+      card.removeEventListener('touchstart', Eden.onTouchStart);
+      card.removeEventListener('touchmove', Eden.onTouchMove);
+      card.removeEventListener('touchend', Eden.onTouchEnd);
       
-      card.addEventListener('touchstart', Eden.onDragStart, { passive: false });
-      card.addEventListener('touchmove', Eden.onDragMove, { passive: false });
-      card.addEventListener('touchend', Eden.onDragEnd);
+      card.addEventListener('touchstart', Eden.onTouchStart, { passive: false });
+      card.addEventListener('touchmove', Eden.onTouchMove, { passive: false });
+      card.addEventListener('touchend', Eden.onTouchEnd);
     },
 
-    onDragStart: function(e) {
+    onTouchStart: function(e) {
       var card = App.$('#edenCard');
       if (!card) return;
       
@@ -233,31 +238,44 @@
       var touch = e.touches[0];
       Eden.dragStartX = touch.clientX;
       Eden.dragStartY = touch.clientY;
+      Eden.hasMoved = false;
       
       var rect = card.getBoundingClientRect();
       Eden.initialLeft = rect.left;
       Eden.initialTop = rect.top;
       
-      Eden.isDragging = true;
-      card.classList.add('dragging');
-      
-      if (navigator.vibrate) navigator.vibrate(10);
+      // 长按500ms后启动拖拽
+      Eden.longPressTimer = setTimeout(function() {
+        Eden.isDragging = true;
+        card.classList.add('dragging');
+        if (navigator.vibrate) navigator.vibrate(15);
+      }, 500);
     },
 
-    onDragMove: function(e) {
+    onTouchMove: function(e) {
+      if (!Eden.longPressTimer) return;
+      
+      var touch = e.touches[0];
+      var deltaX = Math.abs(touch.clientX - Eden.dragStartX);
+      var deltaY = Math.abs(touch.clientY - Eden.dragStartY);
+      
+      // 如果移动超过10px，取消长按（认为是滚动而不是拖拽）
+      if (deltaX > 10 || deltaY > 10) {
+        clearTimeout(Eden.longPressTimer);
+        Eden.longPressTimer = null;
+        return;
+      }
+      
       if (!Eden.isDragging) return;
+      
       e.preventDefault();
       e.stopPropagation();
       
       var card = App.$('#edenCard');
       if (!card) return;
       
-      var touch = e.touches[0];
-      var deltaX = touch.clientX - Eden.dragStartX;
-      var deltaY = touch.clientY - Eden.dragStartY;
-      
-      var newLeft = Eden.initialLeft + deltaX;
-      var newTop = Eden.initialTop + deltaY;
+      var newLeft = Eden.initialLeft + (touch.clientX - Eden.dragStartX);
+      var newTop = Eden.initialTop + (touch.clientY - Eden.dragStartY);
       
       card.style.position = 'fixed';
       card.style.left = newLeft + 'px';
@@ -265,21 +283,28 @@
       card.style.width = 'calc(100% - 40px)';
       card.style.margin = '0';
       card.style.right = 'auto';
+      
+      Eden.hasMoved = true;
     },
 
-    onDragEnd: function(e) {
-      if (!Eden.isDragging) return;
-      e.stopPropagation();
+    onTouchEnd: function(e) {
+      clearTimeout(Eden.longPressTimer);
+      Eden.longPressTimer = null;
       
       var card = App.$('#edenCard');
       if (card) {
         card.classList.remove('dragging');
+      }
+      
+      if (Eden.isDragging && Eden.hasMoved) {
         var rect = card.getBoundingClientRect();
         Eden.data.position = { left: rect.left, top: rect.top };
         Eden.save();
+        e.stopPropagation();
       }
       
       Eden.isDragging = false;
+      Eden.hasMoved = false;
     },
 
     restorePosition: function() {
@@ -355,9 +380,10 @@
 
       document.body.appendChild(wrap);
 
-      wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
-      wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
+      wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); });
+      wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); });
 
+      // 字体上传
       App.$('#edenFontFile').addEventListener('change', async function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -371,15 +397,17 @@
           await font.load();
           document.fonts.add(font);
           
+          // 保存到数据
           Eden.data.fontBase64 = base64;
           Eden.data.fontUrl = '';
           Eden.save();
           
+          // 应用到当前
           var textEl = App.$('#edenText');
           if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
           
           App.$('#edenFontUrl').value = '已上传: ' + file.name;
-          App.showToast('字体已保存，刷新不会丢失');
+          App.showToast('字体已保存');
         } catch(err) {
           App.showToast('字体加载失败');
         }
@@ -391,9 +419,7 @@
           fontSize: parseInt(App.$('#edenSize').value),
           rotate: parseInt(App.$('#edenRotate').value),
           spacing: parseInt(App.$('#edenSpacing').value),
-          fontColor: App.$('#edenColor').value,
-          fontUrl: Eden.data.fontUrl,
-          fontBase64: Eden.data.fontBase64
+          fontColor: App.$('#edenColor').value
         };
       }
 
@@ -420,6 +446,7 @@
         if (el) el.addEventListener('input', preview);
       });
 
+      // 保存按钮
       App.$('#edenSave').addEventListener('click', function() {
         Eden.data.text = App.$('#edenTextInput').value;
         Eden.data.fontSize = parseInt(App.$('#edenSize').value);
@@ -433,6 +460,7 @@
         App.showToast('已保存');
       });
 
+      // 重置按钮
       App.$('#edenReset').addEventListener('click', function() {
         Eden.data = JSON.parse(JSON.stringify(Eden.DEFAULTS));
         Eden.save();
@@ -441,6 +469,7 @@
         App.showToast('已重置');
       });
 
+      // 点击外部关闭
       setTimeout(function() {
         function dismiss(e) {
           if (wrap.contains(e.target)) return;
