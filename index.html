@@ -32,51 +32,43 @@
 
 <!-- 第一页 -->
 <section class="screen-page screen-page-1">
-  <div class="screen-page-inner" style="display: flex; flex-direction: column; min-height: 100%;">
-    
-    <!-- 1. 时间栏 - 独立 -->
-    <div class="wt-card" id="wtCard">
-      <div class="wt-cw">
-        <div class="vf-c tl"></div>
-        <div class="vf-c tr"></div>
-        <div class="vf-c bl"></div>
-        <div class="vf-c br"></div>
-        <div class="vf-grid"></div>
-        <div class="vf-hl top"></div>
-        <div class="vf-hl bot"></div>
-        <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
-        <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
+  <div class="screen-page-inner" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
+    <div>
+      <div class="wt-card" id="wtCard">
+        <div class="wt-cw">
+          <div class="vf-c tl"></div>
+          <div class="vf-c tr"></div>
+          <div class="vf-c bl"></div>
+          <div class="vf-c br"></div>
+          <div class="vf-grid"></div>
+          <div class="vf-hl top"></div>
+          <div class="vf-hl bot"></div>
+          <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
+          <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
 
-        <div class="wt-cd">
-          <div class="wt-l" id="wtDateArea">
-            <div class="wt-time">
-              <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+          <div class="wt-cd">
+            <div class="wt-l" id="wtDateArea">
+              <div class="wt-time">
+                <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+              </div>
+              <div class="wt-tl"></div>
+              <div class="wt-date">
+                <span id="wt-fd">----年--月--日</span>
+                <span class="wt-wk" id="wt-wk">---</span>
+              </div>
             </div>
-            <div class="wt-tl"></div>
-            <div class="wt-date">
-              <span id="wt-fd">----年--月--日</span>
-              <span class="wt-wk" id="wt-wk">---</span>
+            <div class="wt-vd"></div>
+            <div class="wt-r" id="wtScheduleArea">
+              <div class="wt-sched-text" id="wt-schedule-val">暂无日程</div>
             </div>
-          </div>
-          <div class="wt-vd"></div>
-          <div class="wt-r" id="wtScheduleArea">
-            <div class="wt-sched-text" id="wt-schedule-val">暂无日程</div>
           </div>
         </div>
       </div>
+      <div class="card-row" id="cardRow"></div>
     </div>
-
-    <!-- 2. 角色卡片 - 独立 -->
-    <div class="card-row" id="cardRow"></div>
-
-    <!-- 3. 占位空间（自动撑开，把文字卡片推到底部） -->
-    <div style="flex: 1; min-height: 0;"></div>
-
-    <!-- 4. 文字卡片 - 独立 -->
     <div class="eden-card" id="edenCard">
       <div class="eden-text" id="edenText">你是我的伊甸塔</div>
     </div>
-
   </div>
 </section>
 
