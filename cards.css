@@ -1,15 +1,15 @@
 /* =========================
    并排容器
 ========================= */
-.wt-card {
-  --S: 1;
-  width: calc(420px * var(--S));
-  max-width: 100%;
-  margin: 30px auto 10px;
-  user-select: none;
-  position: relative;
-  z-index: 10;
-  flex-shrink: 0;  /* 添加 */
+.card-row｛
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gар: 30px;
+  padding: 10px 0 0;
+  width: 100%;
+  margin-top: 20px;
+  flex-shrink: 0;
 }
 
 .card-right-area {
