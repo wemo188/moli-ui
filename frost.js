@@ -119,7 +119,7 @@
   };
 
   // ============================
-  //  文字卡片（第一页）
+  //  文字卡片（第一页）- 最终版
   // ============================
   var Eden = {
     data: {},
@@ -168,32 +168,32 @@
       var el = App.$('#edenText');
       if (!el) return;
       
-      // 优先使用 base64（上传的字体）
+      // 优先使用 base64
       if (Eden.data.fontBase64 && Eden.data.fontBase64.startsWith('data:')) {
-        var fontName = 'UploadFont_' + Eden.data.fontBase64.length;
+        var fontName = 'Font_' + Eden.data.fontBase64.substring(0, 50);
         if (!document.fonts.check('12px "' + fontName + '"')) {
           var font = new FontFace(fontName, 'url(' + Eden.data.fontBase64 + ')');
           font.load().then(function(loaded) {
             document.fonts.add(loaded);
-            el.style.fontFamily = "'" + fontName + "', cursive";
-          }).catch(function() {});
+            el.style.fontFamily = '"' + fontName + '", cursive';
+          }).catch(function(e) { console.log('字体加载失败', e); });
         } else {
-          el.style.fontFamily = "'" + fontName + "', cursive";
+          el.style.fontFamily = '"' + fontName + '", cursive';
         }
         return;
       }
       
       // 其次使用 URL
       if (Eden.data.fontUrl && Eden.data.fontUrl.trim() !== '') {
-        var urlName = 'UrlFont_' + Eden.data.fontUrl.length;
+        var urlName = 'UrlFont_' + Eden.data.fontUrl.replace(/[^a-zA-Z0-9]/g, '');
         if (!document.fonts.check('12px "' + urlName + '"')) {
           var urlFont = new FontFace(urlName, 'url(' + Eden.data.fontUrl + ')');
           urlFont.load().then(function(loaded) {
             document.fonts.add(loaded);
-            el.style.fontFamily = "'" + urlName + "', cursive";
-          }).catch(function() {});
+            el.style.fontFamily = '"' + urlName + '", cursive';
+          }).catch(function(e) { console.log('URL字体加载失败', e); });
         } else {
-          el.style.fontFamily = "'" + urlName + "', cursive";
+          el.style.fontFamily = '"' + urlName + '", cursive';
         }
         return;
       }
@@ -210,26 +210,30 @@
       el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
       el.style.letterSpacing = (d.spacing || 0) + 'px';
       el.style.color = d.fontColor || '#ffffff';
-      el.style.wordBreak = 'break-word';
+      
+      // 固定宽度样式
+      var card = App.$('#edenCard');
+      if (card) {
+        card.style.width = 'calc(100% - 40px)';
+        card.style.maxWidth = 'calc(100% - 40px)';
+        card.style.margin = '0 20px 20px 20px';
+      }
+      el.style.width = '100%';
       el.style.maxWidth = '100%';
-      el.style.overflowWrap = 'break-word';
+      el.style.boxSizing = 'border-box';
       
       Eden.applyFont();
       
       // 恢复位置
-      var card = App.$('#edenCard');
-      if (card) {
-        if (d.posX || d.posY) {
-          card.style.position = 'fixed';
-          card.style.left = d.posX + 'px';
-          card.style.top = d.posY + 'px';
-          card.style.width = 'calc(100% - 40px)';
-          card.style.margin = '0';
-        } else {
-          card.style.position = '';
-          card.style.left = '';
-          card.style.top = '';
-        }
+      if (card && (d.posX || d.posY)) {
+        card.style.position = 'fixed';
+        card.style.left = d.posX + 'px';
+        card.style.top = d.posY + 'px';
+        card.style.margin = '0';
+      } else if (card) {
+        card.style.position = '';
+        card.style.left = '';
+        card.style.top = '';
       }
     },
 
@@ -333,24 +337,22 @@
 
           '<div class="eden-ctrl-row">' +
             '<label>字体URL</label>' +
-            '<input type="text" id="edenFontUrl" placeholder="https://example.com/font.ttf" value="' + App.esc(d.fontUrl || '') + '" style="flex:1;">' +
+            '<input type="url" id="edenFontUrl" placeholder="https://example.com/font.ttf" value="' + App.esc(d.fontUrl || '') + '">' +
           '</div>' +
 
           '<div class="eden-ctrl-row">' +
             '<label>上传字体</label>' +
-            '<input type="file" id="edenFontFile" accept=".ttf,.otf,.woff,.woff2" style="flex:1;">' +
+            '<input type="file" id="edenFontFile" accept=".ttf,.otf,.woff,.woff2">' +
           '</div>' +
 
           '<div class="eden-ctrl-divider"></div>' +
-          '<div class="eden-ctrl-section">内容</div>' +
 
           '<div class="eden-ctrl-row">' +
-            '<label>文字</label>' +
-            '<textarea id="edenTextInput" rows="3" placeholder="输入文字..." style="flex:1; padding:8px; font-size:13px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#f5f5f5; font-family:inherit; resize:vertical;">' + App.esc(d.text || '') + '</textarea>' +
+            '<label>文字内容</label>' +
+            '<textarea id="edenTextInput" rows="3" placeholder="输入文字...">' + App.esc(d.text || '') + '</textarea>' +
           '</div>' +
 
           '<div class="eden-ctrl-divider"></div>' +
-          '<div class="eden-ctrl-section">样式</div>' +
 
           '<div class="eden-ctrl-row">' +
             '<label>字号</label>' +
@@ -371,13 +373,13 @@
           '</div>' +
 
           '<div class="eden-ctrl-row">' +
-            '<label>字色</label>' +
+            '<label>文字颜色</label>' +
             '<input type="color" id="edenColor" value="' + (d.fontColor || '#ffffff') + '">' +
           '</div>' +
 
           '<div class="eden-ctrl-btns">' +
-            '<button class="eden-ctrl-save" id="edenSave" type="button">保存</button>' +
-            '<button class="eden-ctrl-reset" id="edenReset" type="button">重置</button>' +
+            '<button class="eden-ctrl-save" id="edenSave">保存</button>' +
+            '<button class="eden-ctrl-reset" id="edenReset">重置</button>' +
           '</div>' +
         '</div>';
 
@@ -386,13 +388,11 @@
       // URL 字体
       App.$('#edenFontUrl').addEventListener('change', function() {
         var url = this.value.trim();
-        if (url) {
-          Eden.data.fontUrl = url;
-          Eden.data.fontBase64 = '';
-          Eden.save();
-          Eden.applyFont();
-          App.showToast('字体URL已保存');
-        }
+        Eden.data.fontUrl = url;
+        Eden.data.fontBase64 = '';
+        Eden.save();
+        Eden.applyFont();
+        App.showToast(url ? '字体URL已保存' : '已清除字体');
       });
 
       // 上传字体
@@ -400,11 +400,10 @@
         var file = e.target.files[0];
         if (!file) return;
         
-        App.showToast('字体加载中...');
+        App.showToast('加载中...');
         
         try {
           var base64 = await Eden.fileToBase64(file);
-          
           var testName = 'Test_' + Date.now();
           var testFont = new FontFace(testName, 'url(' + base64 + ')');
           await testFont.load();
@@ -414,8 +413,6 @@
           Eden.data.fontUrl = '';
           Eden.save();
           Eden.applyFont();
-          
-          App.$('#edenFontUrl').value = '';
           App.showToast('字体已保存');
         } catch(err) {
           App.showToast('字体无效');
@@ -473,15 +470,12 @@
         App.showToast('已重置');
       });
 
-      // 点击外部关闭
-      var closeHandler = function(e) {
-        if (wrap.contains(e.target)) return;
-        wrap.remove();
-        document.removeEventListener('touchstart', closeHandler);
-      };
-      setTimeout(function() {
-        document.addEventListener('touchstart', closeHandler);
-      }, 100);
+      // 点击背景关闭
+      wrap.addEventListener('click', function(e) {
+        if (e.target === wrap) {
+          wrap.remove();
+        }
+      });
     },
 
     init: function() {
