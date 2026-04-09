@@ -119,17 +119,10 @@
   };
 
   // ============================
-  //  文字卡片（第一页）- 修复版
+  //  文字卡片（第一页）- 简化版
   // ============================
   var Eden = {
     data: {},
-    dragStartX: 0,
-    dragStartY: 0,
-    initialLeft: 0,
-    initialTop: 0,
-    isDragging: false,
-    longPressTimer: null,
-    startTime: 0,
 
     DEFAULTS: {
       text: '你是我的伊甸塔',
@@ -157,7 +150,9 @@
       }
     },
 
-    save: function() { App.LS.set('edenCard', Eden.data); },
+    save: function() { 
+      App.LS.set('edenCard', Eden.data); 
+    },
 
     loadFont: function(url, base64) {
       var textEl = App.$('#edenText');
@@ -215,114 +210,12 @@
       });
     },
 
-    initDrag: function() {
-      var card = App.$('#edenCard');
-      if (!card) return;
-      
-      card.removeEventListener('touchstart', Eden.onTouchStart);
-      card.removeEventListener('touchmove', Eden.onTouchMove);
-      card.removeEventListener('touchend', Eden.onTouchEnd);
-      
-      card.addEventListener('touchstart', Eden.onTouchStart, { passive: false });
-      card.addEventListener('touchmove', Eden.onTouchMove, { passive: false });
-      card.addEventListener('touchend', Eden.onTouchEnd);
-    },
-
-    onTouchStart: function(e) {
-      var card = App.$('#edenCard');
-      if (!card) return;
-      
-      e.stopPropagation();
-      
-      var touch = e.touches[0];
-      Eden.dragStartX = touch.clientX;
-      Eden.dragStartY = touch.clientY;
-      
-      // 获取当前实际位置（考虑 transform 和定位）
-      var rect = card.getBoundingClientRect();
-      Eden.initialLeft = rect.left;
-      Eden.initialTop = rect.top;
-      
-      // 记录起始时间
-      Eden.startTime = Date.now();
-      
-      // 设置长按定时器（500ms）
-      Eden.longPressTimer = setTimeout(function() {
-        Eden.isDragging = true;
-        card.classList.add('dragging');
-        if (navigator.vibrate) navigator.vibrate(15);
-      }, 500);
-    },
-
-    onTouchMove: function(e) {
-      var touch = e.touches[0];
-      var deltaX = Math.abs(touch.clientX - Eden.dragStartX);
-      var deltaY = Math.abs(touch.clientY - Eden.dragStartY);
-      
-      // 如果移动超过10px，取消长按（认为是滚动）
-      if (deltaX > 10 || deltaY > 10) {
-        if (Eden.longPressTimer) {
-          clearTimeout(Eden.longPressTimer);
-          Eden.longPressTimer = null;
-        }
-        return;
-      }
-      
-      // 如果不是拖拽模式，不处理移动
-      if (!Eden.isDragging) return;
-      
-      e.preventDefault();
-      e.stopPropagation();
-      
-      var card = App.$('#edenCard');
-      if (!card) return;
-      
-      // 计算新位置
-      var newLeft = Eden.initialLeft + (touch.clientX - Eden.dragStartX);
-      var newTop = Eden.initialTop + (touch.clientY - Eden.dragStartY);
-      
-      // 使用 transform 移动，不改变定位方式
-      card.style.transform = 'translate(' + newLeft + 'px, ' + newTop + 'px)';
-    },
-
-    onTouchEnd: function(e) {
-      // 清除长按定时器
-      if (Eden.longPressTimer) {
-        clearTimeout(Eden.longPressTimer);
-        Eden.longPressTimer = null;
-      }
-      
-      var card = App.$('#edenCard');
-      
-      // 如果是拖拽状态，保存位置
-      if (Eden.isDragging && card) {
-        card.classList.remove('dragging');
-        
-        // 获取当前位置
-        var rect = card.getBoundingClientRect();
-        Eden.data.position = { left: rect.left, top: rect.top };
-        Eden.save();
-        e.stopPropagation();
-      }
-      
-      // 重置状态
-      Eden.isDragging = false;
-    },
-
-    restorePosition: function() {
-      var card = App.$('#edenCard');
-      if (!card || !Eden.data.position) return;
-      
-      // 恢复位置时使用 transform
-      card.style.transform = 'translate(' + Eden.data.position.left + 'px, ' + Eden.data.position.top + 'px)';
-    },
-
     openEdit: function() {
-      // 如果是拖拽中，不打开编辑
-      if (Eden.isDragging) return;
-      
       var old = App.$('#edenCtrlWrap');
-      if (old) { old.remove(); return; }
+      if (old) { 
+        old.remove(); 
+        return; 
+      }
 
       var d = Eden.data;
       var wrap = document.createElement('div');
@@ -382,6 +275,7 @@
 
       document.body.appendChild(wrap);
 
+      // 阻止事件冒泡
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); });
 
@@ -409,44 +303,38 @@
           if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
           
           App.$('#edenFontUrl').value = '已上传: ' + file.name;
-          App.showToast('字体已保存');
+          App.showToast('字体已保存，刷新不会丢失');
         } catch(err) {
           App.showToast('字体加载失败');
         }
       });
 
-      function getCfg() {
-        return {
-          text: App.$('#edenTextInput').value,
-          fontSize: parseInt(App.$('#edenSize').value),
-          rotate: parseInt(App.$('#edenRotate').value),
-          spacing: parseInt(App.$('#edenSpacing').value),
-          fontColor: App.$('#edenColor').value
-        };
-      }
-
       function updateLabels() {
-        App.$('#edenSizeVal').textContent = App.$('#edenSize').value + 'px';
-        App.$('#edenRotateVal').textContent = App.$('#edenRotate').value + '°';
-        App.$('#edenSpacingVal').textContent = App.$('#edenSpacing').value + 'px';
+        var sizeVal = App.$('#edenSizeVal');
+        var rotateVal = App.$('#edenRotateVal');
+        var spacingVal = App.$('#edenSpacingVal');
+        if (sizeVal) sizeVal.textContent = App.$('#edenSize').value + 'px';
+        if (rotateVal) rotateVal.textContent = App.$('#edenRotate').value + '°';
+        if (spacingVal) spacingVal.textContent = App.$('#edenSpacing').value + 'px';
       }
 
       function preview() {
         updateLabels();
-        var cfg = getCfg();
         var el = App.$('#edenText');
         if (!el) return;
-        el.textContent = cfg.text || '';
-        el.style.fontSize = cfg.fontSize + 'px';
-        el.style.transform = 'rotate(' + cfg.rotate + 'deg)';
-        el.style.letterSpacing = cfg.spacing + 'px';
-        el.style.color = cfg.fontColor;
+        el.textContent = App.$('#edenTextInput').value;
+        el.style.fontSize = App.$('#edenSize').value + 'px';
+        el.style.transform = 'rotate(' + App.$('#edenRotate').value + 'deg)';
+        el.style.letterSpacing = App.$('#edenSpacing').value + 'px';
+        el.style.color = App.$('#edenColor').value;
       }
 
-      ['edenSize', 'edenRotate', 'edenSpacing', 'edenColor', 'edenTextInput'].forEach(function(id) {
-        var el = App.$('#' + id);
-        if (el) el.addEventListener('input', preview);
-      });
+      // 绑定预览事件
+      App.$('#edenSize').addEventListener('input', preview);
+      App.$('#edenRotate').addEventListener('input', preview);
+      App.$('#edenSpacing').addEventListener('input', preview);
+      App.$('#edenColor').addEventListener('input', preview);
+      App.$('#edenTextInput').addEventListener('input', preview);
 
       // 保存按钮
       App.$('#edenSave').addEventListener('click', function() {
@@ -455,7 +343,7 @@
         Eden.data.rotate = parseInt(App.$('#edenRotate').value);
         Eden.data.spacing = parseInt(App.$('#edenSpacing').value);
         Eden.data.fontColor = App.$('#edenColor').value;
-        // 注意：fontUrl 和 fontBase64 保持不变
+        // fontUrl 和 fontBase64 保持不变
         
         Eden.save();
         Eden.apply();
@@ -473,32 +361,27 @@
       });
 
       // 点击外部关闭
+      var dismissHandler = function(e) {
+        if (wrap.contains(e.target)) return;
+        var edenCard = App.$('#edenCard');
+        if (edenCard && edenCard.contains(e.target)) return;
+        wrap.remove();
+        document.removeEventListener('touchstart', dismissHandler);
+        document.removeEventListener('click', dismissHandler);
+      };
       setTimeout(function() {
-        function dismiss(e) {
-          if (wrap.contains(e.target)) return;
-          var edenCard = App.$('#edenCard');
-          if (edenCard && edenCard.contains(e.target)) return;
-          wrap.remove();
-          document.removeEventListener('touchstart', dismiss, true);
-          document.removeEventListener('click', dismiss);
-        }
-        document.addEventListener('touchstart', dismiss, true);
-        document.addEventListener('click', dismiss);
+        document.addEventListener('touchstart', dismissHandler);
+        document.addEventListener('click', dismissHandler);
       }, 100);
     },
 
     init: function() {
       Eden.load();
       Eden.apply();
-      setTimeout(function() {
-        Eden.initDrag();
-        Eden.restorePosition();
-      }, 100);
       
       var el = App.$('#edenCard');
       if (el) {
         el.addEventListener('click', function(e) {
-          if (Eden.isDragging) return;
           e.stopPropagation();
           Eden.openEdit();
         });
