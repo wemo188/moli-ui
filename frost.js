@@ -17,7 +17,7 @@
     dragTimer: null,
 
     DEFAULTS: {
-      text: '你是我的伊甸塔',
+      text: '你是我的伊甸塔与失乐园',
       fontSize: 50,
       rotate: 0,
       spacing: 2,
