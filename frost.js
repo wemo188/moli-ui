@@ -220,20 +220,23 @@
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-      // 上传字体并永久保存
-      App.$('#edenFontFile').addEventListener('change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          // 转为 dataURL 永久保存
-          var dataUrl = ev.target.result;
-          App.$('#edenFontUrl').value = dataUrl;
-          Eden.loadFont(dataUrl);
-          App.showToast('字体已加载');
-        };
-        reader.readAsDataURL(file);
-      });
+// 上传字体并永久保存
+App.$('#edenFontFile').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var dataUrl = ev.target.result;
+    App.$('#edenFontUrl').value = dataUrl;
+    Eden.loadFont(dataUrl);
+    // 保存到 localStorage
+    var d = Eden.data;
+    d.fontUrl = dataUrl;
+    Eden.save();
+    App.showToast('字体已加载并保存');
+  };
+  reader.readAsDataURL(file);
+});
 
       function getCfg() {
         return {
