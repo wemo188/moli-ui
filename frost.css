@@ -19,7 +19,6 @@
   background: transparent;
   box-shadow: none;
   border: none;
-  margin: 0 auto;              /* 👈 添加：让卡片本身居中 */
 }
 
 .eden-card .eden-text {
