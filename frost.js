@@ -14,7 +14,7 @@
       hex: '#ffffff',
       alpha: 25,
       blur: 12,
-      textColor: '#ffffff',
+      textColor: '#000',
       text: ''
     },
 
