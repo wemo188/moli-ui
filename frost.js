@@ -119,19 +119,28 @@
   };
 
   // ============================
-  //  文字卡片（第一页）- 简化版
+  //  文字卡片（第一页）- 长按拖拽版
   // ============================
   var Eden = {
     data: {},
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    isDragging: false,
+    longPressTimer: null,
+    hasMoved: false,
 
     DEFAULTS: {
       text: '你是我的伊甸塔',
       fontSize: 32,
       rotate: 0,
       spacing: 2,
-      fontColor: '#000',
+      fontColor: '#ffffff',
       fontUrl: '',
-      fontBase64: ''
+      fontBase64: '',
+      posX: 0,
+      posY: 0
     },
 
     load: function() {
@@ -145,6 +154,8 @@
         Eden.data.fontColor = saved.fontColor || d.fontColor;
         Eden.data.fontUrl = saved.fontUrl || '';
         Eden.data.fontBase64 = saved.fontBase64 || '';
+        Eden.data.posX = saved.posX != null ? saved.posX : d.posX;
+        Eden.data.posY = saved.posY != null ? saved.posY : d.posY;
       } else {
         Eden.data = JSON.parse(JSON.stringify(d));
       }
@@ -198,6 +209,15 @@
       el.style.wordBreak = 'break-word';
       el.style.maxWidth = '100%';
       el.style.overflowWrap = 'break-word';
+      
+      // 恢复位置
+      var card = App.$('#edenCard');
+      if (card && (d.posX || d.posY)) {
+        card.style.position = 'relative';
+        card.style.left = d.posX + 'px';
+        card.style.top = d.posY + 'px';
+      }
+      
       Eden.loadFont(d.fontUrl, d.fontBase64);
     },
 
@@ -210,7 +230,96 @@
       });
     },
 
+    // 开始触摸
+    onTouchStart: function(e) {
+      var card = App.$('#edenCard');
+      if (!card) return;
+      
+      var touch = e.touches[0];
+      Eden.startX = touch.clientX;
+      Eden.startY = touch.clientY;
+      Eden.hasMoved = false;
+      
+      // 获取当前位置
+      var rect = card.getBoundingClientRect();
+      Eden.currentX = rect.left;
+      Eden.currentY = rect.top;
+      
+      // 设置长按定时器
+      Eden.longPressTimer = setTimeout(function() {
+        Eden.isDragging = true;
+        card.style.transition = 'none';
+        card.style.zIndex = '999';
+        if (navigator.vibrate) navigator.vibrate(15);
+      }, 500);
+    },
+
+    // 触摸移动
+    onTouchMove: function(e) {
+      var touch = e.touches[0];
+      var deltaX = Math.abs(touch.clientX - Eden.startX);
+      var deltaY = Math.abs(touch.clientY - Eden.startY);
+      
+      // 移动超过10px，取消长按
+      if (deltaX > 10 || deltaY > 10) {
+        if (Eden.longPressTimer) {
+          clearTimeout(Eden.longPressTimer);
+          Eden.longPressTimer = null;
+        }
+        Eden.hasMoved = true;
+      }
+      
+      // 如果不是拖拽模式，不处理
+      if (!Eden.isDragging) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      var card = App.$('#edenCard');
+      if (!card) return;
+      
+      var newX = Eden.currentX + (touch.clientX - Eden.startX);
+      var newY = Eden.currentY + (touch.clientY - Eden.startY);
+      
+      card.style.position = 'fixed';
+      card.style.left = newX + 'px';
+      card.style.top = newY + 'px';
+      card.style.margin = '0';
+      card.style.width = 'calc(100% - 40px)';
+      
+      Eden.hasMoved = true;
+    },
+
+    // 触摸结束
+    onTouchEnd: function(e) {
+      // 清除长按定时器
+      if (Eden.longPressTimer) {
+        clearTimeout(Eden.longPressTimer);
+        Eden.longPressTimer = null;
+      }
+      
+      var card = App.$('#edenCard');
+      
+      // 如果是拖拽状态，保存位置
+      if (Eden.isDragging && card && Eden.hasMoved) {
+        var rect = card.getBoundingClientRect();
+        Eden.data.posX = rect.left;
+        Eden.data.posY = rect.top;
+        Eden.save();
+        card.style.transition = '';
+        card.style.zIndex = '';
+        e.stopPropagation();
+      }
+      
+      // 重置状态
+      Eden.isDragging = false;
+      Eden.hasMoved = false;
+    },
+
     openEdit: function() {
+      // 如果是拖拽中，不打开编辑
+      if (Eden.isDragging) return;
+      
       var old = App.$('#edenCtrlWrap');
       if (old) { 
         old.remove(); 
@@ -275,7 +384,6 @@
 
       document.body.appendChild(wrap);
 
-      // 阻止事件冒泡
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); });
 
@@ -293,17 +401,15 @@
           await font.load();
           document.fonts.add(font);
           
-          // 保存到数据
           Eden.data.fontBase64 = base64;
           Eden.data.fontUrl = '';
           Eden.save();
           
-          // 应用到当前
           var textEl = App.$('#edenText');
           if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
           
           App.$('#edenFontUrl').value = '已上传: ' + file.name;
-          App.showToast('字体已保存，刷新不会丢失');
+          App.showToast('字体已保存');
         } catch(err) {
           App.showToast('字体加载失败');
         }
@@ -329,7 +435,6 @@
         el.style.color = App.$('#edenColor').value;
       }
 
-      // 绑定预览事件
       App.$('#edenSize').addEventListener('input', preview);
       App.$('#edenRotate').addEventListener('input', preview);
       App.$('#edenSpacing').addEventListener('input', preview);
@@ -343,7 +448,6 @@
         Eden.data.rotate = parseInt(App.$('#edenRotate').value);
         Eden.data.spacing = parseInt(App.$('#edenSpacing').value);
         Eden.data.fontColor = App.$('#edenColor').value;
-        // fontUrl 和 fontBase64 保持不变
         
         Eden.save();
         Eden.apply();
@@ -379,9 +483,16 @@
       Eden.load();
       Eden.apply();
       
-      var el = App.$('#edenCard');
-      if (el) {
-        el.addEventListener('click', function(e) {
+      var card = App.$('#edenCard');
+      if (card) {
+        // 绑定触摸事件
+        card.addEventListener('touchstart', Eden.onTouchStart, { passive: false });
+        card.addEventListener('touchmove', Eden.onTouchMove, { passive: false });
+        card.addEventListener('touchend', Eden.onTouchEnd);
+        
+        // 点击编辑
+        card.addEventListener('click', function(e) {
+          if (Eden.isDragging) return;
           e.stopPropagation();
           Eden.openEdit();
         });
@@ -389,9 +500,6 @@
     }
   };
 
-  // ============================
-  //  统一注册
-  // ============================
   App.register('frost', Frost);
   App.register('eden', Eden);
 })();
