@@ -107,7 +107,6 @@
   word-break: break-word;
   line-height: 1.4;
   box-sizing: border-box;
-  border: 1px solid ;
   overflow: auto;  /* 文字太多时可以滚动 */
 }
 
