@@ -4,11 +4,66 @@
   if (!App) return;
 
   // ============================
-  //  文字卡片（第一页）- 贴底部栏上方
+  //  IndexedDB 字体存储
+  // ============================
+  var FontDB = {
+    dbName: 'EdenFontDB',
+    storeName: 'fonts',
+    db: null,
+
+    init: function() {
+      return new Promise(function(resolve, reject) {
+        var request = indexedDB.open(FontDB.dbName, 1);
+        request.onerror = function() { reject(request.error); };
+        request.onsuccess = function() { FontDB.db = request.result; resolve(); };
+        request.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains(FontDB.storeName)) {
+            db.createObjectStore(FontDB.storeName, { keyPath: 'name' });
+          }
+        };
+      });
+    },
+
+    saveFont: function(name, dataUrl) {
+      return new Promise(function(resolve, reject) {
+        if (!FontDB.db) { reject('DB not ready'); return; }
+        var tx = FontDB.db.transaction([FontDB.storeName], 'readwrite');
+        var store = tx.objectStore(FontDB.storeName);
+        var request = store.put({ name: name, dataUrl: dataUrl, time: Date.now() });
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+      });
+    },
+
+    getFont: function(name) {
+      return new Promise(function(resolve, reject) {
+        if (!FontDB.db) { reject('DB not ready'); return; }
+        var tx = FontDB.db.transaction([FontDB.storeName], 'readonly');
+        var store = tx.objectStore(FontDB.storeName);
+        var request = store.get(name);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+      });
+    },
+
+    deleteFont: function(name) {
+      return new Promise(function(resolve, reject) {
+        if (!FontDB.db) { reject('DB not ready'); return; }
+        var tx = FontDB.db.transaction([FontDB.storeName], 'readwrite');
+        var store = tx.objectStore(FontDB.storeName);
+        var request = store.delete(name);
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+      });
+    }
+  };
+
+  // ============================
+  //  文字卡片
   // ============================
   var Eden = {
     data: {},
-    customFont: null,
     dragStartX: 0,
     dragStartY: 0,
     originalLeft: 0,
@@ -17,11 +72,12 @@
     dragTimer: null,
 
     DEFAULTS: {
-      text: '你是我的伊甸塔与失乐园',
-      fontSize: 50,
+      text: '你是我的伊甸塔',
+      fontSize: 28,
       rotate: 0,
       spacing: 2,
-      fontColor: '#1a1a1a',  // 默认黑色
+      fontColor: '#1a1a1a',
+      fontName: '',        // 存储字体名称
       fontUrl: '',
       posX: 0,
       posY: 0
@@ -36,6 +92,7 @@
         Eden.data.rotate = saved.rotate != null ? saved.rotate : d.rotate;
         Eden.data.spacing = saved.spacing != null ? saved.spacing : d.spacing;
         Eden.data.fontColor = saved.fontColor || d.fontColor;
+        Eden.data.fontName = saved.fontName || '';
         Eden.data.fontUrl = saved.fontUrl || '';
         Eden.data.posX = saved.posX != null ? saved.posX : d.posX;
         Eden.data.posY = saved.posY != null ? saved.posY : d.posY;
@@ -44,24 +101,58 @@
       }
     },
 
-    save: function() { 
+    save: function() {
       App.LS.set('edenCard', Eden.data);
     },
 
-    loadFont: function(url) {
-      if (!url) {
-        var textEl = App.$('#edenText');
-        if (textEl) textEl.style.fontFamily = '';
-        return;
-      }
-      var fontName = 'EdenCustom_' + Date.now();
+    // 从 IndexedDB 加载字体
+    loadFontFromDB: function(fontName) {
+      if (!fontName) return Promise.resolve(false);
+      return FontDB.getFont(fontName).then(function(result) {
+        if (result && result.dataUrl) {
+          return Eden.loadFontFromUrl(result.dataUrl, fontName);
+        }
+        return false;
+      }).catch(function() { return false; });
+    },
+
+    // 从 URL 加载字体
+    loadFontFromUrl: function(url, customName) {
+      var fontName = customName || 'EdenCustom_' + Date.now();
       var font = new FontFace(fontName, 'url(' + url + ')');
-      font.load().then(function(loaded) {
+      return font.load().then(function(loaded) {
         document.fonts.add(loaded);
         var textEl = App.$('#edenText');
         if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
+        return true;
       }).catch(function() {
-        // 静默失败
+        return false;
+      });
+    },
+
+    // 上传并保存字体到 IndexedDB
+    uploadAndSaveFont: function(file) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var dataUrl = ev.target.result;
+          var fontName = 'EdenFont_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9]/g, '_');
+          
+          // 保存到 IndexedDB
+          FontDB.saveFont(fontName, dataUrl).then(function() {
+            // 加载字体
+            self.loadFontFromUrl(dataUrl, fontName).then(function() {
+              // 保存字体名称到 localStorage
+              self.data.fontName = fontName;
+              self.data.fontUrl = '';
+              self.save();
+              resolve(fontName);
+            }).catch(reject);
+          }).catch(reject);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     },
 
@@ -81,8 +172,11 @@
         card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
       }
       
-      if (d.fontUrl) {
-        Eden.loadFont(d.fontUrl);
+      // 加载保存的字体
+      if (d.fontName) {
+        Eden.loadFontFromDB(d.fontName);
+      } else if (d.fontUrl) {
+        Eden.loadFontFromUrl(d.fontUrl);
       }
     },
 
@@ -94,7 +188,6 @@
       var startX, startY, startPosX, startPosY, longPressed = false, timer, moved = false;
       
       card.addEventListener('touchstart', function(e) {
-        // 如果点击的是编辑浮窗内的元素，不触发拖拽
         if (e.target.closest('.eden-ctrl-wrap')) return;
         
         var touch = e.touches[0];
@@ -103,7 +196,6 @@
         longPressed = false;
         moved = false;
         
-        // 获取当前位置
         var transform = card.style.transform;
         var match = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
         startPosX = match ? parseFloat(match[1]) : (Eden.data.posX || 0);
@@ -216,27 +308,22 @@
 
       document.body.appendChild(wrap);
 
-      // 阻止触摸传播
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-// 上传字体并永久保存
-App.$('#edenFontFile').addEventListener('change', function(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var dataUrl = ev.target.result;
-    App.$('#edenFontUrl').value = dataUrl;
-    Eden.loadFont(dataUrl);
-    // 保存到 localStorage
-    var d = Eden.data;
-    d.fontUrl = dataUrl;
-    Eden.save();
-    App.showToast('字体已加载并保存');
-  };
-  reader.readAsDataURL(file);
-});
+      // 上传字体到 IndexedDB
+      var self = this;
+      App.$('#edenFontFile').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        App.showToast('上传中...');
+        Eden.uploadAndSaveFont(file).then(function(fontName) {
+          App.$('#edenFontUrl').value = '(已保存) ' + file.name;
+          App.showToast('字体已保存，刷新不会丢失');
+        }).catch(function() {
+          App.showToast('上传失败');
+        });
+      });
 
       function getCfg() {
         return {
@@ -274,19 +361,23 @@ App.$('#edenFontFile').addEventListener('change', function(e) {
 
       App.$('#edenFontUrl').addEventListener('change', function() {
         var url = this.value.trim();
-        if (url) {
-          Eden.loadFont(url);
+        if (url && !url.startsWith('(已保存)')) {
+          Eden.loadFontFromUrl(url);
         }
       });
 
       App.$('#edenSave').addEventListener('click', function() {
         var cfg = getCfg();
+        // 如果用户输入了 URL 而不是上传文件
+        if (cfg.fontUrl && !cfg.fontUrl.startsWith('(已保存)')) {
+          Eden.data.fontName = '';
+          Eden.data.fontUrl = cfg.fontUrl;
+        }
         Eden.data.text = cfg.text;
         Eden.data.fontSize = cfg.fontSize;
         Eden.data.rotate = cfg.rotate;
         Eden.data.spacing = cfg.spacing;
         Eden.data.fontColor = cfg.fontColor;
-        Eden.data.fontUrl = cfg.fontUrl;
         Eden.save();
         Eden.apply();
         wrap.remove();
@@ -301,7 +392,6 @@ App.$('#edenFontFile').addEventListener('change', function(e) {
         App.showToast('已重置');
       });
 
-      // 点外面关闭
       setTimeout(function() {
         function dismiss(e) {
           if (wrap.contains(e.target)) return;
@@ -317,23 +407,35 @@ App.$('#edenFontFile').addEventListener('change', function(e) {
     },
 
     init: function() {
-      Eden.load();
-      Eden.apply();
-      Eden.bindDrag();  // 绑定拖拽
-      var el = App.$('#edenCard');
-      if (el) {
-        el.addEventListener('click', function(e) {
-          // 拖拽时避免触发点击
-          if (Eden.isDragging) return;
-          e.stopPropagation();
-          Eden.openEdit();
-        });
-      }
+      // 先初始化 IndexedDB
+      FontDB.init().then(function() {
+        Eden.load();
+        Eden.apply();
+        Eden.bindDrag();
+        var el = App.$('#edenCard');
+        if (el) {
+          el.addEventListener('click', function(e) {
+            if (Eden.isDragging) return;
+            e.stopPropagation();
+            Eden.openEdit();
+          });
+        }
+      }).catch(function() {
+        // IndexedDB 不可用，降级处理
+        Eden.load();
+        Eden.apply();
+        Eden.bindDrag();
+        var el = App.$('#edenCard');
+        if (el) {
+          el.addEventListener('click', function(e) {
+            if (Eden.isDragging) return;
+            e.stopPropagation();
+            Eden.openEdit();
+          });
+        }
+      });
     }
   };
 
-  // ============================
-  //  统一注册
-  // ============================
   App.register('eden', Eden);
 })();
