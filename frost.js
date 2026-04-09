@@ -73,7 +73,7 @@
 
     DEFAULTS: {
       text: '你是我的伊甸塔',
-      fontSize: 28,
+      fontSize: 50,
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
