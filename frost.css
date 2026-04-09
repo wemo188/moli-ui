@@ -16,7 +16,7 @@
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  margin-top: auto;  /* 自动推到底部 */
+  margin-top: auto;
 }
 
 .eden-card .eden-text {
@@ -44,6 +44,7 @@
   top: 60px;
   transform: translateX(-50%);
   pointer-events: none;
+  max-width: calc(100vw - 32px);
 }
 
 .eden-ctrl-panel {
@@ -55,6 +56,8 @@
   padding: 14px 16px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.15);
   border: 1px solid rgba(0,0,0,0.06);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .eden-ctrl-title {
@@ -84,6 +87,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .eden-ctrl-row label {
@@ -91,6 +95,7 @@
   color: #666;
   min-width: 36px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .eden-ctrl-row input[type="range"] {
@@ -125,10 +130,9 @@
   border-radius: 8px;
   outline: none;
   font-family: inherit;
-}
-
-.eden-ctrl-row input[type="text"]:focus {
-  border-color: rgba(0,0,0,0.15);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .eden-font-upload-btn {
