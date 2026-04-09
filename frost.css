@@ -5,7 +5,7 @@
   width: 400px;
   max-width: 90%;
   height: 100px;
-  margin: 0 auto 80px;  
+  margin: 0 auto 50px;  
   display: flex;
   align-items: center;
   justify-content: center;     /* ✅ 已有，保持 */
