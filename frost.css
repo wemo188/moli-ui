@@ -85,55 +85,26 @@
    文字卡片（第一页）
 ========================= */
 .eden-card {
-  width: calc(100% - 40px);  /* 左右留20px边距 */
-  margin: 0 20px 20px 20px;  /* 下边距20px贴底部栏，上边距0 */
-  padding: 20px 16px;
-  min-height: 80px;
+  width: 100%;
+  height: 150px;
+  min-height: 150px;
+  max-height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.3);
-  transition: all 0.2s;
-  box-sizing: border-box;
-}
-
-.eden-card:active {
-  transform: scale(0.98);
-  opacity: 0.8;
 }
 
 .eden-card .eden-text {
   max-width: 100%;
   pointer-events: none;
-  white-space: pre-wrap;      /* 保留空格和换行 */
-  word-break: break-word;     /* 长单词换行 */
-  text-align: center;         /* 文字居中 */
-  line-height: 1.4;
-}
-
-/* 拖拽时的样式 */
-.eden-card.dragging {
-  opacity: 0.8;
-  z-index: 1000;
-  transition: none;
-}
-
-/* 边框调节器控制 */
-.eden-card {
-  --eden-border-width: 1px;
-  --eden-border-color: rgba(255,255,255,0.3);
-  --eden-border-radius: 20px;
-  border-width: var(--eden-border-width);
-  border-color: var(--eden-border-color);
-  border-radius: var(--eden-border-radius);
 }
 
 /* 编辑浮窗 */
