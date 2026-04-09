@@ -168,21 +168,33 @@ var Eden = {
   save: function() { App.LS.set('edenCard', Eden.data); },
 
   loadFont: function(url) {
+  var textEl = App.$('#edenText');
+  if (!textEl) return;
+  
+  // 如果为空，恢复默认字体
   if (!url) {
-    var textEl = App.$('#edenText');
-    if (textEl) textEl.style.fontFamily = '';
+    textEl.style.fontFamily = '';
     return;
   }
-  var fontName = 'EdenCustom_' + Date.now();
-  var font = new FontFace(fontName, 'url(' + url + ')');
-  font.load().then(function(loaded) {
-    document.fonts.add(loaded);
-    var textEl = App.$('#edenText');
-    if (textEl) textEl.style.fontFamily = "'" + fontName + "', cursive";
-  }).catch(function(err) {
-    console.log('字体加载失败:', err);
-  });
-},
+  
+  // 判断是否是 URL（以 http:// 或 https:// 开头）
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    // 是 URL，加载字体
+    var fontName = 'EdenCustom_' + Date.now();
+    var font = new FontFace(fontName, 'url(' + url + ')');
+    font.load().then(function(loaded) {
+      document.fonts.add(loaded);
+      textEl.style.fontFamily = "'" + fontName + "', cursive";
+    }).catch(function(err) {
+      console.log('字体加载失败:', err);
+      // 加载失败时，尝试直接作为字体名使用
+      textEl.style.fontFamily = url + ', cursive';
+    });
+  } else {
+    // 不是 URL，直接作为字体名使用
+    textEl.style.fontFamily = url + ', cursive';
+  }
+}
 
   apply: function() {
     var el = App.$('#edenCard');
