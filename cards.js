@@ -71,21 +71,21 @@ var Cards={
               '<input type="text" class="search-input" placeholder="左边搜索...">'+
             '</div>'+
           '</div>'+
-          '<div class="search-wrapper">'+
-            '<div class="search-box-right-avatar">'+
-              '<input type="text" class="search-input" placeholder="右边搜索...">'+
-              '<div class="avatar-area" data-side="search2">'+
-                '<div class="avatar-preview" id="avatarPreview2">'+
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
-                    '<circle cx="12" cy="8" r="4"></circle>'+
-                    '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
-                  '</svg>'+
-                '</div>'+
-              '</div>'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
+         '<div class="search-wrapper">'+
+  '<div class="search-box-right">'+
+    '<input type="text" class="search-input-right" placeholder="右边搜索...">'+
+    '<div class="avatar-area-right" data-side="search2">'+
+      '<div class="avatar-preview" id="avatarPreview2">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+          '<circle cx="12" cy="8" r="4"></circle>'+
+          '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+        '</svg>'+
       '</div>'+
+    '</div>'+
+  '</div>'+
+'</div>'+
+      '</div>'+
+      
       '<div class="card-right-area">'+
         '<div class="card-placeholder-icons">'+
           '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
