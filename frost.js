@@ -77,7 +77,7 @@
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
-      fontName: '',        // 存储字体名称
+      fontName: '',
       fontUrl: '',
       posX: 0,
       posY: 0
@@ -105,7 +105,6 @@
       App.LS.set('edenCard', Eden.data);
     },
 
-    // 从 IndexedDB 加载字体
     loadFontFromDB: function(fontName) {
       if (!fontName) return Promise.resolve(false);
       return FontDB.getFont(fontName).then(function(result) {
@@ -116,7 +115,6 @@
       }).catch(function() { return false; });
     },
 
-    // 从 URL 加载字体
     loadFontFromUrl: function(url, customName) {
       var fontName = customName || 'EdenCustom_' + Date.now();
       var font = new FontFace(fontName, 'url(' + url + ')');
@@ -130,7 +128,6 @@
       });
     },
 
-    // 上传并保存字体到 IndexedDB
     uploadAndSaveFont: function(file) {
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -139,11 +136,8 @@
           var dataUrl = ev.target.result;
           var fontName = 'EdenFont_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9]/g, '_');
           
-          // 保存到 IndexedDB
           FontDB.saveFont(fontName, dataUrl).then(function() {
-            // 加载字体
             self.loadFontFromUrl(dataUrl, fontName).then(function() {
-              // 保存字体名称到 localStorage
               self.data.fontName = fontName;
               self.data.fontUrl = '';
               self.save();
@@ -165,14 +159,14 @@
       el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
       el.style.letterSpacing = (d.spacing || 0) + 'px';
       el.style.color = d.fontColor || '#1a1a1a';
+      el.style.whiteSpace = 'pre-wrap';
+      el.style.wordBreak = 'break-word';
       
-      // 应用拖拽位置
       var card = App.$('#edenCard');
       if (card && (d.posX || d.posY)) {
         card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
       }
       
-      // 加载保存的字体
       if (d.fontName) {
         Eden.loadFontFromDB(d.fontName);
       } else if (d.fontUrl) {
@@ -180,7 +174,6 @@
       }
     },
 
-    // 长按拖拽功能
     bindDrag: function() {
       var card = App.$('#edenCard');
       if (!card) return;
@@ -271,7 +264,7 @@
 
           '<div class="eden-ctrl-row">' +
             '<label>文字</label>' +
-            '<input type="text" id="edenTextInput" placeholder="输入显示的文字..." value="' + App.esc(d.text || '') + '">' +
+            '<textarea id="edenTextInput" rows="3" placeholder="输入显示的文字（支持换行）..." style="flex:1; padding:8px 10px; font-size:13px; color:#1a1a1a; background:#f5f5f5; border:1px solid rgba(0,0,0,0.06); border-radius:8px; outline:none; font-family:inherit; resize:vertical;">' + App.esc(d.text || '') + '</textarea>' +
           '</div>' +
 
           '<div class="eden-ctrl-divider"></div>' +
@@ -311,8 +304,6 @@
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
-      // 上传字体到 IndexedDB
-      var self = this;
       App.$('#edenFontFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -352,6 +343,8 @@
         el.style.transform = 'rotate(' + cfg.rotate + 'deg)';
         el.style.letterSpacing = cfg.spacing + 'px';
         el.style.color = cfg.fontColor;
+        el.style.whiteSpace = 'pre-wrap';
+        el.style.wordBreak = 'break-word';
       }
 
       ['edenSize', 'edenRotate', 'edenSpacing', 'edenColor', 'edenTextInput'].forEach(function(id) {
@@ -368,7 +361,6 @@
 
       App.$('#edenSave').addEventListener('click', function() {
         var cfg = getCfg();
-        // 如果用户输入了 URL 而不是上传文件
         if (cfg.fontUrl && !cfg.fontUrl.startsWith('(已保存)')) {
           Eden.data.fontName = '';
           Eden.data.fontUrl = cfg.fontUrl;
@@ -407,7 +399,6 @@
     },
 
     init: function() {
-      // 先初始化 IndexedDB
       FontDB.init().then(function() {
         Eden.load();
         Eden.apply();
@@ -421,7 +412,6 @@
           });
         }
       }).catch(function() {
-        // IndexedDB 不可用，降级处理
         Eden.load();
         Eden.apply();
         Eden.bindDrag();
@@ -439,4 +429,3 @@
 
   App.register('eden', Eden);
 })();
-
