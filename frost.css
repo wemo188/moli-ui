@@ -446,3 +446,16 @@
 #dialogDays.dialog-with-avatar.dialog-reverse .pixel-dialog {
   order: 1 !important;
 }
+
+/* 第二个对话框头像在右边时的边框 */
+#dialogDays .side-avatar {
+  border-left: 2px solid #9dbfe0;
+  border-right: none;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
+}
+
+/* 第一个对话框头像在左边时的边框（保持原样） */
+#dialogMeet .side-avatar {
+  border-left: 2px solid #9dbfe0;
+  border-right: none;
+}
