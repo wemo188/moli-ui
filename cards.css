@@ -33,8 +33,7 @@
   gap: 30px;
   justify-content: center;
   margin-bottom: 10px;
-  position: relative;
-  top: 40px;
+  margin-top: 40px;
 }
 
 .card-right-area #bx-1 {
