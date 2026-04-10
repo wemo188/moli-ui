@@ -402,6 +402,14 @@
 .cal-day-num { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1; }
 .cal-day-cell.cal-day-other .cal-day-num { color: #ccc; }
 .cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: #4f79a6; }
+/* 选中的日期 - 灰色背景 */
+.cal-day-cell.cal-day-selected { 
+  background: rgba(0, 0, 0, 0.1);
+}
+/* 当天被选中时 - 保持黑色背景，文字白色 */
+.cal-day-cell.cal-day-today.cal-day-selected {
+  background: #1a1a1a;
+}
 
 .cal-selected-section {
   margin: 20px -16px -20px;
