@@ -215,6 +215,7 @@
 }
 
 .pixel-dialog {
+  width: 110px;
   display: inline-block;
   background: #adcdea;
   border: 2px solid #9dbfe0;
@@ -369,7 +370,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 110px;
 }
 
 .pixel-text {
