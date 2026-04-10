@@ -43,7 +43,7 @@ var Cards={
     var rNameC=R.name?'':' bx-name-placeholder';
 
     container.innerHTML=
-      // 左边区域（左卡片 + 搜索框，垂直排列）
+      // 左边区域（左卡片 + 两个搜索框）
       '<div class="left-area-wrapper">'+
         // 左卡片
         '<div class="bx-w" id="bx-2" data-side="left">'+
@@ -60,26 +60,28 @@ var Cards={
           '</div></div>'+
         '</div>'+
 
-        // 左边卡片下方：两个搜索框（上下排列）
+        // 两个搜索框：第一条头像在左，第二条头像在右
         '<div class="left-search-area">'+
-          '<div class="search-wrapper-left">'+
-            '<div class="search-box-left">'+
-              '<div class="avatar-area-left" data-side="leftSearch">'+
-                '<div class="avatar-preview" id="avatarPreviewLeftSearch">'+
+          // 搜索框1：头像在左
+          '<div class="search-wrapper">'+
+            '<div class="search-box">'+
+              '<div class="avatar-area" data-side="search1">'+
+                '<div class="avatar-preview" id="avatarPreview1">'+
                   '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
                     '<circle cx="12" cy="8" r="4"></circle>'+
                     '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
                   '</svg>'+
                 '</div>'+
               '</div>'+
-              '<input type="text" class="search-input-left" placeholder="搜索框1...">'+
+              '<input type="text" class="search-input" placeholder="搜索框1...">'+
             '</div>'+
           '</div>'+
-          '<div class="search-wrapper-right">'+
-            '<div class="search-box-right">'+
-              '<input type="text" class="search-input-right" placeholder="搜索框2...">'+
-              '<div class="avatar-area-right" data-side="rightSearch">'+
-                '<div class="avatar-preview" id="avatarPreviewRightSearch">'+
+          // 搜索框2：头像在右
+          '<div class="search-wrapper">'+
+            '<div class="search-box search-box-right-avatar">'+
+              '<input type="text" class="search-input" placeholder="搜索框2...">'+
+              '<div class="avatar-area" data-side="search2">'+
+                '<div class="avatar-preview" id="avatarPreview2">'+
                   '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
                     '<circle cx="12" cy="8" r="4"></circle>'+
                     '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
@@ -119,11 +121,11 @@ var Cards={
   },
 
   bindSearchUpload:function(){
-    // 左边搜索框头像上传
-    var leftArea = document.querySelector('.avatar-area-left');
-    var leftPreview = document.getElementById('avatarPreviewLeftSearch');
-    if(leftArea && leftPreview){
-      leftArea.addEventListener('click',function(){
+    // 搜索框1（头像在左）
+    var area1 = document.querySelector('.avatar-area[data-side="search1"]');
+    var preview1 = document.getElementById('avatarPreview1');
+    if(area1 && preview1){
+      area1.addEventListener('click',function(){
         var input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -132,31 +134,31 @@ var Cards={
           if(file){
             var reader = new FileReader();
             reader.onload = function(ev){
-              leftPreview.innerHTML = '';
+              preview1.innerHTML = '';
               var img = document.createElement('img');
               img.src = ev.target.result;
-              leftPreview.appendChild(img);
-              localStorage.setItem('avatar_leftSearch', ev.target.result);
+              preview1.appendChild(img);
+              localStorage.setItem('avatar_search1', ev.target.result);
             };
             reader.readAsDataURL(file);
           }
         };
         input.click();
       });
-      var saved = localStorage.getItem('avatar_leftSearch');
-      if(saved){
-        leftPreview.innerHTML = '';
-        var img = document.createElement('img');
-        img.src = saved;
-        leftPreview.appendChild(img);
+      var saved1 = localStorage.getItem('avatar_search1');
+      if(saved1){
+        preview1.innerHTML = '';
+        var img1 = document.createElement('img');
+        img1.src = saved1;
+        preview1.appendChild(img1);
       }
     }
 
-    // 右边搜索框头像上传
-    var rightArea = document.querySelector('.avatar-area-right');
-    var rightPreview = document.getElementById('avatarPreviewRightSearch');
-    if(rightArea && rightPreview){
-      rightArea.addEventListener('click',function(){
+    // 搜索框2（头像在右）
+    var area2 = document.querySelector('.avatar-area[data-side="search2"]');
+    var preview2 = document.getElementById('avatarPreview2');
+    if(area2 && preview2){
+      area2.addEventListener('click',function(){
         var input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -165,23 +167,23 @@ var Cards={
           if(file){
             var reader = new FileReader();
             reader.onload = function(ev){
-              rightPreview.innerHTML = '';
+              preview2.innerHTML = '';
               var img = document.createElement('img');
               img.src = ev.target.result;
-              rightPreview.appendChild(img);
-              localStorage.setItem('avatar_rightSearch', ev.target.result);
+              preview2.appendChild(img);
+              localStorage.setItem('avatar_search2', ev.target.result);
             };
             reader.readAsDataURL(file);
           }
         };
         input.click();
       });
-      var saved = localStorage.getItem('avatar_rightSearch');
-      if(saved){
-        rightPreview.innerHTML = '';
-        var img = document.createElement('img');
-        img.src = saved;
-        rightPreview.appendChild(img);
+      var saved2 = localStorage.getItem('avatar_search2');
+      if(saved2){
+        preview2.innerHTML = '';
+        var img2 = document.createElement('img');
+        img2.src = saved2;
+        preview2.appendChild(img2);
       }
     }
   },
