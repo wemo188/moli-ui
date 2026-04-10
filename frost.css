@@ -241,7 +241,7 @@
     height: 100%;
     border: 2px solid #adcdea;
     border-radius: 8px;
-    background: #1a1a2e;
+    background: #transparent;
     overflow: visible;
     z-index: 2;
 }
@@ -305,7 +305,7 @@
     height: 100%;
     border: 2px solid #adcdea;
     border-radius: 8px;
-    background: #1a1a2e;
+    background: #transparent;
     overflow: visible;
     z-index: 2;
 }
