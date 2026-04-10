@@ -22,14 +22,16 @@
 }
 
 .eden-card .eden-text {
-  width: 100%;  
+  width: 100%;
   pointer-events: none;
   transition: all 0.1s ease;
   font-weight: 500;
   margin: 0 auto;
   transform-origin: center;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;           /* 保留换行和空格，但不自动换行 */
+  word-break: keep-all;       /* 不自动断词 */
+  overflow-x: auto;           /* 超出可横向滚动 */
+  overflow: visible;
 }
 
 .eden-card.dragging {
