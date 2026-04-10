@@ -431,3 +431,18 @@
   outline: none;
   width: 100%;
 }
+
+/* 强制第二个对话框头像在右边 */
+#dialogDays.dialog-with-avatar.dialog-reverse {
+  flex-direction: row-reverse !important;
+}
+
+#dialogDays.dialog-with-avatar.dialog-reverse .side-avatar {
+  order: 2 !important;
+  border-left: 2px solid #9dbfe0 !important;
+  border-right: none !important;
+}
+
+#dialogDays.dialog-with-avatar.dialog-reverse .pixel-dialog {
+  order: 1 !important;
+}
