@@ -374,8 +374,38 @@
   box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
 }
 
-/* 第二条搜索框：头像在右（HTML顺序已是 input 在前，avatar 在后） */
-/* 右边搜索框专用 */
+.search-input-left {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #adcdea;
+  font-size: 14px;
+}
+
+.search-input-left::placeholder {
+  color: #adcdea;
+  opacity: 0.5;
+}
+
+.avatar-area-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  min-width: 42px;
+  flex-shrink: 0;
+  height: 100%;
+  cursor: pointer;
+  background: transparent;
+  padding: 4px;
+  border-right: 2px solid #adcdea;
+}
+
+/* 第二条搜索框：头像在右 */
 .search-box-right {
   display: flex;
   align-items: center;
@@ -419,6 +449,7 @@
   border-left: 2px solid #adcdea;
 }
 
+/* 共用头像预览样式 */
 .avatar-preview {
   width: 100%;
   height: 100%;
@@ -443,6 +474,7 @@
   display: block;
 }
 
-.avatar-area:active {
+.avatar-area-left:active,
+.avatar-area-right:active {
   opacity: 0.7;
 }
