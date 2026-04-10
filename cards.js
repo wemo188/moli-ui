@@ -43,45 +43,48 @@ var Cards={
     var rNameC=R.name?'':' bx-name-placeholder';
 
     container.innerHTML=
-      // 左卡片
-      '<div class="bx-w" id="bx-2" data-side="left">'+
-        '<div class="bx-tag-wrap">'+
-          '<div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div>'+
-          '<div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div>'+
-        '</div>'+
-        '<div class="bx-cw"><div class="bx-cd">'+
-          '<div class="bx-av-box">'+lFront+'</div>'+
-          '<div class="bx-name-bar">'+
-            '<div class="bx-name'+lNameC+'">'+App.esc(lName)+'</div>'+
-            '<div class="bx-sub">'+App.esc(lSub)+'</div>'+
+      // 左边区域（左卡片 + 搜索框，垂直排列）
+      '<div class="left-area-wrapper">'+
+        // 左卡片
+        '<div class="bx-w" id="bx-2" data-side="left">'+
+          '<div class="bx-tag-wrap">'+
+            '<div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div>'+
+            '<div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div>'+
           '</div>'+
-        '</div></div>'+
-      '</div>'+
-
-      // 左边卡片下方：两个搜索框（上下排列）
-      '<div class="left-search-area">'+
-        '<div class="search-wrapper-left">'+
-          '<div class="search-box-left">'+
-            '<div class="avatar-area-left" data-side="leftSearch">'+
-              '<div class="avatar-preview" id="avatarPreviewLeftSearch">'+
-                '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
-                  '<circle cx="12" cy="8" r="4"></circle>'+
-                  '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
-                '</svg>'+
-              '</div>'+
+          '<div class="bx-cw"><div class="bx-cd">'+
+            '<div class="bx-av-box">'+lFront+'</div>'+
+            '<div class="bx-name-bar">'+
+              '<div class="bx-name'+lNameC+'">'+App.esc(lName)+'</div>'+
+              '<div class="bx-sub">'+App.esc(lSub)+'</div>'+
             '</div>'+
-            '<input type="text" class="search-input-left" placeholder="左边搜索框...">'+
-          '</div>'+
+          '</div></div>'+
         '</div>'+
-        '<div class="search-wrapper-right">'+
-          '<div class="search-box-right">'+
-            '<input type="text" class="search-input-right" placeholder="右边搜索框...">'+
-            '<div class="avatar-area-right" data-side="rightSearch">'+
-              '<div class="avatar-preview" id="avatarPreviewRightSearch">'+
-                '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
-                  '<circle cx="12" cy="8" r="4"></circle>'+
-                  '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
-                '</svg>'+
+
+        // 左边卡片下方：两个搜索框（上下排列）
+        '<div class="left-search-area">'+
+          '<div class="search-wrapper-left">'+
+            '<div class="search-box-left">'+
+              '<div class="avatar-area-left" data-side="leftSearch">'+
+                '<div class="avatar-preview" id="avatarPreviewLeftSearch">'+
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+                    '<circle cx="12" cy="8" r="4"></circle>'+
+                    '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+                  '</svg>'+
+                '</div>'+
+              '</div>'+
+              '<input type="text" class="search-input-left" placeholder="搜索框1...">'+
+            '</div>'+
+          '</div>'+
+          '<div class="search-wrapper-right">'+
+            '<div class="search-box-right">'+
+              '<input type="text" class="search-input-right" placeholder="搜索框2...">'+
+              '<div class="avatar-area-right" data-side="rightSearch">'+
+                '<div class="avatar-preview" id="avatarPreviewRightSearch">'+
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+                    '<circle cx="12" cy="8" r="4"></circle>'+
+                    '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+                  '</svg>'+
+                '</div>'+
               '</div>'+
             '</div>'+
           '</div>'+
