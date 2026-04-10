@@ -33,7 +33,7 @@
   gap: 30px;
   justify-content: center;
   margin-bottom: 10px;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .card-right-area #bx-1 {
@@ -374,11 +374,10 @@
   box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
 }
 
-/* 第二条搜索框：头像在右 */
+/* 第二条搜索框：头像在右（HTML顺序已是 input 在前，avatar 在后） */
 .search-box-right-avatar {
   display: flex;
   align-items: center;
-  flex-direction: row-reverse;
   width: 100%;
   height: 100%;
   border: 2px solid #adcdea;
@@ -416,7 +415,7 @@
   border-right: 2px solid #adcdea;
 }
 
-/* 头像在右时，边框放在左边 */
+/* 第二条搜索框：头像在右，边框放在左边 */
 .search-box-right-avatar .avatar-area {
   border-right: none;
   border-left: 2px solid #adcdea;
@@ -449,51 +448,3 @@
 .avatar-area:active {
   opacity: 0.7;
 }
-
-/* 强制修复第二条搜索框 */
-.search-box-right-avatar {
-  display: flex !important;
-  flex-direction: row-reverse !important;
-}
-
-.search-box-right-avatar .search-input {
-  order: 1;
-}
-
-.search-box-right-avatar .avatar-area {
-  order: 2;
-  border-right: none !important;
-  border-left: 2px solid #adcdea !important;
-}
-
-/* 终极修复：强制右边头像显示 */
-.search-box-right-avatar {
-  display: flex !important;
-  flex-direction: row-reverse !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-}
-
-.search-box-right-avatar .search-input {
-  flex: 1 !important;
-  order: 1 !important;
-  text-align: left !important;
-}
-
-.search-box-right-avatar .avatar-area {
-  order: 2 !important;
-  flex-shrink: 0 !important;
-  border-right: none !important;
-  border-left: 2px solid #adcdea !important;
-  margin-left: 0 !important;
-}
-
-/* 确保头像预览区域在右边可见 */
-.search-box-right-avatar .avatar-preview {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
