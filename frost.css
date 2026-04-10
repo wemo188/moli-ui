@@ -329,7 +329,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(173, 205, 234, 0.1);
+    background: transparent;
 }
 
 .avatar-preview svg {
