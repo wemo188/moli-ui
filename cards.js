@@ -113,70 +113,92 @@ var Cards={
   },
 
   bindSearchUpload:function(){
+    // 左边搜索框文字
+    var leftInput = document.querySelector('.search-input-left');
+    var leftSaved = localStorage.getItem('searchText_left');
+    if(leftSaved && leftInput) leftInput.value = leftSaved;
+    if(leftInput){
+        leftInput.addEventListener('input', function(){
+            localStorage.setItem('searchText_left', this.value);
+        });
+    }
+
+    // 右边搜索框文字
+    var rightInput = document.querySelector('.search-input-right');
+    var rightSaved = localStorage.getItem('searchText_right');
+    if(rightSaved && rightInput) rightInput.value = rightSaved;
+    if(rightInput){
+        rightInput.addEventListener('input', function(){
+            localStorage.setItem('searchText_right', this.value);
+        });
+    }
+
+    // 左边头像上传
     var area1 = document.querySelector('.avatar-area-left[data-side="search1"]');
     var preview1 = document.getElementById('avatarPreview1');
     if(area1 && preview1){
-      area1.addEventListener('click',function(){
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = function(e){
-          var file = e.target.files[0];
-          if(file){
-            var reader = new FileReader();
-            reader.onload = function(ev){
-              preview1.innerHTML = '';
-              var img = document.createElement('img');
-              img.src = ev.target.result;
-              preview1.appendChild(img);
-              localStorage.setItem('avatar_search1', ev.target.result);
+        area1.addEventListener('click',function(){
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e){
+                var file = e.target.files[0];
+                if(file){
+                    var reader = new FileReader();
+                    reader.onload = function(ev){
+                        preview1.innerHTML = '';
+                        var img = document.createElement('img');
+                        img.src = ev.target.result;
+                        preview1.appendChild(img);
+                        localStorage.setItem('avatar_search1', ev.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
             };
-            reader.readAsDataURL(file);
-          }
-        };
-        input.click();
-      });
-      var saved1 = localStorage.getItem('avatar_search1');
-      if(saved1){
-        preview1.innerHTML = '';
-        var img1 = document.createElement('img');
-        img1.src = saved1;
-        preview1.appendChild(img1);
-      }
+            input.click();
+        });
+        var saved1 = localStorage.getItem('avatar_search1');
+        if(saved1){
+            preview1.innerHTML = '';
+            var img1 = document.createElement('img');
+            img1.src = saved1;
+            preview1.appendChild(img1);
+        }
     }
 
+    // 右边头像上传
     var area2 = document.querySelector('.avatar-area-right[data-side="search2"]');
     var preview2 = document.getElementById('avatarPreview2');
     if(area2 && preview2){
-      area2.addEventListener('click',function(){
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = function(e){
-          var file = e.target.files[0];
-          if(file){
-            var reader = new FileReader();
-            reader.onload = function(ev){
-              preview2.innerHTML = '';
-              var img = document.createElement('img');
-              img.src = ev.target.result;
-              preview2.appendChild(img);
-              localStorage.setItem('avatar_search2', ev.target.result);
+        area2.addEventListener('click',function(){
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e){
+                var file = e.target.files[0];
+                if(file){
+                    var reader = new FileReader();
+                    reader.onload = function(ev){
+                        preview2.innerHTML = '';
+                        var img = document.createElement('img');
+                        img.src = ev.target.result;
+                        preview2.appendChild(img);
+                        localStorage.setItem('avatar_search2', ev.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
             };
-            reader.readAsDataURL(file);
-          }
-        };
-        input.click();
-      });
-      var saved2 = localStorage.getItem('avatar_search2');
-      if(saved2){
-        preview2.innerHTML = '';
-        var img2 = document.createElement('img');
-        img2.src = saved2;
-        preview2.appendChild(img2);
-      }
+            input.click();
+        });
+        var saved2 = localStorage.getItem('avatar_search2');
+        if(saved2){
+            preview2.innerHTML = '';
+            var img2 = document.createElement('img');
+            img2.src = saved2;
+            preview2.appendChild(img2);
+        }
     }
-  },
+},
 
   bindEdit:function(){
     document.querySelectorAll('#cardRow .bx-w').forEach(function(card){
