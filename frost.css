@@ -8,7 +8,7 @@
   margin: 0 auto 50px;  
   display: flex;
   align-items: center;
-  justify-content: center;     /* ✅ 已有，保持 */
+  justify-content: center;
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -30,8 +30,8 @@
   transition: all 0.1s ease;
   font-weight: 500;
   text-align: center;
-  margin: 0 auto;              /* 👈 添加：让文字在卡片内居中 */
-  transform-origin: center;    /* 👈 添加：倾斜/缩放时以中心为基准 */
+  margin: 0 auto;
+  transform-origin: center;
 }
 
 /* 拖拽时的样式 */
@@ -222,26 +222,32 @@
   gap: 0;
 }
 
-.dialog-with-avatar.dialog-reverse {
+/* 第一个对话框（头像在左边） */
+#dialogMeet .side-avatar {
+  border-left: 2px solid #9dbfe0;
+  border-right: none;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, -2px 2px 0 rgba(0,0,0,0.12);
+}
+
+/* 第二个对话框（头像在右边） */
+#dialogDays {
   flex-direction: row-reverse;
 }
 
-.dialog-with-avatar.dialog-reverse .side-avatar {
-  border-left: none;
-  border-right: 2px solid #9dbfe0;
+#dialogDays .side-avatar {
+  border-left: 2px solid #9dbfe0;
+  border-right: none;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
 }
 
 .side-avatar {
   width: 40px;
   background: #eef4fa;
-  border: 2px solid #9dbfe0;
-  border-right: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, -2px 2px 0 rgba(0,0,0,0.12);
 }
 
 .side-avatar-img {
@@ -271,7 +277,7 @@
 
 .pixel-header {
   height: 13px;
-  background: linear-gradient(180deg, #c8dcea, #fff);
+  background: linear-gradient(180deg, #c8dcea, #ffffff);
   border-bottom: 1.5px solid #9dbfe0;
   display: flex;
   align-items: center;
@@ -413,11 +419,11 @@
 }
 
 .pixel-body {
-  padding: 4px 10px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 130px;
+  min-width: 120px;
 }
 
 .pixel-text {
@@ -430,32 +436,4 @@
   border: none;
   outline: none;
   width: 100%;
-}
-
-/* 强制第二个对话框头像在右边 */
-#dialogDays.dialog-with-avatar.dialog-reverse {
-  flex-direction: row-reverse !important;
-}
-
-#dialogDays.dialog-with-avatar.dialog-reverse .side-avatar {
-  order: 2 !important;
-  border-left: 2px solid #9dbfe0 !important;
-  border-right: none !important;
-}
-
-#dialogDays.dialog-with-avatar.dialog-reverse .pixel-dialog {
-  order: 1 !important;
-}
-
-/* 第二个对话框头像在右边时的边框 */
-#dialogDays .side-avatar {
-  border-left: 2px solid #9dbfe0;
-  border-right: none;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
-}
-
-/* 第一个对话框头像在左边时的边框（保持原样） */
-#dialogMeet .side-avatar {
-  border-left: 2px solid #9dbfe0;
-  border-right: none;
 }
