@@ -272,7 +272,7 @@
 .wt-ctrl-reset:active { opacity: 0.7; }
 
 /* =========================
-   日历面板样式（保留原样）
+   日历面板样式
 ========================= */
 #calPanel.fullpage-panel {
   background: #ffffff;
@@ -415,139 +415,8 @@
   text-align: center; color: #555; font-size: 13px; padding: 50px 20px;
 }
 
-.sticker-wrap {
-  position: relative; width: 230px; height: 230px;
-  margin: 0 auto; display: flex; align-items: center; justify-content: center;
-}
-
-.sticker-paper {
-  width: 230px; height: 230px; background: #fff;
-  position: relative; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 32px 24px 44px; cursor: pointer; user-select: none;
-  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3));
-}
-
-.sticker-paper::before {
-  content: ''; position: absolute; inset: -3px; background: #fff; z-index: -1;
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E");
-  mask-size: cover; -webkit-mask-size: cover;
-}
-
-.sticker-paper::after {
-  content: ''; position: absolute;
-  top: 18px; left: 18px; right: 18px; bottom: 18px;
-  border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 1px; pointer-events: none;
-}
-
-.sticker-text-en {
-  font-family: 'Dancing Script', cursive;
-  font-size: 20px; font-weight: 600; color: #1a1a1a;
-  text-align: center; line-height: 1.4;
-  transition: opacity 0.3s; position: relative; z-index: 1;
-}
-
-.sticker-text-zh {
-  position: absolute; top: 18px; left: 18px; right: 18px; bottom: 18px;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px; font-size: 15px; font-weight: 500; color: #1a1a1a;
-  background: rgba(255,255,255,0.95); opacity: 0;
-  transition: opacity 0.3s; pointer-events: none;
-  text-align: center; line-height: 1.6; z-index: 5;
-}
-
-.sticker-paper.show-zh .sticker-text-en { opacity: 0.1; }
-.sticker-paper.show-zh .sticker-text-zh { opacity: 1; pointer-events: auto; }
-
-.sticker-time {
-  font-size: 10px; color: #ccc; margin-top: 8px; position: relative; z-index: 1;
-}
-
-.sticker-pager {
-  position: absolute; bottom: 24px; right: 24px;
-  display: flex; align-items: center; gap: 5px;
-  cursor: pointer; user-select: none; z-index: 6;
-}
-.sticker-pager:active { opacity: 0.5; }
-.sticker-spade { font-size: 18px; color: #1a1a1a; line-height: 1; }
-.sticker-page-num { font-size: 9px; color: #aaa; font-weight: 500; }
-
-@keyframes pageTurn {
-  0% { transform: scale(1) rotate(0); }
-  30% { transform: scale(0.94) rotate(-2deg); }
-  60% { transform: scale(0.97) rotate(1deg); }
-  100% { transform: scale(1) rotate(0); }
-}
-.sticker-paper.turning { animation: pageTurn 0.35s ease-out; }
-
-.sticker-actions {
-  display: flex; justify-content: center; gap: 20px; margin-top: 16px;
-}
-.sticker-action-btn {
-  display: flex; align-items: center; gap: 5px; padding: 8px 16px;
-  border-radius: 20px; border: none; cursor: pointer;
-  font-size: 12px; font-weight: 500; font-family: inherit; transition: opacity 0.15s;
-}
-.sticker-action-btn:active { opacity: 0.6; }
-.sticker-action-btn svg { width: 14px; height: 14px; }
-.sticker-edit-btn { background: rgba(255,255,255,0.1); color: #999; }
-.sticker-del-btn { background: rgba(255,59,48,0.1); color: #ff6b6b; }
-
-.cal-schedule-date {
-  font-size: 14px; color: #999; margin-bottom: 20px; font-weight: 500;
-}
-.cal-schedule-list { display: flex; flex-direction: column; gap: 0; position: relative; }
-.cal-schedule-item {
-  display: flex; align-items: stretch; gap: 0; padding: 0; position: relative; min-height: 56px;
-}
-.cal-schedule-time {
-  width: 46px; font-size: 13px; font-weight: 600; color: #1a1a1a;
-  text-align: right; flex-shrink: 0; line-height: 1;
-  display: flex; align-items: center; justify-content: flex-end;
-}
-.cal-schedule-dot-line {
-  width: 32px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; position: relative;
-}
-.cal-schedule-dot-line::before {
-  content: ''; position: absolute; left: 50%; top: 0; bottom: 50%;
-  width: 1.5px; background: rgba(79,121,166,0.2); transform: translateX(-50%);
-}
-.cal-schedule-dot-line::after {
-  content: ''; position: absolute; left: 50%; top: 50%; bottom: 0;
-  width: 1.5px; background: rgba(79,121,166,0.2); transform: translateX(-50%);
-}
-.cal-schedule-item:first-child .cal-schedule-dot-line::before { display: none; }
-.cal-schedule-item:last-child .cal-schedule-dot-line::after { display: none; }
-.cal-schedule-item:only-child .cal-schedule-dot-line::before,
-.cal-schedule-item:only-child .cal-schedule-dot-line::after { display: none; }
-.cal-schedule-dot-circle {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: #fff; border: 2px solid #4f79a6; position: relative; z-index: 2;
-}
-.cal-schedule-right {
-  flex: 1; min-width: 0; display: flex; align-items: center;
-  justify-content: space-between; gap: 8px; padding-left: 6px;
-}
-.cal-schedule-content {
-  flex: 1; font-size: 14px; color: #333; line-height: 1.4; min-width: 0; word-break: break-word;
-}
-.cal-schedule-actions { display: flex; gap: 4px; flex-shrink: 0; }
-.cal-sm-btn {
-  width: 28px; height: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff;
-  cursor: pointer; padding: 0; border-radius: 7px;
-  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
-}
-.cal-sm-btn svg { width: 12px; height: 12px; }
-.cal-sm-edit { color: #666; }
-.cal-sm-edit:active { background: #f0f0f0; }
-.cal-sm-del { color: #ff3b30; }
-.cal-sm-del:active { background: rgba(255,59,48,0.06); }
-.cal-empty { text-align: center; color: #ccc; font-size: 13px; padding: 50px 20px; }
-
 /* =========================
-   贴纸卡片样式（胶带、虚线、撕边）
+   贴纸卡片样式（唯一一份，胶带、虚线、撕边完整版）
 ========================= */
 .sticker-wrap {
   position: relative; width: 230px; height: 230px;
@@ -575,12 +444,19 @@
   border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 1px; pointer-events: none;
 }
 
+/* 纸张横线（虚线） */
 .paper-lines {
-  position: absolute; top: 18px; left: 18px; right: 18px; bottom: 18px;
-  pointer-events: none; z-index: 0;
-  background: repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(0,0,0,0.04) 31px, rgba(0,0,0,0.04) 32px);
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(0,0,0,0.06) 31px, rgba(0,0,0,0.06) 32px);
 }
 
+/* 蓝色胶带 */
 .tape {
   position: absolute; top: -20px; left: 35px; width: 70px; height: 35px; z-index: 10;
 }
@@ -596,6 +472,7 @@
   clip-path: polygon(0% 0%, 70% 0%, 30% 6%, 80% 12%, 40% 20%, 75% 26%, 35% 34%, 70% 40%, 25% 48%, 65% 54%, 30% 62%, 75% 68%, 40% 76%, 80% 82%, 35% 90%, 60% 100%, 0% 100%);
 }
 
+/* 撕边效果 */
 .torn-top, .torn-bottom, .torn-left, .torn-right {
   position: absolute; background: #fff;
 }
@@ -669,3 +546,55 @@
 }
 .sticker-paper.turning { animation: pageTurn 0.35s ease-out; }
 
+/* 行程时间线 */
+.cal-schedule-date {
+  font-size: 14px; color: #999; margin-bottom: 20px; font-weight: 500;
+}
+.cal-schedule-list { display: flex; flex-direction: column; gap: 0; position: relative; }
+.cal-schedule-item {
+  display: flex; align-items: stretch; gap: 0; padding: 0; position: relative; min-height: 56px;
+}
+.cal-schedule-time {
+  width: 46px; font-size: 13px; font-weight: 600; color: #1a1a1a;
+  text-align: right; flex-shrink: 0; line-height: 1;
+  display: flex; align-items: center; justify-content: flex-end;
+}
+.cal-schedule-dot-line {
+  width: 32px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative;
+}
+.cal-schedule-dot-line::before {
+  content: ''; position: absolute; left: 50%; top: 0; bottom: 50%;
+  width: 1.5px; background: rgba(79,121,166,0.2); transform: translateX(-50%);
+}
+.cal-schedule-dot-line::after {
+  content: ''; position: absolute; left: 50%; top: 50%; bottom: 0;
+  width: 1.5px; background: rgba(79,121,166,0.2); transform: translateX(-50%);
+}
+.cal-schedule-item:first-child .cal-schedule-dot-line::before { display: none; }
+.cal-schedule-item:last-child .cal-schedule-dot-line::after { display: none; }
+.cal-schedule-item:only-child .cal-schedule-dot-line::before,
+.cal-schedule-item:only-child .cal-schedule-dot-line::after { display: none; }
+.cal-schedule-dot-circle {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; border: 2px solid #4f79a6; position: relative; z-index: 2;
+}
+.cal-schedule-right {
+  flex: 1; min-width: 0; display: flex; align-items: center;
+  justify-content: space-between; gap: 8px; padding-left: 6px;
+}
+.cal-schedule-content {
+  flex: 1; font-size: 14px; color: #333; line-height: 1.4; min-width: 0; word-break: break-word;
+}
+.cal-schedule-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.cal-sm-btn {
+  width: 28px; height: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff;
+  cursor: pointer; padding: 0; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.cal-sm-btn svg { width: 12px; height: 12px; }
+.cal-sm-edit { color: #666; }
+.cal-sm-edit:active { background: #f0f0f0; }
+.cal-sm-del { color: #ff3b30; }
+.cal-sm-del:active { background: rgba(255,59,48,0.06); }
+.cal-empty { text-align: center; color: #ccc; font-size: 13px; padding: 50px 20px; }
