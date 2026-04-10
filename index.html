@@ -66,68 +66,67 @@
       </div>
       <div class="card-row" id="cardRow"></div>
     </div>
-    
-    <div class="chat-days-container">
-  <!-- 第一个对话框：我们相识（头像在左边） -->
-  <div class="dialog-with-avatar" id="dialogMeet">
-    <div class="side-avatar" id="avatarBoxLeft">
-      <div class="side-avatar-placeholder" id="avatarPlaceholderLeft">★</div>
-      <img class="side-avatar-img" id="avatarImgLeft" style="display: none;" alt="头像">
-    </div>
-    <div class="pixel-dialog">
-      <div class="pixel-header">
-        <div class="pixel-hearts">
-          <div class="pixel-heart"><div class="ph-core"></div></div>
-          <div class="pixel-heart"><div class="ph-core"></div></div>
-          <div class="pixel-heart"><div class="ph-core"></div></div>
-        </div>
-        <div class="pixel-btns">
-          <div class="pixel-btn minimize"></div>
-          <div class="pixel-btn maximize"></div>
-          <div class="pixel-btn close"></div>
-        </div>
-      </div>
-      <div class="pixel-lace">
-        <div class="lace-pattern"></div>
-      </div>
-      <div class="pixel-body">
-        <div class="pixel-text" id="meetText">我们相识</div>
-      </div>
-    </div>
-  </div>
 
-<!-- 第二个对话框：天数（头像在右边） -->
-<div class="dialog-with-avatar" id="dialogDays">
-  <!-- 对话框内容放在左边 -->
-  <div class="pixel-dialog">
-    <div class="pixel-header">
-      <div class="pixel-btns">
-        <div class="pixel-btn minimize"></div>
-        <div class="pixel-btn maximize"></div>
-        <div class="pixel-btn close"></div>
+    <!-- 相识天数对话框 -->
+    <div class="chat-days-container">
+      <div class="dialog-with-avatar">
+        <div class="side-avatar" id="avatarBoxLeft">
+          <div class="side-avatar-placeholder" id="avatarPlaceholderLeft">★</div>
+          <img class="side-avatar-img" id="avatarImgLeft" style="display: none;" alt="头像">
+        </div>
+        <div class="pixel-dialog">
+          <div class="pixel-header">
+            <div class="pixel-hearts">
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+            </div>
+            <div class="pixel-btns">
+              <div class="pixel-btn minimize"></div>
+              <div class="pixel-btn maximize"></div>
+              <div class="pixel-btn close"></div>
+            </div>
+          </div>
+          <div class="pixel-lace">
+            <div class="lace-pattern"></div>
+          </div>
+          <div class="pixel-body">
+            <div class="pixel-text" id="meetText">我们相识</div>
+          </div>
+        </div>
       </div>
-      <div class="pixel-hearts">
-        <div class="pixel-heart"><div class="ph-core"></div></div>
-        <div class="pixel-heart"><div class="ph-core"></div></div>
-        <div class="pixel-heart"><div class="ph-core"></div></div>
+
+      <div class="dialog-with-avatar dialog-right-avatar">
+        <div class="pixel-dialog">
+          <div class="pixel-header">
+            <div class="pixel-btns">
+              <div class="pixel-btn minimize"></div>
+              <div class="pixel-btn maximize"></div>
+              <div class="pixel-btn close"></div>
+            </div>
+            <div class="pixel-hearts">
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+              <div class="pixel-heart"><div class="ph-core"></div></div>
+            </div>
+          </div>
+          <div class="pixel-lace">
+            <div class="lace-pattern"></div>
+          </div>
+          <div class="pixel-body">
+            <div class="pixel-text" id="daysText">0天</div>
+          </div>
+        </div>
+        <div class="side-avatar" id="avatarBoxRight">
+          <div class="side-avatar-placeholder" id="avatarPlaceholderRight">★</div>
+          <img class="side-avatar-img" id="avatarImgRight" style="display: none;" alt="头像">
+        </div>
       </div>
     </div>
-    <div class="pixel-lace">
-      <div class="lace-pattern"></div>
-    </div>
-    <div class="pixel-body">
-      <div class="pixel-text" id="daysText">0天</div>
-    </div>
-  </div>
-  <!-- 头像放在右边 -->
-  <div class="side-avatar" id="avatarBoxRight">
-    <div class="side-avatar-placeholder" id="avatarPlaceholderRight">★</div>
-    <img class="side-avatar-img" id="avatarImgRight" style="display: none;" alt="头像">
-  </div>
-</div>
-</div>
-<input type="file" id="avatarUploadLeft" accept="image/*" style="display:none">
-<input type="file" id="avatarUploadRight" accept="image/*" style="display:none">
+
+    <!-- 隐藏的文件上传 -->
+    <input type="file" id="avatarUploadLeft" accept="image/*" style="display:none">
+    <input type="file" id="avatarUploadRight" accept="image/*" style="display:none">
 
     <div class="eden-card" id="edenCard">
       <div class="eden-text" id="edenText">你是我的伊甸塔</div>
