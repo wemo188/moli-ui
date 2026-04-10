@@ -465,3 +465,35 @@
   border-right: none !important;
   border-left: 2px solid #adcdea !important;
 }
+
+/* 终极修复：强制右边头像显示 */
+.search-box-right-avatar {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.search-box-right-avatar .search-input {
+  flex: 1 !important;
+  order: 1 !important;
+  text-align: left !important;
+}
+
+.search-box-right-avatar .avatar-area {
+  order: 2 !important;
+  flex-shrink: 0 !important;
+  border-right: none !important;
+  border-left: 2px solid #adcdea !important;
+  margin-left: 0 !important;
+}
+
+/* 确保头像预览区域在右边可见 */
+.search-box-right-avatar .avatar-preview {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
