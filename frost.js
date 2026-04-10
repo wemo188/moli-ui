@@ -73,7 +73,7 @@
 
     DEFAULTS: {
       text: '欢迎来到虚幻梦境',
-      fontSize: 35,
+      fontSize: 45,
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
