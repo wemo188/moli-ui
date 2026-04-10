@@ -369,7 +369,7 @@
   height: 100%;
   border: 2px solid #adcdea;
   border-radius: 8px;
-  background: rgba(26, 26, 46, 0.85);
+  background: transparent;
   overflow: hidden;
   box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
 }
@@ -383,7 +383,7 @@
   height: 100%;
   border: 2px solid #adcdea;
   border-radius: 8px;
-  background: rgba(26, 26, 46, 0.85);
+  background: transparent;
   overflow: hidden;
   box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);
 }
