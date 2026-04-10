@@ -58,7 +58,37 @@ var Cards={
         '</div></div>'+
       '</div>'+
 
-      // 右侧区域（占位图标 + 右卡片）
+      // 左边卡片下方：两个搜索框（上下排列）
+      '<div class="left-search-area">'+
+        '<div class="search-wrapper-left">'+
+          '<div class="search-box-left">'+
+            '<div class="avatar-area-left" data-side="leftSearch">'+
+              '<div class="avatar-preview" id="avatarPreviewLeftSearch">'+
+                '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+                  '<circle cx="12" cy="8" r="4"></circle>'+
+                  '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+                '</svg>'+
+              '</div>'+
+            '</div>'+
+            '<input type="text" class="search-input-left" placeholder="左边搜索框...">'+
+          '</div>'+
+        '</div>'+
+        '<div class="search-wrapper-right">'+
+          '<div class="search-box-right">'+
+            '<input type="text" class="search-input-right" placeholder="右边搜索框...">'+
+            '<div class="avatar-area-right" data-side="rightSearch">'+
+              '<div class="avatar-preview" id="avatarPreviewRightSearch">'+
+                '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+                  '<circle cx="12" cy="8" r="4"></circle>'+
+                  '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+                '</svg>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+
+      // 右侧区域（占位符 + 右卡片）
       '<div class="card-right-area">'+
         '<div class="card-placeholder-icons">'+
           '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
@@ -82,6 +112,75 @@ var Cards={
     Cards.bindEdit();
     Cards.applyDragOffsets();
     Cards.bindDrag();
+    Cards.bindSearchUpload();
+  },
+
+  bindSearchUpload:function(){
+    // 左边搜索框头像上传
+    var leftArea = document.querySelector('.avatar-area-left');
+    var leftPreview = document.getElementById('avatarPreviewLeftSearch');
+    if(leftArea && leftPreview){
+      leftArea.addEventListener('click',function(){
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e){
+          var file = e.target.files[0];
+          if(file){
+            var reader = new FileReader();
+            reader.onload = function(ev){
+              leftPreview.innerHTML = '';
+              var img = document.createElement('img');
+              img.src = ev.target.result;
+              leftPreview.appendChild(img);
+              localStorage.setItem('avatar_leftSearch', ev.target.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        input.click();
+      });
+      var saved = localStorage.getItem('avatar_leftSearch');
+      if(saved){
+        leftPreview.innerHTML = '';
+        var img = document.createElement('img');
+        img.src = saved;
+        leftPreview.appendChild(img);
+      }
+    }
+
+    // 右边搜索框头像上传
+    var rightArea = document.querySelector('.avatar-area-right');
+    var rightPreview = document.getElementById('avatarPreviewRightSearch');
+    if(rightArea && rightPreview){
+      rightArea.addEventListener('click',function(){
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e){
+          var file = e.target.files[0];
+          if(file){
+            var reader = new FileReader();
+            reader.onload = function(ev){
+              rightPreview.innerHTML = '';
+              var img = document.createElement('img');
+              img.src = ev.target.result;
+              rightPreview.appendChild(img);
+              localStorage.setItem('avatar_rightSearch', ev.target.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        input.click();
+      });
+      var saved = localStorage.getItem('avatar_rightSearch');
+      if(saved){
+        rightPreview.innerHTML = '';
+        var img = document.createElement('img');
+        img.src = saved;
+        rightPreview.appendChild(img);
+      }
+    }
   },
 
   bindEdit:function(){
