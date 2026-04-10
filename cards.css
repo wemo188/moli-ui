@@ -375,7 +375,8 @@
 }
 
 /* 第二条搜索框：头像在右（HTML顺序已是 input 在前，avatar 在后） */
-.search-box-right-avatar {
+/* 右边搜索框专用 */
+.search-box-right {
   display: flex;
   align-items: center;
   width: 100%;
@@ -387,8 +388,9 @@
   box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);
 }
 
-.search-input {
+.search-input-right {
   flex: 1;
+  min-width: 0;
   height: 100%;
   padding: 0 14px;
   border: none;
@@ -398,26 +400,22 @@
   font-size: 14px;
 }
 
-.search-input::placeholder {
+.search-input-right::placeholder {
   color: #adcdea;
   opacity: 0.5;
 }
 
-.avatar-area {
+.avatar-area-right {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   width: 42px;
   min-width: 42px;
+  flex-shrink: 0;
   height: 100%;
   cursor: pointer;
+  background: transparent;
   padding: 4px;
-  border-right: 2px solid #adcdea;
-}
-
-/* 第二条搜索框：头像在右，边框放在左边 */
-.search-box-right-avatar .avatar-area {
-  border-right: none;
   border-left: 2px solid #adcdea;
 }
 
