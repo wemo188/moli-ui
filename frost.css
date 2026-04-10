@@ -34,7 +34,6 @@
   transform-origin: center;
 }
 
-/* 拖拽时的样式 */
 .eden-card.dragging {
   opacity: 0.85;
   cursor: grabbing;
@@ -42,7 +41,6 @@
   transition: none;
 }
 
-/* 编辑浮窗 */
 .eden-ctrl-wrap {
   position: fixed;
   z-index: 998;
@@ -222,32 +220,23 @@
   gap: 0;
 }
 
-/* 第一个对话框（头像在左边） */
-#dialogMeet .side-avatar {
-  border-left: 2px solid #9dbfe0;
-  border-right: none;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, -2px 2px 0 rgba(0,0,0,0.12);
-}
-
-/* 第二个对话框（头像在右边） */
-#dialogDays {
-  flex-direction: row-reverse;
-}
-
-#dialogDays .side-avatar {
-  border-left: 2px solid #9dbfe0;
-  border-right: none;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
-}
-
 .side-avatar {
-  width: 40px;
+  width: 60px;
   background: #eef4fa;
+  border: 2px solid #9dbfe0;
+  border-right: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, -2px 2px 0 rgba(0,0,0,0.12);
+}
+
+.dialog-right-avatar .side-avatar {
+  border-left: 2px solid #9dbfe0;
+  border-right: 2px solid #9dbfe0;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
 }
 
 .side-avatar-img {
@@ -423,7 +412,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
+  min-width: 160px;
 }
 
 .pixel-text {
