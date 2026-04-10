@@ -11,13 +11,21 @@
   margin-top: 20px;
 }
 
+/* 左边区域包装器（左卡片 + 搜索框垂直排列） */
+.left-area-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
 .card-right-area {
   width: 180px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;  /* 👈 新增 */
+  position: relative;
 }
 
 .card-right-area .card-placeholder-icons {
@@ -25,8 +33,8 @@
   gap: 30px;
   justify-content: center;
   margin-bottom: 10px;
-  position: relative;  /* 👈 新增 */
-  top: 20px;  /* 👈 新增，控制下移距离，可调整 */
+  position: relative;
+  top: 40px;
 }
 
 .card-right-area #bx-1 {
@@ -342,102 +350,101 @@
    左边卡片下方的搜索框
 ========================= */
 .left-search-area {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .search-wrapper-left,
 .search-wrapper-right {
-    position: relative;
-    width: 180px;
-    height: 42px;
+  position: relative;
+  width: 180px;
+  height: 42px;
 }
 
 .search-box-left,
 .search-box-right {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    border: 2px solid #adcdea;
-    border-radius: 8px;
-    background: rgba(26, 26, 46, 0.85);
-    overflow: hidden;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #adcdea;
+  border-radius: 8px;
+  background: rgba(26, 26, 46, 0.85);
+  overflow: hidden;
 }
 
 .search-box-left {
-    box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
+  box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
 }
 
 .search-box-right {
-    box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);
+  box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);
 }
 
 .search-input-left,
 .search-input-right {
-    flex: 1;
-    height: 100%;
-    padding: 0 14px;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #adcdea;
-    font-size: 14px;
+  flex: 1;
+  height: 100%;
+  padding: 0 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #adcdea;
+  font-size: 14px;
 }
 
 .search-input-left::placeholder,
 .search-input-right::placeholder {
-    color: #adcdea;
-    opacity: 0.5;
+  color: #adcdea;
+  opacity: 0.5;
 }
 
 .avatar-area-left,
 .avatar-area-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    min-width: 42px;
-    height: 100%;
-    cursor: pointer;
-    padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  min-width: 42px;
+  height: 100%;
+  cursor: pointer;
+  padding: 4px;
 }
 
 .avatar-area-left {
-    border-right: 2px solid #adcdea;
+  border-right: 2px solid #adcdea;
 }
 
 .avatar-area-right {
-    border-left: 2px solid #adcdea;
+  border-left: 2px solid #adcdea;
 }
 
 .avatar-preview {
-    width: 100%;
-    height: 100%;
-    border-radius: 4px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
 }
 
 .avatar-preview svg {
-    width: 22px;
-    height: 22px;
-    stroke: #adcdea;
+  width: 22px;
+  height: 22px;
+  stroke: #adcdea;
 }
 
 .avatar-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .avatar-area-left:active,
 .avatar-area-right:active {
-    opacity: 0.7;
+  opacity: 0.7;
 }
