@@ -178,7 +178,6 @@
       if (daysText) {
         var days = Eden.getDaysCount();
         daysText.value = days + '天';
-        // 触发生成dom
         var evt = new Event('input', { bubbles: true });
         daysText.dispatchEvent(evt);
       }
@@ -190,92 +189,6 @@
         localStorage.setItem('meetDate', Date.now());
         Eden.updateDaysDisplay();
         App.showToast('已重置');
-      }
-    },
-
-    // 加载头像
-    loadAvatars: function() {
-      var savedAvatarLeft = localStorage.getItem('pixelAvatarLeft');
-      if (savedAvatarLeft) {
-        var avatarImgLeft = document.getElementById('avatarImgLeft');
-        var avatarPlaceholderLeft = document.getElementById('avatarPlaceholderLeft');
-        if (avatarImgLeft) {
-          avatarImgLeft.src = savedAvatarLeft;
-          avatarImgLeft.style.display = 'block';
-          if (avatarPlaceholderLeft) avatarPlaceholderLeft.style.display = 'none';
-        }
-      }
-      
-      var savedAvatarRight = localStorage.getItem('pixelAvatarRight');
-      if (savedAvatarRight) {
-        var avatarImgRight = document.getElementById('avatarImgRight');
-        var avatarPlaceholderRight = document.getElementById('avatarPlaceholderRight');
-        if (avatarImgRight) {
-          avatarImgRight.src = savedAvatarRight;
-          avatarImgRight.style.display = 'block';
-          if (avatarPlaceholderRight) avatarPlaceholderRight.style.display = 'none';
-        }
-      }
-    },
-
-    // 绑定头像上传
-    bindAvatarUpload: function() {
-      // 左边头像上传
-      var avatarBoxLeft = document.getElementById('avatarBoxLeft');
-      var avatarUploadLeft = document.getElementById('avatarUploadLeft');
-      if (avatarBoxLeft && avatarUploadLeft) {
-        avatarBoxLeft.addEventListener('click', function(e) {
-          e.stopPropagation();
-          avatarUploadLeft.click();
-        });
-        avatarUploadLeft.addEventListener('change', function(e) {
-          var file = e.target.files[0];
-          if (file && file.type.startsWith('image/')) {
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-              var imgUrl = ev.target.result;
-              var avatarImgLeft = document.getElementById('avatarImgLeft');
-              var avatarPlaceholderLeft = document.getElementById('avatarPlaceholderLeft');
-              if (avatarImgLeft) {
-                avatarImgLeft.src = imgUrl;
-                avatarImgLeft.style.display = 'block';
-                if (avatarPlaceholderLeft) avatarPlaceholderLeft.style.display = 'none';
-                localStorage.setItem('pixelAvatarLeft', imgUrl);
-                App.showToast('头像已保存');
-              }
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-      
-      // 右边头像上传
-      var avatarBoxRight = document.getElementById('avatarBoxRight');
-      var avatarUploadRight = document.getElementById('avatarUploadRight');
-      if (avatarBoxRight && avatarUploadRight) {
-        avatarBoxRight.addEventListener('click', function(e) {
-          e.stopPropagation();
-          avatarUploadRight.click();
-        });
-        avatarUploadRight.addEventListener('change', function(e) {
-          var file = e.target.files[0];
-          if (file && file.type.startsWith('image/')) {
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-              var imgUrl = ev.target.result;
-              var avatarImgRight = document.getElementById('avatarImgRight');
-              var avatarPlaceholderRight = document.getElementById('avatarPlaceholderRight');
-              if (avatarImgRight) {
-                avatarImgRight.src = imgUrl;
-                avatarImgRight.style.display = 'block';
-                if (avatarPlaceholderRight) avatarPlaceholderRight.style.display = 'none';
-                localStorage.setItem('pixelAvatarRight', imgUrl);
-                App.showToast('头像已保存');
-              }
-            };
-            reader.readAsDataURL(file);
-          }
-        });
       }
     },
 
@@ -425,7 +338,6 @@
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
       var self = this;
-      // 上传字体到 IndexedDB
       App.$('#edenFontFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -533,7 +445,6 @@
         card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
       }
       
-      // 加载保存的字体
       if (d.fontName) {
         Eden.loadFontFromDB(d.fontName);
       } else if (d.fontUrl) {
@@ -543,14 +454,11 @@
 
     init: function() {
       var self = this;
-      // 先初始化 IndexedDB
       FontDB.init().then(function() {
         self.load();
         self.apply();
         self.bindDrag();
         self.updateDaysDisplay();
-        self.loadAvatars();
-        self.bindAvatarUpload();
         self.bindEditableText();
         
         var el = App.$('#edenCard');
@@ -562,13 +470,10 @@
           });
         }
       }).catch(function() {
-        // IndexedDB 不可用，降级处理
         self.load();
         self.apply();
         self.bindDrag();
         self.updateDaysDisplay();
-        self.loadAvatars();
-        self.bindAvatarUpload();
         self.bindEditableText();
         
         var el = App.$('#edenCard');
