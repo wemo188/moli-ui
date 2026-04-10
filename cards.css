@@ -449,3 +449,14 @@
 .avatar-area:active {
   opacity: 0.7;
 }
+
+/* 强制第二条搜索框头像在右 */
+.search-box-right-avatar {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+}
+
+.search-box-right-avatar .avatar-area {
+  border-right: none !important;
+  border-left: 2px solid #adcdea !important;
+}
