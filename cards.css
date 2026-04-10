@@ -183,7 +183,7 @@
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
-  transform: translateY(20px);
+  transform: translateY(5px);
 }
 
 #bx-1 .bx-cw {
