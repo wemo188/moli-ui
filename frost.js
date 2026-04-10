@@ -177,7 +177,10 @@
       var daysText = document.getElementById('daysText');
       if (daysText) {
         var days = Eden.getDaysCount();
-        daysText.textContent = days + '天';
+        daysText.value = days + '天';
+        // 触发生成dom
+        var evt = new Event('input', { bubbles: true });
+        daysText.dispatchEvent(evt);
       }
     },
 
@@ -217,7 +220,6 @@
 
     // 绑定头像上传
     bindAvatarUpload: function() {
-      var self = this;
       // 左边头像上传
       var avatarBoxLeft = document.getElementById('avatarBoxLeft');
       var avatarUploadLeft = document.getElementById('avatarUploadLeft');
@@ -274,6 +276,37 @@
             reader.readAsDataURL(file);
           }
         });
+      }
+    },
+
+    // 绑定可编辑文字保存
+    bindEditableText: function() {
+      var meetText = document.getElementById('meetText');
+      var daysText = document.getElementById('daysText');
+
+      function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      }
+
+      if (meetText) {
+        meetText.addEventListener('input', function() {
+          autoResize(this);
+          localStorage.setItem('meetText', this.value);
+        });
+        autoResize(meetText);
+        var savedMeet = localStorage.getItem('meetText');
+        if (savedMeet) meetText.value = savedMeet;
+      }
+
+      if (daysText) {
+        daysText.addEventListener('input', function() {
+          autoResize(this);
+          localStorage.setItem('daysText', this.value);
+        });
+        autoResize(daysText);
+        var savedDays = localStorage.getItem('daysText');
+        if (savedDays) daysText.value = savedDays;
       }
     },
 
@@ -518,6 +551,7 @@
         self.updateDaysDisplay();
         self.loadAvatars();
         self.bindAvatarUpload();
+        self.bindEditableText();
         
         var el = App.$('#edenCard');
         if (el) {
@@ -535,6 +569,7 @@
         self.updateDaysDisplay();
         self.loadAvatars();
         self.bindAvatarUpload();
+        self.bindEditableText();
         
         var el = App.$('#edenCard');
         if (el) {
