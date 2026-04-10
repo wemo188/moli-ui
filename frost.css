@@ -217,7 +217,7 @@
 /* 左边：头像在左 */
 .search-wrapper-left {
     position: relative;
-    width: 200px;
+    width: 150px;
     height: 42px;
     overflow: visible;
 }
@@ -281,7 +281,7 @@
 /* 右边：头像在右 */
 .search-wrapper-right {
     position: relative;
-    width: 200px;
+    width: 150px;
     height: 42px;
     overflow: visible;
 }
