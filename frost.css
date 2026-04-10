@@ -32,6 +32,8 @@
   text-align: center;
   margin: 0 auto;
   transform-origin: center;
+  white-space: pre-wrap;    /* 保留换行和空格 */
+  word-break: break-word;   /* 长单词换行 */
 }
 
 .eden-card.dragging {
