@@ -413,11 +413,11 @@
 }
 
 .pixel-body {
-  padding: 6px 14px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 160px;
+  min-width: 130px;
 }
 
 .pixel-text {
