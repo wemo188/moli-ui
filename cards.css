@@ -33,7 +33,7 @@
   gap: 30px;
   justify-content: center;
   margin-bottom: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .card-right-area #bx-1 {
@@ -183,7 +183,7 @@
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
-  transform: translateY(5px);
+  transform: translateY(1px);
 }
 
 #bx-1 .bx-cw {
