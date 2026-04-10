@@ -230,7 +230,7 @@
     height: 100%;
     border-radius: 8px;
     background: #adcdea;
-    z-index: 1;
+    z-index: 0;
 }
 
 .search-box-left {
@@ -243,7 +243,7 @@
     border-radius: 8px;
     background: #transparent;
     overflow: visible;
-    z-index: 2;
+    z-index: 1;
 }
 
 .search-input-left {
@@ -294,7 +294,7 @@
     height: 100%;
     border-radius: 8px;
     background: #adcdea;
-    z-index: 1;
+    z-index: 0;
 }
 
 .search-box-right {
@@ -307,7 +307,7 @@
     border-radius: 8px;
     background: #transparent;
     overflow: visible;
-    z-index: 2;
+    z-index: 1;
 }
 
 .search-input-right {
