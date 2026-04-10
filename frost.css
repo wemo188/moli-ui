@@ -222,7 +222,6 @@
   gap: 0;
 }
 
-/* 反向对话框（头像在右） */
 .dialog-with-avatar.dialog-reverse {
   flex-direction: row-reverse;
 }
@@ -232,7 +231,6 @@
   border-right: 2px solid #9dbfe0;
 }
 
-/* 左侧头像框 */
 .side-avatar {
   width: 60px;
   background: #eef4fa;
@@ -244,7 +242,6 @@
   cursor: pointer;
   overflow: hidden;
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, -2px 2px 0 rgba(0,0,0,0.12);
-  position: relative;
 }
 
 .side-avatar-img {
@@ -265,7 +262,6 @@
   background: #f0f5fa;
 }
 
-/* 像素对话框 */
 .pixel-dialog {
   display: inline-block;
   background: #eef4fa;
@@ -273,7 +269,6 @@
   box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 #b5cddf, 2px 2px 0 rgba(0,0,0,0.12);
 }
 
-/* 页眉 */
 .pixel-header {
   height: 13px;
   background: linear-gradient(180deg, #c8dcea, #b5cddf);
@@ -284,7 +279,6 @@
   padding: 0 4px;
 }
 
-/* 蕾丝花边 */
 .pixel-lace {
   position: relative;
   width: 100%;
@@ -333,7 +327,6 @@
   pointer-events: none;
 }
 
-/* 像素爱心 */
 .pixel-hearts {
   display: flex;
   gap: 3px;
@@ -344,7 +337,6 @@
   width: 9px;
   height: 8px;
   position: relative;
-  image-rendering: pixelated;
 }
 
 .pixel-heart .ph-core {
@@ -363,7 +355,6 @@
     3px 5px 0 #7aaed0, 4px 5px 0 #7aaed0;
 }
 
-/* 右侧按钮 */
 .pixel-btns {
   display: flex;
   gap: 2px;
@@ -421,7 +412,6 @@
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* 内容区 */
 .pixel-body {
   padding: 6px 14px;
   display: flex;
@@ -440,8 +430,4 @@
   border: none;
   outline: none;
   width: 100%;
-}
-
-#avatarUpload {
-  display: none;
 }
