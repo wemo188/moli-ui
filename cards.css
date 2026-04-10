@@ -337,3 +337,107 @@
   font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
 }
 .pc-edit-cancel:active { opacity: 0.7; }
+
+/* =========================
+   左边卡片下方的搜索框
+========================= */
+.left-search-area {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.search-wrapper-left,
+.search-wrapper-right {
+    position: relative;
+    width: 180px;
+    height: 42px;
+}
+
+.search-box-left,
+.search-box-right {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #adcdea;
+    border-radius: 8px;
+    background: rgba(26, 26, 46, 0.85);
+    overflow: hidden;
+}
+
+.search-box-left {
+    box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);
+}
+
+.search-box-right {
+    box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);
+}
+
+.search-input-left,
+.search-input-right {
+    flex: 1;
+    height: 100%;
+    padding: 0 14px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #adcdea;
+    font-size: 14px;
+}
+
+.search-input-left::placeholder,
+.search-input-right::placeholder {
+    color: #adcdea;
+    opacity: 0.5;
+}
+
+.avatar-area-left,
+.avatar-area-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    min-width: 42px;
+    height: 100%;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.avatar-area-left {
+    border-right: 2px solid #adcdea;
+}
+
+.avatar-area-right {
+    border-left: 2px solid #adcdea;
+}
+
+.avatar-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.avatar-preview svg {
+    width: 22px;
+    height: 22px;
+    stroke: #adcdea;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-area-left:active,
+.avatar-area-right:active {
+    opacity: 0.7;
+}
