@@ -371,7 +371,7 @@
   border-radius: 8px;
   background: transparent;
   overflow: hidden;
-  box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.9);
+  box-shadow: -4px 4px 0 rgba(173, 205, 234, 0.9);
   margin-left: -10px;
 }
 
@@ -416,7 +416,7 @@
   border-radius: 8px;
   background: transparent;
   overflow: hidden;
-  box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.9);
+  box-shadow: 4px 4px 0 rgba(173, 205, 234, 0.9);
   margin-right: -13px;
 }
 
