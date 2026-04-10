@@ -72,8 +72,8 @@
     dragTimer: null,
 
     DEFAULTS: {
-      text: '你是我的伊甸塔',
-      fontSize: 28,
+      text: '欢迎来到虚幻梦境',
+      fontSize: 50,
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
