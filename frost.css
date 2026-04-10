@@ -232,7 +232,7 @@
     background: transparent;  /* 半透明深色背景，不透阴影 */
     overflow: hidden;
     z-index: 2;
-    box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);  /* 实心阴影 */
+    box-shadow: -4px 6px 0 rgba(173, 205, 234, 0.4);  /* 实心阴影 */
 }
 
 .search-input-left {
