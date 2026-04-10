@@ -60,7 +60,7 @@ var Cards={
         '<div class="left-search-area">'+
           '<div class="search-wrapper">'+
             '<div class="search-box">'+
-              '<div class="avatar-area" data-side="search1">'+
+              '<div class="avatar-area-left" data-side="search1">'+
                 '<div class="avatar-preview" id="avatarPreview1">'+
                   '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
                     '<circle cx="12" cy="8" r="4"></circle>'+
@@ -68,24 +68,24 @@ var Cards={
                   '</svg>'+
                 '</div>'+
               '</div>'+
-              '<input type="text" class="search-input" placeholder="左边搜索...">'+
+              '<input type="text" class="search-input-left" placeholder="左边搜索...">'+
             '</div>'+
           '</div>'+
-         '<div class="search-wrapper">'+
-  '<div class="search-box-right">'+
-    '<input type="text" class="search-input-right" placeholder="右边搜索...">'+
-    '<div class="avatar-area-right" data-side="search2">'+
-      '<div class="avatar-preview" id="avatarPreview2">'+
-        '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
-          '<circle cx="12" cy="8" r="4"></circle>'+
-          '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
-        '</svg>'+
+          '<div class="search-wrapper">'+
+            '<div class="search-box-right">'+
+              '<input type="text" class="search-input-right" placeholder="右边搜索...">'+
+              '<div class="avatar-area-right" data-side="search2">'+
+                '<div class="avatar-preview" id="avatarPreview2">'+
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+                    '<circle cx="12" cy="8" r="4"></circle>'+
+                    '<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>'+
+                  '</svg>'+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
       '</div>'+
-    '</div>'+
-  '</div>'+
-'</div>'+
-      '</div>'+
-      
       '<div class="card-right-area">'+
         '<div class="card-placeholder-icons">'+
           '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
@@ -113,7 +113,7 @@ var Cards={
   },
 
   bindSearchUpload:function(){
-    var area1 = document.querySelector('.avatar-area[data-side="search1"]');
+    var area1 = document.querySelector('.avatar-area-left[data-side="search1"]');
     var preview1 = document.getElementById('avatarPreview1');
     if(area1 && preview1){
       area1.addEventListener('click',function(){
@@ -145,7 +145,7 @@ var Cards={
       }
     }
 
-    var area2 = document.querySelector('.avatar-area[data-side="search2"]');
+    var area2 = document.querySelector('.avatar-area-right[data-side="search2"]');
     var preview2 = document.getElementById('avatarPreview2');
     if(area2 && preview2){
       area2.addEventListener('click',function(){
