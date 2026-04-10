@@ -229,7 +229,7 @@
     height: 100%;
     border: 2px solid #adcdea;
     border-radius: 8px;
-    background: rgba(26, 26, 46, 0.85);  /* 半透明深色背景，不透阴影 */
+    background: transparent;  /* 半透明深色背景，不透阴影 */
     overflow: hidden;
     z-index: 2;
     box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);  /* 实心阴影 */
@@ -282,7 +282,7 @@
     height: 100%;
     border: 2px solid #adcdea;
     border-radius: 8px;
-    background: rgba(26, 26, 46, 0.85);  /* 半透明深色背景 */
+    background: transparent;  /* 半透明深色背景 */
     overflow: hidden;
     z-index: 2;
     box-shadow: 4px 6px 0 rgba(173, 205, 234, 0.4);  /* 实心阴影 */
