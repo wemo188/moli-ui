@@ -66,9 +66,9 @@
   position: absolute;
   inset: -40%;
   background:
-    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.45), transparent 62%),
-    radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.25), transparent 64%),
-    radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.18), transparent 66%);
+    radial-gradient(closest-side at 52% 48%, rgba(79,121,166,.35), transparent 62%),
+    radial-gradient(closest-side at 50% 55%, rgba(126,163,201,.20), transparent 64%),
+    radial-gradient(closest-side at 60% 40%, rgba(223,231,243,.10), transparent 66%);
   transform: rotate(-10deg);
   pointer-events: none;
 }
