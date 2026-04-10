@@ -43,9 +43,7 @@ var Cards={
     var rNameC=R.name?'':' bx-name-placeholder';
 
     container.innerHTML=
-      // 左边区域（左卡片 + 两个搜索框）
       '<div class="left-area-wrapper">'+
-        // 左卡片
         '<div class="bx-w" id="bx-2" data-side="left">'+
           '<div class="bx-tag-wrap">'+
             '<div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div>'+
@@ -59,10 +57,7 @@ var Cards={
             '</div>'+
           '</div></div>'+
         '</div>'+
-
-        // 两个搜索框：第一条头像在左，第二条头像在右
         '<div class="left-search-area">'+
-          // 搜索框1：头像在左
           '<div class="search-wrapper">'+
             '<div class="search-box">'+
               '<div class="avatar-area" data-side="search1">'+
@@ -73,13 +68,12 @@ var Cards={
                   '</svg>'+
                 '</div>'+
               '</div>'+
-              '<input type="text" class="search-input" placeholder="搜索框1...">'+
+              '<input type="text" class="search-input" placeholder="左边搜索...">'+
             '</div>'+
           '</div>'+
-          // 搜索框2：头像在右
           '<div class="search-wrapper">'+
-            '<div class="search-box search-box-right-avatar">'+
-              '<input type="text" class="search-input" placeholder="搜索框2...">'+
+            '<div class="search-box-right-avatar">'+
+              '<input type="text" class="search-input" placeholder="右边搜索...">'+
               '<div class="avatar-area" data-side="search2">'+
                 '<div class="avatar-preview" id="avatarPreview2">'+
                   '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
@@ -92,8 +86,6 @@ var Cards={
           '</div>'+
         '</div>'+
       '</div>'+
-
-      // 右侧区域（占位符 + 右卡片）
       '<div class="card-right-area">'+
         '<div class="card-placeholder-icons">'+
           '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
@@ -121,7 +113,6 @@ var Cards={
   },
 
   bindSearchUpload:function(){
-    // 搜索框1（头像在左）
     var area1 = document.querySelector('.avatar-area[data-side="search1"]');
     var preview1 = document.getElementById('avatarPreview1');
     if(area1 && preview1){
@@ -154,7 +145,6 @@ var Cards={
       }
     }
 
-    // 搜索框2（头像在右）
     var area2 = document.querySelector('.avatar-area[data-side="search2"]');
     var preview2 = document.getElementById('avatarPreview2');
     if(area2 && preview2){
