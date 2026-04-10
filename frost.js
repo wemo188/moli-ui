@@ -60,7 +60,7 @@
   };
 
   // ============================
-  //  文字卡片 + 相识天数对话框
+  //  文字卡片
   // ============================
   var Eden = {
     data: {},
@@ -77,7 +77,7 @@
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
-      fontName: '',
+      fontName: '',        // 存储字体名称
       fontUrl: '',
       posX: 0,
       posY: 0
@@ -107,11 +107,10 @@
 
     // 从 IndexedDB 加载字体
     loadFontFromDB: function(fontName) {
-      var self = this;
       if (!fontName) return Promise.resolve(false);
       return FontDB.getFont(fontName).then(function(result) {
         if (result && result.dataUrl) {
-          return self.loadFontFromUrl(result.dataUrl, fontName);
+          return Eden.loadFontFromUrl(result.dataUrl, fontName);
         }
         return false;
       }).catch(function() { return false; });
@@ -140,8 +139,11 @@
           var dataUrl = ev.target.result;
           var fontName = 'EdenFont_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9]/g, '_');
           
+          // 保存到 IndexedDB
           FontDB.saveFont(fontName, dataUrl).then(function() {
+            // 加载字体
             self.loadFontFromUrl(dataUrl, fontName).then(function() {
+              // 保存字体名称到 localStorage
               self.data.fontName = fontName;
               self.data.fontUrl = '';
               self.save();
@@ -154,72 +156,27 @@
       });
     },
 
-    // 获取或创建相识日期
-    getMeetDate: function() {
-      var meetDate = localStorage.getItem('meetDate');
-      if (!meetDate) {
-        meetDate = Date.now();
-        localStorage.setItem('meetDate', meetDate);
+    apply: function() {
+      var el = App.$('#edenText');
+      if (!el) return;
+      var d = Eden.data;
+      el.textContent = d.text || '';
+      el.style.fontSize = (d.fontSize || 28) + 'px';
+      el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
+      el.style.letterSpacing = (d.spacing || 0) + 'px';
+      el.style.color = d.fontColor || '#1a1a1a';
+      
+      // 应用拖拽位置
+      var card = App.$('#edenCard');
+      if (card && (d.posX || d.posY)) {
+        card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
       }
-      return parseInt(meetDate);
-    },
-
-    // 计算天数
-    getDaysCount: function() {
-      var meetDate = Eden.getMeetDate();
-      var today = Date.now();
-      var days = Math.floor((today - meetDate) / (1000 * 60 * 60 * 24));
-      return days;
-    },
-
-    // 更新天数显示
-    updateDaysDisplay: function() {
-      var daysText = document.getElementById('daysText');
-      if (daysText) {
-        var days = Eden.getDaysCount();
-        daysText.value = days + '天';
-        var evt = new Event('input', { bubbles: true });
-        daysText.dispatchEvent(evt);
-      }
-    },
-
-    // 重置相识日期
-    resetMeetDate: function() {
-      if (confirm('重置相识日期？')) {
-        localStorage.setItem('meetDate', Date.now());
-        Eden.updateDaysDisplay();
-        App.showToast('已重置');
-      }
-    },
-
-    // 绑定可编辑文字保存
-    bindEditableText: function() {
-      var meetText = document.getElementById('meetText');
-      var daysText = document.getElementById('daysText');
-
-      function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-      }
-
-      if (meetText) {
-        meetText.addEventListener('input', function() {
-          autoResize(this);
-          localStorage.setItem('meetText', this.value);
-        });
-        autoResize(meetText);
-        var savedMeet = localStorage.getItem('meetText');
-        if (savedMeet) meetText.value = savedMeet;
-      }
-
-      if (daysText) {
-        daysText.addEventListener('input', function() {
-          autoResize(this);
-          localStorage.setItem('daysText', this.value);
-        });
-        autoResize(daysText);
-        var savedDays = localStorage.getItem('daysText');
-        if (savedDays) daysText.value = savedDays;
+      
+      // 加载保存的字体
+      if (d.fontName) {
+        Eden.loadFontFromDB(d.fontName);
+      } else if (d.fontUrl) {
+        Eden.loadFontFromUrl(d.fontUrl);
       }
     },
 
@@ -232,15 +189,18 @@
       
       card.addEventListener('touchstart', function(e) {
         if (e.target.closest('.eden-ctrl-wrap')) return;
+        
         var touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
         longPressed = false;
         moved = false;
+        
         var transform = card.style.transform;
         var match = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
         startPosX = match ? parseFloat(match[1]) : (Eden.data.posX || 0);
         startPosY = match ? parseFloat(match[2]) : (Eden.data.posY || 0);
+        
         timer = setTimeout(function() {
           longPressed = true;
           card.classList.add('dragging');
@@ -258,12 +218,15 @@
           return;
         }
         if (!longPressed) return;
+        
         e.preventDefault();
         moved = true;
+        
         var dx = touch.clientX - startX;
         var dy = touch.clientY - startY;
         var newX = startPosX + dx;
         var newY = startPosY + dy;
+        
         card.style.transform = 'translate(' + newX + 'px, ' + newY + 'px)';
         Eden.data.posX = newX;
         Eden.data.posY = newY;
@@ -273,6 +236,7 @@
         clearTimeout(timer);
         timer = null;
         card.classList.remove('dragging');
+        
         if (longPressed && moved) {
           Eden.save();
           e.stopPropagation();
@@ -293,40 +257,49 @@
       wrap.innerHTML =
         '<div class="eden-ctrl-panel">' +
           '<div class="eden-ctrl-title">文字卡片</div>' +
+
           '<div class="eden-ctrl-section">内容</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>字体</label>' +
-            '<input type="text" id="edenFontUrl" placeholder="字体URL" value="' + App.esc(d.fontUrl || '') + '">' +
+            '<input type="text" id="edenFontUrl" placeholder="字体URL（留空用全局字体）" value="' + App.esc(d.fontUrl || '') + '">' +
             '<label class="eden-font-upload-btn" for="edenFontFile">' +
               '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
             '</label>' +
             '<input type="file" id="edenFontFile" accept=".ttf,.otf,.woff,.woff2" hidden>' +
           '</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>文字</label>' +
-            '<input type="text" id="edenTextInput" value="' + App.esc(d.text || '') + '">' +
+            '<input type="text" id="edenTextInput" placeholder="输入显示的文字..." value="' + App.esc(d.text || '') + '">' +
           '</div>' +
+
           '<div class="eden-ctrl-divider"></div>' +
           '<div class="eden-ctrl-section">样式</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>字号</label>' +
             '<input type="range" id="edenSize" min="14" max="60" value="' + (d.fontSize || 28) + '">' +
             '<span class="eden-ctrl-val" id="edenSizeVal">' + (d.fontSize || 28) + 'px</span>' +
           '</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>倾斜</label>' +
             '<input type="range" id="edenRotate" min="-20" max="20" value="' + (d.rotate || 0) + '">' +
             '<span class="eden-ctrl-val" id="edenRotateVal">' + (d.rotate || 0) + '°</span>' +
           '</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>间距</label>' +
             '<input type="range" id="edenSpacing" min="0" max="20" value="' + (d.spacing || 2) + '">' +
             '<span class="eden-ctrl-val" id="edenSpacingVal">' + (d.spacing || 2) + 'px</span>' +
           '</div>' +
+
           '<div class="eden-ctrl-row">' +
             '<label>字色</label>' +
             '<input type="color" id="edenColor" value="' + (d.fontColor || '#1a1a1a') + '">' +
           '</div>' +
+
           '<div class="eden-ctrl-btns">' +
             '<button class="eden-ctrl-save" id="edenSave" type="button">保存</button>' +
             '<button class="eden-ctrl-reset" id="edenReset" type="button">重置</button>' +
@@ -334,9 +307,11 @@
         '</div>';
 
       document.body.appendChild(wrap);
+
       wrap.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       wrap.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
 
+      // 上传字体到 IndexedDB
       var self = this;
       App.$('#edenFontFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
@@ -393,6 +368,7 @@
 
       App.$('#edenSave').addEventListener('click', function() {
         var cfg = getCfg();
+        // 如果用户输入了 URL 而不是上传文件
         if (cfg.fontUrl && !cfg.fontUrl.startsWith('(已保存)')) {
           Eden.data.fontName = '';
           Eden.data.fontUrl = cfg.fontUrl;
@@ -430,58 +406,31 @@
       }, 100);
     },
 
-    apply: function() {
-      var el = App.$('#edenText');
-      if (!el) return;
-      var d = Eden.data;
-      el.textContent = d.text || '';
-      el.style.fontSize = (d.fontSize || 28) + 'px';
-      el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
-      el.style.letterSpacing = (d.spacing || 0) + 'px';
-      el.style.color = d.fontColor || '#1a1a1a';
-      
-      var card = App.$('#edenCard');
-      if (card && (d.posX || d.posY)) {
-        card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
-      }
-      
-      if (d.fontName) {
-        Eden.loadFontFromDB(d.fontName);
-      } else if (d.fontUrl) {
-        Eden.loadFontFromUrl(d.fontUrl);
-      }
-    },
-
     init: function() {
-      var self = this;
+      // 先初始化 IndexedDB
       FontDB.init().then(function() {
-        self.load();
-        self.apply();
-        self.bindDrag();
-        self.updateDaysDisplay();
-        self.bindEditableText();
-        
+        Eden.load();
+        Eden.apply();
+        Eden.bindDrag();
         var el = App.$('#edenCard');
         if (el) {
           el.addEventListener('click', function(e) {
-            if (self.isDragging) return;
+            if (Eden.isDragging) return;
             e.stopPropagation();
-            self.openEdit();
+            Eden.openEdit();
           });
         }
       }).catch(function() {
-        self.load();
-        self.apply();
-        self.bindDrag();
-        self.updateDaysDisplay();
-        self.bindEditableText();
-        
+        // IndexedDB 不可用，降级处理
+        Eden.load();
+        Eden.apply();
+        Eden.bindDrag();
         var el = App.$('#edenCard');
         if (el) {
           el.addEventListener('click', function(e) {
-            if (self.isDragging) return;
+            if (Eden.isDragging) return;
             e.stopPropagation();
-            self.openEdit();
+            Eden.openEdit();
           });
         }
       });
@@ -489,4 +438,57 @@
   };
 
   App.register('eden', Eden);
+})();
+
+// 双搜索框头像上传
+(function() {
+    // 左边
+    const leftArea = document.querySelector('.avatar-area-left');
+    const leftInput = document.getElementById('avatarInputLeft');
+    const leftPreview = document.getElementById('avatarPreviewLeft');
+    
+    if (leftArea && leftInput) {
+        leftArea.addEventListener('click', function() {
+            leftInput.click();
+        });
+        
+        leftInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    leftPreview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    leftPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // 右边
+    const rightArea = document.querySelector('.avatar-area-right');
+    const rightInput = document.getElementById('avatarInputRight');
+    const rightPreview = document.getElementById('avatarPreviewRight');
+    
+    if (rightArea && rightInput) {
+        rightArea.addEventListener('click', function() {
+            rightInput.click();
+        });
+        
+        rightInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    rightPreview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    rightPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 })();
