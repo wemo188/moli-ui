@@ -5,9 +5,16 @@
 ========================= */
 .wt-card {
   --S: 1;
+  --wt-ink: #1a1a1a;
+  --wt-ink2: #444444;
+  --wt-ink3: #666666;
+  --wt-line: rgba(0,0,0,0.15);
+  --wt-line2: rgba(0,0,0,0.08);
+  --wt-gold: rgba(0,0,0,0.25);
+  --wt-gold2: rgba(0,0,0,0.3);
   width: calc(420px * var(--S));
   max-width: 100%;
-  margin: 30px auto 10px;
+  margin: 30px auto 20px;
   user-select: none;
   position: relative;
   z-index: 10;
@@ -17,6 +24,10 @@
 .wt-cw {
   position: relative;
   overflow: hidden;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(7px);
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .wt-card .vf-c {
