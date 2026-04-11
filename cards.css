@@ -126,7 +126,7 @@
   --arrow: calc(10px * var(--S));
   position: absolute; white-space: nowrap;
   font-size: calc(9.5px * var(--S)); font-weight: 600; letter-spacing: calc(1px * var(--S));
-  padding: calc(4px * var(--S)) calc(12px * var(--S)) calc(4px * var(--S)) calc(14px * var(--S));
+  padding: calc(2px * var(--S)) calc(12px * var(--S)) calc(2px * var(--S)) calc(14px * var(--S));
   box-shadow: 0 calc(2px * var(--S)) calc(5px * var(--S)) rgba(0,0,0,.12);
   clip-path: polygon(var(--arrow) 0%, 100% 0%, 100% 100%, var(--arrow) 100%, 0% 50%);
 }
