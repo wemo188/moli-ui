@@ -296,7 +296,7 @@ html, body {
   height: 5px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,.8);
+  background: rgba(0,0,0,.1);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -304,7 +304,7 @@ html, body {
 .screen-dot.active {
   width: 14px;
   border-radius: 999px;
-  background: #8ba0d1;
+  background: #fff;
   box-shadow: 0 0 8px rgba(255,255,255,0.4);
 }
 
