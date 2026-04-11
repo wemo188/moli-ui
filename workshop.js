@@ -104,12 +104,15 @@
     resetAllLayout: function() {
       // 天气卡片
       App.LS.remove('wtCardPos');
-      if (App.calendar) {
-        App.calendar._dragOffsetX = 0;
-        App.calendar._dragOffsetY = 0;
-      }
-      var wtCard = App.$('#wtCard');
-      if (wtCard) wtCard.style.transform = '';
+if (App.calendar) {
+    App.calendar._dragOffsetX = 0;
+    App.calendar._dragOffsetY = 0;
+}
+var wtCard = App.$('#wtCard');
+if (wtCard) {
+    wtCard.style.removeProperty('--wt-tx');
+    wtCard.style.removeProperty('--wt-ty');
+}
 
       // 人物卡片
       if (App.modules.cards) {
