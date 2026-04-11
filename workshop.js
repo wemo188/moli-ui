@@ -109,10 +109,7 @@ if (App.calendar) {
     App.calendar._dragOffsetY = 0;
 }
 var wtCard = App.$('#wtCard');
-if (wtCard) {
-    wtCard.style.removeProperty('--wt-tx');
-    wtCard.style.removeProperty('--wt-ty');
-}
+if (wtCard) wtCard.style.transform = '';
 
       // 人物卡片
       if (App.modules.cards) {
