@@ -69,7 +69,7 @@ var Cal={
       cw.style.webkitBackdropFilter=bv>0?'blur('+bv+'px)':'none';
       cw.style.border=(1*s)+'px solid rgba('+rgb.r+','+rgb.g+','+rgb.b+','+ba+')';
       cw.style.borderRadius=((c.radius||10)*s)+'px';
-      cw.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';
+      cw.style.boxShadow='0 4px 20px rgba(0,0,0,0.01)';
     }
 
     card.querySelectorAll('.wt-time,.wt-time span').forEach(function(el){el.style.color=fc;});
