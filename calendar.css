@@ -22,7 +22,6 @@
   flex-shrink: 0;
   min-height: 160px;  /* 防止缩得太小时高度变化过大 */
   flex-shrink: 0;     /* 防止被压缩 */
-  margin-bottom: 20px; /* 固定底部间距 */
 }
 
 .wt-cw {
