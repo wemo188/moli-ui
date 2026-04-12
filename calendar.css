@@ -827,7 +827,7 @@
   font-size: 15px;
   font-weight: 500;
   color: #1a1a1a;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.3);
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
