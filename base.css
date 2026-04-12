@@ -265,7 +265,7 @@ html, body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 34px 18px calc(34px + var(--safe-bottom));
+  padding: 20px 18px calc(34px + var(--safe-bottom));
   overflow: hidden;
 }
 
