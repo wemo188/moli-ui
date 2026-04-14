@@ -1,15 +1,13 @@
 /* =========================
-   手机外壳
+   手机外壳 · 全屏填充
 ========================= */
 .soc-phone {
   position: relative;
   width: 100%;
-  max-width: 380px;
-  margin: 0 auto;
   height: 100%;
   border-radius: 40px;
   background: #fff;
-  border: 10px solid rgba(0,0,0,1);
+  border: 12px solid rgba(0,0,0,1);
   box-shadow:
     0 14px 40px rgba(60,80,110,.12),
     0 2px 8px rgba(60,80,110,.06),
@@ -23,7 +21,8 @@
    社交主页 · 全屏面板
 ========================= */
 #socialPanel {
-  background: #f7fafc;
+  background: transparent;
+  padding: 0;
 }
 
 .soc-inner {
@@ -34,7 +33,7 @@
   overflow: hidden;
 }
 
-/* 晕染背景 */
+/* 晕染 · 完全照搬模板 */
 .soc-inner::before {
   content: "";
   position: absolute;
@@ -42,24 +41,24 @@
   width: 140%; height: 140%;
   transform: translate(-50%, -50%);
   background:
-    radial-gradient(circle at 50% 48%, rgba(202,223,242,.38) 0%, rgba(202,223,242,.18) 18%, rgba(202,223,242,.08) 38%, transparent 62%),
-    radial-gradient(circle at 46% 44%, rgba(140,180,215,.15) 0%, rgba(140,180,215,.06) 28%, transparent 52%),
-    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.12) 0%, transparent 48%);
+    radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),
+    radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
+    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* 玻璃高光 */
+/* 玻璃高光 · 完全照搬模板 */
 .soc-inner::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(255,255,255,.55), transparent 42%),
-    linear-gradient(315deg, rgba(255,255,255,.28), transparent 44%);
+    linear-gradient(135deg, rgba(255,255,255,.70), transparent 42%),
+    linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
   pointer-events: none;
   mix-blend-mode: screen;
-  opacity: .6;
+  opacity: .72;
   z-index: 0;
 }
 
@@ -70,9 +69,9 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding: 56px 20px 10px;
+  padding: 18px 20px 10px;
   flex-shrink: 0;
 }
 
@@ -103,12 +102,12 @@
 }
 
 /* =========================
-   搜索栏
+   搜索栏 · 完全照搬模板
 ========================= */
 .soc-search {
   position: relative;
   z-index: 2;
-  padding: 0 18px 10px;
+  padding: 0 16px 6px;
   flex-shrink: 0;
 }
 
@@ -116,16 +115,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
-  background: rgba(255,255,255,.85);
+  padding: 6px 14px;
+  background: rgba(255,255,255,1);
+  backdrop-filter: blur(12px);
   border-radius: 10px;
-  border: 1px solid rgba(202,223,242,.3);
+  border: 1px solid rgba(126,163,201,.25);
   box-shadow: inset 0 1px 3px rgba(0,0,0,.02);
 }
 
 .soc-search-bar svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   stroke: #a8c0d8;
   fill: none;
   stroke-width: 2;
@@ -134,12 +134,12 @@
 }
 
 .soc-search-bar span {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #a8c0d8;
 }
 
 /* =========================
-   内容区域（标签页切换）
+   内容区域
 ========================= */
 .soc-body {
   position: relative;
@@ -151,37 +151,37 @@
 }
 
 /* =========================
-   聊天列表
+   聊天列表 · 完全照搬模板
 ========================= */
 .soc-chat-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
+  padding: 10px 18px;
   cursor: pointer;
-  transition: background .15s;
+  transition: background .2s;
   position: relative;
   -webkit-tap-highlight-color: transparent;
 }
 
 .soc-chat-item:active {
-  background: rgba(202,223,242,.15);
+  background: rgba(255,255,255,.28);
 }
 
 .soc-chat-item:not(:last-child)::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 74px;
-  right: 20px;
+  left: 72px;
+  right: 18px;
   height: 1px;
-  background: rgba(202,223,242,.18);
+  background: rgba(126,163,201,.12);
 }
 
-/* 头像 */
+/* 头像 · 完全照搬模板 */
 .soc-avatar {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   flex-shrink: 0;
   position: relative;
@@ -189,31 +189,31 @@
 }
 
 .soc-avatar img {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 2px 8px rgba(60,80,110,.08);
   display: block;
-  border: 1.5px solid rgba(202,223,242,.6);
-  outline: 1.5px solid rgba(255,255,255,.9);
+  border: 1.5px solid rgba(192,206,220,.7);
+  outline: 1.5px solid rgba(255,255,255,1);
 }
 
 .soc-avatar-placeholder {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
-  background: rgba(202,223,242,.2);
-  border: 1.5px solid rgba(202,223,242,.5);
-  outline: 1.5px solid rgba(255,255,255,.9);
+  background: rgba(202,223,242,.15);
+  border: 1.5px solid rgba(192,206,220,.7);
+  outline: 1.5px solid rgba(255,255,255,1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .soc-avatar-placeholder svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   stroke: #a8c0d8;
   fill: none;
   stroke-width: 1.5;
@@ -221,14 +221,14 @@
   stroke-linejoin: round;
 }
 
-/* 角标 */
+/* 角标 · 完全照搬模板 */
 .soc-badge {
   position: absolute;
   top: -5px;
   right: -5px;
   min-width: 18px;
   height: 18px;
-  background: #1a1a1a;
+  background: #000;
   border-radius: 10px;
   font-size: 11px;
   font-weight: 700;
@@ -237,12 +237,12 @@
   align-items: center;
   justify-content: center;
   padding: 0 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
   z-index: 3;
   line-height: 1;
 }
 
-/* 红色小圆点 */
+/* 红色小圆点 · 完全照搬模板 */
 .soc-dot {
   position: absolute;
   top: -2px;
@@ -255,7 +255,7 @@
   z-index: 3;
 }
 
-/* 聊天内容区 */
+/* 聊天内容 · 完全照搬模板 */
 .soc-chat-content {
   flex: 1;
   min-width: 0;
@@ -308,7 +308,7 @@
 .soc-empty svg {
   width: 48px;
   height: 48px;
-  stroke: #cadff2;
+  stroke: #a8c0d8;
   fill: none;
   stroke-width: 1.2;
   stroke-linecap: round;
@@ -320,10 +320,11 @@
   color: #a8c0d8;
   text-align: center;
   letter-spacing: 0.5px;
+  line-height: 1.6;
 }
 
 /* =========================
-   底部标签栏
+   底部标签栏 · 完全照搬模板
 ========================= */
 .soc-tabbar {
   position: relative;
@@ -331,11 +332,11 @@
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
-  padding: 8px 10px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(202,223,242,.2);
+  padding: 6px 10px 4px;
+  background: rgba(255,255,255,1);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 3px solid rgba(126,163,201,.18);
   flex-shrink: 0;
 }
 
@@ -343,19 +344,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   cursor: pointer;
   position: relative;
-  padding: 3px 14px;
+  padding: 3px 12px;
   -webkit-tap-highlight-color: transparent;
-  transition: opacity .15s;
 }
 
-.soc-tab:active { opacity: 0.7; }
-
 .soc-tab svg {
-  width: 22px;
-  height: 22px;
+  width: 21px;
+  height: 21px;
   fill: none;
   stroke-width: 1.7;
   stroke-linecap: round;
@@ -363,7 +361,7 @@
 }
 
 .soc-tab span {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
 }
 
@@ -378,7 +376,7 @@
   right: 4px;
   min-width: 15px;
   height: 15px;
-  background: #1a1a1a;
+  background: #000;
   border-radius: 8px;
   font-size: 9px;
   font-weight: 700;
@@ -387,7 +385,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,.20);
   line-height: 1;
 }
 
@@ -396,10 +394,10 @@
 ========================= */
 .soc-add-menu {
   position: absolute;
-  top: 52px;
-  right: 16px;
+  top: 44px;
+  right: 0;
   z-index: 100;
-  background: #1a1a1a;
+  background: #000;
   border-radius: 12px;
   padding: 6px 0;
   box-shadow: 0 8px 30px rgba(0,0,0,.25);
@@ -456,10 +454,10 @@
   content: "";
   position: absolute;
   top: -6px;
-  right: 18px;
+  right: 14px;
   width: 12px;
   height: 12px;
-  background: #1a1a1a;
+  background: #000;
   transform: rotate(45deg);
   border-radius: 2px 0 0 0;
 }
