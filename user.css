@@ -437,8 +437,18 @@
 }
 
 #charCreatePanel {
-  background: #f4f7fb;
-  padding: 0;
+  background: #f4f7fb !important;
+  padding: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .cc-scroll {
@@ -681,31 +691,8 @@
   border-left-color: #88abda;
 }
 
-.comic-card .cc-section-arrow {
-  width: 16px;
-  height: 16px;
-  stroke: #999;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: transform 0.25s ease;
-  flex-shrink: 0;
-}
-
-.comic-card .cc-section.open .cc-section-arrow {
-  transform: rotate(90deg);
-}
-
 .comic-card .cc-section-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.22, 0.8, 0.2, 1);
-}
-
-.comic-card .cc-section.open .cc-section-body {
-  max-height: 600px;
-}
+  overflow: visible;
 
 .comic-card .cc-content-area {
   margin: 0 20px 14px;
@@ -996,17 +983,17 @@
    放大编辑器 · 漫画风格
 ========================= */
 .cc-expand-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10001;
-  background: #f4f7fb;
-  display: flex;
-  flex-direction: column;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 10001 !important;
+  background: #f4f7fb !important;
+  display: flex !important;
+  flex-direction: column !important;
   transform: translateY(100%);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s;
