@@ -44,7 +44,7 @@
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s ease;
   background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(202,223,242,0.5);
+  border: 1px solid rgba(202,223,242,1);
   box-shadow: 0 3px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
 }
 .ball-card-item:nth-child(1) { transform: rotate(-3deg) translateX(-2px); }
