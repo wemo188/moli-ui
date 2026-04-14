@@ -44,11 +44,11 @@
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s ease;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(202,223,242,0.5);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(202,223,242,0.7);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
 }
 .ball-card-item:nth-child(1) { transform: rotate(-3deg) translateX(-2px); }
 .ball-card-item:nth-child(2) { transform: rotate(2deg) translateX(4px); }
@@ -60,7 +60,7 @@
 .ball-card-item:active {
   transform: rotate(0deg) translateX(0) scale(0.97) !important;
   box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0 0 2px rgba(202,223,242,0.5);
-  background: rgba(202,223,242,0.25);
+  background: rgba(202,223,242,0.3);
 }
 .ball-card-item span {
   font-size: 13.5px; font-weight: 600; color: #3a4f65;
@@ -89,14 +89,14 @@
   --notch: 8px;
   --inset: 10px;
   position: relative;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 14px 16px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
@@ -121,7 +121,7 @@
   content: "";
   position: absolute;
   top: var(--inset); left: var(--inset); right: var(--inset); bottom: var(--inset);
-  border: 1.5px solid #cadff2;
+  border: 1.5px solid rgba(202,223,242,0.8);
   pointer-events: none; z-index: 2;
   --inner-notch: 6px;
   -webkit-mask:
@@ -163,7 +163,7 @@
 }
 .ws-ticket.ws-sm { padding: 10px 14px; }
 .ws-ticket.ws-btn { text-align: center; cursor: pointer; padding: 9px 12px; }
-.ws-ticket.ws-btn-accent { background: #cadff2; }
+.ws-ticket.ws-btn-accent { background: rgba(202,223,242,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .ws-ticket.ws-btn-accent .ws-ticket-name { color: #fff; font-size: 11px; }
 .ws-ticket.ws-btn-accent .ws-ticket-name::before,
 .ws-ticket.ws-btn-accent .ws-ticket-name::after { display: none; }
@@ -177,7 +177,8 @@
 .ws-menu-wrap { padding: 2px 4px; }
 .ws-menu-shell {
   --notch: 10px;
-  position: relative; padding: 2px; background: #cadff2;
+  position: relative; padding: 2px;
+  background: rgba(202,223,242,0.75);
   box-shadow: 0 4px 14px rgba(0,0,0,0.06);
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
@@ -196,7 +197,11 @@
 }
 .ws-menu-body {
   --ni: 8px;
-  position: relative; background: rgba(255,255,255,0.96); padding: 18px 16px;
+  position: relative;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 18px 16px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -217,7 +222,9 @@
   pointer-events: none; z-index: 1;
 }
 .ws-menu-inner-border {
-  position: absolute; inset: 0; background: #cadff2; padding: 1px;
+  position: absolute; inset: 0;
+  background: rgba(202,223,242,0.6);
+  padding: 1px;
   --ir: 5px;
   -webkit-mask:
     radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
@@ -235,7 +242,8 @@
   mask-repeat: no-repeat;
 }
 .ws-menu-inner-fill {
-  width: 100%; height: 100%; background: rgba(255,255,255,0.96);
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.7);
   --ifr: 4px;
   -webkit-mask:
     radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
