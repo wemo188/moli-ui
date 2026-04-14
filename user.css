@@ -1,0 +1,444 @@
+/* =========================
+   社交主页 · 全屏面板
+========================= */
+#socialPanel {
+  background: #f7fafc;
+}
+
+.soc-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 晕染背景 */
+.soc-inner::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140%; height: 140%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(202,223,242,.38) 0%, rgba(202,223,242,.18) 18%, rgba(202,223,242,.08) 38%, transparent 62%),
+    radial-gradient(circle at 46% 44%, rgba(140,180,215,.15) 0%, rgba(140,180,215,.06) 28%, transparent 52%),
+    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.12) 0%, transparent 48%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 玻璃高光 */
+.soc-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.55), transparent 42%),
+    linear-gradient(315deg, rgba(255,255,255,.28), transparent 44%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .6;
+  z-index: 0;
+}
+
+/* =========================
+   顶部栏
+========================= */
+.soc-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 56px 20px 10px;
+  flex-shrink: 0;
+}
+
+.soc-header-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.soc-header-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #7a9ab8;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.soc-header-btn:active svg {
+  stroke: #4a7a9e;
+}
+
+/* =========================
+   搜索栏
+========================= */
+.soc-search {
+  position: relative;
+  z-index: 2;
+  padding: 0 18px 10px;
+  flex-shrink: 0;
+}
+
+.soc-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.85);
+  border-radius: 10px;
+  border: 1px solid rgba(202,223,242,.3);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.02);
+}
+
+.soc-search-bar svg {
+  width: 15px;
+  height: 15px;
+  stroke: #a8c0d8;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  flex-shrink: 0;
+}
+
+.soc-search-bar span {
+  font-size: 13px;
+  color: #a8c0d8;
+}
+
+/* =========================
+   内容区域（标签页切换）
+========================= */
+.soc-body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 4px;
+}
+
+/* =========================
+   聊天列表
+========================= */
+.soc-chat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.soc-chat-item:active {
+  background: rgba(202,223,242,.15);
+}
+
+.soc-chat-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 74px;
+  right: 20px;
+  height: 1px;
+  background: rgba(202,223,242,.18);
+}
+
+/* 头像 */
+.soc-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+
+.soc-avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(60,80,110,.08);
+  display: block;
+  border: 1.5px solid rgba(202,223,242,.6);
+  outline: 1.5px solid rgba(255,255,255,.9);
+}
+
+.soc-avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(202,223,242,.2);
+  border: 1.5px solid rgba(202,223,242,.5);
+  outline: 1.5px solid rgba(255,255,255,.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.soc-avatar-placeholder svg {
+  width: 24px;
+  height: 24px;
+  stroke: #a8c0d8;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 角标 */
+.soc-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  z-index: 3;
+  line-height: 1;
+}
+
+/* 红色小圆点 */
+.soc-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #d4566e;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.8);
+  z-index: 3;
+}
+
+/* 聊天内容区 */
+.soc-chat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.soc-chat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3px;
+}
+
+.soc-chat-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2e4258;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.soc-chat-time {
+  font-size: 11px;
+  color: #a8c0d8;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.soc-chat-msg {
+  font-size: 13px;
+  color: #8aa0b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* =========================
+   空状态
+========================= */
+.soc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 12px;
+}
+
+.soc-empty svg {
+  width: 48px;
+  height: 48px;
+  stroke: #cadff2;
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.soc-empty-text {
+  font-size: 13px;
+  color: #a8c0d8;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   底部标签栏
+========================= */
+.soc-tabbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 8px 10px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(202,223,242,.2);
+  flex-shrink: 0;
+}
+
+.soc-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  position: relative;
+  padding: 3px 14px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .15s;
+}
+
+.soc-tab:active { opacity: 0.7; }
+
+.soc-tab svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.soc-tab span {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.soc-tab.active svg { stroke: #4a7a9e; }
+.soc-tab.active span { color: #4a7a9e; }
+.soc-tab:not(.active) svg { stroke: #a8c0d8; }
+.soc-tab:not(.active) span { color: #a8c0d8; }
+
+.soc-tab-badge {
+  position: absolute;
+  top: -1px;
+  right: 4px;
+  min-width: 15px;
+  height: 15px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  line-height: 1;
+}
+
+/* =========================
+   添加菜单弹窗
+========================= */
+.soc-add-menu {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  z-index: 100;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 6px 0;
+  box-shadow: 0 8px 30px rgba(0,0,0,.25);
+  min-width: 150px;
+  opacity: 0;
+  transform: scale(0.9) translateY(-8px);
+  transform-origin: top right;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+
+.soc-add-menu.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.soc-add-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.soc-add-menu-item:active {
+  background: rgba(255,255,255,.1);
+}
+
+.soc-add-menu-item:not(:last-child) {
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.soc-add-menu-item svg {
+  width: 18px;
+  height: 18px;
+  stroke: rgba(255,255,255,.7);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.soc-add-menu-item span {
+  font-size: 13px;
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+}
+
+/* 小三角 */
+.soc-add-menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 18px;
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a;
+  transform: rotate(45deg);
+  border-radius: 2px 0 0 0;
+}
