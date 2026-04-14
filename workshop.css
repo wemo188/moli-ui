@@ -10,6 +10,8 @@
   transform: scale(0.92) translateY(6px);
   transition: opacity 0.22s ease, transform 0.22s ease, width 0.32s ease;
   overflow: clip;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .ball-card-menu.show {
   pointer-events: auto;
@@ -45,8 +47,6 @@
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s ease;
   background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(202,223,242,0.5);
   box-shadow: 0 3px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -88,8 +88,6 @@
   --inset: 10px;
   position: relative;
   background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   padding: 18px 20px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
