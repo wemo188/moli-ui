@@ -260,46 +260,24 @@
     return App.state.ball.getBoundingClientRect();
   };
 
-  App.positionMenu = function() {
-    var rect = App.getBallRect();
-    var menu = App.state.ballMenuEl;
-    menu.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-    if (rect.left + rect.width / 2 < window.innerWidth / 2) {
-      menu.style.left = rect.left + 'px';
-      menu.style.right = 'auto';
-    } else {
-      menu.style.right = (window.innerWidth - rect.right) + 'px';
-      menu.style.left = 'auto';
-    }
-  };
-
   App.openMenu = function() {
-    App.state.menuOpen = true;
-    App.state.ball.classList.add('active');
-    App.positionMenu();
-    App.state.ballMenuEl.classList.remove('hidden');
-    requestAnimationFrame(function() {
-      App.state.ballMenuEl.classList.add('show');
-    });
-  };
+  if (App.workshop) App.workshop.open();
+};
 
-  App.closeMenu = function() {
-    if (!App.state.menuOpen) return;
-    App.state.menuOpen = false;
-    App.state.ball.classList.remove('active');
-    App.state.ballMenuEl.classList.remove('show');
-    setTimeout(function() {
-      App.state.ballMenuEl.classList.add('hidden');
-    }, 250);
-  };
+App.closeMenu = function() {
+  if (App.workshop) App.workshop.close();
+};
 
-  App.toggleMenu = function() {
-    var now = Date.now();
-    if (now - App.state.lastToggleTime < 250) return;
-    App.state.lastToggleTime = now;
-    if (App.state.menuOpen) App.closeMenu();
-    else App.openMenu();
-  };
+App.toggleMenu = function() {
+  var now = Date.now();
+  if (now - App.state.lastToggleTime < 250) return;
+  App.state.lastToggleTime = now;
+  if (App.workshop) App.workshop.toggle();
+};
+
+App.positionMenu = function() {
+  if (App.workshop) App.workshop.positionMenu();
+};
 
   App.openPanel = function(id) {
     if (!id) return;
@@ -379,95 +357,6 @@
       }
     }
   };
-
-App.openWorkshop = function() {
-  App.closeMenu();
-
-  var old = App.$('#workshopCard');
-  if (old) { old.remove(); return; }
-
-  var rect = App.getBallRect();
-  var panel = document.createElement('div');
-  panel.id = 'workshopCard';
-  panel.className = 'workshop-card';
-
-  panel.innerHTML =
-    '<div class="workshop-title">✦ 美化工坊</div>' +
-
-    '<div class="workshop-item" id="wsWeather">' +
-      '<svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>' +
-      '<div><div class="workshop-item-label">天气栏</div><div class="workshop-item-desc">调节天气卡片样式</div></div>' +
-    '</div>' +
-
-    '<div class="workshop-item" id="wsEden">' +
-      '<svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>' +
-      '<div><div class="workshop-item-label">文字卡片</div><div class="workshop-item-desc">调节伊甸文字样式</div></div>' +
-    '</div>' +
-
-    '<div class="workshop-item" id="wsFrost">' +
-      '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>' +
-      '<div><div class="workshop-item-label">磨砂卡片</div><div class="workshop-item-desc">调节第二页磨砂效果</div></div>' +
-    '</div>';
-
-  // 定位：在球的左边或右边
-  var ballCX = rect.left + rect.width / 2;
-  var panelW = 220;
-
-  if (ballCX > window.innerWidth / 2) {
-    // 球在右边，面板在左边
-    panel.style.right = (window.innerWidth - rect.left + 8) + 'px';
-    panel.style.left = 'auto';
-  } else {
-    // 球在左边，面板在右边
-    panel.style.left = (rect.right + 8) + 'px';
-    panel.style.right = 'auto';
-  }
-
-  // 垂直居中于球
-  var panelTop = rect.top + rect.height / 2 - 120;
-  if (panelTop < 10) panelTop = 10;
-  if (panelTop + 260 > window.innerHeight) panelTop = window.innerHeight - 270;
-  panel.style.top = panelTop + 'px';
-
-  document.body.appendChild(panel);
-  requestAnimationFrame(function() { panel.classList.add('show'); });
-
-  // 阻止触摸传播
-  panel.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
-  panel.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
-
-  // 点击事件
-  App.$('#wsWeather').addEventListener('click', function() {
-    panel.classList.remove('show');
-    setTimeout(function() { panel.remove(); }, 200);
-    if (App.calendar) App.calendar.openCtrl();
-  });
-
-  App.$('#wsEden').addEventListener('click', function() {
-    panel.classList.remove('show');
-    setTimeout(function() { panel.remove(); }, 200);
-    if (App.modules.eden) App.modules.eden.openEdit();
-  });
-
-  App.$('#wsFrost').addEventListener('click', function() {
-    panel.classList.remove('show');
-    setTimeout(function() { panel.remove(); }, 200);
-    if (App.modules.frost) App.modules.frost.openEdit();
-  });
-
-  // 点外面关闭
-  setTimeout(function() {
-    function dismiss(e) {
-      if (panel.contains(e.target)) return;
-      panel.classList.remove('show');
-      setTimeout(function() { if (panel.parentNode) panel.remove(); }, 200);
-      document.removeEventListener('touchstart', dismiss, true);
-      document.removeEventListener('click', dismiss);
-    }
-    document.addEventListener('touchstart', dismiss, true);
-    document.addEventListener('click', dismiss);
-  }, 100);
-};
 
   App.openBallSettings = function() {
     App.closeMenu();
@@ -759,11 +648,6 @@ App.openWorkshop = function() {
     pageTapCount = 0;
     clearTimeout(ballTapTimer);
     clearTimeout(pageTapTimer);
-
-    if (item.id === 'ballSettings') {
-      App.openBallSettings();
-      return;
-    }
 
     if (item.id === 'ballWorkshop') {
       if (App.workshop) App.workshop.open();
