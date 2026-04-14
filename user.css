@@ -1,6 +1,4 @@
-/* =========================
-   手机外壳 · 全屏填充
-========================= */
+
 .soc-phone {
   position: relative;
   width: 100%;
@@ -17,9 +15,6 @@
   flex-direction: column;
 }
 
-/* =========================
-   社交主页 · 全屏面板
-========================= */
 #socialPanel {
   background: transparent;
   padding: 0;
@@ -33,7 +28,6 @@
   overflow: hidden;
 }
 
-/* 晕染 · 完全照搬模板 */
 .soc-inner::before {
   content: "";
   position: absolute;
@@ -48,7 +42,6 @@
   z-index: 0;
 }
 
-/* 玻璃高光 · 完全照搬模板 */
 .soc-inner::after {
   content: "";
   position: absolute;
@@ -62,9 +55,6 @@
   z-index: 0;
 }
 
-/* =========================
-   顶部栏
-========================= */
 .soc-header {
   position: relative;
   z-index: 2;
@@ -101,9 +91,11 @@
   stroke: #4a7a9e;
 }
 
-/* =========================
-   搜索栏 · 完全照搬模板
-========================= */
+#socBackBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
 .soc-search {
   position: relative;
   z-index: 2;
@@ -115,7 +107,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
+  padding: 8px 14px;
   background: rgba(255,255,255,1);
   backdrop-filter: blur(12px);
   border-radius: 10px;
@@ -138,9 +130,6 @@
   color: #a8c0d8;
 }
 
-/* =========================
-   内容区域
-========================= */
 .soc-body {
   position: relative;
   z-index: 2;
@@ -150,9 +139,6 @@
   padding: 0 0 4px;
 }
 
-/* =========================
-   聊天列表 · 完全照搬模板
-========================= */
 .soc-chat-item {
   display: flex;
   align-items: center;
@@ -178,7 +164,6 @@
   background: rgba(126,163,201,.12);
 }
 
-/* 头像 · 完全照搬模板 */
 .soc-avatar {
   width: 48px;
   height: 48px;
@@ -221,7 +206,6 @@
   stroke-linejoin: round;
 }
 
-/* 角标 · 完全照搬模板 */
 .soc-badge {
   position: absolute;
   top: -5px;
@@ -242,7 +226,6 @@
   line-height: 1;
 }
 
-/* 红色小圆点 · 完全照搬模板 */
 .soc-dot {
   position: absolute;
   top: -2px;
@@ -255,7 +238,6 @@
   z-index: 3;
 }
 
-/* 聊天内容 · 完全照搬模板 */
 .soc-chat-content {
   flex: 1;
   min-width: 0;
@@ -293,9 +275,6 @@
   line-height: 1.4;
 }
 
-/* =========================
-   空状态
-========================= */
 .soc-empty {
   display: flex;
   flex-direction: column;
@@ -323,9 +302,6 @@
   line-height: 1.6;
 }
 
-/* =========================
-   底部标签栏 · 完全照搬模板
-========================= */
 .soc-tabbar {
   position: relative;
   z-index: 2;
@@ -344,12 +320,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 2px;
   cursor: pointer;
   position: relative;
   padding: 3px 12px;
   -webkit-tap-highlight-color: transparent;
 }
+
+.soc-tab:active { opacity: 0.7; }
 
 .soc-tab svg {
   width: 28px;
@@ -389,9 +367,6 @@
   line-height: 1;
 }
 
-/* =========================
-   添加菜单弹窗
-========================= */
 .soc-add-menu {
   position: absolute;
   top: 44px;
@@ -449,7 +424,6 @@
   font-weight: 500;
 }
 
-/* 小三角 */
 .soc-add-menu::before {
   content: "";
   position: absolute;
@@ -461,3 +435,559 @@
   transform: rotate(45deg);
   border-radius: 2px 0 0 0;
 }
+
+#charCreatePanel {
+  background: #f4f7fb;
+  padding: 0;
+}
+
+.cc-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 40px;
+}
+
+.cc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 12px;
+  flex-shrink: 0;
+  background: #f4f7fb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.cc-top-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cc-top-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #7a9ab8;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cc-top-btn:active svg { stroke: #4a7a9e; }
+
+.cc-top-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2e4258;
+  letter-spacing: 1px;
+}
+
+.comic-card {
+  margin: 0 16px;
+  max-width: 100%;
+  background: #fff;
+  border: 3.5px solid #111;
+  border-radius: 0;
+  padding: 0;
+  position: relative;
+  box-shadow: 6px 6px 0 #111;
+  overflow: hidden;
+}
+
+.comic-card .top-bar {
+  background: #111;
+  height: 6px;
+  width: 100%;
+}
+
+.comic-card::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 3px, #88abda 3px, #88abda 5px);
+  opacity: .35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.comic-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  background: repeating-linear-gradient(45deg, transparent, transparent 3px, #88abda 3px, #88abda 5px);
+  opacity: .35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.comic-card .cc-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 20px 20px 16px;
+  border-bottom: 2.5px solid #111;
+  position: relative;
+}
+
+.comic-card .cc-avatar-box {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #111;
+  background: #f4f7fb;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.comic-card .cc-avatar-box .cc-avatar-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #bbb;
+}
+
+.comic-card .cc-avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.comic-card .cc-avatar-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top: 14px solid #88abda;
+  border-right: 14px solid transparent;
+  z-index: 2;
+}
+
+.comic-card .cc-name-area {
+  flex: 1;
+  padding-bottom: 4px;
+}
+
+.comic-card .cc-name-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #88abda;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.comic-card .cc-name-input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #111;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  outline: none;
+  padding: 4px 0;
+  font-family: inherit;
+}
+
+.comic-card .cc-name-input::placeholder {
+  color: #ccc;
+  font-weight: 400;
+}
+
+.comic-card .cc-name-sub {
+  width: 60%;
+  height: 1.5px;
+  background: #d0d8e4;
+  margin-top: 6px;
+}
+
+.comic-card .cc-section {
+  border-bottom: 2.5px solid #111;
+  padding: 0;
+  position: relative;
+}
+
+.comic-card .cc-section:last-of-type {
+  border-bottom: none;
+}
+
+.comic-card .cc-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.comic-card .cc-section-head:active {
+  background: rgba(136,171,218,.06);
+}
+
+.comic-card .cc-section-title {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+  background: #111;
+  padding: 3px 10px 3px 8px;
+  position: relative;
+  line-height: 1.4;
+}
+
+.comic-card .cc-section-title::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 8px solid #111;
+  border-top: 0 solid transparent;
+  border-bottom: 22px solid transparent;
+}
+
+.comic-card .cc-section-title.blue {
+  background: #88abda;
+}
+
+.comic-card .cc-section-title.blue::after {
+  border-left-color: #88abda;
+}
+
+.comic-card .cc-section-arrow {
+  width: 16px;
+  height: 16px;
+  stroke: #999;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.comic-card .cc-section.open .cc-section-arrow {
+  transform: rotate(90deg);
+}
+
+.comic-card .cc-section-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+.comic-card .cc-section.open .cc-section-body {
+  max-height: 600px;
+}
+
+.comic-card .cc-content-area {
+  margin: 0 20px 14px;
+  min-height: 80px;
+  border: 1.5px dashed #c8d4e2;
+  background: repeating-linear-gradient(0deg, transparent, transparent 22px, #eef2f7 22px, #eef2f7 23px);
+  position: relative;
+}
+
+.comic-card .cc-content-area textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 22px;
+}
+
+.comic-card .cc-content-area textarea::placeholder {
+  color: #bbb;
+}
+
+.comic-card .cc-dialogue-area {
+  margin: 0 20px 14px;
+  min-height: 80px;
+  border: 1.5px dashed #c8d4e2;
+  position: relative;
+}
+
+.comic-card .cc-dialogue-area::before {
+  content: "「";
+  position: absolute;
+  top: 6px;
+  left: 5px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #88abda;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.comic-card .cc-dialogue-area::after {
+  content: "」";
+  position: absolute;
+  bottom: 2px;
+  right: 8px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #88abda;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.comic-card .cc-dialogue-area textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  background: transparent;
+  padding: 10px 12px 10px 24px;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.comic-card .cc-dialogue-area textarea::placeholder {
+  color: #bbb;
+}
+
+.comic-card .cc-expand-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.8);
+  border: 1px solid #d0d8e4;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.comic-card .cc-expand-btn:active {
+  background: #eef2f7;
+}
+
+.comic-card .cc-expand-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: #88abda;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.comic-card .cc-section:nth-child(odd)::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 44px;
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle, #88abda 1px, transparent 1px);
+  background-size: 5px 5px;
+  opacity: .5;
+  pointer-events: none;
+}
+
+.comic-card .cc-bottom-deco {
+  height: 10px;
+  background: linear-gradient(90deg, #111 30%, #88abda 30%, #88abda 65%, #111 65%);
+}
+
+.cc-save-area {
+  padding: 20px 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.cc-save-btn {
+  flex: 1;
+  padding: 14px;
+  background: #111;
+  color: #fff;
+  border: 3px solid #111;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 4px 4px 0 #88abda;
+  transition: transform 0.1s, box-shadow 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cc-save-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #88abda;
+}
+
+.cc-cancel-btn {
+  padding: 14px 20px;
+  background: #fff;
+  color: #111;
+  border: 3px solid #111;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 4px 4px 0 #d0d8e4;
+  transition: transform 0.1s, box-shadow 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cc-cancel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #d0d8e4;
+}
+
+.cc-avatar-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-avatar-menu-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+}
+
+.cc-avatar-menu-body {
+  position: relative;
+  width: 280px;
+  background: #fff;
+  border: 3px solid #111;
+  box-shadow: 6px 6px 0 #111;
+  padding: 0;
+  overflow: hidden;
+}
+
+.cc-avatar-menu-top {
+  background: #111;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.cc-avatar-menu-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cc-avatar-menu-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cc-avatar-menu-row input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #111;
+  font-size: 13px;
+  color: #111;
+  outline: none;
+  font-family: inherit;
+  background: #f4f7fb;
+}
+
+.cc-avatar-menu-row input[type="text"]::placeholder {
+  color: #bbb;
+}
+
+.cc-avatar-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid #111;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cc-avatar-action:active {
+  background: #f4f7fb;
+}
+
+.cc-avatar-action svg {
+  width: 20px;
+  height: 20px;
+  stroke: #88abda;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.cc-avatar-action span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+
+.cc-avatar-url-btn {
+  padding: 10px 14px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.cc-avatar-url-btn:active { opacity: 0.7; }
