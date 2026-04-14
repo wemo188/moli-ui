@@ -1015,15 +1015,14 @@ App.positionMenu = function() {
   };
 
   // ========= 总初始化 =========
-  App.init = function() {
-    App.state.ball = App.$('#floatingBall');
-    App.state.ballMenuEl = App.$('#ballMenu');
-    App.state.overlay = App.$('#overlay');
+App.init = function() {
+  App.state.ball = App.$('#floatingBall');
+  App.state.overlay = App.$('#overlay');
 
-    if (!App.state.ball || !App.state.ballMenuEl || !App.state.overlay) {
-      console.warn('页面缺少核心元素');
-      return;
-    }
+  if (!App.state.ball || !App.state.overlay) {
+    console.warn('页面缺少核心元素');
+    return;
+  }
 
     App.initFloatingBall();
     App.runInits();
