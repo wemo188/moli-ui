@@ -1,3 +1,4 @@
+
 /* =========================
    悬浮球菜单 · cadff2 便签风格
 ========================= */
@@ -37,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: 4px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -62,8 +63,8 @@
   background: rgba(202,223,242,0.25);
 }
 .ball-card-item span {
-  font-size: 12.5px; font-weight: 600; color: #3a4f65;
-  line-height: 1; letter-spacing: 1.5px; text-align: center;
+  font-size: 13.5px; font-weight: 600; color: #3a4f65;
+  line-height: 1; letter-spacing: 2px; text-align: center;
 }
 .ball-card-item.has-sub span::after {
   content: " ›"; color: rgba(202,223,242,0.7); font-weight: 400;
@@ -77,7 +78,13 @@
   flex-direction: column;
   gap: 10px;
   padding: 6px 4px;
+  max-height: 420px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.ws-ticket-list::-webkit-scrollbar { display: none; }
+
 .ws-ticket {
   --notch: 8px;
   --inset: 10px;
@@ -133,7 +140,7 @@
   mask-repeat: no-repeat;
 }
 .ws-ticket-name {
-  font-size: 13px; font-weight: 700; color: #3a4f65;
+  font-size: 14px; font-weight: 700; color: #3a4f65;
   letter-spacing: 1.5px; text-align: center;
   position: relative; z-index: 4;
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -160,7 +167,7 @@
 .ws-ticket.ws-btn-accent .ws-ticket-name { color: #fff; font-size: 11px; }
 .ws-ticket.ws-btn-accent .ws-ticket-name::before,
 .ws-ticket.ws-btn-accent .ws-ticket-name::after { display: none; }
-.ws-ticket.ws-btn-accent::after { border-color: rgba(255,255,255,0.3); }
+.ws-ticket.ws-btn-accent::after { display: none; }
 .ws-btn-row { display: flex; gap: 6px; padding: 2px 4px; }
 .ws-btn-row .ws-ticket { flex: 1; }
 
