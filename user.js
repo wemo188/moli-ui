@@ -316,19 +316,33 @@
       var old = App.$('#ccExpandEditor');
       if (old) old.remove();
 
+      var isDialogue = (title === '示例对话');
+      var isBlue = isDialogue;
+
       var editor = document.createElement('div');
       editor.id = 'ccExpandEditor';
-      editor.className = 'expand-editor';
+      editor.className = 'cc-expand-overlay';
       editor.innerHTML =
-        '<div class="expand-editor-header">' +
-          '<div class="fullpage-back" id="ccExpandBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>' +
-          '<h2>' + App.esc(title) + '</h2>' +
-          '<div class="fullpage-action-btn" id="ccExpandDone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="cc-expand-top">' +
+          '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<div class="cc-expand-title-tag' + (isBlue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
+          '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
         '</div>' +
-        '<div class="expand-editor-body"><textarea class="expand-editor-textarea" id="ccExpandTA">' + App.esc(textarea.value) + '</textarea></div>';
+        '<div class="cc-expand-body">' +
+          '<div class="cc-expand-card">' +
+            '<div class="top-bar"></div>' +
+            '<div class="cc-expand-textarea-wrap' + (isDialogue ? ' dialogue' : '') + '">' +
+              '<textarea class="cc-expand-textarea' + (isDialogue ? ' dialogue' : '') + '" id="ccExpandTA" placeholder="' + App.esc(textarea.placeholder || '') + '">' + App.esc(textarea.value) + '</textarea>' +
+            '</div>' +
+            '<div class="cc-bottom-deco"></div>' +
+          '</div>' +
+        '</div>';
 
       document.body.appendChild(editor);
       requestAnimationFrame(function() { editor.classList.add('show'); });
+
+      var expandTA = App.$('#ccExpandTA');
+      if (expandTA) expandTA.focus();
 
       App.safeOn('#ccExpandBack', 'click', function() {
         textarea.value = App.$('#ccExpandTA').value;
