@@ -43,7 +43,7 @@
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s ease;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.78);
   border: 1px solid rgba(202,223,242,0.5);
   box-shadow: 0 3px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -84,7 +84,7 @@
   --notch: 8px;
   --inset: 10px;
   position: relative;
-  background: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.85);
   padding: 18px 20px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
