@@ -32,7 +32,7 @@
   padding: 4px 8px;
 }
 
-/* 便签条 */
+/* ====== 第一页 · 便签条 ====== */
 .ball-card-item {
   position: relative;
   display: flex;
@@ -70,14 +70,12 @@
   content: " ›"; color: rgba(202,223,242,0.7); font-weight: 400;
 }
 
-/* =========================
-   美化工坊 · 票券风格
-========================= */
+/* ====== 第二页 · 票券风格 ====== */
 .ws-ticket-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 6px 4px;
+  gap: 12px;
+  padding: 6px 6px;
   max-height: 420px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -92,7 +90,7 @@
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 14px 16px;
+  padding: 18px 20px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -140,41 +138,41 @@
   mask-repeat: no-repeat;
 }
 .ws-ticket-name {
-  font-size: 14px; font-weight: 700; color: #3a4f65;
-  letter-spacing: 1.5px; text-align: center;
+  font-size: 15px; font-weight: 700; color: #3a4f65;
+  letter-spacing: 2px; text-align: center;
   position: relative; z-index: 4;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .ws-ticket-name::before,
 .ws-ticket-name::after {
-  content: "♠"; font-size: 8px; color: #cadff2;
+  content: "♠"; font-size: 9px; color: #cadff2;
   flex-shrink: 0; line-height: 1;
 }
 .ws-ticket-line {
   width: 60%; height: 1px;
   background: linear-gradient(90deg, transparent, #cadff2, transparent);
-  margin: 6px auto 4px;
+  margin: 8px auto 5px;
   position: relative; z-index: 4;
 }
 .ws-ticket-desc {
-  font-size: 10px; color: rgba(58,79,101,0.45); text-align: center;
-  letter-spacing: 0.5px;
+  font-size: 11.5px; color: rgba(58,79,101,0.45); text-align: center;
+  letter-spacing: 0.8px;
   position: relative; z-index: 4;
 }
-.ws-ticket.ws-sm { padding: 10px 14px; }
-.ws-ticket.ws-btn { text-align: center; cursor: pointer; padding: 9px 12px; }
+
+/* 票券按钮变体 */
+.ws-ticket.ws-sm { padding: 12px 16px; }
+.ws-ticket.ws-btn { text-align: center; cursor: pointer; padding: 11px 14px; }
 .ws-ticket.ws-btn-accent { background: #cadff2; }
-.ws-ticket.ws-btn-accent .ws-ticket-name { color: #fff; font-size: 11px; }
+.ws-ticket.ws-btn-accent .ws-ticket-name { color: #fff; font-size: 12px; }
 .ws-ticket.ws-btn-accent .ws-ticket-name::before,
 .ws-ticket.ws-btn-accent .ws-ticket-name::after { display: none; }
 .ws-ticket.ws-btn-accent::after { display: none; }
-.ws-btn-row { display: flex; gap: 6px; padding: 2px 4px; }
+.ws-btn-row { display: flex; gap: 8px; padding: 2px 6px; }
 .ws-btn-row .ws-ticket { flex: 1; }
 
-/* =========================
-   调节面板 · 票券外壳
-========================= */
-.ws-menu-wrap { padding: 2px 4px; }
+/* ====== 第三页 · 调节面板外壳 ====== */
+.ws-menu-wrap { padding: 2px 6px; }
 .ws-menu-shell {
   --notch: 10px;
   position: relative; padding: 2px; background: #cadff2;
@@ -196,7 +194,7 @@
 }
 .ws-menu-body {
   --ni: 8px;
-  position: relative; background: rgba(255,255,255,0.96); padding: 18px 16px;
+  position: relative; background: rgba(255,255,255,0.96); padding: 20px 18px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -253,12 +251,10 @@
   mask-repeat: no-repeat;
 }
 
-/* =========================
-   调节面板 · 控件
-========================= */
+/* ====== 第三页 · 控件 ====== */
 .ws-menu-ctrl {
   position: relative; z-index: 2;
-  display: flex; flex-direction: column; gap: 12px;
+  display: flex; flex-direction: column; gap: 14px;
 }
 .ws-section-title {
   display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -268,15 +264,15 @@
   background: linear-gradient(90deg, transparent, #cadff2, transparent);
 }
 .ws-section-title span {
-  font-size: 10px; font-weight: 700; color: #6a90ad;
+  font-size: 11px; font-weight: 700; color: #6a90ad;
   letter-spacing: 2.5px; white-space: nowrap;
 }
 .ws-ctrl-row {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 10px;
 }
 .ws-ctrl-label {
-  font-size: 10px; font-weight: 600; color: #5a7a9a;
-  letter-spacing: 1px; min-width: 28px; flex-shrink: 0;
+  font-size: 11px; font-weight: 600; color: #5a7a9a;
+  letter-spacing: 1px; min-width: 30px; flex-shrink: 0;
 }
 .ws-ctrl-row input[type="range"] {
   flex: 1; height: 3px; -webkit-appearance: none;
@@ -284,29 +280,29 @@
 }
 .ws-ctrl-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 18px; height: 18px; border-radius: 50%;
   background: #fff; border: 2px solid #cadff2;
   box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer;
 }
 .ws-ctrl-val {
-  font-size: 10px; font-weight: 600; color: #5a7a9a;
-  min-width: 32px; text-align: right; flex-shrink: 0;
+  font-size: 11px; font-weight: 600; color: #5a7a9a;
+  min-width: 36px; text-align: right; flex-shrink: 0;
 }
 .ws-ctrl-color-row {
-  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
 }
 .ws-ctrl-color-item {
-  display: flex; align-items: center; gap: 4px;
+  display: flex; align-items: center; gap: 5px;
 }
 .ws-ctrl-color-item input[type="color"] {
-  width: 26px; height: 26px; border: 2px solid #cadff2;
+  width: 28px; height: 28px; border: 2px solid #cadff2;
   border-radius: 6px; padding: 1px; cursor: pointer;
   background: transparent; -webkit-appearance: none;
 }
 .ws-ctrl-color-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
 .ws-ctrl-color-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 .ws-ctrl-color-item label {
-  font-size: 10px; color: #5a7a9a; font-weight: 500;
+  font-size: 11px; color: #5a7a9a; font-weight: 500;
 }
 .ball-page-scroll {
   max-height: 460px; overflow-y: auto;
@@ -319,5 +315,5 @@
 ========================= */
 .ws-placeholder {
   padding: 40px 16px; text-align: center;
-  font-size: 12px; color: #5a7a9a; letter-spacing: 1px;
+  font-size: 13px; color: #5a7a9a; letter-spacing: 1px;
 }
