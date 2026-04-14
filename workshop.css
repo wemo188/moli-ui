@@ -1,78 +1,316 @@
-.workshop-card {
+/* =========================
+   悬浮球菜单 · cadff2 便签风格
+========================= */
+.ball-card-menu {
   position: fixed;
-  z-index: 997;
-  width: 230px;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
-  border: 1px solid rgba(0,0,0,0.06);
-  transform: scale(0.85);
+  z-index: 99998;
+  pointer-events: none;
   opacity: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transform: scale(0.92) translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease, width 0.32s ease;
+  overflow: hidden;
+}
+.ball-card-menu.show {
   pointer-events: auto;
-}
-
-.workshop-card.show {
-  transform: scale(1);
   opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.ball-card-slider {
+  display: flex;
+  transition: transform 0.32s cubic-bezier(0.22, 0.8, 0.2, 1);
+  will-change: transform;
+  align-items: flex-start;
+}
+.ball-card-page { flex-shrink: 0; }
+
+/* 便签堆叠 */
+.ball-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 8px;
 }
 
-.workshop-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1a1a1a;
-  text-align: center;
-  margin-bottom: 14px;
-  letter-spacing: 1px;
-}
-
-.workshop-item {
+/* 便签条 */
+.ball-card-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 12px;
-  border-radius: 12px;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s;
-  margin-bottom: 2px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.15s ease;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(202,223,242,0.5);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+}
+.ball-card-item:nth-child(1) { transform: rotate(-3deg) translateX(-2px); }
+.ball-card-item:nth-child(2) { transform: rotate(2deg) translateX(4px); }
+.ball-card-item:nth-child(3) { transform: rotate(-1.5deg) translateX(-1px); }
+.ball-card-item:nth-child(4) { transform: rotate(2.5deg) translateX(3px); }
+.ball-card-item:nth-child(5) { transform: rotate(-2deg) translateX(-3px); }
+.ball-card-item:nth-child(6) { transform: rotate(1.5deg) translateX(2px); }
+.ball-card-item:nth-child(7) { transform: rotate(-2.5deg) translateX(-3px); }
+.ball-card-item:active {
+  transform: rotate(0deg) translateX(0) scale(0.97) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0 0 2px rgba(202,223,242,0.5);
+  background: rgba(202,223,242,0.25);
+}
+.ball-card-item span {
+  font-size: 12.5px; font-weight: 600; color: #3a4f65;
+  line-height: 1; letter-spacing: 1.5px; text-align: center;
+}
+.ball-card-item.has-sub span::after {
+  content: " ›"; color: rgba(202,223,242,0.7); font-weight: 400;
 }
 
-.workshop-item:last-child {
-  margin-bottom: 0;
+/* =========================
+   美化工坊 · 票券风格
+========================= */
+.ws-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 4px;
+}
+.ws-ticket {
+  --notch: 8px;
+  --inset: 10px;
+  position: relative;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 14px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-mask:
+    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  mask:
+    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.ws-ticket:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.ws-ticket::after {
+  content: "";
+  position: absolute;
+  top: var(--inset); left: var(--inset); right: var(--inset); bottom: var(--inset);
+  border: 1.5px solid #cadff2;
+  pointer-events: none; z-index: 2;
+  --inner-notch: 6px;
+  -webkit-mask:
+    radial-gradient(var(--inner-notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--inner-notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--inner-notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--inner-notch) at 100% 100%, transparent 98%, #000) bottom right;
+  mask:
+    radial-gradient(var(--inner-notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--inner-notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--inner-notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--inner-notch) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.ws-ticket-name {
+  font-size: 13px; font-weight: 700; color: #3a4f65;
+  letter-spacing: 1.5px; text-align: center;
+  position: relative; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.ws-ticket-name::before,
+.ws-ticket-name::after {
+  content: "♠"; font-size: 8px; color: #cadff2;
+  flex-shrink: 0; line-height: 1;
+}
+.ws-ticket-line {
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, #cadff2, transparent);
+  margin: 6px auto 4px;
+  position: relative; z-index: 4;
+}
+.ws-ticket-desc {
+  font-size: 10px; color: rgba(58,79,101,0.45); text-align: center;
+  letter-spacing: 0.5px;
+  position: relative; z-index: 4;
+}
+.ws-ticket.ws-sm { padding: 10px 14px; }
+.ws-ticket.ws-btn { text-align: center; cursor: pointer; padding: 9px 12px; }
+.ws-ticket.ws-btn-accent { background: #cadff2; }
+.ws-ticket.ws-btn-accent .ws-ticket-name { color: #fff; font-size: 11px; }
+.ws-ticket.ws-btn-accent .ws-ticket-name::before,
+.ws-ticket.ws-btn-accent .ws-ticket-name::after { display: none; }
+.ws-ticket.ws-btn-accent::after { border-color: rgba(255,255,255,0.3); }
+.ws-btn-row { display: flex; gap: 6px; padding: 2px 4px; }
+.ws-btn-row .ws-ticket { flex: 1; }
+
+/* =========================
+   调节面板 · 票券外壳
+========================= */
+.ws-menu-wrap { padding: 2px 4px; }
+.ws-menu-shell {
+  --notch: 10px;
+  position: relative; padding: 2px; background: #cadff2;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  -webkit-mask:
+    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  mask-size: 51% 51%;
+  mask-repeat: no-repeat;
+}
+.ws-menu-body {
+  --ni: 8px;
+  position: relative; background: rgba(255,255,255,0.96); padding: 18px 16px;
+  -webkit-mask:
+    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
+  mask-size: 51% 51%;
+  mask-repeat: no-repeat;
+}
+.ws-menu-inner-frame {
+  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+  pointer-events: none; z-index: 1;
+}
+.ws-menu-inner-border {
+  position: absolute; inset: 0; background: #cadff2; padding: 1px;
+  --ir: 5px;
+  -webkit-mask:
+    radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
+  mask-size: 51% 51%;
+  mask-repeat: no-repeat;
+}
+.ws-menu-inner-fill {
+  width: 100%; height: 100%; background: rgba(255,255,255,0.96);
+  --ifr: 4px;
+  -webkit-mask:
+    radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
+  mask-size: 51% 51%;
+  mask-repeat: no-repeat;
 }
 
-.workshop-item:active {
-  background: rgba(0,0,0,0.05);
+/* =========================
+   调节面板 · 控件
+========================= */
+.ws-menu-ctrl {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; gap: 12px;
 }
-
-.workshop-item svg {
-  width: 20px;
-  height: 20px;
-  color: #666;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  flex-shrink: 0;
+.ws-section-title {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-
-.workshop-item-info {
-  flex: 1;
-  min-width: 0;
+.ws-section-title::before, .ws-section-title::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, #cadff2, transparent);
 }
-
-.workshop-item-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+.ws-section-title span {
+  font-size: 10px; font-weight: 700; color: #6a90ad;
+  letter-spacing: 2.5px; white-space: nowrap;
 }
+.ws-ctrl-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.ws-ctrl-label {
+  font-size: 10px; font-weight: 600; color: #5a7a9a;
+  letter-spacing: 1px; min-width: 28px; flex-shrink: 0;
+}
+.ws-ctrl-row input[type="range"] {
+  flex: 1; height: 3px; -webkit-appearance: none;
+  background: #cadff2; border-radius: 2px; outline: none; min-width: 0;
+}
+.ws-ctrl-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; border: 2px solid #cadff2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer;
+}
+.ws-ctrl-val {
+  font-size: 10px; font-weight: 600; color: #5a7a9a;
+  min-width: 32px; text-align: right; flex-shrink: 0;
+}
+.ws-ctrl-color-row {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+}
+.ws-ctrl-color-item {
+  display: flex; align-items: center; gap: 4px;
+}
+.ws-ctrl-color-item input[type="color"] {
+  width: 26px; height: 26px; border: 2px solid #cadff2;
+  border-radius: 6px; padding: 1px; cursor: pointer;
+  background: transparent; -webkit-appearance: none;
+}
+.ws-ctrl-color-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
+.ws-ctrl-color-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+.ws-ctrl-color-item label {
+  font-size: 10px; color: #5a7a9a; font-weight: 500;
+}
+.ball-page-scroll {
+  max-height: 460px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.ball-page-scroll::-webkit-scrollbar { display: none; }
 
-.workshop-item-desc {
-  font-size: 11px;
-  color: #aaa;
-  margin-top: 2px;
+/* =========================
+   占位页提示
+========================= */
+.ws-placeholder {
+  padding: 40px 16px; text-align: center;
+  font-size: 12px; color: #5a7a9a; letter-spacing: 1px;
 }
