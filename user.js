@@ -8,7 +8,6 @@
     panelEl: null,
     addMenuOpen: false,
 
-    // ========= 用户数据（保留旧接口兼容） =========
     list: [],
     FIELDS: [
       { key: 'name', label: '名字' },
@@ -19,11 +18,9 @@
     load: function() {
       Social.list = App.LS.get('userList') || [];
     },
-
     save: function() {
       App.LS.set('userList', Social.list);
     },
-
     getActiveUser: function() {
       var activeId = App.LS.get('activeUserId');
       if (activeId) {
@@ -33,19 +30,16 @@
       }
       return Social.list[0] || null;
     },
-
     getById: function(id) {
       for (var i = 0; i < Social.list.length; i++) {
         if (Social.list[i].id === id) return Social.list[i];
       }
       return null;
     },
-
     setActive: function(id) {
       App.LS.set('activeUserId', id);
     },
 
-    // ========= 面板 =========
     open: function() {
       Social.load();
       var panel = App.$('#socialPanel');
@@ -69,23 +63,26 @@
       if (!panel) return;
 
       panel.innerHTML =
-  '<div class="soc-phone"><div class="soc-inner">' +
+        '<div class="soc-phone"><div class="soc-inner">' +
 
           '<div class="soc-header">' +
-            '<button class="soc-header-btn" id="socBackBtn" type="button" style="position:absolute;left:16px;">' +
-              '<svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<button class="soc-header-btn" id="socBackBtn" type="button">' +
+              '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<button class="soc-header-btn" id="socAddBtn" type="button">' +
-              '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>' +
-            '</button>' +
-            '<div class="soc-add-menu" id="socAddMenu">' +
-              '<div class="soc-add-menu-item" data-action="addChar">' +
-                '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' +
-                '<span>创建角色</span>' +
-              '</div>' +
-              '<div class="soc-add-menu-item" data-action="addUser">' +
-                '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' +
-                '<span>创建用户</span>' +
+            '<div style="flex:1;"></div>' +
+            '<div style="position:relative;">' +
+              '<button class="soc-header-btn" id="socAddBtn" type="button">' +
+                '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+              '</button>' +
+              '<div class="soc-add-menu" id="socAddMenu">' +
+                '<div class="soc-add-menu-item" data-action="addChar">' +
+                  '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' +
+                  '<span>创建角色</span>' +
+                '</div>' +
+                '<div class="soc-add-menu-item" data-action="addUser">' +
+                  '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' +
+                  '<span>创建用户</span>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -228,7 +225,7 @@
       var user = Social.getActiveUser();
       var name = user ? (user.name || '未命名') : '未创建用户';
       var avatarHtml = user && user.avatar
-        ? '<img src="' + App.esc(user.avatar) + '" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(202,223,242,.5);outline:2px solid rgba(255,255,255,.9);">'
+        ? '<img src="' + App.esc(user.avatar) + '" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(192,206,220,.7);outline:1.5px solid rgba(255,255,255,1);">'
         : '<div class="soc-avatar-placeholder" style="width:64px;height:64px;border-radius:50%;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
@@ -243,12 +240,10 @@
       var panel = Social.panelEl;
       if (!panel) return;
 
-      // 返回
       App.safeOn('#socBackBtn', 'click', function() {
         Social.close();
       });
 
-      // + 按钮
       App.safeOn('#socAddBtn', 'click', function(e) {
         e.stopPropagation();
         var menu = App.$('#socAddMenu');
@@ -257,7 +252,6 @@
         menu.classList.toggle('show', Social.addMenuOpen);
       });
 
-      // 添加菜单项
       panel.querySelectorAll('.soc-add-menu-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -275,7 +269,6 @@
         });
       });
 
-      // 点外面关闭添加菜单
       panel.addEventListener('click', function() {
         if (Social.addMenuOpen) {
           Social.addMenuOpen = false;
@@ -284,7 +277,6 @@
         }
       });
 
-      // 标签切换
       panel.querySelectorAll('.soc-tab').forEach(function(tab) {
         tab.addEventListener('click', function() {
           Social.currentTab = tab.dataset.tab;
@@ -299,7 +291,6 @@
     init: function() {
       Social.load();
 
-      // 创建面板
       if (!App.$('#socialPanel')) {
         var panel = document.createElement('div');
         panel.id = 'socialPanel';
@@ -307,12 +298,10 @@
         document.body.appendChild(panel);
       }
 
-      // 绑定底部栏第一个图标
       App.safeOn('#dockMine', 'click', function() {
         Social.open();
       });
 
-      // 保持旧接口兼容
       App.user = Social;
     }
   };
