@@ -1,293 +1,262 @@
+
 (function() {
   'use strict';
-
   var App = window.App;
   if (!App) return;
 
+  var FROST = {
+    name: '霜蓝',
+    desc: '清透冰蓝 · 默认主题',
+    colors: {
+      bg: '#f4f7fb',
+      card: '#ffffff',
+      accent: '#cadff2',
+      accentDeep: '#88abda',
+      text: '#2e4258',
+      border: '#cadff2'
+    }
+  };
+
   var Theme = {
-    PRESET_THEMES: [
-      {
-        id: 'blue-white',
-        name: '蓝白',
-        desc: '清爽蓝白',
-        vars: {
-          '--bg-primary': '#f0f6fb',
-          '--bg-secondary': '#ffffff',
-          '--bg-card': '#ffffff',
-          '--accent': '#adcdea',
-          '--accent-deep': '#8ab8de',
-          '--text-primary': '#1a1a1a',
-          '--text-secondary': '#555555',
-          '--text-muted': '#999999',
-          '--border': '#1a1a1a',
-          '--border-light': 'rgba(173, 205, 234, 0.3)',
-          '--shadow': 'rgba(0, 0, 0, 0.06)'
-        }
-      },
-      {
-        id: 'dark',
-        name: '暗夜',
-        desc: '深色护眼',
-        vars: {
-          '--bg-primary': '#0f1114',
-          '--bg-secondary': '#1a1d22',
-          '--bg-card': '#22262d',
-          '--accent': '#5b9bd5',
-          '--accent-deep': '#3a7cc2',
-          '--text-primary': '#e0e4ea',
-          '--text-secondary': '#8e95a3',
-          '--text-muted': '#555d6b',
-          '--border': '#2e333b',
-          '--border-light': 'rgba(91,155,213,0.15)',
-          '--shadow': 'rgba(0,0,0,0.3)'
-        }
-      },
-      {
-        id: 'sakura',
-        name: '樱花',
-        desc: '柔和粉白',
-        vars: {
-          '--bg-primary': '#fdf2f4',
-          '--bg-secondary': '#ffffff',
-          '--bg-card': '#ffffff',
-          '--accent': '#e8a0b4',
-          '--accent-deep': '#d4819a',
-          '--text-primary': '#2d1f24',
-          '--text-secondary': '#7a5a63',
-          '--text-muted': '#b09098',
-          '--border': '#2d1f24',
-          '--border-light': 'rgba(232,160,180,0.3)',
-          '--shadow': 'rgba(232,160,180,0.12)'
-        }
-      },
-      {
-        id: 'midnight',
-        name: '午夜蓝',
-        desc: '深蓝沉稳',
-        vars: {
-          '--bg-primary': '#0c1525',
-          '--bg-secondary': '#111d32',
-          '--bg-card': '#172740',
-          '--accent': '#adcdea',
-          '--accent-deep': '#8ab8de',
-          '--text-primary': '#dbe8ff',
-          '--text-secondary': '#7a9ab5',
-          '--text-muted': '#4a6680',
-          '--border': '#223550',
-          '--border-light': 'rgba(173,205,234,0.15)',
-          '--shadow': 'rgba(0,0,0,0.3)'
-        }
-      },
-      {
-        id: 'mono-blueblack',
-        name: '机能蓝黑',
-        desc: '蓝主黑边',
-        vars: {
-          '--bg-primary': '#252629',
-          '--bg-secondary': '#2c3138',
-          '--bg-card': 'rgba(87, 101, 138, 0.18)',
-          '--accent': '#57658a',
-          '--accent-deep': '#6f7da5',
-          '--text-primary': '#edf3ff',
-          '--text-secondary': '#aab6d1',
-          '--text-muted': '#7d8aaa',
-          '--border': '#111111',
-          '--border-light': 'rgba(87,101,138,0.28)',
-          '--shadow': 'rgba(0,0,0,0.35)'
-        }
-      }
-    ],
-
+    builtIn: [FROST],
     customThemes: [],
-    currentThemeId: 'blue-white',
+    currentName: '',
 
-    applyThemeVars: function(vars) {
-      if (!vars) return;
-      Object.keys(vars).forEach(function(k) {
-        document.documentElement.style.setProperty(k, vars[k]);
-      });
+    load: function() {
+      Theme.customThemes = App.LS.get('customThemes') || [];
+      Theme.currentName = App.LS.get('currentTheme') || FROST.name;
     },
 
-    findThemeById: function(id) {
-      for (var i = 0; i < Theme.PRESET_THEMES.length; i++) {
-        if (Theme.PRESET_THEMES[i].id === id) return Theme.PRESET_THEMES[i];
+    save: function() {
+      App.LS.set('customThemes', Theme.customThemes);
+      App.LS.set('currentTheme', Theme.currentName);
+    },
+
+    apply: function(colors) {
+      var r = document.documentElement.style;
+      r.setProperty('--bg-primary', colors.bg);
+      r.setProperty('--bg-secondary', colors.card);
+      r.setProperty('--bg-card', colors.card);
+      r.setProperty('--accent', colors.accent);
+      r.setProperty('--accent-deep', colors.accentDeep);
+      r.setProperty('--text-primary', colors.text);
+      r.setProperty('--text-secondary', Theme.mix(colors.text, colors.bg, 0.6));
+      r.setProperty('--text-muted', Theme.mix(colors.text, colors.bg, 0.35));
+      r.setProperty('--border', Theme.hexToRgba(colors.border, 0.55));
+      r.setProperty('--border-light', Theme.hexToRgba(colors.border, 0.25));
+      r.setProperty('--shadow', Theme.hexToRgba(colors.text, 0.06));
+    },
+
+    applyByName: function(name) {
+      var theme = Theme.findTheme(name);
+      if (!theme) theme = FROST;
+      Theme.currentName = theme.name;
+      Theme.apply(theme.colors);
+      Theme.save();
+    },
+
+    findTheme: function(name) {
+      var i;
+      for (i = 0; i < Theme.builtIn.length; i++) {
+        if (Theme.builtIn[i].name === name) return Theme.builtIn[i];
       }
-      for (var j = 0; j < Theme.customThemes.length; j++) {
-        if (Theme.customThemes[j].id === id) return Theme.customThemes[j];
+      for (i = 0; i < Theme.customThemes.length; i++) {
+        if (Theme.customThemes[i].name === name) return Theme.customThemes[i];
       }
       return null;
     },
 
-    updateColorInputs: function(vars) {
-      var map = {
-        colorBg: '--bg-primary',
-        colorCard: '--bg-card',
-        colorAccent: '--accent',
-        colorAccentDeep: '--accent-deep',
-        colorText: '--text-primary',
-        colorBorder: '--border'
-      };
-      Object.keys(map).forEach(function(id) {
-        var el = App.$('#' + id);
-        var val = vars[map[id]];
-        if (el && val && val.indexOf('#') === 0) el.value = val;
-      });
+    hexToRgba: function(hex, alpha) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      var r = parseInt(hex.substr(0, 2), 16);
+      var g = parseInt(hex.substr(2, 2), 16);
+      var b = parseInt(hex.substr(4, 2), 16);
+      return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
     },
 
-    selectTheme: function(id) {
-      var theme = Theme.findThemeById(id);
-      if (!theme) return;
-      Theme.currentThemeId = id;
-      App.LS.set('currentThemeId', id);
-      Theme.applyThemeVars(theme.vars);
-      App.LS.set('themeVars', theme.vars);
-      Theme.updateColorInputs(theme.vars);
-      Theme.renderThemeList();
-      App.showToast('已切换: ' + theme.name);
+    mix: function(c1, c2, weight) {
+      c1 = c1.replace('#', '');
+      c2 = c2.replace('#', '');
+      if (c1.length === 3) c1 = c1[0] + c1[0] + c1[1] + c1[1] + c1[2] + c1[2];
+      if (c2.length === 3) c2 = c2[0] + c2[0] + c2[1] + c2[1] + c2[2] + c2[2];
+      var r = Math.round(parseInt(c1.substr(0, 2), 16) * weight + parseInt(c2.substr(0, 2), 16) * (1 - weight));
+      var g = Math.round(parseInt(c1.substr(2, 2), 16) * weight + parseInt(c2.substr(2, 2), 16) * (1 - weight));
+      var b = Math.round(parseInt(c1.substr(4, 2), 16) * weight + parseInt(c2.substr(4, 2), 16) * (1 - weight));
+      return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     },
 
-    renderThemeList: function() {
-      var c = App.$('#themeList');
-      if (!c) return;
+    renderPanel: function() {
+      var list = App.$('#themeList');
+      var customList = App.$('#customThemeList');
+      if (!list || !customList) return;
 
-      c.innerHTML = Theme.PRESET_THEMES.map(function(t) {
-        var dots = '';
-        var colors = [t.vars['--bg-primary'], t.vars['--accent'], t.vars['--text-primary'], t.vars['--border']];
-        for (var i = 0; i < colors.length; i++) {
-          dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
-        }
-        return '<div class="theme-card' + (Theme.currentThemeId === t.id ? ' active' : '') + '" data-theme="' + t.id + '">' +
-          '<div class="theme-card-colors">' + dots + '</div>' +
+      list.innerHTML = Theme.builtIn.map(function(t) {
+        var c = t.colors;
+        var isActive = Theme.currentName === t.name;
+        return '<div class="theme-card' + (isActive ? ' active' : '') + '" data-name="' + App.esc(t.name) + '">' +
+          '<div class="theme-card-colors">' +
+            '<div class="theme-color-dot" style="background:' + c.bg + '"></div>' +
+            '<div class="theme-color-dot" style="background:' + c.card + '"></div>' +
+            '<div class="theme-color-dot" style="background:' + c.accent + '"></div>' +
+            '<div class="theme-color-dot" style="background:' + c.accentDeep + '"></div>' +
+            '<div class="theme-color-dot" style="background:' + c.text + '"></div>' +
+            '<div class="theme-color-dot" style="background:' + c.border + '"></div>' +
+          '</div>' +
           '<div class="theme-card-name">' + App.esc(t.name) + '</div>' +
           '<div class="theme-card-desc">' + App.esc(t.desc) + '</div>' +
         '</div>';
       }).join('');
 
-      c.querySelectorAll('.theme-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          Theme.selectTheme(card.dataset.theme);
-        });
-      });
-
-      Theme.renderCustomThemeList();
-    },
-
-    renderCustomThemeList: function() {
-      var c = App.$('#customThemeList');
-      if (!c) return;
-
       if (!Theme.customThemes.length) {
-        c.innerHTML = '<p style="font-size:12px;color:var(--text-muted);padding:8px 0;">暂无自定义主题</p>';
-        return;
+        customList.innerHTML = '';
+      } else {
+        customList.innerHTML = Theme.customThemes.map(function(t) {
+          var c = t.colors;
+          var isActive = Theme.currentName === t.name;
+          return '<div class="theme-card' + (isActive ? ' active' : '') + '" data-name="' + App.esc(t.name) + '">' +
+            '<div class="theme-card-colors">' +
+              '<div class="theme-color-dot" style="background:' + c.bg + '"></div>' +
+              '<div class="theme-color-dot" style="background:' + c.card + '"></div>' +
+              '<div class="theme-color-dot" style="background:' + c.accent + '"></div>' +
+              '<div class="theme-color-dot" style="background:' + c.accentDeep + '"></div>' +
+              '<div class="theme-color-dot" style="background:' + c.text + '"></div>' +
+              '<div class="theme-color-dot" style="background:' + c.border + '"></div>' +
+            '</div>' +
+            '<div class="theme-card-name">' + App.esc(t.name) + '</div>' +
+            '<div class="theme-card-desc">' + App.esc(t.desc || '自定义主题') + '</div>' +
+            '<button class="theme-card-del" data-del="' + App.esc(t.name) + '" type="button">×</button>' +
+          '</div>';
+        }).join('');
       }
 
-      c.innerHTML = Theme.customThemes.map(function(t, idx) {
-        var dots = '';
-        var colors = [t.vars['--bg-primary'], t.vars['--accent'], t.vars['--text-primary'], t.vars['--border']];
-        for (var i = 0; i < colors.length; i++) {
-          dots += '<div class="theme-color-dot" style="background:' + colors[i] + '"></div>';
-        }
-        return '<div class="theme-card' + (Theme.currentThemeId === t.id ? ' active' : '') + '" data-theme="' + t.id + '">' +
-          '<button class="theme-card-del" onclick="event.stopPropagation();window._delTheme(' + idx + ')" type="button">x</button>' +
-          '<div class="theme-card-colors">' + dots + '</div>' +
-          '<div class="theme-card-name">' + App.esc(t.name) + '</div>' +
-          '<div class="theme-card-desc">' + App.esc(t.desc || '自定义') + '</div>' +
-        '</div>';
-      }).join('');
+      Theme.syncPickers();
+      Theme.bindPanelEvents();
+    },
 
-      c.querySelectorAll('.theme-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          Theme.selectTheme(card.dataset.theme);
+    syncPickers: function() {
+      var current = Theme.findTheme(Theme.currentName);
+      if (!current) current = FROST;
+      var c = current.colors;
+      if (App.$('#colorBg')) App.$('#colorBg').value = c.bg;
+      if (App.$('#colorCard')) App.$('#colorCard').value = c.card;
+      if (App.$('#colorAccent')) App.$('#colorAccent').value = c.accent;
+      if (App.$('#colorAccentDeep')) App.$('#colorAccentDeep').value = c.accentDeep;
+      if (App.$('#colorText')) App.$('#colorText').value = c.text;
+      if (App.$('#colorBorder')) App.$('#colorBorder').value = c.border;
+    },
+
+    getPickerColors: function() {
+      return {
+        bg: (App.$('#colorBg') || {}).value || FROST.colors.bg,
+        card: (App.$('#colorCard') || {}).value || FROST.colors.card,
+        accent: (App.$('#colorAccent') || {}).value || FROST.colors.accent,
+        accentDeep: (App.$('#colorAccentDeep') || {}).value || FROST.colors.accentDeep,
+        text: (App.$('#colorText') || {}).value || FROST.colors.text,
+        border: (App.$('#colorBorder') || {}).value || FROST.colors.border
+      };
+    },
+
+    bindPanelEvents: function() {
+      App.$$('#themeList .theme-card, #customThemeList .theme-card').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('.theme-card-del')) return;
+          var name = card.dataset.name;
+          Theme.applyByName(name);
+          Theme.renderPanel();
+          App.showToast('已切换: ' + name);
+        });
+      });
+
+      App.$$('#customThemeList .theme-card-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var name = btn.dataset.del;
+          Theme.customThemes = Theme.customThemes.filter(function(t) { return t.name !== name; });
+          if (Theme.currentName === name) {
+            Theme.applyByName(FROST.name);
+          }
+          Theme.save();
+          Theme.renderPanel();
+          App.showToast('已删除: ' + name);
         });
       });
     },
 
-    bindEvents: function() {
-      window._delTheme = function(idx) {
-        var removed = Theme.customThemes.splice(idx, 1)[0];
-        App.LS.set('customThemes', Theme.customThemes);
-        if (removed && Theme.currentThemeId === removed.id) Theme.selectTheme('blue-white');
-        Theme.renderThemeList();
-        App.showToast('已删除: ' + (removed ? removed.name : '主题'));
-      };
-
+    bindGlobalEvents: function() {
       App.safeOn('#applyCustomColors', 'click', function() {
-        var vars = {
-          '--bg-primary': App.$('#colorBg').value,
-          '--bg-secondary': App.$('#colorCard').value,
-          '--bg-card': App.$('#colorCard').value,
-          '--accent': App.$('#colorAccent').value,
-          '--accent-deep': App.$('#colorAccentDeep').value,
-          '--text-primary': App.$('#colorText').value,
-          '--border': App.$('#colorBorder').value
-        };
-        Theme.applyThemeVars(vars);
-        App.LS.set('themeVars', vars);
-        Theme.currentThemeId = 'custom-temp';
-        App.LS.set('currentThemeId', 'custom-temp');
-        Theme.renderThemeList();
-        App.showToast('配色已应用');
+        var colors = Theme.getPickerColors();
+        Theme.apply(colors);
+        App.showToast('颜色已预览');
       });
 
       App.safeOn('#saveCustomTheme', 'click', function() {
-        var name = App.$('#customThemeName') ? App.$('#customThemeName').value.trim() : '';
+        var nameInput = App.$('#customThemeName');
+        var name = nameInput ? nameInput.value.trim() : '';
         if (!name) {
           App.showToast('请输入主题名称');
           return;
         }
 
-        var vars = {
-          '--bg-primary': App.$('#colorBg').value,
-          '--bg-secondary': App.$('#colorCard').value,
-          '--bg-card': App.$('#colorCard').value,
-          '--accent': App.$('#colorAccent').value,
-          '--accent-deep': App.$('#colorAccentDeep').value,
-          '--text-primary': App.$('#colorText').value,
-          '--text-secondary': App.$('#colorText').value === '#1a1a1a' ? '#555555' : '#8e95a3',
-          '--text-muted': '#999999',
-          '--border': App.$('#colorBorder').value,
-          '--border-light': 'rgba(173, 205, 234, 0.3)',
-          '--shadow': 'rgba(0, 0, 0, 0.06)'
-        };
+        for (var i = 0; i < Theme.builtIn.length; i++) {
+          if (Theme.builtIn[i].name === name) {
+            App.showToast('不能使用内置主题名称');
+            return;
+          }
+        }
 
-        var id = 'custom-' + Date.now();
-        Theme.customThemes.push({
-          id: id,
-          name: name,
-          desc: '自定义',
-          vars: vars
-        });
+        var colors = Theme.getPickerColors();
+        var existing = -1;
+        for (var j = 0; j < Theme.customThemes.length; j++) {
+          if (Theme.customThemes[j].name === name) { existing = j; break; }
+        }
 
-        App.LS.set('customThemes', Theme.customThemes);
-        Theme.currentThemeId = id;
-        App.LS.set('currentThemeId', id);
-        App.LS.set('themeVars', vars);
-        Theme.applyThemeVars(vars);
-        if (App.$('#customThemeName')) App.$('#customThemeName').value = '';
-        Theme.renderThemeList();
-        App.showToast('主题已保存');
+        var themeObj = { name: name, desc: '自定义主题', colors: colors };
+        if (existing >= 0) {
+          Theme.customThemes[existing] = themeObj;
+        } else {
+          Theme.customThemes.push(themeObj);
+        }
+
+        Theme.currentName = name;
+        Theme.apply(colors);
+        Theme.save();
+        Theme.renderPanel();
+        if (nameInput) nameInput.value = '';
+        App.showToast('主题已保存: ' + name);
       });
 
       App.safeOn('#resetTheme', 'click', function() {
-        Theme.selectTheme('blue-white');
+        Theme.applyByName(FROST.name);
+        Theme.renderPanel();
         App.showToast('已恢复默认主题');
+      });
+
+      ['colorBg', 'colorCard', 'colorAccent', 'colorAccentDeep', 'colorText', 'colorBorder'].forEach(function(id) {
+        App.safeOn('#' + id, 'input', function() {
+          Theme.apply(Theme.getPickerColors());
+        });
       });
     },
 
     init: function() {
-      Theme.customThemes = App.LS.get('customThemes') || [];
-      Theme.currentThemeId = App.LS.get('currentThemeId') || 'blue-white';
+      Theme.load();
+      Theme.applyByName(Theme.currentName);
+      Theme.bindGlobalEvents();
 
-      Theme.renderThemeList();
-      var savedThemeVars = App.LS.get('themeVars');
-      if (savedThemeVars) {
-        Theme.applyThemeVars(savedThemeVars);
-        Theme.updateColorInputs(savedThemeVars);
-      } else {
-        Theme.selectTheme(Theme.currentThemeId);
-      }
+      var observer = new MutationObserver(function() {
+        var panel = App.$('#themePanel');
+        if (panel && panel.classList.contains('show') && !panel.dataset.rendered) {
+          panel.dataset.rendered = '1';
+          Theme.renderPanel();
+        }
+        if (panel && panel.classList.contains('hidden')) {
+          panel.dataset.rendered = '';
+        }
+      });
+      observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
 
-      Theme.bindEvents();
+      App.theme = Theme;
     }
   };
 
