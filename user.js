@@ -256,16 +256,16 @@
                 '<div class="cc-name-sub"></div>' +
               '</div>' +
             '</div>' +
-            '<div class="cc-section" id="ccSec1">' +
-              '<div class="cc-section-head" data-sec="ccSec1"><div class="cc-section-title">角色档案</div><svg class="cc-section-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+            '<div class="cc-section">' +
+              '<div class="cc-section-head"><div class="cc-section-title">角色档案</div></div>' +
               '<div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(existing ? existing.profile || '' : '') + '</textarea></div></div>' +
             '</div>' +
-            '<div class="cc-section" id="ccSec2">' +
-              '<div class="cc-section-head" data-sec="ccSec2"><div class="cc-section-title blue">示例对话</div><svg class="cc-section-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+            '<div class="cc-section">' +
+              '<div class="cc-section-head"><div class="cc-section-title blue">示例对话</div></div>' +
               '<div class="cc-section-body"><div class="cc-dialogue-area"><button class="cc-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccDialog" placeholder="示例对话内容...">' + App.esc(existing ? existing.dialogExamples || '' : '') + '</textarea></div></div>' +
             '</div>' +
-            '<div class="cc-section" id="ccSec3">' +
-              '<div class="cc-section-head" data-sec="ccSec3"><div class="cc-section-title">后置指令</div><svg class="cc-section-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+            '<div class="cc-section">' +
+              '<div class="cc-section-head"><div class="cc-section-title">后置指令</div></div>' +
               '<div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccPost" placeholder="每轮对话末尾注入的指令...">' + App.esc(existing ? existing.postInstruction || '' : '') + '</textarea></div></div>' +
             '</div>' +
             '<div class="cc-bottom-deco"></div>' +
@@ -289,13 +289,6 @@
       App.safeOn('#ccCancelBtn', 'click', function() { Social.closeCharCreate(); });
       App.safeOn('#ccDoneBtn', 'click', function() { Social.saveCharacter(); });
       App.safeOn('#ccSaveBtn', 'click', function() { Social.saveCharacter(); });
-
-      panel.querySelectorAll('.cc-section-head').forEach(function(head) {
-        head.addEventListener('click', function() {
-          var sec = App.$('#' + head.dataset.sec);
-          if (sec) sec.classList.toggle('open');
-        });
-      });
 
       panel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
