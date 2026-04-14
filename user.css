@@ -1,4 +1,25 @@
 /* =========================
+   手机外壳
+========================= */
+.soc-phone {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  height: 100%;
+  border-radius: 40px;
+  background: #fff;
+  border: 10px solid rgba(0,0,0,1);
+  box-shadow:
+    0 14px 40px rgba(60,80,110,.12),
+    0 2px 8px rgba(60,80,110,.06),
+    inset 0 1px 0 rgba(255,255,255,.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
    社交主页 · 全屏面板
 ========================= */
 #socialPanel {
