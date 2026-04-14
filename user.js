@@ -69,7 +69,7 @@
       if (!panel) return;
 
       panel.innerHTML =
-        '<div class="soc-inner">' +
+  '<div class="soc-phone"><div class="soc-inner">' +
 
           '<div class="soc-header">' +
             '<button class="soc-header-btn" id="socBackBtn" type="button" style="position:absolute;left:16px;">' +
@@ -118,7 +118,7 @@
             '</div>' +
           '</div>' +
 
-        '</div>';
+        '</div></div>';
 
       Social.renderTab();
       Social.bindEvents();
