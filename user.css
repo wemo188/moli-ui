@@ -5,9 +5,9 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 40px;
+  border-radius: 50px;
   background: #fff;
-  border: 15px solid rgba(0,0,0,1);
+  border: 17px solid rgba(0,0,0,1);
   box-shadow:
     0 14px 40px rgba(60,80,110,.12),
     0 2px 8px rgba(60,80,110,.06),
@@ -332,11 +332,11 @@
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
-  padding:.10px 10px 8px;
+  padding: 10px 10px 8px;
   background: rgba(255,255,255,1);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border-top: 3px solid rgba(126,163,201,.18);
+  border-top: 4px solid rgba(126,163,201,.18);
   flex-shrink: 0;
 }
 
