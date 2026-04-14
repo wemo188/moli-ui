@@ -9,7 +9,7 @@
   opacity: 0;
   transform: scale(0.92) translateY(6px);
   transition: opacity 0.22s ease, transform 0.22s ease, width 0.32s ease;
-  overflow: hidden;
+  overflow: clip;
 }
 .ball-card-menu.show {
   pointer-events: auto;
