@@ -3,7 +3,7 @@
   var App = window.App;
   if (!App) return;
 
-  var MAIN_W = 178, WS_W = 178, CTRL_W = 245;
+  var MAIN_W = 200, WS_W = 200, CTRL_W = 260;
 
   var Workshop = {
     menuEl: null,
