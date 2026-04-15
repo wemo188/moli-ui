@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -95,6 +94,10 @@
       panel.innerHTML =
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
           '<div class="char-list-wrap">' +
+            '<div class="cl-back-tag" id="clCloseBtn">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+              '<span>返回</span>' +
+            '</div>' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
               '<div class="cl-header-left">' +
@@ -115,9 +118,6 @@
               '<div class="cl-dots">' + dotsHtml + '</div>' +
             '</div>' +
             '<div class="cl-bottom-bar"></div>' +
-          '</div>' +
-          '<div style="padding:20px 0;text-align:center;">' +
-            '<button id="clCloseBtn" type="button" style="background:none;border:none;font-size:12px;color:#a8c0d8;cursor:pointer;font-family:inherit;letter-spacing:1px;">返回</button>' +
           '</div>' +
         '</div>';
 
@@ -304,8 +304,11 @@
           '<div class="cc-avatar-menu-top">设置头像</div>' +
           '<div class="cc-avatar-menu-content">' +
             '<div class="cc-avatar-menu-row"><input type="text" id="ccAvatarUrl" placeholder="输入图片URL..."><button class="cc-avatar-url-btn" id="ccAvatarUrlBtn" type="button">确定</button></div>' +
-            '<label class="cc-avatar-action" for="ccAvatarFile"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>从相册选择</span></label>' +
-            '<input type="file" id="ccAvatarFile" accept="image/*" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;">' +
+            '<label class="cc-avatar-action" style="cursor:pointer;">' +
+              '<input type="file" accept="image/*" style="display:none;">' +
+              '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+              '<span>从相册选择</span>' +
+            '</label>' +
           '</div>' +
         '</div>';
       document.body.appendChild(menu);
@@ -321,7 +324,7 @@
         menu.remove();
       });
 
-      var fileInput = menu.querySelector('#ccAvatarFile');
+      var fileInput = menu.querySelector('input[type="file"]');
       if (fileInput) {
         fileInput.addEventListener('change', function(e) {
           var file = e.target.files[0];
@@ -330,11 +333,11 @@
           reader.onload = function(ev) {
             var src = ev.target.result;
             if (App.cropImage) {
+              menu.remove();
               App.cropImage(src, function(cropped) {
                 Character.tempAvatar = cropped;
                 var box = App.$('#ccAvatarBox');
                 if (box) box.innerHTML = '<img src="' + cropped + '">';
-                menu.remove();
               });
             } else {
               var img = new Image();
