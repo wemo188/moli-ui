@@ -317,39 +317,45 @@
         if (box) box.innerHTML = '<img src="' + App.esc(url) + '">';
         menu.remove();
       });
-      App.$('#ccAvatarUpload').addEventListener('click', function() { App.$('#ccAvatarFile').click(); });
-      App.$('#ccAvatarFile').addEventListener('change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var src = ev.target.result;
-          if (App.cropImage) {
-            App.cropImage(src, function(cropped) {
-              Character.tempAvatar = cropped;
-              var box = App.$('#ccAvatarBox');
-              if (box) box.innerHTML = '<img src="' + cropped + '">';
-              menu.remove();
-            });
-          } else {
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var max = 256, w = img.width, h = img.height;
-              if (w > h) { if (w > max) { h = h * max / w; w = max; } } else { if (h > max) { w = w * max / h; h = max; } }
-              canvas.width = w; canvas.height = h;
-              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-              Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
-              var box = App.$('#ccAvatarBox');
-              if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
-              menu.remove();
-            };
-            img.src = src;
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    },
+      var uploadBtn = menu.querySelector('#ccAvatarUpload');
+      var fileInput = menu.querySelector('#ccAvatarFile');
+
+      if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', function() { fileInput.click(); });
+
+        fileInput.addEventListener('change', function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var src = ev.target.result;
+            if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                Character.tempAvatar = cropped;
+                var box = App.$('#ccAvatarBox');
+                if (box) box.innerHTML = '<img src="' + cropped + '">';
+                menu.remove();
+              });
+            } else {
+              var img = new Image();
+              img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var max = 256, w = img.width, h = img.height;
+                if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+                else { if (h > max) { w = w * max / h; h = max; } }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
+                var box = App.$('#ccAvatarBox');
+                if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
+                menu.remove();
+              };
+              img.src = src;
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      }
 
     init: function() {
       Character.load();
