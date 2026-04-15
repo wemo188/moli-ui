@@ -145,7 +145,6 @@
       var existing = null;
       if (charId && App.character) existing = App.character.getById(charId);
 
-      // 删掉旧的再创建新的
       var old = App.$('#charCreatePanel');
       if (old) old.remove();
 
@@ -155,12 +154,12 @@
       document.body.appendChild(panel);
 
       panel.innerHTML =
-        '<div class="cc-top">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<span class="cc-top-title">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
+          '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
           '<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
         '</div>' +
-        '<div class="cc-scroll">' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
           '<div class="comic-card">' +
             '<div class="top-bar"></div>' +
             '<div class="cc-header">' +
@@ -177,14 +176,11 @@
 
       if (existing && existing.avatar) Social.tempAvatar = existing.avatar;
 
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          panel.style.transform = 'translateX(0)';
-          panel.style.opacity = '1';
-        });
-      });
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        panel.style.transform = 'translateX(0)';
+        panel.style.opacity = '1';
+      }); });
 
-      // 返回按钮
       App.$('#ccBackBtn').addEventListener('click', function() { Social.closeCharCreate(); });
       App.$('#ccCancelBtn').addEventListener('click', function() { Social.closeCharCreate(); });
       App.$('#ccDoneBtn').addEventListener('click', function() { Social.saveCharacter(); });
@@ -223,29 +219,29 @@
       editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10002;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
 
       editor.innerHTML =
-        '<div class="cc-expand-top">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
           '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
         '</div>' +
-        '<div class="cc-expand-body">' +
-          '<div class="cc-expand-card">' +
-            '<div class="top-bar"></div>' +
-            '<div class="cc-expand-textarea-wrap' + (isDialogue ? ' dialogue' : '') + '">' +
-              '<textarea class="cc-expand-textarea' + (isDialogue ? ' dialogue' : '') + '" id="ccExpandTA" placeholder="' + App.esc(textarea.placeholder || '') + '">' + App.esc(textarea.value) + '</textarea>' +
+        '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
+          '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
+            '<div style="background:#111;height:4px;width:100%;"></div>' +
+            '<div style="position:absolute;top:4px;right:0;width:40px;height:40px;background:repeating-linear-gradient(-45deg,transparent,transparent 3px,#88abda 3px,#88abda 5px);opacity:.35;pointer-events:none;"></div>' +
+            '<div style="min-height:calc(100vh - 220px);border:1.5px dashed #c8d4e2;margin:14px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#eef2f7 22px,#eef2f7 23px);position:relative;">' +
+              (isDialogue ? '<div style="position:absolute;top:8px;left:6px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">「</div><div style="position:absolute;bottom:4px;right:10px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">」</div>' : '') +
+              '<textarea id="ccExpandTA" style="width:100%;min-height:calc(100vh - 250px);border:none;background:transparent;padding:12px ' + (isDialogue ? '14px 12px 26px' : '14px') + ';font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;" placeholder="' + App.esc(textarea.placeholder || '') + '">' + App.esc(textarea.value) + '</textarea>' +
             '</div>' +
-            '<div class="cc-bottom-deco"></div>' +
+            '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
           '</div>' +
         '</div>';
 
       document.body.appendChild(editor);
 
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          editor.style.transform = 'translateY(0)';
-          editor.style.opacity = '1';
-        });
-      });
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        editor.style.transform = 'translateY(0)';
+        editor.style.opacity = '1';
+      }); });
 
       var expandTA = App.$('#ccExpandTA');
       if (expandTA) expandTA.focus();
