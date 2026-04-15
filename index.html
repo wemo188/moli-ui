@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Star</title>
+  <title>Mono Space</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +13,6 @@
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="panels.css">
   <link rel="stylesheet" href="character.css">
-  <link rel="stylesheet" href="user.css">     
   <link rel="stylesheet" href="worldbook.css">
   <link rel="stylesheet" href="chat.css">
   <link rel="stylesheet" href="preset.css">
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="cards.css">
   <link rel="stylesheet" href="frost.css">
   <link rel="stylesheet" href="workshop.css">
+  <link rel="stylesheet" href="user.css">
 </head>
 <body>
 
@@ -31,75 +32,54 @@
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-<!-- 第一页 -->
-<section class="screen-page screen-page-1">
-  <div class="screen-page-inner" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
-    <div>
-      <div class="wt-card" id="wtCard">
-        <div class="wt-cw">
-          <div class="vf-c tl"></div>
-          <div class="vf-c tr"></div>
-          <div class="vf-c bl"></div>
-          <div class="vf-c br"></div>
-          <div class="vf-grid"></div>
-          <div class="vf-hl top"></div>
-          <div class="vf-hl bot"></div>
-          <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
-          <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
+    <!-- 第一页 -->
+    <section class="screen-page screen-page-1">
+      <div class="screen-page-inner" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
+        <div>
+          <div class="wt-card" id="wtCard">
+            <div class="wt-cw">
+              <div class="vf-c tl"></div>
+              <div class="vf-c tr"></div>
+              <div class="vf-c bl"></div>
+              <div class="vf-c br"></div>
+              <div class="vf-grid"></div>
+              <div class="vf-hl top"></div>
+              <div class="vf-hl bot"></div>
+              <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
+              <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
 
-          <div class="wt-cd">
-            <div class="wt-l" id="wtDateArea">
-              <div class="wt-time">
-                <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+              <div class="wt-cd">
+                <div class="wt-l" id="wtDateArea">
+                  <div class="wt-time">
+                    <span id="wt-hh">--</span><span class="wt-colon">:</span><span id="wt-mm">--</span><span class="wt-sec" id="wt-ss">00</span>
+                  </div>
+                  <div class="wt-tl"></div>
+                  <div class="wt-date">
+                    <span id="wt-fd">----年--月--日</span>
+                    <span class="wt-wk" id="wt-wk">---</span>
+                  </div>
+                </div>
+                <div class="wt-vd"></div>
+                <div class="wt-r" id="wtScheduleArea">
+                  <div class="wt-sched-text" id="wt-schedule-val">暂无日程</div>
+                </div>
               </div>
-              <div class="wt-tl"></div>
-              <div class="wt-date">
-                <span id="wt-fd">----年--月--日</span>
-                <span class="wt-wk" id="wt-wk">---</span>
-              </div>
-            </div>
-            <div class="wt-vd"></div>
-            <div class="wt-r" id="wtScheduleArea">
-              <div class="wt-sched-text" id="wt-schedule-val">暂无日程</div>
             </div>
           </div>
+          <div class="card-row" id="cardRow"></div>
+        </div>
+
+        <div class="eden-card" id="edenCard">
+          <div class="eden-text" id="edenText">你是我的伊甸塔</div>
         </div>
       </div>
-      <div class="card-row" id="cardRow"></div>
-    </div>
-  
-    <div class="eden-card" id="edenCard">
-      <div class="eden-text" id="edenText">你是我的伊甸塔</div>
-    </div>
-  </div>
-</section>
+    </section>
 
     <!-- 第二页 -->
     <section class="screen-page screen-page-2">
       <div class="screen-page-inner" style="position:relative;height:100%;">
-        <div class="frost-card" id="frostCard"></div>
 
         <div class="app-grid" id="appGrid">
-          <div class="app-icon" id="openCharacterBtn" data-icon="character">
-            <div class="app-icon-img" id="characterIconImg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="4"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-              </svg>
-            </div>
-            <div class="app-icon-label">角色</div>
-          </div>
-
-          <div class="app-icon" id="openUserBtn" data-icon="user">
-            <div class="app-icon-img" id="userIconImg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div class="app-icon-label">用户</div>
-          </div>
-
           <div class="app-icon" id="openWorldBookBtn" data-icon="worldbook">
             <div class="app-icon-img" id="worldBookIconImg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -154,7 +134,7 @@
   </div>
   <div class="dock-item" id="dockLong">
     <div class="mk-card">
-      <img src="https://iili.io/B7uSVQR.jpg" style="transform:scale(0.7);">
+      <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);">
     </div>
   </div>
   <div class="dock-item" id="dockShort">
@@ -164,7 +144,7 @@
   </div>
   <div class="dock-item" id="dockCheck">
     <div class="mk-card">
-      <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);">
+      <img src="https://iili.io/B7uSVQR.jpg" style="transform:scale(0.7);">
     </div>
   </div>
 </div>
@@ -177,7 +157,7 @@
 <!-- ====== 遮罩层 ====== -->
 <div id="overlay" class="overlay hidden"></div>
 
-<!-- ====== 所有面板（必须在main外面） ====== -->
+<!-- ====== 面板 ====== -->
 
 <!-- API 配置 -->
 <div id="apiPanel" class="panel hidden">
@@ -331,36 +311,6 @@
       <button class="btn btn-primary" id="applyBgBtn" type="button">应用背景</button>
       <button class="btn btn-outline" id="removeBgBtn" type="button">移除背景</button>
     </div>
-  </div>
-</div>
-
-<!-- 日历面板 -->
-<div id="calendarPanel" class="panel hidden">
-  <div class="panel-header">
-    <h2>日历</h2>
-    <div class="panel-close" data-close="calendarPanel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </div>
-  </div>
-  <div class="panel-body">
-    <p style="color:var(--text-muted);text-align:center;padding:40px 0;">日历功能开发中...</p>
-  </div>
-</div>
-
-<!-- 天气面板 -->
-<div id="weatherPanel" class="panel hidden">
-  <div class="panel-header">
-    <h2>天气</h2>
-    <div class="panel-close" data-close="weatherPanel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </div>
-  </div>
-  <div class="panel-body">
-    <p style="color:var(--text-muted);text-align:center;padding:40px 0;">天气详情开发中...</p>
   </div>
 </div>
 
