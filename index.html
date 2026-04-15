@@ -10,18 +10,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
-  <link rel="stylesheet" href="base.css">
-  <link rel="stylesheet" href="panels.css">
-<link rel="stylesheet" href="character.css?v=2026041520">
-  <link rel="stylesheet" href="worldbook.css">
-  <link rel="stylesheet" href="chat.css">
-  <link rel="stylesheet" href="preset.css">
-  <link rel="stylesheet" href="calendar.css">
-  <link rel="stylesheet" href="dock.css">
-  <link rel="stylesheet" href="cards.css">
-  <link rel="stylesheet" href="frost.css">
-  <link rel="stylesheet" href="workshop.css">
-  <link rel="stylesheet" href="user.css">
+<script>
+(function(){
+  var v = Date.now();
+  var css = [
+    'base.css','panels.css','character.css','worldbook.css',
+    'chat.css','preset.css','calendar.css','dock.css',
+    'cards.css','frost.css','workshop.css','user.css'
+  ];
+  css.forEach(function(href){
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href + '?v=' + v;
+    document.head.appendChild(link);
+  });
+})();
+</script>
 </head>
 <body>
 
@@ -319,20 +323,26 @@
 <div id="toast" class="toast hidden"></div>
 
 <!-- ====== JS ====== -->
-<script src="script.js?v=2026041520"></script>
-<script src="theme.js"></script>
-<script src="font.js"></script>
-<script src="api.js"></script>
-<script src="bg.js"></script>
-<script src="character.js?v=2026041520">
-<script src="user.js"></script>
-<script src="worldbook.js"></script>
-<script src="preset.js"></script>
-<script src="chat.js"></script>
-<script src="calendar.js"></script>
-<script src="cards.js"></script>
-<script src="frost.js"></script>
-<script src="workshop.js"></script>
-<script src="dock.js"></script>
+<script>
+(function(){
+  var v = Date.now();
+  var files = [
+    'script.js','theme.js','font.js','api.js','bg.js',
+    'character.js','user.js','worldbook.js','preset.js',
+    'chat.js','calendar.js','cards.js','frost.js',
+    'workshop.js','dock.js'
+  ];
+  var idx = 0;
+  function loadNext(){
+    if(idx >= files.length) return;
+    var s = document.createElement('script');
+    s.src = files[idx] + '?v=' + v;
+    s.onload = function(){ idx++; loadNext(); };
+    s.onerror = function(){ console.warn('加载失败: ' + files[idx]); idx++; loadNext(); };
+    document.body.appendChild(s);
+  }
+  loadNext();
+})();
+</script>
 </body>
 </html>
