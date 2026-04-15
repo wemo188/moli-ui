@@ -1,24 +1,21 @@
-
 .cl-back-tag {
   position: absolute;
   top: -1px;
   left: -1px;
   z-index: 10;
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 4px;
   background: #111;
   color: #fff;
-  padding: 8px 6px 14px;
+  padding: 6px 16px 6px 10px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.5px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 50% 100%, 0 calc(100% - 10px));
+  /* 修改这里：平头朝上，燕尾朝下 */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100% - 8px) 50%, 0 100%);
   transition: background 0.15s;
 }
 
@@ -30,7 +27,6 @@
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  transform: rotate(90deg);
 }
 
 .cl-back-tag span {
