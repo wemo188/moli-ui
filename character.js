@@ -187,34 +187,48 @@
         createPanel.style.opacity = '1';
       }); });
 
-      // 头像上传 — 跟 cards.js 完全一样的方式
-      var avatarBox = createPanel.querySelector('#ccAvatarBox');
-      avatarBox.addEventListener('click', function() {
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        document.body.appendChild(input);
-        input.onchange = function(e) {
-          var file = e.target.files[0];
-          document.body.removeChild(input);
-          if (!file) return;
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            var src = ev.target.result;
-            if (App.cropImage) {
-              App.cropImage(src, function(cropped) {
-                Character.tempAvatar = cropped;
-                avatarBox.innerHTML = '<img src="' + cropped + '">';
-              });
-            } else {
-              Character.tempAvatar = src;
-              avatarBox.innerHTML = '<img src="' + src + '">';
-            }
-          };
-          reader.readAsDataURL(file);
-        };
-        input.click();
-      });
+      // 头像上传 — 修复版本
+var avatarBox = createPanel.querySelector('#ccAvatarBox');
+avatarBox.addEventListener('click', function() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.style.display = 'none';  // 隐藏元素
+  
+  // 先绑定事件，再添加到DOM
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var src = ev.target.result;
+      if (App.cropImage) {
+        App.cropImage(src, function(cropped) {
+          Character.tempAvatar = cropped;
+          avatarBox.innerHTML = '<img src="' + cropped + '">';
+        });
+      } else {
+        Character.tempAvatar = src;
+        avatarBox.innerHTML = '<img src="' + src + '">';
+      }
+    };
+    reader.readAsDataURL(file);
+    
+    // 清理input元素
+    setTimeout(function() {
+      if (input.parentNode) input.remove();
+    }, 100);
+  };
+  
+  // 添加到DOM并触发点击
+  document.body.appendChild(input);
+  
+  // 使用setTimeout确保DOM更新后再触发click
+  setTimeout(function() {
+    input.click();
+  }, 10);
+});
 
       createPanel.querySelector('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
       createPanel.querySelector('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
