@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -71,14 +70,8 @@
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
               '</button>' +
               '<div class="soc-add-menu" id="socAddMenu">' +
-                '<div class="soc-add-menu-item" data-action="addFriend">' +
-                  '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' +
-                  '<span>加好友</span>' +
-                '</div>' +
-                '<div class="soc-add-menu-item" data-action="changeTheme">' +
-                  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>' +
-                  '<span>更换主题</span>' +
-                '</div>' +
+                '<div class="soc-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
+                '<div class="soc-add-menu-item" data-action="changeTheme"><span>更换主题</span></div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -201,7 +194,6 @@
             e.stopPropagation();
             var menu = App.$('#socAddMenu');
             if (menu) menu.classList.remove('show');
-
             if (item.dataset.action === 'addFriend') {
               App.showToast('加好友 · 开发中');
             } else if (item.dataset.action === 'changeTheme') {
