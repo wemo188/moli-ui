@@ -109,25 +109,27 @@
 /* ====== 角色展示卡 ====== */
 .char-list-wrap {
   font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  margin: 0 auto 16px;
+  margin: 0 auto 24px;
   max-width: 400px;
   background: #fff;
-  border: 3.5px solid #111;
+  border: 3.5px solid var(--card-dark, #111);
   padding: 0;
   position: relative;
-  box-shadow: 6px 6px 0 #111;
+  box-shadow: 6px 6px 0 var(--card-dark, #111);
   overflow: hidden;
+  --card-dark: #111;
   --card-accent: #88abda;
+  --card-light: #fff;
 }
 
 .cl-top-bar {
   height: 6px;
-  background: linear-gradient(90deg, #111 40%, var(--card-accent) 40%, var(--card-accent) 75%, #111 75%);
+  background: linear-gradient(90deg, var(--card-dark) 40%, var(--card-accent) 40%, var(--card-accent) 75%, var(--card-dark) 75%);
 }
 
 .cl-bottom-bar {
   height: 8px;
-  background: linear-gradient(90deg, var(--card-accent) 25%, #111 25%, #111 50%, var(--card-accent) 50%, var(--card-accent) 75%, #111 75%);
+  background: linear-gradient(90deg, var(--card-accent) 25%, var(--card-dark) 25%, var(--card-dark) 50%, var(--card-accent) 50%, var(--card-accent) 75%, var(--card-dark) 75%);
 }
 
 .cl-header {
@@ -135,7 +137,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px 12px;
-  border-bottom: 3px solid #111;
+  border-bottom: 3px solid var(--card-dark);
   position: relative;
   overflow: hidden;
 }
@@ -155,7 +157,7 @@
   font-size: 20px;
   font-weight: 900;
   letter-spacing: 2px;
-  color: #111;
+  color: var(--card-dark);
   position: relative;
 }
 
@@ -172,15 +174,15 @@
   align-items: center;
   gap: 6px;
   background: var(--card-accent);
-  color: #fff;
-  border: 3px solid #111;
+  color: var(--card-light);
+  border: 3px solid var(--card-dark);
   padding: 7px 14px;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.5px;
   cursor: pointer;
   position: relative;
-  box-shadow: 3px 3px 0 #111;
+  box-shadow: 3px 3px 0 var(--card-dark);
   transition: all .15s;
   z-index: 1;
   -webkit-tap-highlight-color: transparent;
@@ -188,12 +190,12 @@
 }
 
 .cl-create-btn:active {
-  box-shadow: 1px 1px 0 #111;
+  box-shadow: 1px 1px 0 var(--card-dark);
   transform: translate(2px, 2px);
 }
 
 .cl-create-btn.mounted {
-  background: #111;
+  background: var(--card-dark);
 }
 
 .plus-icon {
@@ -201,12 +203,12 @@
   align-items: center;
   justify-content: center;
   width: 20px; height: 20px;
-  background: #fff;
+  background: var(--card-light);
   color: var(--card-accent);
   font-size: 18px;
   font-weight: 900;
   line-height: 1;
-  border: 2px solid #111;
+  border: 2px solid var(--card-dark);
 }
 
 .plus-icon svg {
@@ -220,7 +222,7 @@
 .cl-item {
   display: flex;
   align-items: stretch;
-  border-bottom: 3px solid #111;
+  border-bottom: 3px solid var(--card-dark);
   position: relative;
   transition: background .15s;
 }
@@ -230,8 +232,8 @@
 .cl-item-index {
   width: 32px;
   flex-shrink: 0;
-  background: #111;
-  color: #fff;
+  background: var(--card-dark);
+  color: var(--card-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -257,9 +259,9 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 12px 12px 12px 14px;
+  padding: 16px 14px 16px 16px;
   min-width: 0;
-  border-right: 2.5px solid #111;
+  border-right: 2.5px solid var(--card-dark);
   position: relative;
 }
 
@@ -300,8 +302,8 @@
 }
 
 .cl-avatar {
-  width: 72px; height: 72px;
-  border: 3px solid #111;
+  width: 82px; height: 82px;
+  border: 3px solid var(--card-dark);
   background: #f0f3f8;
   flex-shrink: 0;
   position: relative;
@@ -365,13 +367,13 @@
 
 .cl-act-edit {
   background: #f7f9fc;
-  color: #111;
-  border-bottom: 2px solid #111;
+  color: var(--card-dark);
+  border-bottom: 2px solid var(--card-dark);
 }
 
 .cl-act-edit:active {
   background: var(--card-accent);
-  color: #fff;
+  color: var(--card-light);
 }
 
 .cl-act-edit svg { width: 11px; height: 11px; }
@@ -389,7 +391,7 @@
 .cl-act-del svg { width: 10px; height: 10px; }
 
 .cl-footer {
-  border-top: 3px solid #111;
+  border-top: 3px solid var(--card-dark);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -440,9 +442,12 @@
 
 .cl-change-dot {
   width: 6px; height: 6px;
-  background: var(--card-accent);
   transition: background 0.2s;
 }
+
+.cl-change-dot:nth-child(1) { background: var(--card-dark); }
+.cl-change-dot:nth-child(2) { background: var(--card-accent); }
+.cl-change-dot:nth-child(3) { background: var(--card-light); border: 1px solid #ddd; box-sizing: border-box; }
 
 .cl-change-label {
   font-size: 9px;
@@ -464,7 +469,7 @@
   display: none;
   flex-direction: column;
   gap: 8px;
-  min-width: 160px;
+  min-width: 180px;
 }
 
 .cl-color-popup.show { display: flex; }
@@ -491,26 +496,31 @@
 .cl-color-swatch { width: 14px; height: 14px; }
 
 .cl-color-custom {
-  display: flex; align-items: center; gap: 8px;
-  padding-top: 4px; border-top: 1.5px dashed #ddd;
+  display: flex; align-items: center; gap: 6px;
+  padding-top: 6px; border-top: 1.5px dashed #ddd;
+  flex-wrap: wrap;
 }
 
-.cl-color-custom label {
-  font-size: 9px; font-weight: 700;
-  color: #888; letter-spacing: 1px;
+.cl-color-custom-item {
+  display: flex; align-items: center; gap: 3px;
 }
 
-.cl-color-custom input[type="color"] {
-  width: 24px; height: 24px;
+.cl-color-custom-item input[type="color"] {
+  width: 22px; height: 22px;
   border: 2px solid #111; padding: 0;
   cursor: pointer; background: transparent;
   -webkit-appearance: none;
 }
 
-.cl-color-custom input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
-.cl-color-custom input[type="color"]::-webkit-color-swatch { border: none; }
+.cl-color-custom-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
+.cl-color-custom-item input[type="color"]::-webkit-color-swatch { border: none; }
 
-/* ====== 创建页面（原漫画风格） ====== */
+.cl-color-custom-item label {
+  font-size: 8px; font-weight: 700;
+  color: #888; letter-spacing: 0.5px;
+}
+
+/* ====== 创建/编辑页面 ====== */
 .cc-top-btn {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -529,16 +539,16 @@
 .comic-card {
   margin: 0 16px;
   max-width: 100%;
-  background: #fff;
-  border: 3.5px solid #111;
+  background: var(--edit-light, #fff);
+  border: 3.5px solid var(--edit-dark, #111);
   padding: 0;
   position: relative;
-  box-shadow: 6px 6px 0 #111;
+  box-shadow: 6px 6px 0 var(--edit-dark, #111);
   overflow: hidden;
 }
 
 .comic-card .top-bar {
-  background: #111;
+  background: var(--edit-dark, #111);
   height: 6px; width: 100%;
 }
 
@@ -547,7 +557,7 @@
   position: absolute;
   top: 6px; right: 0;
   width: 60px; height: 60px;
-  background: repeating-linear-gradient(-45deg, transparent, transparent 3px, #88abda 3px, #88abda 5px);
+  background: repeating-linear-gradient(-45deg, transparent, transparent 3px, var(--edit-accent, #88abda) 3px, var(--edit-accent, #88abda) 5px);
   opacity: .35; pointer-events: none; z-index: 1;
 }
 
@@ -556,19 +566,19 @@
   position: absolute;
   bottom: 0; left: 0;
   width: 50px; height: 50px;
-  background: repeating-linear-gradient(45deg, transparent, transparent 3px, #88abda 3px, #88abda 5px);
+  background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--edit-accent, #88abda) 3px, var(--edit-accent, #88abda) 5px);
   opacity: .35; pointer-events: none; z-index: 1;
 }
 
 .cc-header {
   display: flex; align-items: flex-end; gap: 16px;
   padding: 20px 20px 16px;
-  border-bottom: 2.5px solid #111;
+  border-bottom: 2.5px solid var(--edit-dark, #111);
 }
 
 .cc-avatar-box {
   width: 110px; height: 110px;
-  border: 3px solid #111;
+  border: 3px solid var(--edit-dark, #111);
   background: #f4f7fb;
   flex-shrink: 0; position: relative;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
@@ -589,15 +599,15 @@
 
 .cc-name-label {
   font-size: 9px; font-weight: 900;
-  letter-spacing: 3px; color: #88abda;
+  letter-spacing: 3px; color: var(--edit-accent, #88abda);
   text-transform: uppercase; margin-bottom: 4px;
 }
 
 .cc-name-input {
   width: 100%; border: none;
-  border-bottom: 2px solid #111;
+  border-bottom: 2px solid var(--edit-dark, #111);
   background: transparent;
-  font-size: 16px; font-weight: 700; color: #111;
+  font-size: 16px; font-weight: 700; color: var(--edit-dark, #111);
   outline: none; padding: 4px 0; font-family: inherit;
 }
 
@@ -609,7 +619,7 @@
 }
 
 .cc-section {
-  border-bottom: 2.5px solid #111;
+  border-bottom: 2.5px solid var(--edit-dark, #111);
   padding: 0; position: relative;
 }
 
@@ -619,7 +629,7 @@
 .cc-section-title {
   display: inline-block;
   font-size: 11px; font-weight: 900; letter-spacing: 2px;
-  color: #fff; background: #111;
+  color: var(--edit-light, #fff); background: var(--edit-dark, #111);
   padding: 3px 10px 3px 8px;
   position: relative; line-height: 1.4;
 }
@@ -628,12 +638,12 @@
   content: "";
   position: absolute;
   right: -8px; top: 0; bottom: 0;
-  border-left: 8px solid #111;
+  border-left: 8px solid var(--edit-dark, #111);
   border-bottom: 22px solid transparent;
 }
 
-.cc-section-title.blue { background: #88abda; }
-.cc-section-title.blue::after { border-left-color: #88abda; }
+.cc-section-title.blue { background: var(--edit-accent, #88abda); }
+.cc-section-title.blue::after { border-left-color: var(--edit-accent, #88abda); }
 
 .cc-section-body { overflow: visible; }
 
@@ -666,14 +676,14 @@
 .cc-dialogue-area::before {
   content: "「";
   position: absolute; top: 6px; left: 5px;
-  font-size: 20px; font-weight: 900; color: #88abda;
+  font-size: 20px; font-weight: 900; color: var(--edit-accent, #88abda);
   line-height: 1; pointer-events: none; z-index: 1;
 }
 
 .cc-dialogue-area::after {
   content: "」";
   position: absolute; bottom: 2px; right: 8px;
-  font-size: 20px; font-weight: 900; color: #88abda;
+  font-size: 20px; font-weight: 900; color: var(--edit-accent, #88abda);
   line-height: 1; pointer-events: none; z-index: 1;
 }
 
@@ -702,7 +712,7 @@
 
 .cc-expand-btn svg {
   width: 14px; height: 14px;
-  stroke: #88abda; fill: none;
+  stroke: var(--edit-accent, #88abda); fill: none;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
@@ -710,14 +720,14 @@
   content: "";
   position: absolute; top: 8px; right: 44px;
   width: 18px; height: 18px;
-  background: radial-gradient(circle, #88abda 1px, transparent 1px);
+  background: radial-gradient(circle, var(--edit-accent, #88abda) 1px, transparent 1px);
   background-size: 5px 5px;
   opacity: .5; pointer-events: none;
 }
 
 .cc-bottom-deco {
   height: 10px;
-  background: linear-gradient(90deg, #111 30%, #88abda 30%, #88abda 65%, #111 65%);
+  background: linear-gradient(90deg, var(--edit-dark, #111) 30%, var(--edit-accent, #88abda) 30%, var(--edit-accent, #88abda) 65%, var(--edit-dark, #111) 65%);
 }
 
 .cc-save-area {
@@ -727,24 +737,24 @@
 
 .cc-save-btn {
   flex: 1; padding: 14px;
-  background: #111; color: #fff;
-  border: 3px solid #111;
+  background: var(--edit-dark, #111); color: var(--edit-light, #fff);
+  border: 3px solid var(--edit-dark, #111);
   font-size: 14px; font-weight: 900; letter-spacing: 2px;
   cursor: pointer; font-family: inherit;
-  box-shadow: 4px 4px 0 #88abda;
+  box-shadow: 4px 4px 0 var(--edit-accent, #88abda);
   transition: transform 0.1s, box-shadow 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .cc-save-btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #88abda;
+  box-shadow: 2px 2px 0 var(--edit-accent, #88abda);
 }
 
 .cc-cancel-btn {
   padding: 14px 20px;
-  background: #fff; color: #111;
-  border: 3px solid #111;
+  background: var(--edit-light, #fff); color: var(--edit-dark, #111);
+  border: 3px solid var(--edit-dark, #111);
   font-size: 14px; font-weight: 900; letter-spacing: 2px;
   cursor: pointer; font-family: inherit;
   box-shadow: 4px 4px 0 #d0d8e4;
@@ -788,5 +798,5 @@
   border-bottom: 24px solid transparent;
 }
 
-.cc-expand-title-tag.blue { background: #88abda; }
-.cc-expand-title-tag.blue::after { border-left-color: #88abda; }
+.cc-expand-title-tag.blue { background: var(--edit-accent, #88abda); }
+.cc-expand-title-tag.blue::after { border-left-color: var(--edit-accent, #88abda); }
