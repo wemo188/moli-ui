@@ -414,14 +414,6 @@
   position: relative; z-index: 1;
 }
 
-.cc-avatar-box::after {
-  content: "";
-  position: absolute; top: 0; left: 0;
-  border-top: 14px solid #88abda;
-  border-right: 14px solid transparent;
-  z-index: 2;
-}
-
 .cc-name-area { flex: 1; padding-bottom: 4px; }
 
 .cc-name-label {
