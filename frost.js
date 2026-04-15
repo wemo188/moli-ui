@@ -72,8 +72,8 @@
     dragTimer: null,
 
     DEFAULTS: {
-      text: '欢迎来到虚幻梦境',
-      fontSize: 45,
+      text: '全世界 最好的你˶ᵒ ᵕ ˂˶️ಣ',
+      fontSize: 38,
       rotate: 0,
       spacing: 2,
       fontColor: '#1a1a1a',
