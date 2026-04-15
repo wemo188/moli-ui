@@ -220,7 +220,7 @@
       }
     },
 
-    init: function() {
+        init: function() {
       Social.load();
       if (!App.$('#socialPanel')) {
         var panel = document.createElement('div');
@@ -229,13 +229,7 @@
         document.body.appendChild(panel);
       }
       App.user = Social;
-
-      var dockMine = App.$('#dockMine');
-      if (dockMine) {
-        dockMine.addEventListener('click', function() {
-          Social.open();
-        });
-      }
+      App.safeOn('#dockMine', 'click', function() { Social.open(); });
     }
 
   App.register('user', Social);
