@@ -95,6 +95,7 @@
           '<div class="char-list-wrap">' +
             '<div class="cl-back-tag" id="clCloseBtn">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+              '<span>返回</span>' +
             '</div>' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
@@ -187,136 +188,35 @@
         createPanel.style.opacity = '1';
       }); });
 
-// ========== 头像上传 - 完全重写版本 ==========
-var avatarBox = createPanel.querySelector('#ccAvatarBox');
+      // 头像上传 — 跟 cards.js 完全一样的方式
+      var avatarBox = createPanel.querySelector('#ccAvatarBox');
+      avatarBox.addEventListener('click', function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        document.body.appendChild(input);
+        input.onchange = function(e) {
+          var file = e.target.files[0];
+          document.body.removeChild(input);
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var src = ev.target.result;
+            if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                Character.tempAvatar = cropped;
+                avatarBox.innerHTML = '<img src="' + cropped + '">';
+              });
+            } else {
+              Character.tempAvatar = src;
+              avatarBox.innerHTML = '<img src="' + src + '">';
+            }
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      });
 
-// 1. 创建一个固定的隐藏 input
-var fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.accept = 'image/*';
-fileInput.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
-fileInput.id = 'avatarFileInput_' + Date.now();
-createPanel.appendChild(fileInput);
-
-// 2. 调试用的状态标记
-var isUploading = false;
-
-// 3. 绑定点击事件
-avatarBox.addEventListener('click', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  // 防止重复点击
-  if (isUploading) {
-    console.log('上传中，请稍候...');
-    return;
-  }
-  
-  console.log('=== 头像点击事件触发 ===');
-  console.log('App对象:', !!App);
-  console.log('cropImage方法:', !!App.cropImage);
-  
-  // 直接触发文件选择
-  fileInput.click();
-});
-
-// 4. 监听文件选择
-fileInput.addEventListener('change', function(e) {
-  console.log('=== 文件选择事件触发 ===');
-  
-  var file = e.target.files[0];
-  if (!file) {
-    console.log('未选择文件');
-    return;
-  }
-  
-  console.log('文件信息:', {
-    name: file.name,
-    type: file.type,
-    size: file.size + ' bytes'
-  });
-  
-  isUploading = true;
-  
-  var reader = new FileReader();
-  
-  reader.onloadstart = function() {
-    console.log('开始读取文件...');
-    avatarBox.style.opacity = '0.7';
-  };
-  
-  reader.onload = function(ev) {
-    console.log('文件读取完成');
-    var src = ev.target.result;
-    
-    // 检查图片数据
-    if (!src || src.length < 100) {
-      console.error('图片数据异常');
-      isUploading = false;
-      avatarBox.style.opacity = '1';
-      return;
-    }
-    
-    console.log('图片数据长度:', src.length);
-    
-    // 处理裁剪或直接显示
-    if (App.cropImage) {
-      console.log('调用 App.cropImage...');
-      
-      try {
-        App.cropImage(src, function(cropped) {
-          console.log('裁剪完成，回调执行');
-          Character.tempAvatar = cropped;
-          avatarBox.innerHTML = '<img src="' + cropped + '" style="width:100%;height:100%;object-fit:cover;">';
-          avatarBox.style.opacity = '1';
-          isUploading = false;
-          fileInput.value = ''; // 清空，允许重复选择
-        });
-      } catch (err) {
-        console.error('cropImage 调用失败:', err);
-        // 降级：直接显示原图
-        Character.tempAvatar = src;
-        avatarBox.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;">';
-        avatarBox.style.opacity = '1';
-        isUploading = false;
-        fileInput.value = '';
-      }
-      
-    } else {
-      console.log('直接使用原图（无裁剪功能）');
-      Character.tempAvatar = src;
-      avatarBox.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;">';
-      avatarBox.style.opacity = '1';
-      isUploading = false;
-      fileInput.value = '';
-    }
-  };
-  
-  reader.onerror = function(err) {
-    console.error('文件读取失败:', err);
-    isUploading = false;
-    avatarBox.style.opacity = '1';
-    App.showToast && App.showToast('图片读取失败');
-  };
-  
-  reader.onabort = function() {
-    console.log('文件读取中断');
-    isUploading = false;
-    avatarBox.style.opacity = '1';
-  };
-  
-  // 开始读取
-  try {
-    reader.readAsDataURL(file);
-  } catch (err) {
-    console.error('readAsDataURL 调用失败:', err);
-    isUploading = false;
-    avatarBox.style.opacity = '1';
-  }
-});
-
-// 5. 添加手动测试按钮（临时调试用）
-console.log('头像上传已初始化，可在控制台测试：document.querySelector("#ccAvatarBox").click()');
       createPanel.querySelector('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
       createPanel.querySelector('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
       createPanel.querySelector('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
