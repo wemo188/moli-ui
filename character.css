@@ -631,15 +631,16 @@
 }
 
 .cl-paw:active {
-  transform: scale(0.7);
+  transform: scale(0.85);
 }
 
-@keyframes pawPress {
-  0% { transform: scale(1); }
-  40% { transform: scale(0.65); }
-  100% { transform: scale(1); }
+@keyframes pawNudge {
+  0% { transform: translateX(0) rotate(0); }
+  30% { transform: translateX(4px) rotate(8deg); }
+  60% { transform: translateX(-3px) rotate(-5deg); }
+  100% { transform: translateX(0) rotate(0); }
 }
 
 .cl-paw.cl-paw-tap {
-  animation: pawPress 0.3s ease-out;
+  animation: pawNudge 0.35s ease-out;
 }
