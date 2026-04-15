@@ -1,7 +1,7 @@
 .cl-back-tag {
   position: absolute;
-  top: -20px;
-  left: -20px;
+  top: -10px;
+  left: -10px;
   z-index: 10;
   display: flex;
   align-items: center;
