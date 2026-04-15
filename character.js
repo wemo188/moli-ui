@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -189,7 +190,7 @@
       App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
       App.$('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
-      App.$('#ccAvatarBox').addEventListener('click', function() { Character.openAvatarMenu(); });
+      App.$('#ccAvatarBox').addEventListener('click', function() { Character.pickAvatar(); });
 
       panel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -251,6 +252,49 @@
       App.showToast('角色已创建');
     },
 
+    pickAvatar: function() {
+      var fi = document.createElement('input');
+      fi.type = 'file';
+      fi.accept = 'image/*';
+      fi.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(fi);
+
+      fi.addEventListener('change', function() {
+        var file = fi.files[0];
+        document.body.removeChild(fi);
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              Character.tempAvatar = cropped;
+              var box = App.$('#ccAvatarBox');
+              if (box) box.innerHTML = '<img src="' + cropped + '">';
+            });
+          } else {
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = 256, w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+              else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
+              var box = App.$('#ccAvatarBox');
+              if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
+            };
+            img.src = src;
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      fi.click();
+    },
+
     openExpandEditor: function(title, textarea) {
       var old = App.$('#ccExpandEditor');
       if (old) old.remove();
@@ -290,75 +334,6 @@
       }
       App.$('#ccExpandBack').addEventListener('click', closeEditor);
       App.$('#ccExpandDone').addEventListener('click', closeEditor);
-    },
-
-    openAvatarMenu: function() {
-      var old = App.$('#ccAvatarMenu');
-      if (old) old.remove();
-      var menu = document.createElement('div');
-      menu.id = 'ccAvatarMenu';
-      menu.className = 'cc-avatar-menu';
-      menu.innerHTML =
-        '<div class="cc-avatar-menu-mask"></div>' +
-        '<div class="cc-avatar-menu-body">' +
-          '<div class="cc-avatar-menu-top">设置头像</div>' +
-          '<div class="cc-avatar-menu-content">' +
-            '<div class="cc-avatar-menu-row"><input type="text" id="ccAvatarUrl" placeholder="输入图片URL..."><button class="cc-avatar-url-btn" id="ccAvatarUrlBtn" type="button">确定</button></div>' +
-            '<label class="cc-avatar-action" style="cursor:pointer;">' +
-              '<input type="file" accept="image/*" style="display:none;">' +
-              '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
-              '<span>从相册选择</span>' +
-            '</label>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(menu);
-
-      menu.querySelector('.cc-avatar-menu-mask').addEventListener('click', function() { menu.remove(); });
-
-      menu.querySelector('#ccAvatarUrlBtn').addEventListener('click', function() {
-        var url = menu.querySelector('#ccAvatarUrl').value.trim();
-        if (!url) { App.showToast('请输入URL'); return; }
-        Character.tempAvatar = url;
-        var box = App.$('#ccAvatarBox');
-        if (box) box.innerHTML = '<img src="' + App.esc(url) + '">';
-        menu.remove();
-      });
-
-      var fileInput = menu.querySelector('input[type="file"]');
-      if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-          var file = e.target.files[0];
-          if (!file) return;
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            var src = ev.target.result;
-            if (App.cropImage) {
-              menu.remove();
-              App.cropImage(src, function(cropped) {
-                Character.tempAvatar = cropped;
-                var box = App.$('#ccAvatarBox');
-                if (box) box.innerHTML = '<img src="' + cropped + '">';
-              });
-            } else {
-              var img = new Image();
-              img.onload = function() {
-                var canvas = document.createElement('canvas');
-                var max = 256, w = img.width, h = img.height;
-                if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-                else { if (h > max) { w = w * max / h; h = max; } }
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
-                var box = App.$('#ccAvatarBox');
-                if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
-                menu.remove();
-              };
-              img.src = src;
-            }
-          };
-          reader.readAsDataURL(file);
-        });
-      }
     },
 
     init: function() {
