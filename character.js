@@ -4,358 +4,362 @@
   if (!App) return;
 
   var Character = {
+    list: [],
+    editingCharId: null,
+    tempAvatar: '',
+
     FIELDS: [
-      {
-        key: 'profile',
-        label: '角色档案',
-        placeholder: '填写基础信息、核心内在、背景补充、说话方式与行为处事、习惯爱好与性、与user的关系等全部内容...'
-      },
-      {
-        key: 'openings',
-        label: '开场白',
-        placeholder: '每行一个开场白\n开场白1\n开场白2...',
-        hint: '聊天时可随机切换'
-      },
-      {
-        key: 'dialogExamples',
-        label: '示例对话',
-        placeholder: '<START>\n{{user}}: 你好\n{{char}}: ...',
-        hint: '给 AI 看的对话样例'
-      },
-      {
-        key: 'postInstruction',
-        label: '后置指令',
-        placeholder: '每轮强制提醒，防止 AI 跑偏...'
-      }
+      { key: 'name', label: '名字' },
+      { key: 'profile', label: '角色档案' },
+      { key: 'dialogExamples', label: '示例对话' },
+      { key: 'postInstruction', label: '后置指令' }
     ],
 
-    list: [],
-
-    load: function() {
-      Character.list = App.LS.get('characters') || [];
-    },
-    save: function() {
-      App.LS.set('characters', Character.list);
-    },
+    load: function() { Character.list = App.LS.get('characterList') || []; },
+    save: function() { App.LS.set('characterList', Character.list); },
     getById: function(id) {
       for (var i = 0; i < Character.list.length; i++) {
         if (Character.list[i].id === id) return Character.list[i];
       }
       return null;
     },
-    empty: function() {
-      var obj = {
-        id: 'char-' + Date.now(),
-        name: '',
-        avatar: '',
-        avatarShape: 'circle'
-      };
-      Character.FIELDS.forEach(function(f) { obj[f.key] = ''; });
-      return obj;
-    },
-    remove: function(id) {
-      Character.list = Character.list.filter(function(c) { return c.id !== id; });
-      Character.save();
-    },
-    getShapeClass: function(s) {
-      if (s === 'square') return 'shape-square';
-      if (s === 'rounded') return 'shape-rounded';
-      return 'shape-circle';
-    },
-    getNextShape: function(s) {
-      if (s === 'circle') return 'square';
-      if (s === 'square') return 'rounded';
-      return 'circle';
-    },
 
-    openPanel: function() {
-      var panel = App.$('#characterPanel');
+    open: function() {
+      Character.load();
+      var panel = App.$('#charPanel');
       if (!panel) return;
-      Character.renderCards();
-      panel.classList.remove('hidden');
-      setTimeout(function() { panel.classList.add('show'); }, 20);
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      document.body.appendChild(panel);
+      Character.renderList();
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        panel.style.transform = 'translateX(0)';
+        panel.style.opacity = '1';
+      }); });
     },
 
-    closePanel: function() {
-      var panel = App.$('#characterPanel');
+    close: function() {
+      var panel = App.$('#charPanel');
       if (!panel) return;
-      panel.classList.remove('show');
-      setTimeout(function() { panel.classList.add('hidden'); }, 350);
+      panel.style.transform = 'translateX(100%)';
+      panel.style.opacity = '0';
+      setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-    renderCards: function() {
-      var panel = App.$('#characterPanel');
+    renderList: function() {
+      var panel = App.$('#charPanel');
       if (!panel) return;
+      var chars = Character.list;
+      var count = chars.length;
 
-      panel.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="closeCharPanel">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>角色</h2>' +
-          '<button class="fullpage-action-btn" id="addCharBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<path d="M12 5v14M5 12h14"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="fullpage-body" id="charListBody"></div>';
-
-      App.safeOn('#closeCharPanel', 'click', function() { Character.closePanel(); });
-      App.safeOn('#addCharBtn', 'click', function() { Character.renderEditView(null); });
-
-      var body = App.$('#charListBody');
-
-      if (!Character.list.length) {
-        body.innerHTML = '<div class="empty-hint">还没有角色，点击右上角 + 创建</div>';
-        return;
+      var itemsHtml = '';
+      if (!count) {
+        itemsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;letter-spacing:1px;">暂无角色，点击上方创建</div>';
+      } else {
+        itemsHtml = chars.map(function(c, i) {
+          var idx = String(i + 1).padStart(2, '0');
+          var name = App.esc(c.name || '未命名');
+          var avatarHtml = c.avatar
+            ? '<img src="' + App.esc(c.avatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
+            : '';
+          var desc = (c.profile || '').split('\n')[0] || '';
+          desc = desc.slice(0, 20);
+          return '<div class="cl-item" data-char-id="' + c.id + '">' +
+            '<div class="cl-item-index">' + idx + '</div>' +
+            '<div class="cl-item-main">' +
+              '<div class="cl-avatar">' + avatarHtml + '</div>' +
+              '<div class="cl-info">' +
+                '<div class="cl-name">' + name + '</div>' +
+                (desc ? '<div class="cl-meta"><span class="cl-tag">' + App.esc(desc) + '</span></div>' : '') +
+              '</div>' +
+            '</div>' +
+            '<div class="cl-actions">' +
+              '<div class="cl-act-btn cl-act-edit" data-id="' + c.id + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5l3 3L12 15H9v-3z"/></svg>' +
+                '编辑' +
+              '</div>' +
+              '<div class="cl-act-btn cl-act-del" data-id="' + c.id + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14h12l1-14"/></svg>' +
+                '删除' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
       }
 
-      body.innerHTML = Character.list.map(function(c) {
-        var shapeClass = Character.getShapeClass(c.avatarShape);
-        var displayName = c.name || (c.profile || '').split('\n')[0].slice(0, 20) || '未命名';
-        var desc = (c.profile || '').slice(0, 30) || '';
-        return '<div class="char-card" data-id="' + c.id + '">' +
-          '<div class="char-card-avatar ' + shapeClass + '" data-id="' + c.id + '" data-role="shapeToggle">' +
-            (c.avatar
-              ? '<img src="' + c.avatar + '" alt="">'
-              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-                '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>') +
+      var dotsHtml = '';
+      for (var d = 0; d < Math.max(count, 1); d++) {
+        dotsHtml += '<div class="cl-dot' + (d === 0 ? ' active' : '') + '"></div>';
+      }
+
+      panel.innerHTML =
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
+          '<div class="char-list-wrap">' +
+            '<div class="cl-top-bar"></div>' +
+            '<div class="cl-header">' +
+              '<div class="cl-header-left">' +
+                '<h2>角色列表</h2>' +
+                '<span class="cl-count">' + count + '</span>' +
+              '</div>' +
+              '<div class="cl-create-btn" id="clCreateBtn">' +
+                '<span class="plus-icon">+</span>' +
+                '创建角色' +
+              '</div>' +
+            '</div>' +
+            '<div class="cl-body">' + itemsHtml + '</div>' +
+            '<div class="cl-footer">' +
+              '<div class="cl-footer-left">' +
+                '<span class="cl-paw">🐾</span>' +
+                '<span class="cl-footer-text">Character List</span>' +
+              '</div>' +
+              '<div class="cl-dots">' + dotsHtml + '</div>' +
+            '</div>' +
+            '<div class="cl-bottom-bar"></div>' +
           '</div>' +
-          '<div class="char-card-info">' +
-            '<div class="char-card-name">' + App.esc(displayName) + '</div>' +
-            '<div class="char-card-desc">' + App.esc(desc) + '</div>' +
-          '</div>' +
-          '<div class="char-card-actions">' +
-            '<button class="char-edit-btn" data-id="' + c.id + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-              '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
-            '</button>' +
-            '<button class="char-del-btn" data-id="' + c.id + '" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-              '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
-            '</button>' +
+          '<div style="padding:20px 0;text-align:center;">' +
+            '<button id="clCloseBtn" type="button" style="background:none;border:none;font-size:12px;color:#a8c0d8;cursor:pointer;font-family:inherit;letter-spacing:1px;">返回</button>' +
           '</div>' +
         '</div>';
-      }).join('');
 
-      body.querySelectorAll('.char-card').forEach(function(card) {
-        card.addEventListener('click', function(e) {
-          if (e.target.closest('.char-edit-btn') || e.target.closest('.char-del-btn') || e.target.closest('[data-role="shapeToggle"]')) return;
-          var charId = card.dataset.id;
-          if (App.chat && App.chat.startChat) {
-            App.chat.startChat(charId);
-          }
+      App.$('#clCloseBtn').addEventListener('click', function() { Character.close(); });
+      App.$('#clCreateBtn').addEventListener('click', function() { Character.openCreate(); });
+
+      panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Character.openCreate(btn.dataset.id);
         });
       });
 
-      body.querySelectorAll('[data-role="shapeToggle"]').forEach(function(el) {
-        el.addEventListener('click', function(e) {
+      panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var c = Character.getById(el.dataset.id);
-          if (!c) return;
-          c.avatarShape = Character.getNextShape(c.avatarShape || 'circle');
+          if (!confirm('确定删除这个角色？')) return;
+          Character.list = Character.list.filter(function(c) { return c.id !== btn.dataset.id; });
           Character.save();
-          el.classList.remove('shape-circle', 'shape-square', 'shape-rounded');
-          el.classList.add(Character.getShapeClass(c.avatarShape));
-        });
-      });
-
-      body.querySelectorAll('.char-edit-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          Character.renderEditView(btn.dataset.id);
-        });
-      });
-
-      body.querySelectorAll('.char-del-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (!confirm('确定删除？')) return;
-          Character.remove(btn.dataset.id);
-          Character.renderCards();
+          Character.renderList();
           App.showToast('已删除');
         });
       });
     },
 
-    renderEditView: function(id) {
-      var panel = App.$('#characterPanel');
-      if (!panel) return;
+    openCreate: function(charId) {
+      Character.editingCharId = charId || null;
+      Character.tempAvatar = '';
+      var existing = null;
+      if (charId) existing = Character.getById(charId);
 
-      var isNew = !id;
-      var c = isNew ? Character.empty() : Character.getById(id);
-      if (!c) return;
+      var old = App.$('#charCreatePanel');
+      if (old) old.remove();
 
-      var fieldsHtml = '';
-
-      fieldsHtml +=
-        '<div class="form-group">' +
-          '<label>名称</label>' +
-          '<input type="text" id="charName" value="' + App.esc(c.name || '') + '" placeholder="角色名称">' +
-        '</div>';
-
-      fieldsHtml +=
-        '<div class="field-card">' +
-          '<div class="field-card-top">' +
-            '<div class="field-card-label">角色档案</div>' +
-          '</div>' +
-          '<div class="field-card-body">' +
-            '<textarea class="field-card-textarea" id="field_profile" placeholder="填写角色的全部相关信息..." rows="12">' + App.esc(c.profile || '') + '</textarea>' +
-            '<button class="field-expand-btn" data-field="profile" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-              '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>';
-
-      ['openings', 'dialogExamples', 'postInstruction'].forEach(function(key) {
-        var label = {
-          openings: '开场白',
-          dialogExamples: '示例对话',
-          postInstruction: '后置指令'
-        }[key];
-        fieldsHtml +=
-          '<div class="field-card">' +
-            '<div class="field-card-top">' +
-              '<div class="field-card-label">' + label + '</div>' +
-            '</div>' +
-            '<div class="field-card-body">' +
-              '<textarea class="field-card-textarea" id="field_' + key + '" placeholder="" rows="6">' + App.esc(c[key] || '') + '</textarea>' +
-              '<button class="field-expand-btn" data-field="' + key + '" type="button">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-                '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>';
-      });
+      var panel = document.createElement('div');
+      panel.id = 'charCreatePanel';
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      document.body.appendChild(panel);
 
       panel.innerHTML =
-        '<div class="fullpage-header">' +
-          '<div class="fullpage-back" id="backToCharList">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>' + (isNew ? '新建角色' : '编辑角色') + '</h2>' +
-          '<button class="fullpage-action-btn" id="saveCharBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>' +
-          '</button>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+          '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
+          '<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
         '</div>' +
-        '<div class="fullpage-body">' +
-          '<div class="avatar-row">' +
-            '<div class="avatar-upload-area" id="charAvatarUpload">' +
-              (c.avatar ?
-                '<img src="' + c.avatar + '" alt="">' :
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-                '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>上传头像</span>') +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
+          '<div class="comic-card">' +
+            '<div class="top-bar"></div>' +
+            '<div class="cc-header">' +
+              '<div class="cc-avatar-box" id="ccAvatarBox">' + (existing && existing.avatar ? '<img src="' + App.esc(existing.avatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>') + '</div>' +
+              '<div class="cc-name-area"><div class="cc-name-label">CHARACTER NAME</div><input type="text" class="cc-name-input" id="ccNameInput" placeholder="输入角色名..." value="' + App.esc(existing ? existing.name || '' : '') + '"><div class="cc-name-sub"></div></div>' +
             '</div>' +
-            '<div class="avatar-row-info">点击上传头像<br>点击列表中的头像切换形状</div>' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(existing ? existing.profile || '' : '') + '</textarea></div></div></div>' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">示例对话</div></div><div class="cc-section-body"><div class="cc-dialogue-area"><button class="cc-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccDialog" placeholder="示例对话内容...">' + App.esc(existing ? existing.dialogExamples || '' : '') + '</textarea></div></div></div>' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">后置指令</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccPost" placeholder="每轮对话末尾注入的指令...">' + App.esc(existing ? existing.postInstruction || '' : '') + '</textarea></div></div></div>' +
+            '<div class="cc-bottom-deco"></div>' +
           '</div>' +
-          fieldsHtml +
+          '<div class="cc-save-area"><button class="cc-save-btn" id="ccSaveBtn" type="button">保 存</button><button class="cc-cancel-btn" id="ccCancelBtn" type="button">取 消</button></div>' +
         '</div>';
 
-      var fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.hidden = true;
-      panel.appendChild(fileInput);
+      if (existing && existing.avatar) Character.tempAvatar = existing.avatar;
 
-      App.safeOn('#charAvatarUpload', 'click', function() { fileInput.click(); });
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        panel.style.transform = 'translateX(0)';
+        panel.style.opacity = '1';
+      }); });
 
-                  fileInput.addEventListener('change', function(e) {
+      App.$('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
+      App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
+      App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
+      App.$('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
+      App.$('#ccAvatarBox').addEventListener('click', function() { Character.openAvatarMenu(); });
+
+      panel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var field = btn.dataset.field;
+          var taMap = { profile: '#ccProfile', dialogExamples: '#ccDialog', postInstruction: '#ccPost' };
+          var ta = App.$(taMap[field]);
+          if (!ta) return;
+          var titleMap = { profile: '角色档案', dialogExamples: '示例对话', postInstruction: '后置指令' };
+          Character.openExpandEditor(titleMap[field], ta);
+        });
+      });
+    },
+
+    closeCreate: function() {
+      var panel = App.$('#charCreatePanel');
+      if (!panel) return;
+      panel.style.transform = 'translateX(100%)';
+      panel.style.opacity = '0';
+      setTimeout(function() { if (panel.parentNode) panel.remove(); }, 350);
+    },
+
+    saveChar: function() {
+      var name = (App.$('#ccNameInput') || {}).value || '';
+      name = name.trim();
+      if (!name) { App.showToast('请输入角色名'); return; }
+
+      var profile = (App.$('#ccProfile') || {}).value || '';
+      var dialogExamples = (App.$('#ccDialog') || {}).value || '';
+      var postInstruction = (App.$('#ccPost') || {}).value || '';
+
+      if (Character.editingCharId) {
+        var existing = Character.getById(Character.editingCharId);
+        if (existing) {
+          existing.name = name;
+          existing.avatar = Character.tempAvatar || existing.avatar;
+          existing.profile = profile;
+          existing.dialogExamples = dialogExamples;
+          existing.postInstruction = postInstruction;
+          Character.save();
+          Character.closeCreate();
+          Character.renderList();
+          App.showToast('角色已更新');
+          return;
+        }
+      }
+
+      Character.list.push({
+        id: 'char-' + Date.now(),
+        name: name,
+        avatar: Character.tempAvatar,
+        profile: profile,
+        dialogExamples: dialogExamples,
+        postInstruction: postInstruction
+      });
+      Character.save();
+      Character.closeCreate();
+      Character.renderList();
+      App.showToast('角色已创建');
+    },
+
+    openExpandEditor: function(title, textarea) {
+      var old = App.$('#ccExpandEditor');
+      if (old) old.remove();
+      var isDialogue = (title === '示例对话');
+      var editor = document.createElement('div');
+      editor.id = 'ccExpandEditor';
+      editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10002;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
+      editor.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+          '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
+          '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+        '</div>' +
+        '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
+          '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
+            '<div style="background:#111;height:4px;width:100%;"></div>' +
+            '<div style="position:absolute;top:4px;right:0;width:40px;height:40px;background:repeating-linear-gradient(-45deg,transparent,transparent 3px,#88abda 3px,#88abda 5px);opacity:.35;pointer-events:none;"></div>' +
+            '<div style="min-height:calc(100vh - 220px);border:1.5px dashed #c8d4e2;margin:14px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#eef2f7 22px,#eef2f7 23px);position:relative;">' +
+              (isDialogue ? '<div style="position:absolute;top:8px;left:6px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">「</div><div style="position:absolute;bottom:4px;right:10px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">」</div>' : '') +
+              '<textarea id="ccExpandTA" style="width:100%;min-height:calc(100vh - 250px);border:none;background:transparent;padding:12px ' + (isDialogue ? '14px 12px 26px' : '14px') + ';font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;" placeholder="' + App.esc(textarea.placeholder || '') + '">' + App.esc(textarea.value) + '</textarea>' +
+            '</div>' +
+            '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(editor);
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        editor.style.transform = 'translateY(0)';
+        editor.style.opacity = '1';
+      }); });
+      var expandTA = App.$('#ccExpandTA');
+      if (expandTA) expandTA.focus();
+      function closeEditor() {
+        textarea.value = App.$('#ccExpandTA').value;
+        editor.style.transform = 'translateY(100%)';
+        editor.style.opacity = '0';
+        setTimeout(function() { if (editor.parentNode) editor.remove(); }, 350);
+      }
+      App.$('#ccExpandBack').addEventListener('click', closeEditor);
+      App.$('#ccExpandDone').addEventListener('click', closeEditor);
+    },
+
+    openAvatarMenu: function() {
+      var old = App.$('#ccAvatarMenu');
+      if (old) old.remove();
+      var menu = document.createElement('div');
+      menu.id = 'ccAvatarMenu';
+      menu.className = 'cc-avatar-menu';
+      menu.innerHTML =
+        '<div class="cc-avatar-menu-mask"></div>' +
+        '<div class="cc-avatar-menu-body">' +
+          '<div class="cc-avatar-menu-top">设置头像</div>' +
+          '<div class="cc-avatar-menu-content">' +
+            '<div class="cc-avatar-menu-row"><input type="text" id="ccAvatarUrl" placeholder="输入图片URL..."><button class="cc-avatar-url-btn" id="ccAvatarUrlBtn" type="button">确定</button></div>' +
+            '<div class="cc-avatar-action" id="ccAvatarUpload"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>从相册选择</span></div>' +
+            '<input type="file" id="ccAvatarFile" accept="image/*" hidden>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(menu);
+      menu.querySelector('.cc-avatar-menu-mask').addEventListener('click', function() { menu.remove(); });
+      App.$('#ccAvatarUrlBtn').addEventListener('click', function() {
+        var url = App.$('#ccAvatarUrl').value.trim();
+        if (!url) { App.showToast('请输入URL'); return; }
+        Character.tempAvatar = url;
+        var box = App.$('#ccAvatarBox');
+        if (box) box.innerHTML = '<img src="' + App.esc(url) + '">';
+        menu.remove();
+      });
+      App.$('#ccAvatarUpload').addEventListener('click', function() { App.$('#ccAvatarFile').click(); });
+      App.$('#ccAvatarFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          App.cropImage(ev.target.result, function(cropped) {
-            c.avatar = cropped;
-            App.$('#charAvatarUpload').innerHTML = '<img src="' + cropped + '" alt="">';
-          });
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              Character.tempAvatar = cropped;
+              var box = App.$('#ccAvatarBox');
+              if (box) box.innerHTML = '<img src="' + cropped + '">';
+              menu.remove();
+            });
+          } else {
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = 256, w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } } else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
+              var box = App.$('#ccAvatarBox');
+              if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
+              menu.remove();
+            };
+            img.src = src;
+          }
         };
         reader.readAsDataURL(file);
       });
-
-      App.safeOn('#backToCharList', 'click', function() { Character.renderCards(); });
-
-      App.safeOn('#saveCharBtn', 'click', function() {
-        var nameInput = App.$('#charName');
-        c.name = nameInput ? nameInput.value.trim() : '';
-        Character.FIELDS.forEach(function(f) {
-          var el = App.$('#field_' + f.key);
-          if (el) c[f.key] = el.value;
-        });
-        if (isNew) Character.list.push(c);
-        Character.save();
-        Character.renderCards();
-        App.showToast(isNew ? '角色已创建' : '已保存');
-      });
-
-      panel.querySelectorAll('.field-expand-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var key = btn.dataset.field;
-          var textarea = App.$('#field_' + key);
-          if (!textarea) return;
-          var label = '';
-          for (var i = 0; i < Character.FIELDS.length; i++) {
-            if (Character.FIELDS[i].key === key) {
-              label = Character.FIELDS[i].label;
-              break;
-            }
-          }
-          Character.openExpandEditor(label || key, textarea);
-        });
-      });
-    },
-
-    openExpandEditor: function(title, sourceTextarea) {
-      var existing = App.$('#expandEditor');
-      if (existing) existing.remove();
-
-      var editor = document.createElement('div');
-      editor.id = 'expandEditor';
-      editor.className = 'expand-editor';
-      editor.innerHTML =
-        '<div class="expand-editor-header">' +
-          '<div class="fullpage-back" id="expandEditorBack">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-          '</div>' +
-          '<h2>' + App.esc(title) + '</h2>' +
-          '<button class="fullpage-action-btn" id="expandEditorDone" type="button">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-            '<polyline points="20 6 9 17 4 12"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="expand-editor-body">' +
-          '<textarea class="expand-editor-textarea" id="expandTextarea">' + App.esc(sourceTextarea.value) + '</textarea>' +
-        '</div>';
-
-      document.body.appendChild(editor);
-      setTimeout(function() { editor.classList.add('show'); }, 20);
-
-      function closeEditor() {
-        sourceTextarea.value = App.$('#expandTextarea').value;
-        editor.classList.remove('show');
-        setTimeout(function() { editor.remove(); }, 300);
-      }
-
-      App.safeOn('#expandEditorBack', 'click', closeEditor);
-      App.safeOn('#expandEditorDone', 'click', closeEditor);
     },
 
     init: function() {
       Character.load();
-      if (!App.$('#characterPanel')) {
+      if (!App.$('#charPanel')) {
         var panel = document.createElement('div');
-        panel.id = 'characterPanel';
-        panel.className = 'fullpage-panel hidden';
+        panel.id = 'charPanel';
+        panel.style.display = 'none';
         document.body.appendChild(panel);
       }
       App.character = Character;
-      App.safeOn('#openCharacterBtn', 'click', function() {
-        Character.openPanel();
-      });
     }
   };
 
