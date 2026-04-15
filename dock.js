@@ -8,8 +8,6 @@
       App.safeOn('#dockLong', 'click', function() {
         if (App.character && App.character.open) {
           App.character.open();
-        } else {
-          App.showToast('角色模块加载中...');
         }
       });
 
