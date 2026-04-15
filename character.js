@@ -152,12 +152,16 @@
       var old = App.$('#charCreatePanel');
       if (old) old.remove();
 
-      var panel = document.createElement('div');
-      panel.id = 'charCreatePanel';
-      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
-      document.body.appendChild(panel);
+      var createPanel = document.createElement('div');
+      createPanel.id = 'charCreatePanel';
+      createPanel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      document.body.appendChild(createPanel);
 
-      panel.innerHTML =
+      var avatarDisplay = existing && existing.avatar
+        ? '<img src="' + App.esc(existing.avatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">'
+        : '<span class="cc-avatar-empty">PHOTO</span>';
+
+      createPanel.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
@@ -167,7 +171,10 @@
           '<div class="comic-card">' +
             '<div class="top-bar"></div>' +
             '<div class="cc-header">' +
-              '<div class="cc-avatar-box" id="ccAvatarBox">' + (existing && existing.avatar ? '<img src="' + App.esc(existing.avatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>') + '</div>' +
+              '<div class="cc-avatar-box" id="ccAvatarBox">' +
+                avatarDisplay +
+                '<input type="file" accept="image/*" id="ccAvatarFile" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:5;">' +
+              '</div>' +
               '<div class="cc-name-area"><div class="cc-name-label">CHARACTER NAME</div><input type="text" class="cc-name-input" id="ccNameInput" placeholder="输入角色名..." value="' + App.esc(existing ? existing.name || '' : '') + '"><div class="cc-name-sub"></div></div>' +
             '</div>' +
             '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(existing ? existing.profile || '' : '') + '</textarea></div></div></div>' +
@@ -180,18 +187,13 @@
 
       if (existing && existing.avatar) Character.tempAvatar = existing.avatar;
 
-      // 头像上传 — 跟旧代码完全一样的方式
-      var fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.hidden = true;
-      panel.appendChild(fileInput);
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        createPanel.style.transform = 'translateX(0)';
+        createPanel.style.opacity = '1';
+      }); });
 
-      App.$('#ccAvatarBox').addEventListener('click', function() {
-        fileInput.click();
-      });
-
-      fileInput.addEventListener('change', function(e) {
+      // 头像：file input 直接叠在头像上，用户点的就是 input 本身
+      App.$('#ccAvatarFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
@@ -201,29 +203,41 @@
             App.cropImage(src, function(cropped) {
               Character.tempAvatar = cropped;
               var box = App.$('#ccAvatarBox');
-              if (box) box.innerHTML = '<img src="' + cropped + '">';
+              if (box) {
+                var fi = box.querySelector('#ccAvatarFile');
+                box.innerHTML = '<img src="' + cropped + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">';
+                if (fi) box.appendChild(fi);
+                else {
+                  var newFi = document.createElement('input');
+                  newFi.type = 'file';
+                  newFi.accept = 'image/*';
+                  newFi.id = 'ccAvatarFile';
+                  newFi.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:5;';
+                  box.appendChild(newFi);
+                  Character.bindAvatarInput(newFi);
+                }
+              }
             });
           } else {
             Character.tempAvatar = src;
             var box = App.$('#ccAvatarBox');
-            if (box) box.innerHTML = '<img src="' + src + '">';
+            if (box) {
+              var fi = box.querySelector('#ccAvatarFile');
+              box.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">';
+              if (fi) box.appendChild(fi);
+            }
           }
         };
         reader.readAsDataURL(file);
         e.target.value = '';
       });
 
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
-        panel.style.transform = 'translateX(0)';
-        panel.style.opacity = '1';
-      }); });
-
       App.$('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
       App.$('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
 
-      panel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
+      createPanel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var field = btn.dataset.field;
@@ -233,6 +247,38 @@
           var titleMap = { profile: '角色档案', dialogExamples: '示例对话', postInstruction: '后置指令' };
           Character.openExpandEditor(titleMap[field], ta);
         });
+      });
+    },
+
+    bindAvatarInput: function(fi) {
+      fi.addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              Character.tempAvatar = cropped;
+              var box = App.$('#ccAvatarBox');
+              if (box) {
+                var existingFi = box.querySelector('#ccAvatarFile');
+                box.innerHTML = '<img src="' + cropped + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">';
+                if (existingFi) box.appendChild(existingFi);
+              }
+            });
+          } else {
+            Character.tempAvatar = src;
+            var box = App.$('#ccAvatarBox');
+            if (box) {
+              var existingFi = box.querySelector('#ccAvatarFile');
+              box.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">';
+              if (existingFi) box.appendChild(existingFi);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
       });
     },
 
