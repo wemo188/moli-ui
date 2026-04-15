@@ -1,43 +1,115 @@
-/* 燕尾返回标签 */
-.cl-back-tag {
-  position: absolute;
-  top: -2px;
-  left: -10px;
-  z-index: 10;
+/* ====== 创建入口 ====== */
+.cc-new-bar {
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  margin: 0 auto 16px;
+  max-width: 400px;
   display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.cl-esc {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  padding: 0 14px;
+  border: 3.5px solid #111;
+  border-right: none;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #111;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: -3px 6px 0 #111;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.cl-esc:active {
   background: #111;
   color: #fff;
-  padding: 2px 16px 2px 10px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+}
+
+.cc-new-main {
+  flex: 1;
+  background: #fff;
+  border: 3.5px solid #111;
+  position: relative;
+  box-shadow: 6px 6px 0 #111;
+  overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%);
-  transition: background 0.15s;
+  transition: all 0.15s;
 }
 
-.cl-back-tag:active {
-  background: #88abda;
+.cc-new-main:active {
+  box-shadow: 3px 3px 0 #111;
+  transform: translate(3px, 3px);
 }
 
-.cl-back-tag svg {
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
+.cc-new-top {
+  height: 4px;
+  background: #111;
 }
 
-.cl-back-tag span {
-  font-size: 10px;
+.cc-new-body {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.cc-new-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cc-new-icon {
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: #111;
+  line-height: 1;
+}
+
+.cc-new-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cc-new-title {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #111;
+}
+
+.cc-new-sub {
+  font-size: 8px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
+  color: #bbb;
+  text-transform: uppercase;
 }
 
+.cc-new-bottom {
+  height: 4px;
+  background: #111;
+}
+
+/* ====== 角色展示卡 ====== */
 .char-list-wrap {
   font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  margin: 0 auto;
+  margin: 0 auto 16px;
   max-width: 400px;
   background: #fff;
   border: 3.5px solid #111;
@@ -45,18 +117,24 @@
   position: relative;
   box-shadow: 6px 6px 0 #111;
   overflow: hidden;
+  --card-accent: #88abda;
 }
 
 .cl-top-bar {
   height: 6px;
-  background: linear-gradient(90deg, #111 40%, #88abda 40%, #88abda 75%, #111 75%);
+  background: linear-gradient(90deg, #111 40%, var(--card-accent) 40%, var(--card-accent) 75%, #111 75%);
+}
+
+.cl-bottom-bar {
+  height: 8px;
+  background: linear-gradient(90deg, var(--card-accent) 25%, #111 25%, #111 50%, var(--card-accent) 50%, var(--card-accent) 75%, #111 75%);
 }
 
 .cl-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 14px;
+  padding: 14px 20px 12px;
   border-bottom: 3px solid #111;
   position: relative;
   overflow: hidden;
@@ -67,15 +145,9 @@
   position: absolute;
   right: -10px; top: -10px;
   width: 100px; height: 100px;
-  background: repeating-linear-gradient(-45deg, transparent, transparent 4px, #88abda 4px, #88abda 6px);
+  background: repeating-linear-gradient(-45deg, transparent, transparent 4px, var(--card-accent) 4px, var(--card-accent) 6px);
   opacity: .12;
   pointer-events: none;
-}
-
-.cl-header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
 }
 
 .cl-header-left h2 {
@@ -90,34 +162,16 @@
 .cl-header-left h2::after {
   content: "";
   position: absolute;
-  left: 0; bottom: -4px;
-  width: 100%; height: 3px;
-  background: #88abda;
-}
-
-.cl-count {
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  background: #111;
-  padding: 2px 8px;
-  letter-spacing: 1px;
-  position: relative;
-}
-
-.cl-count::after {
-  content: "";
-  position: absolute;
-  right: -6px; top: 0; bottom: 0;
-  border-left: 6px solid #111;
-  border-bottom: 18px solid transparent;
+  left: -4px; bottom: -4px;
+  width: calc(100% + 8px); height: 3px;
+  background: var(--card-accent);
 }
 
 .cl-create-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #88abda;
+  background: var(--card-accent);
   color: #fff;
   border: 3px solid #111;
   padding: 7px 14px;
@@ -138,17 +192,27 @@
   transform: translate(2px, 2px);
 }
 
+.cl-create-btn.mounted {
+  background: #111;
+}
+
 .plus-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 20px; height: 20px;
   background: #fff;
-  color: #88abda;
+  color: var(--card-accent);
   font-size: 18px;
   font-weight: 900;
   line-height: 1;
   border: 2px solid #111;
+}
+
+.plus-icon svg {
+  width: 12px; height: 12px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
 .cl-body { padding: 0; }
@@ -162,7 +226,6 @@
 }
 
 .cl-item:last-child { border-bottom: none; }
-.cl-item:active { background: #f7f9fc; }
 
 .cl-item-index {
   width: 32px;
@@ -193,75 +256,94 @@
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 12px;
+  justify-content: flex-start;
+  padding: 12px 12px 12px 14px;
   min-width: 0;
   border-right: 2.5px solid #111;
+  position: relative;
+}
+
+.cl-cover {
+  position: absolute;
+  inset: 0;
+  background: #f0f3f8;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 1;
+}
+
+.cl-cover img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+.cl-cover-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.cl-cover-empty svg {
+  width: 28px; height: 28px;
+  stroke: #ccc; fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.cl-cover-empty span {
+  font-size: 8px; font-weight: 800;
+  letter-spacing: 1.5px; color: #ccc;
 }
 
 .cl-avatar {
-  width: 70px; height: 70px;
+  width: 72px; height: 72px;
   border: 3px solid #111;
   background: #f0f3f8;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 2;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+  margin-right: auto;
 }
 
 .cl-avatar img {
   width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
+  object-fit: cover; display: block;
 }
 
-.cl-info { flex: 1; min-width: 0; }
-
-.cl-name {
-  font-size: 15px;
-  font-weight: 900;
-  color: #111;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cl-nick {
-  font-size: 11px;
-  font-weight: 600;
-  color: #88abda;
-  margin-left: 6px;
-}
-
-.cl-meta {
+.cl-avatar-empty {
+  position: absolute;
+  inset: 0;
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
-.cl-tag {
-  font-size: 10px;
-  font-weight: 700;
-  color: #666;
-  background: #f0f3f8;
-  border: 2px solid #d0d8e4;
-  padding: 1px 7px;
-  letter-spacing: .5px;
-  white-space: nowrap;
+.cl-avatar-empty svg {
+  width: 24px; height: 24px;
+  stroke: #bbb; fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
-.cl-tag.accent {
-  color: #88abda;
-  border-color: #88abda;
-  background: #eef3fa;
+.cl-avatar-empty span {
+  font-size: 7px; font-weight: 800;
+  letter-spacing: 1px; color: #bbb;
 }
 
 .cl-actions {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 72px;
+  width: 52px;
 }
 
 .cl-act-btn {
@@ -269,10 +351,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 3px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   cursor: pointer;
   transition: all .15s;
   border: none;
@@ -288,11 +370,11 @@
 }
 
 .cl-act-edit:active {
-  background: #88abda;
+  background: var(--card-accent);
   color: #fff;
 }
 
-.cl-act-edit svg { width: 13px; height: 13px; }
+.cl-act-edit svg { width: 11px; height: 11px; }
 
 .cl-act-del {
   background: #f7f9fc;
@@ -304,7 +386,7 @@
   color: #fff;
 }
 
-.cl-act-del svg { width: 12px; height: 12px; }
+.cl-act-del svg { width: 10px; height: 10px; }
 
 .cl-footer {
   border-top: 3px solid #111;
@@ -321,7 +403,18 @@
   gap: 6px;
 }
 
-.cl-paw { font-size: 14px; line-height: 1; }
+.cl-paw {
+  font-size: 13px;
+  line-height: 1;
+  opacity: .6;
+  transition: opacity .2s, transform .2s;
+  cursor: default;
+}
+
+.cl-paw:hover {
+  opacity: 1;
+  transform: scale(1.25) rotate(-12deg);
+}
 
 .cl-footer-text {
   font-size: 9px;
@@ -331,15 +424,93 @@
   text-transform: uppercase;
 }
 
-.cl-dots { display: flex; gap: 4px; }
-.cl-dot { width: 6px; height: 6px; background: #111; }
-.cl-dot.active { background: #88abda; }
-
-.cl-bottom-bar {
-  height: 8px;
-  background: linear-gradient(90deg, #88abda 25%, #111 25%, #111 50%, #88abda 50%, #88abda 75%, #111 75%);
+.cl-change {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
+.cl-change-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.cl-change-dot {
+  width: 6px; height: 6px;
+  background: var(--card-accent);
+  transition: background 0.2s;
+}
+
+.cl-change-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--card-accent);
+  text-transform: lowercase;
+  transition: color 0.2s;
+}
+
+.cl-color-popup {
+  position: absolute;
+  bottom: 28px; right: 0;
+  background: #fff;
+  border: 3px solid #111;
+  box-shadow: 4px 4px 0 #111;
+  padding: 10px 12px;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.cl-color-popup.show { display: flex; }
+
+.cl-color-popup-title {
+  font-size: 9px; font-weight: 900;
+  letter-spacing: 2px; color: #111;
+  text-transform: uppercase; margin-bottom: 2px;
+}
+
+.cl-color-presets { display: flex; gap: 8px; }
+
+.cl-color-preset {
+  display: flex; gap: 2px;
+  cursor: pointer; padding: 4px;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cl-color-preset:active,
+.cl-color-preset.active { border-color: #111; }
+
+.cl-color-swatch { width: 14px; height: 14px; }
+
+.cl-color-custom {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 4px; border-top: 1.5px dashed #ddd;
+}
+
+.cl-color-custom label {
+  font-size: 9px; font-weight: 700;
+  color: #888; letter-spacing: 1px;
+}
+
+.cl-color-custom input[type="color"] {
+  width: 24px; height: 24px;
+  border: 2px solid #111; padding: 0;
+  cursor: pointer; background: transparent;
+  -webkit-appearance: none;
+}
+
+.cl-color-custom input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
+.cl-color-custom input[type="color"]::-webkit-color-swatch { border: none; }
+
+/* ====== 创建页面（原漫画风格） ====== */
 .cc-top-btn {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -443,7 +614,6 @@
 }
 
 .cc-section:last-of-type { border-bottom: none; }
-
 .cc-section-head { padding: 14px 20px; }
 
 .cc-section-title {
@@ -620,17 +790,3 @@
 
 .cc-expand-title-tag.blue { background: #88abda; }
 .cc-expand-title-tag.blue::after { border-left-color: #88abda; }
-
-/* 猫爪按动效果 */
-.char-list-wrap .cl-footer .cl-paw {
-  font-size: 13px;
-  line-height: 1;
-  opacity: .6;
-  transition: opacity .2s, transform .2s;
-  cursor: default;
-}
-
-.char-list-wrap .cl-footer .cl-paw:hover {
-  opacity: 1;
-  transform: scale(1.25) rotate(-12deg);
-}
