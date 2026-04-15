@@ -110,7 +110,7 @@
             '<div class="cl-body">' + itemsHtml + '</div>' +
             '<div class="cl-footer">' +
               '<div class="cl-footer-left">' +
-                '<span class="cl-paw">🐾</span>' +
+                '<span class="cl-paw" id="clPaw">🐾</span>' +
                 '<span class="cl-footer-text">Character List</span>' +
               '</div>' +
               '<div class="cl-dots">' + dotsHtml + '</div>' +
@@ -139,7 +139,16 @@
           App.showToast('已删除');
         });
       });
-    },
+      var paw = panel.querySelector('#clPaw');
+      if (paw) {
+        paw.addEventListener('click', function(e) {
+          e.stopPropagation();
+          paw.classList.remove('cl-paw-tap');
+          void paw.offsetWidth;
+          paw.classList.add('cl-paw-tap');
+        });
+      }
+    }, 
 
     openCreate: function(charId) {
       Character.editingCharId = charId || null;
@@ -201,20 +210,15 @@
           var reader = new FileReader();
           reader.onload = function(ev) {
             var src = ev.target.result;
-            // 先压缩，不裁剪
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var max = 256, w = img.width, h = img.height;
-              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-              else { if (h > max) { w = w * max / h; h = max; } }
-              canvas.width = w; canvas.height = h;
-              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-              var compressed = canvas.toDataURL('image/jpeg', 0.85);
-              Character.tempAvatar = compressed;
-              avatarBox.innerHTML = '<img src="' + compressed + '">';
-            };
-            img.src = src;
+                       if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                Character.tempAvatar = cropped;
+                avatarBox.innerHTML = '<img src="' + cropped + '">';
+              });
+            } else {
+              Character.tempAvatar = src;
+              avatarBox.innerHTML = '<img src="' + src + '">';
+            }
           };
           reader.readAsDataURL(file);
         };
