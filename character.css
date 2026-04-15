@@ -396,7 +396,7 @@
 }
 
 .cc-avatar-box {
-  width: 80px; height: 80px;
+  width: 90px; height: 90px;
   border: 3px solid #111;
   background: #f4f7fb;
   flex-shrink: 0; position: relative;
