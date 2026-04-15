@@ -189,32 +189,30 @@
         createPanel.style.opacity = '1';
       }); });
 
-      App.$('#ccAvatarBox').addEventListener('click', function() {
+App.$('#ccAvatarBox').addEventListener('click', function() {
+  alert('第1步：点击事件触发了');
   var input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
+  document.body.appendChild(input);
   input.onchange = function(e) {
+    alert('第3步：选了照片，文件名=' + e.target.files[0].name);
     var file = e.target.files[0];
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(ev) {
-      var src = ev.target.result;
-      if (App.cropImage) {
-        App.cropImage(src, function(cropped) {
-          Character.tempAvatar = cropped;
-          var box = App.$('#ccAvatarBox');
-          if (box) box.innerHTML = '<img src="' + cropped + '">';
-        });
-      } else {
-        Character.tempAvatar = src;
-        var box = App.$('#ccAvatarBox');
-        if (box) box.innerHTML = '<img src="' + src + '">';
-      }
+      alert('第4步：读取完成');
+      Character.tempAvatar = ev.target.result;
+      var box = App.$('#ccAvatarBox');
+      if (box) box.innerHTML = '<img src="' + ev.target.result + '">';
     };
     reader.readAsDataURL(file);
+    document.body.removeChild(input);
   };
+  alert('第2步：准备弹出选择器');
   input.click();
 });
+
       App.$('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
