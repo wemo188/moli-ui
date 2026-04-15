@@ -66,6 +66,21 @@
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
             '<div style="flex:1;"></div>' +
+            '<div style="position:relative;">' +
+              '<button class="soc-header-btn" id="socAddBtn" type="button">' +
+                '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+              '</button>' +
+              '<div class="soc-add-menu" id="socAddMenu">' +
+                '<div class="soc-add-menu-item" data-action="addFriend">' +
+                  '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' +
+                  '<span>加好友</span>' +
+                '</div>' +
+                '<div class="soc-add-menu-item" data-action="changeTheme">' +
+                  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>' +
+                  '<span>更换主题</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
           '<div class="soc-search"><div class="soc-search-bar">' +
             '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>' +
@@ -174,7 +189,33 @@
     bindEvents: function() {
       App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
 
+      App.safeOn('#socAddBtn', 'click', function(e) {
+        e.stopPropagation();
+        var menu = App.$('#socAddMenu');
+        if (menu) menu.classList.toggle('show');
+      });
+
       if (Social.panelEl) {
+        Social.panelEl.querySelectorAll('.soc-add-menu-item').forEach(function(item) {
+          item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var menu = App.$('#socAddMenu');
+            if (menu) menu.classList.remove('show');
+
+            if (item.dataset.action === 'addFriend') {
+              App.showToast('加好友 · 开发中');
+            } else if (item.dataset.action === 'changeTheme') {
+              Social.close();
+              setTimeout(function() { App.openPanel('themePanel'); }, 380);
+            }
+          });
+        });
+
+        Social.panelEl.addEventListener('click', function() {
+          var menu = App.$('#socAddMenu');
+          if (menu) menu.classList.remove('show');
+        });
+
         Social.panelEl.querySelectorAll('.soc-tab').forEach(function(tab) {
           tab.addEventListener('click', function() {
             Social.currentTab = tab.dataset.tab;
