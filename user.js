@@ -228,7 +228,6 @@
         panel.className = 'fullpage-panel hidden';
         document.body.appendChild(panel);
       }
-      App.safeOn('#dockMine', 'click', function() { Social.open(); });
       App.user = Social;
     }
   };
