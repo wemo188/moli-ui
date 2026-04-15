@@ -464,7 +464,7 @@
   justify-content: space-between;
   padding: 56px 16px 12px;
   flex-shrink: 0;
-  background: #f4f7fb;
+  background: #fff;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -980,7 +980,7 @@
   width: 100% !important;
   height: 100% !important;
   z-index: 10001 !important;
-  background: #f4f7fb !important;
+  background: #fff !important;
   display: flex !important;
   flex-direction: column !important;
   transform: translateY(100%);
@@ -1159,7 +1159,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 10000;
-  background: #f4f7fb;
+  background: #fff;
   display: flex;
   flex-direction: column;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s;
