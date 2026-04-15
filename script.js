@@ -65,6 +65,7 @@
   App.cropImage = function(src, callback) {
     var overlay = document.createElement('div');
     overlay.className = 'crop-overlay';
+    overlay.style.zIndex = '99999';
 
     overlay.innerHTML =
       '<div class="crop-container">' +
