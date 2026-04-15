@@ -57,8 +57,8 @@
     close: function() {
       var panel = App.$('#socialPanel');
       if (!panel) return;
-      panel.classList.remove('show');
-      setTimeout(function() { panel.classList.add('hidden'); }, 350);
+      panel.classList.remove('cc-panel-show');
+setTimeout(function() { panel.classList.add('cc-panel-hidden'); }, 350);
     },
 
     render: function() {
@@ -233,7 +233,7 @@
       if (!panel) {
         panel = document.createElement('div');
         panel.id = 'charCreatePanel';
-        panel.className = 'fullpage-panel hidden';
+        panel.className = 'cc-panel cc-panel-hidden';
         document.body.appendChild(panel);
       }
 
@@ -278,8 +278,8 @@
 
       if (existing && existing.avatar) Social.tempAvatar = existing.avatar;
 
-      panel.classList.remove('hidden');
-      requestAnimationFrame(function() { panel.classList.add('show'); });
+      panel.classList.remove('cc-panel-hidden');
+requestAnimationFrame(function() { panel.classList.add('cc-panel-show'); });
 
       Social.bindCharCreateEvents(panel);
     },
