@@ -1,18 +1,4 @@
 
-var fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.accept = 'image/*';
-fileInput.hidden = true;
-panel.appendChild(fileInput);  // 挂在面板上
-
-App.safeOn('#charAvatarUpload', 'click', function() { fileInput.click(); });
-```
-
-**跟我写的区别：旧代码把 fileInput 挂在 `panel` 上（已经在 DOM 里的元素），而不是 `document.body`，也不是用 `label for`。**
-
-**character.js — 完整替换：**
-
-```javascript
 (function() {
   'use strict';
   var App = window.App;
