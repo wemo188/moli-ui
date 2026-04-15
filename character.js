@@ -190,26 +190,31 @@
       }); });
 
 App.$('#ccAvatarBox').addEventListener('click', function() {
-  alert('第1步：点击事件触发了');
   var input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
   document.body.appendChild(input);
   input.onchange = function(e) {
-    alert('第3步：选了照片，文件名=' + e.target.files[0].name);
     var file = e.target.files[0];
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(ev) {
-      alert('第4步：读取完成');
-      Character.tempAvatar = ev.target.result;
-      var box = App.$('#ccAvatarBox');
-      if (box) box.innerHTML = '<img src="' + ev.target.result + '">';
+      var src = ev.target.result;
+      if (App.cropImage) {
+        App.cropImage(src, function(cropped) {
+          Character.tempAvatar = cropped;
+          var box = App.$('#ccAvatarBox');
+          if (box) box.innerHTML = '<img src="' + cropped + '">';
+        });
+      } else {
+        Character.tempAvatar = src;
+        var box = App.$('#ccAvatarBox');
+        if (box) box.innerHTML = '<img src="' + src + '">';
+      }
     };
     reader.readAsDataURL(file);
     document.body.removeChild(input);
   };
-  alert('第2步：准备弹出选择器');
   input.click();
 });
 
@@ -289,7 +294,7 @@ App.$('#ccAvatarBox').addEventListener('click', function() {
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
-          '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+'<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
           '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
