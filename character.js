@@ -95,6 +95,7 @@
           '<div class="char-list-wrap">' +
             '<div class="cl-back-tag" id="clCloseBtn">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+              '<span>返回</span>' +
             '</div>' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
@@ -139,6 +140,7 @@
           App.showToast('已删除');
         });
       });
+
       var paw = panel.querySelector('#clPaw');
       if (paw) {
         paw.addEventListener('click', function(e) {
@@ -148,7 +150,7 @@
           paw.classList.add('cl-paw-tap');
         });
       }
-    }, 
+    },
 
     openCreate: function(charId) {
       Character.editingCharId = charId || null;
@@ -172,7 +174,7 @@
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
-'<div style="width:36px;"></div>' +
+          '<div style="width:36px;"></div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
           '<div class="comic-card">' +
@@ -196,8 +198,7 @@
         createPanel.style.opacity = '1';
       }); });
 
-      // 头像上传 — 跟 cards.js 完全一样的方式
-            var avatarBox = createPanel.querySelector('#ccAvatarBox');
+      var avatarBox = createPanel.querySelector('#ccAvatarBox');
       avatarBox.addEventListener('click', function() {
         var input = document.createElement('input');
         input.type = 'file';
@@ -210,7 +211,7 @@
           var reader = new FileReader();
           reader.onload = function(ev) {
             var src = ev.target.result;
-                       if (App.cropImage) {
+            if (App.cropImage) {
               App.cropImage(src, function(cropped) {
                 Character.tempAvatar = cropped;
                 avatarBox.innerHTML = '<img src="' + cropped + '">';
@@ -227,7 +228,6 @@
 
       createPanel.querySelector('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
       createPanel.querySelector('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
-      createPanel.querySelector('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
       createPanel.querySelector('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
 
       createPanel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
@@ -301,7 +301,7 @@
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
-'<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
+          '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
           '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
