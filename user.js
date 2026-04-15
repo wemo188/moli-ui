@@ -230,7 +230,6 @@
       }
       App.user = Social;
     }
-  };
 
   App.register('user', Social);
 })();
