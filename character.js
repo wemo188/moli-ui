@@ -1,4 +1,18 @@
 
+var fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.hidden = true;
+panel.appendChild(fileInput);  // 挂在面板上
+
+App.safeOn('#charAvatarUpload', 'click', function() { fileInput.click(); });
+```
+
+**跟我写的区别：旧代码把 fileInput 挂在 `panel` 上（已经在 DOM 里的元素），而不是 `document.body`，也不是用 `label for`。**
+
+**character.js — 完整替换：**
+
+```javascript
 (function() {
   'use strict';
   var App = window.App;
@@ -30,7 +44,6 @@
       var panel = App.$('#charPanel');
       if (!panel) return;
       panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
-      document.body.appendChild(panel);
       Character.renderList();
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         panel.style.transform = 'translateX(0)';
@@ -181,6 +194,39 @@
 
       if (existing && existing.avatar) Character.tempAvatar = existing.avatar;
 
+      // 头像上传 — 跟旧代码完全一样的方式
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.hidden = true;
+      panel.appendChild(fileInput);
+
+      App.$('#ccAvatarBox').addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              Character.tempAvatar = cropped;
+              var box = App.$('#ccAvatarBox');
+              if (box) box.innerHTML = '<img src="' + cropped + '">';
+            });
+          } else {
+            Character.tempAvatar = src;
+            var box = App.$('#ccAvatarBox');
+            if (box) box.innerHTML = '<img src="' + src + '">';
+          }
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+      });
+
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         panel.style.transform = 'translateX(0)';
         panel.style.opacity = '1';
@@ -190,7 +236,6 @@
       App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
       App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
       App.$('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
-      App.$('#ccAvatarBox').addEventListener('click', function() { Character.pickAvatar(); });
 
       panel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -250,49 +295,6 @@
       Character.closeCreate();
       Character.renderList();
       App.showToast('角色已创建');
-    },
-
-    pickAvatar: function() {
-      var fi = document.createElement('input');
-      fi.type = 'file';
-      fi.accept = 'image/*';
-      fi.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
-      document.body.appendChild(fi);
-
-      fi.addEventListener('change', function() {
-        var file = fi.files[0];
-        document.body.removeChild(fi);
-        if (!file) return;
-
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var src = ev.target.result;
-          if (App.cropImage) {
-            App.cropImage(src, function(cropped) {
-              Character.tempAvatar = cropped;
-              var box = App.$('#ccAvatarBox');
-              if (box) box.innerHTML = '<img src="' + cropped + '">';
-            });
-          } else {
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var max = 256, w = img.width, h = img.height;
-              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-              else { if (h > max) { w = w * max / h; h = max; } }
-              canvas.width = w; canvas.height = h;
-              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-              Character.tempAvatar = canvas.toDataURL('image/jpeg', 0.85);
-              var box = App.$('#ccAvatarBox');
-              if (box) box.innerHTML = '<img src="' + Character.tempAvatar + '">';
-            };
-            img.src = src;
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-
-      fi.click();
     },
 
     openExpandEditor: function(title, textarea) {
