@@ -56,7 +56,10 @@
         cardsHtml = chars.map(function(c, i) {
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
-          var savedColor = c.cardColor || '#88abda';
+          // 修改 ④：卡片渲染时读取三色
+          var savedDark = c.cardDark || '#111111';
+          var savedAccent = c.cardAccent || '#88abda';
+          var savedLight = c.cardLight || '#ffffff';
           var avatarHtml = c.avatar
             ? '<img src="' + App.esc(c.avatar) + '">'
             : '<div class="cl-avatar-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>UPLOAD</span></div>';
@@ -70,7 +73,7 @@
             ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             : '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-          return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="--card-accent:' + savedColor + ';">' +
+          return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="--card-dark:' + savedDark + ';--card-accent:' + savedAccent + ';--card-light:' + savedLight + ';">' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
               '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
@@ -95,11 +98,17 @@
                 '<div class="cl-color-popup">' +
                   '<div class="cl-color-popup-title">配色方案</div>' +
                   '<div class="cl-color-presets">' +
-                    '<div class="cl-color-preset' + (savedColor === '#88abda' ? ' active' : '') + '" data-color="#88abda"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#88abda;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
-                    '<div class="cl-color-preset' + (savedColor === '#c9706b' ? ' active' : '') + '" data-color="#c9706b"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#c9706b;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
-                    '<div class="cl-color-preset' + (savedColor === '#a0a8b0' ? ' active' : '') + '" data-color="#a0a8b0"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#a0a8b0;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
+                    // 修改 ②：三种预设配色
+                    '<div class="cl-color-preset" data-dark="#111111" data-accent="#88abda" data-light="#ffffff"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#88abda;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
+                    '<div class="cl-color-preset" data-dark="#111111" data-accent="#f0f0f0" data-light="#ffffff"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#f0f0f0;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
+                    '<div class="cl-color-preset" data-dark="#ffffff" data-accent="#a0a8b0" data-light="#f5f5f5"><div class="cl-color-swatch" style="background:#fff;border:1px solid #ddd;"></div><div class="cl-color-swatch" style="background:#a0a8b0;"></div><div class="cl-color-swatch" style="background:#f5f5f5;border:1px solid #ddd;"></div></div>' +
                   '</div>' +
-                  '<div class="cl-color-custom"><label>自定义</label><input type="color" value="' + savedColor + '" class="cl-custom-color-input" data-id="' + c.id + '"></div>' +
+                  // 修改 ①：颜色弹窗自定义区域，改成三个颜色选择器
+                  '<div class="cl-color-custom">' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardDark || '#111111') + '" class="cl-cc-dark" data-id="' + c.id + '"><label>深</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardAccent || '#88abda') + '" class="cl-cc-accent" data-id="' + c.id + '"><label>中</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardLight || '#ffffff') + '" class="cl-cc-light" data-id="' + c.id + '"><label>浅</label></div>' +
+                  '</div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -176,7 +185,7 @@
         });
       });
 
-      // 颜色切换
+      // 修改 ③：颜色切换绑定事件
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
         var charId = ch.dataset.id;
         var card = ch.closest('.char-list-wrap');
@@ -188,29 +197,51 @@
           popup.classList.toggle('show');
         });
 
+        function applyColors(dark, accent, light) {
+          card.style.setProperty('--card-dark', dark);
+          card.style.setProperty('--card-accent', accent);
+          card.style.setProperty('--card-light', light);
+          var c = Character.getById(charId);
+          if (c) {
+            c.cardDark = dark;
+            c.cardAccent = accent;
+            c.cardLight = light;
+            c.cardColor = accent;
+            Character.save();
+          }
+          ch.querySelector('.cl-cc-dark').value = dark;
+          ch.querySelector('.cl-cc-accent').value = accent;
+          ch.querySelector('.cl-cc-light').value = light;
+        }
+
         ch.querySelectorAll('.cl-color-preset').forEach(function(p) {
+          var savedD = Character.getById(charId);
+          if (savedD && savedD.cardDark === p.dataset.dark && savedD.cardAccent === p.dataset.accent) {
+            p.classList.add('active');
+          }
           p.addEventListener('click', function(e) {
             e.stopPropagation();
             ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
             p.classList.add('active');
-            var color = p.dataset.color;
-            card.style.setProperty('--card-accent', color);
-            ch.querySelector('.cl-custom-color-input').value = color;
-            var c = Character.getById(charId);
-            if (c) { c.cardColor = color; Character.save(); }
+            applyColors(p.dataset.dark, p.dataset.accent, p.dataset.light);
           });
         });
 
-        var customInput = ch.querySelector('.cl-custom-color-input');
-        if (customInput) {
-          customInput.addEventListener('input', function(e) {
-            e.stopPropagation();
-            card.style.setProperty('--card-accent', this.value);
-            ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
-            var c = Character.getById(charId);
-            if (c) { c.cardColor = this.value; Character.save(); }
-          });
-        }
+        ch.querySelector('.cl-cc-dark').addEventListener('input', function(e) {
+          e.stopPropagation();
+          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
+          applyColors(this.value, ch.querySelector('.cl-cc-accent').value, ch.querySelector('.cl-cc-light').value);
+        });
+        ch.querySelector('.cl-cc-accent').addEventListener('input', function(e) {
+          e.stopPropagation();
+          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
+          applyColors(ch.querySelector('.cl-cc-dark').value, this.value, ch.querySelector('.cl-cc-light').value);
+        });
+        ch.querySelector('.cl-cc-light').addEventListener('input', function(e) {
+          e.stopPropagation();
+          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
+          applyColors(ch.querySelector('.cl-cc-dark').value, ch.querySelector('.cl-cc-accent').value, this.value);
+        });
       });
 
       // 点外面关闭颜色弹窗
@@ -219,6 +250,7 @@
       });
     },
 
+    // 修改 ⑥：uploadImage 里，封面也加裁剪
     uploadImage: function(charId, field, box) {
       var input = document.createElement('input');
       input.type = 'file';
@@ -231,7 +263,7 @@
         var reader = new FileReader();
         reader.onload = function(ev) {
           var src = ev.target.result;
-          if (field === 'avatar' && App.cropImage) {
+          if (App.cropImage) {
             App.cropImage(src, function(cropped) {
               var c = Character.getById(charId);
               if (c) { c[field] = cropped; Character.save(); }
@@ -300,6 +332,16 @@
         '</div>';
 
       if (existing && existing.avatar) Character.tempAvatar = existing.avatar;
+
+      // 修改 ⑤：openCreate 函数里，编辑时设置颜色变量
+      if (existing) {
+        var editDark = existing.cardDark || '#111111';
+        var editAccent = existing.cardAccent || '#88abda';
+        var editLight = existing.cardLight || '#ffffff';
+        createPanel.style.setProperty('--edit-dark', editDark);
+        createPanel.style.setProperty('--edit-accent', editAccent);
+        createPanel.style.setProperty('--edit-light', editLight);
+      }
 
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         createPanel.style.transform = 'translateX(0)';
@@ -384,6 +426,7 @@
         }
       }
 
+      // 修改 ⑦：新角色默认数据加三色
       Character.list.push({
         id: 'char-' + Date.now(),
         name: name,
@@ -392,6 +435,9 @@
         profile: profile,
         dialogExamples: dialogExamples,
         postInstruction: postInstruction,
+        cardDark: '#111111',
+        cardAccent: '#88abda',
+        cardLight: '#ffffff',
         cardColor: '#88abda',
         worldbookMounted: false
       });
