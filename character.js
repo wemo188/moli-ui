@@ -188,7 +188,7 @@
       }); });
 
       // 头像上传 — 跟 cards.js 完全一样的方式
-      var avatarBox = createPanel.querySelector('#ccAvatarBox');
+            var avatarBox = createPanel.querySelector('#ccAvatarBox');
       avatarBox.addEventListener('click', function() {
         var input = document.createElement('input');
         input.type = 'file';
@@ -201,15 +201,20 @@
           var reader = new FileReader();
           reader.onload = function(ev) {
             var src = ev.target.result;
-            if (App.cropImage) {
-              App.cropImage(src, function(cropped) {
-                Character.tempAvatar = cropped;
-                avatarBox.innerHTML = '<img src="' + cropped + '">';
-              });
-            } else {
-              Character.tempAvatar = src;
-              avatarBox.innerHTML = '<img src="' + src + '">';
-            }
+            // 先压缩，不裁剪
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = 256, w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+              else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              var compressed = canvas.toDataURL('image/jpeg', 0.85);
+              Character.tempAvatar = compressed;
+              avatarBox.innerHTML = '<img src="' + compressed + '">';
+            };
+            img.src = src;
           };
           reader.readAsDataURL(file);
         };
