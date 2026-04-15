@@ -304,8 +304,8 @@
           '<div class="cc-avatar-menu-top">设置头像</div>' +
           '<div class="cc-avatar-menu-content">' +
             '<div class="cc-avatar-menu-row"><input type="text" id="ccAvatarUrl" placeholder="输入图片URL..."><button class="cc-avatar-url-btn" id="ccAvatarUrlBtn" type="button">确定</button></div>' +
-            '<div class="cc-avatar-action" id="ccAvatarUpload"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>从相册选择</span></div>' +
-            '<input type="file" id="ccAvatarFile" accept="image/*" hidden>' +
+            '<label class="cc-avatar-action" for="ccAvatarFile"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>从相册选择</span></label>' +
+            '<input type="file" id="ccAvatarFile" accept="image/*" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;">' +
           '</div>' +
         '</div>';
       document.body.appendChild(menu);
@@ -321,12 +321,8 @@
         menu.remove();
       });
 
-      var uploadBtn = menu.querySelector('#ccAvatarUpload');
       var fileInput = menu.querySelector('#ccAvatarFile');
-
-      if (uploadBtn && fileInput) {
-        uploadBtn.addEventListener('click', function() { fileInput.click(); });
-
+      if (fileInput) {
         fileInput.addEventListener('change', function(e) {
           var file = e.target.files[0];
           if (!file) return;
