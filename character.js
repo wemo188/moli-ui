@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -158,20 +157,20 @@
       document.body.appendChild(createPanel);
 
       var avatarDisplay = existing && existing.avatar
-        ? '<img src="' + App.esc(existing.avatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1;">'
+        ? '<img src="' + App.esc(existing.avatar) + '">'
         : '<span class="cc-avatar-empty">PHOTO</span>';
 
       createPanel.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
-'<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
+          '<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
           '<div class="comic-card">' +
             '<div class="top-bar"></div>' +
             '<div class="cc-header">' +
-             '<div class="cc-avatar-box" id="ccAvatarBox">' + (existing && existing.avatar ? '<img src="' + App.esc(existing.avatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>') + '</div>' +
+              '<div class="cc-avatar-box" id="ccAvatarBox">' + avatarDisplay + '</div>' +
               '<div class="cc-name-area"><div class="cc-name-label">CHARACTER NAME</div><input type="text" class="cc-name-input" id="ccNameInput" placeholder="输入角色名..." value="' + App.esc(existing ? existing.name || '' : '') + '"><div class="cc-name-sub"></div></div>' +
             '</div>' +
             '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(existing ? existing.profile || '' : '') + '</textarea></div></div></div>' +
@@ -189,39 +188,39 @@
         createPanel.style.opacity = '1';
       }); });
 
-App.$('#ccAvatarBox').addEventListener('click', function() {
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  document.body.appendChild(input);
-  input.onchange = function(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var src = ev.target.result;
-      if (App.cropImage) {
-        App.cropImage(src, function(cropped) {
-          Character.tempAvatar = cropped;
-          var box = App.$('#ccAvatarBox');
-          if (box) box.innerHTML = '<img src="' + cropped + '">';
-        });
-      } else {
-        Character.tempAvatar = src;
-        var box = App.$('#ccAvatarBox');
-        if (box) box.innerHTML = '<img src="' + src + '">';
-      }
-    };
-    reader.readAsDataURL(file);
-    document.body.removeChild(input);
-  };
-  input.click();
-});
+      // 头像上传 — 跟 cards.js 完全一样的方式
+      var avatarBox = createPanel.querySelector('#ccAvatarBox');
+      avatarBox.addEventListener('click', function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        document.body.appendChild(input);
+        input.onchange = function(e) {
+          var file = e.target.files[0];
+          document.body.removeChild(input);
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var src = ev.target.result;
+            if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                Character.tempAvatar = cropped;
+                avatarBox.innerHTML = '<img src="' + cropped + '">';
+              });
+            } else {
+              Character.tempAvatar = src;
+              avatarBox.innerHTML = '<img src="' + src + '">';
+            }
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      });
 
-      App.$('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
-      App.$('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
-      App.$('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
-      App.$('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
+      createPanel.querySelector('#ccBackBtn').addEventListener('click', function() { Character.closeCreate(); });
+      createPanel.querySelector('#ccCancelBtn').addEventListener('click', function() { Character.closeCreate(); });
+      createPanel.querySelector('#ccDoneBtn').addEventListener('click', function() { Character.saveChar(); });
+      createPanel.querySelector('#ccSaveBtn').addEventListener('click', function() { Character.saveChar(); });
 
       createPanel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -294,7 +293,7 @@ App.$('#ccAvatarBox').addEventListener('click', function() {
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
-'<button class="cc-top-btn" id="ccDoneBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
+          '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
           '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
