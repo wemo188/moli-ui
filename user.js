@@ -220,7 +220,7 @@
       }
     },
 
-        init: function() {
+    init: function() {
       Social.load();
       if (!App.$('#socialPanel')) {
         var panel = document.createElement('div');
@@ -231,6 +231,7 @@
       App.user = Social;
       App.safeOn('#dockMine', 'click', function() { Social.open(); });
     }
+  };
 
   App.register('user', Social);
 })();
