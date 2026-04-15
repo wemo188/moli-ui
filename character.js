@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -308,15 +309,18 @@
           '</div>' +
         '</div>';
       document.body.appendChild(menu);
+
       menu.querySelector('.cc-avatar-menu-mask').addEventListener('click', function() { menu.remove(); });
-      App.$('#ccAvatarUrlBtn').addEventListener('click', function() {
-        var url = App.$('#ccAvatarUrl').value.trim();
+
+      menu.querySelector('#ccAvatarUrlBtn').addEventListener('click', function() {
+        var url = menu.querySelector('#ccAvatarUrl').value.trim();
         if (!url) { App.showToast('请输入URL'); return; }
         Character.tempAvatar = url;
         var box = App.$('#ccAvatarBox');
         if (box) box.innerHTML = '<img src="' + App.esc(url) + '">';
         menu.remove();
       });
+
       var uploadBtn = menu.querySelector('#ccAvatarUpload');
       var fileInput = menu.querySelector('#ccAvatarFile');
 
@@ -356,6 +360,7 @@
           reader.readAsDataURL(file);
         });
       }
+    },
 
     init: function() {
       Character.load();
