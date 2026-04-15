@@ -25,48 +25,6 @@
 </head>
 <body>
 
-<div id="uploadTest" style="position:fixed;top:100px;left:20px;z-index:99999;background:#fff;border:3px solid red;padding:20px;display:flex;flex-direction:column;gap:10px;">
-  <div style="font-size:14px;font-weight:bold;color:red;">上传测试（测完删掉）</div>
-  <div style="font-size:12px;" id="testLog">等待点击...</div>
-  <button type="button" id="testBtn1" style="padding:12px;font-size:14px;background:#88abda;color:#fff;border:2px solid #111;">方法1：动态input.click()</button>
-  <button type="button" id="testBtn2" style="padding:12px;font-size:14px;background:#6a90ad;color:#fff;border:2px solid #111;">方法2：动态input（挂body）</button>
-  <label style="padding:12px;font-size:14px;background:#4a7a9a;color:#fff;border:2px solid #111;text-align:center;cursor:pointer;">方法3：label+input<input type="file" accept="image/*" id="testFile3" style="display:none;"></label>
-  <div style="width:60px;height:60px;border:2px solid #111;position:relative;background:#eee;"><span style="font-size:10px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">方法4</span><input type="file" accept="image/*" id="testFile4" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;"></div>
-</div>
-<script>
-(function(){
-  var log = document.getElementById('testLog');
-  function setLog(t){ log.textContent = t; }
-
-  document.getElementById('testBtn1').addEventListener('click', function(){
-    setLog('方法1：创建中...');
-    var inp = document.createElement('input');
-    inp.type='file'; inp.accept='image/*';
-    inp.onchange=function(){ setLog('方法1：成功！选了 '+inp.files[0].name); };
-    inp.click();
-  });
-
-  document.getElementById('testBtn2').addEventListener('click', function(){
-    setLog('方法2：创建中...');
-    var inp = document.createElement('input');
-    inp.type='file'; inp.accept='image/*';
-    document.body.appendChild(inp);
-    inp.onchange=function(){ setLog('方法2：成功！选了 '+inp.files[0].name); document.body.removeChild(inp); };
-    inp.click();
-  });
-
-  document.getElementById('testFile3').addEventListener('change', function(){
-    setLog('方法3：成功！选了 '+this.files[0].name);
-    this.value='';
-  });
-
-  document.getElementById('testFile4').addEventListener('change', function(){
-    setLog('方法4：成功！选了 '+this.files[0].name);
-    this.value='';
-  });
-})();
-</script>
-
 <!-- ====== 背景层 ====== -->
 <div id="bgLayer" class="bg-layer"></div>
 
