@@ -229,6 +229,13 @@
         document.body.appendChild(panel);
       }
       App.user = Social;
+
+      var dockMine = App.$('#dockMine');
+      if (dockMine) {
+        dockMine.addEventListener('click', function() {
+          Social.open();
+        });
+      }
     }
 
   App.register('user', Social);
