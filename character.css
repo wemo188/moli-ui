@@ -622,25 +622,15 @@
 .cc-expand-title-tag.blue::after { border-left-color: #88abda; }
 
 /* 猫爪按动效果 */
-.cl-paw {
-  cursor: pointer;
-  display: inline-block;
-  transition: transform 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+.char-list-wrap .cl-footer .cl-paw {
+  font-size: 13px;
+  line-height: 1;
+  opacity: .6;
+  transition: opacity .2s, transform .2s;
+  cursor: default;
 }
 
-.cl-paw:active {
-  transform: scale(0.85);
-}
-
-@keyframes pawNudge {
-  0% { transform: translateX(0) rotate(0); }
-  30% { transform: translateX(4px) rotate(8deg); }
-  60% { transform: translateX(-3px) rotate(-5deg); }
-  100% { transform: translateX(0) rotate(0); }
-}
-
-.cl-paw.cl-paw-tap {
-  animation: pawNudge 0.35s ease-out;
+.char-list-wrap .cl-footer .cl-paw:hover {
+  opacity: 1;
+  transform: scale(1.25) rotate(-12deg);
 }
