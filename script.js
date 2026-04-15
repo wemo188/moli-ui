@@ -83,9 +83,12 @@
     var canvas = overlay.querySelector('#cropCanvas');
     var ctx = canvas.getContext('2d');
     var img = new Image();
+    var dpr = window.devicePixelRatio || 1;
 
     var crop = { x: 0, y: 0, size: 0 };
     var scale = 1;
+    var displayW = 0;
+    var displayH = 0;
     var dragging = false;
     var startX = 0, startY = 0;
 
@@ -95,12 +98,18 @@
       var maxH = workspace.clientHeight;
 
       scale = Math.min(maxW / img.width, maxH / img.height, 1);
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
+      displayW = Math.round(img.width * scale);
+      displayH = Math.round(img.height * scale);
 
-      crop.size = Math.min(canvas.width, canvas.height) * 0.7;
-      crop.x = (canvas.width - crop.size) / 2;
-      crop.y = (canvas.height - crop.size) / 2;
+      canvas.width = displayW * dpr;
+      canvas.height = displayH * dpr;
+      canvas.style.width = displayW + 'px';
+      canvas.style.height = displayH + 'px';
+      ctx.scale(dpr, dpr);
+
+      crop.size = Math.min(displayW, displayH) * 0.7;
+      crop.x = (displayW - crop.size) / 2;
+      crop.y = (displayH - crop.size) / 2;
 
       draw();
     };
@@ -108,11 +117,11 @@
     img.src = src;
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, displayW, displayH);
+      ctx.drawImage(img, 0, 0, displayW, displayH);
 
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, displayW, displayH);
 
       ctx.clearRect(crop.x, crop.y, crop.size, crop.size);
       ctx.drawImage(img,
@@ -167,8 +176,8 @@
       if (e.touches && e.touches.length > 1) return;
       e.preventDefault();
       var p = getPos(e);
-      crop.x = Math.max(0, Math.min(canvas.width - crop.size, p.x - startX));
-      crop.y = Math.max(0, Math.min(canvas.height - crop.size, p.y - startY));
+      crop.x = Math.max(0, Math.min(displayW - crop.size, p.x - startX));
+      crop.y = Math.max(0, Math.min(displayH - crop.size, p.y - startY));
       draw();
     }
 
@@ -201,14 +210,14 @@
         var diff = dist - lastDist;
         var newSize = crop.size + diff;
         var minSize = 50;
-        var maxSize = Math.min(canvas.width, canvas.height);
+        var maxSize = Math.min(displayW, displayH);
         newSize = Math.max(minSize, Math.min(maxSize, newSize));
 
         var cx = crop.x + crop.size / 2;
         var cy = crop.y + crop.size / 2;
         crop.size = newSize;
-        crop.x = Math.max(0, Math.min(canvas.width - crop.size, cx - crop.size / 2));
-        crop.y = Math.max(0, Math.min(canvas.height - crop.size, cy - crop.size / 2));
+        crop.x = Math.max(0, Math.min(displayW - crop.size, cx - crop.size / 2));
+        crop.y = Math.max(0, Math.min(displayH - crop.size, cy - crop.size / 2));
 
         lastDist = dist;
         draw();
@@ -221,7 +230,7 @@
 
     overlay.querySelector('.crop-confirm').addEventListener('click', function() {
       var output = document.createElement('canvas');
-      var outSize = 256;
+      var outSize = 512;
       output.width = outSize;
       output.height = outSize;
       var outCtx = output.getContext('2d');
@@ -229,7 +238,7 @@
         crop.x / scale, crop.y / scale, crop.size / scale, crop.size / scale,
         0, 0, outSize, outSize
       );
-      var data = output.toDataURL('image/jpeg', 0.85);
+      var data = output.toDataURL('image/jpeg', 0.92);
       overlay.remove();
       callback(data);
     });
