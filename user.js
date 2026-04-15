@@ -229,13 +229,13 @@ setTimeout(function() { panel.classList.add('cc-panel-hidden'); }, 350);
         existing = App.character.getById(charId);
       }
 
-      var panel = App.$('#charCreatePanel');
+            var panel = App.$('#charCreatePanel');
       if (!panel) {
         panel = document.createElement('div');
         panel.id = 'charCreatePanel';
-        panel.className = 'cc-panel cc-panel-hidden';
         document.body.appendChild(panel);
       }
+      panel.className = 'cc-panel cc-panel-hidden';
 
       panel.innerHTML =
         '<div class="cc-top">' +
