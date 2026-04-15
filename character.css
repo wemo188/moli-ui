@@ -1,7 +1,7 @@
 /* 燕尾返回标签 */
 .cl-back-tag {
   position: absolute;
-  top: -4px;
+  top: -2px;
   left: -10px;
   z-index: 10;
   display: flex;
