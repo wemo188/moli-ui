@@ -95,7 +95,6 @@
           '<div class="char-list-wrap">' +
             '<div class="cl-back-tag" id="clCloseBtn">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-              '<span>返回</span>' +
             '</div>' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
