@@ -91,7 +91,7 @@
   background: var(--card-border-c); color: var(--card-bg);
   border: none; padding: 7px 14px; font-size: 12px; font-weight: 900;
   letter-spacing: 1.5px; cursor: pointer;
-  box-shadow: 3px 3px 0 var(--card-border-c);
+box-shadow: none;
   transition: all 0.3s; z-index: 1;
   -webkit-tap-highlight-color: transparent; font-family: inherit;
 }
