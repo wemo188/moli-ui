@@ -187,21 +187,19 @@
 .cl-color-popup {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.7);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border-radius: 16px 16px 0 0;
-  box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
-  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 10px));
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+  padding: 12px 16px calc(10px + env(safe-area-inset-bottom, 8px));
   z-index: 200;
   display: none;
   flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-  margin: 0 auto;
+  gap: 8px;
 }
 .cl-color-popup.show { display: flex; }
-.cl-color-popup-title { font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #333; text-transform: uppercase; }
+.cl-color-popup-title { font-size: 9px; font-weight: 900; letter-spacing: 2px; color: #555; text-transform: uppercase; }
 .cl-color-custom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .cl-color-custom-item { display: flex; align-items: center; gap: 5px; }
 .cl-color-custom-item input[type="color"] {
@@ -212,7 +210,7 @@
 .cl-color-custom-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
 .cl-color-custom-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
 .cl-color-custom-item label { font-size: 9px; font-weight: 700; color: #999; letter-spacing: 0.5px; }
-.cl-line-row { display: flex; align-items: center; gap: 8px; }
+.cl-line-row { display: flex; align-items: center; gap: 6px; }
 .cl-line-row label { font-size: 9px; font-weight: 700; color: #999; letter-spacing: 0.5px; flex-shrink: 0; }
 .cl-line-row input[type="range"] {
   flex: 1; height: 3px; -webkit-appearance: none;
@@ -229,6 +227,7 @@
   color: #bbb; cursor: pointer; background: none; border: none;
   -webkit-tap-highlight-color: transparent; font-family: inherit; padding: 2px 0;
 }
+.cl-color-popup .cl-color-custom { margin-bottom: 2px; }
 .cl-popup-reset:active { color: #666; }
 
 /* ====== frost 卡片 ====== */
