@@ -7,18 +7,29 @@
   var MODE_LABELS = ['①', '②', '③'];
   var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  // 每种模式的默认颜色
-  var MODE_DEFAULTS = [
-    { v1:'#111111', v2:'#88abda', v3:'#ffffff', v4:'#111111', inner:3, outer:3.5 },
-    { v1:'#374151', v2:'#9ca3af', inner:1.5, outer:2 },
-    { v1:'#1a1a1a', inner:1, outer:1.5 }
-  ];
-
-  // 每种模式的调色盘字段
-  var MODE_FIELDS = [
-    [ {key:'v1',label:'框'}, {key:'v2',label:'中'}, {key:'v3',label:'底'}, {key:'v4',label:'名'} ],
-    [ {key:'v1',label:'字'}, {key:'v2',label:'中'} ],
-    [ {key:'v1',label:'线'} ]
+  // 每种模式的默认值和控件定义
+  var MODE_CFG = [
+    { // ① 漫画
+      defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
+      controls: [
+        { key: 'border', label: '框', cssVar: '--card-border-c' },
+        { key: 'accent', label: '中', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底', cssVar: '--card-bg' },
+        { key: 'left',   label: '左', cssVar: '--card-left' }
+      ]
+    },
+    { // ② 磨砂
+      defaults: { accent: '#9ca3af', line: 2, outer: 2 },
+      controls: [
+        { key: 'accent', label: '中', cssVar: '--card-accent' }
+      ]
+    },
+    { // ③ 极简
+      defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
+      controls: [
+        { key: 'border', label: '线', cssVar: '--card-border-c' }
+      ]
+    }
   ];
 
   var Character = {
@@ -39,27 +50,19 @@
     },
 
     getColors: function(c, mi) {
-      if (!c.colors) c.colors = [{}, {}, {}];
-      var m = c.colors[mi] || {};
-      var d = MODE_DEFAULTS[mi];
-      var r = {};
-      Object.keys(d).forEach(function(k) { r[k] = m[k] !== undefined ? m[k] : d[k]; });
-      return r;
+      if (!c.modeColors) c.modeColors = [{}, {}, {}];
+      var saved = c.modeColors[mi] || {};
+      var def = MODE_CFG[mi].defaults;
+      var result = {};
+      Object.keys(def).forEach(function(k) {
+        result[k] = saved[k] !== undefined ? saved[k] : def[k];
+      });
+      return result;
     },
 
     setColors: function(c, mi, colors) {
-      if (!c.colors) c.colors = [{}, {}, {}];
-      c.colors[mi] = colors;
-    },
-
-    buildStyle: function(col) {
-      var s = '--cv1:' + col.v1 + ';';
-      if (col.v2) s += '--cv2:' + col.v2 + ';';
-      if (col.v3) s += '--cv3:' + col.v3 + ';';
-      if (col.v4) s += '--cv4:' + col.v4 + ';';
-      s += '--cl-inner:' + col.inner + 'px;';
-      s += '--cl-outer:' + col.outer + 'px;';
-      return s;
+      if (!c.modeColors) c.modeColors = [{}, {}, {}];
+      c.modeColors[mi] = colors;
     },
 
     open: function() {
@@ -82,13 +85,27 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
+    applyCardVars: function(card, col, mi) {
+      var cfg = MODE_CFG[mi];
+      cfg.controls.forEach(function(ctrl) {
+        card.style.setProperty(ctrl.cssVar, col[ctrl.key]);
+      });
+      card.style.setProperty('--card-line', col.line + 'px');
+      card.style.setProperty('--card-outer', col.outer + 'px');
+
+      // 模式①额外设置
+      if (mi === 0) {
+        card.style.setProperty('--card-bg', col.bg);
+        card.style.setProperty('--card-left', col.left);
+      }
+    },
+
     renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
       var chars = Character.list;
       var mi = Character.currentMode;
       var modeClass = MODES[mi] || '';
-      var fields = MODE_FIELDS[mi];
 
       var cardsHtml = '';
       if (!chars.length) {
@@ -98,24 +115,25 @@
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
           var col = Character.getColors(c, mi);
+          var cfg = MODE_CFG[mi];
 
           var avatarHtml = c.avatar
             ? '<img src="' + App.esc(c.avatar) + '">'
-            : '<div class="cl-avatar-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>UPLOAD</span></div>';
+            : '<div class="cl-avatar-empty"></div>';
           var coverHtml = c.cover
             ? '<img src="' + App.esc(c.cover) + '">'
-            : '<div class="cl-cover-empty"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>COVER</span></div>';
+            : '<div class="cl-cover-empty"></div>';
 
           var wbMounted = c.worldbookMounted ? true : false;
           var wbClass = wbMounted ? ' mounted' : '';
           var wbText = wbMounted ? '已挂载' : '世界书';
 
-          // 调色盘HTML
-          var colorInputs = fields.map(function(f) {
-            return '<div class="cl-color-custom-item"><input type="color" value="' + col[f.key] + '" class="cl-cc" data-key="' + f.key + '"><label>' + f.label + '</label></div>';
+          // 颜色控件 HTML
+          var colorHtml = cfg.controls.map(function(ctrl) {
+            return '<div class="cl-color-custom-item"><input type="color" value="' + col[ctrl.key] + '" class="cl-cc" data-key="' + ctrl.key + '"><label>' + ctrl.label + '</label></div>';
           }).join('');
 
-          return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="' + Character.buildStyle(col) + '">' +
+          return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
               '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
@@ -135,12 +153,13 @@
             '<div class="cl-footer">' +
               '<div class="cl-footer-left"><span class="cl-paw">🐾</span><span class="cl-footer-text">Character</span></div>' +
               '<div class="cl-change" data-id="' + c.id + '">' +
-                '<div class="cl-change-dots"><div class="cl-change-dot"></div><div class="cl-change-dot"></div></div>' +
+                '<div class="cl-change-dots"><div class="cl-change-dot"></div><div class="cl-change-dot"></div><div class="cl-change-dot"></div></div>' +
                 '<span class="cl-change-label">change</span>' +
                 '<div class="cl-color-popup">' +
-                  '<div class="cl-color-custom">' + colorInputs + '</div>' +
-                  '<div class="cl-line-row"><label>内线</label><input type="range" min="0.5" max="5" step="0.5" value="' + col.inner + '" class="cl-cc-range" data-key="inner"><span class="cl-line-val">' + col.inner + '</span></div>' +
-                  '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-range" data-key="outer"><span class="cl-line-val">' + col.outer + '</span></div>' +
+                  '<div class="cl-color-popup-title">自定义配色</div>' +
+                  '<div class="cl-color-custom">' + colorHtml + '</div>' +
+                  '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
+                  '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
                   '<button class="cl-popup-reset" type="button">重置</button>' +
                 '</div>' +
               '</div>' +
@@ -162,7 +181,15 @@
 
       var pageEl = panel.querySelector('#clPageInner');
 
+      // 渲染后应用 CSS 变量
+      panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
+        var cid = card.dataset.charId;
+        var c = Character.getById(cid);
+        if (c) Character.applyCardVars(card, Character.getColors(c, mi), mi);
+      });
+
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
+
       panel.querySelector('#clModeBtn').addEventListener('click', function() {
         MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
         Character.currentMode = (Character.currentMode + 1) % MODES.length;
@@ -171,40 +198,55 @@
         Character.saveMode();
         Character.renderList();
       });
+
       panel.querySelector('#clNewBtn').addEventListener('click', function() {
         if (App.charEdit) App.charEdit.open();
       });
 
-      // 头像上传
       panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
-        box.addEventListener('click', function(e) { e.stopPropagation(); Character.uploadImage(box.dataset.id, 'avatar', box); });
+        box.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Character.uploadImage(box.dataset.id, 'avatar', box);
+        });
       });
-      // 封面上传
+
       panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
-        box.addEventListener('click', function() { Character.uploadImage(box.dataset.id, 'cover', box); });
+        box.addEventListener('click', function() {
+          Character.uploadImage(box.dataset.id, 'cover', box);
+        });
       });
-      // 世界书
+
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
           if (!c) return;
           c.worldbookMounted = !c.worldbookMounted;
           Character.save();
-          btn.classList.toggle('mounted', c.worldbookMounted);
-          btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>' + (c.worldbookMounted ? '已挂载' : '世界书');
+          if (c.worldbookMounted) {
+            btn.classList.add('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已挂载';
+          } else {
+            btn.classList.remove('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
+          }
         });
       });
-      // 编辑
+
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
-        btn.addEventListener('click', function(e) { e.stopPropagation(); if (App.charEdit) App.charEdit.open(btn.dataset.id); });
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (App.charEdit) App.charEdit.open(btn.dataset.id);
+        });
       });
-      // 删除
+
       panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除这个角色？')) return;
           Character.list = Character.list.filter(function(c) { return c.id !== btn.dataset.id; });
-          Character.save(); Character.renderList(); App.showToast('已删除');
+          Character.save();
+          Character.renderList();
+          App.showToast('已删除');
         });
       });
 
@@ -220,41 +262,42 @@
           popup.classList.toggle('show');
         });
 
-        function apply() {
+        function readAndApply() {
           var c = Character.getById(charId);
           if (!c) return;
           var col = Character.getColors(c, mi);
-          ch.querySelectorAll('.cl-cc').forEach(function(inp) { col[inp.dataset.key] = inp.value; });
-          ch.querySelectorAll('.cl-cc-range').forEach(function(inp) {
-            col[inp.dataset.key] = parseFloat(inp.value);
-            inp.nextElementSibling.textContent = inp.value;
+          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
+            col[inp.dataset.key] = inp.value;
           });
+          col.line = parseFloat(ch.querySelector('.cl-cc-line').value);
+          col.outer = parseFloat(ch.querySelector('.cl-cc-outer').value);
+          ch.querySelector('.cl-line-val').textContent = col.line + 'px';
+          ch.querySelector('.cl-outer-val').textContent = col.outer + 'px';
           Character.setColors(c, mi, col);
+          Character.applyCardVars(card, col, mi);
           Character.save();
-          card.setAttribute('style', Character.buildStyle(col));
         }
 
         ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-          inp.addEventListener('input', function(e) { e.stopPropagation(); apply(); });
-          inp.addEventListener('click', function(e) { e.stopPropagation(); });
-        });
-        ch.querySelectorAll('.cl-cc-range').forEach(function(inp) {
-          inp.addEventListener('input', function(e) { e.stopPropagation(); apply(); });
+          inp.addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
           inp.addEventListener('click', function(e) { e.stopPropagation(); });
         });
 
-        var resetBtn = ch.querySelector('.cl-popup-reset');
-        if (resetBtn) {
-          resetBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var c = Character.getById(charId);
-            if (!c) return;
-            var def = MODE_DEFAULTS[mi];
-            Character.setColors(c, mi, JSON.parse(JSON.stringify(def)));
-            Character.save();
-            Character.renderList();
+        ch.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        ch.querySelector('.cl-cc-line').addEventListener('click', function(e) { e.stopPropagation(); });
+        ch.querySelector('.cl-cc-outer').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        ch.querySelector('.cl-cc-outer').addEventListener('click', function(e) { e.stopPropagation(); });
+
+        ch.querySelector('.cl-popup-reset').addEventListener('click', function(e) {
+          e.stopPropagation();
+          var def = MODE_CFG[mi].defaults;
+          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
+            if (def[inp.dataset.key]) inp.value = def[inp.dataset.key];
           });
-        }
+          ch.querySelector('.cl-cc-line').value = def.line;
+          ch.querySelector('.cl-cc-outer').value = def.outer;
+          readAndApply();
+        });
       });
 
       panel.addEventListener('click', function() {
@@ -264,7 +307,8 @@
 
     uploadImage: function(charId, field, box) {
       var input = document.createElement('input');
-      input.type = 'file'; input.accept = 'image/*';
+      input.type = 'file';
+      input.accept = 'image/*';
       document.body.appendChild(input);
       input.onchange = function(e) {
         var file = e.target.files[0];
@@ -280,9 +324,21 @@
               box.innerHTML = '<img src="' + cropped + '">';
             });
           } else {
-            var c = Character.getById(charId);
-            if (c) { c[field] = src; Character.save(); }
-            box.innerHTML = '<img src="' + src + '">';
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = field === 'avatar' ? 256 : 600;
+              var w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+              else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              var compressed = canvas.toDataURL('image/jpeg', 0.85);
+              var c = Character.getById(charId);
+              if (c) { c[field] = compressed; Character.save(); }
+              box.innerHTML = '<img src="' + compressed + '">';
+            };
+            img.src = src;
           }
         };
         reader.readAsDataURL(file);
