@@ -3,14 +3,27 @@
   var App = window.App;
   if (!App) return;
 
-  var THEMES = ['', 'theme-frost', 'theme-mono'];
+  var MODES = ['', 'mode-frost', 'mode-mono'];
+  var MODE_LABELS = ['①', '②', '③'];
   var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var DEFAULTS = {
+    dark: '#111111',
+    accent: '#88abda',
+    bg: '#ffffff',
+    line: 3
+  };
 
   var Character = {
     list: [],
+    currentMode: 0,
 
-    load: function() { Character.list = App.LS.get('characterList') || []; },
+    load: function() {
+      Character.list = App.LS.get('characterList') || [];
+      Character.currentMode = App.LS.get('charCardMode') || 0;
+    },
     save: function() { App.LS.set('characterList', Character.list); },
+    saveMode: function() { App.LS.set('charCardMode', Character.currentMode); },
     getById: function(id) {
       for (var i = 0; i < Character.list.length; i++) {
         if (Character.list[i].id === id) return Character.list[i];
@@ -42,6 +55,7 @@
       var panel = App.$('#charPanel');
       if (!panel) return;
       var chars = Character.list;
+      var modeClass = MODES[Character.currentMode] || '';
 
       var cardsHtml = '';
       if (!chars.length) {
@@ -50,8 +64,10 @@
         cardsHtml = chars.map(function(c, i) {
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
-          var theme = c.cardTheme || '';
-          var themeClass = theme ? ' ' + theme : '';
+          var cd = c.cardDark || DEFAULTS.dark;
+          var ca = c.cardAccent || DEFAULTS.accent;
+          var cb = c.cardBg || DEFAULTS.bg;
+          var cl = c.cardLine || DEFAULTS.line;
 
           var avatarHtml = c.avatar
             ? '<img src="' + App.esc(c.avatar) + '">'
@@ -64,7 +80,9 @@
           var wbClass = wbMounted ? ' mounted' : '';
           var wbText = wbMounted ? '已挂载' : '世界书';
 
-          return '<div class="char-list-wrap' + themeClass + '" data-char-id="' + c.id + '">' +
+          var cardStyle = '--card-dark:' + cd + ';--card-accent:' + ca + ';--cw-bg:' + cb + ';--card-line:' + cl + 'px;';
+
+          return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="' + cardStyle + '">' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
               '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
@@ -86,6 +104,20 @@
               '<div class="cl-change" data-id="' + c.id + '">' +
                 '<div class="cl-change-dots"><div class="cl-change-dot"></div><div class="cl-change-dot"></div><div class="cl-change-dot"></div></div>' +
                 '<span class="cl-change-label">change</span>' +
+                '<div class="cl-color-popup">' +
+                  '<div class="cl-color-popup-title">自定义配色</div>' +
+                  '<div class="cl-color-custom">' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + cd + '" class="cl-cc-dark"><label>深</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + ca + '" class="cl-cc-accent"><label>中</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + cb + '" class="cl-cc-bg"><label>底</label></div>' +
+                  '</div>' +
+                  '<div class="cl-line-row">' +
+                    '<label>线条</label>' +
+                    '<input type="range" min="1" max="5" value="' + cl + '" class="cl-cc-line">' +
+                    '<span class="cl-line-val">' + cl + 'px</span>' +
+                  '</div>' +
+                  '<button class="cl-popup-reset" type="button">重置</button>' +
+                '</div>' +
               '</div>' +
             '</div>' +
             '<div class="cl-bottom-bar"></div>' +
@@ -94,21 +126,32 @@
       }
 
       panel.innerHTML =
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
-          '<div class="cc-new-bar">' +
+        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
+          '<div class="cl-topbar-wrap">' +
             '<div class="cl-esc" id="clEsc">ESC</div>' +
-            '<div class="cc-new-main" id="ccNewBar">' +
-              '<div class="cc-new-top"></div>' +
-              '<div class="cc-new-body"><div class="cc-new-left"><div class="cc-new-icon">+</div><div class="cc-new-text"><div class="cc-new-title">创建角色</div><div class="cc-new-sub">new character</div></div></div></div>' +
-              '<div class="cc-new-bottom"></div>' +
-            '</div>' +
+            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[Character.currentMode] + '</div>' +
+            '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
           '</div>' +
           cardsHtml +
         '</div>';
 
+      var pageEl = panel.querySelector('#clPageInner');
+
+      // ESC
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
-      panel.querySelector('#ccNewBar').addEventListener('click', function() {
-        if (App.charEdit) App.charEdit.open();
+
+      // 模式切换
+      panel.querySelector('#clModeBtn').addEventListener('click', function() {
+        MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
+        Character.currentMode = (Character.currentMode + 1) % MODES.length;
+        if (MODES[Character.currentMode]) pageEl.classList.add(MODES[Character.currentMode]);
+        this.textContent = MODE_LABELS[Character.currentMode];
+        Character.saveMode();
+      });
+
+      // 创建
+      panel.querySelector('#clNewBtn').addEventListener('click', function() {
+        if (App.charEdit) App.charEdit.open(null, Character.currentMode);
       });
 
       // 头像上传
@@ -126,7 +169,7 @@
         });
       });
 
-      // 世界书挂载（图标始终保持书本）
+      // 世界书
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
@@ -147,7 +190,7 @@
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (App.charEdit) App.charEdit.open(btn.dataset.id);
+          if (App.charEdit) App.charEdit.open(btn.dataset.id, Character.currentMode);
         });
       });
 
@@ -163,27 +206,69 @@
         });
       });
 
-      // 主题切换（点击循环三种）
+      // change 调色（只对模式①生效）
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
+        var charId = ch.dataset.id;
+        var card = ch.closest('.char-list-wrap');
+        var popup = ch.querySelector('.cl-color-popup');
+
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-          var charId = ch.dataset.id;
-          var c = Character.getById(charId);
-          if (!c) return;
-          var card = ch.closest('.char-list-wrap');
-
-          var currentIdx = THEMES.indexOf(c.cardTheme || '');
-          var nextIdx = (currentIdx + 1) % THEMES.length;
-          var nextTheme = THEMES[nextIdx];
-
-          // 移除所有主题 class
-          THEMES.forEach(function(t) { if (t) card.classList.remove(t); });
-          // 加新的
-          if (nextTheme) card.classList.add(nextTheme);
-
-          c.cardTheme = nextTheme;
-          Character.save();
+          if (Character.currentMode !== 0) {
+            App.showToast('切换到模式①可调色');
+            return;
+          }
+          panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
+          popup.classList.toggle('show');
         });
+
+        function applyColors() {
+          var d = ch.querySelector('.cl-cc-dark').value;
+          var a = ch.querySelector('.cl-cc-accent').value;
+          var b = ch.querySelector('.cl-cc-bg').value;
+          var l = ch.querySelector('.cl-cc-line').value;
+          card.style.setProperty('--card-dark', d);
+          card.style.setProperty('--card-accent', a);
+          card.style.setProperty('--cw-bg', b);
+          card.style.setProperty('--card-line', l + 'px');
+          ch.querySelector('.cl-line-val').textContent = l + 'px';
+          var c = Character.getById(charId);
+          if (c) {
+            c.cardDark = d;
+            c.cardAccent = a;
+            c.cardBg = b;
+            c.cardLine = parseInt(l);
+            Character.save();
+          }
+        }
+
+        ch.querySelectorAll('input[type="color"]').forEach(function(inp) {
+          inp.addEventListener('input', function(e) { e.stopPropagation(); applyColors(); });
+          inp.addEventListener('click', function(e) { e.stopPropagation(); });
+        });
+
+        var lineInput = ch.querySelector('.cl-cc-line');
+        if (lineInput) {
+          lineInput.addEventListener('input', function(e) { e.stopPropagation(); applyColors(); });
+          lineInput.addEventListener('click', function(e) { e.stopPropagation(); });
+        }
+
+        var resetBtn = ch.querySelector('.cl-popup-reset');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            ch.querySelector('.cl-cc-dark').value = DEFAULTS.dark;
+            ch.querySelector('.cl-cc-accent').value = DEFAULTS.accent;
+            ch.querySelector('.cl-cc-bg').value = DEFAULTS.bg;
+            ch.querySelector('.cl-cc-line').value = DEFAULTS.line;
+            applyColors();
+          });
+        }
+      });
+
+      // 点外面关闭
+      panel.addEventListener('click', function() {
+        panel.querySelectorAll('.cl-color-popup').forEach(function(p) { p.classList.remove('show'); });
       });
     },
 
