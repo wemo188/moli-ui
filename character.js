@@ -214,10 +214,7 @@
 
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (Character.currentMode !== 0) {
-            App.showToast('切换到模式①可调色');
-            return;
-          }
+
           panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
           popup.classList.toggle('show');
         });
