@@ -215,7 +215,7 @@
   background: #fff; border: 1.5px solid #ccc;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
 }
-.cl-line-row .cl-line-val { font-size: 9px; font-weight: 700; color: #999; min-width: 28px; text-align: right; }
+.cl-line-row .cl-line-val { font-size: 4px; font-weight: 700; color: #999; min-width: 28px; text-align: right; }
 .cl-popup-reset {
   align-self: flex-end; font-size: 9px; font-weight: 800; letter-spacing: 1px;
   color: #bbb; cursor: pointer; background: none; border: none;
