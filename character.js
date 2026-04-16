@@ -3,15 +3,11 @@
   var App = window.App;
   if (!App) return;
 
+  var THEMES = ['', 'theme-frost', 'theme-mono'];
+  var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
   var Character = {
     list: [],
-
-    FIELDS: [
-      { key: 'name', label: '名字' },
-      { key: 'profile', label: '角色档案' },
-      { key: 'dialogExamples', label: '示例对话' },
-      { key: 'postInstruction', label: '后置指令' }
-    ],
 
     load: function() { Character.list = App.LS.get('characterList') || []; },
     save: function() { App.LS.set('characterList', Character.list); },
@@ -54,27 +50,25 @@
         cardsHtml = chars.map(function(c, i) {
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
-          var savedDark = c.cardDark || '#111111';
-          var savedAccent = c.cardAccent || '#88abda';
-          var savedLight = c.cardLight || '#ffffff';
+          var theme = c.cardTheme || '';
+          var themeClass = theme ? ' ' + theme : '';
+
           var avatarHtml = c.avatar
             ? '<img src="' + App.esc(c.avatar) + '">'
             : '<div class="cl-avatar-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>UPLOAD</span></div>';
           var coverHtml = c.cover
             ? '<img src="' + App.esc(c.cover) + '">'
             : '<div class="cl-cover-empty"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>COVER</span></div>';
+
           var wbMounted = c.worldbookMounted ? true : false;
           var wbClass = wbMounted ? ' mounted' : '';
           var wbText = wbMounted ? '已挂载' : '世界书';
-          var wbIconSvg = wbMounted
-            ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-            : '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-          return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="--card-dark:' + savedDark + ';--card-accent:' + savedAccent + ';--card-light:' + savedLight + ';">' +
+          return '<div class="char-list-wrap' + themeClass + '" data-char-id="' + c.id + '">' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
               '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
-              '<div class="cl-create-btn cl-wb-btn' + wbClass + '" data-id="' + c.id + '"><span class="plus-icon">' + wbIconSvg + '</span>' + wbText + '</div>' +
+              '<div class="cl-create-btn cl-wb-btn' + wbClass + '" data-id="' + c.id + '"><span class="plus-icon">' + BOOK_SVG + '</span>' + wbText + '</div>' +
             '</div>' +
             '<div class="cl-body"><div class="cl-item">' +
               '<div class="cl-item-index">' + idx + '</div>' +
@@ -92,19 +86,6 @@
               '<div class="cl-change" data-id="' + c.id + '">' +
                 '<div class="cl-change-dots"><div class="cl-change-dot"></div><div class="cl-change-dot"></div><div class="cl-change-dot"></div></div>' +
                 '<span class="cl-change-label">change</span>' +
-                '<div class="cl-color-popup">' +
-                  '<div class="cl-color-popup-title">配色方案</div>' +
-                  '<div class="cl-color-presets">' +
-                    '<div class="cl-color-preset" data-dark="#111111" data-accent="#88abda" data-light="#ffffff"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#88abda;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
-                    '<div class="cl-color-preset" data-dark="#111111" data-accent="#f0f0f0" data-light="#ffffff"><div class="cl-color-swatch" style="background:#111;"></div><div class="cl-color-swatch" style="background:#f0f0f0;"></div><div class="cl-color-swatch" style="background:#fff;"></div></div>' +
-                    '<div class="cl-color-preset" data-dark="#ffffff" data-accent="#a0a8b0" data-light="#f5f5f5"><div class="cl-color-swatch" style="background:#fff;border:1px solid #ddd;"></div><div class="cl-color-swatch" style="background:#a0a8b0;"></div><div class="cl-color-swatch" style="background:#f5f5f5;border:1px solid #ddd;"></div></div>' +
-                  '</div>' +
-                  '<div class="cl-color-custom">' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardDark || '#111111') + '" class="cl-cc-dark" data-id="' + c.id + '"><label>深</label></div>' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardAccent || '#88abda') + '" class="cl-cc-accent" data-id="' + c.id + '"><label>中</label></div>' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + (c.cardLight || '#ffffff') + '" class="cl-cc-light" data-id="' + c.id + '"><label>浅</label></div>' +
-                  '</div>' +
-                '</div>' +
               '</div>' +
             '</div>' +
             '<div class="cl-bottom-bar"></div>' +
@@ -130,6 +111,7 @@
         if (App.charEdit) App.charEdit.open();
       });
 
+      // 头像上传
       panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
         box.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -137,22 +119,31 @@
         });
       });
 
+      // 封面上传
       panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
         box.addEventListener('click', function() {
           Character.uploadImage(box.dataset.id, 'cover', box);
         });
       });
 
+      // 世界书挂载（图标始终保持书本）
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
           if (!c) return;
           c.worldbookMounted = !c.worldbookMounted;
           Character.save();
-          Character.renderList();
+          if (c.worldbookMounted) {
+            btn.classList.add('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已挂载';
+          } else {
+            btn.classList.remove('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
+          }
         });
       });
 
+      // 编辑
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -160,6 +151,7 @@
         });
       });
 
+      // 删除
       panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -171,66 +163,27 @@
         });
       });
 
+      // 主题切换（点击循环三种）
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
-        var charId = ch.dataset.id;
-        var card = ch.closest('.char-list-wrap');
-        var popup = ch.querySelector('.cl-color-popup');
-
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-          panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
-          popup.classList.toggle('show');
-        });
-
-        function applyColors(dark, accent, light) {
-          card.style.setProperty('--card-dark', dark);
-          card.style.setProperty('--card-accent', accent);
-          card.style.setProperty('--card-light', light);
+          var charId = ch.dataset.id;
           var c = Character.getById(charId);
-          if (c) {
-            c.cardDark = dark;
-            c.cardAccent = accent;
-            c.cardLight = light;
-            c.cardColor = accent;
-            Character.save();
-          }
-          ch.querySelector('.cl-cc-dark').value = dark;
-          ch.querySelector('.cl-cc-accent').value = accent;
-          ch.querySelector('.cl-cc-light').value = light;
-        }
+          if (!c) return;
+          var card = ch.closest('.char-list-wrap');
 
-        ch.querySelectorAll('.cl-color-preset').forEach(function(p) {
-          var savedD = Character.getById(charId);
-          if (savedD && savedD.cardDark === p.dataset.dark && savedD.cardAccent === p.dataset.accent) {
-            p.classList.add('active');
-          }
-          p.addEventListener('click', function(e) {
-            e.stopPropagation();
-            ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
-            p.classList.add('active');
-            applyColors(p.dataset.dark, p.dataset.accent, p.dataset.light);
-          });
-        });
+          var currentIdx = THEMES.indexOf(c.cardTheme || '');
+          var nextIdx = (currentIdx + 1) % THEMES.length;
+          var nextTheme = THEMES[nextIdx];
 
-        ch.querySelector('.cl-cc-dark').addEventListener('input', function(e) {
-          e.stopPropagation();
-          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
-          applyColors(this.value, ch.querySelector('.cl-cc-accent').value, ch.querySelector('.cl-cc-light').value);
-        });
-        ch.querySelector('.cl-cc-accent').addEventListener('input', function(e) {
-          e.stopPropagation();
-          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
-          applyColors(ch.querySelector('.cl-cc-dark').value, this.value, ch.querySelector('.cl-cc-light').value);
-        });
-        ch.querySelector('.cl-cc-light').addEventListener('input', function(e) {
-          e.stopPropagation();
-          ch.querySelectorAll('.cl-color-preset').forEach(function(x) { x.classList.remove('active'); });
-          applyColors(ch.querySelector('.cl-cc-dark').value, ch.querySelector('.cl-cc-accent').value, this.value);
-        });
-      });
+          // 移除所有主题 class
+          THEMES.forEach(function(t) { if (t) card.classList.remove(t); });
+          // 加新的
+          if (nextTheme) card.classList.add(nextTheme);
 
-      panel.addEventListener('click', function() {
-        panel.querySelectorAll('.cl-color-popup').forEach(function(p) { p.classList.remove('show'); });
+          c.cardTheme = nextTheme;
+          Character.save();
+        });
       });
     },
 
