@@ -185,7 +185,7 @@
 
 /* 调色盘 */
 .cl-color-popup {
-  position: absolute; top: 32px; right: -8px;
+position: absolute; bottom: 32px; right: -8px;
   background: #fff; border-radius: 12px;
   box-shadow: 0 6px 28px rgba(0,0,0,0.15);
   padding: 14px 16px; z-index: 100;
