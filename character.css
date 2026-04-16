@@ -185,12 +185,20 @@
 
 /* 调色盘 */
 .cl-color-popup {
-position: absolute; bottom: 32px; right: -8px;
-  background: #fff; border-radius: 12px;
-  box-shadow: 0 6px 28px rgba(0,0,0,0.15);
-  padding: 14px 16px; z-index: 100;
-  display: none; flex-direction: column; gap: 12px;
-  min-width: 210px;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 10px));
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
 }
 .cl-color-popup.show { display: flex; }
 .cl-color-popup-title { font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #333; text-transform: uppercase; }
