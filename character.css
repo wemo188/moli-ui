@@ -89,7 +89,7 @@
 .cl-create-btn {
   display: inline-flex; align-items: center; gap: 6px;
   background: #111; color: #fff;
-  border: var(--card-line) solid #111;
+border: var(--card-line) solid var(--card-border-c);
   padding: 7px 14px; font-size: 12px; font-weight: 900;
   letter-spacing: 1.5px; cursor: pointer;
   box-shadow: 3px 3px 0 #111;
@@ -186,7 +186,7 @@
 .cl-color-popup {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
   border-radius: 16px 16px 0 0;
