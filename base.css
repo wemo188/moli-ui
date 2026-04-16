@@ -476,20 +476,20 @@ html, body {
 /* ====== 自定义调色盘 ====== */
 .cp-overlay {
   position: fixed; inset: 0; z-index: 100000;
-  background: rgba(0,0,0,0.15);
+  background: transparent;
   display: flex; align-items: flex-end; justify-content: center;
   -webkit-tap-highlight-color: transparent;
 }
 
 .cp-panel {
   width: 100%; max-width: 400px;
-  background: rgba(255,255,255,0.85);
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px 20px 0 0;
-  padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 10px));
-  box-shadow: 0 -4px 30px rgba(0,0,0,0.12);
-  display: flex; flex-direction: column; gap: 16px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 10px));
+  box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; gap: 12px;
   animation: cpSlideUp 0.3s ease;
 }
 
@@ -537,7 +537,7 @@ backdrop-filter: blur(20px);
 .cp-hex-input:focus { border-color: #aaa; }
 
 .cp-spectrum {
-  position: relative; width: 100%; height: 180px;
+  position: relative; width: 100%; height: 120px;
   border-radius: 10px; overflow: hidden;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -556,8 +556,8 @@ backdrop-filter: blur(20px);
 }
 
 .cp-hue-wrap {
-  position: relative; width: 100%; height: 28px;
-  border-radius: 14px; overflow: hidden;
+  position: relative; width: 100%; height: 22px;
+  border-radius: 11px; overflow: hidden;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
