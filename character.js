@@ -129,8 +129,8 @@
           var wbText = wbMounted ? '已挂载' : '世界书';
 
           // 颜色控件 HTML
-          var colorHtml = cfg.controls.map(function(ctrl) {
-            return '<div class="cl-color-custom-item"><input type="color" value="' + col[ctrl.key] + '" class="cl-cc" data-key="' + ctrl.key + '"><label>' + ctrl.label + '</label></div>';
+                    var colorHtml = cfg.controls.map(function(ctrl) {
+            return '<div class="cl-color-custom-item"><div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div><label>' + ctrl.label + '</label></div>';
           }).join('');
 
           return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
@@ -266,9 +266,13 @@
           var c = Character.getById(charId);
           if (!c) return;
           var col = Character.getColors(c, mi);
-          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-            col[inp.dataset.key] = inp.value;
-          });
+                                          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
+              var k = inp.dataset.key;
+              if (def[k]) {
+                inp.dataset.value = def[k];
+                inp.style.background = def[k];
+              }
+            });
           col.line = parseFloat(ch.querySelector('.cl-cc-line').value);
           col.outer = parseFloat(ch.querySelector('.cl-cc-outer').value);
           ch.querySelector('.cl-line-val').textContent = col.line + 'px';
@@ -278,9 +282,15 @@
           Character.save();
         }
 
-        ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-          inp.addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
-          inp.addEventListener('click', function(e) { e.stopPropagation(); });
+                        ch.querySelectorAll('.cl-cc').forEach(function(inp) {
+          inp.addEventListener('click', function(e) {
+            e.stopPropagation();
+            App.openColorPicker(inp.dataset.value, function(hex) {
+              inp.dataset.value = hex;
+              inp.style.background = hex;
+              readAndApply();
+            });
+          });
         });
 
         ch.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
