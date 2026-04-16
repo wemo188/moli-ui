@@ -7,7 +7,7 @@
     editingCharId: null,
     tempAvatar: '',
 
-    open: function(charId) {
+    open: function(charId, modeIdx) {
       CharEdit.editingCharId = charId || null;
       CharEdit.tempAvatar = '';
       var existing = null;
@@ -18,6 +18,7 @@
 
       var createPanel = document.createElement('div');
       createPanel.id = 'charCreatePanel';
+      createPanel.className = 'cc-edit-page' + editModeClass;
       createPanel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
       document.body.appendChild(createPanel);
 
@@ -182,6 +183,10 @@
             '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
           '</div>' +
         '</div>';
+              var editModeClass = '';
+      var mode = (typeof modeIdx === 'number') ? modeIdx : (App.character ? App.character.currentMode : 0);
+      if (mode === 1) editModeClass = ' cc-edit-frost';
+      else if (mode === 2) editModeClass = ' cc-edit-mono';
       document.body.appendChild(editor);
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         editor.style.transform = 'translateY(0)';
