@@ -267,6 +267,16 @@
           e.stopPropagation();
           panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
           popup.classList.toggle('show');
+          if (popup.classList.contains('show')) {
+            setTimeout(function() {
+              var cardRect = card.getBoundingClientRect();
+              var scrollEl = panel.querySelector('#clPageInner');
+              if (scrollEl && cardRect.bottom > window.innerHeight * 0.5) {
+                var offset = card.offsetTop - 60;
+                scrollEl.scrollTo({ top: offset, behavior: 'smooth' });
+              }
+            }, 50);
+          }
         });
 
         function readAndApply() {
