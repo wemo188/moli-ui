@@ -414,21 +414,22 @@
     });
   };
   
-  App.openColorPicker = function(currentColor, callback) {
+    App.openColorPicker = function(currentColor, onConfirm, onChange) {
     var old = App.$('#cpOverlay');
     if (old) old.remove();
 
-    var PRESETS = ['#111111','#1a1a1a','#333333','#666666','#999999','#cccccc','#ffffff',
-                   '#e85d5d','#e8a85d','#e8e25d','#5de876','#5dc8e8','#5d6ae8','#b85de8',
-                   '#88abda','#9ca3af','#6b7280','#d1d5db','#f3f4f6','#c9706b','#a0a8b0'];
+    var savedPresets = App.LS.get('cpPresets') || ['#111111','#88abda','#ffffff','#9ca3af','#d1d5db','#c9706b'];
 
     var overlay = document.createElement('div');
     overlay.id = 'cpOverlay';
     overlay.className = 'cp-overlay';
 
-    var presetsHtml = PRESETS.map(function(c) {
-      return '<div class="cp-preset" data-color="' + c + '" style="background:' + c + ';"></div>';
-    }).join('');
+    function buildPresetsHtml() {
+      return savedPresets.map(function(c, i) {
+        return '<div class="cp-preset" data-color="' + c + '" data-idx="' + i + '" style="background:' + c + ';"><div class="cp-preset-del">✕</div></div>';
+      }).join('') +
+      '<div class="cp-preset-add">+</div>';
+    }
 
     overlay.innerHTML =
       '<div class="cp-panel">' +
@@ -448,7 +449,10 @@
           '<div class="cp-hue-bar"></div>' +
           '<div class="cp-hue-cursor" id="cpHueCursor"></div>' +
         '</div>' +
-        '<div class="cp-presets">' + presetsHtml + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+          '<div class="cp-presets" id="cpPresets">' + buildPresetsHtml() + '</div>' +
+          '<button class="cp-preset-edit-btn" id="cpEditBtn" type="button">编辑</button>' +
+        '</div>' +
         '<button class="cp-confirm" id="cpConfirm" type="button">确 定</button>' +
       '</div>';
 
@@ -462,13 +466,12 @@
     var specCursor = overlay.querySelector('#cpSpecCursor');
     var hueWrap = overlay.querySelector('#cpHueWrap');
     var hueCursor = overlay.querySelector('#cpHueCursor');
+    var presetsEl = overlay.querySelector('#cpPresets');
 
-    var currentHue = 0;
-    var currentSat = 100;
-    var currentLight = 50;
+    var currentHue = 0, currentSat = 100, currentLight = 50;
     var selectedHex = currentColor || '#111111';
+    var editing = false;
 
-    // 工具函数
     function hexToHsl(hex) {
       hex = hex.replace('#', '');
       if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
@@ -493,30 +496,19 @@
       var x = c * (1 - Math.abs((h/60)%2 - 1));
       var m = l - c/2;
       var r=0, g=0, b=0;
-      if (h<60) { r=c; g=x; }
-      else if (h<120) { r=x; g=c; }
-      else if (h<180) { g=c; b=x; }
-      else if (h<240) { g=x; b=c; }
-      else if (h<300) { r=x; b=c; }
-      else { r=c; b=x; }
-      r = Math.round((r+m)*255);
-      g = Math.round((g+m)*255);
-      b = Math.round((b+m)*255);
-      return '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+      if (h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
+      else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
+      r=Math.round((r+m)*255);g=Math.round((g+m)*255);b=Math.round((b+m)*255);
+      return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
     }
 
     function drawSpectrum() {
-      var w = specEl.clientWidth;
-      var h = specEl.clientHeight;
-      specCanvas.width = w;
-      specCanvas.height = h;
-
-      for (var x = 0; x < w; x++) {
-        for (var y = 0; y < h; y++) {
-          var s = (x / w) * 100;
-          var l = 100 - (y / h) * 100;
-          specCtx.fillStyle = hslToHex(currentHue, s, l);
-          specCtx.fillRect(x, y, 1, 1);
+      var w = specEl.clientWidth, h = specEl.clientHeight;
+      specCanvas.width = w; specCanvas.height = h;
+      for (var x=0;x<w;x++) {
+        for (var y=0;y<h;y++) {
+          specCtx.fillStyle = hslToHex(currentHue, (x/w)*100, 100-(y/h)*100);
+          specCtx.fillRect(x,y,1,1);
         }
       }
     }
@@ -525,108 +517,107 @@
       selectedHex = hslToHex(currentHue, currentSat, currentLight);
       preview.style.background = selectedHex;
       hexInput.value = selectedHex;
-
-      // 光谱游标
-      var sw = specEl.clientWidth;
-      var sh = specEl.clientHeight;
-      var sx = (currentSat / 100) * sw;
-      var sy = ((100 - currentLight) / 100) * sh;
-      specCursor.style.left = sx + 'px';
-      specCursor.style.top = sy + 'px';
+      var sw=specEl.clientWidth, sh=specEl.clientHeight;
+      specCursor.style.left = (currentSat/100)*sw+'px';
+      specCursor.style.top = ((100-currentLight)/100)*sh+'px';
       specCursor.style.background = selectedHex;
-
-      // 色相游标
-      var hw = hueWrap.clientWidth;
-      var hx = (currentHue / 360) * hw;
-      hueCursor.style.left = hx + 'px';
+      hueCursor.style.left = (currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background = hslToHex(currentHue, 100, 50);
+      if (onChange) onChange(selectedHex);
     }
 
     function setFromHex(hex) {
       if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
       var hsl = hexToHsl(hex);
-      currentHue = hsl.h;
-      currentSat = hsl.s;
-      currentLight = hsl.l;
-      drawSpectrum();
-      updateUI();
+      currentHue=hsl.h; currentSat=hsl.s; currentLight=hsl.l;
+      drawSpectrum(); updateUI();
     }
 
-    // 初始化
     setFromHex(selectedHex);
 
-    // 光谱拖动
+    var specDrag=false;
     function specFromPos(e) {
-      var rect = specEl.getBoundingClientRect();
-      var t = e.touches ? e.touches[0] : e;
-      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
-      var y = Math.max(0, Math.min(rect.height, t.clientY - rect.top));
-      currentSat = (x / rect.width) * 100;
-      currentLight = 100 - (y / rect.height) * 100;
+      var rect=specEl.getBoundingClientRect();
+      var t=e.touches?e.touches[0]:e;
+      currentSat = Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));
+      currentLight = Math.max(0,Math.min(100,100-(t.clientY-rect.top)/rect.height*100));
       updateUI();
     }
+    specEl.addEventListener('mousedown',function(e){e.preventDefault();specDrag=true;specFromPos(e);});
+    specEl.addEventListener('touchstart',function(e){e.preventDefault();specDrag=true;specFromPos(e);},{passive:false});
 
-    var specDrag = false;
-    specEl.addEventListener('mousedown', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); });
-    specEl.addEventListener('touchstart', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); }, { passive: false });
-    document.addEventListener('mousemove', function(e) { if (specDrag) specFromPos(e); });
-    document.addEventListener('touchmove', function(e) { if (specDrag) { e.preventDefault(); specFromPos(e); } }, { passive: false });
-    document.addEventListener('mouseup', function() { specDrag = false; });
-    document.addEventListener('touchend', function() { specDrag = false; });
-
-    // 色相拖动
+    var hueDrag=false;
     function hueFromPos(e) {
-      var rect = hueWrap.getBoundingClientRect();
-      var t = e.touches ? e.touches[0] : e;
-      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
-      currentHue = (x / rect.width) * 360;
-      drawSpectrum();
-      updateUI();
+      var rect=hueWrap.getBoundingClientRect();
+      var t=e.touches?e.touches[0]:e;
+      currentHue = Math.max(0,Math.min(360,(t.clientX-rect.left)/rect.width*360));
+      drawSpectrum(); updateUI();
     }
+    hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
+    hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
 
-    var hueDrag = false;
-    hueWrap.addEventListener('mousedown', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); });
-    hueWrap.addEventListener('touchstart', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); }, { passive: false });
-    document.addEventListener('mousemove', function(e) { if (hueDrag) hueFromPos(e); });
-    document.addEventListener('touchmove', function(e) { if (hueDrag) { e.preventDefault(); hueFromPos(e); } }, { passive: false });
-    document.addEventListener('mouseup', function() { hueDrag = false; });
-    document.addEventListener('touchend', function() { hueDrag = false; });
+    document.addEventListener('mousemove',function(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);});
+    document.addEventListener('touchmove',function(e){if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}},{passive:false});
+    document.addEventListener('mouseup',function(){specDrag=false;hueDrag=false;});
+    document.addEventListener('touchend',function(){specDrag=false;hueDrag=false;});
 
-    // Hex 输入
-    hexInput.addEventListener('input', function() {
-      var v = this.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
-        setFromHex(v);
-      }
+    hexInput.addEventListener('input',function(){
+      var v=this.value.trim();
+      if(/^#[0-9a-fA-F]{6}$/.test(v))setFromHex(v);
     });
 
-    // 预设色
-    overlay.querySelectorAll('.cp-preset').forEach(function(p) {
-      p.addEventListener('click', function(e) {
-        e.stopPropagation();
-        setFromHex(p.dataset.color);
+    function rebindPresets() {
+      presetsEl.innerHTML = buildPresetsHtml();
+      if (editing) presetsEl.classList.add('editing');
+      else presetsEl.classList.remove('editing');
+
+      presetsEl.querySelectorAll('.cp-preset').forEach(function(p) {
+        p.addEventListener('click',function(e){
+          e.stopPropagation();
+          if (editing) return;
+          setFromHex(p.dataset.color);
+        });
+        var del = p.querySelector('.cp-preset-del');
+        if (del) {
+          del.addEventListener('click',function(e){
+            e.stopPropagation();
+            savedPresets.splice(parseInt(p.dataset.idx),1);
+            App.LS.set('cpPresets', savedPresets);
+            rebindPresets();
+          });
+        }
       });
-    });
 
-    // 关闭
-    function closePanel() {
-      overlay.style.opacity = '0';
-      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 200);
+      var addBtn = presetsEl.querySelector('.cp-preset-add');
+      if (addBtn) {
+        addBtn.addEventListener('click',function(e){
+          e.stopPropagation();
+          if (savedPresets.indexOf(selectedHex) === -1) {
+            savedPresets.push(selectedHex);
+            App.LS.set('cpPresets', savedPresets);
+            rebindPresets();
+          }
+        });
+      }
     }
 
-    overlay.querySelector('#cpClose').addEventListener('click', function(e) {
+    rebindPresets();
+
+    overlay.querySelector('#cpEditBtn').addEventListener('click',function(e){
       e.stopPropagation();
-      closePanel();
+      editing = !editing;
+      this.textContent = editing ? '完成' : '编辑';
+      if (editing) presetsEl.classList.add('editing');
+      else presetsEl.classList.remove('editing');
     });
 
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay) closePanel();
-    });
+    function closePanel() { overlay.remove(); }
 
-    // 确定
-    overlay.querySelector('#cpConfirm').addEventListener('click', function(e) {
+    overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();closePanel();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
+    overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
       e.stopPropagation();
-      callback(selectedHex);
+      onConfirm(selectedHex);
       closePanel();
     });
   };
