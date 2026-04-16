@@ -263,22 +263,22 @@
         var card = ch.closest('.char-list-wrap');
         var popup = ch.querySelector('.cl-color-popup');
 
-        ch.addEventListener('click', function(e) {
+                ch.addEventListener('click', function(e) {
           e.stopPropagation();
           panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
+          var wasOpen = popup.classList.contains('show');
           popup.classList.toggle('show');
-          if (popup.classList.contains('show')) {
-            setTimeout(function() {
-              var cardRect = card.getBoundingClientRect();
-              var scrollEl = panel.querySelector('#clPageInner');
-              if (scrollEl && cardRect.bottom > window.innerHeight * 0.5) {
-                var offset = card.offsetTop - 60;
-                scrollEl.scrollTo({ top: offset, behavior: 'smooth' });
-              }
-            }, 50);
+          if (!wasOpen) {
+            var scrollEl = panel.querySelector('#clPageInner');
+            if (scrollEl) {
+              setTimeout(function() {
+                var cardTop = card.offsetTop;
+                scrollEl.scrollTo({ top: cardTop - 20, behavior: 'smooth' });
+              }, 50);
+            }
           }
         });
-
+        
         function readAndApply() {
           var c = Character.getById(charId);
           if (!c) return;
