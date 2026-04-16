@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -7,12 +8,11 @@
   var MODE_LABELS = ['①', '②', '③'];
   var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  var DEFAULTS = {
-    dark: '#111111',
-    accent: '#88abda',
-    bg: '#ffffff',
-    line: 3
-  };
+  var MODE_DEFAULTS = [
+    { dark: '#111111', accent: '#88abda', bg: '#ffffff', line: 3 },
+    { dark: '#6b7280', accent: '#9ca3af', bg: '#f3f4f6', line: 2 },
+    { dark: '#1a1a1a', accent: '#1a1a1a', bg: '#ffffff', line: 1.5 }
+  ];
 
   var Character = {
     list: [],
@@ -29,6 +29,23 @@
         if (Character.list[i].id === id) return Character.list[i];
       }
       return null;
+    },
+
+    getColors: function(c, modeIdx) {
+      if (!c.colors) c.colors = [{}, {}, {}];
+      var m = c.colors[modeIdx] || {};
+      var d = MODE_DEFAULTS[modeIdx];
+      return {
+        dark: m.dark || d.dark,
+        accent: m.accent || d.accent,
+        bg: m.bg || d.bg,
+        line: m.line !== undefined ? m.line : d.line
+      };
+    },
+
+    setColors: function(c, modeIdx, colors) {
+      if (!c.colors) c.colors = [{}, {}, {}];
+      c.colors[modeIdx] = colors;
     },
 
     open: function() {
@@ -55,7 +72,8 @@
       var panel = App.$('#charPanel');
       if (!panel) return;
       var chars = Character.list;
-      var modeClass = MODES[Character.currentMode] || '';
+      var mi = Character.currentMode;
+      var modeClass = MODES[mi] || '';
 
       var cardsHtml = '';
       if (!chars.length) {
@@ -64,10 +82,7 @@
         cardsHtml = chars.map(function(c, i) {
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
-          var cd = c.cardDark || DEFAULTS.dark;
-          var ca = c.cardAccent || DEFAULTS.accent;
-          var cb = c.cardBg || DEFAULTS.bg;
-          var cl = c.cardLine || DEFAULTS.line;
+          var col = Character.getColors(c, mi);
 
           var avatarHtml = c.avatar
             ? '<img src="' + App.esc(c.avatar) + '">'
@@ -80,7 +95,7 @@
           var wbClass = wbMounted ? ' mounted' : '';
           var wbText = wbMounted ? '已挂载' : '世界书';
 
-          var cardStyle = '--card-dark:' + cd + ';--card-accent:' + ca + ';--cw-bg:' + cb + ';--card-line:' + cl + 'px;';
+          var cardStyle = '--card-dark:' + col.dark + ';--card-accent:' + col.accent + ';--cw-bg:' + col.bg + ';--card-line:' + col.line + 'px;';
 
           return '<div class="char-list-wrap" data-char-id="' + c.id + '" style="' + cardStyle + '">' +
             '<div class="cl-top-bar"></div>' +
@@ -107,14 +122,14 @@
                 '<div class="cl-color-popup">' +
                   '<div class="cl-color-popup-title">自定义配色</div>' +
                   '<div class="cl-color-custom">' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + cd + '" class="cl-cc-dark"><label>深</label></div>' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + ca + '" class="cl-cc-accent"><label>中</label></div>' +
-                    '<div class="cl-color-custom-item"><input type="color" value="' + cb + '" class="cl-cc-bg"><label>底</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + col.dark + '" class="cl-cc-dark"><label>深</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + col.accent + '" class="cl-cc-accent"><label>中</label></div>' +
+                    '<div class="cl-color-custom-item"><input type="color" value="' + col.bg + '" class="cl-cc-bg"><label>底</label></div>' +
                   '</div>' +
                   '<div class="cl-line-row">' +
                     '<label>线条</label>' +
-                    '<input type="range" min="1" max="5" value="' + cl + '" class="cl-cc-line">' +
-                    '<span class="cl-line-val">' + cl + 'px</span>' +
+                    '<input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line">' +
+                    '<span class="cl-line-val">' + col.line + 'px</span>' +
                   '</div>' +
                   '<button class="cl-popup-reset" type="button">重置</button>' +
                 '</div>' +
@@ -129,7 +144,7 @@
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
           '<div class="cl-topbar-wrap">' +
             '<div class="cl-esc" id="clEsc">ESC</div>' +
-            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[Character.currentMode] + '</div>' +
+            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
             '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
           '</div>' +
           cardsHtml +
@@ -137,24 +152,21 @@
 
       var pageEl = panel.querySelector('#clPageInner');
 
-      // ESC
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
 
-      // 模式切换
       panel.querySelector('#clModeBtn').addEventListener('click', function() {
         MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
         Character.currentMode = (Character.currentMode + 1) % MODES.length;
         if (MODES[Character.currentMode]) pageEl.classList.add(MODES[Character.currentMode]);
         this.textContent = MODE_LABELS[Character.currentMode];
         Character.saveMode();
+        Character.renderList();
       });
 
-      // 创建
       panel.querySelector('#clNewBtn').addEventListener('click', function() {
         if (App.charEdit) App.charEdit.open(null, Character.currentMode);
       });
 
-      // 头像上传
       panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
         box.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -162,14 +174,12 @@
         });
       });
 
-      // 封面上传
       panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
         box.addEventListener('click', function() {
           Character.uploadImage(box.dataset.id, 'cover', box);
         });
       });
 
-      // 世界书
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
@@ -186,7 +196,6 @@
         });
       });
 
-      // 编辑
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -194,7 +203,6 @@
         });
       });
 
-      // 删除
       panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -206,7 +214,6 @@
         });
       });
 
-      // change 调色（只对模式①生效）
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
         var charId = ch.dataset.id;
         var card = ch.closest('.char-list-wrap');
@@ -214,7 +221,6 @@
 
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-
           panel.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p !== popup) p.classList.remove('show'); });
           popup.classList.toggle('show');
         });
@@ -223,7 +229,7 @@
           var d = ch.querySelector('.cl-cc-dark').value;
           var a = ch.querySelector('.cl-cc-accent').value;
           var b = ch.querySelector('.cl-cc-bg').value;
-          var l = ch.querySelector('.cl-cc-line').value;
+          var l = parseFloat(ch.querySelector('.cl-cc-line').value);
           card.style.setProperty('--card-dark', d);
           card.style.setProperty('--card-accent', a);
           card.style.setProperty('--cw-bg', b);
@@ -231,10 +237,7 @@
           ch.querySelector('.cl-line-val').textContent = l + 'px';
           var c = Character.getById(charId);
           if (c) {
-            c.cardDark = d;
-            c.cardAccent = a;
-            c.cardBg = b;
-            c.cardLine = parseInt(l);
+            Character.setColors(c, Character.currentMode, { dark: d, accent: a, bg: b, line: l });
             Character.save();
           }
         }
@@ -254,16 +257,16 @@
         if (resetBtn) {
           resetBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            ch.querySelector('.cl-cc-dark').value = DEFAULTS.dark;
-            ch.querySelector('.cl-cc-accent').value = DEFAULTS.accent;
-            ch.querySelector('.cl-cc-bg').value = DEFAULTS.bg;
-            ch.querySelector('.cl-cc-line').value = DEFAULTS.line;
+            var def = MODE_DEFAULTS[Character.currentMode];
+            ch.querySelector('.cl-cc-dark').value = def.dark;
+            ch.querySelector('.cl-cc-accent').value = def.accent;
+            ch.querySelector('.cl-cc-bg').value = def.bg;
+            ch.querySelector('.cl-cc-line').value = def.line;
             applyColors();
           });
         }
       });
 
-      // 点外面关闭
       panel.addEventListener('click', function() {
         panel.querySelectorAll('.cl-color-popup').forEach(function(p) { p.classList.remove('show'); });
       });
@@ -324,3 +327,4 @@
 
   App.register('character', Character);
 })();
+
