@@ -12,7 +12,8 @@
   <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
 <script>
 (function(){
-  var v = Date.now();
+  var v = sessionStorage.getItem('_v');
+if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
   var css = [
     'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
