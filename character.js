@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -7,9 +8,8 @@
   var MODE_LABELS = ['①', '②', '③'];
   var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  // 每种模式的默认值和控件定义
   var MODE_CFG = [
-    { // ① 漫画
+    {
       defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
       controls: [
         { key: 'border', label: '框', cssVar: '--card-border-c' },
@@ -18,13 +18,13 @@
         { key: 'left',   label: '左', cssVar: '--card-left' }
       ]
     },
-    { // ② 磨砂
-      defaults: { accent: '#d1d5db', line: 2, outer: 2 },
+    {
+      defaults: { accent: '#9ca3af', line: 2, outer: 2 },
       controls: [
         { key: 'accent', label: '中', cssVar: '--card-accent' }
       ]
     },
-    { // ③ 极简
+    {
       defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
       controls: [
         { key: 'border', label: '线', cssVar: '--card-border-c' }
@@ -65,6 +65,19 @@
       c.modeColors[mi] = colors;
     },
 
+    applyCardVars: function(card, col, mi) {
+      var cfg = MODE_CFG[mi];
+      cfg.controls.forEach(function(ctrl) {
+        card.style.setProperty(ctrl.cssVar, col[ctrl.key]);
+      });
+      card.style.setProperty('--card-line', col.line + 'px');
+      card.style.setProperty('--card-outer', col.outer + 'px');
+      if (mi === 0) {
+        card.style.setProperty('--card-bg', col.bg);
+        card.style.setProperty('--card-left', col.left);
+      }
+    },
+
     open: function() {
       Character.load();
       var panel = App.$('#charPanel');
@@ -83,21 +96,6 @@
       panel.style.transform = 'translateX(100%)';
       panel.style.opacity = '0';
       setTimeout(function() { panel.style.display = 'none'; }, 350);
-    },
-
-    applyCardVars: function(card, col, mi) {
-      var cfg = MODE_CFG[mi];
-      cfg.controls.forEach(function(ctrl) {
-        card.style.setProperty(ctrl.cssVar, col[ctrl.key]);
-      });
-      card.style.setProperty('--card-line', col.line + 'px');
-      card.style.setProperty('--card-outer', col.outer + 'px');
-
-      // 模式①额外设置
-      if (mi === 0) {
-        card.style.setProperty('--card-bg', col.bg);
-        card.style.setProperty('--card-left', col.left);
-      }
     },
 
     renderList: function() {
@@ -128,9 +126,10 @@
           var wbClass = wbMounted ? ' mounted' : '';
           var wbText = wbMounted ? '已挂载' : '世界书';
 
-          // 颜色控件 HTML
-                    var colorHtml = cfg.controls.map(function(ctrl) {
-            return '<div class="cl-color-custom-item"><div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div><label>' + ctrl.label + '</label></div>';
+          var colorHtml = cfg.controls.map(function(ctrl) {
+            return '<div class="cl-color-custom-item">' +
+              '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
+              '<label>' + ctrl.label + '</label></div>';
           }).join('');
 
           return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
@@ -188,8 +187,10 @@
         if (c) Character.applyCardVars(card, Character.getColors(c, mi), mi);
       });
 
+      // ESC
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
 
+      // 模式切换
       panel.querySelector('#clModeBtn').addEventListener('click', function() {
         MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
         Character.currentMode = (Character.currentMode + 1) % MODES.length;
@@ -199,10 +200,12 @@
         Character.renderList();
       });
 
+      // 创建
       panel.querySelector('#clNewBtn').addEventListener('click', function() {
         if (App.charEdit) App.charEdit.open();
       });
 
+      // 头像上传
       panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
         box.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -210,12 +213,14 @@
         });
       });
 
+      // 封面上传
       panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
         box.addEventListener('click', function() {
           Character.uploadImage(box.dataset.id, 'cover', box);
         });
       });
 
+      // 世界书
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
@@ -232,6 +237,7 @@
         });
       });
 
+      // 编辑
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -239,6 +245,7 @@
         });
       });
 
+      // 删除
       panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -266,13 +273,9 @@
           var c = Character.getById(charId);
           if (!c) return;
           var col = Character.getColors(c, mi);
-                                          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-              var k = inp.dataset.key;
-              if (def[k]) {
-                inp.dataset.value = def[k];
-                inp.style.background = def[k];
-              }
-            });
+          ch.querySelectorAll('.cl-cc').forEach(function(el) {
+            col[el.dataset.key] = el.dataset.value;
+          });
           col.line = parseFloat(ch.querySelector('.cl-cc-line').value);
           col.outer = parseFloat(ch.querySelector('.cl-cc-outer').value);
           ch.querySelector('.cl-line-val').textContent = col.line + 'px';
@@ -282,27 +285,38 @@
           Character.save();
         }
 
-                        ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-          inp.addEventListener('click', function(e) {
+        // 颜色块点击 → 打开自定义调色盘
+        ch.querySelectorAll('.cl-cc').forEach(function(el) {
+          el.addEventListener('click', function(e) {
             e.stopPropagation();
-            App.openColorPicker(inp.dataset.value, function(hex) {
-              inp.dataset.value = hex;
-              inp.style.background = hex;
+            if (!App.openColorPicker) {
+              App.showToast('调色盘未加载');
+              return;
+            }
+            App.openColorPicker(el.dataset.value, function(hex) {
+              el.dataset.value = hex;
+              el.style.background = hex;
               readAndApply();
             });
           });
         });
 
+        // 滑块
         ch.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
         ch.querySelector('.cl-cc-line').addEventListener('click', function(e) { e.stopPropagation(); });
         ch.querySelector('.cl-cc-outer').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
         ch.querySelector('.cl-cc-outer').addEventListener('click', function(e) { e.stopPropagation(); });
 
+        // 重置
         ch.querySelector('.cl-popup-reset').addEventListener('click', function(e) {
           e.stopPropagation();
           var def = MODE_CFG[mi].defaults;
-          ch.querySelectorAll('.cl-cc').forEach(function(inp) {
-            if (def[inp.dataset.key]) inp.value = def[inp.dataset.key];
+          ch.querySelectorAll('.cl-cc').forEach(function(el) {
+            var k = el.dataset.key;
+            if (def[k]) {
+              el.dataset.value = def[k];
+              el.style.background = def[k];
+            }
           });
           ch.querySelector('.cl-cc-line').value = def.line;
           ch.querySelector('.cl-cc-outer').value = def.outer;
@@ -310,6 +324,7 @@
         });
       });
 
+      // 点外面关闭
       panel.addEventListener('click', function() {
         panel.querySelectorAll('.cl-color-popup').forEach(function(p) { p.classList.remove('show'); });
       });
@@ -370,3 +385,4 @@
 
   App.register('character', Character);
 })();
+
