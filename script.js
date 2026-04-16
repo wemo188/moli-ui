@@ -127,223 +127,7 @@
 
       draw();
     };
-      App.openColorPicker = function(currentColor, callback) {
-    var old = App.$('#cpOverlay');
-    if (old) old.remove();
-
-    var PRESETS = ['#111111','#1a1a1a','#333333','#666666','#999999','#cccccc','#ffffff',
-                   '#e85d5d','#e8a85d','#e8e25d','#5de876','#5dc8e8','#5d6ae8','#b85de8',
-                   '#88abda','#9ca3af','#6b7280','#d1d5db','#f3f4f6','#c9706b','#a0a8b0'];
-
-    var overlay = document.createElement('div');
-    overlay.id = 'cpOverlay';
-    overlay.className = 'cp-overlay';
-
-    var presetsHtml = PRESETS.map(function(c) {
-      return '<div class="cp-preset" data-color="' + c + '" style="background:' + c + ';"></div>';
-    }).join('');
-
-    overlay.innerHTML =
-      '<div class="cp-panel">' +
-        '<div class="cp-header">' +
-          '<span class="cp-title">选择颜色</span>' +
-          '<button class="cp-close" id="cpClose" type="button">✕</button>' +
-        '</div>' +
-        '<div class="cp-preview-row">' +
-          '<div class="cp-preview" id="cpPreview"></div>' +
-          '<input type="text" class="cp-hex-input" id="cpHexInput" maxlength="7">' +
-        '</div>' +
-        '<div class="cp-spectrum" id="cpSpectrum">' +
-          '<canvas id="cpSpectrumCanvas"></canvas>' +
-          '<div class="cp-spectrum-cursor" id="cpSpecCursor"></div>' +
-        '</div>' +
-        '<div class="cp-hue-wrap" id="cpHueWrap">' +
-          '<div class="cp-hue-bar"></div>' +
-          '<div class="cp-hue-cursor" id="cpHueCursor"></div>' +
-        '</div>' +
-        '<div class="cp-presets">' + presetsHtml + '</div>' +
-        '<button class="cp-confirm" id="cpConfirm" type="button">确 定</button>' +
-      '</div>';
-
-    document.body.appendChild(overlay);
-
-    var preview = overlay.querySelector('#cpPreview');
-    var hexInput = overlay.querySelector('#cpHexInput');
-    var specEl = overlay.querySelector('#cpSpectrum');
-    var specCanvas = overlay.querySelector('#cpSpectrumCanvas');
-    var specCtx = specCanvas.getContext('2d');
-    var specCursor = overlay.querySelector('#cpSpecCursor');
-    var hueWrap = overlay.querySelector('#cpHueWrap');
-    var hueCursor = overlay.querySelector('#cpHueCursor');
-
-    var currentHue = 0;
-    var currentSat = 100;
-    var currentLight = 50;
-    var selectedHex = currentColor || '#111111';
-
-    // 工具函数
-    function hexToHsl(hex) {
-      hex = hex.replace('#', '');
-      if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-      var r = parseInt(hex.substr(0,2),16)/255;
-      var g = parseInt(hex.substr(2,2),16)/255;
-      var b = parseInt(hex.substr(4,2),16)/255;
-      var max = Math.max(r,g,b), min = Math.min(r,g,b);
-      var h=0, s=0, l=(max+min)/2;
-      if (max !== min) {
-        var d = max - min;
-        s = l > 0.5 ? d/(2-max-min) : d/(max+min);
-        if (max === r) h = ((g-b)/d + (g<b?6:0))/6;
-        else if (max === g) h = ((b-r)/d+2)/6;
-        else h = ((r-g)/d+4)/6;
-      }
-      return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
-    }
-
-    function hslToHex(h, s, l) {
-      s /= 100; l /= 100;
-      var c = (1 - Math.abs(2*l-1)) * s;
-      var x = c * (1 - Math.abs((h/60)%2 - 1));
-      var m = l - c/2;
-      var r=0, g=0, b=0;
-      if (h<60) { r=c; g=x; }
-      else if (h<120) { r=x; g=c; }
-      else if (h<180) { g=c; b=x; }
-      else if (h<240) { g=x; b=c; }
-      else if (h<300) { r=x; b=c; }
-      else { r=c; b=x; }
-      r = Math.round((r+m)*255);
-      g = Math.round((g+m)*255);
-      b = Math.round((b+m)*255);
-      return '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
-    }
-
-    function drawSpectrum() {
-      var w = specEl.clientWidth;
-      var h = specEl.clientHeight;
-      specCanvas.width = w;
-      specCanvas.height = h;
-
-      for (var x = 0; x < w; x++) {
-        for (var y = 0; y < h; y++) {
-          var s = (x / w) * 100;
-          var l = 100 - (y / h) * 100;
-          specCtx.fillStyle = hslToHex(currentHue, s, l);
-          specCtx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-
-    function updateUI() {
-      selectedHex = hslToHex(currentHue, currentSat, currentLight);
-      preview.style.background = selectedHex;
-      hexInput.value = selectedHex;
-
-      // 光谱游标
-      var sw = specEl.clientWidth;
-      var sh = specEl.clientHeight;
-      var sx = (currentSat / 100) * sw;
-      var sy = ((100 - currentLight) / 100) * sh;
-      specCursor.style.left = sx + 'px';
-      specCursor.style.top = sy + 'px';
-      specCursor.style.background = selectedHex;
-
-      // 色相游标
-      var hw = hueWrap.clientWidth;
-      var hx = (currentHue / 360) * hw;
-      hueCursor.style.left = hx + 'px';
-      hueCursor.style.background = hslToHex(currentHue, 100, 50);
-    }
-
-    function setFromHex(hex) {
-      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
-      var hsl = hexToHsl(hex);
-      currentHue = hsl.h;
-      currentSat = hsl.s;
-      currentLight = hsl.l;
-      drawSpectrum();
-      updateUI();
-    }
-
-    // 初始化
-    setFromHex(selectedHex);
-
-    // 光谱拖动
-    function specFromPos(e) {
-      var rect = specEl.getBoundingClientRect();
-      var t = e.touches ? e.touches[0] : e;
-      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
-      var y = Math.max(0, Math.min(rect.height, t.clientY - rect.top));
-      currentSat = (x / rect.width) * 100;
-      currentLight = 100 - (y / rect.height) * 100;
-      updateUI();
-    }
-
-    var specDrag = false;
-    specEl.addEventListener('mousedown', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); });
-    specEl.addEventListener('touchstart', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); }, { passive: false });
-    document.addEventListener('mousemove', function(e) { if (specDrag) specFromPos(e); });
-    document.addEventListener('touchmove', function(e) { if (specDrag) { e.preventDefault(); specFromPos(e); } }, { passive: false });
-    document.addEventListener('mouseup', function() { specDrag = false; });
-    document.addEventListener('touchend', function() { specDrag = false; });
-
-    // 色相拖动
-    function hueFromPos(e) {
-      var rect = hueWrap.getBoundingClientRect();
-      var t = e.touches ? e.touches[0] : e;
-      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
-      currentHue = (x / rect.width) * 360;
-      drawSpectrum();
-      updateUI();
-    }
-
-    var hueDrag = false;
-    hueWrap.addEventListener('mousedown', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); });
-    hueWrap.addEventListener('touchstart', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); }, { passive: false });
-    document.addEventListener('mousemove', function(e) { if (hueDrag) hueFromPos(e); });
-    document.addEventListener('touchmove', function(e) { if (hueDrag) { e.preventDefault(); hueFromPos(e); } }, { passive: false });
-    document.addEventListener('mouseup', function() { hueDrag = false; });
-    document.addEventListener('touchend', function() { hueDrag = false; });
-
-    // Hex 输入
-    hexInput.addEventListener('input', function() {
-      var v = this.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
-        setFromHex(v);
-      }
-    });
-
-    // 预设色
-    overlay.querySelectorAll('.cp-preset').forEach(function(p) {
-      p.addEventListener('click', function(e) {
-        e.stopPropagation();
-        setFromHex(p.dataset.color);
-      });
-    });
-
-    // 关闭
-    function closePanel() {
-      overlay.style.opacity = '0';
-      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 200);
-    }
-
-    overlay.querySelector('#cpClose').addEventListener('click', function(e) {
-      e.stopPropagation();
-      closePanel();
-    });
-
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay) closePanel();
-    });
-
-    // 确定
-    overlay.querySelector('#cpConfirm').addEventListener('click', function(e) {
-      e.stopPropagation();
-      callback(selectedHex);
-      closePanel();
-    });
-  };
-
+      
     img.src = src;
 
     function clampCrop() {
@@ -627,6 +411,223 @@
       var data = output.toDataURL('image/jpeg', 0.92);
       overlay.remove();
       callback(data);
+    });
+  };
+  
+  App.openColorPicker = function(currentColor, callback) {
+    var old = App.$('#cpOverlay');
+    if (old) old.remove();
+
+    var PRESETS = ['#111111','#1a1a1a','#333333','#666666','#999999','#cccccc','#ffffff',
+                   '#e85d5d','#e8a85d','#e8e25d','#5de876','#5dc8e8','#5d6ae8','#b85de8',
+                   '#88abda','#9ca3af','#6b7280','#d1d5db','#f3f4f6','#c9706b','#a0a8b0'];
+
+    var overlay = document.createElement('div');
+    overlay.id = 'cpOverlay';
+    overlay.className = 'cp-overlay';
+
+    var presetsHtml = PRESETS.map(function(c) {
+      return '<div class="cp-preset" data-color="' + c + '" style="background:' + c + ';"></div>';
+    }).join('');
+
+    overlay.innerHTML =
+      '<div class="cp-panel">' +
+        '<div class="cp-header">' +
+          '<span class="cp-title">选择颜色</span>' +
+          '<button class="cp-close" id="cpClose" type="button">✕</button>' +
+        '</div>' +
+        '<div class="cp-preview-row">' +
+          '<div class="cp-preview" id="cpPreview"></div>' +
+          '<input type="text" class="cp-hex-input" id="cpHexInput" maxlength="7">' +
+        '</div>' +
+        '<div class="cp-spectrum" id="cpSpectrum">' +
+          '<canvas id="cpSpectrumCanvas"></canvas>' +
+          '<div class="cp-spectrum-cursor" id="cpSpecCursor"></div>' +
+        '</div>' +
+        '<div class="cp-hue-wrap" id="cpHueWrap">' +
+          '<div class="cp-hue-bar"></div>' +
+          '<div class="cp-hue-cursor" id="cpHueCursor"></div>' +
+        '</div>' +
+        '<div class="cp-presets">' + presetsHtml + '</div>' +
+        '<button class="cp-confirm" id="cpConfirm" type="button">确 定</button>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var preview = overlay.querySelector('#cpPreview');
+    var hexInput = overlay.querySelector('#cpHexInput');
+    var specEl = overlay.querySelector('#cpSpectrum');
+    var specCanvas = overlay.querySelector('#cpSpectrumCanvas');
+    var specCtx = specCanvas.getContext('2d');
+    var specCursor = overlay.querySelector('#cpSpecCursor');
+    var hueWrap = overlay.querySelector('#cpHueWrap');
+    var hueCursor = overlay.querySelector('#cpHueCursor');
+
+    var currentHue = 0;
+    var currentSat = 100;
+    var currentLight = 50;
+    var selectedHex = currentColor || '#111111';
+
+    // 工具函数
+    function hexToHsl(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      var r = parseInt(hex.substr(0,2),16)/255;
+      var g = parseInt(hex.substr(2,2),16)/255;
+      var b = parseInt(hex.substr(4,2),16)/255;
+      var max = Math.max(r,g,b), min = Math.min(r,g,b);
+      var h=0, s=0, l=(max+min)/2;
+      if (max !== min) {
+        var d = max - min;
+        s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+        if (max === r) h = ((g-b)/d + (g<b?6:0))/6;
+        else if (max === g) h = ((b-r)/d+2)/6;
+        else h = ((r-g)/d+4)/6;
+      }
+      return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
+    }
+
+    function hslToHex(h, s, l) {
+      s /= 100; l /= 100;
+      var c = (1 - Math.abs(2*l-1)) * s;
+      var x = c * (1 - Math.abs((h/60)%2 - 1));
+      var m = l - c/2;
+      var r=0, g=0, b=0;
+      if (h<60) { r=c; g=x; }
+      else if (h<120) { r=x; g=c; }
+      else if (h<180) { g=c; b=x; }
+      else if (h<240) { g=x; b=c; }
+      else if (h<300) { r=x; b=c; }
+      else { r=c; b=x; }
+      r = Math.round((r+m)*255);
+      g = Math.round((g+m)*255);
+      b = Math.round((b+m)*255);
+      return '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+    }
+
+    function drawSpectrum() {
+      var w = specEl.clientWidth;
+      var h = specEl.clientHeight;
+      specCanvas.width = w;
+      specCanvas.height = h;
+
+      for (var x = 0; x < w; x++) {
+        for (var y = 0; y < h; y++) {
+          var s = (x / w) * 100;
+          var l = 100 - (y / h) * 100;
+          specCtx.fillStyle = hslToHex(currentHue, s, l);
+          specCtx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+
+    function updateUI() {
+      selectedHex = hslToHex(currentHue, currentSat, currentLight);
+      preview.style.background = selectedHex;
+      hexInput.value = selectedHex;
+
+      // 光谱游标
+      var sw = specEl.clientWidth;
+      var sh = specEl.clientHeight;
+      var sx = (currentSat / 100) * sw;
+      var sy = ((100 - currentLight) / 100) * sh;
+      specCursor.style.left = sx + 'px';
+      specCursor.style.top = sy + 'px';
+      specCursor.style.background = selectedHex;
+
+      // 色相游标
+      var hw = hueWrap.clientWidth;
+      var hx = (currentHue / 360) * hw;
+      hueCursor.style.left = hx + 'px';
+      hueCursor.style.background = hslToHex(currentHue, 100, 50);
+    }
+
+    function setFromHex(hex) {
+      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+      var hsl = hexToHsl(hex);
+      currentHue = hsl.h;
+      currentSat = hsl.s;
+      currentLight = hsl.l;
+      drawSpectrum();
+      updateUI();
+    }
+
+    // 初始化
+    setFromHex(selectedHex);
+
+    // 光谱拖动
+    function specFromPos(e) {
+      var rect = specEl.getBoundingClientRect();
+      var t = e.touches ? e.touches[0] : e;
+      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
+      var y = Math.max(0, Math.min(rect.height, t.clientY - rect.top));
+      currentSat = (x / rect.width) * 100;
+      currentLight = 100 - (y / rect.height) * 100;
+      updateUI();
+    }
+
+    var specDrag = false;
+    specEl.addEventListener('mousedown', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); });
+    specEl.addEventListener('touchstart', function(e) { e.preventDefault(); specDrag = true; specFromPos(e); }, { passive: false });
+    document.addEventListener('mousemove', function(e) { if (specDrag) specFromPos(e); });
+    document.addEventListener('touchmove', function(e) { if (specDrag) { e.preventDefault(); specFromPos(e); } }, { passive: false });
+    document.addEventListener('mouseup', function() { specDrag = false; });
+    document.addEventListener('touchend', function() { specDrag = false; });
+
+    // 色相拖动
+    function hueFromPos(e) {
+      var rect = hueWrap.getBoundingClientRect();
+      var t = e.touches ? e.touches[0] : e;
+      var x = Math.max(0, Math.min(rect.width, t.clientX - rect.left));
+      currentHue = (x / rect.width) * 360;
+      drawSpectrum();
+      updateUI();
+    }
+
+    var hueDrag = false;
+    hueWrap.addEventListener('mousedown', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); });
+    hueWrap.addEventListener('touchstart', function(e) { e.preventDefault(); hueDrag = true; hueFromPos(e); }, { passive: false });
+    document.addEventListener('mousemove', function(e) { if (hueDrag) hueFromPos(e); });
+    document.addEventListener('touchmove', function(e) { if (hueDrag) { e.preventDefault(); hueFromPos(e); } }, { passive: false });
+    document.addEventListener('mouseup', function() { hueDrag = false; });
+    document.addEventListener('touchend', function() { hueDrag = false; });
+
+    // Hex 输入
+    hexInput.addEventListener('input', function() {
+      var v = this.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+        setFromHex(v);
+      }
+    });
+
+    // 预设色
+    overlay.querySelectorAll('.cp-preset').forEach(function(p) {
+      p.addEventListener('click', function(e) {
+        e.stopPropagation();
+        setFromHex(p.dataset.color);
+      });
+    });
+
+    // 关闭
+    function closePanel() {
+      overlay.style.opacity = '0';
+      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 200);
+    }
+
+    overlay.querySelector('#cpClose').addEventListener('click', function(e) {
+      e.stopPropagation();
+      closePanel();
+    });
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closePanel();
+    });
+
+    // 确定
+    overlay.querySelector('#cpConfirm').addEventListener('click', function(e) {
+      e.stopPropagation();
+      callback(selectedHex);
+      closePanel();
     });
   };
 
