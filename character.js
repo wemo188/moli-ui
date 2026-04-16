@@ -286,7 +286,7 @@
         }
 
         // 颜色块点击 → 打开自定义调色盘
-        ch.querySelectorAll('.cl-cc').forEach(function(el) {
+                ch.querySelectorAll('.cl-cc').forEach(function(el) {
           el.addEventListener('click', function(e) {
             e.stopPropagation();
             if (!App.openColorPicker) {
@@ -297,6 +297,18 @@
               el.dataset.value = hex;
               el.style.background = hex;
               readAndApply();
+            }, function(hex) {
+              el.dataset.value = hex;
+              el.style.background = hex;
+              var c = Character.getById(charId);
+              if (!c) return;
+              var col = Character.getColors(c, mi);
+              ch.querySelectorAll('.cl-cc').forEach(function(inp) {
+                col[inp.dataset.key] = inp.dataset.value;
+              });
+              col.line = parseFloat(ch.querySelector('.cl-cc-line').value);
+              col.outer = parseFloat(ch.querySelector('.cl-cc-outer').value);
+              Character.applyCardVars(card, col, mi);
             });
           });
         });
