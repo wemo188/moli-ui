@@ -58,12 +58,12 @@
 }
 .cl-top-bar {
   height: 6px;
-  background: linear-gradient(90deg, var(--card-left) 40%, var(--card-accent) 40%, var(--card-accent) 75%, var(--card-left) 75%);
+  background: linear-gradient(90deg, var(--card-border-c) 40%, var(--card-accent) 40%, var(--card-accent) 75%, var(--card-border-c) 75%);
   border-radius: var(--card-radius) var(--card-radius) 0 0; transition: all 0.3s;
 }
 .cl-bottom-bar {
   height: 8px;
-  background: linear-gradient(90deg, var(--card-accent) 25%, var(--card-left) 25%, var(--card-left) 50%, var(--card-accent) 50%, var(--card-accent) 75%, var(--card-left) 75%);
+  background: linear-gradient(90deg, var(--card-accent) 25%, var(--card-border-c) 25%, var(--card-border-c) 50%, var(--card-accent) 50%, var(--card-accent) 75%, var(--card-border-c) 75%);
   border-radius: 0 0 var(--card-radius) var(--card-radius); transition: all 0.3s;
 }
 .cl-header {
@@ -236,7 +236,7 @@
 .mode-frost .cl-header-left h2 { font-weight: 800; letter-spacing: 3px; color: #374151; }
 .mode-frost .cl-header-left h2::after { background: linear-gradient(90deg, transparent, var(--card-accent), transparent); height: 1.5px; }
 .mode-frost .cl-create-btn { border: 1.5px solid var(--card-border-c); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: var(--card-border-c); }
-.mode-frost .cl-create-btn.mounted { background: var(--card-accent); color: #fff; }
+.mode-frost .cl-create-btn.mounted { background: rgba(156,163,175,0.35); color: #374151; }
 .mode-frost .cl-create-btn:active { box-shadow: 0 1px 4px rgba(0,0,0,0.1); transform: translate(1px,1px); }
 .mode-frost .plus-icon { border: 1.5px solid var(--card-border-c); background: rgba(255,255,255,0.6); color: var(--card-border-c); border-radius: 2px; }
 .mode-frost .cl-item { border-bottom: none; }
