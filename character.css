@@ -34,7 +34,6 @@
   -webkit-tap-highlight-color: transparent; transition: all 0.3s; font-family: inherit;
 }
 .cl-new-btn:active { opacity: 0.7; }
-
 .mode-frost .cl-esc { border-radius: 4px; }
 .mode-frost .cl-mode-btn { border-radius: 4px; }
 .mode-frost .cl-new-btn { border-radius: 4px; background: #9ca3af; border-color: #6b7280; }
@@ -90,8 +89,7 @@
 .cl-create-btn {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--card-border-c); color: var(--card-bg);
-  border: var(--card-line) solid var(--card-border-c);
-  padding: 7px 14px; font-size: 12px; font-weight: 900;
+  border: none; padding: 7px 14px; font-size: 12px; font-weight: 900;
   letter-spacing: 1.5px; cursor: pointer;
   box-shadow: 3px 3px 0 var(--card-border-c);
   transition: all 0.3s; z-index: 1;
@@ -125,7 +123,7 @@
   flex: 1; display: flex; align-items: center;
   padding: 16px 14px; min-width: 0;
   border-right: 2.5px solid var(--card-border-c);
-  position: relative; min-height: 130px; transition: all 0.3s;
+  position: relative; min-height: 120px; transition: all 0.3s;
 }
 .cl-cover {
   position: absolute; inset: 0; background: #f0f3f8;
@@ -183,7 +181,7 @@
   color: #111; text-transform: lowercase;
 }
 
-/* 调色盘 */
+/* 调色盘 · 固定底部 */
 .cl-color-popup {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -200,15 +198,8 @@
 }
 .cl-color-popup.show { display: flex; }
 .cl-color-popup-title { font-size: 9px; font-weight: 900; letter-spacing: 2px; color: #555; text-transform: uppercase; }
-.cl-color-custom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cl-color-custom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 2px; }
 .cl-color-custom-item { display: flex; align-items: center; gap: 5px; }
-.cl-color-custom-item input[type="color"] {
-  width: 28px; height: 28px; border: 1.5px solid #ddd;
-  border-radius: 8px; padding: 0; cursor: pointer;
-  background: transparent; -webkit-appearance: none;
-}
-.cl-color-custom-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
-.cl-color-custom-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
 .cl-color-custom-item label { font-size: 9px; font-weight: 700; color: #999; letter-spacing: 0.5px; }
 .cl-line-row { display: flex; align-items: center; gap: 6px; }
 .cl-line-row label { font-size: 9px; font-weight: 700; color: #999; letter-spacing: 0.5px; flex-shrink: 0; }
@@ -221,13 +212,13 @@
   background: #fff; border: 1.5px solid #ccc;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
 }
-.cl-line-row .cl-line-val { font-size: 10px; font-weight: 700; color: #999; min-width: 28px; text-align: right; }
+.cl-line-row .cl-line-val { font-size: 9px; font-weight: 700; color: #999; min-width: 28px; text-align: right; }
+.cl-outer-val { font-size: 9px; font-weight: 700; color: #999; min-width: 28px; text-align: right; }
 .cl-popup-reset {
   align-self: flex-end; font-size: 9px; font-weight: 800; letter-spacing: 1px;
   color: #bbb; cursor: pointer; background: none; border: none;
   -webkit-tap-highlight-color: transparent; font-family: inherit; padding: 2px 0;
 }
-.cl-color-popup .cl-color-custom { margin-bottom: 2px; }
 .cl-popup-reset:active { color: #666; }
 
 /* ====== frost 卡片 ====== */
@@ -242,21 +233,21 @@
 .mode-frost .cl-header::before { background: none; }
 .mode-frost .cl-header-left h2 { font-weight: 800; letter-spacing: 3px; color: #374151; }
 .mode-frost .cl-header-left h2::after { background: linear-gradient(90deg, transparent, var(--card-accent), transparent); height: 1.5px; }
-.mode-frost .cl-create-btn { border: 1.5px solid var(--card-border-c); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: var(--card-border-c); }
+.mode-frost .cl-create-btn { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: #6b7280; }
 .mode-frost .cl-create-btn.mounted { background: var(--card-accent); color: #fff; opacity: 0.6; }
 .mode-frost .cl-create-btn:active { box-shadow: 0 1px 4px rgba(0,0,0,0.1); transform: translate(1px,1px); }
-.mode-frost .plus-icon { border: 1.5px solid var(--card-border-c); background: rgba(255,255,255,0.6); color: var(--card-border-c); border-radius: 2px; }
+.mode-frost .plus-icon { border: 1.5px solid #6b7280; background: rgba(255,255,255,0.6); color: #6b7280; border-radius: 2px; }
 .mode-frost .cl-item { border-bottom: none; }
-.mode-frost .cl-item-index { background: rgba(0,0,0,0.08); color: var(--card-border-c); }
+.mode-frost .cl-item-index { background: rgba(0,0,0,0.08); color: #6b7280; }
 .mode-frost .cl-item-index::before { display: none; }
 .mode-frost .cl-item-main { border-right: 1px solid rgba(0,0,0,0.08); }
 .mode-frost .cl-avatar { border: 2px solid rgba(0,0,0,0.15); border-radius: 3px; }
 .mode-frost .cl-actions { width: 48px; }
-.mode-frost .cl-act-edit { background: transparent; color: var(--card-border-c); border-bottom: 1px solid rgba(0,0,0,0.08); }
+.mode-frost .cl-act-edit { background: transparent; color: #6b7280; border-bottom: 1px solid rgba(0,0,0,0.08); }
 .mode-frost .cl-act-edit:active { background: var(--card-accent); color: #fff; }
 .mode-frost .cl-act-del { background: transparent; color: #9ca3af; }
 .mode-frost .cl-footer { border-top: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.3); }
-.mode-frost .cl-change-label { color: var(--card-border-c); }
+.mode-frost .cl-change-label { color: #6b7280; }
 
 /* ====== mono 卡片 ====== */
 .mode-mono .char-list-wrap {
@@ -270,7 +261,7 @@
 .mode-mono .cl-header::before { display: none; }
 .mode-mono .cl-header-left h2 { font-size: 18px; font-weight: 700; letter-spacing: 1px; color: #1a1a1a; }
 .mode-mono .cl-header-left h2::after { display: none; }
-.mode-mono .cl-create-btn { border: 1px solid var(--card-border-c); box-shadow: none; border-radius: 8px; background: #fff; color: var(--card-border-c); font-size: 12px; font-weight: 700; padding: 8px 14px; }
+.mode-mono .cl-create-btn { border: none; box-shadow: none; border-radius: 8px; background: #fff; color: var(--card-border-c); font-size: 11px; font-weight: 700; padding: 6px 12px; }
 .mode-mono .cl-create-btn.mounted { background: var(--card-border-c); color: #fff; }
 .mode-mono .cl-create-btn:active { background: #f0f0f0; transform: none; box-shadow: none; }
 .mode-mono .plus-icon { border: 1px solid var(--card-border-c); background: #fff; color: var(--card-border-c); border-radius: 4px; width: 18px; height: 18px; font-size: 14px; }
@@ -293,12 +284,10 @@
 .cc-top-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .cc-top-btn svg { width: 20px; height: 20px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .cc-top-btn:active svg { stroke: #4a7a9e; }
-
 .comic-card { margin: 0 16px; max-width: 100%; background: var(--edit-light, #fff); border: 3.5px solid var(--edit-dark, #111); padding: 0; position: relative; box-shadow: 6px 6px 0 var(--edit-dark, #111); overflow: hidden; }
 .comic-card .top-bar { background: var(--edit-dark, #111); height: 6px; width: 100%; }
 .comic-card::before { content: ""; position: absolute; top: 6px; right: 0; width: 60px; height: 60px; background: repeating-linear-gradient(-45deg, transparent, transparent 3px, var(--edit-accent, #88abda) 3px, var(--edit-accent, #88abda) 5px); opacity: .35; pointer-events: none; z-index: 1; }
 .comic-card::after { content: ""; position: absolute; bottom: 0; left: 0; width: 50px; height: 50px; background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--edit-accent, #88abda) 3px, var(--edit-accent, #88abda) 5px); opacity: .35; pointer-events: none; z-index: 1; }
-
 .cc-header { display: flex; align-items: flex-end; gap: 16px; padding: 20px 20px 16px; border-bottom: 2.5px solid var(--edit-dark, #111); }
 .cc-avatar-box { width: 110px; height: 110px; border: 3px solid var(--edit-dark, #111); background: #f4f7fb; flex-shrink: 0; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .cc-avatar-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #bbb; }
@@ -308,7 +297,6 @@
 .cc-name-input { width: 100%; border: none; border-bottom: 2px solid var(--edit-dark, #111); background: transparent; font-size: 16px; font-weight: 700; color: var(--edit-dark, #111); outline: none; padding: 4px 0; font-family: inherit; }
 .cc-name-input::placeholder { color: #ccc; font-weight: 400; }
 .cc-name-sub { width: 60%; height: 1.5px; background: #d0d8e4; margin-top: 6px; }
-
 .cc-section { border-bottom: 2.5px solid var(--edit-dark, #111); padding: 0; position: relative; }
 .cc-section:last-of-type { border-bottom: none; }
 .cc-section-head { padding: 14px 20px; }
@@ -317,7 +305,6 @@
 .cc-section-title.blue { background: var(--edit-accent, #88abda); }
 .cc-section-title.blue::after { border-left-color: var(--edit-accent, #88abda); }
 .cc-section-body { overflow: visible; }
-
 .cc-content-area { margin: 0 20px 14px; min-height: 80px; border: 1.5px dashed #c8d4e2; background: repeating-linear-gradient(0deg, transparent, transparent 22px, #eef2f7 22px, #eef2f7 23px); position: relative; }
 .cc-content-area textarea { width: 100%; min-height: 80px; border: none; background: transparent; padding: 10px 12px; font-size: 13px; color: #333; outline: none; resize: vertical; font-family: inherit; line-height: 22px; }
 .cc-content-area textarea::placeholder { color: #bbb; }
@@ -326,12 +313,10 @@
 .cc-dialogue-area::after { content: "」"; position: absolute; bottom: 2px; right: 8px; font-size: 20px; font-weight: 900; color: var(--edit-accent, #88abda); line-height: 1; pointer-events: none; z-index: 1; }
 .cc-dialogue-area textarea { width: 100%; min-height: 80px; border: none; background: transparent; padding: 10px 12px 10px 24px; font-size: 13px; color: #333; outline: none; resize: vertical; font-family: inherit; line-height: 1.6; }
 .cc-dialogue-area textarea::placeholder { color: #bbb; }
-
 .cc-expand-btn { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.8); border: 1px solid #d0d8e4; border-radius: 4px; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent; }
 .cc-expand-btn:active { background: #eef2f7; }
 .cc-expand-btn svg { width: 14px; height: 14px; stroke: var(--edit-accent, #88abda); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .cc-section:nth-child(odd)::before { content: ""; position: absolute; top: 8px; right: 44px; width: 18px; height: 18px; background: radial-gradient(circle, var(--edit-accent, #88abda) 1px, transparent 1px); background-size: 5px 5px; opacity: .5; pointer-events: none; }
-
 .cc-bottom-deco { height: 10px; background: linear-gradient(90deg, var(--edit-dark, #111) 30%, var(--edit-accent, #88abda) 30%, var(--edit-accent, #88abda) 65%, var(--edit-dark, #111) 65%); }
 .cc-save-area { padding: 20px 16px; display: flex; gap: 10px; }
 .cc-save-btn { flex: 1; padding: 14px; background: var(--edit-dark, #111); color: var(--edit-light, #fff); border: 3px solid var(--edit-dark, #111); font-size: 14px; font-weight: 900; letter-spacing: 2px; cursor: pointer; font-family: inherit; box-shadow: 4px 4px 0 var(--edit-accent, #88abda); transition: transform 0.1s, box-shadow 0.1s; -webkit-tap-highlight-color: transparent; }
@@ -345,11 +330,412 @@
 .cc-expand-title-tag::after { content: ""; position: absolute; right: -9px; top: 0; bottom: 0; border-left: 9px solid #111; border-bottom: 24px solid transparent; }
 .cc-expand-title-tag.blue { background: var(--edit-accent, #88abda); }
 .cc-expand-title-tag.blue::after { border-left-color: var(--edit-accent, #88abda); }
+```
 
-.cl-outer-val {
-  font-size: 10px;
-  font-weight: 700;
-  color: #999;
-  min-width: 28px;
-  text-align: right;
-}
+---
+
+**character.js — 完整替换：**
+
+```javascript
+(function() {
+  'use strict';
+  var App = window.App;
+  if (!App) return;
+
+  var MODES = ['', 'mode-frost', 'mode-mono'];
+  var MODE_LABELS = ['①', '②', '③'];
+  var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var MODE_CFG = [
+    {
+      defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
+      controls: [
+        { key: 'border', label: '框', cssVar: '--card-border-c' },
+        { key: 'accent', label: '中', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底', cssVar: '--card-bg' },
+        { key: 'left',   label: '左', cssVar: '--card-left' }
+      ]
+    },
+    {
+      defaults: { accent: '#9ca3af', line: 2, outer: 2 },
+      controls: [
+        { key: 'accent', label: '中', cssVar: '--card-accent' }
+      ]
+    },
+    {
+      defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
+      controls: [
+        { key: 'border', label: '线', cssVar: '--card-border-c' }
+      ]
+    }
+  ];
+
+  var Character = {
+    list: [],
+    currentMode: 0,
+
+    load: function() {
+      Character.list = App.LS.get('characterList') || [];
+      Character.currentMode = App.LS.get('charCardMode') || 0;
+    },
+    save: function() { App.LS.set('characterList', Character.list); },
+    saveMode: function() { App.LS.set('charCardMode', Character.currentMode); },
+    getById: function(id) {
+      for (var i = 0; i < Character.list.length; i++) {
+        if (Character.list[i].id === id) return Character.list[i];
+      }
+      return null;
+    },
+
+    getColors: function(c, mi) {
+      if (!c.modeColors) c.modeColors = [{}, {}, {}];
+      var saved = c.modeColors[mi] || {};
+      var def = MODE_CFG[mi].defaults;
+      var result = {};
+      Object.keys(def).forEach(function(k) {
+        result[k] = saved[k] !== undefined ? saved[k] : def[k];
+      });
+      return result;
+    },
+
+    setColors: function(c, mi, colors) {
+      if (!c.modeColors) c.modeColors = [{}, {}, {}];
+      c.modeColors[mi] = colors;
+    },
+
+    applyCardVars: function(card, col, mi) {
+      var cfg = MODE_CFG[mi];
+      cfg.controls.forEach(function(ctrl) {
+        card.style.setProperty(ctrl.cssVar, col[ctrl.key]);
+      });
+      card.style.setProperty('--card-line', col.line + 'px');
+      card.style.setProperty('--card-outer', col.outer + 'px');
+      if (mi === 0) {
+        card.style.setProperty('--card-bg', col.bg);
+        card.style.setProperty('--card-left', col.left);
+      }
+    },
+
+    open: function() {
+      Character.load();
+      var panel = App.$('#charPanel');
+      if (!panel) return;
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      Character.renderList();
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        panel.style.transform = 'translateX(0)';
+        panel.style.opacity = '1';
+      }); });
+    },
+
+    close: function() {
+      var panel = App.$('#charPanel');
+      if (!panel) return;
+      panel.style.transform = 'translateX(100%)';
+      panel.style.opacity = '0';
+      setTimeout(function() { panel.style.display = 'none'; }, 350);
+    },
+
+    renderList: function() {
+      var panel = App.$('#charPanel');
+      if (!panel) return;
+      var chars = Character.list;
+      var mi = Character.currentMode;
+      var modeClass = MODES[mi] || '';
+
+      var cardsHtml = '';
+      if (!chars.length) {
+        cardsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;letter-spacing:1px;">暂无角色，点击上方创建</div>';
+      } else {
+        cardsHtml = chars.map(function(c, i) {
+          var idx = String(i + 1).padStart(2, '0');
+          var name = App.esc(c.name || '未命名');
+          var col = Character.getColors(c, mi);
+          var cfg = MODE_CFG[mi];
+
+          var avatarHtml = c.avatar
+            ? '<img src="' + App.esc(c.avatar) + '">'
+            : '<div class="cl-avatar-empty"></div>';
+          var coverHtml = c.cover
+            ? '<img src="' + App.esc(c.cover) + '">'
+            : '<div class="cl-cover-empty"></div>';
+
+          var wbMounted = c.worldbookMounted ? true : false;
+          var wbClass = wbMounted ? ' mounted' : '';
+          var wbText = wbMounted ? '已挂载' : '世界书';
+
+          var colorHtml = cfg.controls.map(function(ctrl) {
+            return '<div class="cl-color-custom-item">' +
+              '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
+              '<label>' + ctrl.label + '</label></div>';
+          }).join('');
+
+          return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
+            '<div class="cl-top-bar"></div>' +
+            '<div class="cl-header">' +
+              '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
+              '<div class="cl-create-btn cl-wb-btn' + wbClass + '" data-id="' + c.id + '"><span class="plus-icon">' + BOOK_SVG + '</span>' + wbText + '</div>' +
+            '</div>' +
+            '<div class="cl-body"><div class="cl-item">' +
+              '<div class="cl-item-index">' + idx + '</div>' +
+              '<div class="cl-item-main">' +
+                '<div class="cl-cover cl-cover-box" data-id="' + c.id + '">' + coverHtml + '</div>' +
+                '<div class="cl-avatar cl-avatar-box" data-id="' + c.id + '">' + avatarHtml + '</div>' +
+              '</div>' +
+              '<div class="cl-actions">' +
+                '<div class="cl-act-btn cl-act-edit" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5l3 3L12 15H9v-3z"/></svg>编辑</div>' +
+                '<div class="cl-act-btn cl-act-del" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14h12l1-14"/></svg>删除</div>' +
+              '</div>' +
+            '</div></div>' +
+            '<div class="cl-footer">' +
+              '<div class="cl-footer-left"><span class="cl-paw">🐾</span><span class="cl-footer-text">Character</span></div>' +
+              '<div class="cl-change" data-id="' + c.id + '">' +
+                '<div class="cl-change-dots"><div class="cl-change-dot"></div><div class="cl-change-dot"></div><div class="cl-change-dot"></div></div>' +
+                '<span class="cl-change-label">change</span>' +
+                '<div class="cl-color-popup">' +
+                  '<div class="cl-color-popup-title">自定义配色</div>' +
+                  '<div class="cl-color-custom">' + colorHtml + '</div>' +
+                  '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
+                  '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
+                  '<button class="cl-popup-reset" type="button">重置</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="cl-bottom-bar"></div>' +
+          '</div>';
+        }).join('');
+      }
+
+      panel.innerHTML =
+        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
+          '<div class="cl-topbar-wrap">' +
+            '<div class="cl-esc" id="clEsc">ESC</div>' +
+            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
+            '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
+          '</div>' +
+          cardsHtml +
+        '</div>';
+
+      var pageEl = panel.querySelector('#clPageInner');
+
+      panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
+        var cid = card.dataset.charId;
+        var c = Character.getById(cid);
+        if (c) Character.applyCardVars(card, Character.getColors(c, mi), mi);
+      });
+
+      panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
+
+      panel.querySelector('#clModeBtn').addEventListener('click', function() {
+        MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
+        Character.currentMode = (Character.currentMode + 1) % MODES.length;
+        if (MODES[Character.currentMode]) pageEl.classList.add(MODES[Character.currentMode]);
+        this.textContent = MODE_LABELS[Character.currentMode];
+        Character.saveMode();
+        Character.renderList();
+      });
+
+      panel.querySelector('#clNewBtn').addEventListener('click', function() {
+        if (App.charEdit) App.charEdit.open();
+      });
+
+      panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
+        box.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Character.uploadImage(box.dataset.id, 'avatar', box);
+        });
+      });
+
+      panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
+        box.addEventListener('click', function() {
+          Character.uploadImage(box.dataset.id, 'cover', box);
+        });
+      });
+
+      panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var c = Character.getById(btn.dataset.id);
+          if (!c) return;
+          c.worldbookMounted = !c.worldbookMounted;
+          Character.save();
+          if (c.worldbookMounted) {
+            btn.classList.add('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已挂载';
+          } else {
+            btn.classList.remove('mounted');
+            btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
+          }
+        });
+      });
+
+      panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (App.charEdit) App.charEdit.open(btn.dataset.id);
+        });
+      });
+
+      panel.querySelectorAll('.cl-act-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('确定删除这个角色？')) return;
+          Character.list = Character.list.filter(function(c) { return c.id !== btn.dataset.id; });
+          Character.save();
+          Character.renderList();
+          App.showToast('已删除');
+        });
+      });
+
+      // 调色盘
+      var activePopup = null;
+
+      panel.querySelectorAll('.cl-change').forEach(function(ch) {
+        var charId = ch.dataset.id;
+        var card = ch.closest('.char-list-wrap');
+        var popup = ch.querySelector('.cl-color-popup');
+
+        // 把 popup 移到 body 上，脱离卡片
+        document.body.appendChild(popup);
+
+        ch.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (activePopup && activePopup !== popup) {
+            activePopup.classList.remove('show');
+          }
+          popup.classList.toggle('show');
+          activePopup = popup.classList.contains('show') ? popup : null;
+
+          if (popup.classList.contains('show')) {
+            setTimeout(function() {
+              var scrollEl = panel.querySelector('#clPageInner');
+              if (scrollEl) {
+                scrollEl.scrollTo({ top: card.offsetTop - 20, behavior: 'smooth' });
+              }
+            }, 50);
+          }
+        });
+
+        function readAndApply() {
+          var c = Character.getById(charId);
+          if (!c) return;
+          var col = Character.getColors(c, mi);
+          popup.querySelectorAll('.cl-cc').forEach(function(el) {
+            col[el.dataset.key] = el.dataset.value;
+          });
+          col.line = parseFloat(popup.querySelector('.cl-cc-line').value);
+          col.outer = parseFloat(popup.querySelector('.cl-cc-outer').value);
+          popup.querySelector('.cl-line-val').textContent = col.line + 'px';
+          popup.querySelector('.cl-outer-val').textContent = col.outer + 'px';
+          Character.setColors(c, mi, col);
+          Character.applyCardVars(card, col, mi);
+          Character.save();
+        }
+
+        // 实时预览 + 确认保存
+        popup.querySelectorAll('.cl-cc').forEach(function(el) {
+          el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!App.openColorPicker) return;
+            App.openColorPicker(el.dataset.value, function(hex) {
+              el.dataset.value = hex;
+              el.style.background = hex;
+              readAndApply();
+            }, function(hex) {
+              el.dataset.value = hex;
+              el.style.background = hex;
+              var c = Character.getById(charId);
+              if (!c) return;
+              var col = Character.getColors(c, mi);
+              popup.querySelectorAll('.cl-cc').forEach(function(inp) {
+                col[inp.dataset.key] = inp.dataset.value;
+              });
+              col.line = parseFloat(popup.querySelector('.cl-cc-line').value);
+              col.outer = parseFloat(popup.querySelector('.cl-cc-outer').value);
+              Character.applyCardVars(card, col, mi);
+            });
+          });
+        });
+
+        popup.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        popup.querySelector('.cl-cc-line').addEventListener('click', function(e) { e.stopPropagation(); });
+        popup.querySelector('.cl-cc-outer').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        popup.querySelector('.cl-cc-outer').addEventListener('click', function(e) { e.stopPropagation(); });
+
+        popup.querySelector('.cl-popup-reset').addEventListener('click', function(e) {
+          e.stopPropagation();
+          var def = MODE_CFG[mi].defaults;
+          popup.querySelectorAll('.cl-cc').forEach(function(el) {
+            var k = el.dataset.key;
+            if (def[k]) { el.dataset.value = def[k]; el.style.background = def[k]; }
+          });
+          popup.querySelector('.cl-cc-line').value = def.line;
+          popup.querySelector('.cl-cc-outer').value = def.outer;
+          readAndApply();
+        });
+
+        popup.addEventListener('click', function(e) { e.stopPropagation(); });
+      });
+
+      document.addEventListener('click', function closePopups() {
+        if (activePopup) {
+          activePopup.classList.remove('show');
+          activePopup = null;
+        }
+      });
+    },
+
+    uploadImage: function(charId, field, box) {
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      document.body.appendChild(input);
+      input.onchange = function(e) {
+        var file = e.target.files[0];
+        document.body.removeChild(input);
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              var c = Character.getById(charId);
+              if (c) { c[field] = cropped; Character.save(); }
+              box.innerHTML = '<img src="' + cropped + '">';
+            });
+          } else {
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = field === 'avatar' ? 256 : 600;
+              var w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+              else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              var compressed = canvas.toDataURL('image/jpeg', 0.85);
+              var c = Character.getById(charId);
+              if (c) { c[field] = compressed; Character.save(); }
+              box.innerHTML = '<img src="' + compressed + '">';
+            };
+            img.src = src;
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    },
+
+    init: function() {
+      Character.load();
+      if (!App.$('#charPanel')) {
+        var panel = document.createElement('div');
+        panel.id = 'charPanel';
+        panel.style.display = 'none';
+        document.body.appendChild(panel);
+      }
+      App.character = Character;
+    }
+  };
+
+  App.register('character', Character);
+})();
