@@ -309,65 +309,65 @@
 }
 .cl-popup-reset:active { color: #666; }
 
-/* ====== frost 卡片覆盖 ====== */
+/* ====== frost 卡片 · 形状覆盖 ====== */
 .mode-frost .char-list-wrap {
   --card-radius: 4px; --card-border: 2px;
   --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  background: linear-gradient(145deg, #f9fafb, #e5e7eb, #f3f4f6);
+  background: var(--cw-bg);
 }
-.mode-frost .cl-top-bar { height: 4px; background: linear-gradient(90deg, #9ca3af, #d1d5db, #9ca3af); }
-.mode-frost .cl-bottom-bar { height: 4px; background: linear-gradient(90deg, #d1d5db, #9ca3af, #d1d5db); }
-.mode-frost .cl-header { border-bottom: 1.5px solid rgba(107,114,128,0.2); }
+.mode-frost .cl-top-bar { height: 4px; background: linear-gradient(90deg, var(--card-accent), var(--cw-bg), var(--card-accent)); }
+.mode-frost .cl-bottom-bar { height: 4px; background: linear-gradient(90deg, var(--cw-bg), var(--card-accent), var(--cw-bg)); }
+.mode-frost .cl-header { border-bottom: var(--card-line) solid var(--card-dark); border-color: rgba(0,0,0,0.12); }
 .mode-frost .cl-header::before { background: none; }
-.mode-frost .cl-header-left h2 { font-weight: 800; letter-spacing: 3px; color: #374151; }
-.mode-frost .cl-header-left h2::after { background: linear-gradient(90deg, transparent, #9ca3af, transparent); height: 1.5px; }
-.mode-frost .cl-create-btn { border: 1.5px solid #6b7280; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: #6b7280; }
-.mode-frost .cl-create-btn.mounted { background: rgba(156,163,175,0.35); color: #374151; }
+.mode-frost .cl-header-left h2 { font-weight: 800; letter-spacing: 3px; }
+.mode-frost .cl-header-left h2::after { background: linear-gradient(90deg, transparent, var(--card-accent), transparent); height: 1.5px; }
+.mode-frost .cl-create-btn { border: 1.5px solid var(--card-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: var(--card-dark); }
+.mode-frost .cl-create-btn.mounted { background: var(--card-accent); color: var(--cw-bg); }
 .mode-frost .cl-create-btn:active { box-shadow: 0 1px 4px rgba(0,0,0,0.1); transform: translate(1px,1px); }
-.mode-frost .plus-icon { border: 1.5px solid #6b7280; background: rgba(255,255,255,0.6); color: #6b7280; border-radius: 2px; }
+.mode-frost .plus-icon { border: 1.5px solid var(--card-dark); background: rgba(255,255,255,0.6); color: var(--card-dark); border-radius: 2px; }
 .mode-frost .cl-item { border-bottom: none; }
-.mode-frost .cl-item-index { background: rgba(107,114,128,0.15); color: #6b7280; }
+.mode-frost .cl-item-index { background: rgba(0,0,0,0.08); color: var(--card-dark); }
 .mode-frost .cl-item-index::before { display: none; }
-.mode-frost .cl-item-main { border-right: 1px solid rgba(107,114,128,0.15); }
-.mode-frost .cl-cover { background: rgba(229,231,235,0.5); }
-.mode-frost .cl-avatar { border: 2px solid rgba(107,114,128,0.3); background: rgba(229,231,235,0.5); border-radius: 3px; }
+.mode-frost .cl-item-main { border-right: 1px solid rgba(0,0,0,0.08); }
+.mode-frost .cl-cover { background: var(--cw-bg); }
+.mode-frost .cl-avatar { border: 2px solid var(--card-dark); background: var(--cw-bg); border-radius: 3px; }
 .mode-frost .cl-actions { width: 48px; }
-.mode-frost .cl-act-edit { background: transparent; color: #6b7280; border-bottom: 1px solid rgba(107,114,128,0.15); }
-.mode-frost .cl-act-edit:active { background: rgba(156,163,175,0.3); }
-.mode-frost .cl-act-del { background: transparent; color: #9ca3af; }
-.mode-frost .cl-footer { border-top: 1.5px solid rgba(107,114,128,0.2); background: rgba(243,244,246,0.5); }
+.mode-frost .cl-act-edit { background: transparent; color: var(--card-dark); border-bottom: 1px solid rgba(0,0,0,0.08); }
+.mode-frost .cl-act-edit:active { background: var(--card-accent); color: var(--cw-bg); }
+.mode-frost .cl-act-del { background: transparent; color: var(--card-accent); }
+.mode-frost .cl-footer { border-top: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.3); }
 
-/* ====== mono 卡片覆盖 ====== */
+/* ====== mono 卡片 · 形状覆盖 ====== */
 .mode-mono .char-list-wrap {
   --card-radius: 14px; --card-border: 1.5px;
   --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  background: #fff;
+  background: var(--cw-bg);
 }
 .mode-mono .cl-top-bar { height: 0; }
 .mode-mono .cl-bottom-bar { height: 0; }
-.mode-mono .cl-header { border-bottom: 1px solid #1a1a1a; padding: 16px 20px 14px; }
+.mode-mono .cl-header { border-bottom: var(--card-line) solid var(--card-dark); padding: 16px 20px 14px; }
 .mode-mono .cl-header::before { display: none; }
 .mode-mono .cl-header-left h2 { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
 .mode-mono .cl-header-left h2::after { display: none; }
-.mode-mono .cl-create-btn { border: 1px solid #1a1a1a; box-shadow: none; border-radius: 8px; background: #fff; color: #1a1a1a; font-size: 11px; font-weight: 700; padding: 6px 12px; }
-.mode-mono .cl-create-btn.mounted { background: #1a1a1a; color: #fff; }
-.mode-mono .cl-create-btn:active { background: #f0f0f0; transform: none; box-shadow: none; }
-.mode-mono .plus-icon { border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; border-radius: 4px; width: 18px; height: 18px; font-size: 14px; }
-.mode-mono .cl-item-index { background: #1a1a1a; color: #fff; width: 28px; font-size: 11px; }
+.mode-mono .cl-create-btn { border: 1px solid var(--card-dark); box-shadow: none; border-radius: 8px; background: var(--cw-bg); color: var(--card-dark); font-size: 11px; font-weight: 700; padding: 6px 12px; }
+.mode-mono .cl-create-btn.mounted { background: var(--card-dark); color: var(--cw-bg); }
+.mode-mono .cl-create-btn:active { background: var(--cw-bg); transform: none; box-shadow: none; }
+.mode-mono .plus-icon { border: 1px solid var(--card-dark); background: var(--cw-bg); color: var(--card-dark); border-radius: 4px; width: 18px; height: 18px; font-size: 14px; }
+.mode-mono .cl-item-index { background: var(--card-dark); color: var(--cw-bg); width: 28px; font-size: 11px; }
 .mode-mono .cl-item-index::before { display: none; }
-.mode-mono .cl-item-main { border-right: 1px solid #1a1a1a; }
-.mode-mono .cl-cover { background: #fafafa; }
+.mode-mono .cl-item-main { border-right: var(--card-line) solid var(--card-dark); }
+.mode-mono .cl-cover { background: var(--cw-bg); }
 .mode-mono .cl-cover-empty svg { stroke: #ddd; }
 .mode-mono .cl-cover-empty span { color: #ddd; }
-.mode-mono .cl-avatar { border: 1.5px solid #1a1a1a; border-radius: 10px; background: #fafafa; }
+.mode-mono .cl-avatar { border: var(--card-line) solid var(--card-dark); border-radius: 10px; background: var(--cw-bg); }
 .mode-mono .cl-actions { width: 48px; }
-.mode-mono .cl-act-edit { background: #fff; color: #1a1a1a; border-bottom: 1px solid #1a1a1a; font-size: 8px; }
-.mode-mono .cl-act-edit:active { background: #f5f5f5; }
-.mode-mono .cl-act-del { background: #fff; color: #aaa; font-size: 8px; }
+.mode-mono .cl-act-edit { background: var(--cw-bg); color: var(--card-dark); border-bottom: var(--card-line) solid var(--card-dark); font-size: 8px; }
+.mode-mono .cl-act-edit:active { background: rgba(0,0,0,0.05); }
+.mode-mono .cl-act-del { background: var(--cw-bg); color: #aaa; font-size: 8px; }
 .mode-mono .cl-act-del:active { background: #fee; color: #e85d5d; }
-.mode-mono .cl-footer { border-top: 1px solid #1a1a1a; background: #fff; border-radius: 0 0 14px 14px; padding: 10px 20px; }
-.mode-mono .cl-change-label { color: #1a1a1a; }
-.mode-mono .cl-change-dot:nth-child(2) { background: #1a1a1a; }
+.mode-mono .cl-footer { border-top: var(--card-line) solid var(--card-dark); background: var(--cw-bg); border-radius: 0 0 14px 14px; padding: 10px 20px; }
+.mode-mono .cl-change-label { color: var(--card-dark); }
+.mode-mono .cl-change-dot:nth-child(2) { background: var(--card-dark); }
 
 /* ====== 编辑页 ====== */
 .cc-top-btn {
