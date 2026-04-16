@@ -19,7 +19,7 @@
       ]
     },
     { // ② 磨砂
-      defaults: { accent: '#9ca3af', line: 2, outer: 2 },
+      defaults: { accent: '#d1d5db', line: 2, outer: 2 },
       controls: [
         { key: 'accent', label: '中', cssVar: '--card-accent' }
       ]
