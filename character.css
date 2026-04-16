@@ -330,5 +330,3 @@
 .cc-expand-title-tag::after { content: ""; position: absolute; right: -9px; top: 0; bottom: 0; border-left: 9px solid #111; border-bottom: 24px solid transparent; }
 .cc-expand-title-tag.blue { background: var(--edit-accent, #88abda); }
 .cc-expand-title-tag.blue::after { border-left-color: var(--edit-accent, #88abda); }
-
-
