@@ -97,9 +97,11 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-    renderList: function() {
+        renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
+      // 清理之前移到 body 上的调色盘
+      document.querySelectorAll('.cl-color-popup').forEach(function(p) { if (p.parentNode === document.body) p.remove(); });
       var chars = Character.list;
       var mi = Character.currentMode;
       var modeClass = MODES[mi] || '';
@@ -256,6 +258,7 @@
         var popup = ch.querySelector('.cl-color-popup');
 
         // 把 popup 移到 body 上，脱离卡片
+        if (popup.parentNode) popup.parentNode.removeChild(popup);
         document.body.appendChild(popup);
 
         ch.addEventListener('click', function(e) {
