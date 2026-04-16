@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -15,6 +16,11 @@
 
       var old = App.$('#charCreatePanel');
       if (old) old.remove();
+
+      var mode = (typeof modeIdx === 'number') ? modeIdx : (App.character ? App.character.currentMode : 0);
+      var editModeClass = '';
+      if (mode === 1) editModeClass = ' cc-edit-frost';
+      else if (mode === 2) editModeClass = ' cc-edit-mono';
 
       var createPanel = document.createElement('div');
       createPanel.id = 'charCreatePanel';
@@ -149,7 +155,8 @@
         postInstruction: postInstruction,
         cardDark: '#111111',
         cardAccent: '#88abda',
-        cardLight: '#ffffff',
+        cardBg: '#ffffff',
+        cardLine: 3,
         cardColor: '#88abda',
         worldbookMounted: false
       });
@@ -183,10 +190,6 @@
             '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
           '</div>' +
         '</div>';
-              var editModeClass = '';
-      var mode = (typeof modeIdx === 'number') ? modeIdx : (App.character ? App.character.currentMode : 0);
-      if (mode === 1) editModeClass = ' cc-edit-frost';
-      else if (mode === 2) editModeClass = ' cc-edit-mono';
       document.body.appendChild(editor);
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         editor.style.transform = 'translateY(0)';
