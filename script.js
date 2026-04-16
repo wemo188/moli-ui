@@ -71,8 +71,14 @@
       '<div class="crop-container">' +
         '<div class="crop-header">' +
           '<button class="crop-cancel" type="button">取消</button>' +
-          '<span>裁剪头像</span>' +
+          '<span>裁剪图片</span>' +
           '<button class="crop-confirm" type="button">确定</button>' +
+        '</div>' +
+        '<div class="crop-toolbar">' +
+          '<button class="crop-ratio-btn active" data-ratio="free" type="button">自由</button>' +
+          '<button class="crop-ratio-btn" data-ratio="1" type="button">1:1</button>' +
+          '<button class="crop-ratio-btn" data-ratio="4:3" type="button">4:3</button>' +
+          '<button class="crop-ratio-btn" data-ratio="16:9" type="button">16:9</button>' +
         '</div>' +
         '<div class="crop-workspace">' +
           '<canvas id="cropCanvas"></canvas>' +
@@ -86,12 +92,16 @@
     var img = new Image();
     var dpr = window.devicePixelRatio || 1;
 
-    var crop = { x: 0, y: 0, size: 0 };
+    var crop = { x: 0, y: 0, w: 0, h: 0 };
     var scale = 1;
     var displayW = 0;
     var displayH = 0;
-    var dragging = false;
+    var dragMode = ''; // 'move', 'tl', 'tr', 'bl', 'br', 't', 'b', 'l', 'r'
     var startX = 0, startY = 0;
+    var startCrop = {};
+    var lockedRatio = 0; // 0 = free
+    var HANDLE = 20;
+    var MIN_SIZE = 30;
 
     img.onload = function() {
       var workspace = overlay.querySelector('.crop-workspace');
@@ -108,51 +118,132 @@
       canvas.style.height = displayH + 'px';
       ctx.scale(dpr, dpr);
 
-      crop.size = Math.min(displayW, displayH) * 0.7;
-      crop.x = (displayW - crop.size) / 2;
-      crop.y = (displayH - crop.size) / 2;
+      var initW = displayW * 0.7;
+      var initH = displayH * 0.7;
+      crop.w = initW;
+      crop.h = initH;
+      crop.x = (displayW - initW) / 2;
+      crop.y = (displayH - initH) / 2;
 
       draw();
     };
 
     img.src = src;
 
+    function clampCrop() {
+      crop.w = Math.max(MIN_SIZE, Math.min(displayW, crop.w));
+      crop.h = Math.max(MIN_SIZE, Math.min(displayH, crop.h));
+      crop.x = Math.max(0, Math.min(displayW - crop.w, crop.x));
+      crop.y = Math.max(0, Math.min(displayH - crop.h, crop.y));
+    }
+
     function draw() {
       ctx.clearRect(0, 0, displayW, displayH);
       ctx.drawImage(img, 0, 0, displayW, displayH);
 
+      // 暗色遮罩
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(0, 0, displayW, displayH);
+      ctx.fillRect(0, 0, displayW, crop.y);
+      ctx.fillRect(0, crop.y + crop.h, displayW, displayH - crop.y - crop.h);
+      ctx.fillRect(0, crop.y, crop.x, crop.h);
+      ctx.fillRect(crop.x + crop.w, crop.y, displayW - crop.x - crop.w, crop.h);
 
-      ctx.clearRect(crop.x, crop.y, crop.size, crop.size);
-      ctx.drawImage(img,
-        crop.x / scale, crop.y / scale, crop.size / scale, crop.size / scale,
-        crop.x, crop.y, crop.size, crop.size
-      );
-
+      // 边框
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
-      ctx.strokeRect(crop.x, crop.y, crop.size, crop.size);
+      ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
 
+      // 三等分线
       ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.lineWidth = 1;
-      var third = crop.size / 3;
+      var tw = crop.w / 3, th = crop.h / 3;
       ctx.beginPath();
-      ctx.moveTo(crop.x + third, crop.y);
-      ctx.lineTo(crop.x + third, crop.y + crop.size);
-      ctx.moveTo(crop.x + third * 2, crop.y);
-      ctx.lineTo(crop.x + third * 2, crop.y + crop.size);
-      ctx.moveTo(crop.x, crop.y + third);
-      ctx.lineTo(crop.x + crop.size, crop.y + third);
-      ctx.moveTo(crop.x, crop.y + third * 2);
-      ctx.lineTo(crop.x + crop.size, crop.y + third * 2);
+      ctx.moveTo(crop.x + tw, crop.y);
+      ctx.lineTo(crop.x + tw, crop.y + crop.h);
+      ctx.moveTo(crop.x + tw * 2, crop.y);
+      ctx.lineTo(crop.x + tw * 2, crop.y + crop.h);
+      ctx.moveTo(crop.x, crop.y + th);
+      ctx.lineTo(crop.x + crop.w, crop.y + th);
+      ctx.moveTo(crop.x, crop.y + th * 2);
+      ctx.lineTo(crop.x + crop.w, crop.y + th * 2);
       ctx.stroke();
+
+      // 四角拖拽手柄
+      ctx.fillStyle = '#fff';
+      var hs = 8;
+      var corners = [
+        [crop.x, crop.y],
+        [crop.x + crop.w, crop.y],
+        [crop.x, crop.y + crop.h],
+        [crop.x + crop.w, crop.y + crop.h]
+      ];
+      corners.forEach(function(c) {
+        ctx.fillRect(c[0] - hs / 2, c[1] - hs / 2, hs, hs);
+      });
+
+      // 四边中点手柄
+      var middles = [
+        [crop.x + crop.w / 2, crop.y],
+        [crop.x + crop.w / 2, crop.y + crop.h],
+        [crop.x, crop.y + crop.h / 2],
+        [crop.x + crop.w, crop.y + crop.h / 2]
+      ];
+      middles.forEach(function(m) {
+        ctx.fillRect(m[0] - hs / 2, m[1] - hs / 2, hs, hs);
+      });
     }
 
     function getPos(e) {
       var t = e.touches ? e.touches[0] : e;
       var rect = canvas.getBoundingClientRect();
       return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+
+    function hitTest(px, py) {
+      var cx = crop.x, cy = crop.y, cw = crop.w, ch = crop.h;
+      var H = HANDLE;
+
+      // 四角
+      if (px >= cx - H && px <= cx + H && py >= cy - H && py <= cy + H) return 'tl';
+      if (px >= cx + cw - H && px <= cx + cw + H && py >= cy - H && py <= cy + H) return 'tr';
+      if (px >= cx - H && px <= cx + H && py >= cy + ch - H && py <= cy + ch + H) return 'bl';
+      if (px >= cx + cw - H && px <= cx + cw + H && py >= cy + ch - H && py <= cy + ch + H) return 'br';
+
+      // 四边
+      if (py >= cy - H && py <= cy + H && px > cx + H && px < cx + cw - H) return 't';
+      if (py >= cy + ch - H && py <= cy + ch + H && px > cx + H && px < cx + cw - H) return 'b';
+      if (px >= cx - H && px <= cx + H && py > cy + H && py < cy + ch - H) return 'l';
+      if (px >= cx + cw - H && px <= cx + cw + H && py > cy + H && py < cy + ch - H) return 'r';
+
+      // 内部移动
+      if (px >= cx && px <= cx + cw && py >= cy && py <= cy + ch) return 'move';
+
+      return '';
+    }
+
+    function applyRatio(mode, anchorX, anchorY) {
+      if (!lockedRatio) return;
+      if (mode === 'move') return;
+
+      var ratio = lockedRatio;
+
+      // 根据拖动方向调整
+      if (mode === 't' || mode === 'b') {
+        crop.w = crop.h * ratio;
+      } else if (mode === 'l' || mode === 'r') {
+        crop.h = crop.w / ratio;
+      } else {
+        // 角：以宽为基准
+        crop.h = crop.w / ratio;
+      }
+
+      // 保持锚点
+      if (mode === 'tl' || mode === 'bl' || mode === 'l') {
+        crop.x = anchorX - crop.w;
+      }
+      if (mode === 'tl' || mode === 'tr' || mode === 't') {
+        crop.y = anchorY - crop.h;
+      }
     }
 
     canvas.addEventListener('mousedown', onStart);
@@ -162,9 +253,11 @@
       if (e.touches && e.touches.length > 1) return;
       e.preventDefault();
       var p = getPos(e);
-      dragging = true;
-      startX = p.x - crop.x;
-      startY = p.y - crop.y;
+      dragMode = hitTest(p.x, p.y);
+      if (!dragMode) return;
+      startX = p.x;
+      startY = p.y;
+      startCrop = { x: crop.x, y: crop.y, w: crop.w, h: crop.h };
 
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onEnd);
@@ -173,23 +266,66 @@
     }
 
     function onMove(e) {
-      if (!dragging) return;
-      if (e.touches && e.touches.length > 1) return;
+      if (!dragMode) return;
       e.preventDefault();
       var p = getPos(e);
-      crop.x = Math.max(0, Math.min(displayW - crop.size, p.x - startX));
-      crop.y = Math.max(0, Math.min(displayH - crop.size, p.y - startY));
+      var dx = p.x - startX;
+      var dy = p.y - startY;
+
+      var sc = startCrop;
+
+      if (dragMode === 'move') {
+        crop.x = sc.x + dx;
+        crop.y = sc.y + dy;
+      } else if (dragMode === 'br') {
+        crop.w = sc.w + dx;
+        crop.h = sc.h + dy;
+        applyRatio('br', sc.x, sc.y);
+      } else if (dragMode === 'bl') {
+        crop.x = sc.x + dx;
+        crop.w = sc.w - dx;
+        crop.h = sc.h + dy;
+        applyRatio('bl', sc.x + sc.w, sc.y);
+      } else if (dragMode === 'tr') {
+        crop.w = sc.w + dx;
+        crop.y = sc.y + dy;
+        crop.h = sc.h - dy;
+        applyRatio('tr', sc.x, sc.y + sc.h);
+      } else if (dragMode === 'tl') {
+        crop.x = sc.x + dx;
+        crop.y = sc.y + dy;
+        crop.w = sc.w - dx;
+        crop.h = sc.h - dy;
+        applyRatio('tl', sc.x + sc.w, sc.y + sc.h);
+      } else if (dragMode === 'r') {
+        crop.w = sc.w + dx;
+        applyRatio('r', sc.x, sc.y);
+      } else if (dragMode === 'l') {
+        crop.x = sc.x + dx;
+        crop.w = sc.w - dx;
+        applyRatio('l', sc.x + sc.w, sc.y);
+      } else if (dragMode === 'b') {
+        crop.h = sc.h + dy;
+        applyRatio('b', sc.x, sc.y);
+      } else if (dragMode === 't') {
+        crop.y = sc.y + dy;
+        crop.h = sc.h - dy;
+        applyRatio('t', sc.x, sc.y + sc.h);
+      }
+
+      clampCrop();
       draw();
     }
 
     function onEnd() {
-      dragging = false;
+      dragMode = '';
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onEnd);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('touchend', onEnd);
     }
 
+    // 双指缩放（整体缩放裁剪框）
     var lastDist = 0;
     canvas.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
@@ -209,21 +345,53 @@
           e.touches[0].clientY - e.touches[1].clientY
         );
         var diff = dist - lastDist;
-        var newSize = crop.size + diff;
-        var minSize = 50;
-        var maxSize = Math.min(displayW, displayH);
-        newSize = Math.max(minSize, Math.min(maxSize, newSize));
-
-        var cx = crop.x + crop.size / 2;
-        var cy = crop.y + crop.size / 2;
-        crop.size = newSize;
-        crop.x = Math.max(0, Math.min(displayW - crop.size, cx - crop.size / 2));
-        crop.y = Math.max(0, Math.min(displayH - crop.size, cy - crop.size / 2));
-
+        var cx = crop.x + crop.w / 2;
+        var cy = crop.y + crop.h / 2;
+        var ratio = crop.w / crop.h;
+        crop.w = Math.max(MIN_SIZE, crop.w + diff);
+        crop.h = Math.max(MIN_SIZE, crop.h + diff / ratio);
+        crop.x = cx - crop.w / 2;
+        crop.y = cy - crop.h / 2;
+        clampCrop();
         lastDist = dist;
         draw();
       }
     }, { passive: false });
+
+    // 比例按钮
+    overlay.querySelectorAll('.crop-ratio-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        overlay.querySelectorAll('.crop-ratio-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var r = btn.dataset.ratio;
+        if (r === 'free') {
+          lockedRatio = 0;
+        } else if (r === '1') {
+          lockedRatio = 1;
+        } else if (r === '4:3') {
+          lockedRatio = 4 / 3;
+        } else if (r === '16:9') {
+          lockedRatio = 16 / 9;
+        }
+        if (lockedRatio) {
+          var cx = crop.x + crop.w / 2;
+          var cy = crop.y + crop.h / 2;
+          var newW = crop.w;
+          var newH = newW / lockedRatio;
+          if (newH > displayH * 0.9) {
+            newH = displayH * 0.9;
+            newW = newH * lockedRatio;
+          }
+          crop.w = newW;
+          crop.h = newH;
+          crop.x = cx - crop.w / 2;
+          crop.y = cy - crop.h / 2;
+          clampCrop();
+          draw();
+        }
+      });
+    });
 
     overlay.querySelector('.crop-cancel').addEventListener('click', function() {
       overlay.remove();
@@ -231,13 +399,14 @@
 
     overlay.querySelector('.crop-confirm').addEventListener('click', function() {
       var output = document.createElement('canvas');
-      var outSize = 512;
-      output.width = outSize;
-      output.height = outSize;
+      var outW = Math.round(crop.w / scale);
+      var outH = Math.round(crop.h / scale);
+      output.width = outW;
+      output.height = outH;
       var outCtx = output.getContext('2d');
       outCtx.drawImage(img,
-        crop.x / scale, crop.y / scale, crop.size / scale, crop.size / scale,
-        0, 0, outSize, outSize
+        crop.x / scale, crop.y / scale, crop.w / scale, crop.h / scale,
+        0, 0, outW, outH
       );
       var data = output.toDataURL('image/jpeg', 0.92);
       overlay.remove();
