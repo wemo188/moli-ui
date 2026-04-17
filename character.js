@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -30,6 +31,29 @@
       ]
     }
   ];
+
+  // 全局拖拽状态
+  var _drag = { active: false, el: null, sx: 0, sy: 0, ox: 0, oy: 0 };
+
+  document.addEventListener('touchmove', function(e) {
+    if (!_drag.active || !_drag.el) return;
+    e.preventDefault();
+    var t = e.touches[0];
+    _drag.el.style.left = (_drag.ox + t.clientX - _drag.sx) + 'px';
+    _drag.el.style.top = (_drag.oy + t.clientY - _drag.sy) + 'px';
+  }, { passive: false });
+
+  document.addEventListener('touchend', function() {
+    _drag.active = false;
+  });
+
+  function makeDraggable(handle, target) {
+    handle.addEventListener('touchstart', function(e) {
+      var t = e.touches[0];
+      var rect = target.getBoundingClientRect();
+      _drag = { active: true, el: target, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+    }, { passive: true });
+  }
 
   var Character = {
     list: [],
@@ -92,6 +116,8 @@
     close: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
+      // 关闭所有浮动调色盘
+      panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) { p.classList.remove('show'); });
       panel.style.transform = 'translateX(100%)';
       panel.style.opacity = '0';
       setTimeout(function() { panel.style.display = 'none'; }, 350);
@@ -155,14 +181,14 @@
                 '<span class="cl-change-label">change</span>' +
               '</div>' +
             '</div>' +
-            '<div class="cl-color-popup" data-char-id="' + c.id + '">' +
-              '<div class="cl-color-popup-title">自定义配色</div>' +
-              '<div class="cl-color-custom">' + colorHtml + '</div>' +
-              '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
-              '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
-              '<button class="cl-popup-reset" type="button">重置</button>' +
-            '</div>' +
             '<div class="cl-bottom-bar"></div>' +
+          '</div>' +
+          '<div class="cl-color-popup" data-for="' + c.id + '">' +
+            '<div class="cl-color-popup-title">☰ 自定义配色</div>' +
+            '<div class="cl-color-custom">' + colorHtml + '</div>' +
+            '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
+            '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
+            '<button class="cl-popup-reset" type="button">重置</button>' +
           '</div>';
         }).join('');
       }
@@ -179,12 +205,14 @@
 
       var pageEl = panel.querySelector('#clPageInner');
 
+      // 应用卡片变量
       panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
         var cid = card.dataset.charId;
         var c = Character.getById(cid);
         if (c) Character.applyCardVars(card, Character.getColors(c, mi), mi);
       });
 
+      // 顶部按钮
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
 
       panel.querySelector('#clModeBtn').addEventListener('click', function() {
@@ -200,6 +228,7 @@
         if (App.charEdit) App.charEdit.open();
       });
 
+      // 头像/封面上传
       panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
         box.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -213,6 +242,7 @@
         });
       });
 
+      // 世界书按钮
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var c = Character.getById(btn.dataset.id);
@@ -229,6 +259,7 @@
         });
       });
 
+      // 编辑/删除
       panel.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -251,41 +282,46 @@
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
         var charId = ch.dataset.id;
         var card = ch.closest('.char-list-wrap');
-        var popup = card.querySelector('.cl-color-popup');
+        // popup 在卡片外面（同级下一个元素）
+        var popup = card.nextElementSibling;
+        if (!popup || !popup.classList.contains('cl-color-popup')) return;
+
+        // 拖拽
+        var popTitle = popup.querySelector('.cl-color-popup-title');
+        makeDraggable(popTitle, popup);
 
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
           // 关闭其他
-          panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
+          pageEl.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
             if (p !== popup) p.classList.remove('show');
           });
 
           if (popup.classList.contains('show')) {
             popup.classList.remove('show');
           } else {
+            // 计算位置：卡片上方
+            var cardRect = card.getBoundingClientRect();
+            var left = cardRect.left + cardRect.width / 2 - 100;
+            var top = cardRect.top - 8;
+            if (left < 8) left = 8;
+            if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
+            if (top < 60) top = cardRect.bottom + 8;
+            popup.style.left = left + 'px';
+            popup.style.top = 'auto';
+            popup.style.bottom = (window.innerHeight - top) + 'px';
             popup.classList.add('show');
+
+            // 等 popup 显示后重算位置
             requestAnimationFrame(function() {
-              var cardRect = card.getBoundingClientRect();
               var popH = popup.offsetHeight;
-              var left = cardRect.left + cardRect.width / 2 - 100;
-              var top = cardRect.top - popH - 8;
-              if (left < 8) left = 8;
-              if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
-              if (top < 60) top = 60;
-              popup.style.left = left + 'px';
-              popup.style.top = top + 'px';
+              var finalTop = cardRect.top - popH - 8;
+              if (finalTop < 60) finalTop = 60;
+              popup.style.bottom = 'auto';
+              popup.style.top = finalTop + 'px';
             });
           }
         });
-
-        // 拖拽标题
-        var popTitle = popup.querySelector('.cl-color-popup-title');
-        popTitle.addEventListener('touchstart', function(e) {
-          e.stopPropagation();
-          var t = e.touches[0];
-          var rect = popup.getBoundingClientRect();
-          Character._drag = { el: popup, active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-        }, { passive: true });
 
         function readAndApply() {
           var c = Character.getById(charId);
@@ -349,12 +385,11 @@
         });
 
         popup.addEventListener('click', function(e) { e.stopPropagation(); });
-        popup.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
       });
 
       // 点击其他地方关闭
       pageEl.addEventListener('click', function() {
-        panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
+        pageEl.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
           p.classList.remove('show');
         });
       });
@@ -409,22 +444,10 @@
         panel.style.display = 'none';
         document.body.appendChild(panel);
       }
-            // 拖拽全局监听
-      Character._drag = { el: null, active: false };
-      document.addEventListener('touchmove', function(e) {
-        var d = Character._drag;
-        if (!d || !d.active || !d.el) return;
-        e.preventDefault();
-        var t = e.touches[0];
-        d.el.style.left = (d.ox + t.clientX - d.sx) + 'px';
-        d.el.style.top = (d.oy + t.clientY - d.sy) + 'px';
-      }, { passive: false });
-      document.addEventListener('touchend', function() {
-        if (Character._drag) Character._drag.active = false;
-      });
       App.character = Character;
     }
   };
 
   App.register('character', Character);
 })();
+
