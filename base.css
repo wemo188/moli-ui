@@ -372,7 +372,7 @@ html, body {
 .crop-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 200000;
   background: rgba(0,0,0,0.9);
   display: flex;
   flex-direction: column;
@@ -482,9 +482,7 @@ html, body {
 }
 
 .cp-panel {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  max-width: 400px; margin: 0 auto;
+  width: 100%; max-width: 400px;
   background: rgba(255,255,255,0.5);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
@@ -493,7 +491,6 @@ html, body {
   box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
   display: flex; flex-direction: column; gap: 12px;
   animation: cpSlideUp 0.3s ease;
-  touch-action: none;
 }
 
 @keyframes cpSlideUp {
@@ -503,7 +500,6 @@ html, body {
 
 .cp-header {
   display: flex; align-items: center; justify-content: space-between;
-  cursor: grab; -webkit-tap-highlight-color: transparent;
 }
 .cp-header:active { cursor: grabbing; }
 
