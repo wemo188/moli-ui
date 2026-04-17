@@ -395,7 +395,60 @@
       });
     },
 
-    uploadImage: function(charId, field, box) {
+        uploadImage: function(charId, field, box) {
+      var c = Character.getById(charId);
+      var hasImg = c && c[field];
+
+      if (hasImg) {
+        // 已有图片，弹出选择
+        var old = document.querySelector('.cl-img-menu');
+        if (old) old.remove();
+
+        var rect = box.getBoundingClientRect();
+        var menu = document.createElement('div');
+        menu.className = 'cl-img-menu';
+        menu.style.cssText = 'position:fixed;z-index:10010;background:#fff;border:1.5px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:4px 0;min-width:100px;';
+        menu.style.left = Math.min(rect.left, window.innerWidth - 120) + 'px';
+        menu.style.top = (rect.bottom + 4) + 'px';
+
+        menu.innerHTML =
+          '<div style="padding:10px 16px;font-size:12px;font-weight:600;color:#333;cursor:pointer;-webkit-tap-highlight-color:transparent;" id="clImgReplace">更换照片</div>' +
+          '<div style="height:1px;background:#eee;margin:0 8px;"></div>' +
+          '<div style="padding:10px 16px;font-size:12px;font-weight:600;color:#e85d5d;cursor:pointer;-webkit-tap-highlight-color:transparent;" id="clImgDelete">删除照片</div>';
+
+        document.body.appendChild(menu);
+
+        menu.querySelector('#clImgReplace').addEventListener('click', function(e) {
+          e.stopPropagation();
+          menu.remove();
+          Character.pickImage(charId, field, box);
+        });
+
+        menu.querySelector('#clImgDelete').addEventListener('click', function(e) {
+          e.stopPropagation();
+          menu.remove();
+          if (c) { c[field] = ''; Character.save(); }
+          Character.renderList();
+          App.showToast('已删除');
+        });
+
+        setTimeout(function() {
+          function dismiss(e) {
+            if (!menu.contains(e.target)) {
+              menu.remove();
+              document.removeEventListener('touchstart', dismiss);
+              document.removeEventListener('click', dismiss);
+            }
+          }
+          document.addEventListener('touchstart', dismiss, { passive: true });
+          document.addEventListener('click', dismiss);
+        }, 50);
+      } else {
+        Character.pickImage(charId, field, box);
+      }
+    },
+
+    pickImage: function(charId, field, box) {
       var input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
