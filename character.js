@@ -259,8 +259,33 @@
           panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
             if (p !== popup) p.classList.remove('show');
           });
-          popup.classList.toggle('show');
+
+          if (popup.classList.contains('show')) {
+            popup.classList.remove('show');
+          } else {
+            popup.classList.add('show');
+            requestAnimationFrame(function() {
+              var cardRect = card.getBoundingClientRect();
+              var popH = popup.offsetHeight;
+              var left = cardRect.left + cardRect.width / 2 - 100;
+              var top = cardRect.top - popH - 8;
+              if (left < 8) left = 8;
+              if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
+              if (top < 60) top = 60;
+              popup.style.left = left + 'px';
+              popup.style.top = top + 'px';
+            });
+          }
         });
+
+        // 拖拽标题
+        var popTitle = popup.querySelector('.cl-color-popup-title');
+        popTitle.addEventListener('touchstart', function(e) {
+          e.stopPropagation();
+          var t = e.touches[0];
+          var rect = popup.getBoundingClientRect();
+          Character._drag = { el: popup, active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+        }, { passive: true });
 
         function readAndApply() {
           var c = Character.getById(charId);
@@ -324,6 +349,7 @@
         });
 
         popup.addEventListener('click', function(e) { e.stopPropagation(); });
+        popup.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
       });
 
       // 点击其他地方关闭
@@ -383,6 +409,19 @@
         panel.style.display = 'none';
         document.body.appendChild(panel);
       }
+            // 拖拽全局监听
+      Character._drag = { el: null, active: false };
+      document.addEventListener('touchmove', function(e) {
+        var d = Character._drag;
+        if (!d || !d.active || !d.el) return;
+        e.preventDefault();
+        var t = e.touches[0];
+        d.el.style.left = (d.ox + t.clientX - d.sx) + 'px';
+        d.el.style.top = (d.oy + t.clientY - d.sy) + 'px';
+      }, { passive: false });
+      document.addEventListener('touchend', function() {
+        if (Character._drag) Character._drag.active = false;
+      });
       App.character = Character;
     }
   };
