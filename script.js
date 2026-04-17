@@ -86,42 +86,6 @@
       '</div>';
 
     document.body.appendChild(overlay);
-        // 颜色面板拖拽
-    var cpPanel = overlay.querySelector('.cp-panel');
-    var cpHead = overlay.querySelector('.cp-header');
-    var _cpDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
-
-    cpHead.addEventListener('touchstart', function(e) {
-      if (e.target.closest('button')) return;
-      var t = e.touches[0];
-      var rect = cpPanel.getBoundingClientRect();
-      cpPanel.style.bottom = 'auto';
-      cpPanel.style.left = rect.left + 'px';
-      cpPanel.style.top = rect.top + 'px';
-      cpPanel.style.right = 'auto';
-      cpPanel.style.margin = '0';
-      cpPanel.style.width = rect.width + 'px';
-      _cpDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-    }, { passive: true });
-
-    var cpMoveHandler = function(e) {
-      if (!_cpDrag.active) return;
-      e.preventDefault();
-      var t = e.touches[0];
-      cpPanel.style.left = (_cpDrag.ox + t.clientX - _cpDrag.sx) + 'px';
-      cpPanel.style.top = (_cpDrag.oy + t.clientY - _cpDrag.sy) + 'px';
-    };
-    var cpEndHandler = function() { _cpDrag.active = false; };
-
-    document.addEventListener('touchmove', cpMoveHandler, { passive: false });
-    document.addEventListener('touchend', cpEndHandler);
-
-    var origClosePanel = closePanel;
-    closePanel = function() {
-      document.removeEventListener('touchmove', cpMoveHandler);
-      document.removeEventListener('touchend', cpEndHandler);
-      origClosePanel();
-    };
 
     var canvas = overlay.querySelector('#cropCanvas');
     var ctx = canvas.getContext('2d');
@@ -493,6 +457,39 @@
       '</div>';
 
     document.body.appendChild(overlay);
+    
+        // 颜色面板拖拽
+    var cpPanel = overlay.querySelector('.cp-panel');
+    var cpHead = overlay.querySelector('.cp-header');
+    var _cpD = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
+
+    cpHead.addEventListener('touchstart', function(e) {
+      if (e.target.closest('button')) return;
+      var t = e.touches[0];
+      var rect = cpPanel.getBoundingClientRect();
+      cpPanel.style.position = 'fixed';
+      cpPanel.style.bottom = 'auto';
+      cpPanel.style.left = rect.left + 'px';
+      cpPanel.style.top = rect.top + 'px';
+      cpPanel.style.right = 'auto';
+      cpPanel.style.margin = '0';
+      cpPanel.style.width = rect.width + 'px';
+      _cpD = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+    }, { passive: true });
+
+    overlay.addEventListener('touchmove', function(e) {
+      if (!_cpD.active) return;
+      e.preventDefault();
+      var t = e.touches[0];
+      cpPanel.style.left = (_cpD.ox + t.clientX - _cpD.sx) + 'px';
+      cpPanel.style.top = (_cpD.oy + t.clientY - _cpD.sy) + 'px';
+    }, { passive: false });
+
+    overlay.addEventListener('touchend', function() {
+      _cpD.active = false;
+    });
+
+    var preview = overlay.querySelector('#cpPreview');
 
     var preview = overlay.querySelector('#cpPreview');
     var hexInput = overlay.querySelector('#cpHexInput');
