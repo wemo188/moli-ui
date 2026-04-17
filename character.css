@@ -22,7 +22,7 @@
 .cl-mode-btn {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0 20px; border: 2px solid var(--page-dark); background: var(--page-light);
-  font-size: 22px; font-weight: 900;
+  font-size: 22px; font-weight: 500;
   color: var(--page-dark); cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: all 0.3s; font-family: inherit;
 }
@@ -223,7 +223,7 @@
 .cl-line-row .cl-line-val { font-size: 8px; font-weight: 700; color: #999; min-width: 24px; text-align: right; }
 .cl-outer-val { font-size: 8px; font-weight: 700; color: #999; min-width: 24px; text-align: right; }
 .cl-popup-reset {
-  align-self: flex-end; font-size: 8px; font-weight: 800; letter-spacing: 1px;
+  align-self: flex-end; font-size: 10px; font-weight: 800; letter-spacing: 1px;
   color: #bbb; cursor: pointer; background: none; border: none;
   -webkit-tap-highlight-color: transparent; font-family: inherit; padding: 2px 0;
 }
@@ -243,7 +243,7 @@
 .mode-frost .cl-header-left h2 { font-weight: 800; letter-spacing: 3px; color: #374151; }
 .mode-frost .cl-header-left h2::after { background: linear-gradient(90deg, transparent, var(--card-accent), transparent); height: 1.5px; }
 .mode-frost .cl-create-btn { border: var(--card-line) solid var(--card-border-c); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 3px; background: rgba(255,255,255,0.7); color: #6b7280; }
-.mode-frost .cl-create-btn.mounted { background: linear-gradient(135deg, var(--card-accent), #ffffff, var(--card-accent)); color: #fff; border: var(--card-line) solid var(--card-border-c); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.mode-frost .cl-create-btn.mounted { background: linear-gradient(135deg, var(--card-accent), #e8eaed, var(--card-accent)); color: #fff; border: var(--card-line) solid var(--card-border-c); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .mode-frost .cl-create-btn:active { box-shadow: 0 1px 4px rgba(0,0,0,0.1); transform: translate(1px,1px); }
 .mode-frost .plus-icon { border: 1.5px solid #6b7280; background: rgba(255,255,255,0.6); color: #6b7280; border-radius: 2px; }
 .mode-frost .plus-icon svg { stroke: #6b7280; }
