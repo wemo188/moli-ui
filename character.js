@@ -49,6 +49,7 @@
 
   function makeDraggable(handle, target) {
     handle.addEventListener('touchstart', function(e) {
+      if (e.target.closest('input') || e.target.closest('button') || e.target.closest('.cl-cc')) return;
       var t = e.touches[0];
       var rect = target.getBoundingClientRect();
       _drag = { active: true, el: target, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
@@ -287,8 +288,7 @@
         if (!popup || !popup.classList.contains('cl-color-popup')) return;
 
         // 拖拽
-        var popTitle = popup.querySelector('.cl-color-popup-title');
-        makeDraggable(popTitle, popup);
+                makeDraggable(popup, popup);
 
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
