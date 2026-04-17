@@ -187,7 +187,7 @@
 .cl-color-popup {
   position: fixed;
   width: 200px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.7);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
   border-radius: 10px;
