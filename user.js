@@ -3,32 +3,33 @@
   var App = window.App;
   if (!App) return;
 
+  var FIELDS_SHORT = [
+    { key: 'realName', en: 'NAME', cn: '姓名' },
+    { key: 'nickname', en: 'NICKNAME', cn: '昵称' },
+    { key: 'gender', en: 'GENDER', cn: '性别' },
+    { key: 'identity', en: 'IDENTITY', cn: '身份' }
+  ];
+
+  var FIELDS_LONG = [
+    { key: 'appearance', en: 'APPEARANCE', cn: '外貌' },
+    { key: 'personality', en: 'PERSONALITY', cn: '性格' },
+    { key: 'speakStyle', en: 'SPEAKING STYLE', cn: '说话风格' },
+    { key: 'bio', en: 'ABOUT', cn: '简介' }
+  ];
+
   var Social = {
     currentTab: 'chat',
     panelEl: null,
-    list: [],
+    userData: null,
+    sealed: false,
 
-    load: function() { Social.list = App.LS.get('userList') || []; },
-    save: function() { App.LS.set('userList', Social.list); },
-
-    getActiveUser: function() {
-      var activeId = App.LS.get('activeUserId');
-      if (activeId) {
-        for (var i = 0; i < Social.list.length; i++) {
-          if (Social.list[i].id === activeId) return Social.list[i];
-        }
-      }
-      return Social.list[0] || null;
+    load: function() {
+      Social.userData = App.LS.get('userData') || null;
+      Social.sealed = !!(Social.userData && Social.userData._sealed);
     },
+    save: function() { App.LS.set('userData', Social.userData); },
 
-    getById: function(id) {
-      for (var i = 0; i < Social.list.length; i++) {
-        if (Social.list[i].id === id) return Social.list[i];
-      }
-      return null;
-    },
-
-    setActive: function(id) { App.LS.set('activeUserId', id); },
+    getActiveUser: function() { return Social.userData; },
 
     open: function() {
       Social.load();
@@ -51,7 +52,6 @@
     render: function() {
       var panel = Social.panelEl;
       if (!panel) return;
-
       var isFS = App.LS.get('socFullScreen') || false;
       var wrapClass = isFS ? 'soc-fullscreen' : '';
 
@@ -177,22 +177,208 @@
     },
 
     renderMeTab: function(body) {
-      var user = Social.getActiveUser();
-      var name = user ? (user.name || '未命名') : '未创建用户';
+      var user = Social.userData;
+      var name = user ? (user.nickname || user.realName || '未命名') : '未创建用户';
 
       var avatarHtml = user && user.avatar
         ? '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
         : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:12px;">' +
-          avatarHtml +
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 16px;gap:12px;">' +
+          '<div id="socMeAvatar" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">' + avatarHtml + '</div>' +
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
-          '<div style="font-size:12px;color:#a8c0d8;">用户管理功能开发中</div>' +
+          (user && user.sign ? '<div style="font-size:12px;color:#a8c0d8;">' + App.esc(user.sign) + '</div>' : '') +
+        '</div>' +
+        '<div>' +
+          '<div class="soc-me-link" id="socOpenProfile">' +
+            '<span class="soc-me-link-text">user资料</span>' +
+            '<span class="soc-me-link-arrow">›</span>' +
+          '</div>' +
         '</div>';
+
+      body.querySelector('#socMeAvatar').addEventListener('click', function() {
+        Social.uploadAvatar(this);
+      });
+
+      body.querySelector('#socOpenProfile').addEventListener('click', function() {
+        Social.openProfile();
+      });
+    },
+
+    uploadAvatar: function(box) {
+      var input = document.createElement('input');
+      input.type = 'file'; input.accept = 'image/*';
+      document.body.appendChild(input);
+      input.onchange = function(e) {
+        var file = e.target.files[0];
+        document.body.removeChild(input);
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var src = ev.target.result;
+          if (App.cropImage) {
+            App.cropImage(src, function(cropped) {
+              if (!Social.userData) Social.userData = {};
+              Social.userData.avatar = cropped;
+              Social.save();
+              Social.renderTab();
+            });
+          } else {
+            if (!Social.userData) Social.userData = {};
+            Social.userData.avatar = src;
+            Social.save();
+            Social.renderTab();
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    },
+
+    openProfile: function() {
+      var body = App.$('#socBody');
+      if (!body) return;
+      Social.load();
+      var user = Social.userData || {};
+      Social.sealed = !!(user._sealed);
+
+      var today = new Date();
+      var dateStr = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
+
+      var shortHtml = FIELDS_SHORT.map(function(f) {
+        var val = user[f.key] || '';
+        if (Social.sealed) {
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        }
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + f.cn + '..." value="' + App.esc(val) + '"></div></div>';
+      }).join('');
+
+      var longHtml = FIELDS_LONG.map(function(f) {
+        var val = user[f.key] || '';
+        if (Social.sealed) {
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        }
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><textarea data-key="' + f.key + '" placeholder="' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
+      }).join('');
+
+      body.innerHTML =
+        '<div style="padding:10px 16px 0;display:flex;align-items:center;justify-content:space-between;">' +
+          '<div id="upBackBtn" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span style="font-size:12px;color:#999;">返回</span>' +
+          '</div>' +
+          '<div style="font-size:10px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
+          '<div id="upRebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (Social.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+        '</div>' +
+
+        '<div style="padding:6px 0 40px;">' +
+          '<div class="up-card" id="upCard">' +
+
+            '<div class="up-seal' + (Social.sealed ? ' show' : '') + '" id="upSeal">' +
+              '<div class="up-seal-outer"><div class="up-seal-dashes"></div>' +
+                '<div class="up-seal-inner">' +
+                  '<div class="up-seal-top">PERSONAL FILE</div>' +
+                  '<div class="up-seal-main">封存</div>' +
+                  '<div class="up-seal-line"></div>' +
+                  '<div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
+                  '<div class="up-seal-date">' + dateStr + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="up-seal-noise"></div>' +
+            '</div>' +
+
+            '<div class="up-bar-top"></div>' +
+            '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
+
+            shortHtml +
+
+            '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL</div><div class="up-divider-line"></div></div>' +
+
+            longHtml +
+
+            '<div class="up-card-foot">CLASSIFIED</div>' +
+            '<div class="up-bar-bot"></div>' +
+
+            '<div class="up-quill" id="upQuill" style="' + (Social.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
+
+          '</div>' +
+        '</div>';
+
+      body.querySelector('#upBackBtn').addEventListener('click', function() {
+        Social.renderTab();
+      });
+
+      body.querySelector('#upRebuild').addEventListener('click', function() {
+        if (!confirm('确定要重建资料吗？将解除封存。')) return;
+        if (Social.userData) Social.userData._sealed = false;
+        Social.save();
+        Social.sealed = false;
+        Social.openProfile();
+        App.showToast('已解除封存');
+      });
+
+      var quill = body.querySelector('#upQuill');
+      if (quill) {
+        quill.addEventListener('click', function() {
+          Social.saveProfile();
+        });
+      }
+    },
+
+    saveProfile: function() {
+      var card = App.$('#upCard');
+      if (!card) return;
+
+      if (!Social.userData) Social.userData = {};
+
+      card.querySelectorAll('input[data-key]').forEach(function(el) {
+        Social.userData[el.dataset.key] = el.value.trim();
+      });
+      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
+        Social.userData[el.dataset.key] = el.value.trim();
+      });
+
+      Social.userData._sealed = true;
+      Social.save();
+      Social.sealed = true;
+
+      // 显示印章动画
+      var seal = App.$('#upSeal');
+      if (seal) {
+        requestAnimationFrame(function() { seal.classList.add('show'); });
+      }
+
+      // 隐藏羽毛笔
+      var quill = App.$('#upQuill');
+      if (quill) quill.style.display = 'none';
+
+      // 显示重建按钮
+      var rebuild = App.$('#upRebuild');
+      if (rebuild) rebuild.style.visibility = '';
+
+      // 输入框变文字
+      var card2 = App.$('#upCard');
+      card2.querySelectorAll('input[data-key]').forEach(function(el) {
+        var div = document.createElement('div');
+        div.className = 'up-text';
+        div.textContent = el.value.trim() || '—';
+        el.parentNode.replaceChild(div, el);
+      });
+      card2.querySelectorAll('textarea[data-key]').forEach(function(el) {
+        var div = document.createElement('div');
+        div.className = 'up-text';
+        div.textContent = el.value.trim() || '—';
+        div.style.whiteSpace = 'pre-wrap';
+        el.parentNode.replaceChild(div, el);
+      });
+
+      App.showToast('档案已封存');
     },
 
     bindEvents: function() {
+      App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
+
       App.safeOn('#socModeToggle', 'click', function() {
         var current = App.LS.get('socFullScreen') || false;
         var next = !current;
@@ -205,8 +391,6 @@
         var valEl = Social.panelEl.querySelector('.soc-me-mode-val');
         if (valEl) valEl.textContent = next ? '全屏' : '手机';
       });
-
-      App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
 
       App.safeOn('#socAddBtn', 'click', function(e) {
         e.stopPropagation();
