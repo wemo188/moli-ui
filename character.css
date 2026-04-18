@@ -156,6 +156,11 @@
 .cl-act-del { background: #f7f9fc; color: #999; }
 .cl-act-del:active { background: #e85d5d; color: #fff; }
 .cl-act-del svg { width: 10px; height: 10px; }
+.cl-act-del { pointer-events: none; }
+.cl-del-text {
+  pointer-events: auto; cursor: pointer;
+  padding: 2px 4px; -webkit-tap-highlight-color: transparent;
+}
 .cl-footer {
   border-top: var(--card-line) solid var(--card-border-c);
   display: flex; align-items: center; justify-content: space-between;
