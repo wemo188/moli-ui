@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -127,6 +126,9 @@
     renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
+      // 修改②：删除旧的调色盘
+      var oldPopup = document.querySelector('#clColorPopup');
+      if (oldPopup) oldPopup.remove();
       var chars = Character.list;
       var mi = Character.currentMode;
       var modeClass = MODES[mi] || '';
@@ -183,13 +185,6 @@
               '</div>' +
             '</div>' +
             '<div class="cl-bottom-bar"></div>' +
-          '</div>' +
-          '<div class="cl-color-popup" data-for="' + c.id + '">' +
-            '<div class="cl-color-popup-title">☰ 自定义配色</div>' +
-            '<div class="cl-color-custom">' + colorHtml + '</div>' +
-            '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
-            '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
-            '<button class="cl-popup-reset" type="button">重置</button>' +
           '</div>';
         }).join('');
       }
@@ -203,6 +198,29 @@
           '</div>' +
           cardsHtml +
         '</div>';
+
+      // 创建调色盘（动态添加，不在 cardsHtml 里）
+      var popupHtml = '';
+      if (chars.length > 0) {
+        var firstChar = chars[0];
+        var firstCol = Character.getColors(firstChar, mi);
+        var firstCfg = MODE_CFG[mi];
+        var popupColorHtml = firstCfg.controls.map(function(ctrl) {
+          return '<div class="cl-color-custom-item">' +
+            '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + firstCol[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + firstCol[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
+            '<label>' + ctrl.label + '</label></div>';
+        }).join('');
+        popupHtml =
+          '<div id="clColorPopup" class="cl-color-popup" style="position:fixed;z-index:100000;display:none;">' +
+            '<div id="clPopupHeader" style="padding:12px 14px 8px;cursor:grab;touch-action:none;border-bottom:1px solid #eee;">' +
+              '<div style="font-size:13px;font-weight:700;color:#333;letter-spacing:1px;">☰ 自定义配色</div>' +
+            '</div>' +
+            '<div id="clPopupColors" class="cl-color-custom" style="padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px;">' + popupColorHtml + '</div>' +
+            '<div class="cl-line-row" style="padding:0 14px 12px;"><label>内线</label><input type="range" id="clPopupLine" min="1" max="5" step="0.5" value="' + firstCol.line + '"><span id="clPopupLineVal">' + firstCol.line + 'px</span></div>' +
+            '<div class="cl-line-row" style="padding:0 14px 12px;"><label>外框</label><input type="range" id="clPopupOuter" min="0.5" max="6" step="0.5" value="' + firstCol.outer + '"><span id="clPopupOuterVal">' + firstCol.outer + 'px</span></div>' +
+            '<button id="clPopupReset" type="button" style="margin:0 14px 14px;padding:8px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;font-size:12px;color:#666;cursor:pointer;">重置</button>' +
+          '</div>';
+      }
 
       var pageEl = panel.querySelector('#clPageInner');
 
@@ -279,120 +297,175 @@
         });
       });
 
+      // 修改①：把 popup 移到 body 上
+      var popup = panel.querySelector('#clColorPopup');
+      if (popup) {
+        document.body.appendChild(popup);
+      }
+      var popupColors = popup ? popup.querySelector('#clPopupColors') : null;
+      var popupLine = popup ? popup.querySelector('#clPopupLine') : null;
+      var popupOuter = popup ? popup.querySelector('#clPopupOuter') : null;
+      var popupLineVal = popup ? popup.querySelector('#clPopupLineVal') : null;
+      var popupOuterVal = popup ? popup.querySelector('#clPopupOuterVal') : null;
+      var popupReset = popup ? popup.querySelector('#clPopupReset') : null;
+
+      // 当前激活的卡片ID
+      var activeCharId = null;
+
       // 调色盘绑定
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
         var charId = ch.dataset.id;
         var card = ch.closest('.char-list-wrap');
-        // popup 在卡片外面（同级下一个元素）
-        var popup = card.nextElementSibling;
-        if (!popup || !popup.classList.contains('cl-color-popup')) return;
 
-        // 拖拽
-                makeDraggable(popup, popup);
+        // 拖拽头部
+        if (popup) {
+          var header = popup.querySelector('#clPopupHeader');
+          if (header) makeDraggable(header, popup);
+        }
 
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-          // 关闭其他
-          pageEl.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
-            if (p !== popup) p.classList.remove('show');
+
+          if (!popup) return;
+
+          // 如果是同一个卡片，切换显示/隐藏
+          if (activeCharId === charId && popup.style.display === 'block') {
+            popup.style.display = 'none';
+            activeCharId = null;
+            return;
+          }
+
+          activeCharId = charId;
+
+          // 更新 popup 内容为当前卡片的配色
+          var c = Character.getById(charId);
+          if (c) {
+            var col = Character.getColors(c, mi);
+            var cfg = MODE_CFG[mi];
+
+            // 更新颜色块
+            if (popupColors) {
+              var newHtml = cfg.controls.map(function(ctrl) {
+                return '<div class="cl-color-custom-item">' +
+                  '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
+                  '<label>' + ctrl.label + '</label></div>';
+              }).join('');
+              popupColors.innerHTML = newHtml;
+            }
+
+            // 更新滑块
+            if (popupLine) popupLine.value = col.line;
+            if (popupOuter) popupOuter.value = col.outer;
+            if (popupLineVal) popupLineVal.textContent = col.line + 'px';
+            if (popupOuterVal) popupOuterVal.textContent = col.outer + 'px';
+          }
+
+          // 计算位置
+          var cardRect = card.getBoundingClientRect();
+          var left = cardRect.left + cardRect.width / 2 - 100;
+          var top = cardRect.top - 8;
+          if (left < 8) left = 8;
+          if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
+          if (top < 60) top = cardRect.bottom + 8;
+          popup.style.left = left + 'px';
+          popup.style.top = top + 'px';
+          popup.style.display = 'block';
+
+          // 等 popup 显示后重算位置
+          requestAnimationFrame(function() {
+            var popH = popup.offsetHeight;
+            var finalTop = cardRect.top - popH - 8;
+            if (finalTop < 60) finalTop = 60;
+            popup.style.top = finalTop + 'px';
           });
 
-          if (popup.classList.contains('show')) {
-            popup.classList.remove('show');
-          } else {
-            // 计算位置：卡片上方
-            var cardRect = card.getBoundingClientRect();
-            var left = cardRect.left + cardRect.width / 2 - 100;
-            var top = cardRect.top - 8;
-            if (left < 8) left = 8;
-            if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
-            if (top < 60) top = cardRect.bottom + 8;
-            popup.style.left = left + 'px';
-            popup.style.top = 'auto';
-            popup.style.bottom = (window.innerHeight - top) + 'px';
-            popup.classList.add('show');
+          // 重新绑定事件
+          function readAndApply() {
+            var c = Character.getById(charId);
+            if (!c) return;
+            var col = Character.getColors(c, mi);
+            if (popupColors) {
+              popupColors.querySelectorAll('.cl-cc').forEach(function(el) {
+                col[el.dataset.key] = el.dataset.value;
+              });
+            }
+            if (popupLine) col.line = parseFloat(popupLine.value);
+            if (popupOuter) col.outer = parseFloat(popupOuter.value);
+            if (popupLineVal) popupLineVal.textContent = col.line + 'px';
+            if (popupOuterVal) popupOuterVal.textContent = col.outer + 'px';
+            Character.setColors(c, mi, col);
+            Character.applyCardVars(card, col, mi);
+            Character.save();
+          }
 
-            // 等 popup 显示后重算位置
-            requestAnimationFrame(function() {
-              var popH = popup.offsetHeight;
-              var finalTop = cardRect.top - popH - 8;
-              if (finalTop < 60) finalTop = 60;
-              popup.style.bottom = 'auto';
-              popup.style.top = finalTop + 'px';
+          function previewOnly() {
+            var c = Character.getById(charId);
+            if (!c) return;
+            var col = Character.getColors(c, mi);
+            if (popupColors) {
+              popupColors.querySelectorAll('.cl-cc').forEach(function(el) {
+                col[el.dataset.key] = el.dataset.value;
+              });
+            }
+            if (popupLine) col.line = parseFloat(popupLine.value);
+            if (popupOuter) col.outer = parseFloat(popupOuter.value);
+            Character.applyCardVars(card, col, mi);
+          }
+
+          if (popupColors) {
+            popupColors.querySelectorAll('.cl-cc').forEach(function(el) {
+              el.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                if (!App.openColorPicker) return;
+                App.openColorPicker(el.dataset.value, function(hex) {
+                  el.dataset.value = hex;
+                  el.style.background = hex;
+                  readAndApply();
+                }, function(hex) {
+                  el.dataset.value = hex;
+                  el.style.background = hex;
+                  previewOnly();
+                });
+              });
             });
           }
-        });
 
-        function readAndApply() {
-          var c = Character.getById(charId);
-          if (!c) return;
-          var col = Character.getColors(c, mi);
-          popup.querySelectorAll('.cl-cc').forEach(function(el) {
-            col[el.dataset.key] = el.dataset.value;
-          });
-          col.line = parseFloat(popup.querySelector('.cl-cc-line').value);
-          col.outer = parseFloat(popup.querySelector('.cl-cc-outer').value);
-          popup.querySelector('.cl-line-val').textContent = col.line + 'px';
-          popup.querySelector('.cl-outer-val').textContent = col.outer + 'px';
-          Character.setColors(c, mi, col);
-          Character.applyCardVars(card, col, mi);
-          Character.save();
-        }
+          if (popupLine) {
+            popupLine.addEventListener('input', function(ev) { ev.stopPropagation(); readAndApply(); });
+            popupLine.addEventListener('click', function(ev) { ev.stopPropagation(); });
+          }
+          if (popupOuter) {
+            popupOuter.addEventListener('input', function(ev) { ev.stopPropagation(); readAndApply(); });
+            popupOuter.addEventListener('click', function(ev) { ev.stopPropagation(); });
+          }
 
-        function previewOnly() {
-          var c = Character.getById(charId);
-          if (!c) return;
-          var col = Character.getColors(c, mi);
-          popup.querySelectorAll('.cl-cc').forEach(function(el) {
-            col[el.dataset.key] = el.dataset.value;
-          });
-          col.line = parseFloat(popup.querySelector('.cl-cc-line').value);
-          col.outer = parseFloat(popup.querySelector('.cl-cc-outer').value);
-          Character.applyCardVars(card, col, mi);
-        }
-
-        popup.querySelectorAll('.cl-cc').forEach(function(el) {
-          el.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (!App.openColorPicker) return;
-            App.openColorPicker(el.dataset.value, function(hex) {
-              el.dataset.value = hex;
-              el.style.background = hex;
+          if (popupReset) {
+            popupReset.addEventListener('click', function(ev) {
+              ev.stopPropagation();
+              var def = MODE_CFG[mi].defaults;
+              if (popupColors) {
+                popupColors.querySelectorAll('.cl-cc').forEach(function(el) {
+                  var k = el.dataset.key;
+                  if (def[k] !== undefined) { el.dataset.value = def[k]; el.style.background = def[k]; }
+                });
+              }
+              if (popupLine) popupLine.value = def.line;
+              if (popupOuter) popupOuter.value = def.outer;
               readAndApply();
-            }, function(hex) {
-              el.dataset.value = hex;
-              el.style.background = hex;
-              previewOnly();
             });
-          });
+          }
+
+          if (popup) {
+            popup.addEventListener('click', function(ev) { ev.stopPropagation(); });
+          }
         });
-
-        popup.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
-        popup.querySelector('.cl-cc-line').addEventListener('click', function(e) { e.stopPropagation(); });
-        popup.querySelector('.cl-cc-outer').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
-        popup.querySelector('.cl-cc-outer').addEventListener('click', function(e) { e.stopPropagation(); });
-
-        popup.querySelector('.cl-popup-reset').addEventListener('click', function(e) {
-          e.stopPropagation();
-          var def = MODE_CFG[mi].defaults;
-          popup.querySelectorAll('.cl-cc').forEach(function(el) {
-            var k = el.dataset.key;
-            if (def[k]) { el.dataset.value = def[k]; el.style.background = def[k]; }
-          });
-          popup.querySelector('.cl-cc-line').value = def.line;
-          popup.querySelector('.cl-cc-outer').value = def.outer;
-          readAndApply();
-        });
-
-        popup.addEventListener('click', function(e) { e.stopPropagation(); });
       });
 
-      // 点击其他地方关闭
+      // 修改③：点击其他地方关闭（只关 popup）
       pageEl.addEventListener('click', function() {
         if (App._cpJustClosed || App.$('#cpOverlay')) return;
-        panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
-          p.classList.remove('show');
-        });
+        if (popup) popup.style.display = 'none';
+        activeCharId = null;
       });
     },
 
@@ -534,4 +607,3 @@
 
   App.register('character', Character);
 })();
-
