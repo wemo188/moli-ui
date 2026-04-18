@@ -1470,6 +1470,7 @@ App.init = function() {
     App.initMainPages();
   };
 
-  window.addEventListener('load', function() {
+    window.addEventListener('load', function() {
     App.init();
   });
+})();
