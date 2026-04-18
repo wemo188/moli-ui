@@ -152,26 +152,28 @@
       var modeText = Social.isFullScreen ? '全屏模式' : '手机模式';
 
       var avatarHtml = user && user.avatar
-        ? '<img src="' + App.esc(user.avatar) + '" alt="">'
-        : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+        ? '<img src="' + App.esc(user.avatar) + '" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">'
+        : '<div class="soc-avatar-placeholder" style="width:64px;height:64px;border-radius:50%;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
-        '<div class="soc-me-wrap">' +
-          '<div class="soc-me-avatar" id="socMeAvatar">' + avatarHtml + '</div>' +
-          '<div class="soc-me-name">' + App.esc(name) + '</div>' +
+        '<div class="soc-me-mode-bar">' +
+          '<div class="soc-me-mode-btn" id="socModeToggle">' +
+            '<span class="soc-me-mode-val">' + modeText + '</span>' +
+            '<span class="soc-me-mode-switch">切换</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 20px;gap:12px;">' +
+          avatarHtml +
+          '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
+          (user && user.sign ? '<div style="font-size:12px;color:#a8c0d8;">' + App.esc(user.sign) + '</div>' : '') +
         '</div>' +
         '<div class="soc-me-links">' +
-          '<div class="soc-me-mode" id="socModeToggle">' +
-            '<span class="soc-me-mode-text">切换全屏/手机模式</span>' +
-            '<span class="soc-me-mode-val">' + modeText + '</span>' +
-          '</div>' +
           '<div class="soc-me-link" id="socOpenProfile">' +
             '<span class="soc-me-link-text">user资料</span>' +
             '<span class="soc-me-link-arrow">›</span>' +
           '</div>' +
         '</div>';
 
-      // 切换模式
       body.querySelector('#socModeToggle').addEventListener('click', function() {
         Social.isFullScreen = !Social.isFullScreen;
         App.LS.set('socFullScreen', Social.isFullScreen);
@@ -180,56 +182,50 @@
           if (Social.isFullScreen) wrap.classList.add('soc-fullscreen');
           else wrap.classList.remove('soc-fullscreen');
         }
-        var valEl = this.querySelector('.soc-me-mode-val');
-        if (valEl) valEl.textContent = Social.isFullScreen ? '全屏模式' : '手机模式';
+        Social.renderTab();
       });
 
-      // user资料
       body.querySelector('#socOpenProfile').addEventListener('click', function() {
         Social.openProfile();
       });
     },
 
     openProfile: function() {
-      var old = App.$('#userProfilePage');
-      if (old) old.remove();
+      var body = App.$('#socBody');
+      if (!body) return;
 
       var user = Social.userData || {};
       Social.tempAvatar = user.avatar || '';
 
       var avatarHtml = user.avatar
-        ? '<img src="' + App.esc(user.avatar) + '">'
-        : '<div class="up-avatar-empty"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>点击上传</span></div>';
+        ? '<img src="' + App.esc(user.avatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
+        : '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#b8c8d8;fill:none;stroke-width:1.5;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style="font-size:9px;color:#b8c8d8;font-weight:600;letter-spacing:1px;">点击上传</span></div>';
 
-      var page = document.createElement('div');
-      page.id = 'userProfilePage';
-      page.className = 'up-page';
-      page.innerHTML =
-        '<div class="up-header">' +
-          '<button class="up-header-btn" id="upBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<span class="up-header-title">user资料</span>' +
-          '<div style="width:36px;"></div>' +
+      body.innerHTML =
+        '<div style="padding:10px 16px 0;">' +
+          '<div id="upBackBtn" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#8aa0b8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span style="font-size:13px;color:#8aa0b8;">返回</span>' +
+          '</div>' +
         '</div>' +
-        '<div class="up-body">' +
-          '<div class="up-avatar-area"><div class="up-avatar" id="upAvatar">' + avatarHtml + '</div></div>' +
-          '<div class="up-group"><div class="up-label">昵称</div><input type="text" class="up-input" id="upName" placeholder="输入昵称..." value="' + App.esc(user.name || '') + '"></div>' +
-          '<div class="up-group"><div class="up-label">签名</div><input type="text" class="up-input" id="upSign" placeholder="一句话介绍自己..." value="' + App.esc(user.sign || '') + '"></div>' +
-          '<div class="up-group"><div class="up-label">简介</div><textarea class="up-textarea" id="upBio" placeholder="详细介绍...">' + App.esc(user.bio || '') + '</textarea></div>' +
-          '<div class="up-group"><div class="up-label">性格</div><textarea class="up-textarea" id="upPersonality" placeholder="性格特点...">' + App.esc(user.personality || '') + '</textarea></div>' +
-          '<div class="up-btns">' +
-            '<button class="up-save" id="upSave" type="button">保 存</button>' +
-            '<button class="up-cancel" id="upCancel" type="button">取 消</button>' +
+        '<div style="display:flex;justify-content:center;padding:16px 0 20px;">' +
+          '<div id="upAvatar" style="width:80px;height:80px;border-radius:50%;overflow:hidden;cursor:pointer;background:rgba(202,223,242,.1);border:2px solid rgba(192,206,220,.4);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;">' +
+            avatarHtml +
+          '</div>' +
+        '</div>' +
+        '<div style="padding:0 20px 30px;display:flex;flex-direction:column;gap:16px;">' +
+          '<div><div style="font-size:12px;font-weight:600;color:#8aa0b8;letter-spacing:1px;margin-bottom:6px;">昵称</div><input type="text" id="upName" placeholder="输入昵称..." value="' + App.esc(user.name || '') + '" style="width:100%;padding:10px 12px;border:1.5px solid rgba(126,163,201,.2);border-radius:10px;background:#fafbfc;font-size:14px;color:#2e4258;outline:none;font-family:inherit;box-sizing:border-box;"></div>' +
+          '<div><div style="font-size:12px;font-weight:600;color:#8aa0b8;letter-spacing:1px;margin-bottom:6px;">签名</div><input type="text" id="upSign" placeholder="一句话介绍自己..." value="' + App.esc(user.sign || '') + '" style="width:100%;padding:10px 12px;border:1.5px solid rgba(126,163,201,.2);border-radius:10px;background:#fafbfc;font-size:14px;color:#2e4258;outline:none;font-family:inherit;box-sizing:border-box;"></div>' +
+          '<div><div style="font-size:12px;font-weight:600;color:#8aa0b8;letter-spacing:1px;margin-bottom:6px;">简介</div><textarea id="upBio" placeholder="详细介绍..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid rgba(126,163,201,.2);border-radius:10px;background:#fafbfc;font-size:14px;color:#2e4258;outline:none;font-family:inherit;resize:vertical;line-height:1.6;box-sizing:border-box;">' + App.esc(user.bio || '') + '</textarea></div>' +
+          '<div><div style="font-size:12px;font-weight:600;color:#8aa0b8;letter-spacing:1px;margin-bottom:6px;">性格</div><textarea id="upPersonality" placeholder="性格特点..." style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid rgba(126,163,201,.2);border-radius:10px;background:#fafbfc;font-size:14px;color:#2e4258;outline:none;font-family:inherit;resize:vertical;line-height:1.6;box-sizing:border-box;">' + App.esc(user.personality || '') + '</textarea></div>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button id="upSave" type="button" style="flex:1;padding:12px;border:none;border-radius:10px;background:#2e4258;color:#fff;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">保 存</button>' +
+            '<button id="upCancel" type="button" style="padding:12px 18px;border:1.5px solid rgba(126,163,201,.25);border-radius:10px;background:#fff;color:#8aa0b8;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">取 消</button>' +
           '</div>' +
         '</div>';
 
-      document.body.appendChild(page);
-
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
-        page.classList.add('show');
-      }); });
-
       // 头像上传
-      page.querySelector('#upAvatar').addEventListener('click', function() {
+      body.querySelector('#upAvatar').addEventListener('click', function() {
         var avatarBox = this;
         var input = document.createElement('input');
         input.type = 'file';
@@ -245,11 +241,11 @@
             if (App.cropImage) {
               App.cropImage(src, function(cropped) {
                 Social.tempAvatar = cropped;
-                avatarBox.innerHTML = '<img src="' + cropped + '">';
+                avatarBox.innerHTML = '<img src="' + cropped + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
               });
             } else {
               Social.tempAvatar = src;
-              avatarBox.innerHTML = '<img src="' + src + '">';
+              avatarBox.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
             }
           };
           reader.readAsDataURL(file);
@@ -257,15 +253,13 @@
         input.click();
       });
 
-      // 返回
-      page.querySelector('#upBack').addEventListener('click', function() { Social.closeProfile(); });
-      page.querySelector('#upCancel').addEventListener('click', function() { Social.closeProfile(); });
+      function goBack() { Social.renderTab(); }
+      body.querySelector('#upBackBtn').addEventListener('click', goBack);
+      body.querySelector('#upCancel').addEventListener('click', goBack);
 
-      // 保存
-      page.querySelector('#upSave').addEventListener('click', function() {
+      body.querySelector('#upSave').addEventListener('click', function() {
         var name = (App.$('#upName') || {}).value || '';
         name = name.trim();
-
         Social.userData = {
           name: name || '未命名',
           avatar: Social.tempAvatar,
@@ -274,17 +268,9 @@
           personality: (App.$('#upPersonality') || {}).value || ''
         };
         Social.save();
-        Social.closeProfile();
         Social.renderTab();
         App.showToast('资料已保存');
       });
-    },
-
-    closeProfile: function() {
-      var page = App.$('#userProfilePage');
-      if (!page) return;
-      page.classList.remove('show');
-      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
     bindEvents: function() {
