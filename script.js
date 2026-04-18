@@ -414,17 +414,19 @@
     });
   };
   
-    App.openColorPicker = function(currentColor, onConfirm, onChange) {
-            var old = App.$('#cpOverlay');
+  App.openColorPicker = function(currentColor, onConfirm, onChange) {
+    var old = App.$('#cpOverlay');
     if (old) {
+      // 同一个颜色再点一次 → 关闭
       if (old._lastColor === currentColor) {
-        old._cpClose();
+        old._doClose();
         return;
       }
+      // 不同颜色 → 切换，不关闭
       old._lastColor = currentColor;
       old._onConfirm = onConfirm;
       old._onChange = onChange;
-      if (old._setFromHex) old._setFromHex(currentColor);
+      if (old._setColor) old._setColor(currentColor);
       return;
     }
 
@@ -433,6 +435,9 @@
     var overlay = document.createElement('div');
     overlay.id = 'cpOverlay';
     overlay.className = 'cp-overlay';
+    overlay._lastColor = currentColor;
+    overlay._onConfirm = onConfirm;
+    overlay._onChange = onChange;
 
     function buildPresetsHtml() {
       return savedPresets.map(function(c, i) {
@@ -467,39 +472,6 @@
       '</div>';
 
     document.body.appendChild(overlay);
-    
-        // 颜色面板拖拽
-    var cpPanel = overlay.querySelector('.cp-panel');
-    var cpHead = overlay.querySelector('.cp-header');
-    var _cpD = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
-
-    cpHead.addEventListener('touchstart', function(e) {
-      if (e.target.closest('button')) return;
-      var t = e.touches[0];
-      var rect = cpPanel.getBoundingClientRect();
-      cpPanel.style.position = 'fixed';
-      cpPanel.style.bottom = 'auto';
-      cpPanel.style.left = rect.left + 'px';
-      cpPanel.style.top = rect.top + 'px';
-      cpPanel.style.right = 'auto';
-      cpPanel.style.margin = '0';
-      cpPanel.style.width = rect.width + 'px';
-      _cpD = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-    }, { passive: true });
-
-    overlay.addEventListener('touchmove', function(e) {
-      if (!_cpD.active) return;
-      e.preventDefault();
-      var t = e.touches[0];
-      cpPanel.style.left = (_cpD.ox + t.clientX - _cpD.sx) + 'px';
-      cpPanel.style.top = (_cpD.oy + t.clientY - _cpD.sy) + 'px';
-    }, { passive: false });
-
-    overlay.addEventListener('touchend', function() {
-      _cpD.active = false;
-    });
-
-    var preview = overlay.querySelector('#cpPreview');
 
     var preview = overlay.querySelector('#cpPreview');
     var hexInput = overlay.querySelector('#cpHexInput');
@@ -566,7 +538,7 @@
       specCursor.style.background = selectedHex;
       hueCursor.style.left = (currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background = hslToHex(currentHue, 100, 50);
-      var changeFn = overlay._onChange || onChange;
+      var changeFn = overlay._onChange;
       if (changeFn) changeFn(selectedHex);
     }
 
@@ -578,10 +550,9 @@
     }
 
     setFromHex(selectedHex);
-    overlay._setFromHex = setFromHex;
-    overlay._lastColor = currentColor;
-    overlay._cpClose = closePanel;
 
+    // 暴露给外部复用
+    overlay._setColor = setFromHex;
 
     var specDrag=false;
     function specFromPos(e) {
@@ -659,20 +630,55 @@
       else presetsEl.classList.remove('editing');
     });
 
-function closePanel() {
+    function doClose() {
       App._cpJustClosed = true;
       setTimeout(function() { App._cpJustClosed = false; }, 200);
       overlay.remove();
     }
 
-    overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();closePanel();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
+    overlay._doClose = doClose;
+
+    overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
+
+    // 点遮罩关闭，但不立刻执行，延迟判断是否是切换颜色
+    overlay.addEventListener('click',function(e){
+      if(e.target===overlay) doClose();
+    });
+
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
       e.stopPropagation();
-      var fn = overlay._onConfirm || onConfirm;
-      fn(selectedHex);
-      closePanel();
+      var fn = overlay._onConfirm;
+      if (fn) fn(selectedHex);
+      doClose();
     });
+
+    // 颜色面板拖拽
+    var cpPanel = overlay.querySelector('.cp-panel');
+    var cpHead = overlay.querySelector('.cp-header');
+    var _cpDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
+
+    cpHead.addEventListener('touchstart', function(e) {
+      if (e.target.closest('button')) return;
+      var t = e.touches[0];
+      var rect = cpPanel.getBoundingClientRect();
+      cpPanel.style.bottom = 'auto';
+      cpPanel.style.left = rect.left + 'px';
+      cpPanel.style.top = rect.top + 'px';
+      cpPanel.style.right = 'auto';
+      cpPanel.style.margin = '0';
+      cpPanel.style.width = rect.width + 'px';
+      _cpDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!_cpDrag.active) return;
+      e.preventDefault();
+      var t = e.touches[0];
+      cpPanel.style.left = (_cpDrag.ox + t.clientX - _cpDrag.sx) + 'px';
+      cpPanel.style.top = (_cpDrag.oy + t.clientY - _cpDrag.sy) + 'px';
+    }, { passive: false });
+
+    document.addEventListener('touchend', function() { _cpDrag.active = false; });
   };
 
   App.state = {
