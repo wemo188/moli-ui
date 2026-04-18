@@ -1470,16 +1470,6 @@ App.init = function() {
     App.initMainPages();
   };
 
-      window.addEventListener('load', function() {
+  window.addEventListener('load', function() {
     App.init();
-
-    // 清除旧的 Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(regs) {
-        regs.forEach(function(reg) { reg.unregister(); });
-      });
-      caches.keys().then(function(names) {
-        names.forEach(function(name) { caches.delete(name); });
-      });
-    }
   });
