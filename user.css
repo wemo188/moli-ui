@@ -1,19 +1,4 @@
-.soc-phone {
-  position: relative;
-  width: 100%;
-  height: calc(100% - 20px);
-  margin-top: 10px;
-  border-radius: 50px;
-  background: #fff;
-  border: 17px solid rgba(0,0,0,1);
-  box-shadow:
-    0 14px 40px rgba(60,80,110,.12),
-    0 2px 8px rgba(60,80,110,.06),
-    inset 0 1px 0 rgba(255,255,255,.5);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+
 
 #socialPanel {
   background: transparent !important;
@@ -434,4 +419,89 @@
   background: #000;
   transform: rotate(45deg);
   border-radius: 2px 0 0 0;
+}
+
+.soc-phone {
+  position: relative;
+  width: calc(100% - 24px);
+  height: calc(100% - 20px);
+  margin: 10px 12px;
+  border-radius: 50px;
+  background: #fff;
+  border: 17px solid rgba(0,0,0,1);
+  box-shadow:
+    0 14px 40px rgba(60,80,110,.12),
+    0 2px 8px rgba(60,80,110,.06),
+    inset 0 1px 0 rgba(255,255,255,.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.soc-phone.fullscreen {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.soc-mode-toggle {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 3px 12px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 10px;
+  border: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: #7a9ab8;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+}
+.soc-mode-toggle:active { background: rgba(0,0,0,0.12); }
+.soc-phone.fullscreen .soc-mode-toggle { top: 8px; }
+
+.soc-me-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-bottom: 1px solid rgba(126,163,201,0.1);
+  transition: background 0.15s;
+}
+.soc-me-item:last-child { border-bottom: none; }
+.soc-me-item:active { background: rgba(126,163,201,0.06); }
+
+.soc-me-item svg {
+  width: 20px;
+  height: 20px;
+  stroke: #7a9ab8;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.soc-me-item span {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2e4258;
+}
+
+.soc-me-arrow {
+  font-size: 18px;
+  color: #c0cee0;
+  font-weight: 300;
+  flex-shrink: 0;
 }
