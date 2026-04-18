@@ -6,34 +6,18 @@
   var Social = {
     currentTab: 'chat',
     panelEl: null,
-    list: [],
-    isFullscreen: false,
+    isFullScreen: false,
+    userData: null,
+    tempAvatar: '',
 
-    load: function() { Social.list = App.LS.get('userList') || []; },
-    save: function() { App.LS.set('userList', Social.list); },
-
-    getActiveUser: function() {
-      var activeId = App.LS.get('activeUserId');
-      if (activeId) {
-        for (var i = 0; i < Social.list.length; i++) {
-          if (Social.list[i].id === activeId) return Social.list[i];
-        }
-      }
-      return Social.list[0] || null;
+    load: function() {
+      Social.userData = App.LS.get('userData') || null;
+      Social.isFullScreen = App.LS.get('socFullScreen') || false;
     },
-
-    getById: function(id) {
-      for (var i = 0; i < Social.list.length; i++) {
-        if (Social.list[i].id === id) return Social.list[i];
-      }
-      return null;
-    },
-
-    setActive: function(id) { App.LS.set('activeUserId', id); },
+    save: function() { App.LS.set('userData', Social.userData); },
 
     open: function() {
       Social.load();
-      Social.isFullscreen = App.LS.get('socFullscreen') || false;
       var panel = App.$('#socialPanel');
       if (!panel) return;
       Social.panelEl = panel;
@@ -54,25 +38,26 @@
       var panel = Social.panelEl;
       if (!panel) return;
 
-      var phoneClass = 'soc-phone' + (Social.isFullscreen ? ' fullscreen' : '');
+      var wrapClass = Social.isFullScreen ? ' soc-fullscreen' : '';
 
       panel.innerHTML =
-        '<div class="' + phoneClass + '" id="socPhone"><div class="soc-inner">' +
-          '<div class="soc-header" id="socHeader">' +
+        '<div class="soc-wrap' + wrapClass + '" id="socWrap"><div class="soc-phone"><div class="soc-inner">' +
+          '<div class="soc-header">' +
             '<button class="soc-header-btn" id="socBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<div class="soc-header-title">Star</div>' +
+            '<div style="flex:1;"></div>' +
             '<div style="position:relative;">' +
               '<button class="soc-header-btn" id="socAddBtn" type="button">' +
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
               '</button>' +
               '<div class="soc-add-menu" id="socAddMenu">' +
                 '<div class="soc-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
+                '<div class="soc-add-menu-item" data-action="changeTheme"><span>更换主题</span></div>' +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="soc-search" id="socSearch"><div class="soc-search-bar">' +
+          '<div class="soc-search"><div class="soc-search-bar">' +
             '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>' +
             '<span>搜索</span>' +
           '</div></div>' +
@@ -95,7 +80,7 @@
               '<span>我的</span>' +
             '</div>' +
           '</div>' +
-        '</div></div>';
+        '</div></div></div>';
 
       Social.renderTab();
       Social.bindEvents();
@@ -104,17 +89,6 @@
     renderTab: function() {
       var body = App.$('#socBody');
       if (!body) return;
-
-      var header = App.$('#socHeader');
-      var search = App.$('#socSearch');
-
-      if (Social.currentTab === 'me') {
-        if (header) header.style.visibility = 'hidden';
-        if (search) search.style.visibility = 'hidden';
-      } else {
-        if (header) header.style.visibility = '';
-        if (search) search.style.visibility = '';
-      }
 
       if (Social.currentTab === 'chat') Social.renderChatTab(body);
       else if (Social.currentTab === 'char') Social.renderCharTab(body);
@@ -173,40 +147,144 @@
     },
 
     renderMeTab: function(body) {
-      var user = Social.getActiveUser();
+      var user = Social.userData;
       var name = user ? (user.name || '未命名') : '未创建用户';
-      var toggleText = Social.isFullscreen ? '手机模式' : '全屏模式';
+      var modeText = Social.isFullScreen ? '全屏模式' : '手机模式';
+
       var avatarHtml = user && user.avatar
-        ? '<img src="' + App.esc(user.avatar) + '" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(126,163,201,0.3);">'
-        : '<div class="soc-avatar-placeholder" style="width:72px;height:72px;border-radius:50%;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+        ? '<img src="' + App.esc(user.avatar) + '" alt="">'
+        : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
 
       body.innerHTML =
-        '<div style="position:relative;padding:50px 20px 20px;">' +
-          '<button class="soc-mode-toggle" id="socModeToggle" type="button">' + toggleText + '</button>' +
-          '<div style="display:flex;flex-direction:column;align-items:center;gap:14px;">' +
-            avatarHtml +
-            '<div style="font-size:18px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + App.esc(name) + '</div>' +
-            '<div style="font-size:12px;color:#a8c0d8;margin-bottom:20px;">用户档案</div>' +
-          '</div>' +
+        '<div class="soc-me-wrap">' +
+          '<div class="soc-me-avatar" id="socMeAvatar">' + avatarHtml + '</div>' +
+          '<div class="soc-me-name">' + App.esc(name) + '</div>' +
         '</div>' +
-        '<div style="padding:0 20px;">' +
-          '<div class="soc-me-item" id="socMeProfile">' +
-            '<span>个人资料</span>' +
+        '<div class="soc-me-links">' +
+          '<div class="soc-me-mode" id="socModeToggle">' +
+            '<span class="soc-me-mode-text">切换全屏/手机模式</span>' +
+            '<span class="soc-me-mode-val">' + modeText + '</span>' +
+          '</div>' +
+          '<div class="soc-me-link" id="socOpenProfile">' +
+            '<span class="soc-me-link-text">user资料</span>' +
+            '<span class="soc-me-link-arrow">›</span>' +
           '</div>' +
         '</div>';
 
-      App.safeOn('#socModeToggle', 'click', function(e) {
-        e.stopPropagation();
-        Social.isFullscreen = !Social.isFullscreen;
-        App.LS.set('socFullscreen', Social.isFullscreen);
-        var phone = App.$('#socPhone');
-        if (phone) phone.classList.toggle('fullscreen', Social.isFullscreen);
-        this.textContent = Social.isFullscreen ? '手机模式' : '全屏模式';
+      // 切换模式
+      body.querySelector('#socModeToggle').addEventListener('click', function() {
+        Social.isFullScreen = !Social.isFullScreen;
+        App.LS.set('socFullScreen', Social.isFullScreen);
+        var wrap = App.$('#socWrap');
+        if (wrap) {
+          if (Social.isFullScreen) wrap.classList.add('soc-fullscreen');
+          else wrap.classList.remove('soc-fullscreen');
+        }
+        var valEl = this.querySelector('.soc-me-mode-val');
+        if (valEl) valEl.textContent = Social.isFullScreen ? '全屏模式' : '手机模式';
       });
 
-      App.safeOn('#socMeProfile', 'click', function() {
-        App.showToast('个人资料 · 开发中');
+      // user资料
+      body.querySelector('#socOpenProfile').addEventListener('click', function() {
+        Social.openProfile();
       });
+    },
+
+    openProfile: function() {
+      var old = App.$('#userProfilePage');
+      if (old) old.remove();
+
+      var user = Social.userData || {};
+      Social.tempAvatar = user.avatar || '';
+
+      var avatarHtml = user.avatar
+        ? '<img src="' + App.esc(user.avatar) + '">'
+        : '<div class="up-avatar-empty"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>点击上传</span></div>';
+
+      var page = document.createElement('div');
+      page.id = 'userProfilePage';
+      page.className = 'up-page';
+      page.innerHTML =
+        '<div class="up-header">' +
+          '<button class="up-header-btn" id="upBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<span class="up-header-title">user资料</span>' +
+          '<div style="width:36px;"></div>' +
+        '</div>' +
+        '<div class="up-body">' +
+          '<div class="up-avatar-area"><div class="up-avatar" id="upAvatar">' + avatarHtml + '</div></div>' +
+          '<div class="up-group"><div class="up-label">昵称</div><input type="text" class="up-input" id="upName" placeholder="输入昵称..." value="' + App.esc(user.name || '') + '"></div>' +
+          '<div class="up-group"><div class="up-label">签名</div><input type="text" class="up-input" id="upSign" placeholder="一句话介绍自己..." value="' + App.esc(user.sign || '') + '"></div>' +
+          '<div class="up-group"><div class="up-label">简介</div><textarea class="up-textarea" id="upBio" placeholder="详细介绍...">' + App.esc(user.bio || '') + '</textarea></div>' +
+          '<div class="up-group"><div class="up-label">性格</div><textarea class="up-textarea" id="upPersonality" placeholder="性格特点...">' + App.esc(user.personality || '') + '</textarea></div>' +
+          '<div class="up-btns">' +
+            '<button class="up-save" id="upSave" type="button">保 存</button>' +
+            '<button class="up-cancel" id="upCancel" type="button">取 消</button>' +
+          '</div>' +
+        '</div>';
+
+      document.body.appendChild(page);
+
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        page.classList.add('show');
+      }); });
+
+      // 头像上传
+      page.querySelector('#upAvatar').addEventListener('click', function() {
+        var avatarBox = this;
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        document.body.appendChild(input);
+        input.onchange = function(e) {
+          var file = e.target.files[0];
+          document.body.removeChild(input);
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var src = ev.target.result;
+            if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                Social.tempAvatar = cropped;
+                avatarBox.innerHTML = '<img src="' + cropped + '">';
+              });
+            } else {
+              Social.tempAvatar = src;
+              avatarBox.innerHTML = '<img src="' + src + '">';
+            }
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      });
+
+      // 返回
+      page.querySelector('#upBack').addEventListener('click', function() { Social.closeProfile(); });
+      page.querySelector('#upCancel').addEventListener('click', function() { Social.closeProfile(); });
+
+      // 保存
+      page.querySelector('#upSave').addEventListener('click', function() {
+        var name = (App.$('#upName') || {}).value || '';
+        name = name.trim();
+
+        Social.userData = {
+          name: name || '未命名',
+          avatar: Social.tempAvatar,
+          sign: (App.$('#upSign') || {}).value || '',
+          bio: (App.$('#upBio') || {}).value || '',
+          personality: (App.$('#upPersonality') || {}).value || ''
+        };
+        Social.save();
+        Social.closeProfile();
+        Social.renderTab();
+        App.showToast('资料已保存');
+      });
+    },
+
+    closeProfile: function() {
+      var page = App.$('#userProfilePage');
+      if (!page) return;
+      page.classList.remove('show');
+      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
     bindEvents: function() {
@@ -226,6 +304,9 @@
             if (menu) menu.classList.remove('show');
             if (item.dataset.action === 'addFriend') {
               App.showToast('加好友 · 开发中');
+            } else if (item.dataset.action === 'changeTheme') {
+              Social.close();
+              setTimeout(function() { App.openPanel('themePanel'); }, 380);
             }
           });
         });
