@@ -237,8 +237,9 @@
     },
 
     openProfile: function() {
-      var body = App.$('#socBody');
-      if (!body) return;
+      var old = App.$('#userProfilePage');
+      if (old) old.remove();
+
       Social.load();
       var user = Social.userData || {};
       Social.sealed = !!(user._sealed);
@@ -262,8 +263,12 @@
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><textarea data-key="' + f.key + '" placeholder="' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
-      body.innerHTML =
-        '<div style="padding:10px 16px 0;display:flex;align-items:center;justify-content:space-between;">' +
+      var page = document.createElement('div');
+      page.id = 'userProfilePage';
+      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+
+      page.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<div id="upBackBtn" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
             '<span style="font-size:12px;color:#999;">返回</span>' +
@@ -272,7 +277,7 @@
           '<div id="upRebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (Social.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
         '</div>' +
 
-        '<div style="padding:6px 0 40px;">' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
           '<div class="up-card" id="upCard">' +
 
             '<div class="up-seal' + (Social.sealed ? ' show' : '') + '" id="upSeal">' +
@@ -305,25 +310,41 @@
           '</div>' +
         '</div>';
 
-      body.querySelector('#upBackBtn').addEventListener('click', function() {
-        Social.renderTab();
+      document.body.appendChild(page);
+
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        page.style.transform = 'translateX(0)';
+        page.style.opacity = '1';
+      }); });
+
+      page.querySelector('#upBackBtn').addEventListener('click', function() {
+        Social.closeProfile();
       });
 
-      body.querySelector('#upRebuild').addEventListener('click', function() {
+      page.querySelector('#upRebuild').addEventListener('click', function() {
         if (!confirm('确定要重建资料吗？将解除封存。')) return;
         if (Social.userData) Social.userData._sealed = false;
         Social.save();
         Social.sealed = false;
-        Social.openProfile();
+        Social.closeProfile();
+        setTimeout(function() { Social.openProfile(); }, 380);
         App.showToast('已解除封存');
       });
 
-      var quill = body.querySelector('#upQuill');
+      var quill = page.querySelector('#upQuill');
       if (quill) {
         quill.addEventListener('click', function() {
           Social.saveProfile();
         });
       }
+    },
+
+    closeProfile: function() {
+      var page = App.$('#userProfilePage');
+      if (!page) return;
+      page.style.transform = 'translateX(100%)';
+      page.style.opacity = '0';
+      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
     saveProfile: function() {
