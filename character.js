@@ -116,8 +116,8 @@
     close: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
-      // 关闭所有浮动调色盘（在 body 上）
-      document.querySelectorAll('.cl-color-popup.show').forEach(function(p) { p.classList.remove('show'); });
+      // 关闭所有浮动调色盘
+      panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) { p.classList.remove('show'); });
       panel.style.transform = 'translateX(100%)';
       panel.style.opacity = '0';
       setTimeout(function() { panel.style.display = 'none'; }, 350);
@@ -126,8 +126,6 @@
     renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
-      // 修改②：删除所有旧的调色盘（在 body 上）
-      document.querySelectorAll('.cl-color-popup').forEach(function(p) { p.remove(); });
       var chars = Character.list;
       var mi = Character.currentMode;
       var modeClass = MODES[mi] || '';
@@ -184,6 +182,13 @@
               '</div>' +
             '</div>' +
             '<div class="cl-bottom-bar"></div>' +
+          '</div>' +
+          '<div class="cl-color-popup" data-for="' + c.id + '">' +
+            '<div class="cl-color-popup-title">☰ 自定义配色</div>' +
+            '<div class="cl-color-custom">' + colorHtml + '</div>' +
+            '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + col.line + '" class="cl-cc-line"><span class="cl-line-val">' + col.line + 'px</span></div>' +
+            '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + col.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + col.outer + 'px</span></div>' +
+            '<button class="cl-popup-reset" type="button">重置</button>' +
           '</div>';
         }).join('');
       }
@@ -273,66 +278,40 @@
         });
       });
 
-      // 为每个卡片创建独立的调色盘并添加到 body
+      // 调色盘绑定
       panel.querySelectorAll('.cl-change').forEach(function(ch) {
         var charId = ch.dataset.id;
         var card = ch.closest('.char-list-wrap');
-        var c = Character.getById(charId);
-        if (!c) return;
-        var col = Character.getColors(c, mi);
-        var cfg = MODE_CFG[mi];
-
-        // 创建这个卡片的调色盘
-        var popup = document.createElement('div');
-        popup.className = 'cl-color-popup';
-        popup.setAttribute('data-for', charId);
-        popup.style.cssText = 'position:fixed;z-index:100000;display:none;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.15);width:200px;';
-
-        var colorHtml = cfg.controls.map(function(ctrl) {
-          return '<div class="cl-color-custom-item">' +
-            '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + col[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + col[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
-            '<label>' + ctrl.label + '</label></div>';
-        }).join('');
-
-        popup.innerHTML =
-          '<div class="cl-popup-header" style="padding:12px 14px 8px;cursor:grab;touch-action:none;border-bottom:1px solid #eee;">' +
-            '<div style="font-size:13px;font-weight:700;color:#333;letter-spacing:1px;">☰ 自定义配色</div>' +
-          '</div>' +
-          '<div class="cl-popup-colors" style="padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px;">' + colorHtml + '</div>' +
-          '<div class="cl-line-row" style="padding:0 14px 12px;display:flex;align-items:center;gap:8px;"><label style="min-width:32px;">内线</label><input type="range" class="cl-cc-line" min="1" max="5" step="0.5" value="' + col.line + '" style="flex:1;"><span class="cl-line-val" style="min-width:36px;">' + col.line + 'px</span></div>' +
-          '<div class="cl-line-row" style="padding:0 14px 12px;display:flex;align-items:center;gap:8px;"><label style="min-width:32px;">外框</label><input type="range" class="cl-cc-outer" min="0.5" max="6" step="0.5" value="' + col.outer + '" style="flex:1;"><span class="cl-outer-val" style="min-width:36px;">' + col.outer + 'px</span></div>' +
-          '<button class="cl-popup-reset" type="button" style="margin:0 14px 14px;padding:8px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;font-size:12px;color:#666;cursor:pointer;">重置</button>';
-
-        // 修改①：把 popup 添加到 body
-        document.body.appendChild(popup);
+        // popup 在卡片外面（同级下一个元素）
+        var popup = card.nextElementSibling;
+        if (!popup || !popup.classList.contains('cl-color-popup')) return;
 
         // 拖拽
-        var header = popup.querySelector('.cl-popup-header');
-        makeDraggable(header, popup);
+                makeDraggable(popup, popup);
 
-        // change 按钮点击事件
         ch.addEventListener('click', function(e) {
           e.stopPropagation();
-
-          // 关闭其他 popup
-          document.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
+          // 关闭其他
+          pageEl.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
             if (p !== popup) p.classList.remove('show');
           });
 
           if (popup.classList.contains('show')) {
             popup.classList.remove('show');
           } else {
-            // 计算位置
+            // 计算位置：卡片上方
             var cardRect = card.getBoundingClientRect();
             var left = cardRect.left + cardRect.width / 2 - 100;
             var top = cardRect.top - 8;
             if (left < 8) left = 8;
             if (left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
+            if (top < 60) top = cardRect.bottom + 8;
             popup.style.left = left + 'px';
             popup.style.top = 'auto';
             popup.style.bottom = (window.innerHeight - top) + 'px';
             popup.classList.add('show');
 
+            // 等 popup 显示后重算位置
             requestAnimationFrame(function() {
               var popH = popup.offsetHeight;
               var finalTop = cardRect.top - popH - 8;
@@ -372,8 +351,8 @@
         }
 
         popup.querySelectorAll('.cl-cc').forEach(function(el) {
-          el.addEventListener('click', function(ev) {
-            ev.stopPropagation();
+          el.addEventListener('click', function(e) {
+            e.stopPropagation();
             if (!App.openColorPicker) return;
             App.openColorPicker(el.dataset.value, function(hex) {
               el.dataset.value = hex;
@@ -387,30 +366,30 @@
           });
         });
 
-        popup.querySelector('.cl-cc-line').addEventListener('input', function(ev) { ev.stopPropagation(); readAndApply(); });
-        popup.querySelector('.cl-cc-line').addEventListener('click', function(ev) { ev.stopPropagation(); });
-        popup.querySelector('.cl-cc-outer').addEventListener('input', function(ev) { ev.stopPropagation(); readAndApply(); });
-        popup.querySelector('.cl-cc-outer').addEventListener('click', function(ev) { ev.stopPropagation(); });
+        popup.querySelector('.cl-cc-line').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        popup.querySelector('.cl-cc-line').addEventListener('click', function(e) { e.stopPropagation(); });
+        popup.querySelector('.cl-cc-outer').addEventListener('input', function(e) { e.stopPropagation(); readAndApply(); });
+        popup.querySelector('.cl-cc-outer').addEventListener('click', function(e) { e.stopPropagation(); });
 
-        popup.querySelector('.cl-popup-reset').addEventListener('click', function(ev) {
-          ev.stopPropagation();
+        popup.querySelector('.cl-popup-reset').addEventListener('click', function(e) {
+          e.stopPropagation();
           var def = MODE_CFG[mi].defaults;
           popup.querySelectorAll('.cl-cc').forEach(function(el) {
             var k = el.dataset.key;
-            if (def[k] !== undefined) { el.dataset.value = def[k]; el.style.background = def[k]; }
+            if (def[k]) { el.dataset.value = def[k]; el.style.background = def[k]; }
           });
           popup.querySelector('.cl-cc-line').value = def.line;
           popup.querySelector('.cl-cc-outer').value = def.outer;
           readAndApply();
         });
 
-        popup.addEventListener('click', function(ev) { ev.stopPropagation(); });
+        popup.addEventListener('click', function(e) { e.stopPropagation(); });
       });
 
-      // 修改③：点击其他地方关闭所有 popup
+      // 点击其他地方关闭
       pageEl.addEventListener('click', function() {
         if (App._cpJustClosed || App.$('#cpOverlay')) return;
-        document.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
+        panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
           p.classList.remove('show');
         });
       });
