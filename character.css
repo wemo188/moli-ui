@@ -21,7 +21,7 @@
 .cl-mode-btn {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0 20px; border: 2px solid var(--page-dark); background: var(--page-light);
-  font-size: 22px; font-weight: 900;
+  font-size: 20px; font-weight: 500;
   color: var(--page-dark); cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: all 0.3s; font-family: inherit;
 }
