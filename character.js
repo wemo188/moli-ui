@@ -518,11 +518,6 @@
       };
       img.src = src;
     },
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    },
 
     init: function() {
       Character.load();
