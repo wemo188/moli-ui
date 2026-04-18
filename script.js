@@ -644,7 +644,11 @@
       else presetsEl.classList.remove('editing');
     });
 
-    function closePanel() { overlay.remove(); }
+function closePanel() {
+      App._cpJustClosed = true;
+      setTimeout(function() { App._cpJustClosed = false; }, 200);
+      overlay.remove();
+    }
 
     overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();closePanel();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
