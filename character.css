@@ -223,7 +223,7 @@
 .cl-outer-val { font-size: 8px; font-weight: 700; color: #333; min-width: 24px; text-align: right; }
 .cl-popup-reset {
   align-self: flex-end; font-size: 8px; font-weight: 800; letter-spacing: 1px;
-  color: #bbb; cursor: pointer; background: none; border: none;
+  color: #333; cursor: pointer; background: none; border: none;
   -webkit-tap-highlight-color: transparent; font-family: inherit; padding: 2px 0;
 }
 .cl-popup-reset:active { color: #666; }
