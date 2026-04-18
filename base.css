@@ -605,12 +605,13 @@ html, body {
 }
 .cp-preset-add:active { border-color: #999; color: #999; }
 .cp-preset-edit-btn {
-  font-size: 8px; font-weight: 800; color: #bbb;
-  cursor: pointer; background: none; border: none;
-  letter-spacing: 1px; padding: 0;
-  -webkit-tap-highlight-color: transparent; font-family: inherit;
+  font-size: 13px; font-weight: 700; color: #5a7a9a;
+  background: none; border: 1px solid #cadff2; border-radius: 6px;
+  padding: 4px 12px; cursor: pointer; flex-shrink: 0;
+  font-family: inherit; -webkit-tap-highlight-color: transparent;
+  letter-spacing: 1px;
 }
-.cp-preset-edit-btn:active { color: #666; }
+.cp-preset-edit-btn:active { background: #f0f6fb; }
 
 .cp-confirm {
   width: 100%; padding: 12px;
