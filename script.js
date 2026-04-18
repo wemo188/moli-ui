@@ -640,11 +640,6 @@
 
     overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
 
-    // 点遮罩关闭，但不立刻执行，延迟判断是否是切换颜色
-    overlay.addEventListener('click',function(e){
-      if(e.target===overlay) doClose();
-    });
-
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
       e.stopPropagation();
       var fn = overlay._onConfirm;
