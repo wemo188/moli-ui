@@ -1470,7 +1470,22 @@ App.init = function() {
     App.initMainPages();
   };
 
-  window.addEventListener('load', function() {
+    window.addEventListener('load', function() {
     App.init();
+
+    // 注册 Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        // 检测到新版本时自动更新
+        reg.addEventListener('updatefound', function() {
+          var newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function() {
+            if (newWorker.state === 'activated') {
+              App.showToast('已更新到最新版本');
+            }
+          });
+        });
+      });
+    }
   });
 })();
