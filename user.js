@@ -162,8 +162,8 @@
       var user = Social.getActiveUser();
       var name = user ? (user.name || '未命名') : '未创建用户';
       var avatarHtml = user && user.avatar
-        ? '<div class="soc-avatar" style="width:80px;height:80px;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:80px;height:80px;border-radius:12px;"></div>'
-        : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:12px;background:rgba(202,223,242,.15);border:1.5px solid rgba(192,206,220,.7);outline:1.5px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+        ? '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
+        : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:12px;">' +
