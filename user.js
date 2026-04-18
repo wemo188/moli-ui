@@ -62,6 +62,11 @@
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
             '<div style="flex:1;"></div>' +
+            '<button class="soc-me-mode-btn" id="socModeToggle" type="button" style="display:none;">' +
+              '<span class="soc-me-mode-val">' + (isFS ? '全屏' : '手机') + '</span>' +
+              '<span class="soc-me-mode-switch">切换</span>' +
+            '</button>' +
+            '<div style="flex:1;"></div>' +
             '<div style="position:relative;">' +
               '<button class="soc-header-btn" id="socAddBtn" type="button">' +
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
@@ -104,6 +109,16 @@
     renderTab: function() {
       var body = App.$('#socBody');
       if (!body) return;
+      var search = Social.panelEl.querySelector('.soc-search');
+      var modeBtn = Social.panelEl.querySelector('#socModeToggle');
+
+      if (Social.currentTab === 'me') {
+        if (search) search.style.display = 'none';
+        if (modeBtn) modeBtn.style.display = '';
+      } else {
+        if (search) search.style.display = '';
+        if (modeBtn) modeBtn.style.display = 'none';
+      }
 
       if (Social.currentTab === 'chat') Social.renderChatTab(body);
       else if (Social.currentTab === 'char') Social.renderCharTab(body);
@@ -164,46 +179,33 @@
     renderMeTab: function(body) {
       var user = Social.getActiveUser();
       var name = user ? (user.name || '未命名') : '未创建用户';
-      var isFS = App.LS.get('socFullScreen') || false;
-      var modeText = isFS ? '全屏模式' : '手机模式';
 
       var avatarHtml = user && user.avatar
         ? '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
         : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
-        '<div class="soc-me-mode-bar">' +
-          '<button class="soc-me-mode-btn" id="socModeToggle" type="button">' +
-            '<span class="soc-me-mode-val">' + modeText + '</span>' +
-            '<span class="soc-me-mode-switch">切换</span>' +
-          '</button>' +
-        '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:12px;">' +
           avatarHtml +
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
           '<div style="font-size:12px;color:#a8c0d8;">用户管理功能开发中</div>' +
         '</div>';
-
-      body.querySelector('#socModeToggle').addEventListener('click', function() {
-        var current = App.LS.get('socFullScreen') || false;
-        var next = !current;
-        App.LS.set('socFullScreen', next);
-
-        var phone = Social.panelEl.querySelector('.soc-phone');
-        if (phone) {
-          if (next) {
-            phone.parentElement.classList.add('soc-fullscreen');
-          } else {
-            phone.parentElement.classList.remove('soc-fullscreen');
-          }
-        }
-
-        var valEl = this.querySelector('.soc-me-mode-val');
-        if (valEl) valEl.textContent = next ? '全屏模式' : '手机模式';
-      });
     },
 
     bindEvents: function() {
+      App.safeOn('#socModeToggle', 'click', function() {
+        var current = App.LS.get('socFullScreen') || false;
+        var next = !current;
+        App.LS.set('socFullScreen', next);
+        var wrap = App.$('#socWrap');
+        if (wrap) {
+          if (next) wrap.classList.add('soc-fullscreen');
+          else wrap.classList.remove('soc-fullscreen');
+        }
+        var valEl = Social.panelEl.querySelector('.soc-me-mode-val');
+        if (valEl) valEl.textContent = next ? '全屏' : '手机';
+      });
+
       App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
 
       App.safeOn('#socAddBtn', 'click', function(e) {
