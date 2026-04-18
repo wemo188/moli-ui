@@ -445,3 +445,47 @@
   transform: rotate(45deg);
   border-radius: 2px 0 0 0;
 }
+
+/* ====== 全屏模式 ====== */
+.soc-fullscreen .soc-phone {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* ====== 模式切换按钮 ====== */
+.soc-me-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px 0;
+}
+
+.soc-me-mode-btn {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  padding: 5px 14px;
+  border: 1px solid rgba(126,163,201,.2);
+  border-radius: 8px;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.soc-me-mode-btn:active { background: rgba(126,163,201,.08); }
+
+.soc-me-mode-val {
+  font-size: 11px;
+  color: #8aa0b8;
+}
+
+.soc-me-mode-switch {
+  font-size: 10px;
+  color: #c0cedd;
+}
