@@ -52,8 +52,11 @@
       var panel = Social.panelEl;
       if (!panel) return;
 
+      var isFS = App.LS.get('socFullScreen') || false;
+      var wrapClass = isFS ? 'soc-fullscreen' : '';
+
       panel.innerHTML =
-        '<div class="soc-phone"><div class="soc-inner">' +
+        '<div class="' + wrapClass + '" id="socWrap"><div class="soc-phone"><div class="soc-inner">' +
           '<div class="soc-header">' +
             '<button class="soc-header-btn" id="socBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
@@ -92,7 +95,7 @@
               '<span>我的</span>' +
             '</div>' +
           '</div>' +
-        '</div></div>';
+        '</div></div></div>';
 
       Social.renderTab();
       Social.bindEvents();
@@ -161,16 +164,43 @@
     renderMeTab: function(body) {
       var user = Social.getActiveUser();
       var name = user ? (user.name || '未命名') : '未创建用户';
+      var isFS = App.LS.get('socFullScreen') || false;
+      var modeText = isFS ? '全屏模式' : '手机模式';
+
       var avatarHtml = user && user.avatar
         ? '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
         : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:12px;">' +
+        '<div class="soc-me-mode-bar">' +
+          '<button class="soc-me-mode-btn" id="socModeToggle" type="button">' +
+            '<span class="soc-me-mode-val">' + modeText + '</span>' +
+            '<span class="soc-me-mode-switch">切换</span>' +
+          '</button>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:12px;">' +
           avatarHtml +
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
           '<div style="font-size:12px;color:#a8c0d8;">用户管理功能开发中</div>' +
         '</div>';
+
+      body.querySelector('#socModeToggle').addEventListener('click', function() {
+        var current = App.LS.get('socFullScreen') || false;
+        var next = !current;
+        App.LS.set('socFullScreen', next);
+
+        var phone = Social.panelEl.querySelector('.soc-phone');
+        if (phone) {
+          if (next) {
+            phone.parentElement.classList.add('soc-fullscreen');
+          } else {
+            phone.parentElement.classList.remove('soc-fullscreen');
+          }
+        }
+
+        var valEl = this.querySelector('.soc-me-mode-val');
+        if (valEl) valEl.textContent = next ? '全屏模式' : '手机模式';
+      });
     },
 
     bindEvents: function() {
