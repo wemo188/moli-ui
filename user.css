@@ -1,9 +1,9 @@
 /* ====== 手机框 ====== */
 .soc-phone {
   position: relative;
-  width: calc(100% - 32px);
-  height: calc(100% - 40px);
-  margin: 20px auto;
+  width: calc(100% - 24px);
+  height: calc(100% - 20px);
+  margin: 10px auto;
   border-radius: 50px;
   background: #fff;
   border: 17px solid rgba(0,0,0,1);
@@ -293,37 +293,35 @@
   transform: rotate(45deg); border-radius: 2px 0 0 0;
 }
 
-/* ====== 我的 · 资料区 ====== */
-.soc-me-wrap {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 30px 20px 20px; gap: 14px;
-}
-
-.soc-me-avatar {
-  width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
-  background: rgba(202,223,242,.15);
-  border: 2px solid rgba(192,206,220,.5);
+/* ====== 我的 · 模式切换 ====== */
+.soc-me-mode-bar {
   display: flex; align-items: center; justify-content: center;
+  padding: 10px 16px 0;
+}
+
+.soc-me-mode-btn {
   cursor: pointer; -webkit-tap-highlight-color: transparent;
+  padding: 6px 14px;
+  border: 1px solid rgba(126,163,201,.2);
+  border-radius: 8px;
+  display: flex; align-items: center; gap: 8px;
+  background: none;
 }
 
-.soc-me-avatar img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+.soc-me-mode-btn:active { background: rgba(126,163,201,.08); }
+
+.soc-me-mode-btn .soc-me-mode-val {
+  font-size: 12px; color: #8aa0b8;
 }
 
-.soc-me-avatar svg {
-  width: 28px; height: 28px; stroke: #a8c0d8;
-  fill: none; stroke-width: 1.5;
+.soc-me-mode-btn .soc-me-mode-switch {
+  font-size: 10px; color: #c0cedd;
 }
 
-.soc-me-name {
-  font-size: 18px; font-weight: 600; color: #2e4258;
-  letter-spacing: 0.5px;
-}
-
+/* ====== 我的 · 链接列表 ====== */
 .soc-me-links {
   width: 100%; display: flex; flex-direction: column; gap: 0;
-  margin-top: 10px;
+  padding: 0 20px;
 }
 
 .soc-me-link {
@@ -342,153 +340,3 @@
 .soc-me-link-arrow {
   font-size: 14px; color: #c0cedd; font-weight: 300;
 }
-
-.soc-me-mode {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 4px; cursor: pointer;
-  border-bottom: 1px solid rgba(126,163,201,.1);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.soc-me-mode:active { opacity: 0.6; }
-
-.soc-me-mode-text {
-  font-size: 14px; font-weight: 500; color: #2e4258;
-}
-
-.soc-me-mode-val {
-  font-size: 12px; color: #8aa0b8;
-}
-
-/* ====== 用户资料页 ====== */
-.up-page {
-  position: fixed; top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  z-index: 10003; background: #fff;
-  display: flex; flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateX(100%); opacity: 0;
-}
-
-.up-page.show {
-  transform: translateX(0); opacity: 1;
-}
-
-.up-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 56px 16px 12px; flex-shrink: 0; background: #fff;
-}
-
-.up-header-btn {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  background: none; border: none; cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.up-header-btn svg {
-  width: 20px; height: 20px; fill: none; stroke: #7a9ab8;
-  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-}
-
-.up-header-btn:active svg { stroke: #4a7a9e; }
-
-.up-header-title {
-  font-size: 16px; font-weight: 700; color: #2e4258;
-  letter-spacing: 1px;
-}
-
-.up-body {
-  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 0 20px 40px;
-}
-
-.up-avatar-area {
-  display: flex; justify-content: center; padding: 20px 0 24px;
-}
-
-.up-avatar {
-  width: 96px; height: 96px; border-radius: 50%;
-  overflow: hidden; cursor: pointer; position: relative;
-  background: rgba(202,223,242,.1);
-  border: 2px solid rgba(192,206,220,.4);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.up-avatar img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
-
-.up-avatar-empty {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-}
-
-.up-avatar-empty svg {
-  width: 28px; height: 28px; stroke: #b8c8d8;
-  fill: none; stroke-width: 1.5;
-}
-
-.up-avatar-empty span {
-  font-size: 9px; color: #b8c8d8; font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.up-group {
-  margin-bottom: 20px;
-}
-
-.up-label {
-  font-size: 12px; font-weight: 600; color: #8aa0b8;
-  letter-spacing: 1px; margin-bottom: 6px;
-}
-
-.up-input {
-  width: 100%; padding: 12px 14px;
-  border: 1.5px solid rgba(126,163,201,.2);
-  border-radius: 10px; background: #fafbfc;
-  font-size: 14px; color: #2e4258; outline: none;
-  font-family: inherit; transition: border-color 0.2s;
-}
-
-.up-input:focus { border-color: rgba(126,163,201,.5); }
-
-.up-input::placeholder { color: #c0cedd; }
-
-.up-textarea {
-  width: 100%; min-height: 100px; padding: 12px 14px;
-  border: 1.5px solid rgba(126,163,201,.2);
-  border-radius: 10px; background: #fafbfc;
-  font-size: 14px; color: #2e4258; outline: none;
-  font-family: inherit; resize: vertical;
-  line-height: 1.6; transition: border-color 0.2s;
-}
-
-.up-textarea:focus { border-color: rgba(126,163,201,.5); }
-
-.up-textarea::placeholder { color: #c0cedd; }
-
-.up-btns {
-  display: flex; gap: 10px; padding: 10px 0;
-}
-
-.up-save {
-  flex: 1; padding: 13px; border: none;
-  border-radius: 10px; background: #2e4258; color: #fff;
-  font-size: 14px; font-weight: 600; letter-spacing: 1px;
-  cursor: pointer; font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.up-save:active { opacity: 0.8; }
-
-.up-cancel {
-  padding: 13px 20px; border: 1.5px solid rgba(126,163,201,.25);
-  border-radius: 10px; background: #fff; color: #8aa0b8;
-  font-size: 14px; font-weight: 600; letter-spacing: 1px;
-  cursor: pointer; font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.up-cancel:active { opacity: 0.7; }
