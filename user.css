@@ -1,8 +1,8 @@
-
 .soc-phone {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 20px);
+  margin-top: 10px;
   border-radius: 50px;
   background: #fff;
   border: 17px solid rgba(0,0,0,1);
