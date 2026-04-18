@@ -415,8 +415,13 @@
   };
   
     App.openColorPicker = function(currentColor, onConfirm, onChange) {
-    var old = App.$('#cpOverlay');
-    if (old) old.remove();
+        var old = App.$('#cpOverlay');
+    if (old) {
+      old._onConfirm = onConfirm;
+      old._onChange = onChange;
+      if (old._setFromHex) old._setFromHex(currentColor);
+      return;
+    }
 
     var savedPresets = App.LS.get('cpPresets') || ['#111111','#88abda','#ffffff','#9ca3af','#d1d5db','#c9706b'];
 
@@ -556,7 +561,8 @@
       specCursor.style.background = selectedHex;
       hueCursor.style.left = (currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background = hslToHex(currentHue, 100, 50);
-      if (onChange) onChange(selectedHex);
+      var changeFn = overlay._onChange || onChange;
+      if (changeFn) changeFn(selectedHex);
     }
 
     function setFromHex(hex) {
@@ -567,6 +573,8 @@
     }
 
     setFromHex(selectedHex);
+    overlay._setFromHex = setFromHex;
+
 
     var specDrag=false;
     function specFromPos(e) {
@@ -654,7 +662,8 @@ function closePanel() {
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
       e.stopPropagation();
-      onConfirm(selectedHex);
+      var fn = overlay._onConfirm || onConfirm;
+      fn(selectedHex);
       closePanel();
     });
   };
