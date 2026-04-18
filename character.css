@@ -207,9 +207,9 @@
 .cl-color-popup-title:active { cursor: grabbing; }
 .cl-color-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cl-color-custom-item { display: flex; align-items: center; gap: 4px; }
-.cl-color-custom-item label { font-size: 8px; font-weight: 700; color: #999; letter-spacing: 0.5px; }
+.cl-color-custom-item label { font-size: 8px; font-weight: 700; color: #333; letter-spacing: 0.5px; }
 .cl-line-row { display: flex; align-items: center; gap: 5px; }
-.cl-line-row label { font-size: 8px; font-weight: 700; color: #999; letter-spacing: 0.5px; flex-shrink: 0; }
+.cl-line-row label { font-size: 8px; font-weight: 700; color: #333; letter-spacing: 0.5px; flex-shrink: 0; }
 .cl-line-row input[type="range"] {
   flex: 1; height: 2px; -webkit-appearance: none;
   background: #e0e0e0; border-radius: 2px; outline: none;
@@ -219,8 +219,8 @@
   background: #fff; border: 1.5px solid #ccc;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
 }
-.cl-line-row .cl-line-val { font-size: 8px; font-weight: 700; color: #999; min-width: 24px; text-align: right; }
-.cl-outer-val { font-size: 8px; font-weight: 700; color: #999; min-width: 24px; text-align: right; }
+.cl-line-row .cl-line-val { font-size: 8px; font-weight: 700; color: #333; min-width: 24px; text-align: right; }
+.cl-outer-val { font-size: 8px; font-weight: 700; color: #333; min-width: 24px; text-align: right; }
 .cl-popup-reset {
   align-self: flex-end; font-size: 8px; font-weight: 800; letter-spacing: 1px;
   color: #bbb; cursor: pointer; background: none; border: none;
