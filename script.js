@@ -415,8 +415,13 @@
   };
   
     App.openColorPicker = function(currentColor, onConfirm, onChange) {
-        var old = App.$('#cpOverlay');
+            var old = App.$('#cpOverlay');
     if (old) {
+      if (old._lastColor === currentColor) {
+        old._cpClose();
+        return;
+      }
+      old._lastColor = currentColor;
       old._onConfirm = onConfirm;
       old._onChange = onChange;
       if (old._setFromHex) old._setFromHex(currentColor);
@@ -574,6 +579,8 @@
 
     setFromHex(selectedHex);
     overlay._setFromHex = setFromHex;
+    overlay._lastColor = currentColor;
+    overlay._cpClose = closePanel;
 
 
     var specDrag=false;
