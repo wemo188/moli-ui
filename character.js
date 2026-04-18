@@ -395,94 +395,129 @@
       });
     },
 
-        uploadImage: function(charId, field, box) {
-      var c = Character.getById(charId);
-      var hasImg = c && c[field];
+    uploadImage: function(charId, field, box) {
+      var old = App.$('#imgSourceMenu');
+      if (old) old.remove();
 
-      if (hasImg) {
-        // 已有图片，弹出选择
-        var old = document.querySelector('.cl-img-menu');
-        if (old) old.remove();
+      var menu = document.createElement('div');
+      menu.id = 'imgSourceMenu';
+      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+      menu.innerHTML =
+        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
+          '<button id="imgFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
+          '<button id="imgFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
+          '<button id="imgFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除图片</button>' +
+          '<button id="imgFromCancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+        '</div>';
+      document.body.appendChild(menu);
 
-        var rect = box.getBoundingClientRect();
-        var menu = document.createElement('div');
-        menu.className = 'cl-img-menu';
-        menu.style.cssText = 'position:fixed;z-index:10010;background:#fff;border:1.5px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:4px 0;min-width:100px;';
-        menu.style.left = Math.min(rect.left, window.innerWidth - 120) + 'px';
-        menu.style.top = (rect.bottom + 4) + 'px';
+      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+      menu.querySelector('#imgFromCancel').addEventListener('click', function() { menu.remove(); });
 
-        menu.innerHTML =
-          '<div style="padding:10px 16px;font-size:12px;font-weight:600;color:#333;cursor:pointer;-webkit-tap-highlight-color:transparent;" id="clImgReplace">更换照片</div>' +
-          '<div style="height:1px;background:#eee;margin:0 8px;"></div>' +
-          '<div style="padding:10px 16px;font-size:12px;font-weight:600;color:#e85d5d;cursor:pointer;-webkit-tap-highlight-color:transparent;" id="clImgDelete">删除照片</div>';
+      // 删除
+      menu.querySelector('#imgFromDel').addEventListener('click', function() {
+        menu.remove();
+        var c = Character.getById(charId);
+        if (c) { c[field] = ''; Character.save(); }
+        if (field === 'avatar') box.innerHTML = '<div class="cl-avatar-empty"></div>';
+        else box.innerHTML = '<div class="cl-cover-empty"></div>';
+        App.showToast('已删除');
+      });
 
-        document.body.appendChild(menu);
-
-        menu.querySelector('#clImgReplace').addEventListener('click', function(e) {
-          e.stopPropagation();
-          menu.remove();
-          Character.pickImage(charId, field, box);
-        });
-
-        menu.querySelector('#clImgDelete').addEventListener('click', function(e) {
-          e.stopPropagation();
-          menu.remove();
-          if (c) { c[field] = ''; Character.save(); }
-          Character.renderList();
-          App.showToast('已删除');
-        });
-
-        setTimeout(function() {
-          function dismiss(e) {
-            if (!menu.contains(e.target)) {
-              menu.remove();
-              document.removeEventListener('touchstart', dismiss);
-              document.removeEventListener('click', dismiss);
+      // 从相册
+      menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
+        menu.remove();
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        document.body.appendChild(input);
+        input.onchange = function(e) {
+          var file = e.target.files[0];
+          document.body.removeChild(input);
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            var src = ev.target.result;
+            if (App.cropImage) {
+              App.cropImage(src, function(cropped) {
+                var c = Character.getById(charId);
+                if (c) { c[field] = cropped; Character.save(); }
+                box.innerHTML = '<img src="' + cropped + '">';
+              });
+            } else {
+              Character._compressAndSet(src, charId, field, box);
             }
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      });
+
+      // URL输入
+      menu.querySelector('#imgFromUrl').addEventListener('click', function() {
+        menu.remove();
+        var urlPanel = document.createElement('div');
+        urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+        urlPanel.innerHTML =
+          '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
+            '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;">输入图片URL</div>' +
+            '<input id="imgUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
+            '<div id="imgUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
+            '<div style="display:flex;gap:8px;">' +
+              '<button id="imgUrlConfirm" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
+              '<button id="imgUrlCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(urlPanel);
+
+        urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
+        urlPanel.querySelector('#imgUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
+
+        // 输入时预览
+        var previewBox = urlPanel.querySelector('#imgUrlPreview');
+        var previewImg = previewBox.querySelector('img');
+        urlPanel.querySelector('#imgUrlInput').addEventListener('input', function() {
+          var v = this.value.trim();
+          if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
+            previewImg.src = v;
+            previewBox.style.display = 'block';
+            previewImg.onerror = function() { previewBox.style.display = 'none'; };
+          } else {
+            previewBox.style.display = 'none';
           }
-          document.addEventListener('touchstart', dismiss, { passive: true });
-          document.addEventListener('click', dismiss);
-        }, 50);
-      } else {
-        Character.pickImage(charId, field, box);
-      }
+        });
+
+        // 确定
+        urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
+          var url = urlPanel.querySelector('#imgUrlInput').value.trim();
+          if (!url) { App.showToast('请输入URL'); return; }
+          urlPanel.remove();
+          var c = Character.getById(charId);
+          if (c) { c[field] = url; Character.save(); }
+          box.innerHTML = '<img src="' + App.esc(url) + '">';
+          App.showToast('已设置');
+        });
+      });
     },
 
-    pickImage: function(charId, field, box) {
-      var input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      document.body.appendChild(input);
-      input.onchange = function(e) {
-        var file = e.target.files[0];
-        document.body.removeChild(input);
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var src = ev.target.result;
-          if (App.cropImage) {
-            App.cropImage(src, function(cropped) {
-              var c = Character.getById(charId);
-              if (c) { c[field] = cropped; Character.save(); }
-              box.innerHTML = '<img src="' + cropped + '">';
-            });
-          } else {
-            var img = new Image();
-            img.onload = function() {
-              var canvas = document.createElement('canvas');
-              var max = field === 'avatar' ? 256 : 600;
-              var w = img.width, h = img.height;
-              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-              else { if (h > max) { w = w * max / h; h = max; } }
-              canvas.width = w; canvas.height = h;
-              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-              var compressed = canvas.toDataURL('image/jpeg', 0.85);
-              var c = Character.getById(charId);
-              if (c) { c[field] = compressed; Character.save(); }
-              box.innerHTML = '<img src="' + compressed + '">';
-            };
-            img.src = src;
-          }
+    _compressAndSet: function(src, charId, field, box) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var max = field === 'avatar' ? 256 : 600;
+        var w = img.width, h = img.height;
+        if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+        else { if (h > max) { w = w * max / h; h = max; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.85);
+        var c = Character.getById(charId);
+        if (c) { c[field] = compressed; Character.save(); }
+        box.innerHTML = '<img src="' + compressed + '">';
+      };
+      img.src = src;
+    },
         };
         reader.readAsDataURL(file);
       };
