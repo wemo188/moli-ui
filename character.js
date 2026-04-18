@@ -389,7 +389,8 @@
 
       // 点击其他地方关闭
       pageEl.addEventListener('click', function() {
-        pageEl.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
+        if (App._cpJustClosed || App.$('#cpOverlay')) return;
+        panel.querySelectorAll('.cl-color-popup.show').forEach(function(p) {
           p.classList.remove('show');
         });
       });
