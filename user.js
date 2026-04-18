@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -56,23 +55,20 @@
       if (!panel) return;
 
       var phoneClass = 'soc-phone' + (Social.isFullscreen ? ' fullscreen' : '');
-      var toggleText = Social.isFullscreen ? '手机模式' : '全屏模式';
 
       panel.innerHTML =
         '<div class="' + phoneClass + '" id="socPhone"><div class="soc-inner">' +
-          '<button class="soc-mode-toggle" id="socModeToggle" type="button">' + toggleText + '</button>' +
           '<div class="soc-header" id="socHeader">' +
             '<button class="soc-header-btn" id="socBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<div style="flex:1;"></div>' +
+            '<div class="soc-header-title">Star</div>' +
             '<div style="position:relative;">' +
               '<button class="soc-header-btn" id="socAddBtn" type="button">' +
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
               '</button>' +
               '<div class="soc-add-menu" id="socAddMenu">' +
                 '<div class="soc-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
-                '<div class="soc-add-menu-item" data-action="changeTheme"><span>更换主题</span></div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -113,11 +109,11 @@
       var search = App.$('#socSearch');
 
       if (Social.currentTab === 'me') {
-        if (header) header.style.display = 'none';
-        if (search) search.style.display = 'none';
+        if (header) header.style.visibility = 'hidden';
+        if (search) search.style.visibility = 'hidden';
       } else {
-        if (header) header.style.display = '';
-        if (search) search.style.display = '';
+        if (header) header.style.visibility = '';
+        if (search) search.style.visibility = '';
       }
 
       if (Social.currentTab === 'chat') Social.renderChatTab(body);
@@ -179,70 +175,42 @@
     renderMeTab: function(body) {
       var user = Social.getActiveUser();
       var name = user ? (user.name || '未命名') : '未创建用户';
+      var toggleText = Social.isFullscreen ? '手机模式' : '全屏模式';
       var avatarHtml = user && user.avatar
         ? '<img src="' + App.esc(user.avatar) + '" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(126,163,201,0.3);">'
         : '<div class="soc-avatar-placeholder" style="width:72px;height:72px;border-radius:50%;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;padding:50px 20px 20px;gap:14px;">' +
-          avatarHtml +
-          '<div style="font-size:18px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + App.esc(name) + '</div>' +
-          '<div style="font-size:12px;color:#a8c0d8;margin-bottom:20px;">用户档案</div>' +
+        '<div style="position:relative;padding:50px 20px 20px;">' +
+          '<button class="soc-mode-toggle" id="socModeToggle" type="button">' + toggleText + '</button>' +
+          '<div style="display:flex;flex-direction:column;align-items:center;gap:14px;">' +
+            avatarHtml +
+            '<div style="font-size:18px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + App.esc(name) + '</div>' +
+            '<div style="font-size:12px;color:#a8c0d8;margin-bottom:20px;">用户档案</div>' +
+          '</div>' +
         '</div>' +
         '<div style="padding:0 20px;">' +
           '<div class="soc-me-item" id="socMeProfile">' +
-            '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-            '<span>个人信息</span>' +
-            '<div class="soc-me-arrow">›</div>' +
-          '</div>' +
-          '<div class="soc-me-item" id="socMeSettings">' +
-            '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' +
-            '<span>设置</span>' +
-            '<div class="soc-me-arrow">›</div>' +
-          '</div>' +
-          '<div class="soc-me-item" id="socMeTheme">' +
-            '<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13.5" r="2.5"/><circle cx="6" cy="12" r="3"/><circle cx="12" cy="19" r="2"/><path d="M12 2a10 10 0 1 0 10 10"/></svg>' +
-            '<span>主题配色</span>' +
-            '<div class="soc-me-arrow">›</div>' +
-          '</div>' +
-          '<div class="soc-me-item" id="socMeAbout">' +
-            '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>' +
-            '<span>关于</span>' +
-            '<div class="soc-me-arrow">›</div>' +
+            '<span>个人资料</span>' +
           '</div>' +
         '</div>';
-
-      App.safeOn('#socMeTheme', 'click', function() {
-        Social.close();
-        setTimeout(function() { App.openPanel('themePanel'); }, 380);
-      });
-
-      App.safeOn('#socMeSettings', 'click', function() {
-        App.showToast('设置 · 开发中');
-      });
-
-      App.safeOn('#socMeProfile', 'click', function() {
-        App.showToast('个人信息 · 开发中');
-      });
-
-      App.safeOn('#socMeAbout', 'click', function() {
-        App.showToast('Mono Space v1.0');
-      });
-    },
-
-    bindEvents: function() {
-      App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
 
       App.safeOn('#socModeToggle', 'click', function(e) {
         e.stopPropagation();
         Social.isFullscreen = !Social.isFullscreen;
         App.LS.set('socFullscreen', Social.isFullscreen);
         var phone = App.$('#socPhone');
-        if (phone) {
-          phone.classList.toggle('fullscreen', Social.isFullscreen);
-        }
+        if (phone) phone.classList.toggle('fullscreen', Social.isFullscreen);
         this.textContent = Social.isFullscreen ? '手机模式' : '全屏模式';
       });
+
+      App.safeOn('#socMeProfile', 'click', function() {
+        App.showToast('个人资料 · 开发中');
+      });
+    },
+
+    bindEvents: function() {
+      App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
 
       App.safeOn('#socAddBtn', 'click', function(e) {
         e.stopPropagation();
@@ -258,9 +226,6 @@
             if (menu) menu.classList.remove('show');
             if (item.dataset.action === 'addFriend') {
               App.showToast('加好友 · 开发中');
-            } else if (item.dataset.action === 'changeTheme') {
-              Social.close();
-              setTimeout(function() { App.openPanel('themePanel'); }, 380);
             }
           });
         });
@@ -297,4 +262,3 @@
 
   App.register('user', Social);
 })();
-
