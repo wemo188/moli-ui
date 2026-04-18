@@ -201,16 +201,16 @@ font-family: inherit;
 }
 .cl-color-popup.show { display: flex; }
 .cl-color-popup-title {
-  font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #333;
+  font-size: 8px; font-weight: 900; letter-spacing: 2px; color: #333;
   text-transform: uppercase; cursor: grab; padding: 2px 0;
   -webkit-tap-highlight-color: transparent;
 }
 .cl-color-popup-title:active { cursor: grabbing; }
 .cl-color-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cl-color-custom-item { display: flex; align-items: center; gap: 4px; }
-.cl-color-custom-item label { font-size: 9px; font-weight: 700; color: #666; letter-spacing: 0.5px; }
+.cl-color-custom-item label { font-size: 8px; font-weight: 700; color: #999; letter-spacing: 0.5px; }
 .cl-line-row { display: flex; align-items: center; gap: 5px; }
-.cl-line-row label { font-size: 9px; font-weight: 700; color: #666;
+.cl-line-row label { font-size: 8px; font-weight: 700; color: #999;
 .cl-line-row input[type="range"] {
   flex: 1; height: 2px; -webkit-appearance: none;
   background: #e0e0e0; border-radius: 2px; outline: none;
