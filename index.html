@@ -17,7 +17,7 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
   var css = [
     'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
-    'cards.css','frost.css','workshop.css','user.css'
+    'cards.css','frost.css','workshop.css','user.css','wechat.css'
   ];
   css.forEach(function(href){
     var link = document.createElement('link');
@@ -143,9 +143,9 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
       <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);">
     </div>
   </div>
-  <div class="dock-item" id="dockShort">
+   <div class="dock-item" id="dockShort">
     <div class="mk-card">
-      <img src="https://iili.io/B7uyNpf.jpg" style="transform:scale(0.75);">
+      <img src="https://iili.io/BgMKYnR.jpg" style="transform:scale(0.75);">
     </div>
   </div>
   <div class="dock-item" id="dockCheck">
@@ -331,7 +331,7 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
     'script.js','theme.js','font.js','api.js','bg.js',
     'character.js','char-edit.js','user.js','worldbook.js','preset.js',
     'chat.js','calendar.js','cards.js','frost.js',
-    'workshop.js','dock.js'
+    'workshop.js','wechat.js','dock.js'
   ];
   var idx = 0;
   function loadNext(){
