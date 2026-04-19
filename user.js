@@ -188,7 +188,6 @@
         '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 16px;gap:12px;">' +
           '<div id="socMeAvatar" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">' + avatarHtml + '</div>' +
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
-          (user && user.sign ? '<div style="font-size:12px;color:#a8c0d8;">' + App.esc(user.sign) + '</div>' : '') +
         '</div>' +
         '<div>' +
           '<div class="soc-me-link" id="socOpenProfile">' +
@@ -201,8 +200,8 @@
         Social.uploadAvatar(this);
       });
 
-            body.querySelector('#socOpenProfile').addEventListener('click', function() {
-        Social.openGate();
+      body.querySelector('#socOpenProfile').addEventListener('click', function() {
+        Social.openForkPage();
       });
     },
 
@@ -236,81 +235,123 @@
       input.click();
     },
 
-    openGate: function() {
-      var old = App.$('#userGatePage');
+    // ====== 前导页：自由编辑 / 一键生成 ======
+    openForkPage: function() {
+      var old = App.$('#userForkPage');
       if (old) old.remove();
 
       var page = document.createElement('div');
-      page.id = 'userGatePage';
-      page.className = 'up-gate';
+      page.id = 'userForkPage';
+      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
 
       page.innerHTML =
-        '<button class="up-gate-back" id="upGateBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span>返回</span></button>' +
-
-        '<div class="up-gate-top" id="upGateTop">' +
-          '<div class="up-gate-top-bg"></div>' +
-          '<div class="up-ring up-ring-1"></div>' +
-          '<div class="up-ring up-ring-2"></div>' +
-          '<div class="up-ring up-ring-3"></div>' +
-          '<div class="up-dot up-dot-1"></div>' +
-          '<div class="up-dot up-dot-2"></div>' +
-          '<div class="up-dot up-dot-3"></div>' +
-          '<div class="up-dot up-dot-4"></div>' +
-          '<div class="up-line up-line-1"></div>' +
-          '<div class="up-line up-line-2"></div>' +
-          '<div class="up-gate-text">' +
-            '<div class="up-gate-en">FREE EDITING</div>' +
-            '<div class="up-gate-title">自由编辑</div>' +
-            '<div class="up-gate-desc">打开档案卡 · 自由填写每一项设定</div>' +
-            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
-          '</div>' +
+        '<div class="up-fork-bg">' +
+          '<div class="up-fork-circle1"></div>' +
+          '<div class="up-fork-circle2"></div>' +
+          '<div class="up-fork-circle3"></div>' +
+          '<div class="up-fork-midline"></div>' +
         '</div>' +
 
-        '<div class="up-gate-divider"></div>' +
-
-        '<div class="up-gate-bot" id="upGateBot">' +
-          '<div class="up-gate-bot-bg"></div>' +
-          '<div class="up-grid"></div>' +
-          '<div class="up-pulse up-pulse-1"></div>' +
-          '<div class="up-pulse up-pulse-2"></div>' +
-          '<div class="up-cross up-cross-1"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
-          '<div class="up-cross up-cross-2"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
-                    '<div class="up-gate-text">' +
-            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
-            '<div class="up-gate-en">STEP BY STEP</div>' +
-            '<div class="up-gate-title">一键生成</div>' +
-            '<div class="up-gate-desc">逐步引导 · 轻松完成角色人设构建</div>' +
+        '<div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:56px 20px 20px;">' +
+          '<div id="upForkBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span style="font-size:12px;color:#adcdea;">返回</span>' +
           '</div>' +
+          '<div style="font-size:8px;color:rgba(173,205,234,0.5);letter-spacing:4px;font-weight:600;">PROFILE SETUP</div>' +
+          '<div style="width:40px;"></div>' +
+        '</div>' +
+
+        '<div style="position:relative;z-index:2;text-align:center;padding:20px 30px 30px;">' +
+          '<div style="font-size:22px;font-weight:300;color:#2e4258;letter-spacing:3px;line-height:1.6;">创建你的</div>' +
+          '<div style="font-size:22px;font-weight:700;color:#2e4258;letter-spacing:3px;line-height:1.6;">专属档案</div>' +
+          '<div style="width:40px;height:2px;background:linear-gradient(90deg,#adcdea,rgba(173,205,234,0.2));margin:12px auto 0;"></div>' +
+        '</div>' +
+
+        '<div style="position:relative;z-index:2;padding:10px 24px;display:flex;flex-direction:column;gap:16px;">' +
+
+          '<div class="up-fork-card" id="upForkFree">' +
+            '<div class="up-fork-card-corner"></div>' +
+            '<div class="up-fork-card-line"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+              '<div>' +
+                '<div style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:2px;">自由编辑</div>' +
+                '<div style="font-size:10px;color:#adcdea;letter-spacing:1.5px;margin-top:4px;font-weight:500;">FREE EDITING</div>' +
+                '<div style="font-size:11px;color:#8aa0b8;margin-top:10px;line-height:1.6;">打开空白档案<br>自由填写每一项内容</div>' +
+              '</div>' +
+              '<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">' +
+                '<svg viewBox="0 0 48 48" style="width:48px;height:48px;">' +
+                  '<rect x="10" y="6" width="28" height="36" rx="2" fill="none" stroke="rgba(173,205,234,0.4)" stroke-width="1.5"/>' +
+                  '<line x1="16" y1="16" x2="32" y2="16" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
+                  '<line x1="16" y1="22" x2="28" y2="22" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
+                  '<line x1="16" y1="28" x2="30" y2="28" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
+                  '<line x1="30" y1="34" x2="36" y2="28" stroke="#adcdea" stroke-width="1.5" stroke-linecap="round"/>' +
+                  '<circle cx="30" cy="34" r="1.5" fill="#adcdea" opacity="0.5"/>' +
+                '</svg>' +
+              '</div>' +
+            '</div>' +
+            '<div class="up-fork-card-dots">' +
+              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.3;"></div>' +
+              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.5;"></div>' +
+              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.3;"></div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="up-fork-card" id="upForkStep" style="background:linear-gradient(135deg,rgba(173,205,234,0.06),rgba(173,205,234,0.02));">' +
+            '<div class="up-fork-card-corner"></div>' +
+            '<div class="up-fork-card-line"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+              '<div>' +
+                '<div style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:2px;">一键生成</div>' +
+                '<div style="font-size:10px;color:#adcdea;letter-spacing:1.5px;margin-top:4px;font-weight:500;">STEP BY STEP</div>' +
+                '<div style="font-size:11px;color:#8aa0b8;margin-top:10px;line-height:1.6;">跟随引导一步步填写<br>轻松完成个人设定</div>' +
+              '</div>' +
+              '<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">' +
+                '<svg viewBox="0 0 48 48" style="width:48px;height:48px;">' +
+                  '<circle cx="24" cy="24" r="18" fill="none" stroke="rgba(173,205,234,0.15)" stroke-width="1.5"/>' +
+                  '<circle cx="24" cy="24" r="18" fill="none" stroke="#adcdea" stroke-width="1.5" stroke-dasharray="28 85" stroke-linecap="round" transform="rotate(-90 24 24)" style="animation:upPulse 3s ease-in-out infinite;"/>' +
+                  '<path d="M20 24h8M25 20l4 4-4 4" fill="none" stroke="#adcdea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+                '</svg>' +
+              '</div>' +
+            '</div>' +
+            '<div class="up-fork-card-steps">' +
+              '<div style="width:12px;height:2px;background:#adcdea;opacity:0.5;border-radius:1px;"></div>' +
+              '<div style="width:8px;height:2px;background:#adcdea;opacity:0.3;border-radius:1px;"></div>' +
+              '<div style="width:8px;height:2px;background:#adcdea;opacity:0.2;border-radius:1px;"></div>' +
+            '</div>' +
+          '</div>' +
+
         '</div>';
 
       document.body.appendChild(page);
 
       requestAnimationFrame(function() { requestAnimationFrame(function() {
-        page.classList.add('show');
+        page.style.transform = 'translateX(0)';
+        page.style.opacity = '1';
       }); });
 
-      page.querySelector('#upGateBack').addEventListener('click', function() {
-        Social.closeGate();
+      page.querySelector('#upForkBack').addEventListener('click', function() {
+        Social.closePage(page);
       });
 
-      page.querySelector('#upGateTop').addEventListener('click', function() {
-        Social.closeGate();
+      page.querySelector('#upForkFree').addEventListener('click', function() {
+        Social.closePage(page);
         setTimeout(function() { Social.openProfile(); }, 380);
       });
 
-      page.querySelector('#upGateBot').addEventListener('click', function() {
-        Social.closeGate();
-        App.showToast('一键生成 · 开发中');
+      page.querySelector('#upForkStep').addEventListener('click', function() {
+        Social.closePage(page);
+        setTimeout(function() { Social.openStepGuide(); }, 380);
       });
     },
 
-    closeGate: function() {
-      var page = App.$('#userGatePage');
+    closePage: function(page) {
       if (!page) return;
-      page.classList.remove('show');
+      page.style.transform = 'translateX(100%)';
+      page.style.opacity = '0';
       setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
+    // ====== 自由编辑档案页 ======
     openProfile: function() {
       var old = App.$('#userProfilePage');
       if (old) old.remove();
@@ -393,7 +434,7 @@
       }); });
 
       page.querySelector('#upBackBtn').addEventListener('click', function() {
-        Social.closeProfile();
+        Social.closePage(page);
       });
 
       page.querySelector('#upRebuild').addEventListener('click', function() {
@@ -401,7 +442,7 @@
         if (Social.userData) Social.userData._sealed = false;
         Social.save();
         Social.sealed = false;
-        Social.closeProfile();
+        Social.closePage(page);
         setTimeout(function() { Social.openProfile(); }, 380);
         App.showToast('已解除封存');
       });
@@ -414,12 +455,9 @@
       }
     },
 
-    closeProfile: function() {
-      var page = App.$('#userProfilePage');
-      if (!page) return;
-      page.style.transform = 'translateX(100%)';
-      page.style.opacity = '0';
-      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
+    // ====== 一键生成（步骤引导）======
+    openStepGuide: function() {
+      App.showToast('一键生成 · 开发中');
     },
 
     saveProfile: function() {
@@ -439,29 +477,24 @@
       Social.save();
       Social.sealed = true;
 
-      // 显示印章动画
       var seal = App.$('#upSeal');
       if (seal) {
         requestAnimationFrame(function() { seal.classList.add('show'); });
       }
 
-      // 隐藏羽毛笔
       var quill = App.$('#upQuill');
       if (quill) quill.style.display = 'none';
 
-      // 显示重建按钮
       var rebuild = App.$('#upRebuild');
       if (rebuild) rebuild.style.visibility = '';
 
-      // 输入框变文字
-      var card2 = App.$('#upCard');
-      card2.querySelectorAll('input[data-key]').forEach(function(el) {
+      card.querySelectorAll('input[data-key]').forEach(function(el) {
         var div = document.createElement('div');
         div.className = 'up-text';
         div.textContent = el.value.trim() || '—';
         el.parentNode.replaceChild(div, el);
       });
-      card2.querySelectorAll('textarea[data-key]').forEach(function(el) {
+      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
         var div = document.createElement('div');
         div.className = 'up-text';
         div.textContent = el.value.trim() || '—';
