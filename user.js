@@ -275,11 +275,11 @@
           '<div class="up-pulse up-pulse-2"></div>' +
           '<div class="up-cross up-cross-1"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
           '<div class="up-cross up-cross-2"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
-          '<div class="up-gate-text">' +
+                    '<div class="up-gate-text">' +
+            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
             '<div class="up-gate-en">STEP BY STEP</div>' +
             '<div class="up-gate-title">一键生成</div>' +
             '<div class="up-gate-desc">逐步引导 · 轻松完成角色人设构建</div>' +
-            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
           '</div>' +
         '</div>';
 
