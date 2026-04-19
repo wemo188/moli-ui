@@ -201,8 +201,8 @@
         Social.uploadAvatar(this);
       });
 
-      body.querySelector('#socOpenProfile').addEventListener('click', function() {
-        Social.openProfile();
+            body.querySelector('#socOpenProfile').addEventListener('click', function() {
+        Social.openGate();
       });
     },
 
@@ -234,6 +234,81 @@
         reader.readAsDataURL(file);
       };
       input.click();
+    },
+
+    openGate: function() {
+      var old = App.$('#userGatePage');
+      if (old) old.remove();
+
+      var page = document.createElement('div');
+      page.id = 'userGatePage';
+      page.className = 'up-gate';
+
+      page.innerHTML =
+        '<button class="up-gate-back" id="upGateBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span>返回</span></button>' +
+
+        '<div class="up-gate-top" id="upGateTop">' +
+          '<div class="up-gate-top-bg"></div>' +
+          '<div class="up-ring up-ring-1"></div>' +
+          '<div class="up-ring up-ring-2"></div>' +
+          '<div class="up-ring up-ring-3"></div>' +
+          '<div class="up-dot up-dot-1"></div>' +
+          '<div class="up-dot up-dot-2"></div>' +
+          '<div class="up-dot up-dot-3"></div>' +
+          '<div class="up-dot up-dot-4"></div>' +
+          '<div class="up-line up-line-1"></div>' +
+          '<div class="up-line up-line-2"></div>' +
+          '<div class="up-gate-text">' +
+            '<div class="up-gate-en">FREE EDITING</div>' +
+            '<div class="up-gate-title">自由编辑</div>' +
+            '<div class="up-gate-desc">打开档案卡 · 自由填写每一项设定</div>' +
+            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="up-gate-divider"></div>' +
+
+        '<div class="up-gate-bot" id="upGateBot">' +
+          '<div class="up-gate-bot-bg"></div>' +
+          '<div class="up-grid"></div>' +
+          '<div class="up-pulse up-pulse-1"></div>' +
+          '<div class="up-pulse up-pulse-2"></div>' +
+          '<div class="up-cross up-cross-1"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
+          '<div class="up-cross up-cross-2"><div class="up-cross-h"></div><div class="up-cross-v"></div></div>' +
+          '<div class="up-gate-text">' +
+            '<div class="up-gate-en">STEP BY STEP</div>' +
+            '<div class="up-gate-title">一键生成</div>' +
+            '<div class="up-gate-desc">逐步引导 · 轻松完成角色人设构建</div>' +
+            '<div class="up-gate-arrow"><div class="up-gate-arrow-line"></div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>' +
+          '</div>' +
+        '</div>';
+
+      document.body.appendChild(page);
+
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        page.classList.add('show');
+      }); });
+
+      page.querySelector('#upGateBack').addEventListener('click', function() {
+        Social.closeGate();
+      });
+
+      page.querySelector('#upGateTop').addEventListener('click', function() {
+        Social.closeGate();
+        setTimeout(function() { Social.openProfile(); }, 380);
+      });
+
+      page.querySelector('#upGateBot').addEventListener('click', function() {
+        Social.closeGate();
+        App.showToast('一键生成 · 开发中');
+      });
+    },
+
+    closeGate: function() {
+      var page = App.$('#userGatePage');
+      if (!page) return;
+      page.classList.remove('show');
+      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
     openProfile: function() {
