@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/linmo77/my-tavern@main/水.ttf');
 
 /* ====== 前导页 · 动画 ====== */
 @keyframes upFloat1 { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-15px) rotate(5deg);} }
