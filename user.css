@@ -154,7 +154,7 @@
 .p14-avatar-wrap:hover .p14-avatar-ov { opacity: 1; }
 .p14-avatar-ov svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .p14-info { flex: 1; min-width: 0; }
-.p14-name { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 2px; }
+.p14-name { font-size: 13px; font-weight: 700; color: #000; letter-spacing: 1px; margin-bottom: 2px; }
 .p14-sign { font-size: 9px; color: #2a4262; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
 .p14-sign-italic { font-size: 9px; color: #7a9cbd; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .p14-screen-badge { position: absolute; top: 5px; right: 6px; z-index: 3; display: flex; align-items: center; gap: 3px; }
