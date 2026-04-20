@@ -360,19 +360,20 @@
 
       var shortHtml = FIELDS_SHORT.map(function(f, idx) {
         var val = user[f.key] || '';
-        var cls = (idx % 2 === 0) ? 'up-field-dark' : 'up-field-light';
+        var cnHtml = (f.key === 'phone') ? '<span class="up-field-cn">' + f.cn + '</span>' : '';
+        var ph = (f.key === 'phone') ? '输入十位虚拟数字，或者留空随机生成' : '';
         if (User.sealed) {
-          return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div>' + cnHtml + '</div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
-        return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="输入' + f.cn + '..." value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div>' + cnHtml + '</div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
       }).join('');
 
       var longHtml = FIELDS_LONG.map(function(f) {
         var val = user[f.key] || '';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
       var page = User._makePage();
@@ -565,7 +566,7 @@
 
       App.showToast('档案已封存');
       setTimeout(function() {
-        User._popPage();
+        User._popAll();
         User.load();
         if (User.list.length) User.openListPage();
       }, 800);
