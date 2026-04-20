@@ -82,7 +82,7 @@
           '<div style="font-family:\'NaiPao\',cursive;font-size:34px;color:#1e50a2;line-height:1.2;font-weight:400;">Exclusive Profile</div>' +
           '<div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#1e50a2,transparent);margin:14px auto 0;"></div>' +
         '</div>' +
-        '<div style="position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;gap:16px;">' +
+        '<div style="position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;gap:28px;">' +
           '<div class="up-ticket-shell" id="upForkFree"><div class="up-ticket-body"><div class="up-ticket-inner"></div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;"><div style="flex:1;">' +
               '<div class="up-ticket-name">自由编辑</div><div class="up-ticket-line"></div>' +
@@ -234,7 +234,7 @@
         '<div class="up-list-header">' +
           '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span>返回</span></div>' +
           '<div class="up-list-title">用户列表</div>' +
-          '<div class="up-list-add" id="upListAdd">+ 创建</div>' +
+                    '<div class="up-list-add" id="upListAdd">+</div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 40px;">' + cardsHtml + '</div>';
 
