@@ -174,9 +174,9 @@
 /* 左右两侧的按钮 */
 .p14-side-btn { font-size: 6px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 2.5px 8px; border-radius: 6px; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(230,242,255,0.6)); border: 1.5px solid var(--pc45, rgba(180,210,240,0.45)); box-shadow: 0 1px 3px rgba(130,175,220,0.08), inset 0 1px 1px rgba(255,255,255,0.6); transition: transform 0.12s; text-align: center; white-space: nowrap; }
 .p14-side-btn:active { transform: scale(0.88); }
-.p14-side-edit { color: #6590b8; }
-.p14-side-activate { color: #4a9a6a; }
-.p14-side-reset { color: #8aa0b8; }
+.p14-side-edit { color: #2a4262; }
+.p14-side-activate { color: #2a4262; }
+.p14-side-reset { color: #2a4262; }
 .p14-side-del { pointer-events: none; padding: 0; background: none; border: none; box-shadow: none; }
 .p14-side-del:active { transform: none; }
 .p14-del-text { pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; font-size: 6px; font-weight: 700; letter-spacing: 0.5px; color: rgba(200,95,90,0.75); padding: 2.5px 8px; border-radius: 6px; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(230,242,255,0.6)); border: 1.5px solid var(--pc45, rgba(180,210,240,0.45)); box-shadow: 0 1px 3px rgba(130,175,220,0.08), inset 0 1px 1px rgba(255,255,255,0.6); display: inline-block; }
