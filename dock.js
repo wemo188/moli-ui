@@ -11,8 +11,10 @@
         }
       });
 
-      App.safeOn('#dockShort', 'click', function() {
-        App.showToast('短对话 - 开发中');
+            App.safeOn('#dockShort', 'click', function() {
+        if (App.wechat && App.wechat.open) {
+          App.wechat.open();
+        }
       });
 
       App.safeOn('#dockCheck', 'click', function() {
