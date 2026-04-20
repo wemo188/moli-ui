@@ -273,7 +273,7 @@
           var uid = btn.dataset.uid;
           var u = User.getById(uid);
           if (!u) return;
-          u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardBg = '';
+          u.cardHue = 210; u.cardSat = 80; u.cardLit = 87;
           User.save();
           User._popAll();
           User.openListPage();
