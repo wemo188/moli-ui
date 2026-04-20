@@ -15,6 +15,23 @@
     { key: 'bio', en: 'DESCRIPTION', cn: '个人描述' }
   ];
 
+  function pcVars(hue, sat, lit) {
+    var bs = Math.max(40, Math.min(70, +sat));
+    var bl = Math.max(45, Math.min(70, +lit));
+    return '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
+  }
+
+  function setPcVars(card, h, s, l) {
+    var bs = Math.max(40, Math.min(70, +s));
+    var bl = Math.max(45, Math.min(70, +l));
+    card.style.setProperty('--pc5', 'hsla('+h+','+bs+'%,'+bl+'%,0.5)');
+    card.style.setProperty('--pc25', 'hsla('+h+','+bs+'%,'+bl+'%,0.25)');
+    card.style.setProperty('--pc45', 'hsla('+h+','+bs+'%,'+bl+'%,0.45)');
+    card.style.setProperty('--pc35', 'hsla('+h+','+bs+'%,'+bl+'%,0.35)');
+    card.style.setProperty('--pc18', 'hsla('+h+','+bs+'%,'+bl+'%,0.18)');
+    card.style.setProperty('--pc1', 'hsla('+h+','+bs+'%,'+bl+'%,0.1)');
+  }
+
   var User = {
     list: [],
     sealed: false,
@@ -80,7 +97,7 @@
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
-          var vars = '--pc5:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5);--pc25:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.25);--pc45:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.45);--pc35:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.35);--pc18:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.18);--pc1:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.1);';
+          var vars = pcVars(hue, sat, lit);
 
           return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
             bgImgHtml +
@@ -200,12 +217,7 @@
           if (preview) preview.style.background = 'hsl(' + h + ',' + s + '%,' + l + '%)';
           card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
-          card.style.setProperty('--pc5', 'hsla('+h+','+s+'%,'+l+'%,0.5)');
-          card.style.setProperty('--pc25', 'hsla('+h+','+s+'%,'+l+'%,0.25)');
-          card.style.setProperty('--pc45', 'hsla('+h+','+s+'%,'+l+'%,0.45)');
-          card.style.setProperty('--pc35', 'hsla('+h+','+s+'%,'+l+'%,0.35)');
-          card.style.setProperty('--pc18', 'hsla('+h+','+s+'%,'+l+'%,0.18)');
-          card.style.setProperty('--pc1', 'hsla('+h+','+s+'%,'+l+'%,0.1)');
+          setPcVars(card, h, s, l);
           var u = User.getById(uid);
           if (u) { u.cardHue = +h; u.cardSat = +s; u.cardLit = +l; User.save(); }
         });
@@ -348,10 +360,11 @@
 
       var shortHtml = FIELDS_SHORT.map(function(f, idx) {
         var val = user[f.key] || '';
+        var cls = (idx % 2 === 0) ? 'up-field-dark' : 'up-field-light';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+          return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="输入' + f.cn + '..." value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+        return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="输入' + f.cn + '..." value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
       }).join('');
 
       var longHtml = FIELDS_LONG.map(function(f) {
@@ -407,7 +420,6 @@
 
       User._pushPage(page);
 
-      // 头像
       if (!User.sealed) {
         page.querySelector('#upAvatarBox').addEventListener('click', function() {
           var box = this;
@@ -419,12 +431,10 @@
         });
       }
 
-      // 返回
       page.querySelector('.up-profile-back').addEventListener('click', function() {
         User._popPage();
       });
 
-      // 重建（不弹确认）
       page.querySelector('.up-profile-rebuild').addEventListener('click', function() {
         var eid = page._editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
@@ -433,7 +443,6 @@
         App.showToast('已解除封存');
       });
 
-      // 展开编辑器
       page.querySelectorAll('.up-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -445,7 +454,6 @@
         });
       });
 
-      // 羽毛笔保存
       var quill = page.querySelector('#upQuill');
       if (quill) quill.addEventListener('click', function() { User.saveProfile(page); });
     },
