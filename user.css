@@ -111,7 +111,6 @@
 /* ====== PSP 名片卡 ====== */
 .p14-card {
   position: relative; margin: 0 10% 16px;
-  min-height: 220px;
   background: linear-gradient(155deg,rgba(195,220,248,0.6),rgba(215,235,255,0.45) 25%,rgba(240,248,255,0.7) 45%,rgba(220,238,255,0.5) 65%,rgba(200,225,250,0.55));
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid rgba(200,225,252,0.5); border-radius: 18px;
@@ -125,7 +124,7 @@
 .p14-top { position: relative; z-index: 2; display: flex; justify-content: center; gap: 10px; padding: 10px 0 6px; }
 .p14-led { width: 4.5px; height: 4.5px; border-radius: 50%; background: rgba(170,200,230,0.4); box-shadow: inset 0 0.5px 1px rgba(255,255,255,0.4); }
 .p14-led-on { background: #a0c8f0; animation: p14Glow 2s ease-in-out infinite; }
-.p14-body { position: relative; z-index: 2; display: flex; align-items: center; gap: 0; padding: 0 8px 0px; }
+.p14-body { position: relative; z-index: 2; display: flex; align-items: center; gap: 0; padding: 0 8px 12px; }
 
 .p14-left { width: 52px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 6px 0 3px; }
 .p14-paw-btn { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(225,238,252,0.6)); border: 2px solid rgba(180,210,240,0.5); box-shadow: 0 3px 8px rgba(130,175,220,0.18), 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.12s, box-shadow 0.25s, background 0.25s, border-color 0.25s; }
@@ -165,7 +164,7 @@
 
 .p14-right { width: 50px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0 2px; }
 .p14-dpad { display: grid; grid-template-areas: ". up ." "left . right" ". down ."; grid-template-columns: 16px 16px 16px; grid-template-rows: 16px 16px 16px; gap: 0; align-items: center; justify-items: center; }
-.p14-dpad-btn { width: 15px; height: 15px; border-radius: 50%; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(230,242,255,0.6)); border: 1.5px solid rgba(180,210,240,0.5); display: flex; align-items: center; justify-content: center; font-size: 5.5px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.12s, box-shadow 0.12s; box-shadow: 0 2px 3px rgba(130,175,220,0.1), inset 0 1px 1px rgba(255,255,255,0.6); }
+.p14-dpad-btn { width: 15px; height: 15px; border-radius: 50%; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(230,242,255,0.6)); border: 1.5px solid rgba(180,210,240,0.5); display: flex; align-items: center; justify-content: center; font-size: 8px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.12s, box-shadow 0.12s; box-shadow: 0 2px 3px rgba(130,175,220,0.1), inset 0 1px 1px rgba(255,255,255,0.6); }
 .p14-dpad-btn:active { transform: scale(0.82); box-shadow: inset 0 1px 3px rgba(130,175,220,0.18); }
 .p14-dpad-up { grid-area: up; } .p14-dpad-down { grid-area: down; } .p14-dpad-left { grid-area: left; } .p14-dpad-right { grid-area: right; }
 .p14-dk { color: #2a4262; } .p14-rd { color: #c8605a; }
@@ -188,7 +187,7 @@
 .p14-color-preview { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; border: 1.5px solid rgba(180,210,240,0.4); box-shadow: inset 0 1px 2px rgba(0,0,0,0.06); }
 
 /* ====== 底部按钮 ====== */
-.p14-actions { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 0px 14px 10px; }
+.p14-actions { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 0 14px 0; }
 .p14-act-btn { font-size: 7px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 3.5px 10px; border-radius: 8px; background: linear-gradient(145deg,rgba(255,255,255,0.85),rgba(230,242,255,0.6)); border: 1.5px solid rgba(180,210,240,0.45); box-shadow: 0 2px 4px rgba(130,175,220,0.1), inset 0 1px 1px rgba(255,255,255,0.6); transition: transform 0.12s, box-shadow 0.12s; text-align: center; }
 .p14-act-btn:active { transform: scale(0.9); box-shadow: inset 0 1px 3px rgba(130,175,220,0.15); }
 .p14-act-edit { color: #6590b8; }
