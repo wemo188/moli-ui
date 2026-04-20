@@ -16,14 +16,14 @@
   ];
 
   function pcVars(hue, sat, lit) {
-    var bs = Math.max(40, Math.min(70, +sat));
-    var bl = Math.max(45, Math.min(70, +lit));
+    var bs = Math.max(0, Math.min(70, +sat));
+    var bl = Math.max(30, Math.min(70, +lit));
     return '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
   }
 
   function setPcVars(card, h, s, l) {
-    var bs = Math.max(40, Math.min(70, +s));
-    var bl = Math.max(45, Math.min(70, +l));
+    var bs = Math.max(0, Math.min(70, +s));
+    var bl = Math.max(30, Math.min(70, +l));
     card.style.setProperty('--pc5', 'hsla('+h+','+bs+'%,'+bl+'%,0.5)');
     card.style.setProperty('--pc25', 'hsla('+h+','+bs+'%,'+bl+'%,0.25)');
     card.style.setProperty('--pc45', 'hsla('+h+','+bs+'%,'+bl+'%,0.45)');
