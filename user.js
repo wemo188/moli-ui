@@ -39,7 +39,13 @@
     _pages: [],
 
     load: function() { User.list = App.LS.get('userList') || []; },
-    save: function() { App.LS.set('userList', User.list); },
+        save: function() {
+      try {
+        localStorage.setItem('userList', JSON.stringify(User.list));
+      } catch(e) {
+        App.showToast('存储空间不足，请使用URL图片');
+      }
+    },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
     getActiveUser: function() { var id = App.LS.get('activeUserId'); if (id) { var u = User.getById(id); if (u) return u; } return User.list[0] || null; },
     setActive: function(id) { App.LS.set('activeUserId', id); },
