@@ -80,8 +80,6 @@
 .up-field-line .up-text { font-size: 12px; color: #1a1a1a; font-weight: 500; }
 .up-field-underline { height: 1.5px; background: #1a1a1a; }
 .up-field-underline2 { height: 1px; background: #d4d4d4; margin-top: 1px; }
-.up-field-dark .up-field-underline { background: #1a1a1a; }
-.up-field-light .up-field-underline { background: #d4d4d4; }
 .up-divider { margin: 3px 18px; display: flex; align-items: center; gap: 8px; }
 .up-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
 .up-divider-text { font-size: 7px; color: #ccc; letter-spacing: 2px; }
