@@ -1,238 +1,62 @@
+
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
 
   var FIELDS_SHORT = [
-    { key: 'realName', en: 'NAME', cn: '姓名' },
     { key: 'nickname', en: 'NICKNAME', cn: '昵称' },
     { key: 'gender', en: 'GENDER', cn: '性别' },
-    { key: 'identity', en: 'IDENTITY', cn: '身份' }
+    { key: 'age', en: 'AGE', cn: '年龄' },
+    { key: 'birthday', en: 'BIRTHDAY', cn: '生日' },
+    { key: 'phone', en: 'PHONE', cn: '手机号' }
   ];
 
   var FIELDS_LONG = [
-    { key: 'appearance', en: 'APPEARANCE', cn: '外貌' },
-    { key: 'personality', en: 'PERSONALITY', cn: '性格' },
-    { key: 'speakStyle', en: 'SPEAKING STYLE', cn: '说话风格' },
-    { key: 'bio', en: 'ABOUT', cn: '简介' }
+    { key: 'bio', en: 'DESCRIPTION', cn: '个人描述' }
   ];
 
-  var Social = {
-    currentTab: 'chat',
-    panelEl: null,
-    userData: null,
+  var User = {
+    list: [],
     sealed: false,
+    tempAvatar: '',
 
-    load: function() {
-      Social.userData = App.LS.get('userData') || null;
-      Social.sealed = !!(Social.userData && Social.userData._sealed);
+    load: function() { User.list = App.LS.get('userList') || []; },
+    save: function() { App.LS.set('userList', User.list); },
+
+    getById: function(id) {
+      for (var i = 0; i < User.list.length; i++) {
+        if (User.list[i].id === id) return User.list[i];
+      }
+      return null;
     },
-    save: function() { App.LS.set('userData', Social.userData); },
 
-    getActiveUser: function() { return Social.userData; },
+    getActiveUser: function() {
+      var activeId = App.LS.get('activeUserId');
+      if (activeId) {
+        var u = User.getById(activeId);
+        if (u) return u;
+      }
+      return User.list[0] || null;
+    },
 
+    setActive: function(id) { App.LS.set('activeUserId', id); },
+
+    // ====== 入口：打开用户管理 ======
     open: function() {
-      Social.load();
-      var panel = App.$('#socialPanel');
-      if (!panel) return;
-      Social.panelEl = panel;
-      Social.currentTab = 'chat';
-      Social.render();
-      panel.classList.remove('hidden');
-      requestAnimationFrame(function() { panel.classList.add('show'); });
-    },
-
-    close: function() {
-      var panel = App.$('#socialPanel');
-      if (!panel) return;
-      panel.classList.remove('show');
-      setTimeout(function() { panel.classList.add('hidden'); }, 350);
-    },
-
-    render: function() {
-      var panel = Social.panelEl;
-      if (!panel) return;
-      var isFS = App.LS.get('socFullScreen') || false;
-      var wrapClass = isFS ? 'soc-fullscreen' : '';
-
-      panel.innerHTML =
-        '<div class="' + wrapClass + '" id="socWrap"><div class="soc-phone"><div class="soc-inner">' +
-          '<div class="soc-header">' +
-            '<button class="soc-header-btn" id="socBackBtn" type="button">' +
-              '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
-            '</button>' +
-            '<div style="flex:1;"></div>' +
-            '<button class="soc-me-mode-btn" id="socModeToggle" type="button" style="display:none;">' +
-              '<span class="soc-me-mode-val">' + (isFS ? '全屏' : '手机') + '</span>' +
-              '<span class="soc-me-mode-switch">切换</span>' +
-            '</button>' +
-            '<div style="flex:1;"></div>' +
-            '<div style="position:relative;">' +
-              '<button class="soc-header-btn" id="socAddBtn" type="button">' +
-                '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-              '</button>' +
-              '<div class="soc-add-menu" id="socAddMenu">' +
-                '<div class="soc-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
-                '<div class="soc-add-menu-item" data-action="changeTheme"><span>更换主题</span></div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="soc-search"><div class="soc-search-bar">' +
-            '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>' +
-            '<span>搜索</span>' +
-          '</div></div>' +
-          '<div class="soc-body" id="socBody"></div>' +
-          '<div class="soc-tabbar">' +
-            '<div class="soc-tab' + (Social.currentTab === 'chat' ? ' active' : '') + '" data-tab="chat">' +
-              '<svg viewBox="0 0 64 64"><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="23" y1="28" x2="41" y2="28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="34" x2="35" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
-              '<span>聊天</span>' +
-            '</div>' +
-            '<div class="soc-tab' + (Social.currentTab === 'char' ? ' active' : '') + '" data-tab="char">' +
-              '<svg viewBox="0 0 64 64"><path d="M4 34H14L18 26L23 42L28 20L33 38L37 30H44" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M52 28C52 25 50 23 48 23C46 23 44.5 25 44.5 25C44.5 25 43 23 41 23C39 23 37 25 37 28C37 32 44.5 37 44.5 37C44.5 37 52 32 52 28Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="44" y1="34" x2="60" y2="34" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
-              '<span>通讯录</span>' +
-            '</div>' +
-            '<div class="soc-tab' + (Social.currentTab === 'moments' ? ' active' : '') + '" data-tab="moments">' +
-              '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(120 32 32)"/></svg>' +
-              '<span>朋友圈</span>' +
-            '</div>' +
-            '<div class="soc-tab' + (Social.currentTab === 'me' ? ' active' : '') + '" data-tab="me">' +
-              '<svg viewBox="0 0 64 64"><defs><pattern id="mmg-hatch-tab" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="currentColor" stroke-width="2.2"/></pattern></defs><circle cx="32" cy="33" r="21" stroke="currentColor" stroke-width="2.4" fill="none"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="url(#mmg-hatch-tab)" stroke="currentColor" stroke-width="1.6"/></svg>' +
-              '<span>我的</span>' +
-            '</div>' +
-          '</div>' +
-        '</div></div></div>';
-
-      Social.renderTab();
-      Social.bindEvents();
-    },
-
-    renderTab: function() {
-      var body = App.$('#socBody');
-      if (!body) return;
-      var search = Social.panelEl.querySelector('.soc-search');
-      var modeBtn = Social.panelEl.querySelector('#socModeToggle');
-
-      if (Social.currentTab === 'me') {
-        if (search) search.style.display = 'none';
-        if (modeBtn) modeBtn.style.display = '';
+      User.load();
+      if (!User.list.length) {
+        User.openForkPage();
       } else {
-        if (search) search.style.display = '';
-        if (modeBtn) modeBtn.style.display = 'none';
+        User.openListPage();
       }
-
-      if (Social.currentTab === 'chat') Social.renderChatTab(body);
-      else if (Social.currentTab === 'char') Social.renderCharTab(body);
-      else if (Social.currentTab === 'moments') body.innerHTML = '<div class="soc-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><div class="soc-empty-text">朋友圈功能开发中</div></div>';
-      else if (Social.currentTab === 'me') Social.renderMeTab(body);
     },
 
-    renderChatTab: function(body) {
-      var chars = App.character ? App.character.list : [];
-      if (!chars.length) {
-        body.innerHTML = '<div class="soc-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="soc-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
-        return;
-      }
-      body.innerHTML = chars.map(function(c) {
-        var avatarHtml = c.avatar
-          ? '<img src="' + App.esc(c.avatar) + '" alt="">'
-          : '<div class="soc-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-        return '<div class="soc-chat-item" data-char-id="' + c.id + '">' +
-          '<div class="soc-avatar">' + avatarHtml + '</div>' +
-          '<div class="soc-chat-content">' +
-            '<div class="soc-chat-top"><span class="soc-chat-name">' + App.esc(c.name || '未命名') + '</span></div>' +
-            '<div class="soc-chat-msg">点击开始聊天</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-
-      body.querySelectorAll('.soc-chat-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var id = item.dataset.charId;
-          if (id && App.chat) {
-            Social.close();
-            setTimeout(function() { App.chat.startChat(id); }, 380);
-          }
-        });
-      });
-    },
-
-    renderCharTab: function(body) {
-      var chars = App.character ? App.character.list : [];
-      if (!chars.length) {
-        body.innerHTML = '<div class="soc-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="soc-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
-        return;
-      }
-      body.innerHTML = chars.map(function(c) {
-        var avatarHtml = c.avatar
-          ? '<img src="' + App.esc(c.avatar) + '" alt="">'
-          : '<div class="soc-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-        return '<div class="soc-chat-item" data-char-id="' + c.id + '">' +
-          '<div class="soc-avatar">' + avatarHtml + '</div>' +
-          '<div class="soc-chat-content">' +
-            '<div class="soc-chat-top"><span class="soc-chat-name">' + App.esc(c.name || '未命名') + '</span></div>' +
-            '<div class="soc-chat-msg">' + App.esc((c.profile || '').split('\n')[0].slice(0, 30) || '暂无简介') + '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    },
-
-    renderMeTab: function(body) {
-      var user = Social.userData;
-      var name = user ? (user.nickname || user.realName || '未命名') : '未创建用户';
-
-      var avatarHtml = user && user.avatar
-        ? '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
-        : '<div class="soc-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-
-      body.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 16px;gap:12px;">' +
-          '<div id="socMeAvatar" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">' + avatarHtml + '</div>' +
-          '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
-        '</div>' +
-        '<div>' +
-          '<div class="soc-me-link" id="socOpenProfile">' +
-            '<span class="soc-me-link-text">user资料</span>' +
-            '<span class="soc-me-link-arrow">›</span>' +
-          '</div>' +
-        '</div>';
-
-      body.querySelector('#socMeAvatar').addEventListener('click', function() {
-        Social.uploadAvatar(this);
-      });
-
-      body.querySelector('#socOpenProfile').addEventListener('click', function() {
-        Social.openForkPage();
-      });
-    },
-
-    uploadAvatar: function(box) {
-      var input = document.createElement('input');
-      input.type = 'file'; input.accept = 'image/*';
-      document.body.appendChild(input);
-      input.onchange = function(e) {
-        var file = e.target.files[0];
-        document.body.removeChild(input);
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var src = ev.target.result;
-          if (App.cropImage) {
-            App.cropImage(src, function(cropped) {
-              if (!Social.userData) Social.userData = {};
-              Social.userData.avatar = cropped;
-              Social.save();
-              Social.renderTab();
-            });
-          } else {
-            if (!Social.userData) Social.userData = {};
-            Social.userData.avatar = src;
-            Social.save();
-            Social.renderTab();
-          }
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
+    closePage: function(page) {
+      if (!page) return;
+      page.style.transform = 'translateX(100%)';
+      page.style.opacity = '0';
+      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
 
     // ====== 前导页：自由编辑 / 一键生成 ======
@@ -254,129 +78,230 @@
 
         '<div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:56px 20px 20px;">' +
           '<div id="upForkBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
-            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '<span style="font-size:12px;color:#adcdea;">返回</span>' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:rgba(30,80,162,0.5);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span style="font-size:12px;color:rgba(30,80,162,0.5);">返回</span>' +
           '</div>' +
-          '<div style="font-size:8px;color:rgba(173,205,234,0.5);letter-spacing:4px;font-weight:600;">PROFILE SETUP</div>' +
+          '<div style="font-size:8px;color:rgba(30,80,162,0.3);letter-spacing:4px;font-weight:600;">PROFILE SETUP</div>' +
           '<div style="width:40px;"></div>' +
         '</div>' +
 
-        '<div style="position:relative;z-index:2;text-align:center;padding:20px 30px 30px;">' +
-          '<div style="font-size:22px;font-weight:300;color:#2e4258;letter-spacing:3px;line-height:1.6;">创建你的</div>' +
-          '<div style="font-size:22px;font-weight:700;color:#2e4258;letter-spacing:3px;line-height:1.6;">专属档案</div>' +
-          '<div style="width:40px;height:2px;background:linear-gradient(90deg,#adcdea,rgba(173,205,234,0.2));margin:12px auto 0;"></div>' +
+        '<div style="position:relative;z-index:2;text-align:center;padding:16px 30px 32px;">' +
+          '<div style="font-family:\'Dancing Script\',cursive;font-size:30px;color:#1e50a2;line-height:1.3;font-weight:700;">Create Your</div>' +
+          '<div style="font-family:\'Dancing Script\',cursive;font-size:34px;color:#1e50a2;line-height:1.2;font-weight:700;">Exclusive Profile</div>' +
+          '<div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#1e50a2,transparent);margin:14px auto 0;"></div>' +
         '</div>' +
 
-        '<div style="position:relative;z-index:2;padding:10px 24px;display:flex;flex-direction:column;gap:16px;">' +
+        '<div style="position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;gap:16px;">' +
 
-          '<div class="up-fork-card" id="upForkFree">' +
-            '<div class="up-fork-card-corner"></div>' +
-            '<div class="up-fork-card-line"></div>' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-              '<div>' +
-                '<div style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:2px;">自由编辑</div>' +
-                '<div style="font-size:10px;color:#adcdea;letter-spacing:1.5px;margin-top:4px;font-weight:500;">FREE EDITING</div>' +
-                '<div style="font-size:11px;color:#8aa0b8;margin-top:10px;line-height:1.6;">打开空白档案<br>自由填写每一项内容</div>' +
+          '<div class="up-ticket-shell" id="upForkFree"><div class="up-ticket-body"><div class="up-ticket-inner"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;">' +
+              '<div style="flex:1;">' +
+                '<div class="up-ticket-name">自由编辑</div>' +
+                '<div class="up-ticket-line"></div>' +
+                '<div class="up-ticket-sub">FREE EDITING</div>' +
+                '<div class="up-ticket-desc">打开空白档案 · 自由填写每一项内容</div>' +
               '</div>' +
-              '<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">' +
-                '<svg viewBox="0 0 48 48" style="width:48px;height:48px;">' +
-                  '<rect x="10" y="6" width="28" height="36" rx="2" fill="none" stroke="rgba(173,205,234,0.4)" stroke-width="1.5"/>' +
-                  '<line x1="16" y1="16" x2="32" y2="16" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
-                  '<line x1="16" y1="22" x2="28" y2="22" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
-                  '<line x1="16" y1="28" x2="30" y2="28" stroke="rgba(173,205,234,0.3)" stroke-width="1.2" stroke-linecap="round"/>' +
-                  '<line x1="30" y1="34" x2="36" y2="28" stroke="#adcdea" stroke-width="1.5" stroke-linecap="round"/>' +
-                  '<circle cx="30" cy="34" r="1.5" fill="#adcdea" opacity="0.5"/>' +
-                '</svg>' +
+              '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;">' +
+                '<svg viewBox="0 0 48 48" style="width:44px;height:44px;"><rect x="10" y="6" width="28" height="36" rx="2" fill="none" stroke="rgba(30,80,162,0.3)" stroke-width="1.5"/><line x1="16" y1="16" x2="32" y2="16" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="22" x2="28" y2="22" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="28" x2="30" y2="28" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="30" y1="34" x2="36" y2="28" stroke="#1e50a2" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/><circle cx="30" cy="34" r="1.5" fill="#1e50a2" opacity="0.4"/></svg>' +
               '</div>' +
             '</div>' +
-            '<div class="up-fork-card-dots">' +
-              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.3;"></div>' +
-              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.5;"></div>' +
-              '<div style="width:3px;height:3px;background:#adcdea;opacity:0.3;"></div>' +
-            '</div>' +
-          '</div>' +
+          '</div></div>' +
 
-          '<div class="up-fork-card" id="upForkStep" style="background:linear-gradient(135deg,rgba(173,205,234,0.06),rgba(173,205,234,0.02));">' +
-            '<div class="up-fork-card-corner"></div>' +
-            '<div class="up-fork-card-line"></div>' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-              '<div>' +
-                '<div style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:2px;">一键生成</div>' +
-                '<div style="font-size:10px;color:#adcdea;letter-spacing:1.5px;margin-top:4px;font-weight:500;">STEP BY STEP</div>' +
-                '<div style="font-size:11px;color:#8aa0b8;margin-top:10px;line-height:1.6;">跟随引导一步步填写<br>轻松完成个人设定</div>' +
+          '<div class="up-ticket-shell" id="upForkStep"><div class="up-ticket-body"><div class="up-ticket-inner"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;">' +
+              '<div style="flex:1;">' +
+                '<div class="up-ticket-name">一键生成</div>' +
+                '<div class="up-ticket-line"></div>' +
+                '<div class="up-ticket-sub">STEP BY STEP</div>' +
+                '<div class="up-ticket-desc">跟随引导一步步填写 · 轻松完成设定</div>' +
               '</div>' +
-              '<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">' +
-                '<svg viewBox="0 0 48 48" style="width:48px;height:48px;">' +
-                  '<circle cx="24" cy="24" r="18" fill="none" stroke="rgba(173,205,234,0.15)" stroke-width="1.5"/>' +
-                  '<circle cx="24" cy="24" r="18" fill="none" stroke="#adcdea" stroke-width="1.5" stroke-dasharray="28 85" stroke-linecap="round" transform="rotate(-90 24 24)" style="animation:upPulse 3s ease-in-out infinite;"/>' +
-                  '<path d="M20 24h8M25 20l4 4-4 4" fill="none" stroke="#adcdea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-                '</svg>' +
+              '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;">' +
+                '<svg viewBox="0 0 48 48" style="width:44px;height:44px;"><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.12)" stroke-width="1.5"/><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-dasharray="28 85" stroke-linecap="round" transform="rotate(-90 24 24)" style="animation:upPulse 3s ease-in-out infinite;"/><path d="M20 24h8M25 20l4 4-4 4" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
               '</div>' +
             '</div>' +
-            '<div class="up-fork-card-steps">' +
-              '<div style="width:12px;height:2px;background:#adcdea;opacity:0.5;border-radius:1px;"></div>' +
-              '<div style="width:8px;height:2px;background:#adcdea;opacity:0.3;border-radius:1px;"></div>' +
-              '<div style="width:8px;height:2px;background:#adcdea;opacity:0.2;border-radius:1px;"></div>' +
-            '</div>' +
-          '</div>' +
+          '</div></div>' +
 
         '</div>';
 
       document.body.appendChild(page);
-
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         page.style.transform = 'translateX(0)';
         page.style.opacity = '1';
       }); });
 
       page.querySelector('#upForkBack').addEventListener('click', function() {
-        Social.closePage(page);
+        User.closePage(page);
       });
 
       page.querySelector('#upForkFree').addEventListener('click', function() {
-        Social.closePage(page);
-        setTimeout(function() { Social.openProfile(); }, 380);
+        User.closePage(page);
+        setTimeout(function() { User.openProfile(); }, 380);
       });
 
       page.querySelector('#upForkStep').addEventListener('click', function() {
-        Social.closePage(page);
-        setTimeout(function() { Social.openStepGuide(); }, 380);
+        User.closePage(page);
+        setTimeout(function() { User.openStepGuide(); }, 380);
       });
     },
 
-    closePage: function(page) {
-      if (!page) return;
-      page.style.transform = 'translateX(100%)';
-      page.style.opacity = '0';
-      setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
+    openStepGuide: function() {
+      App.showToast('一键生成 · 开发中');
     },
 
-    // ====== 自由编辑档案页 ======
-    openProfile: function() {
+    // ====== 用户列表页 ======
+    openListPage: function() {
+      var old = App.$('#userListPage');
+      if (old) old.remove();
+
+      User.load();
+
+      var page = document.createElement('div');
+      page.id = 'userListPage';
+      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+
+      var activeUser = User.getActiveUser();
+      var activeId = activeUser ? activeUser.id : '';
+
+      var cardsHtml = '';
+      if (!User.list.length) {
+        cardsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;">暂无用户，点击右上角创建</div>';
+      } else {
+        cardsHtml = User.list.map(function(u, i) {
+          var isActive = u.id === activeId;
+          var idx = String(i + 1).padStart(3, '0');
+          var avatarHtml = u.avatar
+            ? '<img src="' + App.esc(u.avatar) + '">'
+            : '';
+          var sign1 = u.sign1 || '';
+          var sign2 = u.sign2 || '';
+
+          return '<div class="p14-card" data-uid="' + u.id + '">' +
+            '<div class="p14-top">' +
+              '<div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div>' +
+              '<div class="p14-led"></div>' +
+              '<div class="p14-led"></div>' +
+            '</div>' +
+            '<div class="p14-body">' +
+              '<div class="p14-screen-wrap"><div class="p14-screen">' +
+                '<div class="p14-screen-badge">' +
+                  (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') +
+                '</div>' +
+                '<div class="p14-screen-no">NO.' + idx + '</div>' +
+                '<div class="p14-screen-content">' +
+                  '<div class="p14-avatar">' + avatarHtml + '</div>' +
+                  '<div class="p14-info">' +
+                    '<div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
+                    (sign1 ? '<div class="p14-sign">' + App.esc(sign1) + '</div>' : '') +
+                    (sign2 ? '<div class="p14-sign-italic">' + App.esc(sign2) + '</div>' : '') +
+                  '</div>' +
+                '</div>' +
+              '</div></div>' +
+              '<div class="p14-right">' +
+                '<div class="p14-act-btn p14-act-edit" data-uid="' + u.id + '">编辑</div>' +
+                '<div class="p14-act-btn" data-uid="' + u.id + '" data-action="activate" style="color:#6590b8;">' + (isActive ? '当前' : '切换') + '</div>' +
+                '<div class="p14-act-btn p14-act-del" data-uid="' + u.id + '">删除</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      page.innerHTML =
+        '<div class="up-list-header">' +
+          '<div class="up-list-back" id="upListBack">' +
+            '<svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span>返回</span>' +
+          '</div>' +
+          '<div class="up-list-title">用户列表</div>' +
+          '<div class="up-list-add" id="upListAdd">+ 创建</div>' +
+        '</div>' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 40px;">' +
+          cardsHtml +
+        '</div>';
+
+      document.body.appendChild(page);
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        page.style.transform = 'translateX(0)';
+        page.style.opacity = '1';
+      }); });
+
+      page.querySelector('#upListBack').addEventListener('click', function() {
+        User.closePage(page);
+      });
+
+      page.querySelector('#upListAdd').addEventListener('click', function() {
+        User.closePage(page);
+        setTimeout(function() { User.openForkPage(); }, 380);
+      });
+
+      page.querySelectorAll('.p14-act-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var uid = btn.dataset.uid;
+          User.closePage(page);
+          setTimeout(function() { User.openProfile(uid); }, 380);
+        });
+      });
+
+      page.querySelectorAll('[data-action="activate"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var uid = btn.dataset.uid;
+          User.setActive(uid);
+          User.closePage(page);
+          setTimeout(function() { User.openListPage(); }, 380);
+          App.showToast('已切换用户');
+        });
+      });
+
+      page.querySelectorAll('.p14-act-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('确定删除这个用户？')) return;
+          User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
+          User.save();
+          User.closePage(page);
+          setTimeout(function() {
+            if (User.list.length) User.openListPage();
+            else User.openForkPage();
+          }, 380);
+          App.showToast('已删除');
+        });
+      });
+    },
+
+    // ====== 档案编辑页 ======
+    openProfile: function(editId) {
       var old = App.$('#userProfilePage');
       if (old) old.remove();
 
-      Social.load();
-      var user = Social.userData || {};
-      Social.sealed = !!(user._sealed);
+      User.load();
+      var existing = editId ? User.getById(editId) : null;
+      var user = existing || {};
+      User.sealed = !!(user._sealed);
+      User.tempAvatar = user.avatar || '';
 
       var today = new Date();
       var dateStr = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
 
+      var avatarHtml = user.avatar
+        ? '<img src="' + App.esc(user.avatar) + '">'
+        : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
       var shortHtml = FIELDS_SHORT.map(function(f) {
         var val = user[f.key] || '';
-        if (Social.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        if (User.sealed) {
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + f.cn + '..." value="' + App.esc(val) + '"></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="输入' + f.cn + '..." value="' + App.esc(val) + '"></div></div>';
       }).join('');
 
       var longHtml = FIELDS_LONG.map(function(f) {
         var val = user[f.key] || '';
-        if (Social.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        if (User.sealed) {
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><textarea data-key="' + f.key + '" placeholder="' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><textarea data-key="' + f.key + '" placeholder="输入' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
       var page = document.createElement('div');
@@ -390,13 +315,13 @@
             '<span style="font-size:12px;color:#999;">返回</span>' +
           '</div>' +
           '<div style="font-size:10px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div id="upRebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (Social.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+          '<div id="upRebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
         '</div>' +
 
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
           '<div class="up-card" id="upCard">' +
 
-            '<div class="up-seal' + (Social.sealed ? ' show' : '') + '" id="upSeal">' +
+            '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
               '<div class="up-seal-outer"><div class="up-seal-dashes"></div>' +
                 '<div class="up-seal-inner">' +
                   '<div class="up-seal-top">PERSONAL FILE</div>' +
@@ -412,86 +337,171 @@
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
 
+            '<div class="up-avatar-area"><div class="up-avatar-box" id="upAvatarBox">' + avatarHtml + '</div></div>' +
+
+            '<div class="up-sign-area">' +
+              (User.sealed
+                ? '<div style="font-size:12px;color:#666;text-align:center;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic" style="text-align:center;">' + App.esc(user.sign2 || '') + '</div>'
+                : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（显示为斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') +
+            '</div>' +
+
+            '<div class="up-name-area">' +
+              '<div class="up-name-label">NAME 姓名</div>' +
+              (User.sealed
+                ? '<div style="font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;">' + App.esc(user.realName || '—') + '</div>'
+                : '<input type="text" class="up-name-input" data-key="realName" placeholder="输入姓名..." value="' + App.esc(user.realName || '') + '">') +
+              '<div class="up-name-underline"></div>' +
+              '<div class="up-name-underline2"></div>' +
+            '</div>' +
+
             shortHtml +
 
-            '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL</div><div class="up-divider-line"></div></div>' +
+            '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL 详情</div><div class="up-divider-line"></div></div>' +
 
             longHtml +
 
             '<div class="up-card-foot">CLASSIFIED</div>' +
             '<div class="up-bar-bot"></div>' +
 
-            '<div class="up-quill" id="upQuill" style="' + (Social.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
+            '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
 
           '</div>' +
         '</div>';
 
       document.body.appendChild(page);
+      page._editId = editId || null;
 
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         page.style.transform = 'translateX(0)';
         page.style.opacity = '1';
       }); });
 
+      // 头像上传
+      if (!User.sealed) {
+        page.querySelector('#upAvatarBox').addEventListener('click', function() {
+          var box = this;
+          var input = document.createElement('input');
+          input.type = 'file'; input.accept = 'image/*';
+          document.body.appendChild(input);
+          input.onchange = function(e) {
+            var file = e.target.files[0];
+            document.body.removeChild(input);
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+              var src = ev.target.result;
+              if (App.cropImage) {
+                App.cropImage(src, function(cropped) {
+                  User.tempAvatar = cropped;
+                  box.innerHTML = '<img src="' + cropped + '">';
+                });
+              } else {
+                User.tempAvatar = src;
+                box.innerHTML = '<img src="' + src + '">';
+              }
+            };
+            reader.readAsDataURL(file);
+          };
+          input.click();
+        });
+      }
+
       page.querySelector('#upBackBtn').addEventListener('click', function() {
-        Social.closePage(page);
+        User.closePage(page);
       });
 
       page.querySelector('#upRebuild').addEventListener('click', function() {
         if (!confirm('确定要重建资料吗？将解除封存。')) return;
-        if (Social.userData) Social.userData._sealed = false;
-        Social.save();
-        Social.sealed = false;
-        Social.closePage(page);
-        setTimeout(function() { Social.openProfile(); }, 380);
+        var editId = page._editId;
+        if (editId) {
+          var u = User.getById(editId);
+          if (u) { u._sealed = false; User.save(); }
+        }
+        User.closePage(page);
+        setTimeout(function() { User.openProfile(editId); }, 380);
         App.showToast('已解除封存');
       });
 
       var quill = page.querySelector('#upQuill');
       if (quill) {
         quill.addEventListener('click', function() {
-          Social.saveProfile();
+          User.saveProfile(page);
         });
       }
     },
 
-    // ====== 一键生成（步骤引导）======
-    openStepGuide: function() {
-      App.showToast('一键生成 · 开发中');
-    },
-
-    saveProfile: function() {
-      var card = App.$('#upCard');
+    saveProfile: function(page) {
+      var card = page.querySelector('#upCard');
       if (!card) return;
 
-      if (!Social.userData) Social.userData = {};
+      var data = {};
+      data.avatar = User.tempAvatar;
+      data._sealed = true;
 
+      // 读取姓名
+      var nameInput = card.querySelector('[data-key="realName"]');
+      if (nameInput) data.realName = (nameInput.value || '').trim();
+
+      // 读取签名
+      var sign1 = card.querySelector('[data-key="sign1"]');
+      var sign2 = card.querySelector('[data-key="sign2"]');
+      if (sign1) data.sign1 = (sign1.value || '').trim();
+      if (sign2) data.sign2 = (sign2.value || '').trim();
+
+      // 读取其他字段
       card.querySelectorAll('input[data-key]').forEach(function(el) {
-        Social.userData[el.dataset.key] = el.value.trim();
+        if (el.dataset.key !== 'realName' && el.dataset.key !== 'sign1' && el.dataset.key !== 'sign2') {
+          data[el.dataset.key] = (el.value || '').trim();
+        }
       });
       card.querySelectorAll('textarea[data-key]').forEach(function(el) {
-        Social.userData[el.dataset.key] = el.value.trim();
+        data[el.dataset.key] = (el.value || '').trim();
       });
 
-      Social.userData._sealed = true;
-      Social.save();
-      Social.sealed = true;
-
-      var seal = App.$('#upSeal');
-      if (seal) {
-        requestAnimationFrame(function() { seal.classList.add('show'); });
+      // 手机号自动生成
+      if (!data.phone) {
+        data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       }
 
-      var quill = App.$('#upQuill');
+      if (!data.realName) {
+        App.showToast('请输入姓名');
+        return;
+      }
+
+      var editId = page._editId;
+      if (editId) {
+        var existing = User.getById(editId);
+        if (existing) {
+          Object.keys(data).forEach(function(k) { existing[k] = data[k]; });
+          User.save();
+        }
+      } else {
+        data.id = 'user-' + Date.now();
+        User.list.push(data);
+        User.save();
+        if (User.list.length === 1) User.setActive(data.id);
+      }
+
+      User.sealed = true;
+
+      // 印章动画
+      var seal = page.querySelector('#upSeal');
+      if (seal) requestAnimationFrame(function() { seal.classList.add('show'); });
+
+      // 隐藏羽毛笔
+      var quill = page.querySelector('#upQuill');
       if (quill) quill.style.display = 'none';
 
-      var rebuild = App.$('#upRebuild');
+      // 显示重建
+      var rebuild = page.querySelector('#upRebuild');
       if (rebuild) rebuild.style.visibility = '';
 
+      // 输入框变文字
       card.querySelectorAll('input[data-key]').forEach(function(el) {
         var div = document.createElement('div');
         div.className = 'up-text';
         div.textContent = el.value.trim() || '—';
+        if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
         el.parentNode.replaceChild(div, el);
       });
       card.querySelectorAll('textarea[data-key]').forEach(function(el) {
@@ -501,76 +511,24 @@
         div.style.whiteSpace = 'pre-wrap';
         el.parentNode.replaceChild(div, el);
       });
+      // 姓名输入框
+      var nameEl = card.querySelector('.up-name-input');
+      if (nameEl) {
+        var div = document.createElement('div');
+        div.style.cssText = 'font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;';
+        div.textContent = nameEl.value.trim() || '—';
+        nameEl.parentNode.replaceChild(div, nameEl);
+      }
 
       App.showToast('档案已封存');
     },
 
-    bindEvents: function() {
-      App.safeOn('#socBackBtn', 'click', function() { Social.close(); });
-
-      App.safeOn('#socModeToggle', 'click', function() {
-        var current = App.LS.get('socFullScreen') || false;
-        var next = !current;
-        App.LS.set('socFullScreen', next);
-        var wrap = App.$('#socWrap');
-        if (wrap) {
-          if (next) wrap.classList.add('soc-fullscreen');
-          else wrap.classList.remove('soc-fullscreen');
-        }
-        var valEl = Social.panelEl.querySelector('.soc-me-mode-val');
-        if (valEl) valEl.textContent = next ? '全屏' : '手机';
-      });
-
-      App.safeOn('#socAddBtn', 'click', function(e) {
-        e.stopPropagation();
-        var menu = App.$('#socAddMenu');
-        if (menu) menu.classList.toggle('show');
-      });
-
-      if (Social.panelEl) {
-        Social.panelEl.querySelectorAll('.soc-add-menu-item').forEach(function(item) {
-          item.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var menu = App.$('#socAddMenu');
-            if (menu) menu.classList.remove('show');
-            if (item.dataset.action === 'addFriend') {
-              App.showToast('加好友 · 开发中');
-            } else if (item.dataset.action === 'changeTheme') {
-              Social.close();
-              setTimeout(function() { App.openPanel('themePanel'); }, 380);
-            }
-          });
-        });
-
-        Social.panelEl.addEventListener('click', function() {
-          var menu = App.$('#socAddMenu');
-          if (menu) menu.classList.remove('show');
-        });
-
-        Social.panelEl.querySelectorAll('.soc-tab').forEach(function(tab) {
-          tab.addEventListener('click', function() {
-            Social.currentTab = tab.dataset.tab;
-            Social.panelEl.querySelectorAll('.soc-tab').forEach(function(t) {
-              t.classList.toggle('active', t.dataset.tab === Social.currentTab);
-            });
-            Social.renderTab();
-          });
-        });
-      }
-    },
-
     init: function() {
-      Social.load();
-      if (!App.$('#socialPanel')) {
-        var panel = document.createElement('div');
-        panel.id = 'socialPanel';
-        panel.className = 'fullpage-panel hidden';
-        document.body.appendChild(panel);
-      }
-      App.user = Social;
-      App.safeOn('#dockMine', 'click', function() { Social.open(); });
+      User.load();
+      App.user = User;
+      App.safeOn('#dockMine', 'click', function() { User.open(); });
     }
   };
 
-  App.register('user', Social);
+  App.register('user', User);
 })();
