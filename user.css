@@ -111,7 +111,7 @@
 /* ====== PSP 名片卡 ====== */
 .p14-card {
   position: relative; margin: 0 10% 26px;
-  min-height: 120px;
+  min-height: 140px;
   background: linear-gradient(155deg,rgba(195,220,248,0.6),rgba(215,235,255,0.45) 25%,rgba(240,248,255,0.7) 45%,rgba(220,238,255,0.5) 65%,rgba(200,225,250,0.55));
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid rgba(200,225,252,0.5); border-radius: 60px;
