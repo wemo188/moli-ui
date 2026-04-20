@@ -125,7 +125,7 @@
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
 
-          return '<div class="p14-card" data-uid="' + u.id + '" '" style="--pc5:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5);--pc25:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.25);--pc45:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.45);--pc35:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.35);--pc18:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.18);--pc1:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.1);background:' + cardBg + ';border-color:' + borderC + ';">' +
+          return '<div class="p14-card" data-uid="' + u.id + '" style="--pc5:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5);--pc25:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.25);--pc45:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.45);--pc35:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.35);--pc18:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.18);--pc1:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.1);background:' + cardBg + ';border-color:' + borderC + ';">' +
             bgImgHtml +
             '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
             '<div class="p14-body">' +
