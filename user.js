@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -33,12 +34,14 @@
         page.style.transform = 'translateX(0)'; page.style.opacity = '1';
       }); });
     },
+
     _popPage: function() {
       if (!User._pages.length) return;
       var page = User._pages.pop();
       page.style.transform = 'translateX(100%)'; page.style.opacity = '0';
       setTimeout(function() { if (page.parentNode) page.remove(); }, 350);
     },
+
     _popAll: function() {
       while (User._pages.length) {
         var page = User._pages.pop();
@@ -46,6 +49,7 @@
         (function(p) { setTimeout(function() { if (p.parentNode) p.remove(); }, 350); })(page);
       }
     },
+
     _makePage: function() {
       var page = document.createElement('div');
       page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
@@ -66,15 +70,35 @@
         '<div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:56px 20px 20px;">' +
           '<div class="up-fork-back-btn" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:rgba(30,80,162,0.5);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '<span style="font-size:12px;color:rgba(30,80,162,0.5);">返回</span></div>' +
-          '<div style="font-size:8px;color:rgba(30,80,162,0.3);letter-spacing:4px;font-weight:600;">PROFILE SETUP</div><div style="width:40px;"></div></div>' +
+            '<span style="font-size:12px;color:rgba(30,80,162,0.5);">返回</span>' +
+          '</div>' +
+          '<div style="font-size:8px;color:rgba(30,80,162,0.3);letter-spacing:4px;font-weight:600;">PROFILE SETUP</div>' +
+          '<div style="width:40px;"></div>' +
+        '</div>' +
         '<div style="position:relative;z-index:2;text-align:center;padding:16px 30px 32px;">' +
           '<div style="font-family:NaiPao,cursive;font-size:30px;color:#1e50a2;line-height:1.3;">Create Your</div>' +
           '<div style="font-family:NaiPao,cursive;font-size:34px;color:#1e50a2;line-height:1.2;">Exclusive Profile</div>' +
-          '<div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#1e50a2,transparent);margin:14px auto 0;"></div></div>' +
+          '<div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#1e50a2,transparent);margin:14px auto 0;"></div>' +
+        '</div>' +
         '<div style="position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;gap:16px;">' +
-          '<div class="up-ticket-shell" id="upForkFree"><div class="up-ticket-body"><div class="up-ticket-inner"></div><div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;"><div style="flex:1;"><div class="up-ticket-name">自由编辑</div><div class="up-ticket-line"></div><div class="up-ticket-sub">FREE EDITING</div><div class="up-ticket-desc">打开空白档案 · 自由填写每一项内容</div></div><div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;"><svg viewBox="0 0 48 48" style="width:44px;height:44px;"><rect x="10" y="6" width="28" height="36" rx="2" fill="none" stroke="rgba(30,80,162,0.3)" stroke-width="1.5"/><line x1="16" y1="16" x2="32" y2="16" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="22" x2="28" y2="22" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="28" x2="30" y2="28" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div></div>' +
-          '<div class="up-ticket-shell" id="upForkStep"><div class="up-ticket-body"><div class="up-ticket-inner"></div><div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;"><div style="flex:1;"><div class="up-ticket-name">一键生成</div><div class="up-ticket-line"></div><div class="up-ticket-sub">STEP BY STEP</div><div class="up-ticket-desc">跟随引导一步步填写 · 轻松完成设定</div></div><div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;"><svg viewBox="0 0 48 48" style="width:44px;height:44px;"><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.12)" stroke-width="1.5"/><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-dasharray="28 85" stroke-linecap="round" transform="rotate(-90 24 24)"/><path d="M20 24h8M25 20l4 4-4 4" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div></div></div>';
+          '<div class="up-ticket-shell" id="upForkFree"><div class="up-ticket-body"><div class="up-ticket-inner"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;"><div style="flex:1;">' +
+              '<div class="up-ticket-name">自由编辑</div><div class="up-ticket-line"></div><div class="up-ticket-sub">FREE EDITING</div>' +
+              '<div class="up-ticket-desc">打开空白档案 · 自由填写每一项内容</div>' +
+            '</div>' +
+            '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;">' +
+              '<svg viewBox="0 0 48 48" style="width:44px;height:44px;"><rect x="10" y="6" width="28" height="36" rx="2" fill="none" stroke="rgba(30,80,162,0.3)" stroke-width="1.5"/><line x1="16" y1="16" x2="32" y2="16" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="22" x2="28" y2="22" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/><line x1="16" y1="28" x2="30" y2="28" stroke="rgba(30,80,162,0.2)" stroke-width="1.2" stroke-linecap="round"/></svg>' +
+            '</div></div></div></div>' +
+          '<div class="up-ticket-shell" id="upForkStep"><div class="up-ticket-body"><div class="up-ticket-inner"></div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;"><div style="flex:1;">' +
+              '<div class="up-ticket-name">一键生成</div><div class="up-ticket-line"></div><div class="up-ticket-sub">STEP BY STEP</div>' +
+              '<div class="up-ticket-desc">跟随引导一步步填写 · 轻松完成设定</div>' +
+            '</div>' +
+            '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;">' +
+              '<svg viewBox="0 0 48 48" style="width:44px;height:44px;"><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.12)" stroke-width="1.5"/><circle cx="24" cy="24" r="18" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-dasharray="28 85" stroke-linecap="round" transform="rotate(-90 24 24)"/><path d="M20 24h8M25 20l4 4-4 4" fill="none" stroke="rgba(30,80,162,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '</div></div></div></div>' +
+        '</div>';
+
       User._pushPage(page);
       page.querySelector('.up-fork-back-btn').addEventListener('click', function() { User._popPage(); });
       page.querySelector('#upForkFree').addEventListener('click', function() { User.openProfile(null); });
@@ -117,18 +141,15 @@
                   '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
                     (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
                     (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
-                  '</div></div>' +
-              '</div></div>' +
-              '<div class="p14-right">' +
-                '<div class="p14-act-btn p14-act-edit" data-uid="' + u.id + '">编辑</div>' +
-                '<div class="p14-dpad">' +
-                  '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
+                  '</div>' +
                 '</div>' +
-                '<div class="p14-act-btn p14-act-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
-              '</div>' +
+              '</div></div>' +
+              '<div class="p14-right"><div class="p14-dpad">' +
+                '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
+                '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
+                '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
+                '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
+              '</div></div>' +
             '</div>' +
             '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
               '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
@@ -139,11 +160,14 @@
                   '<div class="p14-slider-item"><span class="p14-slider-name">S</span><input type="range" class="p14-slider p14-sat" data-uid="' + u.id + '" min="0" max="100" value="' + sat + '"><span class="p14-slider-val p14-sat-val">' + sat + '</span></div>' +
                   '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
                 '</div>' +
-                '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div></div>' +
+                '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
+              '</div>' +
             '</div>' +
             '<div class="p14-actions">' +
+              '<div class="p14-act-btn p14-act-edit" data-uid="' + u.id + '">编辑</div>' +
               '<div class="p14-act-btn p14-act-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
               '<div class="p14-act-btn p14-act-reset" data-uid="' + u.id + '">重置</div>' +
+              '<div class="p14-act-btn p14-act-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
             '</div>' +
           '</div>';
         }).join('');
@@ -155,13 +179,13 @@
           '<div class="up-list-title">用户列表</div>' +
           '<div class="up-list-add" id="upListAdd">+</div>' +
         '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 40px;">' + cardsHtml + '</div>';
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + cardsHtml + '</div>';
 
       User._pushPage(page);
+
       page.querySelector('#upListBack').addEventListener('click', function() { User._popAll(); });
       page.querySelector('#upListAdd').addEventListener('click', function() { User.openForkPage(); });
 
-      // 猫爪
       page.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -181,12 +205,12 @@
         });
       });
 
-      // 头像
       page.querySelectorAll('.p14-avatar-wrap').forEach(function(wrap) {
         wrap.addEventListener('click', function(e) {
           e.stopPropagation();
-          User.showImgMenu(wrap.dataset.uid, 'avatar', function(src) {
-            var u = User.getById(wrap.dataset.uid);
+          var uid = wrap.dataset.uid;
+          User.showImgMenu(uid, 'avatar', function(src) {
+            var u = User.getById(uid);
             if (u) { u.avatar = src; User.save(); }
             var av = wrap.querySelector('.p14-avatar');
             if (av) av.innerHTML = src ? '<img src="' + src + '">' : '';
@@ -194,7 +218,6 @@
         });
       });
 
-      // 背景上传
       page.querySelectorAll('.p14-bg-upload-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -208,13 +231,14 @@
         });
       });
 
-      // 颜色滑块
       page.querySelectorAll('.p14-hue,.p14-sat,.p14-lit').forEach(function(slider) {
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
           var card = page.querySelector('[data-uid="' + uid + '"]');
           if (!card) return;
-          var h = card.querySelector('.p14-hue').value, s = card.querySelector('.p14-sat').value, l = card.querySelector('.p14-lit').value;
+          var h = card.querySelector('.p14-hue').value;
+          var s = card.querySelector('.p14-sat').value;
+          var l = card.querySelector('.p14-lit').value;
           card.querySelector('.p14-hue-val').textContent = h;
           card.querySelector('.p14-sat-val').textContent = s;
           card.querySelector('.p14-lit-val').textContent = l;
@@ -227,12 +251,13 @@
         });
       });
 
-      // 编辑
       page.querySelectorAll('.p14-act-edit').forEach(function(btn) {
-        btn.addEventListener('click', function(e) { e.stopPropagation(); User.openProfile(btn.dataset.uid); });
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          User.openProfile(btn.dataset.uid);
+        });
       });
 
-      // 启用
       page.querySelectorAll('.p14-act-activate').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -243,20 +268,20 @@
         });
       });
 
-      // 重置
       page.querySelectorAll('.p14-act-reset').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var u = User.getById(btn.dataset.uid);
+          var uid = btn.dataset.uid;
+          var u = User.getById(uid);
           if (!u) return;
           u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardBg = '';
           User.save();
-          User._popAll(); User.openListPage();
+          User._popAll();
+          User.openListPage();
           App.showToast('已重置配色');
         });
       });
 
-      // 删除
       page.querySelectorAll('.p14-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -272,7 +297,9 @@
 
     // ====== 图片菜单 ======
     showImgMenu: function(uid, field, callback) {
-      var old = App.$('#imgSourceMenu'); if (old) old.remove();
+      var old = App.$('#imgSourceMenu');
+      if (old) old.remove();
+
       var menu = document.createElement('div');
       menu.id = 'imgSourceMenu';
       menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
@@ -282,29 +309,66 @@
           '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
           '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
           '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
-          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button></div>';
+          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+        '</div>';
       document.body.appendChild(menu);
+
       menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+
       menu.querySelectorAll('.ism-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
-          e.stopPropagation(); var act = btn.dataset.act; menu.remove();
+          e.stopPropagation();
+          var act = btn.dataset.act;
+          menu.remove();
+
           if (act === 'cancel') return;
           if (act === 'del') { callback(''); App.showToast('已删除'); return; }
+
           if (act === 'album') {
-            var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; document.body.appendChild(input);
-            input.onchange = function(ev) { var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return; var reader = new FileReader(); reader.onload = function(r) { if (App.cropImage) App.cropImage(r.target.result, function(cropped) { callback(cropped); }); else callback(r.target.result); }; reader.readAsDataURL(file); };
-            input.click(); return;
+            var input = document.createElement('input');
+            input.type = 'file'; input.accept = 'image/*';
+            document.body.appendChild(input);
+            input.onchange = function(ev) {
+              var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
+              var reader = new FileReader();
+              reader.onload = function(r) {
+                if (App.cropImage) App.cropImage(r.target.result, function(cropped) { callback(cropped); });
+                else callback(r.target.result);
+              };
+              reader.readAsDataURL(file);
+            };
+            input.click();
+            return;
           }
+
           if (act === 'url') {
             var urlPanel = document.createElement('div');
             urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-            urlPanel.innerHTML = '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;"><div style="font-size:13px;font-weight:700;color:#333;text-align:center;">输入图片URL</div><input id="ismUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;"><div id="ismUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div><div style="display:flex;gap:8px;"><button id="ismUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button><button id="ismUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button></div></div>';
+            urlPanel.innerHTML =
+              '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
+                '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;">输入图片URL</div>' +
+                '<input id="ismUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
+                '<div id="ismUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
+                '<div style="display:flex;gap:8px;">' +
+                  '<button id="ismUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
+                  '<button id="ismUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+                '</div>' +
+              '</div>';
             document.body.appendChild(urlPanel);
             urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
             urlPanel.querySelector('#ismUrlNo').addEventListener('click', function() { urlPanel.remove(); });
-            var pBox = urlPanel.querySelector('#ismUrlPreview'), pImg = pBox.querySelector('img');
-            urlPanel.querySelector('#ismUrlInput').addEventListener('input', function() { var v = this.value.trim(); if (v && v.startsWith('http')) { pImg.src = v; pBox.style.display = 'block'; pImg.onerror = function() { pBox.style.display = 'none'; }; } else pBox.style.display = 'none'; });
-            urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() { var url = urlPanel.querySelector('#ismUrlInput').value.trim(); if (!url) { App.showToast('请输入URL'); return; } urlPanel.remove(); callback(url); App.showToast('已设置'); });
+            var pBox = urlPanel.querySelector('#ismUrlPreview');
+            var pImg = pBox.querySelector('img');
+            urlPanel.querySelector('#ismUrlInput').addEventListener('input', function() {
+              var v = this.value.trim();
+              if (v && v.startsWith('http')) { pImg.src = v; pBox.style.display = 'block'; pImg.onerror = function() { pBox.style.display = 'none'; }; }
+              else pBox.style.display = 'none';
+            });
+            urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
+              var url = urlPanel.querySelector('#ismUrlInput').value.trim();
+              if (!url) { App.showToast('请输入URL'); return; }
+              urlPanel.remove(); callback(url); App.showToast('已设置');
+            });
           }
         });
       });
@@ -317,38 +381,76 @@
       var user = existing || {};
       User.sealed = !!(user._sealed);
       User.tempAvatar = user.avatar || '';
+
       var today = new Date();
       var dateStr = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
-      var avatarHtml = user.avatar ? '<img src="' + App.esc(user.avatar) + '">' : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+      var avatarHtml = user.avatar
+        ? '<img src="' + App.esc(user.avatar) + '">'
+        : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
       var shortHtml = FIELDS_SHORT.map(function(f, idx) {
-        var val = user[f.key] || ''; var cls = (idx % 2 === 0) ? 'up-field-dark' : 'up-field-light';
-        if (User.sealed) return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        var val = user[f.key] || '';
+        var cls = (idx % 2 === 0) ? 'up-field-dark' : 'up-field-light';
+        if (User.sealed) {
+          return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        }
         return '<div class="up-field ' + cls + '"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="输入' + f.cn + '..." value="' + App.esc(val) + '"></div></div>';
       }).join('');
+
       var longHtml = FIELDS_LONG.map(function(f) {
         var val = user[f.key] || '';
-        if (User.sealed) return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        if (User.sealed) {
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+        }
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div><span class="up-field-cn">' + f.cn + '</span></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入' + f.cn + '...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
-      var page = User._makePage(); page._editId = editId || null;
+
+      var page = User._makePage();
+      page._editId = editId || null;
+
       page.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          '<div class="up-profile-back" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span style="font-size:12px;color:#999;">返回</span></div>' +
+          '<div class="up-profile-back" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<span style="font-size:12px;color:#999;">返回</span>' +
+          '</div>' +
           '<div style="font-size:10px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div class="up-profile-rebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div></div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;"><div class="up-card" id="upCard">' +
-          '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal"><div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner"><div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div><div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div><div class="up-seal-date">' + dateStr + '</div></div></div><div class="up-seal-noise"></div></div>' +
-          '<div class="up-bar-top"></div><div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
-          '<div class="up-avatar-area"><div class="up-avatar-box" id="upAvatarBox">' + avatarHtml + '</div></div>' +
-          '<div class="up-sign-area">' + (User.sealed ? '<div style="font-size:12px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>' : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') + '</div>' +
-          '<div class="up-name-area"><div class="up-name-label">NAME 姓名</div>' + (User.sealed ? '<div style="font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;">' + App.esc(user.realName || '—') + '</div>' : '<input type="text" class="up-name-input" data-key="realName" placeholder="输入姓名..." value="' + App.esc(user.realName || '') + '">') + '<div class="up-name-underline"></div><div class="up-name-underline2"></div></div>' +
-          shortHtml +
-          '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL 详情</div><div class="up-divider-line"></div></div>' +
-          longHtml +
-          '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
-          '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
-        '</div></div>';
+          '<div class="up-profile-rebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+        '</div>' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
+          '<div class="up-card" id="upCard">' +
+            '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
+              '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
+                '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
+                '<div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
+                '<div class="up-seal-date">' + dateStr + '</div>' +
+              '</div></div><div class="up-seal-noise"></div>' +
+            '</div>' +
+            '<div class="up-bar-top"></div>' +
+            '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
+            '<div class="up-avatar-area"><div class="up-avatar-box" id="upAvatarBox">' + avatarHtml + '</div></div>' +
+            '<div class="up-sign-area">' +
+              (User.sealed
+                ? '<div style="font-size:12px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
+                : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') +
+            '</div>' +
+            '<div class="up-name-area"><div class="up-name-label">NAME 姓名</div>' +
+              (User.sealed
+                ? '<div style="font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;">' + App.esc(user.realName || '—') + '</div>'
+                : '<input type="text" class="up-name-input" data-key="realName" placeholder="输入姓名..." value="' + App.esc(user.realName || '') + '">') +
+              '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
+            '</div>' +
+            shortHtml +
+            '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL 详情</div><div class="up-divider-line"></div></div>' +
+            longHtml +
+            '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
+            '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
+          '</div>' +
+        '</div>';
+
       User._pushPage(page);
+
       if (!User.sealed) {
         page.querySelector('#upAvatarBox').addEventListener('click', function() {
           var box = this;
@@ -359,75 +461,151 @@
           });
         });
       }
+
       page.querySelector('.up-profile-back').addEventListener('click', function() {
-        User._popAll(); User.load();
+        User._popAll();
+        User.load();
         if (User.list.length) User.openListPage();
       });
+
       page.querySelector('.up-profile-rebuild').addEventListener('click', function() {
         if (!confirm('确定要重建资料吗？将解除封存。')) return;
         var eid = page._editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        User._popPage(); User.openProfile(eid);
+        User._popAll();
+        User.load();
+        if (User.list.length) User.openListPage();
+        setTimeout(function() { User.openProfile(eid); }, 400);
         App.showToast('已解除封存');
       });
+
       page.querySelectorAll('.up-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
-          e.stopPropagation(); var field = btn.dataset.field;
-          var ta = page.querySelector('textarea[data-key="' + field + '"]'); if (!ta) return;
+          e.stopPropagation();
+          var field = btn.dataset.field;
+          var ta = page.querySelector('textarea[data-key="' + field + '"]');
+          if (!ta) return;
           var f = FIELDS_LONG.filter(function(x) { return x.key === field; })[0];
           User.openExpandEditor(f ? f.cn : field, ta);
         });
       });
+
       var quill = page.querySelector('#upQuill');
       if (quill) quill.addEventListener('click', function() { User.saveProfile(page); });
     },
 
     // ====== 展开编辑器 ======
     openExpandEditor: function(title, textarea) {
-      var old = App.$('#upExpandEditor'); if (old) old.remove();
-      var editor = document.createElement('div'); editor.id = 'upExpandEditor';
+      var old = App.$('#upExpandEditor');
+      if (old) old.remove();
+
+      var editor = document.createElement('div');
+      editor.id = 'upExpandEditor';
       editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10004;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
       editor.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button id="upExpBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div style="font-size:12px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
-          '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button></div>' +
-        '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;"><div style="border:1px solid #e0e0e0;min-height:calc(100vh - 160px);background:#fff;position:relative;"><div style="border-top:3px solid #1a1a1a;"></div><div style="min-height:calc(100vh - 200px);border:1px dashed #e0e0e0;margin:12px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#f5f5f5 22px,#f5f5f5 23px);"><textarea id="upExpTA" style="width:100%;min-height:calc(100vh - 220px);border:none;background:transparent;padding:12px 14px;font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="输入内容...">' + App.esc(textarea.value) + '</textarea></div><div style="border-bottom:3px solid #1a1a1a;"></div></div></div>';
+          '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
+        '</div>' +
+        '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;">' +
+          '<div style="border:1px solid #e0e0e0;min-height:calc(100vh - 160px);background:#fff;position:relative;">' +
+            '<div style="border-top:3px solid #1a1a1a;"></div>' +
+            '<div style="min-height:calc(100vh - 200px);border:1px dashed #e0e0e0;margin:12px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#f5f5f5 22px,#f5f5f5 23px);">' +
+              '<textarea id="upExpTA" style="width:100%;min-height:calc(100vh - 220px);border:none;background:transparent;padding:12px 14px;font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="输入内容...">' + App.esc(textarea.value) + '</textarea>' +
+            '</div>' +
+            '<div style="border-bottom:3px solid #1a1a1a;"></div>' +
+          '</div>' +
+        '</div>';
+
       document.body.appendChild(editor);
-      requestAnimationFrame(function() { requestAnimationFrame(function() { editor.style.transform = 'translateY(0)'; editor.style.opacity = '1'; }); });
-      var expTA = editor.querySelector('#upExpTA'); if (expTA) expTA.focus();
-      function closeEditor() { textarea.value = editor.querySelector('#upExpTA').value; editor.style.transform = 'translateY(100%)'; editor.style.opacity = '0'; setTimeout(function() { if (editor.parentNode) editor.remove(); }, 350); }
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        editor.style.transform = 'translateY(0)'; editor.style.opacity = '1';
+      }); });
+      var expTA = editor.querySelector('#upExpTA');
+      if (expTA) expTA.focus();
+      function closeEditor() {
+        textarea.value = editor.querySelector('#upExpTA').value;
+        editor.style.transform = 'translateY(100%)'; editor.style.opacity = '0';
+        setTimeout(function() { if (editor.parentNode) editor.remove(); }, 350);
+      }
       editor.querySelector('#upExpBack').addEventListener('click', closeEditor);
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
     // ====== 保存 ======
     saveProfile: function(page) {
-      var card = page.querySelector('#upCard'); if (!card) return;
-      var data = {}; data.avatar = User.tempAvatar; data._sealed = true;
+      var card = page.querySelector('#upCard');
+      if (!card) return;
+      var data = {};
+      data.avatar = User.tempAvatar;
+      data._sealed = true;
+
       var nameInput = card.querySelector('[data-key="realName"]');
       if (nameInput) data.realName = (nameInput.value || '').trim();
-      var sign1 = card.querySelector('[data-key="sign1"]'), sign2 = card.querySelector('[data-key="sign2"]');
+      var sign1 = card.querySelector('[data-key="sign1"]');
+      var sign2 = card.querySelector('[data-key="sign2"]');
       if (sign1) data.sign1 = (sign1.value || '').trim();
       if (sign2) data.sign2 = (sign2.value || '').trim();
-      card.querySelectorAll('input[data-key]').forEach(function(el) { if (el.dataset.key !== 'realName' && el.dataset.key !== 'sign1' && el.dataset.key !== 'sign2') data[el.dataset.key] = (el.value || '').trim(); });
-      card.querySelectorAll('textarea[data-key]').forEach(function(el) { data[el.dataset.key] = (el.value || '').trim(); });
+
+      card.querySelectorAll('input[data-key]').forEach(function(el) {
+        if (el.dataset.key !== 'realName' && el.dataset.key !== 'sign1' && el.dataset.key !== 'sign2') {
+          data[el.dataset.key] = (el.value || '').trim();
+        }
+      });
+      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
+        data[el.dataset.key] = (el.value || '').trim();
+      });
+
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       if (!data.realName) { App.showToast('请输入姓名'); return; }
+
       var editId = page._editId;
-      if (editId) { var existing = User.getById(editId); if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); } }
-      else { data.id = 'user-' + Date.now(); data.cardHue = 210; data.cardSat = 80; data.cardLit = 87; User.list.push(data); User.save(); if (User.list.length === 1) User.setActive(data.id); }
+      if (editId) {
+        var existing = User.getById(editId);
+        if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
+      } else {
+        data.id = 'user-' + Date.now();
+        data.cardHue = 210; data.cardSat = 80; data.cardLit = 87;
+        User.list.push(data);
+        User.save();
+        if (User.list.length === 1) User.setActive(data.id);
+      }
+
       User.sealed = true;
-      var seal = page.querySelector('#upSeal'); if (seal) requestAnimationFrame(function() { seal.classList.add('show'); });
-      var quill = page.querySelector('#upQuill'); if (quill) quill.style.display = 'none';
-      var rebuild = page.querySelector('.up-profile-rebuild'); if (rebuild) rebuild.style.visibility = '';
-      card.querySelectorAll('input[data-key]').forEach(function(el) { var div = document.createElement('div'); div.className = 'up-text'; div.textContent = el.value.trim() || '—'; if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic'; el.parentNode.replaceChild(div, el); });
-      card.querySelectorAll('textarea[data-key]').forEach(function(el) { var div = document.createElement('div'); div.className = 'up-text'; div.textContent = el.value.trim() || '—'; div.style.whiteSpace = 'pre-wrap'; el.parentNode.replaceChild(div, el); });
+      var seal = page.querySelector('#upSeal');
+      if (seal) requestAnimationFrame(function() { seal.classList.add('show'); });
+      var quill = page.querySelector('#upQuill');
+      if (quill) quill.style.display = 'none';
+      var rebuild = page.querySelector('.up-profile-rebuild');
+      if (rebuild) rebuild.style.visibility = '';
+
+      card.querySelectorAll('input[data-key]').forEach(function(el) {
+        var div = document.createElement('div');
+        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
+        if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
+        el.parentNode.replaceChild(div, el);
+      });
+      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
+        var div = document.createElement('div');
+        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
+        div.style.whiteSpace = 'pre-wrap';
+        el.parentNode.replaceChild(div, el);
+      });
       var nameEl = card.querySelector('.up-name-input');
-      if (nameEl) { var div = document.createElement('div'); div.style.cssText = 'font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;'; div.textContent = nameEl.value.trim() || '—'; nameEl.parentNode.replaceChild(div, nameEl); }
+      if (nameEl) {
+        var div = document.createElement('div');
+        div.style.cssText = 'font-size:16px;font-weight:700;color:#1a1a1a;padding:4px 0 6px;';
+        div.textContent = nameEl.value.trim() || '—';
+        nameEl.parentNode.replaceChild(div, nameEl);
+      }
       card.querySelectorAll('.up-expand-btn').forEach(function(btn) { btn.style.display = 'none'; });
+
       App.showToast('档案已封存');
-      setTimeout(function() { User._popAll(); User.openListPage(); }, 800);
+      setTimeout(function() {
+        User._popAll();
+        User.openListPage();
+      }, 800);
     },
 
     init: function() {
