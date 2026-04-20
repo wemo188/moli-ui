@@ -370,9 +370,9 @@
       var longHtml = FIELDS_LONG.map(function(f) {
         var val = user[f.key] || '';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div>'<div class="up-field-key">' + f.cn + ' ' + f.en + '</div>'</div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div>'<div class="up-field-key">' + f.cn + ' ' + f.en + '</div>'</div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
       var page = User._makePage();
