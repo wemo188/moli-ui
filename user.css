@@ -147,7 +147,7 @@
 .p14-screen { position: relative; background: rgba(255,255,255,0.97); border-radius: 6px; padding: 12px; overflow: hidden; min-height: 100px; box-shadow: inset 0 0 0 0.5px rgba(200,225,250,0.3); }
 .p14-screen::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg,rgba(255,255,255,0.4),transparent); border-radius: 6px 6px 0 0; pointer-events: none; z-index: 1; }
 .p14-screen-content { position: relative; z-index: 2; display: flex; gap: 10px; align-items: center; }
-.p14-avatar-wrap { position: relative; width: 48px; height: 48px; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.p14-avatar-wrap { position: relative; width: 65px; height: 65px; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .p14-avatar { width: 65px; height: 65px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(180,210,240,0.45); box-shadow: 0 2px 8px rgba(140,185,230,0.18); background: #f0f5fa; }
 .p14-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .p14-avatar-ov { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
