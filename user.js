@@ -370,9 +370,9 @@
       var longHtml = FIELDS_LONG.map(function(f) {
         var val = user[f.key] || '';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div>'<div class="up-field-key">' + f.cn + ' ' + f.en + '</div>'</div><div class="up-field-box"><div class="up-text">' + App.esc(val || '—') + '</div></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div>'<div class="up-field-key">' + f.cn + ' ' + f.en + '</div>'</div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
       var page = User._makePage();
@@ -404,7 +404,7 @@
                 ? '<div style="font-size:11px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
                 : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') +
             '</div>' +
-            '<div class="up-name-area"><div class="up-name-label">NAME 姓名</div>' +
+            '<div class="up-name-area"><div class="up-name-label">姓名 NAME </div>' +
               (User.sealed
                 ? '<div style="font-size:15px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;">' + App.esc(user.realName || '—') + '</div>'
                 : '<input type="text" class="up-name-input" data-key="realName" placeholder="输入姓名..." value="' + App.esc(user.realName || '') + '">') +
