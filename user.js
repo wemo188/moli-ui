@@ -84,8 +84,8 @@
           '<div style="width:40px;"></div>' +
         '</div>' +
         '<div style="position:relative;z-index:2;text-align:center;padding:16px 30px 32px;">' +
-          '<div style="font-family:\'Dancing Script\',cursive;font-size:30px;color:#1e50a2;line-height:1.3;font-weight:700;">Create Your</div>' +
-          '<div style="font-family:\'Dancing Script\',cursive;font-size:34px;color:#1e50a2;line-height:1.2;font-weight:700;">Exclusive Profile</div>' +
+          '<div style="font-family:\'NaiPao\',cursive;font-size:30px;color:#1e50a2;line-height:1.3;font-weight:400;">Create Your</div>' +
+'<div style="font-family:\'NaiPao\',cursive;font-size:34px;color:#1e50a2;line-height:1.2;font-weight:400;">Exclusive Profile</div>' +
           '<div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#1e50a2,transparent);margin:14px auto 0;"></div>' +
         '</div>' +
         '<div style="position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;gap:16px;">' +
