@@ -125,7 +125,7 @@
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
 
-          return '<div class="p14-card" data-uid="' + u.id + '" style="background:' + cardBg + ';border-color:' + borderC + ';">' +
+          return '<div class="p14-card" data-uid="' + u.id + '" '" style="--pc5:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5);--pc25:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.25);--pc45:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.45);--pc35:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.35);--pc18:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.18);--pc1:hsla(' + hue + ',' + sat + '%,' + lit + '%,0.1);background:' + cardBg + ';border-color:' + borderC + ';">' +
             bgImgHtml +
             '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
             '<div class="p14-body">' +
@@ -245,6 +245,12 @@
           if (preview) preview.style.background = 'hsl(' + h + ',' + s + '%,' + l + '%)';
           card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
+          card.style.setProperty('--pc5', 'hsla('+h+','+s+'%,'+l+'%,0.5)');
+          card.style.setProperty('--pc25', 'hsla('+h+','+s+'%,'+l+'%,0.25)');
+          card.style.setProperty('--pc45', 'hsla('+h+','+s+'%,'+l+'%,0.45)');
+          card.style.setProperty('--pc35', 'hsla('+h+','+s+'%,'+l+'%,0.35)');
+          card.style.setProperty('--pc18', 'hsla('+h+','+s+'%,'+l+'%,0.18)');
+          card.style.setProperty('--pc1', 'hsla('+h+','+s+'%,'+l+'%,0.1)');
           var u = User.getById(uid);
           if (u) { u.cardHue = +h; u.cardSat = +s; u.cardLit = +l; User.save(); }
         });
