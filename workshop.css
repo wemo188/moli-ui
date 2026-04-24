@@ -30,7 +30,7 @@
 .bm-card {
   background: rgba(255,255,255,0.95);
   border-radius: 16px;
-  padding: 20px;
+  padding: 20px 28px;
 }
 .bm-title {
   text-align: center; padding: 0 0 10px;
