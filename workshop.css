@@ -118,7 +118,7 @@
   --ni: 4px;
   position: relative;
   background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 30%, #222 60%, #1a1a1a 100%);
-  width: 56px; min-height: 79px;
+  width: 60px; min-height: 85px;
   padding: 14px 6px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 6px;
