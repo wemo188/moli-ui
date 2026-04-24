@@ -1002,6 +1002,7 @@ App.positionMenu = function() {
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
+            if (App.workshop && App.workshop.isOpen) App.workshop.positionMenu();
     }, { passive: true });
 
     document.addEventListener('touchend', function(e) {
