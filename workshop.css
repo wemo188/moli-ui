@@ -309,3 +309,41 @@
   padding: 40px 16px; text-align: center;
   font-size: 13px; color: #5a7a9a; letter-spacing: 1px;
 }
+
+/* 方案C装饰 · 菱形双线 */
+.bm-card-deco {
+  position: relative;
+}
+.bm-card-deco::before {
+  content: "";
+  position: absolute;
+  top: 12px; left: 12px; right: 12px; bottom: 12px;
+  border: 1px solid rgba(0,0,0,0.04);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.bm-card-deco::after {
+  content: "";
+  position: absolute;
+  top: 15px; left: 15px; right: 15px; bottom: 15px;
+  border: 0.5px solid rgba(0,0,0,0.03);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.bm-diamond {
+  position: absolute; width: 8px; height: 8px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(0,0,0,0.08);
+  pointer-events: none; z-index: 2;
+}
+.bm-diamond-tl { top: 8px; left: 8px; }
+.bm-diamond-tr { top: 8px; right: 8px; }
+.bm-diamond-bl { bottom: 8px; left: 8px; }
+.bm-diamond-br { bottom: 8px; right: 8px; }
+.bm-vline-l, .bm-vline-r {
+  position: absolute; top: 24px; bottom: 24px; width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
+  pointer-events: none;
+}
+.bm-vline-l { left: 8px; }
+.bm-vline-r { right: 8px; }
