@@ -279,28 +279,72 @@
       var menu = Workshop.menuEl;
       var slider = Workshop.sliderEl;
 
+      // 拖拽状态
+      var _menuDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0, moved: false };
+
       menu.addEventListener('touchstart', function(e) {
-        if (Workshop.currentPage === 0) return;
+        e.stopPropagation();
         if (e.target.closest('input')) return;
+
         var t = e.touches[0];
-        Workshop.touchStartX = t.clientX; Workshop.touchStartY = t.clientY;
-        Workshop.touchCurrentX = t.clientX;
-        Workshop.isDragging = true; Workshop.dirLocked = false; Workshop.isHorizontal = false;
-        Workshop.baseX = -Workshop.getPageOffset(Workshop.currentPage);
-        slider.style.transition = 'none';
-      }, { passive: true });
+
+        // 拖拽：只在空白区域（非按钮非控件）
+        var isBtn = e.target.closest('.bm-tk') || e.target.closest('.bm-wk');
+        var isCtrl = e.target.closest('.ws-ctrl-row') || e.target.closest('.ws-ctrl-color-row');
+        if (!isBtn && !isCtrl) {
+          var rect = menu.getBoundingClientRect();
+          _menuDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top, moved: false };
+        }
+
+        // 滑动翻页
+        if (Workshop.currentPage > 0) {
+          Workshop.touchStartX = t.clientX;
+          Workshop.touchStartY = t.clientY;
+          Workshop.touchCurrentX = t.clientX;
+          Workshop.isDragging = true;
+          Workshop.dirLocked = false;
+          Workshop.isHorizontal = false;
+          Workshop.baseX = -Workshop.getPageOffset(Workshop.currentPage);
+          slider.style.transition = 'none';
+        }
+      }, { passive: false });
 
       menu.addEventListener('touchmove', function(e) {
-        if (!Workshop.isDragging) return;
+        e.stopPropagation();
         var t = e.touches[0];
+
+        // 拖拽整个菜单
+        if (_menuDrag.active) {
+          var ddx = Math.abs(t.clientX - _menuDrag.sx);
+          var ddy = Math.abs(t.clientY - _menuDrag.sy);
+          if (!_menuDrag.moved && ddx < 6 && ddy < 6) {
+            // 还没确定方向，同时检查翻页
+          } else {
+            // 如果没有翻页手势，或者是纵向移动，就拖拽菜单
+            if (!Workshop.isDragging || !Workshop.isHorizontal) {
+              _menuDrag.moved = true;
+              e.preventDefault();
+              menu.style.left = (_menuDrag.ox + t.clientX - _menuDrag.sx) + 'px';
+              menu.style.top = (_menuDrag.oy + t.clientY - _menuDrag.sy) + 'px';
+              menu.style.right = 'auto';
+              return;
+            }
+          }
+        }
+
+        // 翻页滑动
+        if (!Workshop.isDragging) return;
         Workshop.touchCurrentX = t.clientX;
         var dx = Math.abs(Workshop.touchCurrentX - Workshop.touchStartX);
         var dy = Math.abs(t.clientY - Workshop.touchStartY);
         if (!Workshop.dirLocked && (dx > 6 || dy > 6)) {
-          Workshop.dirLocked = true; Workshop.isHorizontal = dx > dy;
+          Workshop.dirLocked = true;
+          Workshop.isHorizontal = dx > dy;
         }
         if (!Workshop.dirLocked || !Workshop.isHorizontal) return;
         e.preventDefault();
+        // 翻页生效，禁用拖拽
+        _menuDrag.active = false;
         var delta = Workshop.touchCurrentX - Workshop.touchStartX;
         if (delta < 0) delta *= 0.2;
         var nextX = Workshop.baseX + delta;
@@ -309,6 +353,10 @@
       }, { passive: false });
 
       menu.addEventListener('touchend', function() {
+        // 拖拽结束
+        _menuDrag.active = false;
+
+        // 翻页结束
         if (!Workshop.isDragging) return;
         Workshop.isDragging = false;
         slider.style.transition = '';
@@ -322,6 +370,7 @@
           Workshop.goToPage(Workshop.currentPage);
         }
       }, { passive: true });
+    },
 
       menu.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       menu.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
