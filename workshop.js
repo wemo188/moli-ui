@@ -45,9 +45,15 @@
       menu.innerHTML =
         '<div class="ball-card-slider" id="ballCardSlider">' +
 
-          '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
-            '<div class="bm-card">' +
-              '<div class="bm-grid">' +
+         '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
+  '<div class="bm-card bm-card-deco">' +
+    '<div class="bm-diamond bm-diamond-tl"></div>' +
+    '<div class="bm-diamond bm-diamond-tr"></div>' +
+    '<div class="bm-diamond bm-diamond-bl"></div>' +
+    '<div class="bm-diamond bm-diamond-br"></div>' +
+    '<div class="bm-vline-l"></div>' +
+    '<div class="bm-vline-r"></div>' +
+    '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
                 tkBlack('workshop', '工坊', 'studio') +
                 tkBlack('ballset', '悬浮球', 'float') +
