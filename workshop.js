@@ -401,12 +401,11 @@
       });
     },
 
-    goToPage: function(idx) {
+        goToPage: function(idx) {
       Workshop.currentPage = idx;
       var w = Workshop.getPageWidth(idx);
       Workshop.menuEl.style.width = w + 'px';
       Workshop.sliderEl.style.transform = 'translateX(' + (-Workshop.getPageOffset(idx)) + 'px)';
-      Workshop.positionMenu();
     },
 
         positionMenu: function() {
