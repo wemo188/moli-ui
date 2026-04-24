@@ -335,12 +335,15 @@
       Workshop.positionMenu();
     },
 
-    positionMenu: function() {
+        positionMenu: function() {
       var ball = App.state.ball;
       if (!ball) return;
       var rect = ball.getBoundingClientRect();
       var menu = Workshop.menuEl;
+      var menuH = menu.offsetHeight || 300;
       var ballCX = rect.left + rect.width / 2;
+      var ballCY = rect.top + rect.height / 2;
+
       if (ballCX > window.innerWidth / 2) {
         menu.style.right = (window.innerWidth - rect.left + 10) + 'px';
         menu.style.left = 'auto';
@@ -348,9 +351,10 @@
         menu.style.left = (rect.right + 10) + 'px';
         menu.style.right = 'auto';
       }
-      var top = rect.top + rect.height / 2 - 200;
+
+      var top = ballCY - menuH / 2;
       if (top < 10) top = 10;
-      if (top + 460 > window.innerHeight - 10) top = window.innerHeight - 470;
+      if (top + menuH > window.innerHeight - 10) top = window.innerHeight - menuH - 10;
       menu.style.top = top + 'px';
     },
 
