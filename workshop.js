@@ -370,7 +370,6 @@
           Workshop.goToPage(Workshop.currentPage);
         }
       }, { passive: true });
-    },
 
       menu.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       menu.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
