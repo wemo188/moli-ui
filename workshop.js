@@ -325,6 +325,36 @@
 
       menu.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
       menu.addEventListener('touchmove', function(e) { e.stopPropagation(); }, { passive: false });
+            // 卡片整体拖拽
+      var _menuDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
+
+      menu.addEventListener('touchstart', function(e) {
+        if (e.target.closest('input')) return;
+        if (e.target.closest('.bm-tk') || e.target.closest('.bm-wk')) return;
+        if (e.target.closest('.ws-ctrl-row') || e.target.closest('.ws-ctrl-color-row')) return;
+        var t = e.touches[0];
+        var rect = menu.getBoundingClientRect();
+        _menuDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top, moved: false };
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!_menuDrag.active) return;
+        var t = e.touches[0];
+        var dx = Math.abs(t.clientX - _menuDrag.sx);
+        var dy = Math.abs(t.clientY - _menuDrag.sy);
+        if (!_menuDrag.moved && dx < 6 && dy < 6) return;
+        _menuDrag.moved = true;
+        e.preventDefault();
+        var nx = _menuDrag.ox + t.clientX - _menuDrag.sx;
+        var ny = _menuDrag.oy + t.clientY - _menuDrag.sy;
+        menu.style.left = nx + 'px';
+        menu.style.top = ny + 'px';
+        menu.style.right = 'auto';
+      }, { passive: false });
+
+      document.addEventListener('touchend', function() {
+        _menuDrag.active = false;
+      });
     },
 
     goToPage: function(idx) {
