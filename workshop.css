@@ -333,14 +333,14 @@
   border-radius: 8px;
   pointer-events: none;
 }
-.bm-diamond-tl { top: 6px; left: 5px; }
-.bm-diamond-tr { top: 6px; right: 5px; }
-.bm-diamond-bl { bottom: 6px; left: 5px; }
-.bm-diamond-br { bottom: 6px; right: 5px; }
+.bm-diamond-tl { top: 7px; left: 7px; }
+.bm-diamond-tr { top: 7px; right: 7px; }
+.bm-diamond-bl { bottom: 7px; left: 7px; }
+.bm-diamond-br { bottom: 7px; right: 7px; }
 .bm-vline-l, .bm-vline-r {
   position: absolute; top: 20px; bottom: 20px; width: 1px;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
   pointer-events: none;
 }
-.bm-vline-l { left: 5px; }
-.bm-vline-r { right: 5px; }
+.bm-vline-l { left: 7px; }
+.bm-vline-r { right: 7px; }
