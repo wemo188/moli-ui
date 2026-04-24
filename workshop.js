@@ -1,9 +1,10 @@
+
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
 
-  var PG0_W = 250, PG1_W = 250, CTRL_W = 280;
+  var PG0_W = 220, PG1_W = 220, CTRL_W = 250;
 
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '"><div class="bm-tk-body"><div class="bm-tk-inner"></div><span class="bm-tk-spade">♠</span><div class="bm-tk-text">' + cn + '</div><div class="bm-tk-line"></div><div class="bm-tk-sub">' + en + '</div></div></div>';
@@ -11,11 +12,6 @@
 
   function tkWhite(action, cn, en) {
     return '<div class="bm-wk" data-action="' + action + '"><div class="bm-wk-body"><div class="bm-wk-inner"></div><span class="bm-wk-spade">♠</span><div class="bm-wk-text">' + cn + '</div><div class="bm-wk-line"></div><div class="bm-wk-sub">' + en + '</div></div></div>';
-  }
-
-  function fmtTime() {
-    var n = new Date();
-    return n.getFullYear() + '.' + String(n.getMonth()+1).padStart(2,'0') + '.' + String(n.getDate()).padStart(2,'0') + ' ' + String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
   }
 
   var Workshop = {
@@ -26,7 +22,6 @@
     pages: [],
     touchStartX: 0, touchStartY: 0, touchCurrentX: 0,
     isDragging: false, dirLocked: false, isHorizontal: false, baseX: 0,
-    timeTimer: null,
 
     getPageWidth: function(idx) {
       if (idx <= 1) return PG0_W;
@@ -49,10 +44,8 @@
       menu.innerHTML =
         '<div class="ball-card-slider" id="ballCardSlider">' +
 
-          // ====== Page 0: 主菜单 ======
           '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
             '<div class="bm-card">' +
-              '<div class="bm-time" id="bmTime">' + fmtTime() + '</div>' +
               '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
                 tkBlack('workshop', '工坊', 'studio') +
@@ -65,7 +58,6 @@
             '</div>' +
           '</div>' +
 
-          // ====== Page 1: 美化工坊 ======
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
             '<div class="bm-card">' +
               '<div class="bm-title">♠ 美化工坊 ♠</div>' +
@@ -83,10 +75,7 @@
             '</div>' +
           '</div>' +
 
-          // ====== Page 2: 时间栏调节 ======
           Workshop.buildWeatherPage() +
-
-          // ====== Page 3-7: 占位 ======
           Workshop.buildPlaceholderPage('角色卡片', 3) +
           Workshop.buildPlaceholderPage('对话框', 4) +
           Workshop.buildPlaceholderPage('文字卡片', 5) +
@@ -112,29 +101,31 @@
 
       return '<div class="ball-card-page" data-page="2" style="width:' + CTRL_W + 'px">' +
         '<div class="ball-page-scroll">' +
-          '<div class="ws-menu-wrap">' +
-            '<div class="ws-menu-shell"><div class="ws-menu-body">' +
-              '<div class="ws-menu-inner-frame"><div class="ws-menu-inner-border"><div class="ws-menu-inner-fill"></div></div></div>' +
-              '<div class="ws-menu-ctrl">' +
-                '<div class="ws-section-title"><span>布 局</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">缩放</div><input type="range" min="50" max="100" value="' + s + '" id="wsWtScale"><span class="ws-ctrl-val" id="wsWtScaleVal">' + (s/100).toFixed(2) + '</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">圆角</div><input type="range" min="0" max="40" value="' + r + '" id="wsWtRadius"><span class="ws-ctrl-val" id="wsWtRadiusVal">' + r + 'px</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">边框</div><input type="range" min="0" max="100" value="' + ba + '" id="wsWtBorder"><span class="ws-ctrl-val" id="wsWtBorderVal">' + ba + '%</span></div>' +
-                '<div class="ws-section-title"><span>背 景</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">底色</div><input type="color" value="' + bgC + '" id="wsWtBgColor" style="width:26px;height:26px;border:2px solid #cadff2;border-radius:6px;padding:1px;cursor:pointer;background:transparent;-webkit-appearance:none;"></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">透明</div><input type="range" min="0" max="100" value="' + a + '" id="wsWtAlpha"><span class="ws-ctrl-val" id="wsWtAlphaVal">' + a + '%</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">模糊</div><input type="range" min="0" max="100" value="' + bl + '" id="wsWtBlur"><span class="ws-ctrl-val" id="wsWtBlurVal">' + bl + 'px</span></div>' +
-                '<div class="ws-section-title"><span>颜 色</span></div>' +
-                '<div class="ws-ctrl-color-row">' +
-                  '<div class="ws-ctrl-color-item"><input type="color" value="' + fC + '" id="wsWtFontColor"><label>字体</label></div>' +
-                  '<div class="ws-ctrl-color-item"><input type="color" value="' + lC + '" id="wsWtLineColor"><label>线条</label></div>' +
+          '<div class="bm-card">' +
+            '<div class="ws-menu-wrap">' +
+              '<div class="ws-menu-shell"><div class="ws-menu-body">' +
+                '<div class="ws-menu-inner-frame"><div class="ws-menu-inner-border"><div class="ws-menu-inner-fill"></div></div></div>' +
+                '<div class="ws-menu-ctrl">' +
+                  '<div class="ws-section-title"><span>布 局</span></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">缩放</div><input type="range" min="50" max="100" value="' + s + '" id="wsWtScale"><span class="ws-ctrl-val" id="wsWtScaleVal">' + (s/100).toFixed(2) + '</span></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">圆角</div><input type="range" min="0" max="40" value="' + r + '" id="wsWtRadius"><span class="ws-ctrl-val" id="wsWtRadiusVal">' + r + 'px</span></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">边框</div><input type="range" min="0" max="100" value="' + ba + '" id="wsWtBorder"><span class="ws-ctrl-val" id="wsWtBorderVal">' + ba + '%</span></div>' +
+                  '<div class="ws-section-title"><span>背 景</span></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">底色</div><input type="color" value="' + bgC + '" id="wsWtBgColor" style="width:26px;height:26px;border:2px solid #cadff2;border-radius:6px;padding:1px;cursor:pointer;background:transparent;-webkit-appearance:none;"></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">透明</div><input type="range" min="0" max="100" value="' + a + '" id="wsWtAlpha"><span class="ws-ctrl-val" id="wsWtAlphaVal">' + a + '%</span></div>' +
+                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">模糊</div><input type="range" min="0" max="100" value="' + bl + '" id="wsWtBlur"><span class="ws-ctrl-val" id="wsWtBlurVal">' + bl + 'px</span></div>' +
+                  '<div class="ws-section-title"><span>颜 色</span></div>' +
+                  '<div class="ws-ctrl-color-row">' +
+                    '<div class="ws-ctrl-color-item"><input type="color" value="' + fC + '" id="wsWtFontColor"><label>字体</label></div>' +
+                    '<div class="ws-ctrl-color-item"><input type="color" value="' + lC + '" id="wsWtLineColor"><label>线条</label></div>' +
+                  '</div>' +
                 '</div>' +
-              '</div>' +
-            '</div></div>' +
-          '</div>' +
-          '<div class="ws-btn-row">' +
-            '<div class="ws-btn-item" id="wsWtSave">保存</div>' +
-            '<div class="ws-btn-item" id="wsWtReset">重置</div>' +
+              '</div></div>' +
+            '</div>' +
+            '<div class="ws-btn-row">' +
+              '<div class="ws-btn-item" id="wsWtSave">保存</div>' +
+              '<div class="ws-btn-item" id="wsWtReset">重置</div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -142,14 +133,15 @@
 
     buildPlaceholderPage: function(title, idx) {
       return '<div class="ball-card-page" data-page="' + idx + '" style="width:' + CTRL_W + 'px">' +
-        '<div class="ws-placeholder">' + App.esc(title) + '<br>调节功能开发中...</div>' +
+        '<div class="bm-card">' +
+          '<div class="ws-placeholder">' + App.esc(title) + '<br>调节功能开发中...</div>' +
+        '</div>' +
       '</div>';
     },
 
     bindMenuEvents: function() {
       var menu = Workshop.menuEl;
 
-      // 第一页黑色票券
       menu.querySelectorAll('.bm-tk').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -157,14 +149,13 @@
           if (action === 'workshop') { Workshop.goToPage(1); return; }
           if (action === 'api') { Workshop.close(); setTimeout(function() { App.openPanel('apiPanel'); }, 220); return; }
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
-if (action === 'character') { App.showToast('角色功能开发中'); return; }
-if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
+          if (action === 'character') { App.showToast('角色功能开发中'); return; }
+          if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'exportData') { Workshop.exportData(); return; }
         });
       });
 
-      // 第二页蓝白票券
       var wsActionMap = { 'ws-weather': 2, 'ws-cards': 3, 'ws-dialog': 4, 'ws-eden': 5, 'ws-dock': 6, 'ws-menu': 7 };
       menu.querySelectorAll('.bm-wk').forEach(function(item) {
         item.addEventListener('click', function(e) {
@@ -266,11 +257,8 @@ if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url;
-      a.download = 'mono-space-backup-' + new Date().toISOString().slice(0,10) + '.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
       App.showToast('数据已导出');
     },
@@ -310,8 +298,7 @@ if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
         var dx = Math.abs(Workshop.touchCurrentX - Workshop.touchStartX);
         var dy = Math.abs(t.clientY - Workshop.touchStartY);
         if (!Workshop.dirLocked && (dx > 6 || dy > 6)) {
-          Workshop.dirLocked = true;
-          Workshop.isHorizontal = dx > dy;
+          Workshop.dirLocked = true; Workshop.isHorizontal = dx > dy;
         }
         if (!Workshop.dirLocked || !Workshop.isHorizontal) return;
         e.preventDefault();
@@ -368,11 +355,6 @@ if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
       menu.style.top = top + 'px';
     },
 
-    updateTime: function() {
-      var el = App.$('#bmTime');
-      if (el) el.textContent = fmtTime();
-    },
-
     open: function() {
       Workshop.createMenu();
       Workshop.isOpen = true;
@@ -383,16 +365,12 @@ if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
       setTimeout(function() { Workshop.sliderEl.style.transition = ''; }, 50);
       Workshop.positionMenu();
       Workshop.menuEl.classList.add('show');
-      Workshop.updateTime();
-      clearInterval(Workshop.timeTimer);
-      Workshop.timeTimer = setInterval(Workshop.updateTime, 10000);
     },
 
     close: function() {
       if (!Workshop.isOpen) return;
       Workshop.isOpen = false;
       if (Workshop.menuEl) Workshop.menuEl.classList.remove('show');
-      clearInterval(Workshop.timeTimer);
     },
 
     toggle: function() {
