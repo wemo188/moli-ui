@@ -32,6 +32,9 @@
   border-radius: 16px;
   padding: 20px 28px;
 }
+[data-page="1"] .bm-card {
+  padding: 12px 28px;
+}
 .bm-title {
   text-align: center; padding: 0 0 10px;
   font-size: 10px; font-weight: 700; color: #3a4f65;
@@ -330,14 +333,14 @@
   border-radius: 8px;
   pointer-events: none;
 }
-.bm-diamond-tl { top: 4px; left: 3px; }
-.bm-diamond-tr { top: 4px; right: 3px; }
-.bm-diamond-bl { bottom: 4px; left: 3px; }
-.bm-diamond-br { bottom: 4px; right: 3px; }
+.bm-diamond-tl { top: 6px; left: 5px; }
+.bm-diamond-tr { top: 6px; right: 5px; }
+.bm-diamond-bl { bottom: 6px; left: 5px; }
+.bm-diamond-br { bottom: 6px; right: 5px; }
 .bm-vline-l, .bm-vline-r {
   position: absolute; top: 20px; bottom: 20px; width: 1px;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
   pointer-events: none;
 }
-.bm-vline-l { left: 3px; }
-.bm-vline-r { right: 3px; }
+.bm-vline-l { left: 5px; }
+.bm-vline-r { right: 5px; }
