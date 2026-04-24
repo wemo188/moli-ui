@@ -28,7 +28,7 @@
    白底卡片外壳
 ========================= */
 .bm-card {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,1);
   border-radius: 16px;
   padding: 20px 28px;
 }
