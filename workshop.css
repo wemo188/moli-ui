@@ -30,7 +30,7 @@
 .bm-card {
   background: rgba(255,255,255,0.95);
   border-radius: 16px;
-  padding: 14px;
+  padding: 20px;
 }
 .bm-title {
   text-align: center; padding: 0 0 10px;
@@ -54,8 +54,8 @@
 ========================= */
 .bm-tk {
   --notch: 5px;
-  position: relative; padding: 1px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 40%, #1a1a1a 100%);
+  position: relative;
+  background: none;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
