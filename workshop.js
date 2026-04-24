@@ -67,7 +67,7 @@
 
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
             '<div class="bm-card">' +
-              '<div class="bm-title">♠ 美化工坊 ♠</div>' +
+              '<div class="bm-title"> 美化工坊 </div>' +
               '<div class="bm-grid">' +
                 tkWhite('ws-weather', '时间栏', 'clock') +
                 tkWhite('ws-cards', '角色卡', 'cards') +
