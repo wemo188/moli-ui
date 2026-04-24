@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var PG0_W = 220, PG1_W = 220, CTRL_W = 250;
+  var PG0_W = 240, PG1_W = 260, CTRL_W = 280;
 
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '"><div class="bm-tk-body"><div class="bm-tk-inner"></div><span class="bm-tk-spade">♠</span><div class="bm-tk-text">' + cn + '</div><div class="bm-tk-line"></div><div class="bm-tk-sub">' + en + '</div></div></div>';
@@ -24,7 +24,8 @@
     isDragging: false, dirLocked: false, isHorizontal: false, baseX: 0,
 
     getPageWidth: function(idx) {
-      if (idx <= 1) return PG0_W;
+      if (idx === 0) return PG0_W;
+      if (idx === 1) return PG1_W;
       return CTRL_W;
     },
 
@@ -111,11 +112,11 @@
                   '<div class="ws-ctrl-row"><div class="ws-ctrl-label">圆角</div><input type="range" min="0" max="40" value="' + r + '" id="wsWtRadius"><span class="ws-ctrl-val" id="wsWtRadiusVal">' + r + 'px</span></div>' +
                   '<div class="ws-ctrl-row"><div class="ws-ctrl-label">边框</div><input type="range" min="0" max="100" value="' + ba + '" id="wsWtBorder"><span class="ws-ctrl-val" id="wsWtBorderVal">' + ba + '%</span></div>' +
                   '<div class="ws-section-title"><span>背 景</span></div>' +
-                  '<div class="ws-ctrl-row"><div class="ws-ctrl-label">底色</div><input type="color" value="' + bgC + '" id="wsWtBgColor" style="width:26px;height:26px;border:2px solid #cadff2;border-radius:6px;padding:1px;cursor:pointer;background:transparent;-webkit-appearance:none;"></div>' +
                   '<div class="ws-ctrl-row"><div class="ws-ctrl-label">透明</div><input type="range" min="0" max="100" value="' + a + '" id="wsWtAlpha"><span class="ws-ctrl-val" id="wsWtAlphaVal">' + a + '%</span></div>' +
                   '<div class="ws-ctrl-row"><div class="ws-ctrl-label">模糊</div><input type="range" min="0" max="100" value="' + bl + '" id="wsWtBlur"><span class="ws-ctrl-val" id="wsWtBlurVal">' + bl + 'px</span></div>' +
                   '<div class="ws-section-title"><span>颜 色</span></div>' +
                   '<div class="ws-ctrl-color-row">' +
+                    '<div class="ws-ctrl-color-item"><input type="color" value="' + bgC + '" id="wsWtBgColor"><label>底色</label></div>' +
                     '<div class="ws-ctrl-color-item"><input type="color" value="' + fC + '" id="wsWtFontColor"><label>字体</label></div>' +
                     '<div class="ws-ctrl-color-item"><input type="color" value="' + lC + '" id="wsWtLineColor"><label>线条</label></div>' +
                   '</div>' +
