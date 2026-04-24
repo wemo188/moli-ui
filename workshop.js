@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var PG0_W = 240, PG1_W = 240, CTRL_W = 270;
+  var PG0_W = 250, PG1_W = 240, CTRL_W = 270;
 
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '"><div class="bm-tk-body"><div class="bm-tk-inner"></div><span class="bm-tk-spade">♠</span><div class="bm-tk-text">' + cn + '</div><div class="bm-tk-line"></div><div class="bm-tk-sub">' + en + '</div></div></div>';
