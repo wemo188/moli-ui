@@ -50,8 +50,9 @@
 }
 .bm-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 60px);
+  gap: 12px;
+  justify-content: center;
 }
 
 /* =========================
@@ -77,6 +78,8 @@
 }
 .bm-tk:active { transform: scale(0.93); }
 .bm-tk-body {
+  width: 56px;
+  min-height: 79px;
   --ni: 4px;
   position: relative;
   background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 30%, #222 60%, #1a1a1a 100%);
@@ -135,6 +138,8 @@
 }
 .bm-wk:active { transform: scale(0.93); }
 .bm-wk-body {
+  width: 56px;
+  min-height: 79px;
   --ni: 4px;
   position: relative;
   background: rgba(255,255,255,0.95);
