@@ -43,7 +43,7 @@
 .bm-card-deco::before {
   content: "";
   position: absolute;
-  top: 12px; left: 12px; right: 12px; bottom: 12px;
+  top: 10px; left: 10px; right: 10px; bottom: 10px;
   border: 1px solid rgba(0,0,0,0.04);
   border-radius: 8px;
   pointer-events: none;
@@ -51,7 +51,7 @@
 .bm-card-deco::after {
   content: "";
   position: absolute;
-  top: 15px; left: 15px; right: 15px; bottom: 15px;
+  top: 13px; left: 13px; right: 13px; bottom: 13px;
   border: 0.5px solid rgba(0,0,0,0.03);
   border-radius: 6px;
   pointer-events: none;
@@ -62,17 +62,17 @@
   border: 1px solid rgba(0,0,0,0.08);
   pointer-events: none; z-index: 2;
 }
-.bm-diamond-tl { top: 8px; left: 8px; }
-.bm-diamond-tr { top: 8px; right: 8px; }
-.bm-diamond-bl { bottom: 8px; left: 8px; }
-.bm-diamond-br { bottom: 8px; right: 8px; }
+.bm-diamond-tl { top: 6px; left: 6px; }
+.bm-diamond-tr { top: 6px; right: 6px; }
+.bm-diamond-bl { bottom: 6px; left: 6px; }
+.bm-diamond-br { bottom: 6px; right: 6px; }
 .bm-vline-l, .bm-vline-r {
   position: absolute; top: 24px; bottom: 24px; width: 1px;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
   pointer-events: none;
 }
-.bm-vline-l { left: 8px; }
-.bm-vline-r { right: 8px; }
+.bm-vline-l { left: 6px; }
+.bm-vline-r { right: 6px; }
 
 .bm-title {
   text-align: center; padding: 0 0 10px;
