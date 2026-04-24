@@ -103,27 +103,24 @@
       return '<div class="ball-card-page" data-page="2" style="width:' + CTRL_W + 'px">' +
         '<div class="ball-page-scroll">' +
           '<div class="bm-card">' +
-            '<div class="ws-menu-shell"><div class="ws-menu-body">' +
-              '<div class="ws-menu-inner-frame"><div class="ws-menu-inner-border"><div class="ws-menu-inner-fill"></div></div></div>' +
-              '<div class="ws-menu-ctrl">' +
-                '<div class="ws-section-title"><span>布 局</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">缩放</div><input type="range" min="50" max="100" value="' + s + '" id="wsWtScale"><span class="ws-ctrl-val" id="wsWtScaleVal">' + (s/100).toFixed(2) + '</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">圆角</div><input type="range" min="0" max="40" value="' + r + '" id="wsWtRadius"><span class="ws-ctrl-val" id="wsWtRadiusVal">' + r + 'px</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">边框</div><input type="range" min="0" max="100" value="' + ba + '" id="wsWtBorder"><span class="ws-ctrl-val" id="wsWtBorderVal">' + ba + '%</span></div>' +
-                '<div class="ws-section-title"><span>背 景</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">透明</div><input type="range" min="0" max="100" value="' + a + '" id="wsWtAlpha"><span class="ws-ctrl-val" id="wsWtAlphaVal">' + a + '%</span></div>' +
-                '<div class="ws-ctrl-row"><div class="ws-ctrl-label">模糊</div><input type="range" min="0" max="100" value="' + bl + '" id="wsWtBlur"><span class="ws-ctrl-val" id="wsWtBlurVal">' + bl + 'px</span></div>' +
-                '<div class="ws-section-title"><span>颜 色</span></div>' +
-                '<div class="ws-ctrl-color-row">' +
-                  '<div class="ws-ctrl-color-item"><input type="color" value="' + bgC + '" id="wsWtBgColor"><label>底色</label></div>' +
-                  '<div class="ws-ctrl-color-item"><input type="color" value="' + fC + '" id="wsWtFontColor"><label>字体</label></div>' +
-                  '<div class="ws-ctrl-color-item"><input type="color" value="' + lC + '" id="wsWtLineColor"><label>线条</label></div>' +
-                '</div>' +
+            '<div class="ws-menu-ctrl">' +
+              '<div class="ws-section-title"><span>布 局</span></div>' +
+              '<div class="ws-ctrl-row"><div class="ws-ctrl-label">缩放</div><input type="range" min="50" max="100" value="' + s + '" id="wsWtScale"><span class="ws-ctrl-val" id="wsWtScaleVal">' + (s/100).toFixed(2) + '</span></div>' +
+              '<div class="ws-ctrl-row"><div class="ws-ctrl-label">圆角</div><input type="range" min="0" max="40" value="' + r + '" id="wsWtRadius"><span class="ws-ctrl-val" id="wsWtRadiusVal">' + r + 'px</span></div>' +
+              '<div class="ws-ctrl-row"><div class="ws-ctrl-label">边框</div><input type="range" min="0" max="100" value="' + ba + '" id="wsWtBorder"><span class="ws-ctrl-val" id="wsWtBorderVal">' + ba + '%</span></div>' +
+              '<div class="ws-section-title"><span>背 景</span></div>' +
+              '<div class="ws-ctrl-row"><div class="ws-ctrl-label">透明</div><input type="range" min="0" max="100" value="' + a + '" id="wsWtAlpha"><span class="ws-ctrl-val" id="wsWtAlphaVal">' + a + '%</span></div>' +
+              '<div class="ws-ctrl-row"><div class="ws-ctrl-label">模糊</div><input type="range" min="0" max="100" value="' + bl + '" id="wsWtBlur"><span class="ws-ctrl-val" id="wsWtBlurVal">' + bl + 'px</span></div>' +
+              '<div class="ws-section-title"><span>颜 色</span></div>' +
+              '<div class="ws-ctrl-color-row">' +
+                '<div class="ws-ctrl-color-item"><input type="color" value="' + bgC + '" id="wsWtBgColor"><label>底色</label></div>' +
+                '<div class="ws-ctrl-color-item"><input type="color" value="' + fC + '" id="wsWtFontColor"><label>字体</label></div>' +
+                '<div class="ws-ctrl-color-item"><input type="color" value="' + lC + '" id="wsWtLineColor"><label>线条</label></div>' +
               '</div>' +
-            '</div></div>' +
-            '<div style="display:flex;gap:10px;margin-top:10px;">' +
-              '<div class="bm-wk" id="wsWtSave" style="flex:1;"><div class="bm-wk-body" style="padding:10px 6px;gap:0;"><div class="bm-wk-inner"></div><div class="bm-wk-text">保存</div></div></div>' +
-              '<div class="bm-wk" id="wsWtReset" style="flex:1;"><div class="bm-wk-body" style="padding:10px 6px;gap:0;"><div class="bm-wk-inner"></div><div class="bm-wk-text">重置</div></div></div>' +
+            '</div>' +
+            '<div style="display:flex;gap:10px;margin-top:14px;">' +
+              '<div class="bm-wk" id="wsWtSave" style="flex:1;"><div class="bm-wk-body" style="padding:12px 6px;gap:0;"><div class="bm-wk-inner"></div><div class="bm-wk-text">保存</div></div></div>' +
+              '<div class="bm-wk" id="wsWtReset" style="flex:1;"><div class="bm-wk-body" style="padding:12px 6px;gap:0;"><div class="bm-wk-inner"></div><div class="bm-wk-text">重置</div></div></div>' +
             '</div>' +
           '</div>' +
         '</div>' +
