@@ -117,14 +117,13 @@
 /* 底部按钮行 */
 .api-fl-bottom {
   display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px;
-  justify-content: center; align-items: center;
 }
+.api-fl-bottom .api-fl-tk { flex: 1; }
 
 /* 票券按钮 */
 .api-fl-tk {
   --notch: 4px;
   position: relative; padding: 1px;
-  width: 100px;
   background: #1a1a1a;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
@@ -169,10 +168,10 @@
 }
 
 /* 退出票券 */
-.api-fl-tk-light { background: #e0e0e0; }
-.api-fl-tk-light .api-fl-tk-body { background: #e0e0e0; }
-.api-fl-tk-light .api-fl-tk-inner { border-color: rgba(0,0,0,0.06); }
-.api-fl-tk-light .api-fl-tk-text { color: #666; }
+.api-fl-tk-light { background: #333; }
+.api-fl-tk-light .api-fl-tk-body { background: #333; }
+.api-fl-tk-light .api-fl-tk-inner { border-color: rgba(255,255,255,0.1); }
+.api-fl-tk-light .api-fl-tk-text { color: rgba(255,255,255,0.7); }
 
 /* 分隔 */
 .api-fl-sep { height: 1px; background: #eee; margin: 6px 0; }
