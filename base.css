@@ -627,3 +627,23 @@ html, body {
 }
 
 .cp-confirm:active { opacity: 0.8; }
+
+/* ====== 全屏面板 ====== */
+.fullpage-panel {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 10000;
+  display: flex; flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  transform: translateX(100%);
+  opacity: 0;
+}
+.fullpage-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+.fullpage-panel.hidden {
+  display: none;
+}
+
