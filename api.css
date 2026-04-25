@@ -100,13 +100,15 @@
 .api-fl-range-wrap { display: flex; align-items: center; gap: 6px; }
 .api-fl-range-hint { font-size: 9px; color: #aaa; white-space: nowrap; }
 .api-fl-range {
-  flex: 1; -webkit-appearance: none; height: 3px;
-  background: #e0e0e0; border-radius: 2px; outline: none;
+  flex: 1; -webkit-appearance: none !important; appearance: none !important;
+  height: 3px !important; background: #e0e0e0 !important;
+  border-radius: 2px !important; outline: none !important;
 }
 .api-fl-range::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
-  background: #fff; border: 2px solid #1a1a1a;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
+  -webkit-appearance: none !important; appearance: none !important;
+  width: 16px !important; height: 16px !important; border-radius: 50% !important;
+  background: #fff !important; border: 2px solid #1a1a1a !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important; cursor: pointer !important;
 }
 .api-fl-range-val {
   min-width: 28px; text-align: right; font-size: 11px; font-weight: 600; color: #333;
@@ -117,15 +119,60 @@
   display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px;
   justify-content: center; align-items: center;
 }
-.api-fl-bottom-btn {
-  padding: 8px 20px; border-radius: 6px;
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+
+/* 票券按钮 */
+.api-fl-tk {
+  --notch: 4px;
+  position: relative; padding: 1px;
+  width: 100px;
+  background: #1a1a1a;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
-  border: none; font-family: inherit; transition: transform .1s;
+  -webkit-mask:
+    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
+  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
+  mask-size: 51% 51%; mask-repeat: no-repeat;
+  transition: transform 0.12s;
 }
-.api-fl-bottom-btn:active { transform: scale(0.95); }
-.api-fl-btn-save { background: #1a1a1a; color: #fff; }
-.api-fl-btn-close { background: #f0f0f0; color: #666; }
+.api-fl-tk:active { transform: scale(0.96); }
+.api-fl-tk-body {
+  --ni: 3px;
+  position: relative; background: #1a1a1a;
+  padding: 9px 0; text-align: center;
+  -webkit-mask:
+    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
+}
+.api-fl-tk-inner {
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid rgba(255,255,255,0.15); pointer-events: none; z-index: 1;
+  --ii: 2px;
+  -webkit-mask:
+    radial-gradient(var(--ii) at 0 0, transparent 98%, #000) top left,
+    radial-gradient(var(--ii) at 100% 0, transparent 98%, #000) top right,
+    radial-gradient(var(--ii) at 0 100%, transparent 98%, #000) bottom left,
+    radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
+  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
+}
+.api-fl-tk-text {
+  font-size: 10px; font-weight: 700; color: #fff;
+  letter-spacing: 2px; position: relative; z-index: 2;
+}
+
+/* 退出票券 */
+.api-fl-tk-light { background: #e0e0e0; }
+.api-fl-tk-light .api-fl-tk-body { background: #e0e0e0; }
+.api-fl-tk-light .api-fl-tk-inner { border-color: rgba(0,0,0,0.06); }
+.api-fl-tk-light .api-fl-tk-text { color: #666; }
 
 /* 分隔 */
 .api-fl-sep { height: 1px; background: #eee; margin: 6px 0; }
