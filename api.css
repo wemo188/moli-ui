@@ -4,7 +4,7 @@
   z-index: 100001;
   width: 300px;
   height: 400px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
@@ -168,10 +168,10 @@
 }
 
 /* 退出票券 */
-.api-fl-tk-light { background: #333; }
-.api-fl-tk-light .api-fl-tk-body { background: #333; }
-.api-fl-tk-light .api-fl-tk-inner { border-color: rgba(255,255,255,0.1); }
-.api-fl-tk-light .api-fl-tk-text { color: rgba(255,255,255,0.7); }
+.api-fl-tk-light { background: #1a1a1a; }
+.api-fl-tk-light .api-fl-tk-body { background: #1a1a1a; }
+.api-fl-tk-light .api-fl-tk-inner { border-color: rgba(255,255,255,0.15); }
+.api-fl-tk-light .api-fl-tk-text { color: rgba(255,255,255,0.5); }
 
 /* 分隔 */
 .api-fl-sep { height: 1px; background: #eee; margin: 6px 0; }
