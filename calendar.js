@@ -230,9 +230,12 @@ if(e.target.closest('.vf-lbl'))return;
     panel.style.left=left+'px';
     panel.style.top=top+'px';
 
-    requestAnimationFrame(function(){requestAnimationFrame(function(){panel.classList.add('open');});});
-        App.safeOn('#wcpClose', 'click', function(e) {
+        requestAnimationFrame(function(){requestAnimationFrame(function(){panel.classList.add('open');});});
 
+    panel.querySelector('#wcpClose').addEventListener('click', function(e) {
+      e.stopPropagation();
+      Cal.toggleColorPanel();
+    });
 
     // 存颜色值
     var _colors={bg:c.colorHex||'#ffffff',font:c.fontColor||'#1a1a1a',line:c.lineColor||'#1a1a1a'};
