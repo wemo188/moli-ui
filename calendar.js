@@ -275,7 +275,7 @@ if(e.target.closest('.vf-lbl'))return;
           _colors[key]=hex;
           swatch.style.background=hex;
           Cal.applyCardConfig(getCfg());
-        });
+        },'wt-'+key);
       });
     });
 
