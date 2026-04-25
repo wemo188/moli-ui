@@ -312,11 +312,31 @@
         if (!models.length) { App.showToast('未找到模型'); return; }
         var list = el.querySelector('#apiModelList');
         if (!list) return;
-        list.innerHTML = models.map(function(m) {
+                list.innerHTML = '<input type="text" class="api-fl-input" id="apiModelSearch" placeholder="搜索模型..." style="margin:6px 8px;width:calc(100% - 16px);font-size:12px;">' +
+          '<div id="apiModelResults">' + models.map(function(m) {
           var selected = (selectModel && m === selectModel) ? ' style="background:#f0f5ff;font-weight:700;"' : '';
           return '<div class="api-fl-model-item"' + selected + '>' + App.esc(m) + '</div>';
-        }).join('');
+        }).join('') + '</div>';
         list.classList.add('show');
+
+        var searchInput = list.querySelector('#apiModelSearch');
+        var resultsBox = list.querySelector('#apiModelResults');
+        searchInput.addEventListener('input', function() {
+          var kw = this.value.trim().toLowerCase();
+          var filtered = kw ? models.filter(function(m) { return m.toLowerCase().indexOf(kw) >= 0; }) : models;
+          resultsBox.innerHTML = filtered.map(function(m) {
+            var selected = (selectModel && m === selectModel) ? ' style="background:#f0f5ff;font-weight:700;"' : '';
+            return '<div class="api-fl-model-item"' + selected + '>' + App.esc(m) + '</div>';
+          }).join('');
+          resultsBox.querySelectorAll('.api-fl-model-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+              var inp = el.querySelector('#apiModel');
+              if (inp) inp.value = item.textContent;list.classList.remove('show');
+            });
+          });
+        });
+        searchInput.addEventListener('click', function(e) { e.stopPropagation(); });
+        searchInput.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
         list.querySelectorAll('.api-fl-model-item').forEach(function(item) {
           item.addEventListener('click', function() {
             var inp = el.querySelector('#apiModel');
