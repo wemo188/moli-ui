@@ -126,55 +126,14 @@
 }
 .wt-cp-swatch:active { transform: scale(0.9); }
 .wt-cp-color-label { font-size: 8px; font-weight: 700; color: #333; }
-.wt-cp-btns {
-  display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px;
+.wt-cp-btns { display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px; }
+.wt-cp-btn {
+  flex: 1; padding: 10px 0; border: none; border-radius: 10px;
+  font-size: 11px; font-weight: 800; letter-spacing: 2px;
+  cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
+  background: #1a1a1a; color: #fff;
 }
-.wt-cp-tk {
-  --notch: 4px;
-  flex: 1; position: relative; padding: 1px;
-  background: #1a1a1a;
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-  -webkit-mask:
-    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-  transition: transform 0.12s;
-}
-.wt-cp-tk:active { transform: scale(0.96); }
-.wt-cp-tk-body {
-  --ni: 3px;
-  position: relative; background: #1a1a1a;
-  padding: 9px 0; text-align: center;
-  -webkit-mask:
-    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-}
-.wt-cp-tk-inner {
-  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
-  border: 1px solid rgba(255,255,255,0.15); pointer-events: none; z-index: 1;
-  --ii: 2px;
-  -webkit-mask:
-    radial-gradient(var(--ii) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ii) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ii) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-}
-.wt-cp-tk-text {
-  font-size: 10px; font-weight: 700; color: #fff;
-  letter-spacing: 2px; position: relative; z-index: 2;
-}
-.wt-cp-tk-dim .wt-cp-tk-text { color: rgba(255,255,255,0.5); }
+.wt-cp-btn:active { opacity: 0.7; }
 
 /* ====== 日历面板 ====== */
 #calPanel.fullpage-panel { background: #ffffff; }
