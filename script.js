@@ -423,11 +423,13 @@
   App.openColorPicker = function(currentColor, onConfirm, onChange) {
     var old = App.$('#cpOverlay');
     if (old) {
-      // 同一个颜色再点一次 → 关闭
-      if (old._lastColor === currentColor) {
+      // 同一个调用源再点一次 → 关闭
+      var callerId = arguments[3] || currentColor;
+      if (old._callerId === callerId) {
         old._doClose();
         return;
       }
+      old._callerId = callerId;
       // 不同颜色 → 切换，不关闭
       old._lastColor = currentColor;
       old._onConfirm = onConfirm;
@@ -441,7 +443,7 @@
     var overlay = document.createElement('div');
     overlay.id = 'cpOverlay';
     overlay.className = 'cp-overlay';
-    overlay._lastColor = currentColor;
+    overlay._callerId = arguments[3] || currentColor;
     overlay._onConfirm = onConfirm;
     overlay._onChange = onChange;
 
