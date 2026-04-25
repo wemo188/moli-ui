@@ -68,7 +68,7 @@ html, body {
   position: fixed;
   right: 10px;
   bottom: calc(20px + var(--safe-bottom));
-  z-index: 99999;
+  z-index: 100000;
   cursor: pointer;
   touch-action: none;
   transition: transform 0.2s;
