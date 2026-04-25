@@ -3,7 +3,8 @@
 .api-float {
   position: fixed;
   z-index: 100001;
-  width: 280px;
+  width: 320px;
+  height: 400px;
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
