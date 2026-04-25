@@ -1,106 +1,131 @@
-/* =========================
-   悬浮球菜单 · 容器
-========================= */
-.ball-card-menu {
+/* ====== API 浮动卡片 ====== */
+.api-float {
   position: fixed;
   z-index: 100001;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.92) translateY(6px);
-  transition: opacity 0.22s ease, transform 0.22s ease, width 0.32s ease;
-  overflow: hidden;
-}
-.ball-card-menu.show {
-  pointer-events: auto;
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-.ball-card-slider {
-  display: flex;
-  transition: transform 0.32s cubic-bezier(0.22, 0.8, 0.2, 1);
-  will-change: transform;
-  align-items: flex-start;
-}
-.ball-card-page { flex-shrink: 0; }
-
-/* =========================
-   白底卡片外壳
-========================= */
-.bm-card {
   width: 300px;
   height: 400px;
-  background: rgba(255,255,255,1);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
-  padding: 20px 24px;
-  display: flex;
+  padding: 14px 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  display: none;
   flex-direction: column;
-  position: relative;
+  gap: 8px;
+  touch-action: none;
+  overflow: hidden;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
 }
-.bm-title {
-  text-align: center; padding: 0 0 16px;
-  font-size: 12px; font-weight: 700; color: #3a4f65;
-  letter-spacing: 2px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  flex-shrink: 0;
-}
-.bm-title::before, .bm-title::after {
-  content: ""; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent);
-}
-.bm-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 72px);
-  gap: 16px;
-  justify-content: center;
-  flex: 1;
-  align-content: center;
-}
-/* 第一页不居中，顶部对齐 */
-.bm-grid-top {
-  align-content: start;
-  padding-top: 10px;
+.api-float.open { display: flex; }
+.api-float:active { cursor: grabbing; }
+
+.api-float-title {
+  font-size: 12px; font-weight: 900; letter-spacing: 2px; color: #333;
+  text-transform: uppercase; padding: 2px 0;
+  text-align: center;
 }
 
-/* 方案C装饰 */
-.bm-card-deco { position: relative; }
-.bm-card-deco::before {
-  content: ""; position: absolute;
-  top: 8px; left: 8px; right: 8px; bottom: 8px;
-  border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;
-  pointer-events: none;
+/* 页签 */
+.api-fl-tabs { display: flex; gap: 0; margin-bottom: 4px; flex-shrink: 0; }
+.api-fl-tab {
+  flex: 1; text-align: center; padding: 8px 0;
+  font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
+  color: #bbb; cursor: pointer;
+  border-bottom: 2px solid #e0e0e0;
+  -webkit-tap-highlight-color: transparent; transition: all .2s;
+  font-family: inherit;
 }
-.bm-card-deco::after {
-  content: ""; position: absolute;
-  top: 11px; left: 11px; right: 11px; bottom: 11px;
-  border: 0.5px solid rgba(0,0,0,0.03); border-radius: 6px;
-  pointer-events: none;
+.api-fl-tab.active {
+  color: #111;
+  border-bottom-color: #111;
 }
-.bm-diamond {
-  position: absolute; width: 8px; height: 8px;
-  transform: rotate(45deg); border: 1px solid rgba(0,0,0,0.08);
-  pointer-events: none; z-index: 2;
-}
-.bm-diamond-tl { top: 4px; left: 4px; }
-.bm-diamond-tr { top: 4px; right: 4px; }
-.bm-diamond-bl { bottom: 4px; left: 4px; }
-.bm-diamond-br { bottom: 4px; right: 4px; }
-.bm-vline-l, .bm-vline-r {
-  position: absolute; top: 20px; bottom: 20px; width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
-  pointer-events: none;
-}
-.bm-vline-l { left: 4px; }
-.bm-vline-r { right: 4px; }
 
-/* =========================
-   黑色票券
-========================= */
-.bm-tk {
-  --notch: 5px;
+/* 滚动区 */
+.api-fl-scroll {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; min-height: 0;
+}
+.api-fl-scroll::-webkit-scrollbar { display: none; }
+
+/* 字段 */
+.api-fl-field { margin-bottom: 8px; }
+.api-fl-label {
+  font-size: 11px; font-weight: 700; color: #999;
+  letter-spacing: 1px; margin-bottom: 3px;
+}
+.api-fl-input {
+  width: 100%; border: none; border-bottom: 1.5px solid #1a1a1a;
+  background: transparent; font-size: 13px; font-weight: 500; color: #111;
+  outline: none; padding: 4px 0 6px; font-family: inherit; box-sizing: border-box;
+}
+.api-fl-input::placeholder { color: #ccc; font-weight: 400; }
+.api-fl-row { display: flex; align-items: center; gap: 6px; }
+.api-fl-row .api-fl-input { flex: 1; }
+
+.api-fl-icon-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 1.5px solid #1a1a1a; border-radius: 6px;
+  cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+}
+.api-fl-icon-btn:active { background: #f0f0f0; }
+.api-fl-icon-btn svg {
+  width: 14px; height: 14px; fill: none; stroke: #333;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* 模型列表 */
+.api-fl-model-list {
+  display: none; max-height: 200px; overflow-y: auto;
+  border: 1.5px solid #1a1a1a; border-radius: 6px;
+  margin-top: 4px; background: #fff;
+}
+.api-fl-model-list.show { display: block; }
+.api-fl-model-item {
+  padding: 8px 12px; font-size: 12px; color: #333; font-weight: 500;
+  cursor: pointer; border-bottom: 1px solid #eee;
+  -webkit-tap-highlight-color: transparent;
+}
+.api-fl-model-item:last-child { border-bottom: none; }
+.api-fl-model-item:active { background: #f5f5f5; }
+
+/* 参数 */
+.api-fl-param { margin-bottom: 10px; }
+.api-fl-param-title {
+  font-size: 13px; font-weight: 700; color: #333;
+  font-family: "SF Mono","Menlo",monospace;
+}
+.api-fl-param-desc { font-size: 10px; color: #999; margin-top: 2px; }
+.api-fl-param-slider { margin-top: 6px; }
+.api-fl-range-wrap { display: flex; align-items: center; gap: 6px; }
+.api-fl-range-hint { font-size: 10px; color: #aaa; white-space: nowrap; }
+.api-fl-range {
+  flex: 1; -webkit-appearance: none !important; appearance: none !important;
+  height: 3px !important; background: #e0e0e0 !important;
+  border-radius: 2px !important; outline: none !important;
+}
+.api-fl-range::-webkit-slider-thumb {
+  -webkit-appearance: none !important; appearance: none !important;
+  width: 16px !important; height: 16px !important; border-radius: 50% !important;
+  background: #fff !important; border: 2px solid #1a1a1a !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important; cursor: pointer !important;
+}
+.api-fl-range-val {
+  min-width: 28px; text-align: right; font-size: 12px; font-weight: 600; color: #333;
+}
+
+/* 底部按钮行 */
+.api-fl-bottom {
+  display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px;
+}
+.api-fl-bottom .api-fl-tk { flex: 1; }
+
+/* 票券按钮 */
+.api-fl-tk {
+  --notch: 4px;
   position: relative; padding: 1px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 40%, #1a1a1a 100%);
+  background: #1a1a1a;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
@@ -113,34 +138,24 @@
     radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
     radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
   mask-size: 51% 51%; mask-repeat: no-repeat;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s;
 }
-.bm-tk:active { transform: scale(0.93); }
-.bm-tk-body {
-  --ni: 4px;
-  position: relative;
-  background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 30%, #222 60%, #1a1a1a 100%);
-  width: 68px; min-height: 96px;
-  padding: 16px 6px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
+.api-fl-tk:active { transform: scale(0.96); }
+.api-fl-tk-body {
+  --ni: 3px;
+  position: relative; background: #1a1a1a;
+  padding: 12px 0; text-align: center;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
     radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
     radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
 }
-.bm-tk-inner {
-  position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
-  border: 1px solid rgba(255,255,255,0.08);
-  pointer-events: none; z-index: 1;
-  --ii: 3px;
+.api-fl-tk-inner {
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid rgba(255,255,255,0.15); pointer-events: none; z-index: 1;
+  --ii: 2px;
   -webkit-mask:
     radial-gradient(var(--ii) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ii) at 100% 0, transparent 98%, #000) top right,
@@ -148,75 +163,46 @@
     radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
-.bm-tk-spade { font-size: 12px; color: rgba(255,255,255,0.18); line-height: 1; position: relative; z-index: 2; }
-.bm-tk-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
-.bm-tk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); position: relative; z-index: 2; }
-.bm-tk-sub { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
+.api-fl-tk-text {
+  font-size: 11px; font-weight: 700; color: #fff;
+  letter-spacing: 2px; position: relative; z-index: 2;
+}
 
-/* =========================
-   蓝白票券
-========================= */
-.bm-wk {
-  --notch: 5px;
-  position: relative; padding: 1px;
-  background: linear-gradient(135deg, #cadff2 0%, #e0ecf6 40%, #cadff2 100%);
+/* 分隔 */
+.api-fl-sep { height: 1px; background: #eee; margin: 6px 0; }
+
+/* 已保存列表 */
+.api-fl-saved-empty {
+  padding: 20px; text-align: center; font-size: 12px; color: #bbb;
+}
+.api-fl-saved-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid #eee;
+}
+.api-fl-saved-item:last-child { border-bottom: none; }
+.api-fl-saved-info { flex: 1; min-width: 0; }
+.api-fl-saved-name {
+  font-size: 13px; font-weight: 700; color: #333;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.api-fl-saved-name .api-fl-tag {
+  font-size: 10px; color: #999; font-weight: 600; margin-left: 4px;
+}
+.api-fl-saved-url {
+  font-size: 11px; color: #aaa; margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.api-fl-saved-acts { display: flex; gap: 4px; flex-shrink: 0; }
+.api-fl-act {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid #ddd; border-radius: 5px;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
-  -webkit-mask:
-    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-  transition: transform 0.12s ease;
 }
-.bm-wk:active { transform: scale(0.93); }
-.bm-wk-body {
-  --ni: 4px;
-  position: relative;
-  background: rgba(255,255,255,0.95);
-  padding: 16px 6px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
-  -webkit-mask:
-    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
+.api-fl-act:active { background: #f0f0f0; }
+.api-fl-act svg {
+  width: 12px; height: 12px; fill: none; stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
 }
-.bm-grid .bm-wk-body { width: 68px; min-height: 96px; }
-.bm-wk-inner {
-  position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
-  border: 1px solid rgba(202,223,242,0.4);
-  pointer-events: none; z-index: 1;
-  --ii: 3px;
-  -webkit-mask:
-    radial-gradient(var(--ii) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ii) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ii) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-}
-.bm-wk-spade { font-size: 12px; color: rgba(170,200,230,0.65); line-height: 1; position: relative; z-index: 2; }
-.bm-wk-text { font-size: 12px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
-.bm-wk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent); position: relative; z-index: 2; }
-.bm-wk-sub { font-size: 8px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
-.ws-btn-row .bm-wk-body { padding: 10px 6px; gap: 0; }
-
-/* =========================
-   占位页
-========================= */
-.ws-placeholder {
-  padding: 40px 16px; text-align: center;
-  font-size: 13px; color: #5a7a9a; letter-spacing: 1px;
-}
+.api-fl-act-use svg { stroke: #5a9e6f; }
+.api-fl-act-edit svg { stroke: #666; }
+.api-fl-act-del svg { stroke: #c9706b; }
