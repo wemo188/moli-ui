@@ -94,7 +94,7 @@
           e.stopPropagation();
           var action = item.dataset.action;
           if (action === 'workshop') { Workshop.goToPage(1); return; }
-          if (action === 'api') { Workshop.close(); setTimeout(function() { App.openPanel('apiPanel'); }, 220); return; }
+          if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
           if (action === 'character') { Workshop.close(); setTimeout(function() { if (App.charMgr) App.charMgr.open(); }, 220); return; }
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
