@@ -69,6 +69,11 @@
       setTimeout(function() { if (Api.floatEl && Api.floatEl.parentNode) Api.floatEl.remove(); Api.floatEl = null; }, 200);
     },
 
+    tkBtn: function(id, label, light) {
+      var cls = light ? 'api-fl-tk api-fl-tk-light' : 'api-fl-tk';
+      return '<div class="' + cls + '" id="' + id + '"><div class="api-fl-tk-body"><div class="api-fl-tk-inner"></div><div class="api-fl-tk-text">' + label + '</div></div></div>';
+    },
+
     renderFloat: function() {
       var el = Api.floatEl;
       if (!el) return;
@@ -90,22 +95,30 @@
           '<div class="api-fl-field"><div class="api-fl-label">API 地址</div><input type="text" class="api-fl-input" id="apiUrl" placeholder="https://example.com/v1" value="' + App.esc(editCfg ? editCfg.url : '') + '"></div>' +
           '<div class="api-fl-field"><div class="api-fl-label">API KEY</div><div class="api-fl-row"><input type="password" class="api-fl-input" id="apiKey" placeholder="sk-..." value="' + App.esc(editCfg ? editCfg.key : '') + '"><button class="api-fl-icon-btn" id="apiToggleKey" type="button"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>' +
           '<div class="api-fl-field"><div class="api-fl-label">模型</div><div class="api-fl-row"><input type="text" class="api-fl-input" id="apiModel" placeholder="gpt-4o" value="' + App.esc(editCfg ? editCfg.model : '') + '"><button class="api-fl-icon-btn" id="apiFetchModels" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="api-fl-model-list" id="apiModelList"></div></div>';
-        bottomHtml = '<div class="api-fl-bottom"><button class="api-fl-bottom-btn api-fl-btn-save" id="apiSaveBtn" type="button">保存</button><button class="api-fl-bottom-btn api-fl-btn-close" id="apiCloseBtn" type="button">退出</button></div>';
+        bottomHtml = '<div class="api-fl-bottom">' + Api.tkBtn('apiSaveBtn', '保存', false) + Api.tkBtn('apiCloseBtn', '退出', true) + '</div>';
 
       } else if (Api.currentTab === 'params') {
         bodyHtml =
           '<div class="api-fl-param"><div class="api-fl-param-title">Temperature</div><div class="api-fl-param-desc">贴合人设 ↔ 有创意</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">精确</span><input type="range" class="api-fl-range" id="apiTemp" min="0" max="2" step="0.05" value="' + params.temperature + '"><span class="api-fl-range-val" id="apiTempVal">' + params.temperature + '</span><span class="api-fl-range-hint">创意</span></div></div></div>' +
           '<div class="api-fl-param"><div class="api-fl-param-title">Freq Penalty</div><div class="api-fl-param-desc">避免重复词汇</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">重复</span><input type="range" class="api-fl-range" id="apiFreq" min="0" max="2" step="0.1" value="' + params.freqPenalty + '"><span class="api-fl-range-val" id="apiFreqVal">' + params.freqPenalty + '</span><span class="api-fl-range-hint">避免</span></div></div></div>' +
           '<div class="api-fl-param"><div class="api-fl-param-title">Pres Penalty</div><div class="api-fl-param-desc">鼓励新词汇</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">保守</span><input type="range" class="api-fl-range" id="apiPres" min="0" max="2" step="0.1" value="' + params.presPenalty + '"><span class="api-fl-range-val" id="apiPresVal">' + params.presPenalty + '</span><span class="api-fl-range-hint">创新</span></div></div></div>';
-        bottomHtml = '<div class="api-fl-bottom"><button class="api-fl-bottom-btn api-fl-btn-save" id="apiSaveParamsBtn" type="button">保存</button><button class="api-fl-bottom-btn api-fl-btn-close" id="apiCloseBtn2" type="button">退出</button></div>';
+        bottomHtml = '<div class="api-fl-bottom">' + Api.tkBtn('apiSaveParamsBtn', '保存', false) + Api.tkBtn('apiCloseBtn2', '退出', true) + '</div>';
 
       } else if (Api.currentTab === 'saved') {
         bodyHtml = Api.buildSavedHtml();
-        bottomHtml = '<div class="api-fl-bottom"><button class="api-fl-bottom-btn api-fl-btn-close" id="apiCloseBtn3" type="button">退出</button></div>';
+        bottomHtml = '<div class="api-fl-bottom">' + Api.tkBtn('apiCloseBtn3', '退出', true) + '</div>';
       }
 
       el.innerHTML = '<div class="api-float-title">API 配置</div>' + tabsHtml + '<div class="api-fl-scroll">' + bodyHtml + '</div>' + bottomHtml;
       Api.bindEvents();
+
+      // 编辑模式自动获取模型
+      if (Api.currentTab === 'config' && Api._editingIdx >= 0) {
+        var cfg = Api.apiConfigs[Api._editingIdx];
+        if (cfg && cfg.url && cfg.key) {
+          setTimeout(function() { Api.fetchModels(cfg.model); }, 300);
+        }
+      }
     },
 
     buildSavedHtml: function() {
@@ -118,9 +131,9 @@
             '<div class="api-fl-saved-url">' + App.esc((cfg.model || '') + ' · ' + (cfg.url || '').replace(/^https?:\/\//, '').split('/')[0]) + '</div>' +
           '</div>' +
           '<div class="api-fl-saved-acts">' +
-            '<button class="api-fl-act api-fl-act-use" data-idx="' + i + '" type="button" title="启用"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
-            '<button class="api-fl-act api-fl-act-edit" data-idx="' + i + '" type="button" title="编辑"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>' +
-            '<button class="api-fl-act api-fl-act-del" data-idx="' + i + '" type="button" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>' +
+            '<button class="api-fl-act api-fl-act-use" data-idx="' + i + '" type="button"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+            '<button class="api-fl-act api-fl-act-edit" data-idx="' + i + '" type="button"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>' +
+            '<button class="api-fl-act api-fl-act-del" data-idx="' + i + '" type="button"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -130,12 +143,11 @@
       var el = Api.floatEl;
       if (!el) return;
 
-      // 整个卡片拖拽
       var _startedOnInput = false;
 
       el.addEventListener('touchstart', function(e) {
         e.stopPropagation();
-        if (e.target.closest('input') || e.target.closest('select') || e.target.closest('button') || e.target.closest('.api-fl-tab') || e.target.closest('.api-fl-model-item') || e.target.closest('.api-fl-act') || e.target.closest('.api-fl-range') || e.target.closest('.api-fl-bottom-btn')) {
+        if (e.target.closest('input') || e.target.closest('select') || e.target.closest('button') || e.target.closest('.api-fl-tk') || e.target.closest('.api-fl-tab') || e.target.closest('.api-fl-model-item') || e.target.closest('.api-fl-act') || e.target.closest('.api-fl-range')) {
           _startedOnInput = true;
           return;
         }
@@ -166,7 +178,7 @@
         });
       });
 
-      // 退出按钮
+      // 退出
       ['apiCloseBtn', 'apiCloseBtn2', 'apiCloseBtn3'].forEach(function(id) {
         var btn = el.querySelector('#' + id);
         if (btn) btn.addEventListener('click', function(e) { e.stopPropagation(); Api.close(); });
@@ -267,7 +279,7 @@
       }
     },
 
-    fetchModels: async function() {
+    fetchModels: async function(selectModel) {
       var el = Api.floatEl;
       if (!el) return;
       var url = (el.querySelector('#apiUrl') || {}).value || '';
@@ -290,7 +302,10 @@
         if (!models.length) { App.showToast('未找到模型'); return; }
         var list = el.querySelector('#apiModelList');
         if (!list) return;
-        list.innerHTML = models.map(function(m) { return '<div class="api-fl-model-item">' + App.esc(m) + '</div>'; }).join('');
+        list.innerHTML = models.map(function(m) {
+          var selected = (selectModel && m === selectModel) ? ' style="background:#f0f5ff;font-weight:700;"' : '';
+          return '<div class="api-fl-model-item"' + selected + '>' + App.esc(m) + '</div>';
+        }).join('');
         list.classList.add('show');
         list.querySelectorAll('.api-fl-model-item').forEach(function(item) {
           item.addEventListener('click', function() {
