@@ -151,17 +151,27 @@
           _startedOnInput = true;
           return;
         }
-        _startedOnInput = false;
+               _startedOnInput = false;
         var t = e.touches[0];
         var rect = el.getBoundingClientRect();
-        Api._drag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+        Api._drag = { active: false, locked: false, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
       }, { passive: false });
 
       el.addEventListener('touchmove', function(e) {
         e.stopPropagation();
-        if (!Api._drag.active || _startedOnInput) return;
-        e.preventDefault();
+                if (_startedOnInput) return;
         var t = e.touches[0];
+        var dx = Math.abs(t.clientX - Api._drag.sx);
+        var dy = Math.abs(t.clientY - Api._drag.sy);
+        if (!Api._drag.locked) {
+          if (dx > 15 || dy > 15) {
+            if (dx > dy) { Api._drag.active = true; Api._drag.locked = true; }
+            else { Api._drag.active = false; Api._drag.locked = true; }
+          }
+          return;
+        }
+        if (!Api._drag.active) return;
+        e.preventDefault();
         el.style.left = (Api._drag.ox + t.clientX - Api._drag.sx) + 'px';
         el.style.top = (Api._drag.oy + t.clientY - Api._drag.sy) + 'px';
       }, { passive: false });
