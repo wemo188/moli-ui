@@ -96,7 +96,7 @@
           if (action === 'workshop') { Workshop.goToPage(1); return; }
           if (action === 'api') { Workshop.close(); setTimeout(function() { App.openPanel('apiPanel'); }, 220); return; }
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
-          if (action === 'character') { App.showToast('角色功能开发中'); return; }
+          if (action === 'character') { Workshop.close(); setTimeout(function() { if (App.charMgr) App.charMgr.open(); }, 220); return; }
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'exportData') { Workshop.exportData(); return; }
