@@ -235,24 +235,24 @@
       Workshop.sliderEl.style.transform = 'translateX(' + (-Workshop.getPageOffset(idx)) + 'px)';
     },
 
-    positionMenu: function() {
+        positionMenu: function() {
       var ball = App.state.ball;
       if (!ball) return;
       var rect = ball.getBoundingClientRect();
       var menu = Workshop.menuEl;
-      var menuH = menu.offsetHeight || 300;
+      var menuW = menu.offsetWidth || 332;
+      var menuH = menu.offsetHeight || 400;
       var ballCX = rect.left + rect.width / 2;
-      var ballCY = rect.top + rect.height / 2;
 
       if (ballCX > window.innerWidth / 2) {
-        menu.style.right = (window.innerWidth - rect.left + 10) + 'px';
-        menu.style.left = 'auto';
+        menu.style.left = (rect.left - menuW - 4) + 'px';
+        menu.style.right = 'auto';
       } else {
-        menu.style.left = (rect.right + 10) + 'px';
+        menu.style.left = (rect.right + 4) + 'px';
         menu.style.right = 'auto';
       }
 
-      var top = ballCY - menuH / 2;
+      var top = rect.top + rect.height / 2 - menuH / 2;
       if (top < 10) top = 10;
       if (top + menuH > window.innerHeight - 10) top = window.innerHeight - menuH - 10;
       menu.style.top = top + 'px';
