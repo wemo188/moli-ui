@@ -11,7 +11,6 @@
 .api-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 56px 16px 12px; flex-shrink: 0; background: #fff;
-  border-bottom: 1px solid #eee;
 }
 .api-header-btn {
   width: 36px; height: 36px; display: flex; align-items: center;
@@ -26,137 +25,72 @@
 
 .api-scroll {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 16px 14px 80px;
+  padding: 0 14px 80px;
 }
 
-/* ====== 调色面板风格卡片 ====== */
+/* 小卡片 */
 .api-card {
-  --notch: 10px;
-  position: relative; padding: 2px; background: #cadff2;
-  margin-bottom: 16px;
-  -webkit-mask:
-    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.api-card-body {
-  --ni: 8px;
-  position: relative; background: rgba(255,255,255,0.96); padding: 20px 18px;
-  -webkit-mask:
-    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.api-card-inner-frame {
-  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
-  pointer-events: none; z-index: 1;
-}
-.api-card-inner-border {
-  position: absolute; inset: 0; background: #cadff2; padding: 1px;
-  --ir: 5px;
-  -webkit-mask:
-    radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.api-card-inner-fill {
-  width: 100%; height: 100%; background: rgba(255,255,255,0.96);
-  --ifr: 4px;
-  -webkit-mask:
-    radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.api-card-ctrl {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; gap: 14px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid rgba(202,223,242,0.3);
 }
 
-/* ====== 小标题 ====== */
-.api-section-title {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.api-section-title::before, .api-section-title::after {
-  content: ""; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, #cadff2, transparent);
-}
-.api-section-title span {
-  font-size: 11px; font-weight: 700; color: #6a90ad;
-  letter-spacing: 2.5px; white-space: nowrap;
+.api-card-title {
+  font-size: 8px; font-weight: 900; letter-spacing: 2px; color: #6a90ad;
+  text-transform: uppercase; padding: 0 0 8px;
+  border-bottom: 1px solid rgba(202,223,242,0.3);
+  margin-bottom: 10px;
 }
 
-/* ====== 字段 ====== */
-.api-field { display: flex; flex-direction: column; gap: 4px; }
+/* 字段 */
+.api-field { margin-bottom: 10px; }
+.api-field:last-child { margin-bottom: 0; }
 .api-field-label {
-  font-size: 9px; font-weight: 700; color: #6a90ad;
-  letter-spacing: 1.5px;
+  font-size: 8px; font-weight: 700; color: #8aa0b8;
+  letter-spacing: 1px; margin-bottom: 3px;
 }
 .api-field-input {
-  width: 100%; border: none; border-bottom: 1.5px solid #cadff2; background: transparent;
-  font-size: 13px; font-weight: 500; color: #3a4f65; outline: none;
-  padding: 4px 0 6px; font-family: inherit; box-sizing: border-box;
+  width: 100%; border: none; border-bottom: 1px solid rgba(202,223,242,0.4);
+  background: transparent; font-size: 13px; font-weight: 500; color: #333;
+  outline: none; padding: 4px 0 5px; font-family: inherit; box-sizing: border-box;
 }
-.api-field-input::placeholder { color: #bdd2e8; font-weight: 400; }
-.api-field-row { display: flex; align-items: center; gap: 8px; }
+.api-field-input::placeholder { color: #bdd2e8; font-weight: 400; font-size: 12px; }
+.api-field-row { display: flex; align-items: center; gap: 6px; }
 .api-field-row .api-field-input { flex: 1; }
+
 .api-icon-btn {
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  background: rgba(202,223,242,0.15); border: 1.5px solid #cadff2; border-radius: 8px;
-  cursor: pointer; flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent; transition: background .15s;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid rgba(202,223,242,0.4); border-radius: 6px;
+  cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
 }
-.api-icon-btn:active { background: rgba(202,223,242,0.3); }
+.api-icon-btn:active { background: rgba(202,223,242,0.15); }
 .api-icon-btn svg {
-  width: 15px; height: 15px; fill: none; stroke: #6a90ad;
+  width: 14px; height: 14px; fill: none; stroke: #8aa0b8;
   stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
 /* 模型列表 */
 .api-model-list {
-  display: none; max-height: 200px; overflow-y: auto;
-  border: 1.5px solid #cadff2; border-radius: 8px; margin-top: 4px; background: #fff;
+  display: none; max-height: 180px; overflow-y: auto;
+  border: 1px solid rgba(202,223,242,0.4); border-radius: 6px;
+  margin-top: 4px; background: #fff;
 }
 .api-model-list.show { display: block; }
 .api-model-item {
-  padding: 10px 14px; font-size: 12px; color: #3a4f65; font-weight: 500;
-  cursor: pointer; border-bottom: 1px solid rgba(202,223,242,0.3);
-  transition: background .15s; -webkit-tap-highlight-color: transparent;
+  padding: 8px 12px; font-size: 12px; color: #333; font-weight: 500;
+  cursor: pointer; border-bottom: 1px solid rgba(202,223,242,0.2);
+  -webkit-tap-highlight-color: transparent;
 }
 .api-model-item:last-child { border-bottom: none; }
-.api-model-item:active { background: rgba(202,223,242,0.15); }
+.api-model-item:active { background: rgba(202,223,242,0.1); }
 
-/* ====== 票券按钮 ====== */
+/* 票券按钮 */
 .api-tk-btn {
   --notch: 5px;
-  position: relative; padding: 1px; margin-top: 6px;
+  position: relative; padding: 1px; margin-top: 8px;
   background: linear-gradient(135deg, #cadff2 0%, #e0ecf6 40%, #cadff2 100%);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
@@ -170,27 +104,22 @@
     radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
     radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
   mask-size: 51% 51%; mask-repeat: no-repeat;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s;
 }
 .api-tk-btn:active { transform: scale(0.97); }
 .api-tk-btn-body {
   --ni: 4px;
   position: relative; background: rgba(255,255,255,0.95);
-  padding: 12px 0; text-align: center;
+  padding: 11px 0; text-align: center;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
     radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
     radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
 }
 .api-tk-btn-inner {
-  position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
   border: 1px solid rgba(202,223,242,0.4); pointer-events: none; z-index: 1;
   --ii: 3px;
   -webkit-mask:
@@ -201,69 +130,63 @@
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
 .api-tk-btn-text {
-  font-size: 13px; font-weight: 700; color: #3a4f65;
-  letter-spacing: 3px; position: relative; z-index: 2;
+  font-size: 12px; font-weight: 700; color: #3a4f65;
+  letter-spacing: 2px; position: relative; z-index: 2;
 }
-.api-tk-btn-row { display: flex; gap: 10px; margin-top: 6px; }
-.api-tk-btn-row .api-tk-btn { flex: 1; }
 
-/* ====== 参数卡片 ====== */
-.api-param {
-  background: rgba(202,223,242,0.08); border: 1px solid rgba(202,223,242,0.3);
-  border-radius: 8px; padding: 12px 14px; margin-bottom: 10px;
-}
+/* 参数 */
+.api-param { margin-bottom: 10px; }
 .api-param:last-child { margin-bottom: 0; }
 .api-param-title {
-  font-size: 12px; font-weight: 700; color: #3a4f65;
+  font-size: 11px; font-weight: 700; color: #3a4f65;
   letter-spacing: .5px; font-family: "SF Mono","Menlo",monospace;
 }
 .api-param-desc { font-size: 9px; color: #8aa0b8; margin-top: 2px; line-height: 1.4; }
-.api-param-slider { margin-top: 8px; }
-.api-range-wrap { display: flex; align-items: center; gap: 8px; }
-.api-range-hint { font-size: 9px; color: #8aa0b8; white-space: nowrap; }
+.api-param-slider { margin-top: 6px; }
+.api-range-wrap { display: flex; align-items: center; gap: 6px; }
+.api-range-hint { font-size: 8px; color: #8aa0b8; white-space: nowrap; }
 .api-range {
-  flex: 1; -webkit-appearance: none; appearance: none; height: 3px;
-  background: #cadff2; outline: none; border-radius: 2px;
+  flex: 1; -webkit-appearance: none; height: 2px;
+  background: #cadff2; border-radius: 2px; outline: none;
 }
 .api-range::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-  background: #fff; border: 2px solid #cadff2;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer;
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; border: 1.5px solid #cadff2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
 }
 .api-range-val {
-  min-width: 32px; text-align: right; font-size: 11px; font-weight: 600;
-  color: #5a7a9a; font-variant-numeric: tabular-nums;
+  min-width: 28px; text-align: right; font-size: 10px; font-weight: 600;
+  color: #5a7a9a;
 }
 
-/* ====== 已保存列表 ====== */
+/* 已保存列表 */
 .api-saved-empty {
-  padding: 24px; text-align: center; font-size: 12px; color: #8aa0b8; letter-spacing: 1px;
+  padding: 16px; text-align: center; font-size: 11px; color: #8aa0b8;
 }
 .api-saved-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0; border-bottom: 1px solid rgba(202,223,242,0.2);
+  padding: 10px 0; border-bottom: 1px solid rgba(202,223,242,0.15);
 }
 .api-saved-item:last-child { border-bottom: none; }
 .api-saved-info { flex: 1; min-width: 0; }
 .api-saved-name {
-  font-size: 13px; font-weight: 700; color: #3a4f65;
+  font-size: 12px; font-weight: 700; color: #333;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.api-saved-name .api-active-tag { font-size: 9px; color: #88abda; font-weight: 600; margin-left: 4px; }
+.api-saved-name .api-active-tag { font-size: 8px; color: #88abda; font-weight: 600; margin-left: 4px; }
 .api-saved-url {
-  font-size: 10px; color: #8aa0b8; margin-top: 2px;
+  font-size: 9px; color: #8aa0b8; margin-top: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.api-saved-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.api-saved-actions { display: flex; gap: 3px; flex-shrink: 0; }
 .api-act-btn {
-  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-  background: rgba(202,223,242,0.1); border: 1.5px solid rgba(202,223,242,0.4);
-  border-radius: 6px; cursor: pointer;
-  -webkit-tap-highlight-color: transparent; transition: all .15s;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid rgba(202,223,242,0.3); border-radius: 5px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
-.api-act-btn:active { background: rgba(202,223,242,0.25); }
+.api-act-btn:active { background: rgba(202,223,242,0.15); }
 .api-act-btn svg {
-  width: 14px; height: 14px; fill: none; stroke-width: 1.5;
+  width: 12px; height: 12px; fill: none; stroke-width: 1.5;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .api-act-use svg { stroke: #5a9e6f; }
