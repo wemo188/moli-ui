@@ -67,7 +67,7 @@
 /* ====== 时间栏调色面板 ====== */
 .wt-color-panel {
   position: fixed;
-  z-index: 200;
+  z-index: 100001;
   width: 220px;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(1px);
