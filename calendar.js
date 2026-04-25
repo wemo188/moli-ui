@@ -197,47 +197,42 @@ if(e.target.closest('.vf-lbl'))return;
     panel.className='wt-color-panel';
     Cal._colorPanelEl=panel;
 
-    panel.innerHTML=
-'<div class="wt-cp-title">时间栏调色<div class="wt-cp-close" id="wcpClose">✕</div></div>'+
-      '<div class="wt-cp-section">LAYOUT</div>'+
-      '<div class="wt-cp-row"><span class="wt-cp-label">缩放</span><input type="range" id="wcpScale" min="50" max="100" value="'+c.scale+'"><span class="wt-cp-val" id="wcpScaleVal">'+(c.scale/100).toFixed(2)+'</span></div>'+
-      '<div class="wt-cp-row"><span class="wt-cp-label">圆角</span><input type="range" id="wcpRadius" min="0" max="40" value="'+c.radius+'"><span class="wt-cp-val" id="wcpRadiusVal">'+c.radius+'px</span></div>'+
-      '<div class="wt-cp-row"><span class="wt-cp-label">边框</span><input type="range" id="wcpBorder" min="0" max="100" value="'+c.borderAlpha+'"><span class="wt-cp-val" id="wcpBorderVal">'+c.borderAlpha+'%</span></div>'+
-      '<div class="wt-cp-section">BACKGROUND</div>'+
-      '<div class="wt-cp-row"><span class="wt-cp-label">透明</span><input type="range" id="wcpAlpha" min="0" max="100" value="'+c.alpha+'"><span class="wt-cp-val" id="wcpAlphaVal">'+c.alpha+'%</span></div>'+
-      '<div class="wt-cp-row"><span class="wt-cp-label">模糊</span><input type="range" id="wcpBlur" min="0" max="100" value="'+c.blur+'"><span class="wt-cp-val" id="wcpBlurVal">'+c.blur+'px</span></div>'+
-      '<div class="wt-cp-section">COLOR</div>'+
-      '<div class="wt-cp-colors">'+
-        '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpBgSwatch" data-key="bg" style="background:'+(c.colorHex||'#ffffff')+'"></div><span class="wt-cp-color-label">底色</span></div>'+
-        '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpFontSwatch" data-key="font" style="background:'+(c.fontColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">字体</span></div>'+
-        '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpLineSwatch" data-key="line" style="background:'+(c.lineColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">线条</span></div>'+
+        panel.innerHTML=
+      '<div class="wt-cp-title">时间栏调色<div class="wt-cp-close" id="wcpClose">✕</div></div>'+
+      '<div class="wt-cp-scroll">'+
+        '<div class="wt-cp-section">LAYOUT</div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">缩放</span><input type="range" id="wcpScale" min="50" max="100" value="'+c.scale+'"><span class="wt-cp-val" id="wcpScaleVal">'+(c.scale/100).toFixed(2)+'</span></div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">圆角</span><input type="range" id="wcpRadius" min="0" max="40" value="'+c.radius+'"><span class="wt-cp-val" id="wcpRadiusVal">'+c.radius+'px</span></div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">边框</span><input type="range" id="wcpBorder" min="0" max="100" value="'+c.borderAlpha+'"><span class="wt-cp-val" id="wcpBorderVal">'+c.borderAlpha+'%</span></div>'+
+        '<div class="wt-cp-section">BACKGROUND</div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">透明</span><input type="range" id="wcpAlpha" min="0" max="100" value="'+c.alpha+'"><span class="wt-cp-val" id="wcpAlphaVal">'+c.alpha+'%</span></div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">模糊</span><input type="range" id="wcpBlur" min="0" max="100" value="'+c.blur+'"><span class="wt-cp-val" id="wcpBlurVal">'+c.blur+'px</span></div>'+
+        '<div class="wt-cp-section">COLOR</div>'+
+        '<div class="wt-cp-colors">'+
+          '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpBgSwatch" data-key="bg" style="background:'+(c.colorHex||'#ffffff')+'"></div><span class="wt-cp-color-label">底色</span></div>'+
+          '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpFontSwatch" data-key="font" style="background:'+(c.fontColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">字体</span></div>'+
+          '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpLineSwatch" data-key="line" style="background:'+(c.lineColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">线条</span></div>'+
+        '</div>'+
       '</div>'+
-     '<div class="wt-cp-btns">'+
-  '<button class="wt-cp-btn" id="wcpSave" type="button">保存</button>'+
-  '<button class="wt-cp-btn" id="wcpReset" type="button">重置</button>'+
-'</div>';
+      '<div class="wt-cp-btns">'+
+        '<button class="wt-cp-btn" id="wcpSave" type="button">保存</button>'+
+        '<button class="wt-cp-btn" id="wcpReset" type="button">重置</button>'+
+      '</div>';
 
     document.body.appendChild(panel);
 
-    // 定位到卡片下方中间
     var cardRect=card.getBoundingClientRect();
-    var left=cardRect.left+cardRect.width/2-110;
+    var left=cardRect.left+cardRect.width/2-150;
     if(left<8)left=8;
-    if(left+220>window.innerWidth-8)left=window.innerWidth-228;
+    if(left+300>window.innerWidth-8)left=window.innerWidth-308;
     var top=cardRect.bottom+8;
-    if(top+300>window.innerHeight-10)top=cardRect.top-310;
+    if(top+400>window.innerHeight-10)top=cardRect.top-408;
     if(top<10)top=10;
     panel.style.left=left+'px';
     panel.style.top=top+'px';
 
-        requestAnimationFrame(function(){requestAnimationFrame(function(){panel.classList.add('open');});});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){panel.classList.add('open');});});
 
-    panel.querySelector('#wcpClose').addEventListener('click', function(e) {
-      e.stopPropagation();
-      Cal.toggleColorPanel();
-    });
-
-    // 存颜色值
     var _colors={bg:c.colorHex||'#ffffff',font:c.fontColor||'#1a1a1a',line:c.lineColor||'#1a1a1a'};
 
     function getCfg(){
@@ -266,7 +261,6 @@ if(e.target.closest('.vf-lbl'))return;
       var el=App.$('#'+id);if(el)el.addEventListener('input',pv);
     });
 
-    // 颜色块点击 → 打开共用颜色面板
     panel.querySelectorAll('.wt-cp-swatch').forEach(function(swatch){
       swatch.addEventListener('click',function(e){
         e.stopPropagation();
@@ -284,13 +278,17 @@ if(e.target.closest('.vf-lbl'))return;
       });
     });
 
-    App.$('#wcpSave').addEventListener('click',function(e){
+    panel.querySelector('#wcpClose').addEventListener('click',function(e){
+      e.stopPropagation();Cal.toggleColorPanel();
+    });
+
+    App.safeOn('#wcpSave','click',function(e){
       e.stopPropagation();
       Cal.cardConfig=getCfg();Cal.saveCardConfig();Cal.applyCardConfig();
       Cal.toggleColorPanel();App.showToast('已保存');
     });
 
-    App.$('#wcpReset').addEventListener('click',function(e){
+    App.safeOn('#wcpReset','click',function(e){
       e.stopPropagation();
       App.LS.remove('wtCardConfig');Cal.cardConfig=JSON.parse(JSON.stringify(CARD_DEFAULTS));Cal.saveCardConfig();
       var card=App.$('#wtCard');
@@ -299,41 +297,36 @@ if(e.target.closest('.vf-lbl'))return;
       Cal.toggleColorPanel();App.showToast('已重置');
     });
 
-    // 拖拽标题
-        var _startedOnInput = false;
-    panel.addEventListener('touchstart', function(e) {
+    var _startedOnInput=false;
+    panel.addEventListener('touchstart',function(e){
       e.stopPropagation();
-      if (e.target.closest('input') || e.target.closest('select') || e.target.closest('button') || e.target.closest('.wt-cp-tk') || e.target.closest('.wt-cp-swatch') || e.target.closest('.wt-cp-close') || e.target.closest('.wt-cp-range')) {
-        _startedOnInput = true; return;
+      if(e.target.closest('input')||e.target.closest('select')||e.target.closest('button')||e.target.closest('.wt-cp-swatch')||e.target.closest('.wt-cp-close')){
+        _startedOnInput=true;return;
       }
-      _startedOnInput = false;
-      var t = e.touches[0];
-      var rect = panel.getBoundingClientRect();
-      Cal._cpDrag = { active: false, locked: false, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-    }, { passive: false });
+      _startedOnInput=false;
+      var t=e.touches[0];
+      var rect=panel.getBoundingClientRect();
+      Cal._cpDrag={active:false,locked:false,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
+    },{passive:false});
 
-    panel.addEventListener('touchmove', function(e) {
+    panel.addEventListener('touchmove',function(e){
       e.stopPropagation();
-      if (_startedOnInput) return;
-      var t = e.touches[0];
-      var dx = Math.abs(t.clientX - Cal._cpDrag.sx);
-      var dy = Math.abs(t.clientY - Cal._cpDrag.sy);
-      if (!Cal._cpDrag.locked) {
-        if (dx > 15 || dy > 15) {
-          Cal._cpDrag.active = dx > dy;
-          Cal._cpDrag.locked = true;
-        }
+      if(_startedOnInput)return;
+      var t=e.touches[0];
+      var dx=Math.abs(t.clientX-Cal._cpDrag.sx);
+      var dy=Math.abs(t.clientY-Cal._cpDrag.sy);
+      if(!Cal._cpDrag.locked){
+        if(dx>12||dy>12){Cal._cpDrag.active=dx>dy;Cal._cpDrag.locked=true;}
         return;
       }
-      if (!Cal._cpDrag.active) return;
+      if(!Cal._cpDrag.active)return;
       e.preventDefault();
-      panel.style.left = (Cal._cpDrag.ox + t.clientX - Cal._cpDrag.sx) + 'px';
-      panel.style.top = (Cal._cpDrag.oy + t.clientY - Cal._cpDrag.sy) + 'px';
-    }, { passive: false });
+      panel.style.left=(Cal._cpDrag.ox+t.clientX-Cal._cpDrag.sx)+'px';
+      panel.style.top=(Cal._cpDrag.oy+t.clientY-Cal._cpDrag.sy)+'px';
+    },{passive:false});
 
-    panel.addEventListener('touchend', function() { if (Cal._cpDrag) Cal._cpDrag.active = false; _startedOnInput = false; });
-    panel.addEventListener('click', function(e) { e.stopPropagation(); });
-  },
+    panel.addEventListener('touchend',function(){if(Cal._cpDrag){Cal._cpDrag.active=false;Cal._cpDrag.locked=false;}_startedOnInput=false;});
+    panel.addEventListener('click',function(e){e.stopPropagation();});
 
   // ====== 天气面板 ======
   openWeatherPanel:function(){
