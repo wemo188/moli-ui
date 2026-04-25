@@ -198,7 +198,7 @@ if(e.target.closest('.vf-lbl'))return;
     Cal._colorPanelEl=panel;
 
     panel.innerHTML=
-      '<div class="wt-cp-title">时间栏调色</div>'+
+'<div class="wt-cp-title">时间栏调色<div class="wt-cp-close" id="wcpClose">✕</div></div>'+
       '<div class="wt-cp-section">LAYOUT</div>'+
       '<div class="wt-cp-row"><span class="wt-cp-label">缩放</span><input type="range" id="wcpScale" min="50" max="100" value="'+c.scale+'"><span class="wt-cp-val" id="wcpScaleVal">'+(c.scale/100).toFixed(2)+'</span></div>'+
       '<div class="wt-cp-row"><span class="wt-cp-label">圆角</span><input type="range" id="wcpRadius" min="0" max="40" value="'+c.radius+'"><span class="wt-cp-val" id="wcpRadiusVal">'+c.radius+'px</span></div>'+
@@ -212,10 +212,10 @@ if(e.target.closest('.vf-lbl'))return;
         '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpFontSwatch" data-key="font" style="background:'+(c.fontColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">字体</span></div>'+
         '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpLineSwatch" data-key="line" style="background:'+(c.lineColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">线条</span></div>'+
       '</div>'+
-      '<div class="wt-cp-btns">'+
-        '<button class="wt-cp-save" id="wcpSave" type="button">保存</button>'+
-        '<button class="wt-cp-reset" id="wcpReset" type="button">重置</button>'+
-      '</div>';
+     '<div class="wt-cp-btns">'+
+  '<div class="wt-cp-tk" id="wcpSave"><div class="wt-cp-tk-body"><div class="wt-cp-tk-inner"></div><div class="wt-cp-tk-text">保存</div></div></div>'+
+  '<div class="wt-cp-tk wt-cp-tk-dim" id="wcpReset"><div class="wt-cp-tk-body"><div class="wt-cp-tk-inner"></div><div class="wt-cp-tk-text">重置</div></div></div>'+
+'</div>';
 
     document.body.appendChild(panel);
 
@@ -295,30 +295,39 @@ if(e.target.closest('.vf-lbl'))return;
     });
 
     // 拖拽标题
-    var title=panel.querySelector('.wt-cp-title');
-    var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
-
-    title.addEventListener('touchstart',function(e){
-      var t=e.touches[0];
-      var rect=panel.getBoundingClientRect();
-      _drag={active:true,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
-    },{passive:true});
-
-    panel.addEventListener('touchmove',function(e){
+        var _startedOnInput = false;
+    panel.addEventListener('touchstart', function(e) {
       e.stopPropagation();
-      if(!_drag.active)return;
+      if (e.target.closest('input') || e.target.closest('select') || e.target.closest('button') || e.target.closest('.wt-cp-tk') || e.target.closest('.wt-cp-swatch') || e.target.closest('.wt-cp-close') || e.target.closest('.wt-cp-range')) {
+        _startedOnInput = true; return;
+      }
+      _startedOnInput = false;
+      var t = e.touches[0];
+      var rect = panel.getBoundingClientRect();
+      Cal._cpDrag = { active: false, locked: false, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+    }, { passive: false });
+
+    panel.addEventListener('touchmove', function(e) {
+      e.stopPropagation();
+      if (_startedOnInput) return;
+      var t = e.touches[0];
+      var dx = Math.abs(t.clientX - Cal._cpDrag.sx);
+      var dy = Math.abs(t.clientY - Cal._cpDrag.sy);
+      if (!Cal._cpDrag.locked) {
+        if (dx > 15 || dy > 15) {
+          Cal._cpDrag.active = dx > dy;
+          Cal._cpDrag.locked = true;
+        }
+        return;
+      }
+      if (!Cal._cpDrag.active) return;
       e.preventDefault();
-      var t=e.touches[0];
-      panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';
-      panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';
-    },{passive:false});
+      panel.style.left = (Cal._cpDrag.ox + t.clientX - Cal._cpDrag.sx) + 'px';
+      panel.style.top = (Cal._cpDrag.oy + t.clientY - Cal._cpDrag.sy) + 'px';
+    }, { passive: false });
 
-    panel.addEventListener('touchend',function(){
-      _drag.active=false;
-    });
-
-    panel.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:false});
-    panel.addEventListener('click',function(e){e.stopPropagation();});
+    panel.addEventListener('touchend', function() { if (Cal._cpDrag) Cal._cpDrag.active = false; _startedOnInput = false; });
+    panel.addEventListener('click', function(e) { e.stopPropagation(); });
   },
 
   // ====== 天气面板 ======
