@@ -161,7 +161,7 @@ var Cal={
     if(saved){Cal._dragOffsetX=saved.x||0;Cal._dragOffsetY=saved.y||0;card.style.transform='translate('+Cal._dragOffsetX+'px,'+Cal._dragOffsetY+'px)';}
     var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
     card.addEventListener('touchstart',function(e){
-      if(e.target.closest('.vf-lbl')||e.target.closest('#wtDateArea')||e.target.closest('#wtWeatherArea'))return;
+if(e.target.closest('.vf-lbl'))return;
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
       timer=setTimeout(function(){
         longPressed=true;startOX=Cal._dragOffsetX;startOY=Cal._dragOffsetY;
