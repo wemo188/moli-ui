@@ -1,4 +1,3 @@
-
 /* =========================
    悬浮球菜单 · 容器
 ========================= */
@@ -30,7 +29,7 @@
 .bm-card {
   width: 300px;
   height: 400px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
@@ -39,48 +38,6 @@
   flex-direction: column;
   position: relative;
 }
-[data-page="1"] .bm-card {
-  padding: 12px 28px;
-}
-
-/* 方案C装饰 · 菱形双线 */
-.bm-card-deco {
-  position: relative;
-}
-.bm-card-deco::before {
-  content: "";
-  position: absolute;
-  top: 10px; left: 10px; right: 10px; bottom: 10px;
-  border: 1px solid rgba(0,0,0,0.04);
-  border-radius: 8px;
-  pointer-events: none;
-}
-.bm-card-deco::after {
-  content: "";
-  position: absolute;
-  top: 13px; left: 13px; right: 13px; bottom: 13px;
-  border: 0.5px solid rgba(0,0,0,0.03);
-  border-radius: 6px;
-  pointer-events: none;
-}
-.bm-diamond {
-  position: absolute; width: 8px; height: 8px;
-  transform: rotate(45deg);
-  border: 1px solid rgba(0,0,0,0.08);
-  pointer-events: none; z-index: 2;
-}
-.bm-diamond-tl { top: 6px; left: 6px; }
-.bm-diamond-tr { top: 6px; right: 6px; }
-.bm-diamond-bl { bottom: 6px; left: 6px; }
-.bm-diamond-br { bottom: 6px; right: 6px; }
-.bm-vline-l, .bm-vline-r {
-  position: absolute; top: 24px; bottom: 24px; width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
-  pointer-events: none;
-}
-.bm-vline-l { left: 6px; }
-.bm-vline-r { right: 6px; }
-
 .bm-title {
   text-align: center; padding: 0 0 16px;
   font-size: 12px; font-weight: 700; color: #3a4f65;
@@ -97,15 +54,53 @@
   grid-template-columns: repeat(3, 72px);
   gap: 16px;
   justify-content: center;
+  flex: 1;
+  align-content: center;
+}
+/* 第一页不居中，顶部对齐 */
+.bm-grid-top {
+  align-content: start;
+  padding-top: 10px;
 }
 
+/* 方案C装饰 */
+.bm-card-deco { position: relative; }
+.bm-card-deco::before {
+  content: ""; position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;
+  pointer-events: none;
+}
+.bm-card-deco::after {
+  content: ""; position: absolute;
+  top: 11px; left: 11px; right: 11px; bottom: 11px;
+  border: 0.5px solid rgba(0,0,0,0.03); border-radius: 6px;
+  pointer-events: none;
+}
+.bm-diamond {
+  position: absolute; width: 8px; height: 8px;
+  transform: rotate(45deg); border: 1px solid rgba(0,0,0,0.08);
+  pointer-events: none; z-index: 2;
+}
+.bm-diamond-tl { top: 4px; left: 4px; }
+.bm-diamond-tr { top: 4px; right: 4px; }
+.bm-diamond-bl { bottom: 4px; left: 4px; }
+.bm-diamond-br { bottom: 4px; right: 4px; }
+.bm-vline-l, .bm-vline-r {
+  position: absolute; top: 20px; bottom: 20px; width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
+  pointer-events: none;
+}
+.bm-vline-l { left: 4px; }
+.bm-vline-r { right: 4px; }
+
 /* =========================
-   第一页 · 黑色票券
+   黑色票券
 ========================= */
 .bm-tk {
   --notch: 5px;
-  position: relative;
-  background: none;
+  position: relative; padding: 1px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 40%, #1a1a1a 100%);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
@@ -122,14 +117,13 @@
 }
 .bm-tk:active { transform: scale(0.93); }
 .bm-tk-body {
-  box-shadow: none;
   --ni: 4px;
   position: relative;
   background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 30%, #222 60%, #1a1a1a 100%);
-  width: 68px; min-height: 105px;
-  padding: 14px 6px;
+  width: 68px; min-height: 96px;
+  padding: 16px 6px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 6px;
+  align-items: center; justify-content: center; gap: 8px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -160,7 +154,7 @@
 .bm-tk-sub { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
 
 /* =========================
-   第二页 · 蓝白票券
+   蓝白票券
 ========================= */
 .bm-wk {
   --notch: 5px;
@@ -185,9 +179,9 @@
   --ni: 4px;
   position: relative;
   background: rgba(255,255,255,0.95);
-  padding: 14px 6px;
+  padding: 16px 6px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 6px;
+  align-items: center; justify-content: center; gap: 8px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -200,10 +194,7 @@
     radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
   mask-size: 51% 51%; mask-repeat: no-repeat;
 }
-/* 九宫格里的蓝白票券固定大小 */
-.bm-grid .bm-wk-body {
-  width: 68px; min-height: 96px;
-}
+.bm-grid .bm-wk-body { width: 68px; min-height: 96px; }
 .bm-wk-inner {
   position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
   border: 1px solid rgba(202,223,242,0.4);
@@ -220,137 +211,7 @@
 .bm-wk-text { font-size: 12px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
 .bm-wk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent); position: relative; z-index: 2; }
 .bm-wk-sub { font-size: 8px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
-
-/* 按钮行的蓝白票券：不固定大小 */
-.ws-btn-row .bm-wk-body {
-  padding: 10px 6px; gap: 0;
-}
-
-/* =========================
-   调节面板 · 票券外壳
-========================= */
-.ws-menu-shell {
-  --notch: 10px;
-  position: relative; padding: 2px; background: #cadff2;
-  -webkit-mask:
-    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.ws-menu-body {
-  --ni: 8px;
-  position: relative; background: rgba(255,255,255,0.96); padding: 20px 18px;
-  -webkit-mask:
-    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.ws-menu-inner-frame {
-  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
-  pointer-events: none; z-index: 1;
-}
-.ws-menu-inner-border {
-  position: absolute; inset: 0; background: #cadff2; padding: 1px;
-  --ir: 5px;
-  -webkit-mask:
-    radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ir) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ir) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ir) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ir) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-.ws-menu-inner-fill {
-  width: 100%; height: 100%; background: rgba(255,255,255,0.96);
-  --ifr: 4px;
-  -webkit-mask:
-    radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ifr) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ifr) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ifr) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ifr) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-}
-
-/* =========================
-   调节面板 · 控件
-========================= */
-.ws-menu-ctrl {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.ws-section-title {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.ws-section-title::before, .ws-section-title::after {
-  content: ""; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, #cadff2, transparent);
-}
-.ws-section-title span {
-  font-size: 11px; font-weight: 700; color: #6a90ad;
-  letter-spacing: 2.5px; white-space: nowrap;
-}
-.ws-ctrl-row { display: flex; align-items: center; gap: 10px; }
-.ws-ctrl-label {
-  font-size: 11px; font-weight: 600; color: #5a7a9a;
-  letter-spacing: 1px; min-width: 30px; flex-shrink: 0;
-}
-.ws-ctrl-row input[type="range"] {
-  flex: 1; height: 3px; -webkit-appearance: none;
-  background: #cadff2; border-radius: 2px; outline: none; min-width: 0;
-}
-.ws-ctrl-row input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: #fff; border: 2px solid #cadff2;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer;
-}
-.ws-ctrl-val {
-  font-size: 11px; font-weight: 600; color: #5a7a9a;
-  min-width: 36px; text-align: right; flex-shrink: 0;
-}
-.ws-ctrl-color-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-.ws-ctrl-color-item { display: flex; align-items: center; gap: 5px; }
-.ws-ctrl-color-item input[type="color"] {
-  width: 28px; height: 28px; border: 2px solid #cadff2;
-  border-radius: 6px; padding: 1px; cursor: pointer;
-  background: transparent; -webkit-appearance: none;
-}
-.ws-ctrl-color-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
-.ws-ctrl-color-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
-.ws-ctrl-color-item label { font-size: 11px; color: #5a7a9a; font-weight: 500; }
-
-/* 按钮行 */
-.ws-btn-row { display: flex; gap: 10px; margin-top: 10px; }
-.ws-btn-row .bm-wk { flex: 1; }
-
-.ball-page-scroll {
-  max-height: 460px; overflow-y: auto;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none;
-}
-.ball-page-scroll::-webkit-scrollbar { display: none; }
+.ws-btn-row .bm-wk-body { padding: 10px 6px; gap: 0; }
 
 /* =========================
    占位页
@@ -359,5 +220,3 @@
   padding: 40px 16px; text-align: center;
   font-size: 13px; color: #5a7a9a; letter-spacing: 1px;
 }
-
-
