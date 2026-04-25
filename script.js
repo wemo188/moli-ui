@@ -821,8 +821,9 @@ App.positionMenu = function() {
     var overlay = document.createElement('div');
     overlay.id = 'ballSettingsOverlay';
     overlay.className = 'pc-edit-overlay';
+        overlay.style.zIndex = '100003';
     overlay.innerHTML =
-      '<div class="pc-edit-panel">' +
+      '<div class="pc-edit-panel" style="width:300px;max-height:400px;overflow-y:auto;">' +
         '<div class="pc-edit-title">悬浮球设置</div>' +
 
         '<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;margin:0 auto 16px;background:#f5f5f5;box-shadow:0 2px 8px rgba(0,0,0,0.1);">' +
