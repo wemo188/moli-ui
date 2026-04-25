@@ -297,23 +297,27 @@ if(e.target.closest('.vf-lbl'))return;
     // 拖拽标题
     var title=panel.querySelector('.wt-cp-title');
     var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
+
     title.addEventListener('touchstart',function(e){
-      e.stopPropagation();
       var t=e.touches[0];
       var rect=panel.getBoundingClientRect();
       _drag={active:true,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
     },{passive:true});
-    document.addEventListener('touchmove',function(e){
+
+    panel.addEventListener('touchmove',function(e){
+      e.stopPropagation();
       if(!_drag.active)return;
       e.preventDefault();
       var t=e.touches[0];
       panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';
       panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';
     },{passive:false});
-    document.addEventListener('touchend',function(){_drag.active=false;});
+
+    panel.addEventListener('touchend',function(){
+      _drag.active=false;
+    });
 
     panel.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:false});
-    panel.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:false});
     panel.addEventListener('click',function(e){e.stopPropagation();});
   },
 
