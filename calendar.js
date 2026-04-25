@@ -213,8 +213,8 @@ if(e.target.closest('.vf-lbl'))return;
         '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpLineSwatch" data-key="line" style="background:'+(c.lineColor||'#1a1a1a')+'"></div><span class="wt-cp-color-label">线条</span></div>'+
       '</div>'+
      '<div class="wt-cp-btns">'+
-  '<div class="wt-cp-tk" id="wcpSave"><div class="wt-cp-tk-body"><div class="wt-cp-tk-inner"></div><div class="wt-cp-tk-text">保存</div></div></div>'+
-  '<div class="wt-cp-tk wt-cp-tk-dim" id="wcpReset"><div class="wt-cp-tk-body"><div class="wt-cp-tk-inner"></div><div class="wt-cp-tk-text">重置</div></div></div>'+
+  '<button class="wt-cp-btn" id="wcpSave" type="button">保存</button>'+
+  '<button class="wt-cp-btn" id="wcpReset" type="button">重置</button>'+
 '</div>';
 
     document.body.appendChild(panel);
@@ -231,6 +231,8 @@ if(e.target.closest('.vf-lbl'))return;
     panel.style.top=top+'px';
 
     requestAnimationFrame(function(){requestAnimationFrame(function(){panel.classList.add('open');});});
+        App.safeOn('#wcpClose', 'click', function(e) {
+
 
     // 存颜色值
     var _colors={bg:c.colorHex||'#ffffff',font:c.fontColor||'#1a1a1a',line:c.lineColor||'#1a1a1a'};
