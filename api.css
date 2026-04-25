@@ -107,6 +107,7 @@
 .api-fl-tk {
   --notch: 4px;
   position: relative; padding: 1px; margin-top: 4px;
+  width: 120px; align-self: center;
   background: #1a1a1a;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
