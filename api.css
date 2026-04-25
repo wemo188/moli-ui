@@ -76,7 +76,7 @@
 
 /* 模型列表 */
 .api-fl-model-list {
-  display: none; max-height: 120px; overflow-y: auto;
+  display: none; max-height: 200px; overflow-y: auto;
   border: 1.5px solid #1a1a1a; border-radius: 6px;
   margin-top: 4px; background: #fff;
 }
