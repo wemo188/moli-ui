@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -33,8 +34,9 @@
 
       Api.renderFloat();
 
-      var cx = window.innerWidth / 2 - 120;
+      var cx = window.innerWidth / 2 - 150;
       var cy = window.innerHeight / 2 - 200;
+      if (cx < 8) cx = 8;
       if (cy < 60) cy = 60;
       el.style.left = cx + 'px';
       el.style.top = cy + 'px';
@@ -67,20 +69,23 @@
           '<div class="api-fl-field"><div class="api-fl-label">API 地址</div><input type="text" class="api-fl-input" id="apiUrl" placeholder="https://example.com/v1"></div>' +
           '<div class="api-fl-field"><div class="api-fl-label">API KEY</div><div class="api-fl-row"><input type="password" class="api-fl-input" id="apiKey" placeholder="sk-..."><button class="api-fl-icon-btn" id="apiToggleKey" type="button"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>' +
           '<div class="api-fl-field"><div class="api-fl-label">模型</div><div class="api-fl-row"><input type="text" class="api-fl-input" id="apiModel" placeholder="gpt-4o"><button class="api-fl-icon-btn" id="apiFetchModels" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="api-fl-model-list" id="apiModelList"></div></div>' +
-          '<div class="api-fl-tk" id="apiSaveBtn"><div class="api-fl-tk-body"><div class="api-fl-tk-inner"></div><div class="api-fl-tk-text">保 存</div></div></div>';
+          '<div class="api-fl-sep"></div>' +
+          '<div class="api-fl-tk" id="apiSaveBtn"><div class="api-fl-tk-body"><div class="api-fl-tk-inner"></div><div class="api-fl-tk-text">保 存</div></div></div>' +
+          '<div style="margin-top:6px;text-align:center;"><span style="font-size:9px;color:#bbb;cursor:pointer;-webkit-tap-highlight-color:transparent;" id="apiTestBtn">测试连接</span></div>';
 
       } else if (Api.currentTab === 'params') {
         bodyHtml =
           '<div class="api-fl-param"><div class="api-fl-param-title">Temperature</div><div class="api-fl-param-desc">贴合人设 ↔ 有创意</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">精确</span><input type="range" class="api-fl-range" id="apiTemp" min="0" max="2" step="0.05" value="' + params.temperature + '"><span class="api-fl-range-val" id="apiTempVal">' + params.temperature + '</span><span class="api-fl-range-hint">创意</span></div></div></div>' +
           '<div class="api-fl-param"><div class="api-fl-param-title">Freq Penalty</div><div class="api-fl-param-desc">避免重复词汇</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">重复</span><input type="range" class="api-fl-range" id="apiFreq" min="0" max="2" step="0.1" value="' + params.freqPenalty + '"><span class="api-fl-range-val" id="apiFreqVal">' + params.freqPenalty + '</span><span class="api-fl-range-hint">避免</span></div></div></div>' +
           '<div class="api-fl-param"><div class="api-fl-param-title">Pres Penalty</div><div class="api-fl-param-desc">鼓励新词汇</div><div class="api-fl-param-slider"><div class="api-fl-range-wrap"><span class="api-fl-range-hint">保守</span><input type="range" class="api-fl-range" id="apiPres" min="0" max="2" step="0.1" value="' + params.presPenalty + '"><span class="api-fl-range-val" id="apiPresVal">' + params.presPenalty + '</span><span class="api-fl-range-hint">创新</span></div></div></div>' +
+          '<div class="api-fl-sep"></div>' +
           '<div class="api-fl-tk" id="apiSaveParamsBtn"><div class="api-fl-tk-body"><div class="api-fl-tk-inner"></div><div class="api-fl-tk-text">保 存</div></div></div>';
 
       } else if (Api.currentTab === 'saved') {
         bodyHtml = Api.buildSavedHtml();
       }
 
-      el.innerHTML = '<div class="api-float-title" id="apiDragTitle">API 配置</div>' + tabsHtml + bodyHtml;
+      el.innerHTML = '<div class="api-float-title">API 配置</div>' + tabsHtml + '<div class="api-fl-scroll">' + bodyHtml + '</div>';
       Api.bindEvents();
     },
 
@@ -106,24 +111,31 @@
       var el = Api.floatEl;
       if (!el) return;
 
-      // 拖拽
-      var title = el.querySelector('#apiDragTitle');
-      title.addEventListener('touchstart', function(e) {
+      // 整个卡片拖拽
+      var _startedOnInput = false;
+
+      el.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+        if (e.target.closest('input') || e.target.closest('select') || e.target.closest('button') || e.target.closest('.api-fl-tk') || e.target.closest('.api-fl-tab') || e.target.closest('.api-fl-model-item') || e.target.closest('.api-fl-act') || e.target.closest('.api-fl-range')) {
+          _startedOnInput = true;
+          return;
+        }
+        _startedOnInput = false;
         var t = e.touches[0];
         var rect = el.getBoundingClientRect();
         Api._drag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-      }, { passive: true });
+      }, { passive: false });
 
       el.addEventListener('touchmove', function(e) {
-        if (!Api._drag.active) return;
-        e.preventDefault(); e.stopPropagation();
+        e.stopPropagation();
+        if (!Api._drag.active || _startedOnInput) return;
+        e.preventDefault();
         var t = e.touches[0];
         el.style.left = (Api._drag.ox + t.clientX - Api._drag.sx) + 'px';
         el.style.top = (Api._drag.oy + t.clientY - Api._drag.sy) + 'px';
       }, { passive: false });
 
-      el.addEventListener('touchend', function() { Api._drag.active = false; });
-      el.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: false });
+      el.addEventListener('touchend', function() { Api._drag.active = false; _startedOnInput = false; });
       el.addEventListener('click', function(e) { e.stopPropagation(); });
 
       // Tab
@@ -165,6 +177,14 @@
           Api.save();
           App.showToast('已保存');
         });
+
+        var testBtn = el.querySelector('#apiTestBtn');
+        if (testBtn) {
+          testBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            Api.testConnection();
+          });
+        }
 
       } else if (Api.currentTab === 'params') {
         function bindRange(inputId, valId) {
@@ -229,6 +249,28 @@
       }
     },
 
+    testConnection: async function() {
+      var el = Api.floatEl;
+      if (!el) return;
+      var url = (el.querySelector('#apiUrl') || {}).value || '';
+      var key = (el.querySelector('#apiKey') || {}).value || '';
+      var model = (el.querySelector('#apiModel') || {}).value || '';
+      url = url.trim(); key = key.trim(); model = model.trim();
+      if (!url || !key || !model) { App.showToast('请先填写地址、Key和模型'); return; }
+      App.showToast('测试中...');
+      try {
+        var response = await fetch(url.replace(/\/+$/, '') + '/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+          body: JSON.stringify({ model: model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 })
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        var data = await response.json();
+        if (data.choices && data.choices.length) App.showToast('连接成功 ✓');
+        else App.showToast('返回异常');
+      } catch (err) { App.showToast('失败: ' + err.message); }
+    },
+
     fetchModels: async function() {
       var el = Api.floatEl;
       if (!el) return;
@@ -263,6 +305,11 @@
         });
         App.showToast(models.length + ' 个模型');
       } catch (err) { App.showToast('失败: ' + err.message); }
+    },
+
+    getActiveConfig: function() {
+      if (!Api.activeApi) Api.load();
+      return Api.activeApi;
     },
 
     init: function() {
