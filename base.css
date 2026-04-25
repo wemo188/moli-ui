@@ -647,3 +647,34 @@ html, body {
   display: none;
 }
 
+.pc-edit-overlay {
+  position: fixed; inset: 0; z-index: 100003;
+  background: rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.pc-edit-panel {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px; padding: 20px;
+  width: 300px; max-height: 400px; overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+.pc-edit-title {
+  font-size: 14px; font-weight: 700; color: #333;
+  text-align: center; margin-bottom: 16px; letter-spacing: 1px;
+}
+.pc-edit-group { margin-bottom: 14px; }
+.pc-edit-label { font-size: 11px; font-weight: 600; color: #999; margin-bottom: 4px; display: block; }
+.pc-edit-input {
+  width: 100%; padding: 8px 10px; border: 1.5px solid #1a1a1a;
+  border-radius: 8px; font-size: 13px; color: #333; outline: none;
+  font-family: inherit; background: #fff; box-sizing: border-box;
+}
+.pc-edit-btns { display: flex; gap: 8px; margin-top: 16px; }
+.pc-edit-save, .pc-edit-cancel {
+  flex: 1; padding: 10px 0; border: none; border-radius: 10px;
+  font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
+  background: #1a1a1a; color: #fff;
+}
+.pc-edit-save:active, .pc-edit-cancel:active { opacity: 0.7; }
