@@ -73,37 +73,26 @@
           '<span class="api-header-title">API 配置</span>' +
           '<div style="width:36px;"></div>' +
         '</div>' +
-
         '<div class="api-scroll">' +
-
-          '<div class="api-card"><div class="api-card-body">' + innerFrame +
-            '<div class="api-card-ctrl">' +
-              '<div class="api-section-title"><span>连 接 配 置</span></div>' +
-              '<div class="api-field"><div class="api-field-label">配置名称</div><input type="text" class="api-field-input" id="apiName" placeholder="例如：OpenAI 中转"></div>' +
-              '<div class="api-field"><div class="api-field-label">API 地址</div><input type="text" class="api-field-input" id="apiUrl" placeholder="https://example.com/v1"></div>' +
-              '<div class="api-field"><div class="api-field-label">API KEY</div><div class="api-field-row"><input type="password" class="api-field-input" id="apiKey" placeholder="sk-..."><button class="api-icon-btn" id="apiToggleKey" type="button"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>' +
-              '<div class="api-field"><div class="api-field-label">模型</div><div class="api-field-row"><input type="text" class="api-field-input" id="apiModel" placeholder="gpt-4o / claude-sonnet-4-20250514"><button class="api-icon-btn" id="apiFetchModels" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="api-model-list" id="apiModelList"></div></div>' +
-              '<div class="api-tk-btn" id="apiSaveBtn"><div class="api-tk-btn-body"><div class="api-tk-btn-inner"></div><div class="api-tk-btn-text">保 存 配 置</div></div></div>' +
-            '</div>' +
-          '</div></div>' +
-
-          '<div class="api-card"><div class="api-card-body">' + innerFrame +
-            '<div class="api-card-ctrl">' +
-              '<div class="api-section-title"><span>模 型 参 数</span></div>' +
-              '<div class="api-param"><div class="api-param-title">Temperature</div><div class="api-param-desc">角色温度，决定回复更加贴合人设还是更加有创意</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">精确</span><input type="range" class="api-range" id="apiTemp" min="0" max="2" step="0.05" value="' + params.temperature + '"><span class="api-range-val" id="apiTempVal">' + params.temperature + '</span><span class="api-range-hint">创意</span></div></div></div>' +
-              '<div class="api-param"><div class="api-param-title">Frequency Penalty</div><div class="api-param-desc">频率惩罚，数值越高越避免重复使用相同的词汇和表达</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">允许重复</span><input type="range" class="api-range" id="apiFreq" min="0" max="2" step="0.1" value="' + params.freqPenalty + '"><span class="api-range-val" id="apiFreqVal">' + params.freqPenalty + '</span><span class="api-range-hint">避免重复</span></div></div></div>' +
-              '<div class="api-param"><div class="api-param-title">Presence Penalty</div><div class="api-param-desc">存在惩罚，数值越高越鼓励使用新词汇，让表达更加丰富多样</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">保守</span><input type="range" class="api-range" id="apiPres" min="0" max="2" step="0.1" value="' + params.presPenalty + '"><span class="api-range-val" id="apiPresVal">' + params.presPenalty + '</span><span class="api-range-hint">创新</span></div></div></div>' +
-              '<div class="api-tk-btn" id="apiSaveParamsBtn"><div class="api-tk-btn-body"><div class="api-tk-btn-inner"></div><div class="api-tk-btn-text">保 存 参 数</div></div></div>' +
-            '</div>' +
-          '</div></div>' +
-
-          '<div class="api-card"><div class="api-card-body">' + innerFrame +
-            '<div class="api-card-ctrl">' +
-              '<div class="api-section-title"><span>已 保 存</span></div>' +
-              '<div id="apiSavedList">' + savedHtml + '</div>' +
-            '</div>' +
-          '</div></div>' +
-
+          '<div class="api-card">' +
+            '<div class="api-card-title">连接配置</div>' +
+            '<div class="api-field"><div class="api-field-label">配置名称</div><input type="text" class="api-field-input" id="apiName" placeholder="例如：OpenAI 中转"></div>' +
+            '<div class="api-field"><div class="api-field-label">API 地址</div><input type="text" class="api-field-input" id="apiUrl" placeholder="https://example.com/v1"></div>' +
+            '<div class="api-field"><div class="api-field-label">API KEY</div><div class="api-field-row"><input type="password" class="api-field-input" id="apiKey" placeholder="sk-..."><button class="api-icon-btn" id="apiToggleKey" type="button"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>' +
+            '<div class="api-field"><div class="api-field-label">模型</div><div class="api-field-row"><input type="text" class="api-field-input" id="apiModel" placeholder="gpt-4o / claude-sonnet-4-20250514"><button class="api-icon-btn" id="apiFetchModels" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="api-model-list" id="apiModelList"></div></div>' +
+            '<div class="api-tk-btn" id="apiSaveBtn"><div class="api-tk-btn-body"><div class="api-tk-btn-inner"></div><div class="api-tk-btn-text">保 存 配 置</div></div></div>' +
+          '</div>' +
+          '<div class="api-card">' +
+            '<div class="api-card-title">模型参数</div>' +
+            '<div class="api-param"><div class="api-param-title">Temperature</div><div class="api-param-desc">角色温度，决定回复更加贴合人设还是更加有创意</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">精确</span><input type="range" class="api-range" id="apiTemp" min="0" max="2" step="0.05" value="' + params.temperature + '"><span class="api-range-val" id="apiTempVal">' + params.temperature + '</span><span class="api-range-hint">创意</span></div></div></div>' +
+            '<div class="api-param"><div class="api-param-title">Frequency Penalty</div><div class="api-param-desc">频率惩罚，数值越高越避免重复使用相同的词汇和表达</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">允许重复</span><input type="range" class="api-range" id="apiFreq" min="0" max="2" step="0.1" value="' + params.freqPenalty + '"><span class="api-range-val" id="apiFreqVal">' + params.freqPenalty + '</span><span class="api-range-hint">避免重复</span></div></div></div>' +
+            '<div class="api-param"><div class="api-param-title">Presence Penalty</div><div class="api-param-desc">存在惩罚，数值越高越鼓励使用新词汇，让表达更加丰富多样</div><div class="api-param-slider"><div class="api-range-wrap"><span class="api-range-hint">保守</span><input type="range" class="api-range" id="apiPres" min="0" max="2" step="0.1" value="' + params.presPenalty + '"><span class="api-range-val" id="apiPresVal">' + params.presPenalty + '</span><span class="api-range-hint">创新</span></div></div></div>' +
+            '<div class="api-tk-btn" id="apiSaveParamsBtn"><div class="api-tk-btn-body"><div class="api-tk-btn-inner"></div><div class="api-tk-btn-text">保 存 参 数</div></div></div>' +
+          '</div>' +
+          '<div class="api-card">' +
+            '<div class="api-card-title">已保存配置</div>' +
+            '<div id="apiSavedList">' + savedHtml + '</div>' +
+          '</div>' +
         '</div>';
 
       Api.bindEvents();
