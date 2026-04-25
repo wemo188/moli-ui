@@ -1,10 +1,9 @@
-
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
 
-  var PG0_W = 332, PG1_W = 332;
+  var PG0_W = 348, PG1_W = 348;
 
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '"><div class="bm-tk-body"><div class="bm-tk-inner"></div><span class="bm-tk-spade">♠</span><div class="bm-tk-text">' + cn + '</div><div class="bm-tk-line"></div><div class="bm-tk-sub">' + en + '</div></div></div>';
@@ -20,13 +19,9 @@
     currentPage: 0,
     isOpen: false,
     pages: [],
-    touchStartX: 0, touchStartY: 0, touchCurrentX: 0,
-    isDragging: false, dirLocked: false, isHorizontal: false, baseX: 0,
+    _touch: null,
 
-    getPageWidth: function(idx) {
-      if (idx === 0) return PG0_W;
-      return PG1_W;
-    },
+    getPageWidth: function(idx) { return idx === 0 ? PG0_W : PG1_W; },
 
     getPageOffset: function(idx) {
       var o = 0;
@@ -52,7 +47,7 @@
               '<div class="bm-diamond bm-diamond-br"></div>' +
               '<div class="bm-vline-l"></div>' +
               '<div class="bm-vline-r"></div>' +
-              '<div class="bm-grid">' +
+              '<div class="bm-grid bm-grid-top">' +
                 tkBlack('api', 'API', 'config') +
                 tkBlack('workshop', '工坊', 'studio') +
                 tkBlack('ballset', '悬浮球', 'float') +
@@ -94,7 +89,7 @@
           e.stopPropagation();
           var action = item.dataset.action;
           if (action === 'workshop') { Workshop.goToPage(1); return; }
-          if (action === 'api') { if (App.api) App.api.open(); return; }
+          if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
           if (action === 'character') { Workshop.close(); setTimeout(function() { if (App.charMgr) App.charMgr.open(); }, 220); return; }
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
@@ -145,86 +140,59 @@
       var menu = Workshop.menuEl;
       var slider = Workshop.sliderEl;
 
-      var _touch = {
-        active: false,
-        mode: '',
-        sx: 0, sy: 0,
-        ox: 0, oy: 0,
-        baseSlider: 0
-      };
-
       menu.addEventListener('touchstart', function(e) {
         e.stopPropagation();
         if (e.target.closest('input')) return;
-
         var t = e.touches[0];
         var rect = menu.getBoundingClientRect();
-
-        _touch = {
-          active: true,
-          mode: '',
-          sx: t.clientX,
-          sy: t.clientY,
-          ox: rect.left,
-          oy: rect.top,
+        Workshop._touch = {
+          active: true, mode: '',
+          sx: t.clientX, sy: t.clientY,
+          ox: rect.left, oy: rect.top,
           baseSlider: -Workshop.getPageOffset(Workshop.currentPage)
         };
-
         slider.style.transition = 'none';
       }, { passive: false });
 
       menu.addEventListener('touchmove', function(e) {
-        if (!_touch.active) return;
+        if (!Workshop._touch || !Workshop._touch.active) return;
         e.stopPropagation();
-
         var t = e.touches[0];
-        var dx = t.clientX - _touch.sx;
-        var dy = t.clientY - _touch.sy;
-        var adx = Math.abs(dx);
-        var ady = Math.abs(dy);
+        var dx = t.clientX - Workshop._touch.sx;
+        var dy = t.clientY - Workshop._touch.sy;
+        var adx = Math.abs(dx), ady = Math.abs(dy);
 
-        if (!_touch.mode) {
-          if (adx < 6 && ady < 6) return;
-          if (adx > ady && Workshop.currentPage > 0 && dx > 0) {
-            _touch.mode = 'swipe';
-          } else {
-            _touch.mode = 'drag';
-          }
+        if (!Workshop._touch.mode) {
+          if (adx < 8 && ady < 8) return;
+          if (adx > ady && Workshop.currentPage > 0 && dx > 0) Workshop._touch.mode = 'swipe';
+          else Workshop._touch.mode = 'drag';
         }
 
         e.preventDefault();
-
-        if (_touch.mode === 'drag') {
-          menu.style.left = (_touch.ox + dx) + 'px';
-          menu.style.top = (_touch.oy + dy) + 'px';
+        if (Workshop._touch.mode === 'drag') {
+          menu.style.left = (Workshop._touch.ox + dx) + 'px';
+          menu.style.top = (Workshop._touch.oy + dy) + 'px';
           menu.style.right = 'auto';
-        } else if (_touch.mode === 'swipe') {
-          var nextX = _touch.baseSlider + dx;
+        } else if (Workshop._touch.mode === 'swipe') {
+          var nextX = Workshop._touch.baseSlider + dx;
           if (nextX > 0) nextX *= 0.25;
           slider.style.transform = 'translateX(' + nextX + 'px)';
         }
       }, { passive: false });
 
       menu.addEventListener('touchend', function() {
-        if (!_touch.active) return;
-        _touch.active = false;
+        if (!Workshop._touch || !Workshop._touch.active) return;
+        Workshop._touch.active = false;
         slider.style.transition = '';
-
-        if (_touch.mode === 'swipe') {
-          var t2 = Workshop.currentPage;
-          var pw = Workshop.getPageWidth(t2);
+        if (Workshop._touch.mode === 'swipe') {
           var el = slider.style.transform.match(/translateX\((.+?)px\)/);
-          var currentX = el ? parseFloat(el[1]) : _touch.baseSlider;
-          var delta = currentX - _touch.baseSlider;
-
-          if (delta > pw * 0.25 && t2 > 0) {
-            Workshop.goToPage(t2 - 1);
-          } else {
-            Workshop.goToPage(t2);
-          }
+          var currentX = el ? parseFloat(el[1]) : Workshop._touch.baseSlider;
+          var delta = currentX - Workshop._touch.baseSlider;
+          var pw = Workshop.getPageWidth(Workshop.currentPage);
+          if (delta > pw * 0.25 && Workshop.currentPage > 0) Workshop.goToPage(Workshop.currentPage - 1);
+          else Workshop.goToPage(Workshop.currentPage);
         }
-
-        _touch.mode = '';
+        Workshop._touch.mode = '';
       }, { passive: true });
     },
 
@@ -235,20 +203,20 @@
       Workshop.sliderEl.style.transform = 'translateX(' + (-Workshop.getPageOffset(idx)) + 'px)';
     },
 
-        positionMenu: function() {
+    positionMenu: function() {
       var ball = App.state.ball;
       if (!ball) return;
       var rect = ball.getBoundingClientRect();
       var menu = Workshop.menuEl;
-      var menuW = menu.offsetWidth || 332;
+      var menuW = menu.offsetWidth || PG0_W;
       var menuH = menu.offsetHeight || 400;
       var ballCX = rect.left + rect.width / 2;
 
       if (ballCX > window.innerWidth / 2) {
-        menu.style.left = (rect.left - menuW - 4) + 'px';
+        menu.style.left = (rect.left - menuW) + 'px';
         menu.style.right = 'auto';
       } else {
-        menu.style.left = (rect.right + 4) + 'px';
+        menu.style.left = (rect.right) + 'px';
         menu.style.right = 'auto';
       }
 
