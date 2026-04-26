@@ -68,7 +68,7 @@ html, body {
   position: fixed;
   right: 10px;
   bottom: calc(20px + var(--safe-bottom));
-  z-index: 100000;
+  z-index: 100015;
   cursor: pointer;
   touch-action: none;
   transition: transform 0.2s;
@@ -475,7 +475,7 @@ html, body {
 
 /* ====== 自定义调色盘 ====== */
 .cp-overlay {
-  position: fixed; inset: 0; z-index: 100000;
+  position: fixed; inset: 0; z-index: 100030;
   background: transparent;
   display: flex; align-items: flex-end; justify-content: center;
   -webkit-tap-highlight-color: transparent;
