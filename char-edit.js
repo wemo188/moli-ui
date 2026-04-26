@@ -81,7 +81,7 @@
 
             '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">'+v('profile')+'</textarea></div></div></div>'+
 
-'<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">开场白</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="greeting" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccGreeting">'+v('greeting')+'</textarea></div></div><div class="cc-section-note">留空则角色不会主动发送第一条消息，可以在对话页面修改。</div></div>'+
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">开场白</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="greeting" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccGreeting">'+v('greeting')+'</textarea></div></div><div class="cc-section-note">留空则角色不会主动发送第一条消息，可以在对话页面修改。</div></div>'+
 
             '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">示例对话</div></div><div class="cc-section-body"><div class="cc-dialogue-area"><button class="cc-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccDialog">'+v('dialogExamples')+'</textarea></div></div></div>'+
 
