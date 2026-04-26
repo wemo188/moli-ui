@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -27,15 +28,13 @@
       createPanel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
       document.body.appendChild(createPanel);
 
-      var e = existing || {};
-
-      var avatarDisplay = e.avatar
-        ? '<img src="' + App.esc(e.avatar) + '">'
+      var avatarDisplay = existing && existing.avatar
+        ? '<img src="' + App.esc(existing.avatar) + '">'
         : '<span class="cc-avatar-empty">PHOTO</span>';
 
-      var wxAdd = e.wxAddMode || 'add';
+      var contactVal = existing ? (existing.contactMode || 'direct') : 'direct';
 
-      var html =
+      createPanel.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-top-btn" id="ccBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (existing ? '编辑角色' : '添加角色') + '</span>' +
@@ -44,61 +43,53 @@
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
           '<div class="comic-card">' +
             '<div class="top-bar"></div>' +
-
-            // 头像 + 名字
             '<div class="cc-header">' +
               '<div class="cc-avatar-box" id="ccAvatarBox">' + avatarDisplay + '</div>' +
-              '<div class="cc-name-area"><div class="cc-name-label">CHARACTER NAME</div><input type="text" class="cc-name-input" id="ccNameInput" placeholder="输入角色名..." value="' + App.esc(e.name || '') + '"><div class="cc-name-sub"></div></div>' +
+              '<div class="cc-name-area"><div class="cc-name-label">CHARACTER NAME</div><input type="text" class="cc-name-input" id="ccNameInput" placeholder="输入角色名..." value="' + App.esc(existing ? existing.name || '' : '') + '"><div class="cc-name-sub"></div></div>' +
             '</div>' +
 
-            // ====== 基本信息 ======
+            '<!-- 基本信息 · 黑色 -->' +
             '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">基本信息</div></div><div class="cc-section-body">' +
-              '<div class="cc-field-grid" style="padding:0 20px 6px;">' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">对你的称呼</div></div><input type="text" class="cc-field-input" id="ccCallName" placeholder="" value="' + App.esc(e.callName || '') + '"></div>' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">与你的关系</div></div><input type="text" class="cc-field-input" id="ccRelation" placeholder="" value="' + App.esc(e.relation || '') + '"></div>' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">性别</div></div><input type="text" class="cc-field-input" id="ccGender" placeholder="" value="' + App.esc(e.gender || '') + '"></div>' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">年龄</div></div><input type="text" class="cc-field-input" id="ccAge" placeholder="" value="' + App.esc(e.age || '') + '"></div>' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">生日</div></div><input type="text" class="cc-field-input" id="ccBirthday" placeholder="" value="' + App.esc(e.birthday || '') + '"></div>' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">手机号码</div></div><input type="text" class="cc-field-input" id="ccPhone" placeholder="输入十位虚拟数字，或留空随机" value="' + App.esc(e.phone || '') + '"></div>' +
+              '<div class="cc-field-grid">' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">性别 GENDER</div></div><input type="text" class="cc-field-input" data-key="gender" value="' + App.esc(existing ? existing.gender || '' : '') + '"></div>' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">年龄 AGE</div></div><input type="text" class="cc-field-input" data-key="age" value="' + App.esc(existing ? existing.age || '' : '') + '"></div>' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">生日 BIRTHDAY</div></div><input type="text" class="cc-field-input" data-key="birthday" value="' + App.esc(existing ? existing.birthday || '' : '') + '"></div>' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">对你的称呼 CALL</div></div><input type="text" class="cc-field-input" data-key="callName" value="' + App.esc(existing ? existing.callName || '' : '') + '"></div>' +
               '</div>' +
-              '<div style="padding:0 20px 10px;">' +
-                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">微信号</div></div><input type="text" class="cc-field-input" id="ccWechatId" placeholder="" value="' + App.esc(e.wechatId || '') + '"></div>' +
+              '<div class="cc-field" style="margin-top:8px"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">与你的关系 RELATION</div></div><input type="text" class="cc-field-input" data-key="relation" value="' + App.esc(existing ? existing.relation || '' : '') + '"></div>' +
+              '<div class="cc-divider" style="margin-top:12px"><div class="cc-divider-line"></div><div class="cc-divider-text">社交账号</div><div class="cc-divider-line"></div></div>' +
+              '<div class="cc-field-grid">' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">手机号 PHONE</div></div><input type="text" class="cc-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + App.esc(existing ? existing.charPhone || '' : '') + '"></div>' +
+                '<div class="cc-field"><div class="cc-field-label"><div class="cc-field-dot"></div><div class="cc-field-key">微信号 WECHAT</div></div><input type="text" class="cc-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + App.esc(existing ? existing.charWechat || '' : '') + '"></div>' +
               '</div>' +
-
-              '<div class="cc-sep"><div class="cc-sep-line"></div><div class="cc-sep-text">微信通讯录</div><div class="cc-sep-line"></div></div>' +
-              '<div style="padding:0 20px 6px;">' +
-                '<div class="cc-radio-row">' +
-                  '<div class="cc-radio-item"><input type="radio" name="ccWxAdd" id="ccWxAdd1" value="add"' + (wxAdd === 'add' ? ' checked' : '') + '><label class="cc-radio-label" for="ccWxAdd1">添加到通讯录</label></div>' +
-                  '<div class="cc-radio-item"><input type="radio" name="ccWxAdd" id="ccWxAdd2" value="wait"' + (wxAdd === 'wait' ? ' checked' : '') + '><label class="cc-radio-label" for="ccWxAdd2">等待对方加你</label></div>' +
-                  '<div class="cc-radio-item"><input type="radio" name="ccWxAdd" id="ccWxAdd3" value="none"' + (wxAdd === 'none' ? ' checked' : '') + '><label class="cc-radio-label" for="ccWxAdd3">不添加</label></div>' +
-                '</div>' +
-                '<div class="cc-tip"><div class="cc-tip-icon">!</div><div class="cc-tip-text">选择「等待对方加你」，角色会在某个时机主动发送好友申请；选择「不添加」，你可以在对话页面手动添加。</div></div>' +
+              '<div class="cc-divider" style="margin-top:12px"><div class="cc-divider-line"></div><div class="cc-divider-text">通讯录</div><div class="cc-divider-line"></div></div>' +
+              '<div class="cc-field-label" style="margin-bottom:6px"><div class="cc-field-dot"></div><div class="cc-field-key">微信通讯录 CONTACT</div></div>' +
+              '<div class="cc-radio-row">' +
+                '<div class="cc-radio-item"><input type="radio" name="ccContact" id="ccC1" value="direct"' + (contactVal === 'direct' ? ' checked' : '') + '><label class="cc-radio-label" for="ccC1">直接添加</label></div>' +
+                '<div class="cc-radio-item"><input type="radio" name="ccContact" id="ccC2" value="wait"' + (contactVal === 'wait' ? ' checked' : '') + '><label class="cc-radio-label" for="ccC2">等待对方来加</label></div>' +
+                '<div class="cc-radio-item"><input type="radio" name="ccContact" id="ccC3" value="manual"' + (contactVal === 'manual' ? ' checked' : '') + '><label class="cc-radio-label" for="ccC3">由你主动添加角色</label></div>' +
               '</div>' +
+              '<div class="cc-tip"><div class="cc-tip-icon">!</div><div class="cc-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
             '</div></div>' +
 
-            // ====== 角色档案 ======
-            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(e.profile || '') + '</textarea></div></div></div>' +
+            '<!-- 角色档案 · 蓝色 -->' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">角色档案</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccProfile" placeholder="角色的设定、背景、性格...">' + App.esc(existing ? existing.profile || '' : '') + '</textarea></div></div></div>' +
 
-            // ====== 示例对话 ======
-            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">示例对话</div></div><div class="cc-section-body"><div class="cc-dialogue-area"><button class="cc-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccDialog" placeholder="示例对话内容...">' + App.esc(e.dialogExamples || '') + '</textarea></div></div></div>' +
+            '<!-- 开场白 · 黑色 -->' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">开场白</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="greeting" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccGreeting" placeholder="角色发送的第一条消息...">' + App.esc(existing ? existing.greeting || '' : '') + '</textarea></div><div class="cc-note">留空则角色不会主动发送第一条消息，可以在对话页面修改。</div></div></div>' +
 
-            // ====== 开场白 ======
-            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">开场白</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="greeting" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccGreeting" placeholder="留空则角色不主动发消息，可在对话页面修改">' + App.esc(e.greeting || '') + '</textarea></div>' +
-              '<div class="cc-tip" style="margin:0 20px 10px;"><div class="cc-tip-icon">i</div><div class="cc-tip-text">留空则角色不主动发消息，可在对话页面修改。</div></div>' +
-            '</div></div>' +
+            '<!-- 示例对话 · 蓝色 -->' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title blue">示例对话</div></div><div class="cc-section-body"><div class="cc-dialogue-area"><button class="cc-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccDialog" placeholder="示例对话内容...">' + App.esc(existing ? existing.dialogExamples || '' : '') + '</textarea></div></div></div>' +
 
-            // ====== 后置指令 ======
-            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">后置指令</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccPost" placeholder="每轮对话末尾注入的指令...">' + App.esc(e.postInstruction || '') + '</textarea></div></div></div>' +
+            '<!-- 后置指令 · 黑色 -->' +
+            '<div class="cc-section"><div class="cc-section-head"><div class="cc-section-title">后置指令</div></div><div class="cc-section-body"><div class="cc-content-area"><button class="cc-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea id="ccPost" placeholder="每轮对话末尾注入的指令...">' + App.esc(existing ? existing.postInstruction || '' : '') + '</textarea></div></div></div>' +
 
             '<div class="cc-bottom-deco"></div>' +
           '</div>' +
-
           '<div class="cc-save-area"><button class="cc-save-btn" id="ccSaveBtn" type="button">保 存</button><button class="cc-cancel-btn" id="ccCancelBtn" type="button">取 消</button></div>' +
         '</div>';
 
-      createPanel.innerHTML = html;
-
-      if (e.avatar) CharEdit.tempAvatar = e.avatar;
+      if (existing && existing.avatar) CharEdit.tempAvatar = existing.avatar;
 
       if (existing) {
         createPanel.style.setProperty('--edit-dark', existing.cardDark || '#111111');
@@ -111,23 +102,27 @@
         createPanel.style.opacity = '1';
       }); });
 
-      // 头像
       var avatarBox = createPanel.querySelector('#ccAvatarBox');
       avatarBox.addEventListener('click', function() {
         var input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
+        input.type = 'file';
+        input.accept = 'image/*';
         document.body.appendChild(input);
-        input.onchange = function(ev) {
-          var file = ev.target.files[0];
+        input.onchange = function(e) {
+          var file = e.target.files[0];
           document.body.removeChild(input);
           if (!file) return;
           var reader = new FileReader();
-          reader.onload = function(r) {
-            var src = r.target.result;
+          reader.onload = function(ev) {
+            var src = ev.target.result;
             if (App.cropImage) {
-              App.cropImage(src, function(cropped) { CharEdit.tempAvatar = cropped; avatarBox.innerHTML = '<img src="' + cropped + '">'; });
+              App.cropImage(src, function(cropped) {
+                CharEdit.tempAvatar = cropped;
+                avatarBox.innerHTML = '<img src="' + cropped + '">';
+              });
             } else {
-              CharEdit.tempAvatar = src; avatarBox.innerHTML = '<img src="' + src + '">';
+              CharEdit.tempAvatar = src;
+              avatarBox.innerHTML = '<img src="' + src + '">';
             }
           };
           reader.readAsDataURL(file);
@@ -140,14 +135,14 @@
       createPanel.querySelector('#ccSaveBtn').addEventListener('click', function() { CharEdit.save(); });
 
       createPanel.querySelectorAll('.cc-expand-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(ev) {
-          ev.stopPropagation();
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
           var field = btn.dataset.field;
           var taMap = { profile: '#ccProfile', dialogExamples: '#ccDialog', postInstruction: '#ccPost', greeting: '#ccGreeting' };
           var ta = App.$(taMap[field]);
           if (!ta) return;
           var titleMap = { profile: '角色档案', dialogExamples: '示例对话', postInstruction: '后置指令', greeting: '开场白' };
-          CharEdit.openExpand(titleMap[field], ta);
+          CharEdit.openExpand(titleMap[field], ta, field === 'dialogExamples');
         });
       });
     },
@@ -161,6 +156,9 @@
     },
 
     save: function() {
+      var panel = App.$('#charCreatePanel');
+      if (!panel) return;
+
       var name = (App.$('#ccNameInput') || {}).value || '';
       name = name.trim();
       if (!name) { App.showToast('请输入角色名'); return; }
@@ -170,17 +168,27 @@
       var dialogExamples = (App.$('#ccDialog') || {}).value || '';
       var postInstruction = (App.$('#ccPost') || {}).value || '';
       var greeting = (App.$('#ccGreeting') || {}).value || '';
-      var callName = (App.$('#ccCallName') || {}).value || '';
-      var relation = (App.$('#ccRelation') || {}).value || '';
-      var gender = (App.$('#ccGender') || {}).value || '';
-      var age = (App.$('#ccAge') || {}).value || '';
-      var birthday = (App.$('#ccBirthday') || {}).value || '';
-      var phone = (App.$('#ccPhone') || {}).value || '';
-      var wechatId = (App.$('#ccWechatId') || {}).value || '';
-      var wxAddEl = document.querySelector('input[name="ccWxAdd"]:checked');
-      var wxAddMode = wxAddEl ? wxAddEl.value : 'add';
 
-      if (!phone.trim()) phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
+      // 基本信息
+      var gender = '', age = '', birthday = '', callName = '', relation = '';
+      var charPhone = '', charWechat = '', contactMode = 'direct';
+
+      panel.querySelectorAll('.cc-field-input[data-key]').forEach(function(el) {
+        var k = el.dataset.key, v = (el.value || '').trim();
+        if (k === 'gender') gender = v;
+        else if (k === 'age') age = v;
+        else if (k === 'birthday') birthday = v;
+        else if (k === 'callName') callName = v;
+        else if (k === 'relation') relation = v;
+        else if (k === 'charPhone') charPhone = v;
+        else if (k === 'charWechat') charWechat = v;
+      });
+
+      var contactRadio = panel.querySelector('input[name="ccContact"]:checked');
+      if (contactRadio) contactMode = contactRadio.value;
+
+      if (!charPhone) charPhone = '1' + Math.floor(100000000 + Math.random() * 900000000);
+      if (!charWechat) charWechat = 'wxid_' + Math.random().toString(36).substr(2, 10);
 
       if (CharEdit.editingCharId) {
         var existing = App.character.getById(CharEdit.editingCharId);
@@ -191,14 +199,14 @@
           existing.dialogExamples = dialogExamples;
           existing.postInstruction = postInstruction;
           existing.greeting = greeting;
-          existing.callName = callName;
-          existing.relation = relation;
           existing.gender = gender;
           existing.age = age;
           existing.birthday = birthday;
-          existing.phone = phone;
-          existing.wechatId = wechatId;
-          existing.wxAddMode = wxAddMode;
+          existing.callName = callName;
+          existing.relation = relation;
+          existing.charPhone = charPhone;
+          existing.charWechat = charWechat;
+          existing.contactMode = contactMode;
           App.character.save();
           CharEdit.close();
           App.character.renderList();
@@ -216,14 +224,14 @@
         dialogExamples: dialogExamples,
         postInstruction: postInstruction,
         greeting: greeting,
-        callName: callName,
-        relation: relation,
         gender: gender,
         age: age,
         birthday: birthday,
-        phone: phone,
-        wechatId: wechatId,
-        wxAddMode: wxAddMode,
+        callName: callName,
+        relation: relation,
+        charPhone: charPhone,
+        charWechat: charWechat,
+        contactMode: contactMode,
         cardDark: '#111111',
         cardAccent: '#88abda',
         cardBg: '#ffffff',
@@ -238,17 +246,16 @@
       App.showToast('角色已创建');
     },
 
-    openExpand: function(title, textarea) {
+    openExpand: function(title, textarea, isDialogue) {
       var old = App.$('#ccExpandEditor');
       if (old) old.remove();
-      var isDialogue = (title === '示例对话');
       var editor = document.createElement('div');
       editor.id = 'ccExpandEditor';
       editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10002;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
       editor.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button class="cc-expand-top-btn" id="ccExpandBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<div class="cc-expand-title-tag' + (isDialogue ? '' : ' blue') + '">' + App.esc(title) + '</div>' +
+          '<div class="cc-expand-title-tag' + (isDialogue ? ' blue' : '') + '">' + App.esc(title) + '</div>' +
           '<button class="cc-expand-top-btn" id="ccExpandDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
@@ -286,59 +293,3 @@
 
   App.register('charEdit', CharEdit);
 })();
-```
-
----
-
-**character.js — 找到 `renderList` 函数里 `panel.innerHTML =` 那段，把顶部栏部分：**
-
-```javascript
-          '<div class="cl-topbar-wrap">' +
-            '<div class="cl-esc" id="clEsc">ESC</div>' +
-            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
-            '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
-          '</div>' +
-```
-
-**替换成：**
-
-```javascript
-          '<div class="cl-topbar-wrap">' +
-            '<div class="cl-esc" id="clEsc">ESC</div>' +
-            '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
-            '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
-          '</div>' +
-          '<div class="cc-topbar">' +
-            '<span class="cc-topbar-count">' + chars.length + ' 个角色</span>' +
-            '<input type="text" class="cc-topbar-search" id="clSearchInput" placeholder="搜索角色...">' +
-            '<button class="cc-topbar-settings" id="clSettingsBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>' +
-          '</div>' +
-```
-
-**在 `renderList` 函数的事件绑定区域（顶部按钮那块后面），加上搜索和设置的事件：**
-
-```javascript
-      // 搜索
-      var searchInput = panel.querySelector('#clSearchInput');
-      if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          var kw = this.value.trim().toLowerCase();
-          panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
-            var cid = card.dataset.charId;
-            var c = Character.getById(cid);
-            if (!c) return;
-            var match = !kw || (c.name || '').toLowerCase().indexOf(kw) >= 0;
-            card.style.display = match ? '' : 'none';
-          });
-        });
-      }
-
-      // 设置 → 角色管理
-      var settingsBtn = panel.querySelector('#clSettingsBtn');
-      if (settingsBtn) {
-        settingsBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          Character.close();
-          setTimeout(function() { if (App.charMgr) App.charMgr.open(); }, 380);
-        });
-      }
