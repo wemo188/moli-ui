@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var PG0_W = 348, PG1_W = 348;
+  var PG0_W = 324, PG1_W = 324;
 
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '"><div class="bm-tk-body"><div class="bm-tk-inner"></div><span class="bm-tk-spade">♠</span><div class="bm-tk-text">' + cn + '</div><div class="bm-tk-line"></div><div class="bm-tk-sub">' + en + '</div></div></div>';
@@ -59,7 +59,7 @@
           '</div>' +
 
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
-            '<div class="bm-card">' +
+            '<div class="bm-card bm-card-blur">' +
               '<div class="bm-title">♠ 美化工坊 ♠</div>' +
               '<div class="bm-grid">' +
                 tkWhite('theme', '主题', 'theme') +
