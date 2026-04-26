@@ -61,37 +61,6 @@
   padding-top: 8px;
 }
 
-/* 方案C装饰 */
-.bm-card-deco { position: relative; }
-.bm-card-deco::before {
-  content: ""; position: absolute;
-  top: 8px; left: 8px; right: 8px; bottom: 8px;
-  border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;
-  pointer-events: none;
-}
-.bm-card-deco::after {
-  content: ""; position: absolute;
-  top: 11px; left: 11px; right: 11px; bottom: 11px;
-  border: 0.5px solid rgba(0,0,0,0.03); border-radius: 6px;
-  pointer-events: none;
-}
-.bm-diamond {
-  position: absolute; width: 8px; height: 8px;
-  transform: rotate(45deg); border: 1px solid rgba(0,0,0,0.08);
-  pointer-events: none; z-index: 2;
-}
-.bm-diamond-tl { top: 4px; left: 4px; }
-.bm-diamond-tr { top: 4px; right: 4px; }
-.bm-diamond-bl { bottom: 4px; left: 4px; }
-.bm-diamond-br { bottom: 4px; right: 4px; }
-.bm-vline-l, .bm-vline-r {
-  position: absolute; top: 20px; bottom: 20px; width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
-  pointer-events: none;
-}
-.bm-vline-l { left: 4px; }
-.bm-vline-r { right: 4px; }
-
 /* =========================
    黑色票券 · 第一页
 ========================= */
