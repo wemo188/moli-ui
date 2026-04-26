@@ -38,7 +38,9 @@
       menu.className = 'ball-card-menu';
 
       menu.innerHTML =
-        '<div class="ball-card-slider" id="ballCardSlider">' +          '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
+        '<div class="ball-card-slider" id="ballCardSlider">' +
+
+          '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
             '<div class="bm-card">' +
               '<div class="bm-title">♠ 悬浮助手 ♠</div>' +
               '<div class="bm-grid">' +
@@ -50,17 +52,19 @@
                 tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('exportData', '导出', 'export') +
               '</div>' +
+              '<div class="bm-bottom-line"></div>' +
             '</div>' +
           '</div>' +
 
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
-            '<div class="bm-card bm-card-blur">' +
+            '<div class="bm-card">' +
               '<div class="bm-title">♠ 美化工坊 ♠</div>' +
               '<div class="bm-grid">' +
                 tkWhite('theme', '主题', 'theme') +
                 tkWhite('font', '字体', 'font') +
                 tkWhite('bg', '背景', 'image') +
               '</div>' +
+              '<div class="bm-bottom-line"></div>' +
             '</div>' +
           '</div>' +
 
@@ -157,8 +161,8 @@
         var adx = Math.abs(dx), ady = Math.abs(dy);
 
         if (!Workshop._touch.mode) {
-          if (adx< 8 && ady < 8) return;
-          if (adx >ady && Workshop.currentPage > 0 && dx > 0) Workshop._touch.mode = 'swipe';
+          if (adx < 8 && ady < 8) return;
+          if (adx > ady && Workshop.currentPage > 0 && dx > 0) Workshop._touch.mode = 'swipe';
           else Workshop._touch.mode = 'drag';
         }
 
@@ -185,7 +189,8 @@
           var pw = Workshop.getPageWidth(Workshop.currentPage);
           if (delta > pw * 0.25 && Workshop.currentPage > 0) Workshop.goToPage(Workshop.currentPage - 1);
           else Workshop.goToPage(Workshop.currentPage);
-        }Workshop._touch.mode = '';
+        }
+        Workshop._touch.mode = '';
       }, { passive: true });
     },
 
@@ -204,12 +209,13 @@
       var menuW = menu.offsetWidth || PG0_W;
       var menuH = menu.offsetHeight || 380;
       var ballCX = rect.left + rect.width / 2;
+      var overlap = rect.width * 0.3;
 
       if (ballCX > window.innerWidth / 2) {
-        menu.style.left = (rect.left - menuW) + 'px';
+        menu.style.left = (rect.left - menuW + overlap) + 'px';
         menu.style.right = 'auto';
       } else {
-        menu.style.left = rect.right + 'px';
+        menu.style.left = (rect.right - overlap) + 'px';
         menu.style.right = 'auto';
       }
 
