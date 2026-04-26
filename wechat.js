@@ -234,7 +234,8 @@
       if (!App.$('#wechatPanel')) {
         var panel = document.createElement('div');
         panel.id = 'wechatPanel';
-        panel.className = 'fullpage-panel hidden';
+panel.className = 'fullpage-panel hidden';
+panel.style.zIndex = '10005';
         document.body.appendChild(panel);
       }
       App.wechat = Wechat;
