@@ -48,6 +48,10 @@
   content: ""; flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent);
 }
+.bm-bottom-line {
+  flex-shrink: 0; height: 1px; margin-top: auto;
+  background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent);
+}
 .bm-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
