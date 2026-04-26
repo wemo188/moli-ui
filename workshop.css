@@ -1,6 +1,5 @@
 
-/* =========================
-   悬浮球菜单 · 容器
+/* =========================悬浮球菜单 · 容器
 ========================= */
 .ball-card-menu {
   position: fixed;
@@ -28,19 +27,22 @@
    白底卡片外壳
 ========================= */
 .bm-card {
-  width: 300px;
-  height: 400px;
-  background: rgba(255,255,255,1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  width: 280px;
+  height: 380px;
+  background: rgba(255,255,255,0.92);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: 18px 22px;
   display: flex;
   flex-direction: column;
   position: relative;
 }
+/* 只有第二页需要磨砂 */
+.bm-card-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 .bm-title {
-  text-align: center; padding: 0 0 16px;
+  text-align: center; padding: 0 0 14px;
   font-size: 12px; font-weight: 700; color: #3a4f65;
   letter-spacing: 2px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -52,15 +54,15 @@
 }
 .bm-grid {
   display: grid;
-  grid-template-columns: repeat(3, 72px);
-  gap: 16px;
+  grid-template-columns: repeat(3, 66px);
+  gap: 14px;
   justify-content: center;
   flex: 1;
   align-content: center;
 }
 .bm-grid-top {
   align-content: start;
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 /* 方案C装饰 */
@@ -68,7 +70,8 @@
 .bm-card-deco::before {
   content: ""; position: absolute;
   top: 8px; left: 8px; right: 8px; bottom: 8px;
-  border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;pointer-events: none;
+  border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;
+  pointer-events: none;
 }
 .bm-card-deco::after {
   content: ""; position: absolute;
@@ -93,69 +96,43 @@
 .bm-vline-l { left: 4px; }
 .bm-vline-r { right: 4px; }
 
-/* =========================黑色票券
+/* =========================
+   黑色票券 · 第一页
 ========================= */
 .bm-tk {
-  --notch:5px;
-  position: relative; padding: 1px;
+  position: relative;
   background: #1a1a1a;
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-  -webkit-mask:
-    radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--notch) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--notch) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--notch) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
-  transition: transform 0.12s ease;
+  border-radius: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease;overflow: hidden;
 }
 .bm-tk:active { transform: scale(0.93); }
 .bm-tk-body {
-  --ni: 4px;
   position: relative;
   background: #1a1a1a;
-  width: 68px; min-height: 96px;
-  padding: 16px 6px;
+  width: 62px; min-height: 88px;
+  padding: 14px 4px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
-  -webkit-mask:
-    radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
-  mask: radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ni) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
-  mask-size: 51% 51%; mask-repeat: no-repeat;
+  align-items: center; justify-content: center; gap: 7px;
+  border-radius: 6px;
 }
 .bm-tk-inner {
-  position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
   border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
   pointer-events: none; z-index: 1;
-  --ii: 3px;
-  -webkit-mask:
-    radial-gradient(var(--ii) at 0 0, transparent 98%, #000) top left,
-    radial-gradient(var(--ii) at 100% 0, transparent 98%, #000) top right,
-    radial-gradient(var(--ii) at 0 100%, transparent 98%, #000) bottom left,
-    radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
-  -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
-.bm-tk-spade { font-size: 12px; color: rgba(255,255,255,0.18); line-height: 1; position: relative; z-index: 2; }
-.bm-tk-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
+.bm-tk-spade { font-size: 11px; color: rgba(255,255,255,0.18); line-height: 1; position: relative; z-index: 2; }
+.bm-tk-text { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
 .bm-tk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); position: relative; z-index: 2; }
-.bm-tk-sub { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
+.bm-tk-sub { font-size: 7px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
 
 /* =========================
-   蓝白票券
+   蓝白票券 · 第二页
 ========================= */
 .bm-wk {
-  --notch: 5px;
+  --notch:5px;
   position: relative; padding: 1px;
   background: linear-gradient(135deg, #cadff2 0%, #e0ecf6 40%, #cadff2 100%);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
@@ -177,9 +154,9 @@
   --ni: 4px;
   position: relative;
   background: rgba(255,255,255,0.95);
-  padding: 16px 6px;
+  padding: 14px 4px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
+  align-items: center; justify-content: center; gap: 7px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -192,9 +169,9 @@
     radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
   mask-size: 51% 51%; mask-repeat: no-repeat;
 }
-.bm-grid .bm-wk-body { width: 68px; min-height: 96px; }
+.bm-grid .bm-wk-body { width: 62px; min-height: 88px; }
 .bm-wk-inner {
-  position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+  position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
   border: 1px solid rgba(202,223,242,0.4);
   pointer-events: none; z-index: 1;
   --ii: 3px;
@@ -205,10 +182,10 @@
     radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
-.bm-wk-spade { font-size: 12px; color: rgba(170,200,230,0.65); line-height: 1; position: relative; z-index: 2; }
-.bm-wk-text { font-size: 12px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
+.bm-wk-spade { font-size: 11px; color: rgba(170,200,230,0.65); line-height: 1; position: relative; z-index: 2; }
+.bm-wk-text { font-size: 11px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
 .bm-wk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent); position: relative; z-index: 2; }
-.bm-wk-sub { font-size: 8px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
+.bm-wk-sub { font-size: 7px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
 .ws-btn-row .bm-wk-body { padding: 10px 6px; gap: 0; }
 
 /* =========================
