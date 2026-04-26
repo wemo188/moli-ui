@@ -1,3 +1,5 @@
+
+```css
 /* =========================
    悬浮球菜单 · 容器
 ========================= */
@@ -27,20 +29,18 @@
    白底卡片外壳
 ========================= */
 .bm-card {
-  width: 280px;
-  height: 350px;
-  background: rgba(255,255,255,1);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: 20px 28px;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 .bm-title {
-  text-align: center; padding: 0 0 16px;
-  font-size: 12px; font-weight: 700; color: #3a4f65;
+  text-align: center; padding: 0 0 10px;
+  font-size: 10px; font-weight: 700; color: #3a4f65;
   letter-spacing: 2px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   flex-shrink: 0;
@@ -51,29 +51,22 @@
 }
 .bm-grid {
   display: grid;
-  grid-template-columns: repeat(3, 72px);
-  gap: 16px;
+  grid-template-columns: repeat(3, 60px);
+  gap: 12px;
   justify-content: center;
-  flex: 1;
-  align-content: center;
-}
-/* 第一页不居中，顶部对齐 */
-.bm-grid-top {
-  align-content: start;
-  padding-top: 10px;
 }
 
 /* 方案C装饰 */
 .bm-card-deco { position: relative; }
 .bm-card-deco::before {
   content: ""; position: absolute;
-  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  top: 10px; left: 10px; right: 10px; bottom: 10px;
   border: 1px solid rgba(0,0,0,0.04); border-radius: 8px;
   pointer-events: none;
 }
 .bm-card-deco::after {
   content: ""; position: absolute;
-  top: 11px; left: 11px; right: 11px; bottom: 11px;
+  top: 13px; left: 13px; right: 13px; bottom: 13px;
   border: 0.5px solid rgba(0,0,0,0.03); border-radius: 6px;
   pointer-events: none;
 }
@@ -82,17 +75,17 @@
   transform: rotate(45deg); border: 1px solid rgba(0,0,0,0.08);
   pointer-events: none; z-index: 2;
 }
-.bm-diamond-tl { top: 4px; left: 4px; }
-.bm-diamond-tr { top: 4px; right: 4px; }
-.bm-diamond-bl { bottom: 4px; left: 4px; }
-.bm-diamond-br { bottom: 4px; right: 4px; }
+.bm-diamond-tl { top: 6px; left: 6px; }
+.bm-diamond-tr { top: 6px; right: 6px; }
+.bm-diamond-bl { bottom: 6px; left: 6px; }
+.bm-diamond-br { bottom: 6px; right: 6px; }
 .bm-vline-l, .bm-vline-r {
-  position: absolute; top: 20px; bottom: 20px; width: 1px;
+  position: absolute; top: 24px; bottom: 24px; width: 1px;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04) 30%, rgba(0,0,0,0.04) 70%, transparent);
   pointer-events: none;
 }
-.bm-vline-l { left: 4px; }
-.bm-vline-r { right: 4px; }
+.bm-vline-l { left: 6px; }
+.bm-vline-r { right: 6px; }
 
 /* =========================
    黑色票券
@@ -100,7 +93,7 @@
 .bm-tk {
   --notch: 5px;
   position: relative; padding: 1px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 40%, #1a1a1a 100%);
+  background: #1a1a1a;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   -webkit-mask:
     radial-gradient(var(--notch) at 0 0, transparent 98%, #000) top left,
@@ -119,11 +112,11 @@
 .bm-tk-body {
   --ni: 4px;
   position: relative;
-  background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 30%, #222 60%, #1a1a1a 100%);
-  width: 60px; min-height: 80px;
-  padding: 16px 6px;
+  background: #1a1a1a;
+  width: 56px; min-height: 79px;
+  padding: 14px 6px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
+  align-items: center; justify-content: center; gap: 6px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -148,10 +141,10 @@
     radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
-.bm-tk-spade { font-size: 12px; color: rgba(255,255,255,0.18); line-height: 1; position: relative; z-index: 2; }
-.bm-tk-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
+.bm-tk-spade { font-size: 10px; color: rgba(255,255,255,0.18); line-height: 1; position: relative; z-index: 2; }
+.bm-tk-text { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
 .bm-tk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); position: relative; z-index: 2; }
-.bm-tk-sub { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
+.bm-tk-sub { font-size: 6px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
 
 /* =========================
    蓝白票券
@@ -179,9 +172,9 @@
   --ni: 4px;
   position: relative;
   background: rgba(255,255,255,0.95);
-  padding: 16px 6px;
+  padding: 14px 6px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
+  align-items: center; justify-content: center; gap: 6px;
   -webkit-mask:
     radial-gradient(var(--ni) at 0 0, transparent 98%, #000) top left,
     radial-gradient(var(--ni) at 100% 0, transparent 98%, #000) top right,
@@ -194,7 +187,7 @@
     radial-gradient(var(--ni) at 100% 100%, transparent 98%, #000) bottom right;
   mask-size: 51% 51%; mask-repeat: no-repeat;
 }
-.bm-grid .bm-wk-body { width: 68px; min-height: 96px; }
+.bm-grid .bm-wk-body { width: 56px; min-height: 79px; }
 .bm-wk-inner {
   position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
   border: 1px solid rgba(202,223,242,0.4);
@@ -207,10 +200,10 @@
     radial-gradient(var(--ii) at 100% 100%, transparent 98%, #000) bottom right;
   -webkit-mask-size: 51% 51%; -webkit-mask-repeat: no-repeat;
 }
-.bm-wk-spade { font-size: 12px; color: rgba(170,200,230,0.65); line-height: 1; position: relative; z-index: 2; }
-.bm-wk-text { font-size: 12px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
+.bm-wk-spade { font-size: 10px; color: rgba(170,200,230,0.65); line-height: 1; position: relative; z-index: 2; }
+.bm-wk-text { font-size: 10px; font-weight: 700; color: #3a4f65; letter-spacing: 1.5px; white-space: nowrap; text-align: center; position: relative; z-index: 2; }
 .bm-wk-line { width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(202,223,242,0.5), transparent); position: relative; z-index: 2; }
-.bm-wk-sub { font-size: 8px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
+.bm-wk-sub { font-size: 6px; color: rgba(58,79,101,0.3); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; }
 .ws-btn-row .bm-wk-body { padding: 10px 6px; gap: 0; }
 
 /* =========================
