@@ -208,15 +208,19 @@
       if (!ball) return;
       var rect = ball.getBoundingClientRect();
       var menu = Workshop.menuEl;
-      var menuW = menu.offsetWidth || PG0_W;
-      var menuH = menu.offsetHeight || 400;
+      var menuW = PG0_W;
+      var menuH = menu.offsetHeight || 300;
       var ballCX = rect.left + rect.width / 2;
 
       if (ballCX > window.innerWidth / 2) {
-        menu.style.left = (rect.left - menuW) + 'px';
+        var left = rect.left - menuW - 4;
+        if (left < 4) left = 4;
+        menu.style.left = left + 'px';
         menu.style.right = 'auto';
       } else {
-        menu.style.left = (rect.right) + 'px';
+        var left = rect.right + 4;
+        if (left + menuW > window.innerWidth - 4) left = window.innerWidth - menuW - 4;
+        menu.style.left = left + 'px';
         menu.style.right = 'auto';
       }
 
