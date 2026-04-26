@@ -358,8 +358,8 @@
   padding: 3px 0 5px; font-family: inherit; box-sizing: border-box;
 }
 .cc-field-input::placeholder { color: #ccc; font-weight: 400; }
-.cc-divider { margin: 4px 20px 8px; display: flex; align-items: center; gap: 8px; }
-.cc-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
+.cc-divider { margin: 12px 0 8px; display: flex; align-items: center; gap: 8px; }
+.cc-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #e0e0e0 0, #e0e0e0 4px, transparent 4px, transparent 8px); }
 .cc-divider-text { font-size: 7px; color: #ccc; letter-spacing: 2px; font-weight: 400; }
 .cc-radio-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .cc-radio-item { position: relative; }
@@ -382,5 +382,5 @@
   justify-content: center; font-size: 8px; font-weight: 900; margin-top: 1px;
 }
 .cc-tip-text { font-size: 9px; color: #888; line-height: 1.5; }
-.cc-note { font-size: 11px; color: #aaa; margin-top: 8px; line-height: 1.6; }
-.cc-save-area { padding: 20px 16px 60px; display: flex; gap: 10px; }
+.cc-note { font-size: 11px; color: #aaa; margin-top: 10px; line-height: 1.6; padding: 0 2px; }
+.cc-save-area { padding: 24px 16px 80px; display: flex; gap: 10px; }
