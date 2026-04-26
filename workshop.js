@@ -203,7 +203,7 @@
       Workshop.sliderEl.style.transform = 'translateX(' + (-Workshop.getPageOffset(idx)) + 'px)';
     },
 
-    positionMenu: function() {
+        positionMenu: function() {
       var ball = App.state.ball;
       if (!ball) return;
       var rect = ball.getBoundingClientRect();
@@ -211,18 +211,17 @@
       var menuW = PG0_W;
       var menuH = menu.offsetHeight || 300;
       var ballCX = rect.left + rect.width / 2;
+      var left;
 
       if (ballCX > window.innerWidth / 2) {
-        var left = rect.left - menuW - 4;
+        left = rect.left - menuW - 4;
         if (left < 4) left = 4;
-        menu.style.left = left + 'px';
-        menu.style.right = 'auto';
       } else {
-        var left = rect.right + 4;
+        left = rect.right + 4;
         if (left + menuW > window.innerWidth - 4) left = window.innerWidth - menuW - 4;
-        menu.style.left = left + 'px';
-        menu.style.right = 'auto';
       }
+      menu.style.left = left + 'px';
+      menu.style.right = 'auto';
 
       var top = rect.top + rect.height / 2 - menuH / 2;
       if (top < 10) top = 10;
