@@ -1,7 +1,7 @@
 /* ====== API 浮动卡片 ====== */
 .api-float {
   position: fixed;
-  z-index: 100001;
+  z-index: 100020;
   width: 300px;
   height: 400px;
   background: rgba(255,255,255,0.92);
