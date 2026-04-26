@@ -38,15 +38,10 @@
       menu.className = 'ball-card-menu';
 
       menu.innerHTML =
-        '<div class="ball-card-slider" id="ballCardSlider">' +'<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
-            '<div class="bm-card bm-card-deco">' +
-              '<div class="bm-diamond bm-diamond-tl"></div>' +
-              '<div class="bm-diamond bm-diamond-tr"></div>' +
-              '<div class="bm-diamond bm-diamond-bl"></div>' +
-              '<div class="bm-diamond bm-diamond-br"></div>' +
-              '<div class="bm-vline-l"></div>' +
-              '<div class="bm-vline-r"></div>' +
-              '<div class="bm-grid bm-grid-top">' +
+        '<div class="ball-card-slider" id="ballCardSlider">' +          '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
+            '<div class="bm-card">' +
+              '<div class="bm-title">♠ 悬浮助手 ♠</div>' +
+              '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
                 tkBlack('workshop', '工坊', 'studio') +
                 tkBlack('ballset', '悬浮球', 'float') +
@@ -207,7 +202,7 @@
       var rect = ball.getBoundingClientRect();
       var menu = Workshop.menuEl;
       var menuW = menu.offsetWidth || PG0_W;
-      var menuH = menu.offsetHeight ||400;
+      var menuH = menu.offsetHeight || 380;
       var ballCX = rect.left + rect.width / 2;
 
       if (ballCX > window.innerWidth / 2) {
@@ -218,9 +213,9 @@
         menu.style.right = 'auto';
       }
 
-      var top = rect.top + rect.height / 2 - menuH / 2;
-      if (top < 10) top = 10;
+      var top = rect.top;
       if (top + menuH > window.innerHeight - 10) top = window.innerHeight - menuH - 10;
+      if (top < 10) top = 10;
       menu.style.top = top + 'px';
     },
 
