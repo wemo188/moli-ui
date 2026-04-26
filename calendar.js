@@ -208,7 +208,7 @@ if(e.target.closest('.vf-lbl'))return;
         '<div class="wt-cp-row"><span class="wt-cp-label">边框</span><input type="range" id="wcpBorder" min="0" max="100" value="'+c.borderAlpha+'"><span class="wt-cp-val" id="wcpBorderVal">'+c.borderAlpha+'%</span></div>'+
         '<div class="wt-cp-section"><span>背 景</span></div>'+
         '<div class="wt-cp-row"><span class="wt-cp-label">透明</span><input type="range" id="wcpAlpha" min="0" max="100" value="'+c.alpha+'"><span class="wt-cp-val" id="wcpAlphaVal">'+c.alpha+'%</span></div>'+
-        '<div class="wt-cp-row"><span class="wt-cp-label">模糊</span><input type="range" id="wcpBlur" min="0" max="30" value="'+c.blur+'"><span class="wt-cp-val" id="wcpBlurVal">'+c.blur+'px</span></div>'+
+        '<div class="wt-cp-row"><span class="wt-cp-label">模糊</span><input type="range" id="wcpBlur" min="0" max="50" value="'+c.blur+'"><span class="wt-cp-val" id="wcpBlurVal">'+c.blur+'px</span></div>'+
         '<div class="wt-cp-section"><span>颜 色</span></div>'+
         '<div class="wt-cp-colors">'+
           '<div class="wt-cp-color-item"><div class="wt-cp-swatch" id="wcpBgSwatch" data-key="bg" style="background:'+_colors.bg+'"></div><span class="wt-cp-color-label">底色</span></div>'+
