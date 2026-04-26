@@ -219,7 +219,8 @@
         menu.style.right = 'auto';
       }
 
-      var top = rect.top;
+      var ballCY = rect.top + rect.height / 2;
+      var top = ballCY - menuH / 2;
       if (top + menuH > window.innerHeight - 10) top = window.innerHeight - menuH - 10;
       if (top < 10) top = 10;
       menu.style.top = top + 'px';
