@@ -350,7 +350,7 @@
 .cc-field { margin-bottom: 8px; }
 .cc-field:last-child { margin-bottom: 0; }
 .cc-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
-.cc-field-dot { width: 3px; height: 3px; background: #111; }
+.cc-field-dot { width: 3px; height: 3px; background: #111; flex-shrink: 0; }
 .cc-field-key { font-size: 8px; font-weight: 800; letter-spacing: 1.5px; color: #999; }
 .cc-field-input {
   width: 100%; border: none; border-bottom: 1.5px solid #111; background: transparent;
@@ -360,7 +360,7 @@
 .cc-field-input::placeholder { color: #ccc; font-weight: 400; }
 .cc-divider { margin: 4px 0 8px; display: flex; align-items: center; gap: 8px; }
 .cc-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
-.cc-divider-text { font-size: 7px; color: #ccc; letter-spacing: 2px; }
+.cc-divider-text { font-size: 7px; color: #ccc; letter-spacing: 2px; font-weight: 400; }
 .cc-radio-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .cc-radio-item { position: relative; }
 .cc-radio-item input { display: none; }
@@ -382,4 +382,4 @@
   justify-content: center; font-size: 8px; font-weight: 900; margin-top: 1px;
 }
 .cc-tip-text { font-size: 9px; color: #888; line-height: 1.5; }
-.cc-note { font-size: 9px; color: #aaa; margin-top: 6px; line-height: 1.5; }
+.cc-note { font-size: 11px; color: #aaa; margin-top: 8px; padding: 0 20px; line-height: 1.6; }
