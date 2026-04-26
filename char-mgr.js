@@ -83,7 +83,7 @@
 
       var page = document.createElement('div');
       page.id = 'charMgrPage';
-      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:100020;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
       document.body.appendChild(page);
 
       CharMgr.render(page);
