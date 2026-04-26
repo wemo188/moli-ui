@@ -319,10 +319,10 @@
 .cc-section-title.blue { background: var(--edit-accent, #88abda); }
 .cc-section-title.blue::after { border-left-color: var(--edit-accent, #88abda); }
 .cc-section-body { padding: 0 20px 16px; }
-.cc-content-area { margin: 0 0 0; min-height: 80px;
+.cc-content-area { margin: 0; min-height: 80px; border: 1.5px dashed #c8d4e2; background: repeating-linear-gradient(0deg, transparent, transparent 22px, #eef2f7 22px, #eef2f7 23px); position: relative; }
 .cc-content-area textarea { width: 100%; min-height: 80px; border: none; background: transparent; padding: 10px 12px; font-size: 13px; color: #333; outline: none; resize: vertical; font-family: inherit; line-height: 22px; }
 .cc-content-area textarea::placeholder { color: #bbb; }
-.cc-dialogue-area { margin: 0 0 0; min-height: 80px;
+.cc-dialogue-area { margin: 0; min-height: 80px; border: 1.5px dashed #c8d4e2; position: relative; }
 .cc-dialogue-area::before { content: "「"; position: absolute; top: 6px; left: 5px; font-size: 20px; font-weight: 900; color: var(--edit-accent, #88abda); line-height: 1; pointer-events: none; z-index: 1; }
 .cc-dialogue-area::after { content: "」"; position: absolute; bottom: 2px; right: 8px; font-size: 20px; font-weight: 900; color: var(--edit-accent, #88abda); line-height: 1; pointer-events: none; z-index: 1; }
 .cc-dialogue-area textarea { width: 100%; min-height: 80px; border: none; background: transparent; padding: 10px 12px 10px 24px; font-size: 13px; color: #333; outline: none; resize: vertical; font-family: inherit; line-height: 1.6; }
