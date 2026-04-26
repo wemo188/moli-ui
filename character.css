@@ -344,3 +344,23 @@
 .cc-expand-title-tag::after { content: ""; position: absolute; right: -9px; top: 0; bottom: 0; border-left: 9px solid #111; border-bottom: 24px solid transparent; }
 .cc-expand-title-tag.blue { background: var(--edit-accent, #88abda); }
 .cc-expand-title-tag.blue::after { border-left-color: var(--edit-accent, #88abda); }
+
+/* ====== 角色创建 · 字段扩展 ====== */
+.cc-field { margin-bottom: 10px; }
+.cc-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+.cc-field-dot { width: 3px; height: 3px; background: var(--edit-dark, #111); }
+.cc-field-key { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: #999; }
+.cc-field-input { width: 100%; border: none; border-bottom: 1.5px solid var(--edit-dark, #111); background: transparent; font-size: 13px; font-weight: 500; color: var(--edit-dark, #111); outline: none; padding: 3px 0 5px; font-family: inherit; box-sizing: border-box; }
+.cc-field-input::placeholder { color: #ccc; font-weight: 400; }
+.cc-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+.cc-sep { margin: 6px 0; display: flex; align-items: center; gap: 8px; }
+.cc-sep-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
+.cc-sep-text { font-size: 7px; color: #ccc; letter-spacing: 2px; }
+.cc-radio-row { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.cc-radio-item { position: relative; }
+.cc-radio-item input { display: none; }
+.cc-radio-label { display: block; padding: 6px 12px; font-size: 10px; font-weight: 700; color: #999; border: 1.5px solid #e0e0e0; cursor: pointer; transition: all .2s; letter-spacing: .5px; white-space: nowrap; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.cc-radio-item input:checked + .cc-radio-label { color: #fff; border-color: var(--edit-dark, #111); background: var(--edit-dark, #111); }
+.cc-tip { display: flex; align-items: flex-start; gap: 6px; padding: 8px 10px; background: #fafbfd; border-left: 3px solid var(--edit-accent, #88abda); margin-top: 8px; }
+.cc-tip-icon { flex-shrink: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--edit-accent, #88abda); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 900; margin-top: 1px; }
+.cc-tip-text { font-size: 9px; color: #888; line-height: 1.5; }
