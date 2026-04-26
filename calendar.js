@@ -327,6 +327,7 @@ if(e.target.closest('.vf-lbl'))return;
 
     panel.addEventListener('touchend',function(){if(Cal._cpDrag){Cal._cpDrag.active=false;Cal._cpDrag.locked=false;}_startedOnInput=false;});
     panel.addEventListener('click',function(e){e.stopPropagation();});
+  },
 
   // ====== 天气面板 ======
   openWeatherPanel:function(){
