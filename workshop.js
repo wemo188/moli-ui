@@ -10,7 +10,7 @@
   function tkBlack(action, cn, en) {
     return '<div class="bm-tk" data-action="' + action + '">' +
       '<div class="bm-tk-body"><div class="bm-tk-inner"></div>' +
-      '<span class="bm-tk-spade">\u2660</span>' +
+      '<span class="bm-tk-spade">♠</span>' +
       '<div class="bm-tk-text">' + cn + '</div>' +
       '<div class="bm-tk-line"></div>' +
       '<div class="bm-tk-sub">' + en + '</div>' +
@@ -20,7 +20,7 @@
   function tkWhite(action, cn, en) {
     return '<div class="bm-wk" data-action="' + action + '">' +
       '<div class="bm-wk-body"><div class="bm-wk-inner"></div>' +
-      '<span class="bm-wk-spade">\u2660</span>' +
+      '<span class="bm-wk-spade">♠</span>' +
       '<div class="bm-wk-text">' + cn + '</div>' +
       '<div class="bm-wk-line"></div>' +
       '<div class="bm-wk-sub">' + en + '</div>' +
@@ -67,21 +67,22 @@
               '<div class="bm-vline-r"></div>' +
               '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
-                tkBlack('workshop', '\u5DE5\u574A', 'studio') +
-                tkBlack('ballset', '\u60AC\u6D6E\u7403', 'float') +
-                tkBlack('character', '\u89D2\u8272', 'role') +
-                tkBlack('memory', '\u8BB0\u5FC6', 'memory') +
-                tkBlack('resetLayout', '\u6062\u590D', 'reset') +
-                tkBlack('exportData', '\u5BFC\u51FA', 'export') +'</div>' +
+                tkBlack('workshop', '工坊', 'studio') +
+                tkBlack('ballset', '悬浮球', 'float') +
+                tkBlack('character', '角色', 'role') +
+                tkBlack('memory', '记忆', 'memory') +
+                tkBlack('resetLayout', '恢复', 'reset') +
+                tkBlack('exportData', '导出', 'export') +
+              '</div>' +
             '</div>' +
           '</div>' +
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
             '<div class="bm-card">' +
-              '<div class="bm-title">\u2660 \u7F8E\u5316\u5DE5\u574A \u2660</div>' +
+              '<div class="bm-title">♠ 美化工坊 ♠</div>' +
               '<div class="bm-grid">' +
-                tkWhite('theme', '\u4E3B\u9898', 'theme') +
-                tkWhite('font', '\u5B57\u4F53', 'font') +
-                tkWhite('bg', '\u80CC\u666F', 'image') +
+                tkWhite('theme', '主题', 'theme') +
+                tkWhite('font', '字体', 'font') +
+                tkWhite('bg', '背景', 'image') +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -129,7 +130,7 @@
             return;
           }
           if (action === 'memory') {
-            App.showToast('\u8BB0\u5FC6\u529F\u80FD\u5F00\u53D1\u4E2D');
+            App.showToast('记忆功能开发中');
             return;
           }
           if (action === 'resetLayout') {
@@ -175,7 +176,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      App.showToast('\u6570\u636E\u5DF2\u5BFC\u51FA');
+      App.showToast('数据已导出');
     },
 
     resetAllLayout: function() {
@@ -195,7 +196,7 @@
       }
       var edenCard = App.$('#edenCard');
       if (edenCard) edenCard.style.transform = '';
-      App.showToast('\u5E03\u5C40\u5DF2\u6062\u590D');
+      App.showToast('布局已恢复');
     },
 
     bindSwipe: function() {
@@ -229,8 +230,8 @@
         var ady = Math.abs(dy);
 
         if (!Workshop._touch.mode) {
-          if (adx< 8 && ady < 8) return;
-          if (adx >ady && Workshop.currentPage > 0 && dx > 0) {
+          if (adx < 8 && ady < 8) return;
+          if (adx > ady && Workshop.currentPage > 0 && dx > 0) {
             Workshop._touch.mode = 'swipe';
           } else {
             Workshop._touch.mode = 'drag';
@@ -260,7 +261,7 @@
           var currentX = match ? parseFloat(match[1]) : Workshop._touch.baseSlider;
           var delta = currentX - Workshop._touch.baseSlider;
           var pw = Workshop.getPageWidth(Workshop.currentPage);
-          if (delta > pw * 0.25 && Workshop.currentPage > 0) {
+          if (delta > pw * 0.25&& Workshop.currentPage > 0) {
             Workshop.goToPage(Workshop.currentPage - 1);
           } else {
             Workshop.goToPage(Workshop.currentPage);
@@ -342,8 +343,7 @@
         var ball = App.state.ball;
         if (ball && (e.target === ball || ball.contains(e.target))) return;
         Workshop.close();
-      });
-    }
+      });}
   };
 
   App.workshop = Workshop;
