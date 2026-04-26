@@ -1,11 +1,12 @@
 (function() {
+  'use strict';
+
   // 清除旧SW
   if (navigator.serviceWorker) {
     navigator.serviceWorker.getRegistrations().then(function(rs) {
       rs.forEach(function(r) { r.unregister(); });
     });
   }
-  'use strict';
 
   var App = window.App = window.App || {};
 
