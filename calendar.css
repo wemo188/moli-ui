@@ -74,7 +74,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 18px 20px;
   display: none;
   flex-direction: column;
   gap: 6px;
@@ -87,14 +87,14 @@
 .wt-color-panel:active { cursor: grabbing; }
 
 .wt-cp-title {
-  text-align: center; padding: 2px 0 8px;
-  font-size: 12px; font-weight: 700; color: #333;
+  text-align: center; padding: 4px 0 12px;
+  font-size: 14px; font-weight: 700; color: #333;
   letter-spacing: 2px; position: relative;
 }
 .wt-cp-close {
   position: absolute; top: 0; right: 0;
-  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 14px; color: #aaa;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: #aaa;
   -webkit-tap-highlight-color: transparent;
 }
 .wt-cp-close:active { color: #333; }
@@ -102,27 +102,27 @@
 .wt-cp-scroll {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
   scrollbar-width: none; min-height: 0;
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex-direction: column; gap: 10px;justify-content: space-around;
 }
 .wt-cp-scroll::-webkit-scrollbar { display: none; }
 
 .wt-cp-section {
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  margin: 4px 0 2px;
+  margin: 6px 0 4px;
 }
 .wt-cp-section::before, .wt-cp-section::after {
   content: ""; flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 .wt-cp-section span {
-  font-size: 10px; font-weight: 700; color: #999;
+  font-size: 11px; font-weight: 700; color: #999;
   letter-spacing: 2.5px; white-space: nowrap;
 }
 
-.wt-cp-row { display: flex; align-items: center; gap: 8px; }
+.wt-cp-row { display: flex; align-items: center; gap: 10px; }
 .wt-cp-label {
-  font-size: 12px; font-weight: 600; color: #333;
-  min-width: 28px; flex-shrink: 0;
+  font-size: 13px; font-weight: 600; color: #333;
+  min-width: 32px; flex-shrink: 0;
 }
 .wt-cp-row input[type="range"] {
   flex: 1; height: 3px; -webkit-appearance: none !important;
@@ -130,29 +130,29 @@
 }
 .wt-cp-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
-  width: 16px !important; height: 16px !important; border-radius: 50% !important;
+  width: 18px !important; height: 18px !important; border-radius: 50% !important;
   background: #fff !important; border: 2px solid #1a1a1a !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important; cursor: pointer !important;
 }
 .wt-cp-val {
-  font-size: 12px; font-weight: 600; color: #333;
-  min-width: 32px; text-align: right; flex-shrink: 0;
+  font-size: 13px; font-weight: 600; color: #333;
+  min-width: 36px; text-align: right; flex-shrink: 0;
 }
 
-.wt-cp-colors { display: flex; gap: 14px; justify-content: center; margin: 4px 0; }
-.wt-cp-color-item { display: flex; align-items: center; gap: 5px; }
+.wt-cp-colors { display: flex; gap: 18px; justify-content: center; margin: 6px 0; }
+.wt-cp-color-item { display: flex; align-items: center; gap: 6px; }
 .wt-cp-swatch {
-  width: 26px; height: 26px; border-radius: 7px;
+  width: 32px; height: 32px; border-radius: 8px;
   border: 2px solid #ddd; cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: transform 0.12s;
 }
 .wt-cp-swatch:active { transform: scale(0.9); }
-.wt-cp-color-label { font-size: 12px; font-weight: 600; color: #333; }
+.wt-cp-color-label { font-size: 13px; font-weight: 600; color: #333; }
 
-.wt-cp-btns { display: flex; gap: 8px; flex-shrink: 0; margin-top: 8px; }
+.wt-cp-btns { display: flex; gap: 10px; flex-shrink: 0; margin-top: 10px; }
 .wt-cp-btn {
-  flex: 1; padding: 11px 0; border: none; border-radius: 10px;
-  font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  flex: 1; padding: 13px 0; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 800; letter-spacing: 2px;
   cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
   background: #1a1a1a; color: #fff;
 }
