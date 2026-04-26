@@ -382,5 +382,5 @@
   justify-content: center; font-size: 8px; font-weight: 900; margin-top: 1px;
 }
 .cc-tip-text { font-size: 9px; color: #888; line-height: 1.5; }
-.cc-note { font-size: 11px; color: #aaa; margin-top: 10px; line-height: 1.6; padding: 0 2px; }
-.cc-save-area { padding: 24px 16px 80px; display: flex; gap: 10px; }
+.cc-note { font-size: 11px; color: #aaa; margin: 10px 20px 0; line-height: 1.6; }
+.cc-save-area { padding: 24px 0 80px; display: flex; gap: 10px; }
