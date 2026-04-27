@@ -1,48 +1,49 @@
-/* ====== 微信手机框 ====== */
-.wx-phone {
-  position: relative;
-  width: calc(100% - 24px);
-  margin: 12px auto;
-  border-radius: 50px;
-  background: #fff;
-  border: 17px solid rgba(0,0,0,1);
-  box-shadow:
-    0 14px 40px rgba(60,80,110,.12),
-    0 2px 8px rgba(60,80,110,.06),
-    inset 0 1px 0 rgba(255,255,255,.5);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 24px);
-  height: calc(100dvh - 24px);
-  margin-bottom: 40px;
-}
 
-#wxWrap { width: 100%; height: 100%; }
-
-.wx-fullscreen .wx-phone {
-  width: 100% !important; max-height: none !important;
-  height: 100vh !important; height: 100dvh !important;
-  margin: 0 !important; border-radius: 0 !important; border: none !important; box-shadow: none !important;
-  overflow: hidden !important;
-}
-
-.wx-fullscreen .wx-inner,
-.wx-fullscreen .wx-inner::before,
-.wx-fullscreen .wx-inner::after {
-  border-radius: 0 !important;
-}
-
+/* ====== 微信面板 ====== */
 #wechatPanel {
   background: rgba(0,0,0,0.3) !important;
   padding: 0 !important;
 }
 
+/* ====== 手机框 ====== */
+#wxWrap { width: 100%; height: 100%; }
+
+.wx-phone {
+  position: relative;
+  width: calc(100% - 24px);
+  height: calc(100vh - 64px);
+  height: calc(100dvh - 64px);
+  margin: 12px auto 40px;
+  border-radius: 50px;
+  background: #fff;
+  border: 17px solid #000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====== 全屏 ====== */
+.wx-fullscreen .wx-phone {
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.wx-fullscreen .wx-inner { border-radius: 0 !important; }
+.wx-fullscreen .wx-inner::before { border-radius: 0 !important; }
+.wx-fullscreen .wx-inner::after { border-radius: 0 !important; }
+.wx-fullscreen .wx-header { padding-top: 56px; }
+
+/* ====== 内层 ====== */
 .wx-inner {
   position: relative;
   display: flex; flex-direction: column;
   height: 100%; overflow: hidden;
-  border-radius: inherit;
+  border-radius: 33px;
 }
 
 .wx-inner::before {
@@ -50,24 +51,25 @@
   position: absolute; top: 50%; left: 50%;
   width: 140%; height: 140%;
   transform: translate(-50%, -50%);
+  border-radius: inherit;
   background:
     radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),
     radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
     radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
   pointer-events: none; z-index: 0;
-  border-radius: inherit;
 }
 
 .wx-inner::after {
   content: "";
   position: absolute; inset: 0;
+  border-radius: inherit;
   background:
     linear-gradient(135deg, rgba(255,255,255,.70), transparent 42%),
     linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
   pointer-events: none; mix-blend-mode: screen; opacity: .72; z-index: 0;
-  border-radius: inherit;
 }
 
+/* ====== 顶部栏 ====== */
 .wx-header {
   position: relative; z-index: 10;
   display: flex; justify-content: space-between; align-items: center;
@@ -89,6 +91,7 @@
 .wx-header-btn:active svg { stroke: #4a7a9e; }
 #wxBackBtn svg { width: 18px; height: 18px; }
 
+/* ====== 搜索栏 ====== */
 .wx-search {
   position: relative; z-index: 2;
   padding: 0 16px 6px; flex-shrink: 0;
@@ -109,12 +112,14 @@
 
 .wx-search-bar span { font-size: 12.5px; color: #a8c0d8; }
 
+/* ====== 内容区 ====== */
 .wx-body {
   position: relative; z-index: 2;
   flex: 1; overflow-y: auto;
   -webkit-overflow-scrolling: touch; padding: 0 0 4px;
 }
 
+/* ====== 聊天列表 ====== */
 .wx-chat-item {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 18px; cursor: pointer;
@@ -129,6 +134,7 @@
   height: 1px; background: rgba(126,163,201,.12);
 }
 
+/* ====== 头像 ====== */
 .wx-avatar {
   width: 54px; height: 54px; border-radius: 12px;
   flex-shrink: 0; position: relative; overflow: visible;
@@ -155,6 +161,7 @@
   fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
+/* ====== 聊天内容 ====== */
 .wx-chat-content { flex: 1; min-width: 0; }
 
 .wx-chat-top {
@@ -171,6 +178,7 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;
 }
 
+/* ====== 空状态 ====== */
 .wx-empty {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -187,6 +195,7 @@
   letter-spacing: 0.5px; line-height: 1.6;
 }
 
+/* ====== 底部 Tab ====== */
 .wx-tabbar {
   position: relative; z-index: 2;
   display: flex; justify-content: space-around; align-items: flex-end;
@@ -216,6 +225,7 @@
 .wx-tab:not(.active) svg { stroke: #a8c0d8; }
 .wx-tab:not(.active) span { color: #a8c0d8; }
 
+/* ====== 加号菜单 ====== */
 .wx-add-menu {
   position: absolute; top: 44px; right: 0; z-index: 100;
   background: #000; border-radius: 12px; padding: 6px 0;
@@ -233,9 +243,7 @@
 }
 
 .wx-add-menu-item:active { background: rgba(255,255,255,.1); }
-
 .wx-add-menu-item:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,.08); }
-
 .wx-add-menu-item span { font-size: 13px; color: rgba(255,255,255,.85); font-weight: 500; }
 
 .wx-add-menu::before {
@@ -244,6 +252,7 @@
   transform: rotate(45deg); border-radius: 2px 0 0 0;
 }
 
+/* ====== 模式切换按钮 ====== */
 .wx-me-mode-btn {
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   padding: 5px 14px; border: 1px solid rgba(126,163,201,.2);
@@ -255,6 +264,7 @@
 .wx-me-mode-val { font-size: 11px; color: #8aa0b8; }
 .wx-me-mode-switch { font-size: 10px; color: #c0cedd; }
 
+/* ====== 我的页面链接 ====== */
 .wx-me-link {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 24px; cursor: pointer;
