@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
 
@@ -43,6 +44,15 @@
     var d = document.createElement('div');
     d.textContent = s || '';
     return d.innerHTML;
+  };
+
+  /* ★ 修改：新增属性值转义函数，防止引号注入 */
+  App.escAttr = function(s) {
+    return (s || '').replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
   };
 
   App.safeOn = function(selector, event, fn) {
@@ -103,10 +113,10 @@
     var scale = 1;
     var displayW = 0;
     var displayH = 0;
-    var dragMode = ''; // 'move', 'tl', 'tr', 'bl', 'br', 't', 'b', 'l', 'r'
+    var dragMode = '';
     var startX = 0, startY = 0;
     var startCrop = {};
-    var lockedRatio = 0; // 0 = free
+    var lockedRatio = 0;
     var HANDLE = 20;
     var MIN_SIZE = 30;
 
@@ -148,19 +158,16 @@
       ctx.clearRect(0, 0, displayW, displayH);
       ctx.drawImage(img, 0, 0, displayW, displayH);
 
-      // 暗色遮罩
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(0, 0, displayW, crop.y);
       ctx.fillRect(0, crop.y + crop.h, displayW, displayH - crop.y - crop.h);
       ctx.fillRect(0, crop.y, crop.x, crop.h);
       ctx.fillRect(crop.x + crop.w, crop.y, displayW - crop.x - crop.w, crop.h);
 
-      // 边框
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
       ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
 
-      // 三等分线
       ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.lineWidth = 1;
       var tw = crop.w / 3, th = crop.h / 3;
@@ -175,7 +182,6 @@
       ctx.lineTo(crop.x + crop.w, crop.y + th * 2);
       ctx.stroke();
 
-      // 四角拖拽手柄
       ctx.fillStyle = '#fff';
       var hs = 8;
       var corners = [
@@ -188,7 +194,6 @@
         ctx.fillRect(c[0] - hs / 2, c[1] - hs / 2, hs, hs);
       });
 
-      // 四边中点手柄
       var middles = [
         [crop.x + crop.w / 2, crop.y],
         [crop.x + crop.w / 2, crop.y + crop.h],
@@ -210,19 +215,16 @@
       var cx = crop.x, cy = crop.y, cw = crop.w, ch = crop.h;
       var H = HANDLE;
 
-      // 四角
       if (px >= cx - H && px <= cx + H && py >= cy - H && py <= cy + H) return 'tl';
       if (px >= cx + cw - H && px <= cx + cw + H && py >= cy - H && py <= cy + H) return 'tr';
       if (px >= cx - H && px <= cx + H && py >= cy + ch - H && py <= cy + ch + H) return 'bl';
       if (px >= cx + cw - H && px <= cx + cw + H && py >= cy + ch - H && py <= cy + ch + H) return 'br';
 
-      // 四边
       if (py >= cy - H && py <= cy + H && px > cx + H && px < cx + cw - H) return 't';
       if (py >= cy + ch - H && py <= cy + ch + H && px > cx + H && px < cx + cw - H) return 'b';
       if (px >= cx - H && px <= cx + H && py > cy + H && py < cy + ch - H) return 'l';
       if (px >= cx + cw - H && px <= cx + cw + H && py > cy + H && py < cy + ch - H) return 'r';
 
-      // 内部移动
       if (px >= cx && px <= cx + cw && py >= cy && py <= cy + ch) return 'move';
 
       return '';
@@ -234,17 +236,14 @@
 
       var ratio = lockedRatio;
 
-      // 根据拖动方向调整
       if (mode === 't' || mode === 'b') {
         crop.w = crop.h * ratio;
       } else if (mode === 'l' || mode === 'r') {
         crop.h = crop.w / ratio;
       } else {
-        // 角：以宽为基准
         crop.h = crop.w / ratio;
       }
 
-      // 保持锚点
       if (mode === 'tl' || mode === 'bl' || mode === 'l') {
         crop.x = anchorX - crop.w;
       }
@@ -332,7 +331,6 @@
       document.removeEventListener('touchend', onEnd);
     }
 
-    // 双指缩放（整体缩放裁剪框）
     var lastDist = 0;
     canvas.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
@@ -365,7 +363,6 @@
       }
     }, { passive: false });
 
-    // 比例按钮
     overlay.querySelectorAll('.crop-ratio-btn').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -424,14 +421,12 @@
   App.openColorPicker = function(currentColor, onConfirm, onChange) {
     var old = App.$('#cpOverlay');
     if (old) {
-      // 同一个调用源再点一次 → 关闭
       var callerId = arguments[3] || currentColor;
       if (old._callerId === callerId) {
         old._doClose();
         return;
       }
       old._callerId = callerId;
-      // 不同颜色 → 切换，不关闭
       old._lastColor = currentColor;
       old._onConfirm = onConfirm;
       old._onChange = onChange;
@@ -526,15 +521,44 @@
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
     }
 
+    /* ★ 修改：新增 hslToRgb 函数，供高性能光谱绘制使用 */
+    function hslToRgb(h, s, l) {
+      var c = (1 - Math.abs(2 * l - 1)) * s;
+      var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      var m = l - c / 2;
+      var r = 0, g = 0, b = 0;
+      if (h < 60)       { r = c; g = x; }
+      else if (h < 120) { r = x; g = c; }
+      else if (h < 180) { g = c; b = x; }
+      else if (h < 240) { g = x; b = c; }
+      else if (h < 300) { r = x; b = c; }
+      else              { r = c; b = x; }
+      return [
+        Math.round((r + m) * 255),
+        Math.round((g + m) * 255),
+        Math.round((b + m) * 255)
+      ];
+    }
+
+    /* ★ 修改：光谱绘制改用 ImageData，不再逐像素 fillRect */
     function drawSpectrum() {
       var w = specEl.clientWidth, h = specEl.clientHeight;
       specCanvas.width = w; specCanvas.height = h;
-      for (var x=0;x<w;x++) {
-        for (var y=0;y<h;y++) {
-          specCtx.fillStyle = hslToHex(currentHue, (x/w)*100, 100-(y/h)*100);
-          specCtx.fillRect(x,y,1,1);
+      var imageData = specCtx.createImageData(w, h);
+      var data = imageData.data;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var s = x / w;
+          var l = 1 - (y / h);
+          var rgb = hslToRgb(currentHue, s, l);
+          var idx = (y * w + x) * 4;
+          data[idx]     = rgb[0];
+          data[idx + 1] = rgb[1];
+          data[idx + 2] = rgb[2];
+          data[idx + 3] = 255;
         }
       }
+      specCtx.putImageData(imageData, 0, 0);
     }
 
     function updateUI() {
@@ -560,7 +584,6 @@
 
     setFromHex(selectedHex);
 
-    // 暴露给外部复用
     overlay._setColor = setFromHex;
 
     var specDrag=false;
@@ -584,10 +607,16 @@
     hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
     hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
 
-    document.addEventListener('mousemove',function(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);});
-    document.addEventListener('touchmove',function(e){if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}},{passive:false});
-    document.addEventListener('mouseup',function(){specDrag=false;hueDrag=false;});
-    document.addEventListener('touchend',function(){specDrag=false;hueDrag=false;});
+    /* ★ 修改：全局事件监听器改为具名函数，方便关闭时移除 */
+    function onDocMouseMove(e) { if(specDrag)specFromPos(e); if(hueDrag)hueFromPos(e); }
+    function onDocMouseUp() { specDrag=false; hueDrag=false; }
+    function onDocTouchMove(e) { if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);} }
+    function onDocTouchEnd() { specDrag=false; hueDrag=false; }
+
+    document.addEventListener('mousemove', onDocMouseMove);
+    document.addEventListener('mouseup', onDocMouseUp);
+    document.addEventListener('touchmove', onDocTouchMove, {passive:false});
+    document.addEventListener('touchend', onDocTouchEnd);
 
     hexInput.addEventListener('input',function(){
       var v=this.value.trim();
@@ -639,7 +668,13 @@
       else presetsEl.classList.remove('editing');
     });
 
+    /* ★ 修改：doClose 里移除全局事件监听器，防止内存泄漏 */
     function doClose() {
+      document.removeEventListener('mousemove', onDocMouseMove);
+      document.removeEventListener('mouseup', onDocMouseUp);
+      document.removeEventListener('touchmove', onDocTouchMove);
+      document.removeEventListener('touchend', onDocTouchEnd);
+
       App._cpJustClosed = true;
       setTimeout(function() { App._cpJustClosed = false; }, 200);
       overlay.remove();
@@ -656,7 +691,6 @@
       doClose();
     });
 
-    // 颜色面板拖拽
     var cpPanel = overlay.querySelector('.cp-panel');
     var cpHead = overlay.querySelector('.cp-header');
     var _cpDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
@@ -711,23 +745,23 @@
   };
 
   App.openMenu = function() {
-  if (App.workshop) App.workshop.open();
-};
+    if (App.workshop) App.workshop.open();
+  };
 
-App.closeMenu = function() {
-  if (App.workshop) App.workshop.close();
-};
+  App.closeMenu = function() {
+    if (App.workshop) App.workshop.close();
+  };
 
-App.toggleMenu = function() {
-  var now = Date.now();
-  if (now - App.state.lastToggleTime < 250) return;
-  App.state.lastToggleTime = now;
-  if (App.workshop) App.workshop.toggle();
-};
+  App.toggleMenu = function() {
+    var now = Date.now();
+    if (now - App.state.lastToggleTime < 250) return;
+    App.state.lastToggleTime = now;
+    if (App.workshop) App.workshop.toggle();
+  };
 
-App.positionMenu = function() {
-  if (App.workshop) App.workshop.positionMenu();
-};
+  App.positionMenu = function() {
+    if (App.workshop) App.workshop.positionMenu();
+  };
 
   App.openPanel = function(id) {
     if (!id) return;
@@ -758,7 +792,6 @@ App.positionMenu = function() {
     App.state.currentPanelEl = null;
   };
 
-  // ========= 悬浮球模式 =========
   var BALL_DEFAULTS = {
     mode: 'mascot',
     ballImg: 'https://iili.io/B7m3lY7.md.png',
@@ -822,13 +855,15 @@ App.positionMenu = function() {
     var overlay = document.createElement('div');
     overlay.id = 'ballSettingsOverlay';
     overlay.className = 'pc-edit-overlay';
-        overlay.style.zIndex = '100020';
+    overlay.style.zIndex = '100020';
+
+    /* ★ 修改：innerHTML 里的属性值用 App.escAttr 替代 App.esc */
     overlay.innerHTML =
       '<div class="pc-edit-panel" style="width:300px;max-height:400px;overflow-y:auto;border-radius:14px;">' +
         '<div class="pc-edit-title">悬浮球设置</div>' +
 
         '<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;margin:0 auto 16px;background:#f5f5f5;box-shadow:0 2px 8px rgba(0,0,0,0.1);">' +
-          '<img id="ballSettingsPreview" src="' + App.esc(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
+          '<img id="ballSettingsPreview" src="' + App.escAttr(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
         '</div>' +
 
         '<div class="pc-edit-group">' +
@@ -841,7 +876,7 @@ App.positionMenu = function() {
 
         '<div class="pc-edit-group" id="ballImgGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
           '<label class="pc-edit-label">自定义图片（URL 或上传）</label>' +
-          '<input type="text" class="pc-edit-input" id="ballImgUrl" placeholder="图片URL..." value="' + App.esc(config.customImg || '') + '">' +
+          '<input type="text" class="pc-edit-input" id="ballImgUrl" placeholder="图片URL..." value="' + App.escAttr(config.customImg || '') + '">' +
           '<div style="margin-top:8px;display:flex;gap:8px;">' +
             '<button type="button" id="ballUploadBtn" style="flex:1;padding:10px;background:#f5f5f5;border:1px solid rgba(0,0,0,0.06);border-radius:10px;font-size:13px;color:#666;cursor:pointer;font-family:inherit;">从相册选择</button>' +
             '<input type="file" id="ballFileInput" accept="image/*" hidden>' +
@@ -862,7 +897,6 @@ App.positionMenu = function() {
 
     var currentMode = config.mode;
 
-    // 模式切换
     overlay.querySelectorAll('.ball-mode-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         overlay.querySelectorAll('.ball-mode-btn').forEach(function(b) {
@@ -890,13 +924,11 @@ App.positionMenu = function() {
       });
     });
 
-    // URL输入实时预览
     App.$('#ballImgUrl').addEventListener('input', function() {
       var v = this.value.trim();
       if (v) App.$('#ballSettingsPreview').src = v;
     });
 
-    // 从相册选择
     App.$('#ballUploadBtn').addEventListener('click', function() {
       App.$('#ballFileInput').click();
     });
@@ -925,7 +957,6 @@ App.positionMenu = function() {
       reader.readAsDataURL(file);
     });
 
-    // 保存
     App.$('#ballSettingsSave').addEventListener('click', function() {
       App.ballConfig.mode = currentMode;
       if (currentMode === 'ball') {
@@ -938,12 +969,10 @@ App.positionMenu = function() {
       App.showToast('已保存 · ' + label);
     });
 
-    // 取消
     App.$('#ballSettingsCancel').addEventListener('click', function() {
       overlay.remove();
     });
 
-    // 恢复默认
     App.$('#ballSettingsReset').addEventListener('click', function() {
       App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
       App.saveBallConfig();
@@ -957,7 +986,6 @@ App.positionMenu = function() {
     });
   };
 
-  // ========= 悬浮球初始化 =========
   App.initFloatingBall = function() {
     var ball = App.state.ball;
     if (!ball) return;
@@ -1006,7 +1034,7 @@ App.positionMenu = function() {
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
-            if (App.workshop && App.workshop.isOpen) App.workshop.positionMenu();
+      if (App.workshop && App.workshop.isOpen) App.workshop.positionMenu();
     }, { passive: true });
 
     document.addEventListener('touchend', function(e) {
@@ -1092,26 +1120,25 @@ App.positionMenu = function() {
       }
     });
 
-    // 菜单项点击
     App.$$('.ball-menu-item').forEach(function(item) {
-  item.addEventListener('click', function(e) {
-    e.stopPropagation();
-    ballTapCount = 0;
-    pageTapCount = 0;
-    clearTimeout(ballTapTimer);
-    clearTimeout(pageTapTimer);
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        ballTapCount = 0;
+        pageTapCount = 0;
+        clearTimeout(ballTapTimer);
+        clearTimeout(pageTapTimer);
 
-    if (item.id === 'ballWorkshop') {
-      if (App.workshop) App.workshop.open();
-      return;
-    }
+        if (item.id === 'ballWorkshop') {
+          if (App.workshop) App.workshop.open();
+          return;
+        }
 
-    var panelId = item.dataset.panel;
-    if (panelId) {
-      App.openPanel(panelId);
-    }
-  });
-});
+        var panelId = item.dataset.panel;
+        if (panelId) {
+          App.openPanel(panelId);
+        }
+      });
+    });
 
     App.$$('.panel-close').forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -1137,7 +1164,6 @@ App.positionMenu = function() {
       ball.style.bottom = 'auto';
     }
 
-    // 小公仔动画
     App.mascot = {
       img: App.$('#mascotImg'),
       sprites: {
@@ -1251,7 +1277,6 @@ App.positionMenu = function() {
     }
   };
 
-  // ========= 模块初始化 =========
   App.runInits = function() {
     Object.keys(App.modules).forEach(function(name) {
       var mod = App.modules[name];
@@ -1263,7 +1288,6 @@ App.positionMenu = function() {
     });
   };
 
-  // ========= 主页面滑动 =========
   App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
@@ -1326,7 +1350,8 @@ App.positionMenu = function() {
       var currentY = e.touches[0].clientY;
       var dx = Math.abs(currentX - startX);
       var dy = Math.abs(currentY - startY);
-      if (!directionLocked && (dx > 8 || dy > 8)) {
+      /* ★ 修改：方向锁定阈值从 8 改为 12，减少误触 */
+      if (!directionLocked && (dx > 12 || dy > 12)) {
         directionLocked = true;
         isHorizontal = dx > dy;
       }
@@ -1357,7 +1382,6 @@ App.positionMenu = function() {
       snapToPage(false);
     });
 
-    // 图标长按换图
     (function() {
       var grid = App.$('#appGrid');
       if (!grid) return;
@@ -1466,22 +1490,21 @@ App.positionMenu = function() {
     snapToPage(false);
   };
 
-  // ========= 总初始化 =========
-App.init = function() {
-  App.state.ball = App.$('#floatingBall');
-  App.state.overlay = App.$('#overlay');
+  App.init = function() {
+    App.state.ball = App.$('#floatingBall');
+    App.state.overlay = App.$('#overlay');
 
-  if (!App.state.ball || !App.state.overlay) {
-    console.warn('页面缺少核心元素');
-    return;
-  }
+    if (!App.state.ball || !App.state.overlay) {
+      console.warn('页面缺少核心元素');
+      return;
+    }
 
     App.initFloatingBall();
     App.runInits();
     App.initMainPages();
   };
 
-    window.addEventListener('load', function() {
+  window.addEventListener('load', function() {
     App.init();
   });
 })();
