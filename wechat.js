@@ -1,4 +1,4 @@
-我就知道每次碰到标签替换肯定出错，现在点不开了：
+
 (function() {
   'use strict';
   var App = window.App;
