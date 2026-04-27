@@ -16,7 +16,7 @@
     mmPitch: 0,
     fallbackTTS: false,
     fallbackEngine: '系统 Web Speech',
-    fallbackVoice: 'zh-CN-XiaoxiaoNeural (女)',
+    fallbackVoice: 'zh-CN-YunxiNeural (男)',
     proactive: true,
     proMinInterval: 15,
     proMaxInterval: 120,
