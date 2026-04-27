@@ -102,7 +102,7 @@
     },
 
     renderChatTab: function(body) {
-      var chars = (App.character ? App.character.list : []).filter(function(c) {
+            var chars = (App.character ? App.character.list : []).filter(function(c) {
         return !c.contactMode || c.contactMode === 'direct';
       });
       if (!chars.length) {
