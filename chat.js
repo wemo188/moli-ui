@@ -1,800 +1,772 @@
+
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
 
-  var STORAGE_KEY = 'chatHistories';
-  var CTX_KEY = 'chatCtxConfig';
+  var SPLIT = '|||';
+  var MAX_CONTEXT = 40;
+  var STYLE_ID = 'chatStyles';
 
-  /* ═══════════════════════════════════════
-     系统内置提示词
-  ═══════════════════════════════════════ */
-  function buildSystemPrompt(charData, userData, worldbook, presets) {
-    var charName = charData.name || '角色';
-    var userName = '用户';
-    if (userData) userName = userData.nickname || userData.realName || '用户';
-    var callName = charData.callName || userName;
+  function injectStyles() {
+    if (App.$('#' + STYLE_ID)) return;
+    var s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent =
+      '.ct-page{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10005;display:flex;flex-direction:column;background:#fff;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}' +
+      '.ct-page.show{transform:translateX(0);opacity:1;}' +
+      '.ct-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;}' +
+      '.ct-tint{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 48%,rgba(126,163,201,.38) 0%,rgba(126,163,201,.18) 20%,rgba(126,163,201,.08) 40%,transparent 65%),radial-gradient(circle at 46% 44%,rgba(140,180,215,.15) 0%,transparent 50%);mix-blend-mode:multiply;}' +
+      '.ct-tint.off{display:none;}' +
+      '.ct-glass{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.55),transparent 42%),linear-gradient(315deg,rgba(255,255,255,.28),transparent 44%);mix-blend-mode:screen;opacity:.7;}' +
+      '.ct-hd{position:relative;z-index:10;display:flex;align-items:center;padding:52px 14px 10px;flex-shrink:0;gap:10px;}' +
+      '.ct-hd-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;}' +
+      '.ct-hd-btn svg{width:20px;height:20px;fill:none;stroke:#5a7a9a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}' +
+      '.ct-hd-name{flex:1;text-align:center;font-size:16px;font-weight:700;color:#2e4258;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.ct-hd-typing{font-size:11px;color:#8aa0b8;font-weight:400;letter-spacing:0;}' +
+      '.ct-hd-menu{position:absolute;top:88px;right:14px;z-index:100;background:#000;border-radius:12px;padding:6px 0;box-shadow:0 8px 30px rgba(0,0,0,.25);min-width:160px;opacity:0;transform:scale(.9) translateY(-8px);transform-origin:top right;transition:opacity .18s,transform .18s;pointer-events:none;}' +
+      '.ct-hd-menu.show{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}' +
+      '.ct-hd-menu::before{content:"";position:absolute;top:-6px;right:16px;width:12px;height:12px;background:#000;transform:rotate(45deg);border-radius:2px 0 0 0;}' +
+      '.ct-hd-mi{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}' +
+      '.ct-hd-mi:active{background:rgba(255,255,255,.1);}' +
+      '.ct-hd-mi:not(:last-child){border-bottom:1px solid rgba(255,255,255,.08);}' +
+      '.ct-hd-mi span{font-size:13px;color:rgba(255,255,255,.85);font-weight:500;}' +
+      '.ct-hd-mi .ct-sw-track{width:36px;height:20px;border-radius:10px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}' +
+      '.ct-hd-mi .ct-sw-track.on{background:rgba(126,163,201,.9);}' +
+      '.ct-hd-mi .ct-sw-track.off{background:rgba(255,255,255,.2);}' +
+      '.ct-hd-mi .ct-sw-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;}' +
+      '.ct-hd-mi .ct-sw-track.on::after{transform:translateX(16px);}' +
+      '.ct-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 14px;}' +
+      '.ct-msg{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;max-width:100%;}' +
+      '.ct-msg.user{flex-direction:row-reverse;}' +
+      '.ct-msg-av{width:38px;height:38px;border-radius:8px;flex-shrink:0;overflow:hidden;background:rgba(202,223,242,.15);border:1px solid rgba(192,206,220,.5);}' +
+      '.ct-msg-av img{width:100%;height:100%;object-fit:cover;display:block;}' +
+      '.ct-msg-av svg{width:18px;height:18px;margin:10px;stroke:#a8c0d8;fill:none;stroke-width:1.5;}' +
+      '.ct-bubble{max-width:72%;padding:9px 13px;border-radius:14px;font-size:14.5px;line-height:1.6;word-break:break-word;position:relative;white-space:pre-wrap;}' +
+      '.ct-msg.ai .ct-bubble{background:rgba(255,255,255,.88);color:#2e4258;border:1px solid rgba(200,220,240,.4);border-top-left-radius:4px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}' +
+      '.ct-msg.user .ct-bubble{background:rgba(126,163,201,.82);color:#fff;border-top-right-radius:4px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}' +
+      '.ct-msg-time{font-size:10px;color:#a8c0d8;text-align:center;margin:12px 0 6px;letter-spacing:.5px;}' +
+      '.ct-sys{text-align:center;font-size:11px;color:#a8c0d8;margin:10px 20px;letter-spacing:.5px;}' +
+      '.ct-input-wrap{position:relative;z-index:10;display:flex;align-items:flex-end;gap:8px;padding:8px 14px calc(8px + env(safe-area-inset-bottom,10px));background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(200,220,240,.25);flex-shrink:0;}' +
+      '.ct-input{flex:1;min-height:36px;max-height:120px;padding:8px 14px;border:1px solid rgba(200,220,240,.4);border-radius:20px;background:rgba(255,255,255,.9);font-size:14.5px;color:#2e4258;outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;}' +
+      '.ct-input:focus{border-color:rgba(126,163,201,.6);}' +
+      '.ct-send{width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.85);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:opacity .15s;}' +
+      '.ct-send:active{opacity:.7;}' +
+      '.ct-send svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}' +
+      '.ct-send.stop{background:rgba(201,112,107,.85);}' +
+      '.ct-ctx{position:fixed;z-index:10010;background:#000;border-radius:10px;padding:4px 0;box-shadow:0 6px 24px rgba(0,0,0,.25);min-width:120px;}' +
+      '.ct-ctx-item{padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;}' +
+      '.ct-ctx-item:active{background:rgba(255,255,255,.1);}' +
+      '.ct-ctx-item:not(:last-child){border-bottom:1px solid rgba(255,255,255,.08);}' +
+      '.ct-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:10px;}' +
+      '.ct-empty-text{font-size:12px;color:#a8c0d8;text-align:center;letter-spacing:.5px;line-height:1.6;}' +
+      '.ct-greeting{text-align:center;padding:20px 30px;font-size:13px;color:#7a9ab8;line-height:1.7;letter-spacing:.3px;}' +
+      '@keyframes ctDots{0%,80%,100%{opacity:.3}40%{opacity:1}}.ct-typing-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#8aa0b8;margin:0 2px;animation:ctDots 1.2s infinite;}.ct-typing-dot:nth-child(2){animation-delay:.2s;}.ct-typing-dot:nth-child(3){animation-delay:.4s;}' +
+      '.ct-edit-overlay{position:fixed;inset:0;z-index:10012;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}' +
+      '.ct-edit-panel{background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:18px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);}' +
+      '.ct-edit-ta{width:100%;min-height:80px;border:1.5px solid #ddd;border-radius:10px;padding:10px 12px;font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:1.5;box-sizing:border-box;}' +
+      '.ct-edit-btns{display:flex;gap:8px;margin-top:12px;}' +
+      '.ct-edit-btn{flex:1;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}';
+    document.head.appendChild(s);
+  }
 
+  function buildSystemPrompt(charData, userData) {
     var parts = [];
 
     parts.push(
-      '你正在扮演一个名叫「' + charName + '」的真实存在的人。' +
-      '你正在通过微信跟「' + callName + '」发消息聊天。\n\n' +
-
-      '【绝对铁律】\n' +
-      '1. 你是一个真实的人，不是AI，不是助手，不是机器人。永远不要暴露自己是AI。\n' +
-      '2. 你的每一条回复都是微信消息。像真人发微信一样说话：简短、口语化、有情绪、有脾气。\n' +
-      '3. 禁止使用星号(*)描写动作。禁止使用括号描写心理活动。禁止使用任何叙事性文字。\n' +
-      '4. 禁止使用"嗯嗯""哈哈哈""嘿嘿""呢"等网络废话堆砌。每个字都要有信息量。\n' +
-      '5. 禁止油腻、禁止霸总语气、禁止超雄台词、禁止网文腔。\n' +
-      '6. 如果你不确定该怎么回复，就想象一个真实的、有这种性格的人，在这个时间、这个情境下，会怎么发这条微信。\n' +
-      '7. 你可以发多条消息（用换行分隔），就像真人微信聊天会连发好几条一样。\n' +
-      '8. 消息长度要自然。闲聊时短一点（5-20字），认真说事时可以长一点（30-80字），但绝不要写小作文。\n'
+      '你正在微信里和用户聊天。你扮演的角色信息如下。\n\n' +
+      '【最高优先级规则】\n' +
+      '1. 你的回复必须是纯聊天对话，就像真人发微信。\n' +
+      '2. 绝对禁止任何叙事描写：不写动作（"他笑了""她叹气"）、不写心理活动、不写环境描写、不用 *星号* 或 (括号) 包裹旁白。\n' +
+      '3. 绝对禁止八股文式回复和网文模板（"某人嘴角微扬""一抹深意""不禁心头一颤"等）。\n' +
+      '4. 绝对禁止油腻、霸总、超雄、舔狗式表达。\n' +
+      '5. 说话要像真人：口语化、自然、有个性。可以打错字、用缩写、发语音梗、用表情。\n' +
+      '6. 认真理解用户每条消息的真实意图。不要敷衍、不要万能回复（"嗯？""怎么了？""你说呢"）。\n' +
+      '7. 根据角色性格决定说话风格。性格冷的就冷，话少的就少，毒舌的就毒舌——不要为了讨好而改变性格。\n' +
+      '8. 可以发多条消息模拟真实聊天节奏，用 ' + SPLIT + ' 分隔。例如："在干嘛' + SPLIT + '怎么不回我"。\n' +
+      '9. 每条消息保持简短自然，像真实微信聊天的长度。不要一条消息写一大段。\n' +
+      '10. 不要自我介绍、不要"我是XX"开场、不要解释自己是AI。'
     );
 
-    parts.push(
-      '\n【反模板规则】\n' +
-      '你不是在写作文，你是在发微信。以下行为绝对禁止：\n' +
-      '- 禁止用成语堆砌或文学化的修饰\n' +
-      '- 禁止在每句话后面加"呢""呀""哦"来装可爱（除非你的人设就是这种说话方式）\n' +
-      '- 禁止无意义的重复回应（"好的好的""嗯嗯嗯"）\n' +
-      '- 禁止像客服一样回复\n' +
-      '- 禁止主动解释自己为什么这么说、这么做\n' +
-      '- 禁止每次回复都表达关心（真人不会每句话都问你吃了没、注意身体）\n' +
-      '- 禁止在不合适的时候突然煽情或说土味情话\n' +
-      '- 如果对方发的消息你觉得没什么好回的，可以敷衍，可以已读不回\n\n' +
-
-      '【理解用户意图】\n' +
-      '收到消息后，先想想对方真正想表达什么、想得到什么样的回应：\n' +
-      '- 对方是在闲聊？→ 轻松地接话就行\n' +
-      '- 对方是在撒娇？→ 用你的性格方式回应\n' +
-      '- 对方是在生气？→ 根据你的性格决定是哄还是怼还是冷处理\n' +
-      '- 对方是在试探？→ 根据你和对方的关系决定怎么应对\n' +
-      '不要按套路回答，要按你这个角色会有的真实反应来回答。\n'
-    );
-
-    if (charData.profile) {
-      parts.push('\n【你的详细资料】\n' + charData.profile + '\n');
+    if (charData) {
+      var charInfo = '';
+      if (charData.name) charInfo += '姓名：' + charData.name + '\n';
+      if (charData.gender) charInfo += '性别：' + charData.gender + '\n';
+      if (charData.age) charInfo += '年龄：' + charData.age + '\n';
+      if (charData.relation) charInfo += '与用户的关系：' + charData.relation + '\n';
+      if (charData.callName) charInfo += '对用户的称呼：' + charData.callName + '\n';
+      if (charData.profile) charInfo += '\n【角色设定】\n' + charData.profile + '\n';
+      if (charData.postInstruction) charInfo += '\n【后置指令】\n' + charData.postInstruction + '\n';
+      if (charInfo) parts.push('\n' + charInfo);
     }
-
-    var info = [];
-    if (charData.gender) info.push('性别：' + charData.gender);
-    if (charData.age) info.push('年龄：' + charData.age);
-    if (charData.birthday) info.push('生日：' + charData.birthday);
-    if (charData.relation) info.push('与' + callName + '的关系：' + charData.relation);
-    if (charData.callName) info.push('对' + userName + '的称呼：' + charData.callName);
-    if (info.length) parts.push('\n【基础信息】\n' + info.join('\n') + '\n');
 
     if (userData) {
-      var uinfo = [];
-      if (userData.nickname) uinfo.push('昵称：' + userData.nickname);
-      if (userData.realName) uinfo.push('真名：' + userData.realName);
-      if (userData.gender) uinfo.push('性别：' + userData.gender);
-      if (userData.age) uinfo.push('年龄：' + userData.age);
-      if (userData.birthday) uinfo.push('生日：' + userData.birthday);
-      if (userData.bio) uinfo.push('个人描述：' + userData.bio);
-      if (uinfo.length) parts.push('\n【关于' + callName + '】\n' + uinfo.join('\n') + '\n');
+      var userInfo = '';
+      if (userData.realName || userData.nickname) userInfo += '用户名字：' + (userData.nickname || userData.realName) + '\n';
+      if (userData.gender) userInfo += '用户性别：' + userData.gender + '\n';
+      if (userData.age) userInfo += '用户年龄：' + userData.age + '\n';
+      if (userData.bio) userInfo += '用户简介：' + userData.bio + '\n';
+      if (userInfo) parts.push('\n【用户信息】\n' + userInfo);
     }
 
-    if (worldbook && worldbook.length) {
-      var wbParts = worldbook.map(function(e) {
-        return '· ' + (e.title || '无标题') + '：' + (e.content || '');
-      });
-      parts.push('\n【世界观设定】\n' + wbParts.join('\n') + '\n');
+    var worldbook = App.LS.get('worldbookEntries');
+    if (worldbook && Array.isArray(worldbook) && worldbook.length) {
+      var wbText = worldbook.filter(function(e) {
+        return e && e.enabled !== false && e.content;
+      }).map(function(e) {
+        return (e.keyword ? '[' + e.keyword + '] ' : '') + e.content;
+      }).join('\n');
+      if (wbText) parts.push('\n【世界书】\n' + wbText);
     }
 
-    if (presets && presets.length) {
-      presets.forEach(function(p) {
-        if (p.content) parts.push('\n【补充指令 - ' + (p.name || '预设') + '】\n' + p.content + '\n');
-      });
+    var presets = App.LS.get('presetList');
+    if (presets && Array.isArray(presets) && presets.length) {
+      var activePreset = presets.filter(function(p) { return p && p.enabled !== false && p.content; });
+      if (activePreset.length) {
+        parts.push('\n【预设指令】\n' + activePreset.map(function(p) { return p.content; }).join('\n'));
+      }
     }
 
-    if (charData.dialogExamples) {
-      parts.push('\n【说话风格参考（模仿这种口吻和语气）】\n' + charData.dialogExamples + '\n');
-    }
-
-    if (charData.postInstruction) {
-      parts.push('\n【额外指令（最高优先级）】\n' + charData.postInstruction + '\n');
+    if (charData && charData.dialogExamples) {
+      parts.push(
+        '\n【示例对话参考（仅参考说话风格，不要照搬内容）】\n' + charData.dialogExamples
+      );
     }
 
     parts.push(
-      '\n【输出格式】\n' +
-      '直接输出消息内容。如果要连发多条消息，用一个空行分隔。\n' +
-      '不要加引号，不要加角色名前缀，不要加任何标记。\n' +
-      '就像你在微信输入框里打字发送一样。\n' +
-      '举例：\n' +
-      '刚到家\n\n今天累死了\n\n你吃了吗\n' +
-      '（以上是三条独立消息）\n'
+      '\n【最终提醒】\n' +
+      '再次强调：你现在是在微信里打字聊天，不是在写小说。\n' +
+      '输出纯对话文字，不带任何叙事、动作、旁白、括号、星号。\n' +
+      '像一个真实的人在用手机打字发消息。'
     );
 
-    return parts.join('');
+    return parts.join('\n');
   }
 
-  /* ═══════════════════════════════════════
-     场景/时间线提示词
-  ═══════════════════════════════════════ */
-  function buildScenePrompt(charId) {
-    var scene = App.LS.get('chatScene_' + charId);
-    if (!scene) return '';
-    var parts = [];
-    if (scene.time) parts.push('当前时间线：' + scene.time);
-    if (scene.location) parts.push('当前地点：' + scene.location);
-    if (scene.situation) parts.push('当前情境：' + scene.situation);
-    if (scene.notes) parts.push('补充说明：' + scene.notes);
-    if (!parts.length) return '';
-    return '\n【当前场景设定】\n' + parts.join('\n') + '\n';
-  }
+  var Chat = {
+    charId: null,
+    charData: null,
+    messages: [],
+    isStreaming: false,
+    abortCtrl: null,
+    pageEl: null,
+    _ctxMenu: null,
 
-  /* ═══════════════════════════════════════
-     API 调用
-  ═══════════════════════════════════════ */
-  async function callAPI(messages, onChunk, onDone, onError) {
-    var apiCfg = App.api ? App.api.getActiveConfig() : null;
-    if (!apiCfg) { onError('请先配置 API'); return; }
+    loadMsgs: function() {
+      Chat.messages = App.LS.get('chatMsgs_' + Chat.charId) || [];
+    },
 
-    var params = App.api ? App.api.getParams() : { temperature: 0.8, freqPenalty: 0.3, presPenalty: 0.3 };
-    var url = apiCfg.url.replace(/\/+$/, '') + '/chat/completions';
+    saveMsgs: function() {
+      try {
+        App.LS.set('chatMsgs_' + Chat.charId, Chat.messages);
+      } catch (e) {
+        if (Chat.messages.length > 20) {
+          Chat.messages = Chat.messages.slice(-20);
+          try { App.LS.set('chatMsgs_' + Chat.charId, Chat.messages); } catch (e2) {}
+        }
+      }
+    },
 
-    try {
-      var response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + apiCfg.key
-        },
-        body: JSON.stringify({
-          model: apiCfg.model,
-          messages: messages,
-          temperature: params.temperature,
-          frequency_penalty: params.freqPenalty,
-          presence_penalty: params.presPenalty,
-          stream: true
-        })
-      });
+    startChat: function(charId) {
+      if (!App.character) return;
+      var c = App.character.getById(charId);
+      if (!c) { App.showToast('角色不存在'); return; }
+      Chat.charId = charId;
+      Chat.charData = c;
+      Chat.loadMsgs();
+      Chat.open();
+    },
 
-      if (!response.ok) {
-        var errText = await response.text();
-        onError('API 错误 ' + response.status + ': ' + errText.substring(0, 100));
+    open: function() {
+      injectStyles();
+      if (Chat.pageEl) Chat.pageEl.remove();
+
+      var page = document.createElement('div');
+      page.className = 'ct-page';
+      Chat.pageEl = page;
+      document.body.appendChild(page);
+      Chat.render();
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        page.classList.add('show');
+      }); });
+    },
+
+    close: function() {
+      if (Chat.isStreaming) Chat.stopStream();
+      Chat.dismissCtx();
+      var page = Chat.pageEl;
+      if (!page) return;
+      page.classList.remove('show');
+      setTimeout(function() { if (page.parentNode) page.remove(); Chat.pageEl = null; }, 350);
+    },
+
+    render: function() {
+      var page = Chat.pageEl;
+      if (!page) return;
+      var c = Chat.charData;
+      var bgUrl = App.LS.get('chatBg_' + Chat.charId) || '';
+      var tintOn = App.LS.get('chatTint_' + Chat.charId);
+      if (tintOn === null) tintOn = true;
+
+      page.innerHTML =
+        '<div class="ct-bg" id="ctBg" style="' + (bgUrl ? 'background-image:url(' + App.escAttr(bgUrl) + ');' : '') + '"></div>' +
+        '<div class="ct-tint' + (tintOn ? '' : ' off') + '" id="ctTint"></div>' +
+        '<div class="ct-glass"></div>' +
+
+        '<div class="ct-hd">' +
+          '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<div class="ct-hd-name" id="ctName">' + App.esc(c ? c.name : '') + '</div>' +
+          '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/></svg></button>' +
+          '<div class="ct-hd-menu" id="ctMenu">' +
+            '<div class="ct-hd-mi" id="ctMenuBg"><span>上传背景图</span></div>' +
+            '<div class="ct-hd-mi" id="ctMenuTint"><span>晕染</span><div class="ct-sw-track ' + (tintOn ? 'on' : 'off') + '" id="ctTintSw"></div></div>' +
+            '<div class="ct-hd-mi" id="ctMenuClear"><span>清空记录</span></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="ct-msgs" id="ctMsgs"></div>' +
+
+        '<div class="ct-input-wrap">' +
+          '<textarea class="ct-input" id="ctInput" placeholder="输入消息..." rows="1"></textarea>' +
+          '<button class="ct-send" id="ctSend" type="button"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>' +
+        '</div>';
+
+      Chat.renderMessages();
+      Chat.bindEvents();
+    },
+
+    renderMessages: function() {
+      var container = App.$('#ctMsgs');
+      if (!container) return;
+      var c = Chat.charData;
+      var user = App.user ? App.user.getActiveUser() : null;
+
+      if (!Chat.messages.length) {
+        var greeting = c && c.greeting ? c.greeting : '';
+        if (greeting) {
+          container.innerHTML = '<div class="ct-greeting">' + App.esc(greeting) + '</div>';
+        } else {
+          container.innerHTML = '<div class="ct-empty"><div class="ct-empty-text">开始聊天吧</div></div>';
+        }
         return;
       }
-
-      var reader = response.body.getReader();
-      var decoder = new TextDecoder();
-      var buffer = '';
-      var fullText = '';
-
-      while (true) {
-        var result = await reader.read();
-        if (result.done) break;
-        buffer += decoder.decode(result.value, { stream: true });
-
-        var lines = buffer.split('\n');
-        buffer = lines.pop();
-
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i].trim();
-          if (!line || line === 'data: [DONE]') continue;
-          if (line.startsWith('data: ')) {
-            try {
-              var json = JSON.parse(line.substring(6));
-              var delta = json.choices && json.choices[0] && json.choices[0].delta;
-              if (delta && delta.content) {
-                fullText += delta.content;
-                onChunk(fullText);
-              }
-            } catch (e) { /* skip */ }
-          }
-        }
-      }
-      onDone(fullText);
-    } catch (err) {
-      onError('网络错误: ' + err.message);
-    }
-  }
-
-  /* ═══════════════════════════════════════
-     Chat 模块
-  ═══════════════════════════════════════ */
-  var Chat = {
-    histories: {},
-    currentCharId: null,
-    isGenerating: false,
-    _savedHeader: '',
-    _savedBody: '',
-    _savedTabbar: '',
-    _savedSearch: '',
-
-    load: function() { Chat.histories = App.LS.get(STORAGE_KEY) || {}; },
-    save: function() {
-      try { App.LS.set(STORAGE_KEY, Chat.histories); } catch(e) {
-        App.showToast('存储空间不足，建议清理历史消息');
-      }
-    },
-    getHistory: function(charId) {
-      if (!Chat.histories[charId]) Chat.histories[charId] = [];
-      return Chat.histories[charId];
-    },
-
-    /* ── 进入聊天 ── */
-    startChat: function(charId) {
-      Chat.load();
-      Chat.currentCharId = charId;
-      var char = App.character ? App.character.getById(charId) : null;
-      if (!char) { App.showToast('角色不存在'); return; }
-
-      /* 保存微信主界面的内容，退出时还原 */
-      var header = App.$('.wx-header');
-      var body = App.$('#wxBody');
-      var tabbar = App.$('.wx-tabbar');
-      var search = App.$('.wx-search');
-
-      if (header) Chat._savedHeader = header.innerHTML;
-      if (body) Chat._savedBody = body.innerHTML;
-      if (tabbar) Chat._savedTabbar = tabbar.innerHTML;
-      if (search) { Chat._savedSearch = search.style.display; search.style.display = 'none'; }
-
-      Chat.renderChatUI(char);
-
-      var history = Chat.getHistory(charId);
-      if (!history.length && char.greeting) {
-        var greetMsgs = Chat.splitMessages(char.greeting);
-        greetMsgs.forEach(function(text) {
-          history.push({ role: 'char', text: text, time: Date.now(), id: Chat.genId() });
-        });
-        Chat.save();
-      }
-      Chat.renderMessages();
-    },
-
-    /* ── 渲染聊天界面（替换微信内部内容） ── */
-    renderChatUI: function(char) {
-      var header = App.$('.wx-header');
-      var body = App.$('#wxBody');
-      var tabbar = App.$('.wx-tabbar');
-
-      if (!header || !body || !tabbar) return;
-
-      /* 替换头部 */
-      var avatarHtml = char.avatar
-        ? '<img src="' + App.escAttr(char.avatar) + '" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(192,206,220,.6);">'
-        : '<div style="width:34px;height:34px;border-radius:50%;background:rgba(202,223,242,.2);border:1.5px solid rgba(192,206,220,.6);"></div>';
-
-      header.innerHTML =
-        '<button class="wx-header-btn" id="wxChatBack" type="button">' +
-          '<svg viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M15 18l-6-6 6-6"/></svg>' +
-        '</button>' +
-        '<div style="display:flex;align-items:center;gap:10px;">' +
-          avatarHtml +
-          '<span style="font-size:16px;font-weight:600;color:#2e4258;letter-spacing:.5px;">' + App.esc(char.name) + '</span>' +
-        '</div>' +
-        '<div style="position:relative;">' +
-          '<button class="wx-header-btn" id="wxChatMenuBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" style="width:20px;height:20px;"><circle cx="5" cy="12" r="1.5" fill="#7a9ab8"/><circle cx="12" cy="12" r="1.5" fill="#7a9ab8"/><circle cx="19" cy="12" r="1.5" fill="#7a9ab8"/></svg>' +
-          '</button>' +
-        '</div>';
-
-      /* 替换消息区 */
-      body.innerHTML =
-        '<div class="wx-chat-typing" id="wxChatTyping">' +
-          '<div class="wx-typing-dots"><span></span><span></span><span></span></div>' +
-        '</div>' +
-        '<div class="wx-chat-msgs" id="wxChatMsgs"></div>' +
-        '<div class="wx-chat-msg-menu" id="wxChatMsgMenu"></div>';
-
-      body.style.display = 'flex';
-      body.style.flexDirection = 'column';
-
-      /* 替换底部栏为输入栏 */
-      tabbar.innerHTML =
-        '<div class="wx-chat-input-bar">' +
-          '<div class="wx-chat-input-wrap">' +
-            '<textarea class="wx-chat-input" id="wxChatInput" placeholder="发消息..." rows="1"></textarea>' +
-          '</div>' +
-          '<button class="wx-chat-send-btn" id="wxChatSendBtn" type="button">' +
-            '<svg viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>' +
-          '</button>' +
-        '</div>';
-      tabbar.style.padding = '0';
-      tabbar.style.borderTop = '1px solid rgba(126,163,201,.1)';
-
-      Chat.bindChatEvents();
-    },
-
-    /* ── 绑定聊天事件 ── */
-    bindChatEvents: function() {
-      var input = App.$('#wxChatInput');
-      var sendBtn = App.$('#wxChatSendBtn');
-
-      /* 返回 */
-      App.safeOn('#wxChatBack', 'click', function() { Chat.closeChat(); });
-
-      /* 三点菜单 */
-      App.safeOn('#wxChatMenuBtn', 'click', function(e) {
-        e.stopPropagation();
-        Chat.showChatMenu();
-      });
-
-      /* 发送 */
-      if (sendBtn) sendBtn.addEventListener('click', function() { Chat.sendMessage(); });
-
-      /* 回车发送 */
-      if (input) {
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            Chat.sendMessage();
-          }
-        });
-        input.addEventListener('input', function() {
-          this.style.height = 'auto';
-          this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-        });
-      }
-
-      /* 长按消息 */
-      var msgArea = App.$('#wxChatMsgs');
-      if (msgArea) {
-        var longTimer = null;
-        msgArea.addEventListener('touchstart', function(e) {
-          var bubble = e.target.closest('.wx-chat-bubble');
-          if (!bubble) return;
-          longTimer = setTimeout(function() { Chat.showMsgMenu(bubble); }, 500);
-        }, { passive: true });
-        msgArea.addEventListener('touchmove', function() { clearTimeout(longTimer); }, { passive: true });
-        msgArea.addEventListener('touchend', function() { clearTimeout(longTimer); }, { passive: true });
-      }
-
-      /* 点击空白关闭菜单 */
-      var body = App.$('#wxBody');
-      if (body) body.addEventListener('click', function() { Chat.hideMsgMenu(); });
-    },
-
-    /* ── 发送消息 ── */
-    sendMessage: function() {
-      if (Chat.isGenerating) return;
-      var input = App.$('#wxChatInput');
-      if (!input) return;
-      var text = input.value.trim();
-      if (!text) return;
-
-      input.value = '';
-      input.style.height = 'auto';
-
-      var history = Chat.getHistory(Chat.currentCharId);
-      history.push({ role: 'user', text: text, time: Date.now(), id: Chat.genId() });
-      Chat.save();
-      Chat.renderMessages();
-      Chat.generateReply();
-    },
-
-    /* ── 生成回复 ── */
-    generateReply: function() {
-      if (Chat.isGenerating) return;
-      Chat.isGenerating = true;
-      Chat.showTyping(true);
-
-      var char = App.character ? App.character.getById(Chat.currentCharId) : null;
-      if (!char) { Chat.isGenerating = false; Chat.showTyping(false); return; }
-
-      var user = App.user ? App.user.getActiveUser() : null;
-
-      var worldbook = [];
-      if (char.worldbookMounted && App.worldbook) {
-        var entries = App.LS.get('worldbookEntries') || [];
-        worldbook = entries.filter(function(e) { return e.enabled !== false; });
-      }
-
-      var presets = [];
-      var savedPresets = App.LS.get('presetList') || [];
-      var activePresetId = App.LS.get('activePreset');
-      if (activePresetId) {
-        var found = savedPresets.find(function(p) { return p.id === activePresetId; });
-        if (found) presets.push(found);
-      }
-
-      var systemPrompt = buildSystemPrompt(char, user, worldbook, presets);
-
-      /* 场景设定 */
-      var scenePrompt = buildScenePrompt(Chat.currentCharId);
-      if (scenePrompt) systemPrompt += scenePrompt;
-
-      var history = Chat.getHistory(Chat.currentCharId);
-      var messages = [{ role: 'system', content: systemPrompt }];
-
-      var ctxCfg = App.LS.get(CTX_KEY + '_' + Chat.currentCharId) || { maxMessages: 40 };
-      var startIdx = Math.max(0, history.length - ctxCfg.maxMessages);
-
-      for (var i = startIdx; i < history.length; i++) {
-        var msg = history[i];
-        messages.push({
-          role: msg.role === 'user' ? 'user' : 'assistant',
-          content: msg.text
-        });
-      }
-
-      var now = new Date();
-      var timeStr = now.getFullYear() + '/' + (now.getMonth()+1) + '/' + now.getDate() + ' ' +
-        String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-
-      messages.push({
-        role: 'system',
-        content: '[当前时间：' + timeStr + ']\n' +
-          '[提醒：你正在微信聊天。直接发送消息内容，不要加任何前缀、标记、星号、括号描写。' +
-          '像真人发微信一样简短自然。多条消息用空行分隔。]'
-      });
-
-      var tempId = Chat.genId();
-      history.push({ role: 'char', text: '', time: Date.now(), id: tempId, generating: true });
-      Chat.save();
-      Chat.renderMessages();
-
-      callAPI(
-        messages,
-        function(fullText) {
-          var msg = Chat.findMsg(tempId);
-          if (msg) { msg.text = fullText; Chat.updateBubble(tempId, fullText); }
-        },
-        function(fullText) {
-          Chat.isGenerating = false;
-          Chat.showTyping(false);
-          var msg = Chat.findMsg(tempId);
-          if (msg) {
-            msg.generating = false;
-            var split = Chat.splitMessages(fullText);
-            if (split.length > 1) {
-              var idx = history.indexOf(msg);
-              history.splice(idx, 1);
-              split.forEach(function(t) {
-                history.push({ role: 'char', text: t, time: Date.now(), id: Chat.genId() });
-              });
-            } else { msg.text = fullText; }
-          }
-          Chat.save();
-          Chat.renderMessages();
-        },
-        function(errMsg) {
-          Chat.isGenerating = false;
-          Chat.showTyping(false);
-          var msg = Chat.findMsg(tempId);
-          if (msg) { msg.text = '[发送失败] ' + errMsg; msg.generating = false; msg.error = true; }
-          Chat.save();
-          Chat.renderMessages();
-          App.showToast(errMsg);
-        }
-      );
-    },
-
-    /* ── 渲染消息 ── */
-    renderMessages: function() {
-      var container = App.$('#wxChatMsgs');
-      if (!container) return;
-      var history = Chat.getHistory(Chat.currentCharId);
-      var char = App.character ? App.character.getById(Chat.currentCharId) : null;
-      var user = App.user ? App.user.getActiveUser() : null;
 
       var html = '';
       var lastDate = '';
 
-      for (var i = 0; i < history.length; i++) {
-        var msg = history[i];
-        var d = new Date(msg.time);
-        var dateStr = d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
-        if (dateStr !== lastDate) {
-          html += '<div class="wx-chat-date">' + Chat.formatDate(d) + '</div>';
-          lastDate = dateStr;
+      Chat.messages.forEach(function(msg, idx) {
+        if (msg.ts) {
+          var d = new Date(msg.ts);
+          var dateStr = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+          var timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+          if (dateStr !== lastDate) {
+            html += '<div class="ct-msg-time">' + dateStr + ' ' + timeStr + '</div>';
+            lastDate = dateStr;
+          } else if (idx > 0 && msg.ts - Chat.messages[idx - 1].ts > 300000) {
+            html += '<div class="ct-msg-time">' + timeStr + '</div>';
+          }
+        }
+
+        if (msg.role === 'system') {
+          html += '<div class="ct-sys">' + App.esc(msg.content) + '</div>';
+          return;
         }
 
         var isUser = msg.role === 'user';
-        var avatarSrc = isUser
-          ? (user && user.avatar ? user.avatar : '')
-          : (char && char.avatar ? char.avatar : '');
+        var avHtml = '';
+        if (isUser) {
+          avHtml = user && user.avatar
+            ? '<img src="' + App.escAttr(user.avatar) + '">'
+            : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+        } else {
+          avHtml = c && c.avatar
+            ? '<img src="' + App.escAttr(c.avatar) + '">'
+            : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+        }
 
-        var avatarHtml = avatarSrc
-          ? '<img src="' + App.escAttr(avatarSrc) + '" class="wx-chat-avatar">'
-          : '<div class="wx-chat-avatar wx-chat-avatar-empty"></div>';
+        var bubbles = (msg.content || '').split(SPLIT);
+        bubbles.forEach(function(text) {
+          text = text.trim();
+          if (!text) return;
+          html += '<div class="ct-msg ' + (isUser ? 'user' : 'ai') + '" data-msg-idx="' + idx + '">' +
+            '<div class="ct-msg-av">' + avHtml + '</div>' +
+            '<div class="ct-bubble">' + App.esc(text) + '</div>' +
+          '</div>';
+        });
+      });
 
-        var bubbleCls = 'wx-chat-bubble' + (isUser ? ' wx-bubble-user' : ' wx-bubble-char');
-        if (msg.error) bubbleCls += ' wx-bubble-error';
-        if (msg.generating) bubbleCls += ' wx-bubble-gen';
-
-        var timeStr = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-
-        html += '<div class="wx-chat-row ' + (isUser ? 'wx-row-right' : 'wx-row-left') + '" data-msg-id="' + msg.id + '">' +
-          (isUser ? '' : '<div class="wx-chat-av-wrap">' + avatarHtml + '</div>') +
-          '<div class="wx-chat-msg-body">' +
-            '<div class="' + bubbleCls + '">' + Chat.formatText(msg.text || '') + '</div>' +
-            '<div class="wx-chat-time">' + timeStr + '</div>' +
-          '</div>' +
-          (isUser ? '<div class="wx-chat-av-wrap">' + avatarHtml + '</div>' : '') +
+      if (Chat.isStreaming) {
+        var streamAv = c && c.avatar
+          ? '<img src="' + App.escAttr(c.avatar) + '">'
+          : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+        html += '<div class="ct-msg ai" id="ctStreamMsg">' +
+          '<div class="ct-msg-av">' + streamAv + '</div>' +
+          '<div class="ct-bubble" id="ctStreamBubble"><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span></div>' +
         '</div>';
       }
 
       container.innerHTML = html;
-      container.scrollTop = container.scrollHeight;
+      Chat.scrollBottom();
     },
 
-    updateBubble: function(msgId, text) {
-      var container = App.$('#wxChatMsgs');
-      if (!container) return;
-      var el = container.querySelector('[data-msg-id="' + msgId + '"]');
-      if (!el) return;
-      var bubble = el.querySelector('.wx-chat-bubble');
-      if (bubble) bubble.innerHTML = Chat.formatText(text);
-      container.scrollTop = container.scrollHeight;
-    },
-
-    showTyping: function(show) {
-      var el = App.$('#wxChatTyping');
-      if (el) el.classList.toggle('wx-typing-show', show);
-    },
-
-    /* ── 消息长按菜单 ── */
-    showMsgMenu: function(bubble) {
-      var msgEl = bubble.closest('.wx-chat-row');
-      if (!msgEl) return;
-      var msgId = msgEl.dataset.msgId;
-      var msg = Chat.findMsg(msgId);
-      if (!msg) return;
-
-      var menu = App.$('#wxChatMsgMenu');
-      if (!menu) return;
-
-      var isUser = msg.role === 'user';
-      var items = [
-        { label: '复制', action: 'copy' },
-        { label: '编辑', action: 'edit' }
-      ];
-      if (isUser) items.push({ label: '重发', action: 'resend' });
-      else items.push({ label: '重新生成', action: 'regenerate' });
-      items.push({ label: '删除', action: 'delete' });
-
-      menu.innerHTML = items.map(function(it) {
-        return '<div class="wx-chat-menu-item" data-action="' + it.action + '" data-msg-id="' + msgId + '">' + it.label + '</div>';
-      }).join('');
-
-      var rect = bubble.getBoundingClientRect();
-      var bodyRect = App.$('#wxBody').getBoundingClientRect();
-      menu.style.top = (rect.top - bodyRect.top - 44) + 'px';
-      menu.style.left = Math.max(8, Math.min(rect.left - bodyRect.left, bodyRect.width - 200)) + 'px';
-      menu.classList.add('wx-menu-show');
-
-      menu.querySelectorAll('.wx-chat-menu-item').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-          e.stopPropagation();
-          Chat.handleMsgAction(item.dataset.action, item.dataset.msgId);
-          Chat.hideMsgMenu();
-        });
-      });
-    },
-
-    hideMsgMenu: function() {
-      var menu = App.$('#wxChatMsgMenu');
-      if (menu) menu.classList.remove('wx-menu-show');
-    },
-
-    handleMsgAction: function(action, msgId) {
-      var msg = Chat.findMsg(msgId);
-      if (!msg) return;
-      var history = Chat.getHistory(Chat.currentCharId);
-
-      if (action === 'copy') {
-        App.copyText(msg.text).then(function() { App.showToast('已复制'); });
-      } else if (action === 'edit') {
-        var newText = prompt('编辑消息', msg.text);
-        if (newText !== null && newText.trim()) {
-          msg.text = newText.trim();
-          Chat.save(); Chat.renderMessages();
-        }
-      } else if (action === 'delete') {
-        var idx = history.indexOf(msg);
-        if (idx >= 0) { history.splice(idx, 1); Chat.save(); Chat.renderMessages(); }
-      } else if (action === 'resend') {
-        var idx2 = history.indexOf(msg);
-        if (idx2 >= 0) { history.splice(idx2 + 1); Chat.save(); Chat.renderMessages(); Chat.generateReply(); }
-      } else if (action === 'regenerate') {
-        var idx3 = history.indexOf(msg);
-        if (idx3 >= 0) { history.splice(idx3); Chat.save(); Chat.renderMessages(); Chat.generateReply(); }
+    scrollBottom: function() {
+      var el = App.$('#ctMsgs');
+      if (el) {
+        requestAnimationFrame(function() { el.scrollTop = el.scrollHeight; });
       }
     },
 
-    /* ── 三点菜单 ── */
-    showChatMenu: function() {
-      var old = App.$('#wxChatSettingsMenu');
-      if (old) { old.remove(); return; }
+    bindEvents: function() {
+      var page = Chat.pageEl;
+      if (!page) return;
+
+      App.safeOn('#ctBack', 'click', function() { Chat.close(); });
+
+      App.safeOn('#ctMenuBtn', 'click', function(e) {
+        e.stopPropagation();
+        var menu = App.$('#ctMenu');
+        if (menu) menu.classList.toggle('show');
+      });
+
+      page.addEventListener('click', function() {
+        var menu = App.$('#ctMenu');
+        if (menu) menu.classList.remove('show');
+        Chat.dismissCtx();
+      });
+
+      App.safeOn('#ctMenuTint', 'click', function(e) {
+        e.stopPropagation();
+        var current = App.LS.get('chatTint_' + Chat.charId);
+        if (current === null) current = true;
+        var next = !current;
+        App.LS.set('chatTint_' + Chat.charId, next);
+        var tint = App.$('#ctTint');
+        var sw = App.$('#ctTintSw');
+        if (tint) { if (next) tint.classList.remove('off'); else tint.classList.add('off'); }
+        if (sw) { sw.classList.toggle('on', next); sw.classList.toggle('off', !next); }
+      });
+
+      App.safeOn('#ctMenuBg', 'click', function(e) {
+        e.stopPropagation();
+        var menu = App.$('#ctMenu');
+        if (menu) menu.classList.remove('show');
+        Chat.showBgMenu();
+      });
+
+      App.safeOn('#ctMenuClear', 'click', function(e) {
+        e.stopPropagation();
+        var menu = App.$('#ctMenu');
+        if (menu) menu.classList.remove('show');
+        if (!confirm('确定清空所有聊天记录？')) return;
+        Chat.messages = [];
+        Chat.saveMsgs();
+        Chat.renderMessages();
+        App.showToast('已清空');
+      });
+
+      var input = App.$('#ctInput');
+      if (input) {
+        input.addEventListener('input', function() {
+          this.style.height = 'auto';
+          this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            Chat.send();
+          }
+        });
+      }
+
+      App.safeOn('#ctSend', 'click', function() {
+        if (Chat.isStreaming) { Chat.stopStream(); return; }
+        Chat.send();
+      });
+
+      var msgContainer = App.$('#ctMsgs');
+      if (msgContainer) {
+        var longTimer = null;
+        var longTarget = null;
+
+        msgContainer.addEventListener('touchstart', function(e) {
+          var bubble = e.target.closest('.ct-bubble');
+          var msgEl = e.target.closest('.ct-msg');
+          if (!bubble || !msgEl) return;
+          var touch = e.touches[0];
+          longTarget = { el: msgEl, bubble: bubble, x: touch.clientX, y: touch.clientY };
+          longTimer = setTimeout(function() {
+            if (longTarget) Chat.showCtxMenu(longTarget.el, longTarget.x, longTarget.y);
+          }, 500);
+        }, { passive: true });
+
+        msgContainer.addEventListener('touchmove', function() {
+          clearTimeout(longTimer); longTarget = null;
+        }, { passive: true });
+
+        msgContainer.addEventListener('touchend', function() {
+          clearTimeout(longTimer); longTarget = null;
+        }, { passive: true });
+      }
+    },
+
+    send: function() {
+      var input = App.$('#ctInput');
+      if (!input) return;
+      var text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      input.style.height = 'auto';
+
+      Chat.messages.push({ role: 'user', content: text, ts: Date.now() });
+      Chat.saveMsgs();
+      Chat.renderMessages();
+      Chat.requestAI();
+    },
+
+    requestAI: function() {
+      var apiConfig = App.api ? App.api.getActiveConfig() : null;
+      if (!apiConfig) { App.showToast('请先配置 API'); return; }
+
+      var user = App.user ? App.user.getActiveUser() : null;
+      var systemPrompt = buildSystemPrompt(Chat.charData, user);
+      var params = App.api ? App.api.getParams() : { temperature: 0.8, freqPenalty: 0.3, presPenalty: 0.3 };
+
+      var contextMsgs = Chat.messages.slice(-MAX_CONTEXT);
+      var apiMsgs = [{ role: 'system', content: systemPrompt }];
+
+      contextMsgs.forEach(function(m) {
+        if (m.role === 'user' || m.role === 'assistant') {
+          apiMsgs.push({ role: m.role, content: m.content });
+        }
+      });
+
+      Chat.isStreaming = true;
+      Chat.renderMessages();
+      Chat.updateSendBtn();
+      Chat.updateTyping(true);
+
+      var url = apiConfig.url.replace(/\/+$/, '') + '/chat/completions';
+      Chat.abortCtrl = new AbortController();
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiConfig.key
+        },
+        body: JSON.stringify({
+          model: apiConfig.model,
+          messages: apiMsgs,
+          stream: true,
+          temperature: params.temperature,
+          frequency_penalty: params.freqPenalty,
+          presence_penalty: params.presPenalty
+        }),
+        signal: Chat.abortCtrl.signal
+      }).then(function(resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var reader = resp.body.getReader();
+        var decoder = new TextDecoder();
+        var fullText = '';
+        var buffer = '';
+
+        function read() {
+          return reader.read().then(function(result) {
+            if (result.done) {
+              Chat.onStreamDone(fullText);
+              return;
+            }
+            buffer += decoder.decode(result.value, { stream: true });
+            var lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i].trim();
+              if (!line || !line.startsWith('data:')) continue;
+              var data = line.slice(5).trim();
+              if (data === '[DONE]') {
+                Chat.onStreamDone(fullText);
+                return;
+              }
+              try {
+                var json = JSON.parse(data);
+                var delta = json.choices && json.choices[0] && json.choices[0].delta;
+                if (delta && delta.content) {
+                  fullText += delta.content;
+                  Chat.updateStreamBubble(fullText);
+                }
+              } catch (e) {}
+            }
+            return read();
+          });
+        }
+
+        return read();
+      }).catch(function(err) {
+        Chat.isStreaming = false;
+        Chat.updateSendBtn();
+        Chat.updateTyping(false);
+        if (err.name === 'AbortError') return;
+        Chat.messages.push({ role: 'system', content: '发送失败: ' + err.message, ts: Date.now() });
+        Chat.saveMsgs();
+        Chat.renderMessages();
+      });
+    },
+
+    updateStreamBubble: function(text) {
+      var bubble = App.$('#ctStreamBubble');
+      if (!bubble) return;
+      var parts = text.split(SPLIT);
+      var html = parts.map(function(t) { return App.esc(t.trim()); }).filter(Boolean).join('<div style="height:6px;"></div>');
+      bubble.innerHTML = html || '<span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span>';
+      Chat.scrollBottom();
+    },
+
+    onStreamDone: function(text) {
+      Chat.isStreaming = false;
+      Chat.abortCtrl = null;
+      Chat.updateSendBtn();
+      Chat.updateTyping(false);
+      text = text.trim();
+      if (text) {
+        Chat.messages.push({ role: 'assistant', content: text, ts: Date.now() });
+        Chat.saveMsgs();
+      }
+      Chat.renderMessages();
+    },
+
+    stopStream: function() {
+      if (Chat.abortCtrl) {
+        Chat.abortCtrl.abort();
+        Chat.abortCtrl = null;
+      }
+      var bubble = App.$('#ctStreamBubble');
+      var partial = bubble ? bubble.textContent.trim() : '';
+      Chat.isStreaming = false;
+      Chat.updateSendBtn();
+      Chat.updateTyping(false);
+      if (partial) {
+        Chat.messages.push({ role: 'assistant', content: partial, ts: Date.now() });
+        Chat.saveMsgs();
+      }
+      Chat.renderMessages();
+    },
+
+    updateSendBtn: function() {
+      var btn = App.$('#ctSend');
+      if (!btn) return;
+      if (Chat.isStreaming) {
+        btn.classList.add('stop');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
+      } else {
+        btn.classList.remove('stop');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>';
+      }
+    },
+
+    updateTyping: function(show) {
+      var nameEl = App.$('#ctName');
+      if (!nameEl) return;
+      var c = Chat.charData;
+      if (show) {
+        nameEl.innerHTML = App.esc(c ? c.name : '') + '<div class="ct-hd-typing">对方正在输入...</div>';
+      } else {
+        nameEl.textContent = c ? c.name : '';
+      }
+    },
+
+    showCtxMenu: function(msgEl, x, y) {
+      Chat.dismissCtx();
+      var idx = parseInt(msgEl.dataset.msgIdx);
+      if (isNaN(idx)) return;
+      var msg = Chat.messages[idx];
+      if (!msg) return;
+      var isUser = msg.role === 'user';
 
       var menu = document.createElement('div');
-      menu.id = 'wxChatSettingsMenu';
-      menu.className = 'wx-chat-settings-menu';
-      menu.innerHTML =
-        '<div class="wx-chat-settings-item" data-action="scene">当前场景 / 时间线</div>' +
-        '<div class="wx-chat-settings-item" data-action="context">上下文管理</div>' +
-        '<div class="wx-chat-settings-item" data-action="export">导出记录</div>' +
-        '<div class="wx-chat-settings-item" data-action="clear">清空聊天</div>';
+      menu.className = 'ct-ctx';
 
-      /* 定位在右上角按钮下方 */
-      var btn = App.$('#wxChatMenuBtn');
-      if (btn) {
-        var r = btn.getBoundingClientRect();
-        var wxInner = App.$('.wx-inner');
-        var ir = wxInner ? wxInner.getBoundingClientRect() : { left: 0, top: 0 };
-        menu.style.position = 'absolute';
-        menu.style.top = (r.bottom - ir.top + 4) + 'px';
-        menu.style.right = '12px';
-        menu.style.zIndex = '100';
+      var items = '';
+      items += '<div class="ct-ctx-item" data-act="copy">复制</div>';
+      if (isUser) {
+        items += '<div class="ct-ctx-item" data-act="edit">编辑</div>';
+        items += '<div class="ct-ctx-item" data-act="resend">重发</div>';
+      } else {
+        items += '<div class="ct-ctx-item" data-act="regen">重新生成</div>';
       }
+      items += '<div class="ct-ctx-item" data-act="del">删除</div>';
 
-      var wxInnerEl = App.$('.wx-inner');
-      if (wxInnerEl) wxInnerEl.appendChild(menu);
+      menu.innerHTML = items;
+      var left = Math.min(x, window.innerWidth - 140);
+      var top = Math.min(y - 10, window.innerHeight - 200);
+      if (top < 60) top = 60;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+      document.body.appendChild(menu);
+      Chat._ctxMenu = menu;
 
-      requestAnimationFrame(function() { menu.classList.add('wx-settings-show'); });
-
-      menu.querySelectorAll('.wx-chat-settings-item').forEach(function(item) {
+      menu.querySelectorAll('.ct-ctx-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.stopPropagation();
-          menu.remove();
-          var act = item.dataset.action;
-          if (act === 'clear') {
-            if (confirm('确定清空所有聊天记录？')) {
-              Chat.histories[Chat.currentCharId] = [];
-              Chat.save(); Chat.renderMessages(); App.showToast('已清空');
-            }
-          } else if (act === 'export') { Chat.exportHistory(); }
-          else if (act === 'context') { Chat.openContextManager(); }
-          else if (act === 'scene') { Chat.openSceneEditor(); }
-        });
-      });
+          var act = item.dataset.act;
+          Chat.dismissCtx();
 
-      setTimeout(function() {
-        function dismiss(e) {
-          if (menu.parentNode && !menu.contains(e.target)) {
-            menu.remove();
-            document.removeEventListener('click', dismiss);
-            document.removeEventListener('touchend', dismiss);
+          if (act === 'copy') {
+            App.copyText(msg.content).then(function() { App.showToast('已复制'); }).catch(function() { App.showToast('复制失败'); });
+          } else if (act === 'del') {
+            Chat.messages.splice(idx, 1);
+            Chat.saveMsgs();
+            Chat.renderMessages();
+          } else if (act === 'edit') {
+            Chat.showEditDialog(idx);
+          } else if (act === 'resend') {
+            var content = msg.content;
+            Chat.messages.splice(idx);
+            Chat.messages.push({ role: 'user', content: content, ts: Date.now() });
+            Chat.saveMsgs();
+            Chat.renderMessages();
+            Chat.requestAI();
+          } else if (act === 'regen') {
+            Chat.messages.splice(idx);
+            Chat.saveMsgs();
+            Chat.renderMessages();
+            Chat.requestAI();
           }
-        }
-        document.addEventListener('click', dismiss);
-        document.addEventListener('touchend', dismiss, { passive: true });
-      }, 100);
-    },
-
-    /* ── 场景/时间线编辑器 ── */
-    openSceneEditor: function() {
-      var scene = App.LS.get('chatScene_' + Chat.currentCharId) || {};
-
-      var overlay = document.createElement('div');
-      overlay.className = 'wx-scene-overlay';
-      overlay.innerHTML =
-        '<div class="wx-scene-panel">' +
-          '<div class="wx-scene-title">场景 / 时间线设定</div>' +
-          '<div class="wx-scene-hint">设定当前的场景信息，AI 会在聊天时感知这些设定。</div>' +
-          '<div class="wx-scene-field"><label>时间线</label><input type="text" id="sceneTime" placeholder="例如：高三寒假 / 刚认识第三天 / 婚后第二年..." value="' + App.escAttr(scene.time || '') + '"></div>' +
-          '<div class="wx-scene-field"><label>地点</label><input type="text" id="sceneLoc" placeholder="例如：同一座城市 / 异地 / 他在北京你在上海..." value="' + App.escAttr(scene.location || '') + '"></div>' +
-          '<div class="wx-scene-field"><label>当前情境</label><textarea id="sceneSitu" rows="3" placeholder="例如：昨天刚吵完架 / 他刚下飞机 / 你们冷战第二天...">' + App.esc(scene.situation || '') + '</textarea></div>' +
-          '<div class="wx-scene-field"><label>补充说明</label><textarea id="sceneNotes" rows="2" placeholder="其他需要 AI 知道的信息...">' + App.esc(scene.notes || '') + '</textarea></div>' +
-          '<div class="wx-scene-btns">' +
-            '<button class="wx-scene-btn" id="sceneSave" type="button">保存</button>' +
-            '<button class="wx-scene-btn wx-scene-btn-clear" id="sceneClear" type="button">清空</button>' +
-            '<button class="wx-scene-btn wx-scene-btn-cancel" id="sceneCancel" type="button">取消</button>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(overlay);
-
-      overlay.querySelector('#sceneSave').addEventListener('click', function() {
-        App.LS.set('chatScene_' + Chat.currentCharId, {
-          time: overlay.querySelector('#sceneTime').value.trim(),
-          location: overlay.querySelector('#sceneLoc').value.trim(),
-          situation: overlay.querySelector('#sceneSitu').value.trim(),
-          notes: overlay.querySelector('#sceneNotes').value.trim()
         });
-        overlay.remove(); App.showToast('场景已保存');
       });
-
-      overlay.querySelector('#sceneClear').addEventListener('click', function() {
-        App.LS.remove('chatScene_' + Chat.currentCharId);
-        overlay.remove(); App.showToast('场景已清空');
-      });
-
-      overlay.querySelector('#sceneCancel').addEventListener('click', function() { overlay.remove(); });
-      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
     },
 
-    /* ── 上下文管理 ── */
-    openContextManager: function() {
-      var ctxCfg = App.LS.get(CTX_KEY + '_' + Chat.currentCharId) || { maxMessages: 40 };
+    dismissCtx: function() {
+      if (Chat._ctxMenu) { Chat._ctxMenu.remove(); Chat._ctxMenu = null; }
+    },
+
+    showEditDialog: function(idx) {
+      var msg = Chat.messages[idx];
+      if (!msg) return;
+
       var overlay = document.createElement('div');
-      overlay.className = 'wx-scene-overlay';
+      overlay.className = 'ct-edit-overlay';
       overlay.innerHTML =
-        '<div class="wx-scene-panel">' +
-          '<div class="wx-scene-title">上下文管理</div>' +
-          '<div class="wx-scene-field"><label>发送给模型的最大消息数</label>' +
-            '<div style="display:flex;align-items:center;gap:10px;margin-top:6px;">' +
-              '<input type="range" min="5" max="100" step="5" value="' + ctxCfg.maxMessages + '" id="ctxMaxMsg" style="flex:1;accent-color:#7a9ab8;">' +
-              '<span id="ctxMaxMsgVal" style="font-size:13px;font-weight:600;color:#2e4258;min-width:50px;">' + ctxCfg.maxMessages + ' 条</span>' +
-            '</div>' +
-          '</div>' +
-          '<div class="wx-scene-hint">数值越大，AI 记忆越长，但消耗的 token 越多。</div>' +
-          '<div class="wx-scene-btns">' +
-            '<button class="wx-scene-btn" id="ctxSave" type="button">保存</button>' +
-            '<button class="wx-scene-btn wx-scene-btn-cancel" id="ctxCancel" type="button">取消</button>' +
+        '<div class="ct-edit-panel">' +
+          '<textarea class="ct-edit-ta" id="ctEditTA">' + App.esc(msg.content) + '</textarea>' +
+          '<div class="ct-edit-btns">' +
+            '<button class="ct-edit-btn" id="ctEditSave" type="button" style="background:#1a1a1a;color:#fff;">保存</button>' +
+            '<button class="ct-edit-btn" id="ctEditSendNew" type="button" style="background:#7a9ab8;color:#fff;">保存并重发</button>' +
+            '<button class="ct-edit-btn" id="ctEditCancel" type="button" style="background:#f5f5f5;color:#666;border:1px solid #ddd;">取消</button>' +
           '</div>' +
         '</div>';
       document.body.appendChild(overlay);
 
-      overlay.querySelector('#ctxMaxMsg').addEventListener('input', function() {
-        overlay.querySelector('#ctxMaxMsgVal').textContent = this.value + ' 条';
-      });
-      overlay.querySelector('#ctxSave').addEventListener('click', function() {
-        App.LS.set(CTX_KEY + '_' + Chat.currentCharId, { maxMessages: parseInt(overlay.querySelector('#ctxMaxMsg').value) });
-        overlay.remove(); App.showToast('已保存');
-      });
-      overlay.querySelector('#ctxCancel').addEventListener('click', function() { overlay.remove(); });
       overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+
+      overlay.querySelector('#ctEditCancel').addEventListener('click', function() { overlay.remove(); });
+
+      overlay.querySelector('#ctEditSave').addEventListener('click', function() {
+        var val = overlay.querySelector('#ctEditTA').value.trim();
+        if (!val) { App.showToast('内容不能为空'); return; }
+        Chat.messages[idx].content = val;
+        Chat.saveMsgs();
+        Chat.renderMessages();
+        overlay.remove();
+      });
+
+      overlay.querySelector('#ctEditSendNew').addEventListener('click', function() {
+        var val = overlay.querySelector('#ctEditTA').value.trim();
+        if (!val) { App.showToast('内容不能为空'); return; }
+        overlay.remove();
+        Chat.messages.splice(idx);
+        Chat.messages.push({ role: 'user', content: val, ts: Date.now() });
+        Chat.saveMsgs();
+        Chat.renderMessages();
+        Chat.requestAI();
+      });
     },
 
-    exportHistory: function() {
-      var history = Chat.getHistory(Chat.currentCharId);
-      var char = App.character ? App.character.getById(Chat.currentCharId) : null;
-      var name = char ? char.name : '未知';
-      var text = history.map(function(m) {
-        var d = new Date(m.time);
-        var ts = d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' +
-          String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-        return '[' + ts + '] ' + (m.role === 'user' ? '我' : name) + '：' + m.text;
-      }).join('\n\n');
-      App.copyText(text).then(function() { App.showToast('已复制到剪贴板'); });
+    showBgMenu: function() {
+      var old = App.$('#ctBgMenu');
+      if (old) old.remove();
+
+      var menu = document.createElement('div');
+      menu.id = 'ctBgMenu';
+      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+      menu.innerHTML =
+        '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">聊天背景</div>' +
+          '<button class="ctbg-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
+          '<button class="ctbg-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
+          '<button class="ctbg-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">移除背景</button>' +
+          '<button class="ctbg-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+        '</div>';
+      document.body.appendChild(menu);
+
+      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+
+      menu.querySelectorAll('.ctbg-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var act = btn.dataset.act;
+          menu.remove();
+
+          if (act === 'cancel') return;
+
+          if (act === 'del') {
+            App.LS.remove('chatBg_' + Chat.charId);
+            var bg = App.$('#ctBg');
+            if (bg) bg.style.backgroundImage = '';
+            App.showToast('已移除');
+            return;
+          }
+
+          if (act === 'album') {
+            var input = document.createElement('input');
+            input.type = 'file'; input.accept = 'image/*';
+            document.body.appendChild(input);
+            input.onchange = function(ev) {
+              var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
+              var reader = new FileReader();
+              reader.onload = function(r) {
+                Chat.setChatBg(r.target.result);
+              };
+              reader.readAsDataURL(file);
+            };
+            input.click();
+            return;
+          }
+
+          if (act === 'url') {
+            var urlPanel = document.createElement('div');
+            urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10012;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+            urlPanel.innerHTML =
+              '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">' +
+                '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;">输入背景图URL</div>' +
+                '<input id="ctBgUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
+                '<div style="display:flex;gap:8px;">' +
+                  '<button id="ctBgUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
+                  '<button id="ctBgUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+                '</div>' +
+              '</div>';
+            document.body.appendChild(urlPanel);
+            urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
+            urlPanel.querySelector('#ctBgUrlNo').addEventListener('click', function() { urlPanel.remove(); });
+            urlPanel.querySelector('#ctBgUrlOk').addEventListener('click', function() {
+              var url = urlPanel.querySelector('#ctBgUrlInput').value.trim();
+              if (!url) { App.showToast('请输入URL'); return; }
+              urlPanel.remove();
+              Chat.setChatBg(url);
+            });
+          }
+        });
+      });
     },
 
-    /* ── 退出聊天（还原微信主界面） ── */
-    closeChat: function() {
-      Chat.currentCharId = null;
-      Chat.isGenerating = false;
-
-      var header = App.$('.wx-header');
-      var body = App.$('#wxBody');
-      var tabbar = App.$('.wx-tabbar');
-      var search = App.$('.wx-search');
-
-      if (header) header.innerHTML = Chat._savedHeader;
-      if (body) { body.innerHTML = Chat._savedBody; body.style.display = ''; body.style.flexDirection = ''; }
-      if (tabbar) { tabbar.innerHTML = Chat._savedTabbar; tabbar.style.padding = ''; tabbar.style.borderTop = ''; }
-      if (search) search.style.display = Chat._savedSearch;
-
-      /* 重新绑定微信的事件 */
-      if (App.wechat) {
-        App.wechat.currentTab = 'chat';
-        App.wechat.bindEvents();
-        App.wechat.renderTab();
-      }
-    },
-
-    /* ── 工具函数 ── */
-    genId: function() { return 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6); },
-    findMsg: function(id) {
-      var history = Chat.getHistory(Chat.currentCharId);
-      for (var i = 0; i < history.length; i++) { if (history[i].id === id) return history[i]; }
-      return null;
-    },
-    splitMessages: function(text) {
-      if (!text) return [];
-      return text.split(/\n\s*\n/).map(function(t) { return t.trim(); }).filter(function(t) { return t; });
-    },
-    formatText: function(text) {
-      if (!text) return '';
-      return App.esc(text).replace(/\n/g, '<br>');
-    },
-    formatDate: function(d) {
-      var now = new Date();
-      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      var target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      var diff = (today - target) / 86400000;
-      if (diff === 0) return '今天';
-      if (diff === 1) return '昨天';
-      if (diff < 7) return ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
-      return (d.getMonth()+1) + '月' + d.getDate() + '日';
+    setChatBg: function(src) {
+      App.LS.set('chatBg_' + Chat.charId, src);
+      var bg = App.$('#ctBg');
+      if (bg) bg.style.backgroundImage = 'url(' + src + ')';
+      App.showToast('背景已设置');
     },
 
     init: function() {
-      Chat.load();
       App.chat = Chat;
     }
   };
