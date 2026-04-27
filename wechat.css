@@ -18,8 +18,8 @@
 /* ====== 手机框 ====== */
 .wx-phone {
   position: relative;
-  width: calc(100% - 15px);
-  max-width: 420px;
+  width: calc(100% - 20px);
+  max-width: 100%;
   margin: 12px auto;
   margin-bottom: calc(48px + env(safe-area-inset-bottom, 20px));
   border-radius: 50px;
@@ -202,7 +202,7 @@
 .wx-tabbar {
   position: relative; z-index: 2;
   display: flex; justify-content: space-around; align-items: flex-end;
-  padding: 10px 10px calc(3px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 5px calc(3px + env(safe-area-inset-bottom, 0px));
   background: rgba(255,255,255,1);
   backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
   border-top: 4px solid rgba(126,163,201,.18); flex-shrink: 0;
