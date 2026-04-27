@@ -240,9 +240,10 @@ setUnread:function(charId,n){App.LS.set('chatUnread_'+(charId||Chat.charId),n);}
 clearUnread:function(charId){App.LS.remove('chatUnread_'+(charId||Chat.charId));},
 
 openInWechat:function(charId){
-if(!App.character)return;
+if(!App.character){App.showToast('character模块未加载');return;}
 var c=App.character.getById(charId);
-if(!c){App.showToast('角色不存在');return;}
+if(!c){App.showToast('角色不存在: '+charId);return;}
+if(!App.chatUI){App.showToast('chatUI模块未加载，检查chat-ui.js文件');return;}
 Chat.charId=charId;Chat.charData=c;Chat.loadMsgs();
 Chat.clearUnread(charId);
 
