@@ -410,16 +410,3 @@ init:function(){App.chatUI=ChatUI;}
 
 App.register('chatUI',ChatUI);
 })();
-```
-
----
-
-别忘了在 HTML 的 JS 加载列表里，把 `'chat.js'` 改成 `'chat.js','chat-ui.js'`：
-
-```javascript
-var files = [
-  'script.js','theme.js','font.js','api.js','bg.js',
-  'character.js','char-edit.js','user.js','worldbook.js','preset.js',
-  'chat.js','chat-ui.js','calendar.js','cards.js','frost.js','char-mgr.js',
-  'workshop.js','wechat.js','dock.js'
-];
