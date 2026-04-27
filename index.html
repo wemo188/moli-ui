@@ -333,12 +333,12 @@ function imgFallback(img){
   /* ★ 修改：JS版本号也用sessionStorage，与CSS保持一致 */
   var v = sessionStorage.getItem('_v');
   if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
-  var files = [
-    'script.js','theme.js','font.js','api.js','bg.js',
-    'character.js','char-edit.js','user.js','worldbook.js','preset.js',
-    'chat.js','chat-ui.js','calendar.js','cards.js','frost.js','char-mgr.js',
-    'workshop.js','wechat.js','dock.js'
-  ];
+var files = [
+  'script.js','theme.js','font.js','api.js','bg.js',
+  'character.js','char-edit.js','user.js','worldbook.js','preset.js',
+  'chat.js','chat-ui.js','calendar.js','cards.js','frost.js','char-mgr.js',
+  'workshop.js','wechat.js','dock.js'
+];
   var idx = 0;
   function loadNext(){
     if(idx >= files.length) return;
