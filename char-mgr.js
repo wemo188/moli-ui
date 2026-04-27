@@ -15,7 +15,7 @@
     mmSpeed: 1,
     mmPitch: 0,
     fallbackTTS: false,
-    fallbackEngine: 'Edge TTS',
+    fallbackEngine: '系统 Web Speech',
     fallbackVoice: 'zh-CN-XiaoxiaoNeural (女)',
     proactive: true,
     proMinInterval: 15,
@@ -193,8 +193,8 @@
 
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">备用 TTS 引擎</span><span class="cm-sw-desc">MiniMax 不可用时的替代方案</span></div><label class="cm-sw"><input type="checkbox" id="cmFallToggle"' + ck('fallbackTTS') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.fallbackTTS ? ' cm-open' : '') + '" id="cmFallSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">TTS 引擎</div><select class="cm-select" id="cmFallEngine"><option>Edge TTS</option><option>系统 Web Speech</option><option>OpenAI TTS</option></select></div></div>' +
-              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">音色</div><select class="cm-select" id="cmFallVoice"><option>zh-CN-XiaoxiaoNeural (女)</option><option>zh-CN-YunxiNeural (男)</option><option>zh-CN-XiaoyiNeural (女)</option><option>zh-CN-YunjianNeural (男)</option></select></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">TTS 引擎</div>'<select class="cm-select" id="cmFallEngine"><option' + sv('fallbackEngine','系统 Web Speech') + '>系统 Web Speech</option><option' + sv('fallbackEngine','OpenAI TTS') + '>OpenAI TTS</option></select>'</div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">音色</div>'<select class="cm-select" id="cmFallVoice"><option' + sv('fallbackVoice','zh-CN-XiaoxiaoNeural (女)') + '>zh-CN-XiaoxiaoNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunxiNeural (男)') + '>zh-CN-YunxiNeural (男)</option><option' + sv('fallbackVoice','zh-CN-XiaoyiNeural (女)') + '>zh-CN-XiaoyiNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunjianNeural (男)') + '>zh-CN-YunjianNeural (男)</option></select>'</div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
