@@ -202,7 +202,7 @@
 .wx-tabbar {
   position: relative; z-index: 2;
   display: flex; justify-content: space-around; align-items: flex-end;
-  padding: 6px 10px 5px;
+  padding: 6px 10px 7px;
   background: rgba(255,255,255,1);
   backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
   border-top: 4px solid rgba(126,163,201,.18); flex-shrink: 0;
