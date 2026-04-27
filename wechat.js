@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -7,6 +6,7 @@
   var Wechat = {
     currentTab: 'chat',
     panelEl: null,
+    _savedInner: '',
 
     open: function() {
       var panel = App.$('#wechatPanel');
@@ -25,12 +25,8 @@
       setTimeout(function() { panel.classList.add('hidden'); }, 350);
     },
 
-    /* ★ 新增：判断角色是否应该出现在聊天列表和通讯录中 */
     isCharVisible: function(c) {
-      // direct = 直接添加，立即可见
       if (!c.contactMode || c.contactMode === 'direct') return true;
-      // wait / manual = 需要经过好友添加流程才可见
-      // contactAccepted 标记为 true 时才显示
       if (c.contactAccepted === true) return true;
       return false;
     },
@@ -42,7 +38,7 @@
       var wrapClass = isFS ? 'wx-fullscreen' : '';
 
       panel.innerHTML =
-        '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner">' +
+        '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
           '<div class="wx-header">' +
             '<button class="wx-header-btn" id="wxBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
@@ -68,7 +64,6 @@
             '<span>搜索</span>' +
           '</div></div>' +
           '<div class="wx-body" id="wxBody"></div>' +
-          /* ★ 修改：tabbar 图标加 width:28px;height:28px */
           '<div class="wx-tabbar">' +
             '<div class="wx-tab' + (Wechat.currentTab === 'chat' ? ' active' : '') + '" data-tab="chat">' +
               '<svg viewBox="0 0 64 64" style="width:28px;height:28px;"><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="23" y1="28" x2="41" y2="28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="34" x2="35" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
@@ -115,33 +110,37 @@
 
     renderChatTab: function(body) {
       var chars = App.character ? App.character.list : [];
-      /* ★ 修改：过滤掉未通过好友验证的角色 */
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
 
       if (!visibleChars.length) {
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
         return;
       }
-      /* ★ 修改：img src 用 escAttr */
       body.innerHTML = visibleChars.map(function(c) {
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
           : '<div class="wx-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
+        var lastMsg = '';
+        var msgs = App.LS.get('chatMsgs_' + c.id);
+        if (msgs && msgs.length) {
+          var last = msgs[msgs.length - 1];
+          lastMsg = (last.content || '').split('|||')[0].slice(0, 25);
+        }
         return '<div class="wx-chat-item" data-char-id="' + c.id + '">' +
           '<div class="wx-avatar">' + avatarHtml + '</div>' +
           '<div class="wx-chat-content">' +
             '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(c.name || '未命名') + '</span></div>' +
-            '<div class="wx-chat-msg">点击开始聊天</div>' +
+            '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
 
+      /* ★ 修改：不再关闭微信，直接在 wx-inner 内打开聊天 */
       body.querySelectorAll('.wx-chat-item').forEach(function(item) {
         item.addEventListener('click', function() {
           var id = item.dataset.charId;
           if (id && App.chat) {
-            Wechat.close();
-            setTimeout(function() { App.chat.startChat(id); }, 380);
+            App.chat.openInWechat(id);
           }
         });
       });
@@ -149,10 +148,7 @@
 
     renderCharTab: function(body) {
       var chars = App.character ? App.character.list : [];
-      /* ★ 修改：过滤掉未通过好友验证的角色 */
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
-
-      /* ★ 新增：统计等待中的角色数量，显示提示 */
       var pendingCount = chars.filter(function(c) {
         return c.contactMode && c.contactMode !== 'direct' && !c.contactAccepted;
       }).length;
@@ -161,8 +157,6 @@
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
         return;
       }
-
-      /* ★ 修改：img src 用 escAttr */
       var listHtml = visibleChars.map(function(c) {
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
@@ -176,41 +170,26 @@
         '</div>';
       }).join('');
 
-      /* ★ 新增：如果有等待中的角色，底部显示提示 */
       var pendingHtml = '';
       if (pendingCount > 0) {
         pendingHtml = '<div style="padding:16px 20px;text-align:center;color:#999;font-size:12px;letter-spacing:0.5px;border-top:1px solid rgba(0,0,0,0.04);margin-top:8px;">' +
-          pendingCount + ' 位角色等待添加好友' +
-        '</div>';
+          pendingCount + ' 位角色等待添加好友</div>';
       }
-
       body.innerHTML = listHtml + pendingHtml;
     },
 
+    /* ★ 修改：删掉了"user资料"链接 */
     renderMeTab: function(body) {
       var user = App.user ? App.user.getActiveUser() : null;
       var name = user ? (user.nickname || user.realName || '未命名') : '未创建用户';
-
-      /* ★ 修改：img src 用 escAttr */
       var avatarHtml = user && user.avatar
         ? '<div class="wx-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.escAttr(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
         : '<div class="wx-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-
       body.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 16px;gap:12px;">' +
           avatarHtml +
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
-        '</div>' +
-        '<div>' +
-          '<div class="wx-me-link" id="wxOpenProfile">' +
-            '<span class="wx-me-link-text">user资料</span>' +
-            '<span class="wx-me-link-arrow">›</span>' +
-          '</div>' +
         '</div>';
-
-      body.querySelector('#wxOpenProfile').addEventListener('click', function() {
-        if (App.user && App.user.openForkPage) App.user.openForkPage();
-      });
     },
 
     bindEvents: function() {
@@ -267,6 +246,16 @@
       }
     },
 
+    /* ★ 新增：恢复微信主界面 */
+    restoreInner: function() {
+      var inner = App.$('#wxInner');
+      if (!inner || !Wechat._savedInner) return;
+      inner.innerHTML = Wechat._savedInner;
+      Wechat._savedInner = '';
+      Wechat.renderTab();
+      Wechat.bindEvents();
+    },
+
     init: function() {
       if (!App.$('#wechatPanel')) {
         var panel = document.createElement('div');
@@ -280,4 +269,3 @@
 
   App.register('wechat', Wechat);
 })();
-
