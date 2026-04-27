@@ -31,7 +31,7 @@
       var wrapClass = isFS ? 'wx-fullscreen' : '';
 
       panel.innerHTML =
-        '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner">' +
+        '<div class="' + wrapClass + '" id="wxWrap">'<div class="wx-phone"><div class="wx-phone-screen"><div class="wx-inner">' +
           '<div class="wx-header">' +
             '<button class="wx-header-btn" id="wxBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
@@ -75,7 +75,7 @@
               '<span>我的</span>' +
             '</div>' +
           '</div>' +
-        '</div></div></div>';
+        '</div></div></div></div>';
 
       Wechat.renderTab();
       Wechat.bindEvents();
