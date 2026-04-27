@@ -3,7 +3,6 @@
   position: relative;
   width: calc(100% - 24px);
   height: calc(100% - 24px);
-  max-height: 800px;
   margin: 12px auto;
   border-radius: 50px;
   background: #fff;
