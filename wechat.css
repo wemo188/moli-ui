@@ -2,7 +2,7 @@
 .wx-phone {
   position: relative;
   width: calc(100% - 24px);
-  height: calc(100% - 40px);
+  height: calc(100vh - 24px);
   margin: 12px auto;
   border-radius: 50px;
   background: #fff;
