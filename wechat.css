@@ -7,7 +7,9 @@
 
 #wxWrap {
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex; flex-direction: column; align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -32,8 +34,13 @@
 
 .wx-fullscreen .wx-phone {
   width: 100%; max-width: none;
-  height: 100vh; height: 100dvh;
-  margin: 0; border-radius: 0; border: none;
+  height: 100%; margin: 0;
+  border-radius: 0; border: none; box-shadow: none;
+}
+.wx-fullscreen#wxWrap {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .wx-inner {
