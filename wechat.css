@@ -22,7 +22,7 @@
 .wx-fullscreen .wx-phone {
   width: 100%; max-height: none;
   height: 100vh; height: 100dvh;
-  margin: 0; border-radius: 0; border: none; box-shadow: none;
+  margin: 0; border-radius: 0 !important; border: none; box-shadow: none;
 }
 
 #wechatPanel {
