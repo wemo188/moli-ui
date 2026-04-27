@@ -34,6 +34,7 @@
   position: relative;
   display: flex; flex-direction: column;
   height: 100%; overflow: hidden;
+  border-radius: inherit;
 }
 
 .wx-inner::before {
@@ -46,6 +47,7 @@
     radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
     radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
   pointer-events: none; z-index: 0;
+  border-radius: inherit;
 }
 
 .wx-inner::after {
@@ -55,6 +57,7 @@
     linear-gradient(135deg, rgba(255,255,255,.70), transparent 42%),
     linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
   pointer-events: none; mix-blend-mode: screen; opacity: .72; z-index: 0;
+  border-radius: inherit;
 }
 
 .wx-header {
