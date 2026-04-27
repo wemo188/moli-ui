@@ -380,13 +380,19 @@
         readAndApply();
       });
 
-      var popTitle = popup.querySelector('.cl-color-popup-title');
-      popTitle.addEventListener('touchstart', function(e) {
-        e.stopPropagation();
-        var t = e.touches[0];
-        var rect = popup.getBoundingClientRect();
-        Character._drag = { el: popup, active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-      }, { passive: true });
+      /* ★ 修改：空白处都可以拖动调色盘，排除颜色块、滑块、按钮 */
+popup.addEventListener('touchstart', function(e) {
+  var tag = e.target.tagName.toLowerCase();
+  // 如果触摸的是颜色块、滑块、按钮、label，不触发拖拽
+  if (e.target.closest('.cl-cc') || 
+      e.target.closest('.cl-popup-reset') ||
+      tag === 'input' || 
+      tag === 'label') return;
+  e.stopPropagation();
+  var t = e.touches[0];
+  var rect = popup.getBoundingClientRect();
+  Character._drag = { el: popup, active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
+}, { passive: true });
 
       popup.addEventListener('click', function(e) { e.stopPropagation(); });
       popup.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
