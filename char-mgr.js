@@ -28,8 +28,7 @@
     showTyping: true,
     msgTypes: ['文字','表情','图片','语音','语音通话','视频通话','红包','转账','位置','音乐'],
     stickerGen: false,
-    stickerEngine: 'DALL·E 3',
-    stickerStyle: '可爱卡通',
+    stickerStyles: ['可爱卡通'],
     stickerFreq: 2,
     moments: false,
     momentsMax: 2,
@@ -37,7 +36,6 @@
     momentsImg: 'AI 生成',
     timeWeather: true,
     charCity: '',
-    userCity: '',
     apiMode: 'global',
     apiSelect: '',
     temperature: 0.8,
@@ -46,6 +44,7 @@
   };
 
   var MSG_TYPES = ['文字','表情','图片','语音','语音通话','视频通话','红包','转账','位置','音乐'];
+  var STK_STYLES = ['可爱卡通','写实','像素风','手绘','表情包梗图'];
   var PRO_LEVEL_NAMES = ['佛系','偶尔','适中','频繁','粘人'];
   var STK_FREQ_NAMES = ['极少','偶尔','适中','经常','频繁'];
 
@@ -64,8 +63,10 @@
       try {
         localStorage.setItem('cmGlobal', JSON.stringify(CharMgr.globalConfig));
         localStorage.setItem('cmChars', JSON.stringify(CharMgr.charConfigs));
+        return true;
       } catch (e) {
-        App.showToast('存储失败');
+        App.showToast('存储空间不足');
+        return false;
       }
     },
 
@@ -127,10 +128,16 @@
       var ck = function(key) { return cfg[key] ? ' checked' : ''; };
       var sv = function(key, val) { return cfg[key] === val ? ' selected' : ''; };
       var proManual = cfg.proMode !== 'auto';
+      var isAllDay = cfg.proActiveStart === '00:00' && cfg.proActiveEnd === '23:59';
 
       var msgTagsHtml = MSG_TYPES.map(function(t, i) {
         var checked = (cfg.msgTypes && cfg.msgTypes.indexOf(t) >= 0) ? ' checked' : '';
         return '<div class="cm-tag"><input type="checkbox" id="cmMt' + i + '" data-type="' + t + '"' + checked + '><label class="cm-tag-label" for="cmMt' + i + '">' + t + '</label></div>';
+      }).join('');
+
+      var stkStylesHtml = STK_STYLES.map(function(s, i) {
+        var checked = (cfg.stickerStyles && cfg.stickerStyles.indexOf(s) >= 0) ? ' checked' : '';
+        return '<div class="cm-tag"><input type="checkbox" id="cmSs' + i + '" data-sty="' + s + '"' + checked + '><label class="cm-tag-label" for="cmSs' + i + '">' + s + '</label></div>';
       }).join('');
 
       var momTypesHtml = ['纯文字','图文','转发'].map(function(t, i) {
@@ -203,7 +210,8 @@
               '</div>' +
 
               '<div class="cm-sub-label" style="margin-top:10px">活跃时段</div>' +
-              '<div style="display:flex;align-items:center;gap:6px;margin-top:2px">' +
+              '<div class="cm-radio-row" style="margin-top:4px"><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmAll" value="allday"' + (isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmAll">全天</label></div><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmCustom" value="custom"' + (!isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmCustom">自定义</label></div></div>' +
+              '<div id="cmActiveCustom" style="display:flex;align-items:center;gap:6px;margin-top:6px;' + (isAllDay?'display:none;':'') + '">' +
                 '<input type="time" class="cm-field-input" id="cmProStart" value="' + App.esc(cfg.proActiveStart) + '" style="width:100px;text-align:center;">' +
                 '<span style="font-size:11px;color:#999;font-weight:600;">至</span>' +
                 '<input type="time" class="cm-field-input" id="cmProEnd" value="' + App.esc(cfg.proActiveEnd) + '" style="width:100px;text-align:center;">' +
@@ -228,8 +236,7 @@
 
             '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">生成引擎</div><select class="cm-select" id="cmStkEngine"><option' + sv('stickerEngine','DALL·E 3') + '>DALL·E 3</option><option' + sv('stickerEngine','Stable Diffusion') + '>Stable Diffusion</option><option' + sv('stickerEngine','MidJourney API') + '>MidJourney API</option></select></div></div>' +
-              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">风格</div><select class="cm-select" id="cmStkStyle"><option>可爱卡通</option><option>写实</option><option>像素风</option><option>手绘</option><option>表情包梗图</option></select></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
@@ -246,7 +253,7 @@
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-red">情境感知</div></div><div class="cm-section-body">' +
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气并自然融入对话</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
-              '<div class="cm-field-grid" style="gap:10px 14px"><div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.esc(cfg.charCity||'') + '"></div><div class="cm-field"><div class="cm-field-label">你所在的城市</div><input type="text" class="cm-field-input" id="cmUserCity" placeholder="如：深圳、上海..." value="' + App.esc(cfg.userCity||'') + '"></div></div>' +
+              '<div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.esc(cfg.charCity||'') + '"></div>' +
               '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">设置不同城市后，角色会感知两地时差和天气差异。</div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
@@ -277,8 +284,11 @@
       page.querySelectorAll('#cmMsgTypes input:checked').forEach(function(cb) { msgTypes.push(cb.dataset.type); });
       var momTypes = [];
       page.querySelectorAll('#cmMomTypes input:checked').forEach(function(cb) { momTypes.push(cb.dataset.mtype); });
+      var stkStyles = [];
+      page.querySelectorAll('#cmStkStyles input:checked').forEach(function(cb) { stkStyles.push(cb.dataset.sty); });
       var biStyleEl = page.querySelector('input[name="cmBiStyle"]:checked');
       var proModeEl = page.querySelector('input[name="cmProMode"]:checked');
+      var isAllDay = page.querySelector('#cmAmAll') && page.querySelector('#cmAmAll').checked;
 
       var gv = function(id) { var e = page.querySelector('#' + id); return e ? e.value : ''; };
       var gc = function(id) { var e = page.querySelector('#' + id); return e ? e.checked : false; };
@@ -299,16 +309,15 @@
         proactive: gc('cmProToggle'),
         proMinInterval: parseInt(gv('cmProMin') || 15),
         proMaxInterval: parseInt(gv('cmProMax') || 120),
-        proActiveStart: gv('cmProStart') || '08:00',
-        proActiveEnd: gv('cmProEnd') || '23:30',
+        proActiveStart: isAllDay ? '00:00' : (gv('cmProStart') || '08:00'),
+        proActiveEnd: isAllDay ? '23:59' : (gv('cmProEnd') || '23:30'),
         proMode: proModeEl ? proModeEl.value : 'manual',
         proLevel: parseInt(gv('cmProLevel') || 3),
         replySpeed: gv('cmReplySpeed') || '正常（3-8秒）',
         showTyping: gv('cmShowTyping') === '显示',
         msgTypes: msgTypes,
         stickerGen: gc('cmStkToggle'),
-        stickerEngine: gv('cmStkEngine') || 'DALL·E 3',
-        stickerStyle: gv('cmStkStyle') || '可爱卡通',
+        stickerStyles: stkStyles.length ? stkStyles : ['可爱卡通'],
         stickerFreq: parseInt(gv('cmStkFreq') || 2),
         moments: gc('cmMomToggle'),
         momentsMax: parseInt(gv('cmMomMax') || 2),
@@ -316,7 +325,6 @@
         momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'),
         charCity: gv('cmCharCity'),
-        userCity: gv('cmUserCity'),
         apiMode: gv('cmApiMode') || 'global',
         apiSelect: gv('cmApiSelect') || '',
         temperature: parseFloat(gv('cmTemp') || 0.8),
@@ -363,6 +371,16 @@
       bindToggle('cmStkToggle', 'cmStkSub');
       bindToggle('cmMomToggle', 'cmMomSub');
 
+      // 活跃时段切换
+      page.querySelectorAll('input[name="cmActiveMode"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+          var custom = page.querySelector('#cmActiveCustom');
+          if (this.value === 'allday') { if (custom) custom.style.display = 'none'; }
+          else { if (custom) custom.style.display = 'flex'; }
+        });
+      });
+
+      // 消息积极程度模式
       page.querySelectorAll('input[name="cmProMode"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
           var m = page.querySelector('#cmProManual');
@@ -381,6 +399,7 @@
         });
       }
 
+      // 滑块实时显示
       function bindRange(iid, vid, fmt) {
         var i = page.querySelector('#' + iid);
         var v = page.querySelector('#' + vid);
@@ -402,8 +421,9 @@
         } else if (CharMgr.selectedCharId) {
           CharMgr.charConfigs[CharMgr.selectedCharId] = data;
         }
-        CharMgr.save();
-        App.showToast('设置已保存');
+        if (CharMgr.save()) {
+          App.showToast('✓ 设置已保存');
+        }
       });
     },
 
