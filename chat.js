@@ -83,8 +83,7 @@
       if (userData.gender) uinfo.push('性别：' + userData.gender);
       if (userData.age) uinfo.push('年龄：' + userData.age);
       if (userData.birthday) uinfo.push('生日：' + userData.birthday);
-      if (userData.personality) uinfo.push('性格：' + userData.personality);
-      if (userData.profile) uinfo.push('详细资料：' + userData.profile);
+      if (userData.bio) uinfo.push('个人描述：' + userData.bio);
       if (uinfo.length) {
         parts.push('\n【关于' + callName + '】\n' + uinfo.join('\n') + '\n');
       }
