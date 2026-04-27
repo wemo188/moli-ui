@@ -336,7 +336,7 @@
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmImgApiKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><select class="cm-select" id="cmImgModel"><option' + (cfg.imgModel==='dall-e-3'?' selected':'') + '>dall-e-3</option><option' + (cfg.imgModel==='dall-e-2'?' selected':'') + '>dall-e-2</option><option' + (cfg.imgModel==='gpt-image-1'?' selected':'') + '>gpt-image-1</option></select></div>' +
+           '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1/ dall-e-3 / 或中转站模型名" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
 
             '<div class="cm-sep"></div>' +
