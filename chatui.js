@@ -145,7 +145,11 @@ if(root)root.addEventListener('click',function(){Chat.dismissMenu();Chat.dismiss
 var input=App.$('#ctInput');
 if(input){
   input.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
-  input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();Chat.send();}});
+  input.addEventListener('keydown',function(e){
+    // 手机端不拦截Enter，让它正常换行
+    // 只有桌面端（有物理键盘）才用Enter发送
+    if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();Chat.send();}
+  });
 }
 
 App.safeOn('#ctSend','click',function(e){e.stopPropagation();if(Chat.isStreaming){Chat.stopStream();return;}Chat.send();});
