@@ -102,7 +102,9 @@
     },
 
     renderChatTab: function(body) {
-      var chars = App.character ? App.character.list : [];
+      var chars = (App.character ? App.character.list : []).filter(function(c) {
+        return !c.contactMode || c.contactMode === 'direct';
+      });
       if (!chars.length) {
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
         return;
@@ -145,7 +147,7 @@
           '<div class="wx-avatar">' + avatarHtml + '</div>' +
           '<div class="wx-chat-content">' +
             '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(c.name || '未命名') + '</span></div>' +
-            '<div class="wx-chat-msg">' + App.esc((c.profile || '').split('\n')[0].slice(0, 30) || '暂无简介') + '</div>' +
+                        '<div class="wx-chat-msg">' + App.esc(c.relation || '暂无简介') + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
