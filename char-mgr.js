@@ -336,7 +336,7 @@
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmImgApiKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-'<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div>' +
+'<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="点右边选择或手动输入" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgModelPick" style="width:40px;height:36px;border:1.5px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;"><path d="M6 9l6 6 6-6"/></svg></button></div><div id="cmImgModelMenu" style="display:none;margin-top:4px;border:1.5px solid #ddd;border-radius:8px;background:#fff;overflow:hidden;"></div></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
 
             '<div class="cm-sep"></div>' +
@@ -500,81 +500,39 @@
       bindRange('cmFreq', 'cmFreqVal', function(v) { return v; });
       bindRange('cmPres', 'cmPresVal', function(v) { return v; });
 
-      // 图片模型获取（复用API获取模型的逻辑）
-      var imgFetchBtn = page.querySelector('#cmImgFetchModels');
-      if (imgFetchBtn) {
-        imgFetchBtn.addEventListener('click', function(e) {
+            // 图片模型选择器
+      var imgModelBtn = page.querySelector('#cmImgModelPick');
+      var imgModelMenu = page.querySelector('#cmImgModelMenu');
+      var imgModelInput = page.querySelector('#cmImgModel');
+      if (imgModelBtn && imgModelMenu && imgModelInput) {
+        var models = ['gpt-image-1','gpt-image-2','dall-e-3','dall-e-2','stable-diffusion-xl-1024-v1-0'];
+        var menuOpen = false;
+
+        function renderModelMenu() {
+          imgModelMenu.innerHTML = models.map(function(m) {
+            var sel = imgModelInput.value === m ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
+            return '<div class="cm-img-model-opt" data-model="' + m + '" style="padding:10px 14px;font-size:13px;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;' + sel + '-webkit-tap-highlight-color:transparent;">' + m + '</div>';
+          }).join('') +
+          '<div style="padding:8px 14px;font-size:11px;color:#999;">也可以在输入框直接输入中转站模型名</div>';
+        }
+
+        imgModelBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var url = (page.querySelector('#cmImgApiUrl') || {}).value || '';
-          var key = (page.querySelector('#cmImgApiKey') || {}).value || '';
-          if (!url) {
-            var gApi = App.api ? App.api.getActiveConfig() : null;
-            if (gApi) { url = gApi.url; if (!key) key = gApi.key; }
-          }
-          if (!key) {
-            var gApi2 = App.api ? App.api.getActiveConfig() : null;
-            if (gApi2) key = gApi2.key;
-          }
-          if (!url || !key) { App.showToast('请先填写图片API地址和Key，或配置全局API'); return; }
-          App.showToast('获取模型列表...');
-          fetch(url.replace(/\/+$/, '') + '/models', {
-            headers: { 'Authorization': 'Bearer ' + key }
-          }).then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-          }).then(function(data) {
-            var raw = data.data || data;
-            var models = [];
-            if (Array.isArray(raw)) {
-              for (var i = 0; i < raw.length; i++) {
-                var id = raw[i].id || raw[i].name || raw[i];
-                if (id) models.push(id);
-              }
-            }
-            if (!models.length) { App.showToast('未找到模型'); return; }
-            var list = page.querySelector('#cmImgModelList');
-            if (!list) return;
-            var currentVal = (page.querySelector('#cmImgModel') || {}).value || '';
-            var searchHtml = '<input type="text" id="cmImgModelSearch" placeholder="搜索模型..." style="width:calc(100% - 16px);margin:6px 8px;padding:6px 10px;border:1px solid #eee;border-radius:6px;font-size:12px;outline:none;font-family:inherit;color:#333;box-sizing:border-box;">';
-            var itemsHtml = models.map(function(m) {
-              var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
-              return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>';
-            }).join('');
-            list.innerHTML = searchHtml + '<div id="cmImgModelResults">' + itemsHtml + '</div>';
-            list.style.display = 'block';
-
-            function bindClicks() {
-              list.querySelectorAll('.cm-img-model-item').forEach(function(item) {
-                item.addEventListener('click', function() {
-                  var inp = page.querySelector('#cmImgModel');
-                  if (inp) inp.value = item.dataset.model;
-                  list.style.display = 'none';
-                });
+          menuOpen = !menuOpen;
+          if (menuOpen) {
+            renderModelMenu();
+            imgModelMenu.style.display = 'block';
+            imgModelMenu.querySelectorAll('.cm-img-model-opt').forEach(function(opt) {
+              opt.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                imgModelInput.value = opt.dataset.model;
+                imgModelMenu.style.display = 'none';
+                menuOpen = false;
               });
-            }
-            bindClicks();
-
-            var searchInput = list.querySelector('#cmImgModelSearch');
-            if (searchInput) {
-              searchInput.addEventListener('input', function() {
-                var kw = this.value.trim().toLowerCase();
-                var filtered = kw ? models.filter(function(m) { return m.toLowerCase().indexOf(kw) >= 0; }) : models;
-                var results = list.querySelector('#cmImgModelResults');
-                if (results) {
-                  results.innerHTML = filtered.map(function(m) {
-                    var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
-                    return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>';
-                  }).join('');
-                  bindClicks();
-                }
-              });
-              searchInput.addEventListener('click', function(e) { e.stopPropagation(); });
-            }
-
-            App.showToast(models.length + ' 个模型');
-          }).catch(function(err) {
-            App.showToast('获取失败: ' + err.message);
-          });
+            });
+          } else {
+            imgModelMenu.style.display = 'none';
+          }
         });
       }
 
