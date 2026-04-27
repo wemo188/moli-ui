@@ -9,7 +9,7 @@
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.3);
   display: flex; flex-direction: column; align-items: center;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  justify-content: center;
 }
 
 /* ====== 手机框 ====== */
