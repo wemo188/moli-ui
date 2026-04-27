@@ -2,9 +2,8 @@
 .wx-phone {
   position: relative;
   width: calc(100% - 24px);
-  height: calc(100% - 24px);
-  max-height: 800px;
-  margin: 12px auto;
+  height: calc(100% - 60px);
+  margin: 12px auto 48px;
   border-radius: 50px;
   background: #fff;
   border: 17px solid rgba(0,0,0,1);
