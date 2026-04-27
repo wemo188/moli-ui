@@ -21,8 +21,12 @@
   transition: transform 0.32s cubic-bezier(0.22, 0.8, 0.2, 1);
   will-change: transform;
   align-items: flex-start;
+  overflow: visible;
 }
-.ball-card-page { flex-shrink: 0; }
+.ball-card-page {
+  flex-shrink: 0;
+  overflow: visible;
+}
 
 /* =========================
    白底卡片外壳
@@ -32,6 +36,8 @@
   height: 380px;
   background: #fff;
   border-radius: 14px;
+  outline: none;
+  border: none;
   padding: 18px 22px;
   display: flex;
   flex-direction: column;
