@@ -41,21 +41,16 @@ s.textContent=
 '.ct-bubble{padding:9px 13px;border-radius:14px;font-size:14px;line-height:1.6;word-break:break-word;position:relative;white-space:pre-wrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}'+
 '.ct-msg.ai .ct-bubble{background:rgba(255,255,255,.82);color:#2e4258;border:1px solid rgba(200,220,240,.35);border-top-left-radius:4px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}'+
 '.ct-msg.user .ct-bubble{background:rgba(126,163,201,.8);color:#fff;border-top-right-radius:4px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}'+
-'.ct-msg-meta{display:flex;align-items:center;gap:4px;padding:2px 4px 6px;font-size:10px;color:#a8c0d8;letter-spacing:.3px;}'+
+'.ct-msg-meta{display:flex;align-items:center;gap:4px;padding:2px 4px 6px;font-size:10px;color:#7a8a9a;letter-spacing:.3px;}'+
 '.ct-msg.user .ct-msg-meta{flex-direction:row-reverse;}'+
-'.ct-msg-read{color:#7a9ab8;font-weight:500;}'+
-'.ct-msg-time-sep{font-size:10px;color:#a8c0d8;text-align:center;margin:12px 0 6px;letter-spacing:.5px;}'+
+'.ct-msg-read{color:#5a7a9a;font-weight:500;}'+
+'.ct-msg-time-sep{display:none;}'+
 '.ct-sys{text-align:center;font-size:11px;color:#a8c0d8;margin:10px 20px;letter-spacing:.5px;}'+
 '.ct-sticker{max-width:120px;border-radius:8px;margin:4px 0;}'+
-'.ct-voice{display:flex;align-items:center;gap:6px;padding:8px 14px;min-width:100px;cursor:pointer;}'+
-'.ct-voice-icon{width:18px;height:18px;}'+
-'.ct-voice-bars{display:flex;align-items:center;gap:2px;flex:1;}'+
-'.ct-voice-bar{width:3px;border-radius:2px;background:currentColor;opacity:.5;}'+
-'.ct-voice-dur{font-size:11px;opacity:.6;}'+
-'.ct-input-wrap{position:relative;z-index:10;display:flex;align-items:flex-end;gap:8px;padding:8px 14px 10px;background:rgba(255,255,255,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(200,220,240,.2);flex-shrink:0;}'+
-'.ct-input{flex:1;min-height:36px;max-height:100px;padding:8px 14px;border:1px solid rgba(200,220,240,.4);border-radius:20px;background:rgba(255,255,255,.9);font-size:14px;color:#2e4258;outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;}'+
+'.ct-input-wrap{position:relative;z-index:10;display:flex;align-items:flex-end;gap:8px;padding:10px 14px 14px;background:rgba(255,255,255,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(200,220,240,.2);flex-shrink:0;}'+
+'.ct-input{flex:1;min-height:40px;max-height:100px;padding:10px 16px;border:1px solid rgba(200,220,240,.4);border-radius:20px;background:rgba(255,255,255,.9);font-size:14px;color:#2e4258;outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;}'+
 '.ct-input:focus{border-color:rgba(126,163,201,.6);}'+
-'.ct-send{width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.85);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:opacity .15s;}'+
+'.ct-send{width:40px;height:40px;border-radius:50%;background:rgba(126,163,201,.85);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:opacity .15s;}'+
 '.ct-send:active{opacity:.7;}'+
 '.ct-send svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}'+
 '.ct-send.stop{background:rgba(201,112,107,.85);}'+
@@ -136,18 +131,21 @@ var lang=cfg.mainLang||'简体中文';
 
 parts.push(
 '你正在微信里和用户聊天。\n\n'+
-'【最高优先级规则】\n'+
+'【最高优先级规则 — 违反任何一条都是严重错误】\n'+
 '1. 你的回复必须是纯聊天对话，就像真人发微信。\n'+
-'2. 绝对禁止任何叙事描写：不写动作、不写心理活动、不写环境描写、不用*星号*或(括号)包裹旁白。\n'+
-'3.绝对禁止八股文式回复和网文模板。\n'+
+'2. 绝对禁止任何叙事描写：不写动作（不写"他笑了""她叹气"）、不写心理活动、不写环境描写、不用*星号*或(括号)包裹旁白。\n'+
+'3. 绝对禁止八股文式回复和网文模板（"嘴角微扬""一抹深意""不禁心头一颤"等全部禁止）。\n'+
 '4. 绝对禁止油腻、霸总、超雄、舔狗式表达。\n'+
 '5. 说话要像真人：口语化、自然、有个性。\n'+
 '6. 认真理解用户每条消息的真实意图。不要敷衍。\n'+
 '7. 根据角色性格决定说话风格。性格冷的就冷，话少的就少，毒舌的就毒舌。\n'+
-'8. 可以发多条消息，用'+SPLIT+' 分隔。\n'+
+'8. 你每次回复需要发送 '+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用'+SPLIT+' 分隔不同消息。例如一次发3条就是："第一条'+SPLIT+'第二条'+SPLIT+'第三条"。\n'+
 '9. 每条消息保持简短自然。\n'+
 '10. 不要自我介绍、不要解释自己是AI。\n'+
-'11. 使用'+lang+'回复。'
+'11. 使用'+lang+'回复。\n'+
+'12. 句末不必强制加句号。真实聊天中很多人不加句号，根据角色性格自然处理。\n'+
+'13. 你不是AI助手，你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。如果用户说了让你不舒服的话，用角色的方式回应（生气、冷淡、无视、嘲讽等），而不是跳出角色。无论如何都不要跳出角色。\n'+
+'14. 严格注意当前时间，不要把晚上说成早上，不要把深夜说成白天。根据时间自然调整语气。'
 );
 
 if(cfg.bilingual){
@@ -187,45 +185,50 @@ if(userData){
 
 if(sceneText)parts.push('\n【当前场景/时间线】\n'+sceneText);
 
-// 时间天气感知
 if(cfg.timeWeather){
   var now=new Date();
-  var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
-  var envInfo='\n【当前环境】\n用户当前时间：'+timeStr;
+  var hour=now.getHours();
+  var period='';
+  if(hour>=0&&hour<5)period='凌晨';
+  else if(hour>=5&&hour<8)period='清晨';
+  else if(hour>=8&&hour<11)period='上午';
+  else if(hour>=11&&hour<13)period='中午';
+  else if(hour>=13&&hour<17)period='下午';
+  else if(hour>=17&&hour<19)period='傍晚';
+  else if(hour>=19&&hour<22)period='晚上';
+  else period='深夜';
+  var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
+  var envInfo='\n【当前环境 - 极其重要，必须遵守】\n现在是：'+timeStr+'\n你必须根据这个时间来回复。现在是'+period+'，绝对不要说成其他时段。如果是深夜/凌晨，语气应该更慵懒或困倦；如果是早晨，可能还没完全清醒。';
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
     if(ws)envInfo+='\n用户所在地'+ws;if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity+'（注意可能存在时差和天气差异）';
     var ss=App.calendar.getScheduleSummary();
     if(ss)envInfo+='\n'+ss;
   }
-  envInfo+='\n请自然地融入对话，不要刻意提及时间天气，除非对话需要。';
+  envInfo+='\n自然地融入对话，不要刻意提及时间天气，除非对话需要。';
   parts.push(envInfo);
 }
 
-// 世界书
 var wb=App.LS.get('worldbookEntries');
 if(wb&&Array.isArray(wb)&&wb.length){
   var wt=wb.filter(function(e){return e&&e.enabled!==false&&e.content;}).map(function(e){return(e.keyword?'['+e.keyword+'] ':'')+e.content;}).join('\n');
   if(wt)parts.push('\n【世界书】\n'+wt);
 }
 
-// 预设
 var presets=App.LS.get('presetList');
 if(presets&&Array.isArray(presets)&&presets.length){
   var ap=presets.filter(function(p){return p&&p.enabled!==false&&p.content;});
   if(ap.length)parts.push('\n【预设指令】\n'+ap.map(function(p){return p.content;}).join('\n'));
 }
 
-// 示例对话
 if(charData&&charData.dialogExamples)parts.push('\n【示例对话参考（仅参考说话风格）】\n'+charData.dialogExamples);
 
-// 主动消息积极程度
 if(cfg.proMode==='manual'){
   var levels=['非常被动，基本不主动说话','偶尔主动说一两句','适中，自然地主动聊天','比较主动，经常找话题','非常粘人，频繁主动联系'];
   parts.push('\n【主动联系积极程度】'+levels[Math.min((cfg.proLevel||3)-1,4)]);
 }
 
-parts.push('\n【最终提醒】你在微信里打字聊天，不是写小说。输出纯对话文字。');
+parts.push('\n【最终提醒】你在微信里打字聊天，不是写小说。输出纯对话文字。不要叙事、不要旁白、不要动作描写。你就是这个角色，不是AI。');
 return parts.join('\n');
 }
 
@@ -324,8 +327,12 @@ if(pending){App.LS.remove('chatPending_'+charId);if(pending.partial){Chat.messag
 },
 
 close:function(){
-if(Chat.isStreaming)Chat.stopStream();
-Chat.dismissCtx();Chat.dismissMenu();Chat.stopProactive();
+// 如果正在流式生成，不中断，让它在后台继续跑完
+if(Chat.isStreaming){
+  Chat._backgroundMode=true;
+} else {
+  Chat.dismissCtx();Chat.dismissMenu();Chat.stopProactive();
+}
 if(Chat._visHandler){document.removeEventListener('visibilitychange',Chat._visHandler);Chat._visHandler=null;}
 if(App.wechat)App.wechat.restoreInner();
 },
@@ -509,16 +516,22 @@ Chat.scrollBottom();
 },
 
 onStreamDone:function(text,cfg){
-Chat.isStreaming=false;Chat.abortCtrl=null;Chat.updateSendBtn();Chat.updateTyping(false);
+Chat.isStreaming=false;Chat.abortCtrl=null;
 text=text.trim();
 if(text){
   Chat.messages.push({role:'assistant',content:text,ts:Date.now()});Chat.saveMsgs();
-  // TTS
   if(cfg&&(cfg.minimax||cfg.fallbackTTS)){
     var plainText=text.replace(/\[sticker:[^\]]*\]/g,'').replace(/\|\|\|/g,' ').trim();
     if(plainText)speakTTS(plainText,cfg);
   }
 }
+// 后台模式：DOM已经不在了，只保存不渲染
+if(Chat._backgroundMode){
+  Chat._backgroundMode=false;
+  Chat.stopProactive();
+  return;
+}
+Chat.updateSendBtn();Chat.updateTyping(false);
 Chat.renderMessages();
 },
 
