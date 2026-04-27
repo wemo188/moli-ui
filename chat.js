@@ -15,16 +15,30 @@
     var s = document.createElement('style');
     s.id = STYLE_ID;
     s.textContent =
-      '.ct-root{position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;background:transparent;-webkit-touch-callout:none;}' +
-      '.ct-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;}' +
-      '.ct-tint{position:absolute;inset:-30%;z-index:1;pointer-events:none;transition:opacity .3s;}' +
+      /* ★ 修复尖角溢出：强制使用遮罩裁剪圆角 */
+      '.wx-phone, .wx-inner { -webkit-mask-image: -webkit-radial-gradient(white, black); mask-image: radial-gradient(white, black); }' +
+      '.ct-root{position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;background:transparent;-webkit-touch-callout:none; border-radius:inherit; -webkit-mask-image:-webkit-radial-gradient(white,black);}' +
+      
+      '.ct-bg{position:absolute;top:62px;bottom:0;left:0;right:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;}' +
+      
+      /* ★ 修复晕染：1:1 还原首页的晕染参数，且顶部留白 */
+      '.ct-tint{position:absolute;top:62px;bottom:0;left:0;right:0;z-index:1;pointer-events:none;transition:opacity .3s;' +
+      'background:' +
+      'radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),' +
+      'radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),' +
+      'radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);}' +
       '.ct-tint.off{opacity:0;}' +
-      '.ct-no-bg{position:absolute;inset:0;z-index:0;pointer-events:none;background:#fff;}' +
+      
+      '.ct-no-bg{position:absolute;top:62px;bottom:0;left:0;right:0;z-index:0;pointer-events:none;background:#fff;}' +
       '.ct-no-bg.has-bg{background:transparent;}' +
-      '.ct-glass{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.35),transparent 42%),linear-gradient(315deg,rgba(255,255,255,.15),transparent 44%);mix-blend-mode:screen;opacity:.5;}' +
-      '.ct-hd{position:relative;z-index:10;display:flex;align-items:center;padding:14px 14px 10px;flex-shrink:0;gap:8px;}' +
+      
+      '.ct-glass{position:absolute;top:62px;bottom:0;left:0;right:0;z-index:2;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.35),transparent 42%),linear-gradient(315deg,rgba(255,255,255,.15),transparent 44%);mix-blend-mode:screen;opacity:.5;}' +
+      
+      /* ★ 修复头部：增加纯白背景，与首页完全一致 */
+      '.ct-hd{position:relative;z-index:10;display:flex;align-items:center;padding:18px 20px 10px;flex-shrink:0;gap:8px;background:#fff;border-bottom:1px solid rgba(0,0,0,0.03);}' +
+      
       '.ct-hd-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;}' +
-      '.ct-hd-btn svg{width:20px;height:20px;fill:none;stroke:#5a7a9a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}' +
+      '.ct-hd-btn svg{width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}' +
       '.ct-hd-name{flex:1;text-align:center;font-size:16px;font-weight:700;color:#2e4258;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
       '.ct-hd-typing{font-size:11px;color:#8aa0b8;font-weight:400;letter-spacing:0;}' +
       '.ct-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 14px;min-height:0;}' +
@@ -185,20 +199,14 @@
       if (tintOn === null) tintOn = true;
       var hasBg = !!bgUrl;
 
-      var tintStyle = 'background:' +
-        'radial-gradient(ellipse at 50% 40%, rgba(126,163,201,.65) 0%, rgba(126,163,201,.40) 25%, rgba(140,180,215,.25) 45%, transparent 70%),' +
-        'radial-gradient(ellipse at 30% 60%, rgba(100,150,200,.35) 0%, transparent 55%),' +
-        'radial-gradient(ellipse at 70% 30%, rgba(160,195,225,.30) 0%, transparent 50%),' +
-        'radial-gradient(ellipse at 50% 80%, rgba(126,163,201,.20) 0%, transparent 60%);';
-
       inner.innerHTML =
         '<div class="ct-root" id="ctRoot">' +
           '<div class="ct-no-bg' + (hasBg ? ' has-bg' : '') + '" id="ctNoBg"></div>' +
           '<div class="ct-bg" id="ctBg" style="' + (bgUrl ? 'background-image:url(' + App.escAttr(bgUrl) + ');' : '') + '"></div>' +
-          '<div class="ct-tint' + (tintOn ? '' : ' off') + '" id="ctTint" style="' + tintStyle + '"></div>' +
+          '<div class="ct-tint' + (tintOn ? '' : ' off') + '" id="ctTint"></div>' +
           '<div class="ct-glass"></div>' +
           '<div class="ct-hd">' +
-            '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+            '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>' +
             '<div class="ct-hd-name" id="ctName">' + App.esc(c.name || '') + '</div>' +
             '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg></button>' +
           '</div>' +
@@ -255,8 +263,8 @@
         else { av = c && c.avatar ? '<img src="'+App.escAttr(c.avatar)+'">' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>'; }
 
         var timeStr = msg.ts ? fmtTime(msg.ts) : '';
-
         var bubbles = (msg.content || '').split(SPLIT);
+        
         bubbles.forEach(function(text, bIdx) {
           text = text.trim(); if (!text) return;
           var isLast = bIdx === bubbles.length - 1;
@@ -464,7 +472,7 @@
               var line = lines[i].trim();
               if (!line || !line.startsWith('data:')) continue;
               var data = line.slice(5).trim();
-              if (data === '[DONE]') { Chat.onStreamDone(fullText); return; }
+              if (data === '') { Chat.onStreamDone(fullText); return; }
               try {
                 var json = JSON.parse(data);
                 var delta = json.choices && json.choices[0] && json.choices[0].delta;
@@ -627,7 +635,7 @@
               var line = lines[i].trim();
               if (!line || !line.startsWith('data:')) continue;
               var data = line.slice(5).trim();
-              if (data === '[DONE]') { Chat.onStreamDone(fullText); return; }
+              if (data === '') { Chat.onStreamDone(fullText); return; }
               try {
                 var json = JSON.parse(data);
                 var delta = json.choices && json.choices[0] && json.choices[0].delta;
@@ -642,11 +650,9 @@
         Chat.isStreaming = false;
         Chat.updateSendBtn();
         Chat.updateTyping(false);
-        if (err.name !== 'AbortError') console.warn('proactive failed:', err.message);
       });
     },
 
-    // === 长按菜单 ===
     showCtxMenu: function(msgEl, x, y) {
       Chat.dismissCtx();
       var idx = parseInt(msgEl.dataset.msgIdx);
