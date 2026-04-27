@@ -113,13 +113,14 @@
         else cfg = CharMgr.globalConfig;
       }
 
+      /* ★ 修复：img src 用 escAttr */
       var charRowHtml = '<div class="cm-char-slot" data-id="__global__">' +
         '<div class="cm-char-avatar cm-char-all-circle' + (CharMgr.currentTab === 'global' ? ' cm-active' : '') + '"><span class="cm-char-all">ALL</span></div>' +
         '<div class="cm-char-name' + (CharMgr.currentTab === 'global' ? ' cm-active' : '') + '">全局</div></div>';
 
       chars.forEach(function(c) {
         var isActive = CharMgr.currentTab === 'individual' && CharMgr.selectedCharId === c.id;
-        var avatarHtml = c.avatar ? '<img src="' + App.esc(c.avatar) + '">' : '';
+        var avatarHtml = c.avatar ? '<img src="' + App.escAttr(c.avatar) + '">' : '';
         charRowHtml += '<div class="cm-char-slot" data-id="' + c.id + '">' +
           '<div class="cm-char-avatar' + (isActive ? ' cm-active' : '') + '">' + avatarHtml + '</div>' +
           '<div class="cm-char-name' + (isActive ? ' cm-active' : '') + '">' + App.esc(c.name || '?') + '</div></div>';
@@ -145,11 +146,12 @@
         return '<div class="cm-tag"><input type="checkbox" id="cmMom' + i + '" data-mtype="' + t + '"' + checked + '><label class="cm-tag-label" for="cmMom' + i + '">' + t + '</label></div>';
       }).join('');
 
+      /* ★ 修复：API option value 用 escAttr */
       var apiList = App.LS.get('apiConfigs') || [];
       var apiOptionsHtml = '<option value="">使用全局 API</option>';
       apiList.forEach(function(a) {
         var sel = cfg.apiSelect === a.name ? ' selected' : '';
-        apiOptionsHtml += '<option value="' + App.esc(a.name) + '"' + sel + '>' + App.esc(a.name) + ' (' + App.esc(a.model || '') + ')</option>';
+        apiOptionsHtml += '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + ' (' + App.esc(a.model || '') + ')</option>';
       });
 
       var isIndividual = cfg.apiMode === 'individual';
@@ -184,8 +186,8 @@
 
             '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">MiniMax 语音</span><span class="cm-sw-desc">使用 MiniMax TTS 生成角色语音</span></div><label class="cm-sw"><input type="checkbox" id="cmMmToggle"' + ck('minimax') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.minimax ? ' cm-open' : '') + '" id="cmMmSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">Voice ID</div><input type="text" class="cm-field-input" id="cmMmVoice" placeholder="粘贴 MiniMax Voice ID..." value="' + App.esc(cfg.mmVoiceId||'') + '"></div></div>' +
-              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmMmKey" placeholder="留空则使用全局 API Key" value="' + App.esc(cfg.mmApiKey||'') + '"></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">Voice ID</div><input type="text" class="cm-field-input" id="cmMmVoice" placeholder="粘贴 MiniMax Voice ID..." value="' + App.escAttr(cfg.mmVoiceId||'') + '"></div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmMmKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.mmApiKey||'') + '"></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">语速</div><div class="cm-range-wrap"><span class="cm-range-hint">慢</span><input type="range" class="cm-range" id="cmMmSpeed" min="0.5" max="2" step="0.1" value="' + cfg.mmSpeed + '"><span class="cm-range-val" id="cmMmSpeedVal">' + cfg.mmSpeed + 'x</span><span class="cm-range-hint">快</span></div></div>' +
               '<div class="cm-sub-row" style="margin-top:6px"><div class="cm-sub-label">音调</div><div class="cm-range-wrap"><span class="cm-range-hint">低</span><input type="range" class="cm-range" id="cmMmPitch" min="-12" max="12" step="1" value="' + cfg.mmPitch + '"><span class="cm-range-val" id="cmMmPitchVal">' + (cfg.mmPitch>0?'+':'') + cfg.mmPitch + '</span><span class="cm-range-hint">高</span></div></div>' +
             '</div>' +
@@ -193,8 +195,9 @@
 
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">备用 TTS 引擎</span><span class="cm-sw-desc">MiniMax 不可用时的替代方案</span></div><label class="cm-sw"><input type="checkbox" id="cmFallToggle"' + ck('fallbackTTS') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.fallbackTTS ? ' cm-open' : '') + '" id="cmFallSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">TTS 引擎</div>'<select class="cm-select" id="cmFallEngine"><option' + sv('fallbackEngine','系统 Web Speech') + '>系统 Web Speech</option><option' + sv('fallbackEngine','OpenAI TTS') + '>OpenAI TTS</option></select>'</div></div>' +
-              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">音色</div>'<select class="cm-select" id="cmFallVoice"><option' + sv('fallbackVoice','zh-CN-XiaoxiaoNeural (女)') + '>zh-CN-XiaoxiaoNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunxiNeural (男)') + '>zh-CN-YunxiNeural (男)</option><option' + sv('fallbackVoice','zh-CN-XiaoyiNeural (女)') + '>zh-CN-XiaoyiNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunjianNeural (男)') + '>zh-CN-YunjianNeural (男)</option></select>'</div></div>' +
+              /* ★ 修复：删掉了 <select> 前后多余的单引号 */
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">TTS 引擎</div><select class="cm-select" id="cmFallEngine"><option' + sv('fallbackEngine','系统 Web Speech') + '>系统 Web Speech</option><option' + sv('fallbackEngine','OpenAI TTS') + '>OpenAI TTS</option></select></div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">音色</div><select class="cm-select" id="cmFallVoice"><option' + sv('fallbackVoice','zh-CN-XiaoxiaoNeural (女)') + '>zh-CN-XiaoxiaoNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunxiNeural (男)') + '>zh-CN-YunxiNeural (男)</option><option' + sv('fallbackVoice','zh-CN-XiaoyiNeural (女)') + '>zh-CN-XiaoyiNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunjianNeural (男)') + '>zh-CN-YunjianNeural (男)</option></select></div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
@@ -212,9 +215,9 @@
               '<div class="cm-sub-label" style="margin-top:10px">活跃时段</div>' +
               '<div class="cm-radio-row" style="margin-top:4px"><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmAll" value="allday"' + (isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmAll">全天</label></div><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmCustom" value="custom"' + (!isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmCustom">自定义</label></div></div>' +
               '<div id="cmActiveCustom" style="display:flex;align-items:center;gap:6px;margin-top:6px;' + (isAllDay?'display:none;':'') + '">' +
-                '<input type="time" class="cm-field-input" id="cmProStart" value="' + App.esc(cfg.proActiveStart) + '" style="width:100px;text-align:center;">' +
+                '<input type="time" class="cm-field-input" id="cmProStart" value="' + App.escAttr(cfg.proActiveStart) + '" style="width:100px;text-align:center;">' +
                 '<span style="font-size:11px;color:#999;font-weight:600;">至</span>' +
-                '<input type="time" class="cm-field-input" id="cmProEnd" value="' + App.esc(cfg.proActiveEnd) + '" style="width:100px;text-align:center;">' +
+                '<input type="time" class="cm-field-input" id="cmProEnd" value="' + App.escAttr(cfg.proActiveEnd) + '" style="width:100px;text-align:center;">' +
               '</div>' +
 
               '<div class="cm-sub-label" style="margin-top:10px">消息积极程度</div>' +
@@ -253,7 +256,7 @@
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-red">情境感知</div></div><div class="cm-section-body">' +
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气并自然融入对话</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
-              '<div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.esc(cfg.charCity||'') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
               '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">设置不同城市后，角色会感知两地时差和天气差异。</div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
@@ -304,7 +307,7 @@
         mmSpeed: parseFloat(gv('cmMmSpeed') || 1),
         mmPitch: parseInt(gv('cmMmPitch') || 0),
         fallbackTTS: gc('cmFallToggle'),
-        fallbackEngine: gv('cmFallEngine') || 'Edge TTS',
+        fallbackEngine: gv('cmFallEngine') || '系统 Web Speech',
         fallbackVoice: gv('cmFallVoice') || '',
         proactive: gc('cmProToggle'),
         proMinInterval: parseInt(gv('cmProMin') || 15),
@@ -371,7 +374,6 @@
       bindToggle('cmStkToggle', 'cmStkSub');
       bindToggle('cmMomToggle', 'cmMomSub');
 
-      // 活跃时段切换
       page.querySelectorAll('input[name="cmActiveMode"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
           var custom = page.querySelector('#cmActiveCustom');
@@ -380,7 +382,6 @@
         });
       });
 
-      // 消息积极程度模式
       page.querySelectorAll('input[name="cmProMode"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
           var m = page.querySelector('#cmProManual');
@@ -390,7 +391,6 @@
         });
       });
 
-      // API 模式切换
       var apiModeEl = page.querySelector('#cmApiMode');
       var advSub = page.querySelector('#cmAdvancedSub');
       if (apiModeEl && advSub) {
@@ -399,7 +399,6 @@
         });
       }
 
-      // 滑块实时显示
       function bindRange(iid, vid, fmt) {
         var i = page.querySelector('#' + iid);
         var v = page.querySelector('#' + vid);
@@ -413,7 +412,6 @@
       bindRange('cmFreq', 'cmFreqVal', function(v) { return v; });
       bindRange('cmPres', 'cmPresVal', function(v) { return v; });
 
-      // 保存
       page.querySelector('#cmSaveBtn').addEventListener('click', function() {
         var data = CharMgr.collectConfig(page);
         if (CharMgr.currentTab === 'global') {
