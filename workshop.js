@@ -51,6 +51,7 @@
                 tkBlack('memory', '记忆', 'memory') +
                 tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('exportData', '导出', 'export') +
+                tkBlack('console', '控制台', 'console') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
             '</div>' +
@@ -93,6 +94,7 @@
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'exportData') { Workshop.exportData(); return; }
+          if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
         });
       });
 
@@ -132,6 +134,113 @@
       var edenCard = App.$('#edenCard');
       if (edenCard) edenCard.style.transform = '';
       App.showToast('布局已恢复');
+    },
+
+    openConsole: function() {
+      var old = App.$('#wsConsole');
+      if (old) { old.remove(); return; }
+
+      var panel = document.createElement('div');
+      panel.id = 'wsConsole';
+      panel.style.cssText = 'position:fixed;bottom:80px;left:10px;right:10px;max-height:50vh;z-index:200000;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.4);font-family:monospace;';
+      panel.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;">' +
+          '<span style="color:#7a9ab8;font-size:12px;font-weight:700;letter-spacing:1px;">CONSOLE</span>' +
+          '<div style="display:flex;gap:8px;">' +
+            '<button id="wsClearLog" type="button" style="background:rgba(255,255,255,.1);border:none;color:#999;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">清空</button>' +
+            '<button id="wsCloseConsole" type="button" style="background:rgba(255,255,255,.1);border:none;color:#999;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">关闭</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="wsLogArea" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px;max-height:40vh;"></div>' +
+        '<div style="display:flex;border-top:1px solid rgba(255,255,255,.1);flex-shrink:0;">' +
+          '<input id="wsExecInput" type="text" placeholder="输入JS执行..." style="flex:1;background:transparent;border:none;color:#fff;font-size:12px;padding:10px 14px;outline:none;font-family:monospace;">' +
+          '<button id="wsExecBtn" type="button" style="background:#7a9ab8;border:none;color:#fff;font-size:11px;padding:8px 14px;cursor:pointer;font-family:inherit;font-weight:700;">执行</button>' +
+        '</div>';
+      document.body.appendChild(panel);
+
+      var logArea = panel.querySelector('#wsLogArea');
+
+      function addLog(text, color) {
+        var div = document.createElement('div');
+        div.style.cssText = 'font-size:11px;color:' + (color || '#ccc') + ';padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);word-break:break-all;white-space:pre-wrap;line-height:1.4;';
+        div.textContent = text;
+        logArea.appendChild(div);
+        logArea.scrollTop = logArea.scrollHeight;
+      }
+
+      var origLog = console.log;
+      var origWarn = console.warn;
+      var origError = console.error;
+
+      console.log = function() {
+        origLog.apply(console, arguments);
+        addLog('[LOG] ' + Array.from(arguments).map(function(a) {
+          try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+          catch(e) { return String(a); }
+        }).join(' '), '#ccc');
+      };
+
+      console.warn = function() {
+        origWarn.apply(console, arguments);
+        addLog('[WARN] ' + Array.from(arguments).map(function(a) {
+          try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+          catch(e) { return String(a); }
+        }).join(' '), '#f0c040');
+      };
+
+      console.error = function() {
+        origError.apply(console, arguments);
+        addLog('[ERROR] ' + Array.from(arguments).map(function(a) {
+          try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+          catch(e) { return String(a); }
+        }).join(' '), '#e85d5d');
+      };
+
+      var errHandler = function(e) {
+        addLog('[ERROR] ' + (e.message || e.reason || e) + (e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : ''), '#e85d5d');
+      };
+      window.addEventListener('error', errHandler);
+
+      var rejectHandler = function(e) {
+        addLog('[REJECT] ' + (e.reason || e), '#e85d5d');
+      };
+      window.addEventListener('unhandledrejection', rejectHandler);
+
+      function execCmd() {
+        var input = panel.querySelector('#wsExecInput');
+        var cmd = input.value.trim();
+        if (!cmd) return;
+        addLog('> ' + cmd, '#7a9ab8');
+        input.value = '';
+        try {
+          var result = eval(cmd);
+          if (result !== undefined) {
+            addLog(typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result), '#8fc98f');
+          }
+        } catch (e) {
+          addLog('[ERROR] ' + e.message, '#e85d5d');
+        }
+      }
+
+      panel.querySelector('#wsExecBtn').addEventListener('click', execCmd);
+      panel.querySelector('#wsExecInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); execCmd(); }
+      });
+
+      panel.querySelector('#wsClearLog').addEventListener('click', function() { logArea.innerHTML = ''; });
+
+      panel.querySelector('#wsCloseConsole').addEventListener('click', function() {
+        console.log = origLog;
+        console.warn = origWarn;
+        console.error = origError;
+        window.removeEventListener('error', errHandler);
+        window.removeEventListener('unhandledrejection', rejectHandler);
+        panel.remove();
+      });
+
+      addLog('控制台已打开', '#7a9ab8');
+      addLog('所有 console.log/warn/error 会显示在这里', '#666');
+      addLog('可以输入JS表达式执行', '#666');
     },
 
     bindSwipe: function() {
