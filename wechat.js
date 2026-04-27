@@ -1,4 +1,3 @@
-微信的js
 
 (function() {
   'use strict';
