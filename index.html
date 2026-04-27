@@ -10,10 +10,48 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+
+<!-- ★ 修改：图片加载失败时的回退卡片样式 -->
+<style>
+.mmg-fallback{
+  width:100%;height:100%;
+  position:relative;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid rgba(220,235,255,.55);
+  box-shadow:0 14px 30px rgba(20,35,55,.14);
+  overflow:hidden;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.mmg-fallback:before{
+  content:"";
+  position:absolute;inset:-45%;
+  background:
+    radial-gradient(closest-side at 52% 48%,rgba(79,121,166,.56),transparent 62%),
+    radial-gradient(closest-side at 50% 55%,rgba(126,163,201,.36),transparent 64%),
+    radial-gradient(closest-side at 60% 40%,rgba(223,231,243,.18),transparent 66%);
+  filter:blur(14px);
+  transform:rotate(-10deg);
+  pointer-events:none;
+}
+.mmg-fallback:after{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.42),transparent 42%),
+    linear-gradient(315deg,rgba(255,255,255,.20),transparent 44%);
+  pointer-events:none;
+  mix-blend-mode:screen;
+  opacity:.82;
+}
+</style>
+
 <script>
 (function(){
+  /* ★ 修改：CSS和JS统一使用sessionStorage版本号 */
   var v = sessionStorage.getItem('_v');
-if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
+  if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
   var css = [
     'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
@@ -30,6 +68,18 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 </script>
 </head>
 <body>
+
+<!-- ★ 修改说明：全局图片回退函数，图片加载失败时替换为雾蓝玻璃卡片 -->
+<script>
+function imgFallback(img){
+  img.onerror=null;
+  var d=document.createElement('div');
+  d.className='mmg-fallback';
+  d.style.width=img.width?img.width+'px':'100%';
+  d.style.height=img.height?img.height+'px':'100%';
+  img.replaceWith(d);
+}
+</script>
 
 <!-- ====== 背景层 ====== -->
 <div id="bgLayer" class="bg-layer"></div>
@@ -75,6 +125,7 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
           <div class="card-row" id="cardRow"></div>
         </div>
 
+        <!-- ★ 修改说明：Eden卡片里包含特殊Unicode字符，部分安卓机可能显示异常，如遇问题检查此处 -->
         <div class="eden-card" id="edenCard">
           <div class="eden-text" id="edenText">全世界 最好的你˶ᵒ ᵕ ˂˶️ಣ
 </div>
@@ -133,32 +184,34 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 </main>
 
 <!-- ====== 底部栏 ====== -->
+<!-- ★ 修改：所有外部图片加了 onerror 回退和 loading="lazy" -->
 <div class="dock" id="dockBar">
   <div class="dock-item" id="dockMine">
     <div class="mk-card">
-      <img src="https://iili.io/B5DgD5N.jpg" style="transform:scale(0.8);">
+      <img src="https://iili.io/B5DgD5N.jpg" style="transform:scale(0.8);" loading="lazy" onerror="imgFallback(this)">
     </div>
   </div>
   <div class="dock-item" id="dockLong">
     <div class="mk-card">
-      <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);">
+      <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);" loading="lazy" onerror="imgFallback(this)">
     </div>
   </div>
    <div class="dock-item" id="dockShort">
     <div class="mk-card">
-      <img src="https://iili.io/BghhtFn.md.jpg" style="transform:scale(0.85);">
+      <img src="https://iili.io/BghhtFn.md.jpg" style="transform:scale(0.85);" loading="lazy" onerror="imgFallback(this)">
     </div>
   </div>
   <div class="dock-item" id="dockCheck">
     <div class="mk-card">
-      <img src="https://iili.io/BghjowQ.md.jpg" style="transform:scale(0.85);">
+      <img src="https://iili.io/BghjowQ.md.jpg" style="transform:scale(0.85);" loading="lazy" onerror="imgFallback(this)">
     </div>
   </div>
 </div>
 
 <!-- ====== 悬浮球 ====== -->
+<!-- ★ 修改：悬浮球图片加了 onerror 回退 -->
 <div id="floatingBall" class="floating-ball mascot-ball">
-  <img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false">
+  <img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false" onerror="imgFallback(this)">
 </div>
 
 <!-- ====== 遮罩层 ====== -->
@@ -170,11 +223,12 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 <div id="themePanel" class="panel hidden">
   <div class="panel-header">
     <h2>主题配色</h2>
-    <div class="panel-close" data-close="themePanel">
+    <!-- ★ 修改：div改为button，增加键盘可访问性 -->
+    <button class="panel-close" data-close="themePanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
       </svg>
-    </div>
+    </button>
   </div>
   <div class="panel-body">
     <div id="themeList" class="theme-list"></div>
@@ -206,11 +260,12 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 <div id="fontPanel" class="panel hidden">
   <div class="panel-header">
     <h2>字体设置</h2>
-    <div class="panel-close" data-close="fontPanel">
+    <!-- ★ 修改：div改为button -->
+    <button class="panel-close" data-close="fontPanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
       </svg>
-    </div>
+    </button>
   </div>
   <div class="panel-body">
     <div id="fontList" class="font-list"></div>
@@ -232,11 +287,12 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 <div id="bgPanel" class="panel hidden">
   <div class="panel-header">
     <h2>背景图片</h2>
-    <div class="panel-close" data-close="bgPanel">
+    <!-- ★ 修改：div改为button -->
+    <button class="panel-close" data-close="bgPanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
       </svg>
-    </div>
+    </button>
   </div>
   <div class="panel-body">
     <div class="upload-area" id="bgUploadArea">
@@ -274,7 +330,9 @@ if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
 <!-- ====== JS ====== -->
 <script>
 (function(){
-  var v = Date.now();
+  /* ★ 修改：JS版本号也用sessionStorage，与CSS保持一致 */
+  var v = sessionStorage.getItem('_v');
+  if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
   var files = [
     'script.js','theme.js','font.js','api.js','bg.js',
     'character.js','char-edit.js','user.js','worldbook.js','preset.js',
