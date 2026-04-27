@@ -26,6 +26,8 @@
     proLevel: 3,
     replySpeed: '正常（3-8秒）',
     showTyping: true,
+    minMsgs: 1,
+    maxMsgs: 3,
     msgTypes: ['文字','表情','图片','语音','语音通话','视频通话','红包','转账','位置','音乐'],
     stickerGen: false,
     stickerStyles: ['可爱卡通'],
@@ -36,6 +38,9 @@
     momentsImg: 'AI 生成',
     timeWeather: true,
     charCity: '',
+    imgApiUrl: '',
+    imgApiKey: '',
+    imgModel: 'dall-e-3',
     apiMode: 'global',
     apiSelect: '',
     temperature: 0.8,
@@ -51,7 +56,6 @@
   var CharMgr = {
     globalConfig: {},
     charConfigs: {},
-    currentTab: 'global',
     selectedCharId: null,
 
     load: function() {
@@ -71,15 +75,32 @@
     },
 
     getCharConfig: function(charId) {
-      if (!CharMgr.charConfigs[charId]) {
-        CharMgr.charConfigs[charId] = JSON.parse(JSON.stringify(CharMgr.globalConfig));
+      if (CharMgr.charConfigs[charId]) return CharMgr.charConfigs[charId];
+      return CharMgr.globalConfig;
+    },
+
+    hasCustom: function(charId) {
+      return !!CharMgr.charConfigs[charId];
+    },
+
+    resetChar: function(charId) {
+      delete CharMgr.charConfigs[charId];
+      CharMgr.save();
+    },
+
+    isConfigDifferent: function(a, b) {
+      var keys = Object.keys(DEFAULTS);
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        var va = JSON.stringify(a[k]);
+        var vb = JSON.stringify(b[k]);
+        if (va !== vb) return true;
       }
-      return CharMgr.charConfigs[charId];
+      return false;
     },
 
     open: function() {
       CharMgr.load();
-      CharMgr.currentTab = 'global';
       CharMgr.selectedCharId = null;
 
       var page = document.createElement('div');
@@ -105,25 +126,48 @@
 
     render: function(page) {
       var chars = App.character ? App.character.list : [];
+      var isGlobal = !CharMgr.selectedCharId;
       var cfg;
-      if (CharMgr.currentTab === 'global') {
+
+      if (isGlobal) {
         cfg = CharMgr.globalConfig;
       } else {
-        if (CharMgr.selectedCharId) cfg = CharMgr.getCharConfig(CharMgr.selectedCharId);
-        else cfg = CharMgr.globalConfig;
+        cfg = CharMgr.hasCustom(CharMgr.selectedCharId)
+          ? CharMgr.charConfigs[CharMgr.selectedCharId]
+          : JSON.parse(JSON.stringify(CharMgr.globalConfig));
       }
 
-      /* ★ 修复：img src 用 escAttr */
-      var charRowHtml = '<div class="cm-char-slot" data-id="__global__">' +
-        '<div class="cm-char-avatar cm-char-all-circle' + (CharMgr.currentTab === 'global' ? ' cm-active' : '') + '"><span class="cm-char-all">ALL</span></div>' +
-        '<div class="cm-char-name' + (CharMgr.currentTab === 'global' ? ' cm-active' : '') + '">全局</div></div>';
-
+      // 分类角色
+      var globalChars = [];
+      var customChars = [];
       chars.forEach(function(c) {
-        var isActive = CharMgr.currentTab === 'individual' && CharMgr.selectedCharId === c.id;
+        if (CharMgr.hasCustom(c.id)) customChars.push(c);
+        else globalChars.push(c);
+      });
+
+      // 全局行
+      var globalRowHtml = '<div class="cm-char-slot" data-id="__global__">' +
+        '<div class="cm-char-avatar cm-char-all-circle' + (isGlobal ? ' cm-active' : '') + '"><span class="cm-char-all">ALL</span></div>' +
+        '<div class="cm-char-name' + (isGlobal ? ' cm-active' : '') + '">全局</div></div>';
+
+      globalChars.forEach(function(c) {
+        var isActive = CharMgr.selectedCharId === c.id;
         var avatarHtml = c.avatar ? '<img src="' + App.escAttr(c.avatar) + '">' : '';
-        charRowHtml += '<div class="cm-char-slot" data-id="' + c.id + '">' +
+        globalRowHtml += '<div class="cm-char-slot" data-id="' + c.id + '">' +
           '<div class="cm-char-avatar' + (isActive ? ' cm-active' : '') + '">' + avatarHtml + '</div>' +
           '<div class="cm-char-name' + (isActive ? ' cm-active' : '') + '">' + App.esc(c.name || '?') + '</div></div>';
+      });
+
+      // 个别微调行
+      var customRowHtml = '';
+      customChars.forEach(function(c) {
+        var isActive = CharMgr.selectedCharId === c.id;
+        var avatarHtml = c.avatar ? '<img src="' + App.escAttr(c.avatar) + '">' : '';
+        customRowHtml += '<div class="cm-char-slot" data-id="' + c.id + '" style="position:relative;">' +
+          '<div class="cm-char-avatar' + (isActive ? ' cm-active' : '') + '">' + avatarHtml + '</div>' +
+          '<div class="cm-char-name' + (isActive ? ' cm-active' : '') + '">' + App.esc(c.name || '?') + '</div>' +
+          '<div class="cm-char-restore" data-restore-id="' + c.id + '" style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:rgba(201,112,107,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg></div>' +
+        '</div>';
       });
 
       var ck = function(key) { return cfg[key] ? ' checked' : ''; };
@@ -146,7 +190,6 @@
         return '<div class="cm-tag"><input type="checkbox" id="cmMom' + i + '" data-mtype="' + t + '"' + checked + '><label class="cm-tag-label" for="cmMom' + i + '">' + t + '</label></div>';
       }).join('');
 
-      /* ★ 修复：API option value 用 escAttr */
       var apiList = App.LS.get('apiConfigs') || [];
       var apiOptionsHtml = '<option value="">使用全局 API</option>';
       apiList.forEach(function(a) {
@@ -156,21 +199,41 @@
 
       var isIndividual = cfg.apiMode === 'individual';
 
+      var editingLabel = isGlobal
+        ? '全局设置（通用模板）'
+        : '编辑：' + App.esc((App.character ? App.character.getById(CharMgr.selectedCharId) : null || {}).name || '?');
+
       page.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;border-bottom:1px solid #eee;">' +
-          '<button id="cmBackBtn" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">角色管理</span>' +
-          '<div style="width:36px;"></div>' +
+        // 顶部固定区域
+        '<div style="flex-shrink:0;background:#fff;z-index:10;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;border-bottom:1px solid #eee;">' +
+            '<button id="cmBackBtn" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+            '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">角色管理</span>' +
+            '<div style="width:36px;"></div>' +
+          '</div>' +
+
+          // 角色行：全局
+          '<div style="padding:12px 16px 4px;">' +
+            '<div style="font-size:11px;font-weight:700;color:#8aa0b8;letter-spacing:1px;margin-bottom:6px;">全局（通用模板）</div>' +
+            '<div class="cm-char-row" id="cmGlobalRow" style="padding:0;margin:0;">' + globalRowHtml + '</div>' +
+          '</div>' +
+
+          // 角色行：个别微调
+          '<div style="padding:4px 16px 8px;border-bottom:1px solid #eee;min-height:28px;">' +
+            '<div style="font-size:11px;font-weight:700;color:#c9706b;letter-spacing:1px;margin-bottom:6px;">个别微调</div>' +
+            '<div class="cm-char-row" id="cmCustomRow" style="padding:0;margin:0;">' +
+              (customRowHtml || '<span style="font-size:11px;color:#ccc;">暂无</span>') +
+            '</div>' +
+          '</div>' +
+
+          // 当前编辑标签
+          '<div style="padding:8px 16px;background:rgba(126,163,201,.06);text-align:center;">' +
+            '<span style="font-size:12px;font-weight:700;color:#5a7a9a;letter-spacing:.5px;">' + editingLabel + '</span>' +
+          '</div>' +
         '</div>' +
 
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">' +
-
-          '<div class="cm-char-row">' + charRowHtml + '</div>' +
-
-          '<div class="cm-tab-bar">' +
-            '<div class="cm-tab-item' + (CharMgr.currentTab === 'global' ? ' cm-active' : '') + '" data-tab="global">全局设置</div>' +
-            '<div class="cm-tab-item' + (CharMgr.currentTab === 'individual' ? ' cm-active' : '') + '" data-tab="individual">个别设置</div>' +
-          '</div>' +
+        // 可滚动内容区
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;" id="cmScrollArea">' +
 
           '<!-- CARD 1 · 语言与语音 -->' +
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-green">语言与语音</div></div><div class="cm-section-body">' +
@@ -195,7 +258,6 @@
 
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">备用 TTS 引擎</span><span class="cm-sw-desc">MiniMax 不可用时的替代方案</span></div><label class="cm-sw"><input type="checkbox" id="cmFallToggle"' + ck('fallbackTTS') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.fallbackTTS ? ' cm-open' : '') + '" id="cmFallSub">' +
-              /* ★ 修复：删掉了 <select> 前后多余的单引号 */
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">TTS 引擎</div><select class="cm-select" id="cmFallEngine"><option' + sv('fallbackEngine','系统 Web Speech') + '>系统 Web Speech</option><option' + sv('fallbackEngine','OpenAI TTS') + '>OpenAI TTS</option></select></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">音色</div><select class="cm-select" id="cmFallVoice"><option' + sv('fallbackVoice','zh-CN-XiaoxiaoNeural (女)') + '>zh-CN-XiaoxiaoNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunxiNeural (男)') + '>zh-CN-YunxiNeural (男)</option><option' + sv('fallbackVoice','zh-CN-XiaoyiNeural (女)') + '>zh-CN-XiaoyiNeural (女)</option><option' + sv('fallbackVoice','zh-CN-YunjianNeural (男)') + '>zh-CN-YunjianNeural (男)</option></select></div></div>' +
             '</div>' +
@@ -227,6 +289,14 @@
             '</div>' +
             '<div class="cm-sep"></div>' +
 
+            '<div class="cm-sub-label" style="margin-bottom:6px">每次回复消息条数</div>' +
+            '<div style="display:flex;gap:14px">' +
+              '<div class="cm-field" style="flex:1"><div class="cm-field-label">最少</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMinMsgs" value="' + cfg.minMsgs + '" min="1" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条</span></div></div>' +
+              '<div class="cm-field" style="flex:1"><div class="cm-field-label">最多</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMaxMsgs" value="' + cfg.maxMsgs + '" min="1" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条</span></div></div>' +
+            '</div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">角色每次回复会随机发送该范围内的消息条数，模拟真实聊天节奏。</div></div>' +
+            '<div class="cm-sep"></div>' +
+
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">回复速度</div><select class="cm-select" id="cmReplySpeed"><option' + sv('replySpeed','即时回复') + '>即时回复</option><option' + sv('replySpeed','快速（1-3秒）') + '>快速（1-3秒）</option><option' + sv('replySpeed','正常（3-8秒）') + '>正常（3-8秒）</option><option' + sv('replySpeed','慢速（5-15秒）') + '>慢速（5-15秒）</option><option' + sv('replySpeed','真实模拟（按字数）') + '>真实模拟（按字数）</option></select></div>' +
             '<div class="cm-field"><div class="cm-field-label">「对方正在输入」</div><select class="cm-select" id="cmShowTyping"><option' + (cfg.showTyping?' selected':'') + '>显示</option><option' + (!cfg.showTyping?' selected':'') + '>不显示</option></select></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
@@ -254,7 +324,7 @@
 
           '<!-- CARD 4 · 情境感知 -->' +
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-red">情境感知</div></div><div class="cm-section-body">' +
-            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气并自然融入对话</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
               '<div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
               '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">设置不同城市后，角色会感知两地时差和天气差异。</div></div>' +
@@ -263,15 +333,23 @@
 
           '<!-- CARD 5 · 高级设定 -->' +
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">高级设定</div><div class="cm-section-badge">ADVANCED</div></div><div class="cm-section-body">' +
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (cfg.apiMode==='individual'?' selected':'') + '>为每个角色单独配置</option></select></div>' +
-            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度，请谨慎使用。</div></div>' +
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmImgApiKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><select class="cm-select" id="cmImgModel"><option' + (cfg.imgModel==='dall-e-3'?' selected':'') + '>dall-e-3</option><option' + (cfg.imgModel==='dall-e-2'?' selected':'') + '>dall-e-2</option><option' + (cfg.imgModel==='gpt-image-1'?' selected':'') + '>gpt-image-1</option></select></div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
+
+            '<div class="cm-sep"></div>' +
+
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (cfg.apiMode==='individual'?' selected':'') + '>为该角色单独配置</option></select></div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度。</div></div>' +
 
             '<div id="cmAdvancedSub" style="' + (isIndividual ? '' : 'display:none;') + '">' +
               '<div class="cm-field" style="margin-bottom:10px"><div class="cm-field-label">选择已保存的 API</div><select class="cm-select" id="cmApiSelect">' + apiOptionsHtml + '</select></div>' +
               '<div class="cm-sep"></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Temperature</div><div class="cm-param-desc">角色温度，决定回复更加贴合人设还是更加有创意</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">精确</span><input type="range" class="cm-range" id="cmTemp" min="0" max="2" step="0.05" value="' + cfg.temperature + '"><span class="cm-range-val" id="cmTempVal">' + cfg.temperature + '</span><span class="cm-range-hint">创意</span></div></div></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Frequency Penalty</div><div class="cm-param-desc">频率惩罚，数值越高越避免重复使用相同的词汇和表达</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">允许重复</span><input type="range" class="cm-range" id="cmFreq" min="0" max="2" step="0.1" value="' + cfg.freqPenalty + '"><span class="cm-range-val" id="cmFreqVal">' + cfg.freqPenalty + '</span><span class="cm-range-hint">避免重复</span></div></div></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Presence Penalty</div><div class="cm-param-desc">存在惩罚，数值越高越鼓励使用新词汇，让表达更加丰富多样</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">保守</span><input type="range" class="cm-range" id="cmPres" min="0" max="2" step="0.1" value="' + cfg.presPenalty + '"><span class="cm-range-val" id="cmPresVal">' + cfg.presPenalty + '</span><span class="cm-range-hint">创新</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Temperature</div><div class="cm-param-desc">贴合人设 ↔ 有创意</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">精确</span><input type="range" class="cm-range" id="cmTemp" min="0" max="2" step="0.05" value="' + cfg.temperature + '"><span class="cm-range-val" id="cmTempVal">' + cfg.temperature + '</span><span class="cm-range-hint">创意</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Frequency Penalty</div><div class="cm-param-desc">避免重复词汇</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">重复</span><input type="range" class="cm-range" id="cmFreq" min="0" max="2" step="0.1" value="' + cfg.freqPenalty + '"><span class="cm-range-val" id="cmFreqVal">' + cfg.freqPenalty + '</span><span class="cm-range-hint">避免</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Presence Penalty</div><div class="cm-param-desc">鼓励新词汇</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">保守</span><input type="range" class="cm-range" id="cmPres" min="0" max="2" step="0.1" value="' + cfg.presPenalty + '"><span class="cm-range-val" id="cmPresVal">' + cfg.presPenalty + '</span><span class="cm-range-hint">创新</span></div></div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
@@ -318,6 +396,8 @@
         proLevel: parseInt(gv('cmProLevel') || 3),
         replySpeed: gv('cmReplySpeed') || '正常（3-8秒）',
         showTyping: gv('cmShowTyping') === '显示',
+        minMsgs: parseInt(gv('cmMinMsgs') || 1),
+        maxMsgs: parseInt(gv('cmMaxMsgs') || 3),
         msgTypes: msgTypes,
         stickerGen: gc('cmStkToggle'),
         stickerStyles: stkStyles.length ? stkStyles : ['可爱卡通'],
@@ -328,6 +408,9 @@
         momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'),
         charCity: gv('cmCharCity'),
+        imgApiUrl: gv('cmImgApiUrl'),
+        imgApiKey: gv('cmImgApiKey'),
+        imgModel: gv('cmImgModel') || 'dall-e-3',
         apiMode: gv('cmApiMode') || 'global',
         apiSelect: gv('cmApiSelect') || '',
         temperature: parseFloat(gv('cmTemp') || 0.8),
@@ -339,25 +422,30 @@
     bindEvents: function(page) {
       page.querySelector('#cmBackBtn').addEventListener('click', function() { CharMgr.close(); });
 
+      // 角色头像点击
       page.querySelectorAll('.cm-char-slot').forEach(function(slot) {
-        slot.addEventListener('click', function() {
+        slot.addEventListener('click', function(e) {
+          if (e.target.closest('.cm-char-restore')) return;
           var id = slot.dataset.id;
-          if (id === '__global__') { CharMgr.currentTab = 'global'; CharMgr.selectedCharId = null; }
-          else { CharMgr.currentTab = 'individual'; CharMgr.selectedCharId = id; }
+          if (id === '__global__') { CharMgr.selectedCharId = null; }
+          else { CharMgr.selectedCharId = id; }
           CharMgr.render(page);
+          var scroll = page.querySelector('#cmScrollArea');
+          if (scroll) scroll.scrollTop = 0;
         });
       });
 
-      page.querySelectorAll('.cm-tab-item').forEach(function(tab) {
-        tab.addEventListener('click', function() {
-          if (tab.dataset.tab === 'global') { CharMgr.currentTab = 'global'; CharMgr.selectedCharId = null; }
-          else {
-            CharMgr.currentTab = 'individual';
-            var chars = App.character ? App.character.list : [];
-            if (!CharMgr.selectedCharId && chars.length) CharMgr.selectedCharId = chars[0].id;
-            if (!CharMgr.selectedCharId) { App.showToast('请先创建角色'); return; }
-          }
+      // 恢复按钮
+      page.querySelectorAll('.cm-char-restore').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var id = btn.dataset.restoreId;
+          if (!id) return;
+          if (!confirm('将该角色设置恢复为全局模板？')) return;
+          CharMgr.resetChar(id);
+          if (CharMgr.selectedCharId === id) CharMgr.selectedCharId = null;
           CharMgr.render(page);
+          App.showToast('已恢复为全局模板');
         });
       });
 
@@ -414,12 +502,22 @@
 
       page.querySelector('#cmSaveBtn').addEventListener('click', function() {
         var data = CharMgr.collectConfig(page);
-        if (CharMgr.currentTab === 'global') {
+
+        if (!CharMgr.selectedCharId) {
+          // 全局保存
           CharMgr.globalConfig = data;
-        } else if (CharMgr.selectedCharId) {
-          CharMgr.charConfigs[CharMgr.selectedCharId] = data;
+        } else {
+          // 角色保存：对比全局模板
+          if (CharMgr.isConfigDifferent(data, CharMgr.globalConfig)) {
+            CharMgr.charConfigs[CharMgr.selectedCharId] = data;
+          } else {
+            // 没有差异，删除个别配置
+            delete CharMgr.charConfigs[CharMgr.selectedCharId];
+          }
         }
+
         if (CharMgr.save()) {
+          CharMgr.render(page);
           App.showToast('✓ 设置已保存');
         }
       });
