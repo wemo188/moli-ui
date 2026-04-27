@@ -34,7 +34,7 @@
 #wechatPanel {
   background: rgba(0,0,0,0.3) !important;
   padding: 0 !important;
-  border-radius: 0 !important;
+  overflow: hidden !important;
 }
 
 .wx-inner {
