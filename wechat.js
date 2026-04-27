@@ -36,8 +36,8 @@
             '<button class="wx-header-btn" id="wxBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<div style="flex:1;"></div>' +
-            '<button class="wx-me-mode-btn" id="wxModeToggle" type="button" style="display:none;">' +
+'<div style="flex:1;"></div>' +
+'<button class="wx-me-mode-btn" id="wxModeToggle" type="button" style="display:none;position:relative;z-index:1;">' +
               '<span class="wx-me-mode-val">' + (isFS ? '全屏' : '手机') + '</span>' +
               '<span class="wx-me-mode-switch">切换</span>' +
             '</button>' +
