@@ -137,15 +137,13 @@
       }).join('');
 
       body.querySelectorAll('.wx-chat-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var id = item.dataset.charId;
-          if (id && App.chat) {
-            Wechat.close();
-            setTimeout(function() { App.chat.startChat(id); }, 380);
-          }
-        });
-      });
-    },
+  item.addEventListener('click', function() {
+    var id = item.dataset.charId;
+    if (id && App.chat) {
+      App.chat.startChat(id);
+    }
+  });
+});
 
     /* ★ 修改：通讯录过滤 contactMode */
     renderCharTab: function(body) {
