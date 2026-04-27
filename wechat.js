@@ -1,4 +1,4 @@
-
+我就知道每次碰到标签替换肯定出错，现在点不开了：
 (function() {
   'use strict';
   var App = window.App;
@@ -103,9 +103,7 @@
     },
 
     renderChatTab: function(body) {
-      var chars = (App.character ? App.character.list : []).filter(function(c) {
-        return !c.contactMode || c.contactMode === 'direct';
-      });
+      var chars = App.character ? App.character.list : [];
       if (!chars.length) {
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
         return;
@@ -135,9 +133,7 @@
     },
 
     renderCharTab: function(body) {
-      var chars = (App.character ? App.character.list : []).filter(function(c) {
-        return !c.contactMode || c.contactMode === 'direct';
-      });
+      var chars = App.character ? App.character.list : [];
       if (!chars.length) {
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
         return;
@@ -150,7 +146,7 @@
           '<div class="wx-avatar">' + avatarHtml + '</div>' +
           '<div class="wx-chat-content">' +
             '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(c.name || '未命名') + '</span></div>' +
-            '<div class="wx-chat-msg">' + App.esc(c.relation || '暂无简介') + '</div>' +
+            '<div class="wx-chat-msg">' + App.esc((c.profile || '').split('\n')[0].slice(0, 30) || '暂无简介') + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -161,8 +157,8 @@
       var name = user ? (user.nickname || user.realName || '未命名') : '未创建用户';
 
       var avatarHtml = user && user.avatar
-        ? '<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div class="wx-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+        ? '<div class="wx-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);overflow:hidden;"><img src="' + App.esc(user.avatar) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border:none;outline:none;"></div>'
+        : '<div class="wx-avatar-placeholder" style="width:80px;height:80px;border-radius:50%;background:rgba(202,223,242,.15);border:2px solid rgba(192,206,220,.7);outline:2px solid rgba(255,255,255,1);"><svg viewBox="0 0 24 24" style="width:30px;height:30px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
       body.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px 16px;gap:12px;">' +
@@ -188,7 +184,13 @@
         var current = App.LS.get('wxFullScreen') || false;
         var next = !current;
         App.LS.set('wxFullScreen', next);
-        Wechat.render();
+        var wrap = App.$('#wxWrap');
+        if (wrap) {
+          if (next) wrap.classList.add('wx-fullscreen');
+          else wrap.classList.remove('wx-fullscreen');
+        }
+        var valEl = Wechat.panelEl.querySelector('.wx-me-mode-val');
+        if (valEl) valEl.textContent = next ? '全屏' : '手机';
       });
 
       App.safeOn('#wxAddBtn', 'click', function(e) {
@@ -233,7 +235,7 @@
       if (!App.$('#wechatPanel')) {
         var panel = document.createElement('div');
         panel.id = 'wechatPanel';
-        panel.className = 'fullpage-panel hidden';
+panel.className = 'fullpage-panel hidden';
         document.body.appendChild(panel);
       }
       App.wechat = Wechat;
