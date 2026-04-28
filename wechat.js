@@ -222,7 +222,6 @@
       menu.innerHTML =
         '<div class="wx-av-mi" data-act="pin" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;border-bottom:1px solid rgba(255,255,255,.08);">' + (isPinned ? '取消置顶' : '置顶') + '</div>' +
         '<div class="wx-av-mi" data-act="rename" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;border-bottom:1px solid rgba(255,255,255,.08);">备注</div>' +
-        '<div class="wx-av-mi" data-act="chat" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;">进入聊天</div>';
 
       var rect = avEl.getBoundingClientRect();
       var left = rect.right + 6;
