@@ -26,11 +26,11 @@
   margin: 12px auto;
   margin-bottom: calc(48px + env(safe-area-inset-bottom, 20px));
   border-radius: 50px;
-  background: #000;
+  background: #fff;
   padding: 17px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px - 48px - env(safe-area-inset-bottom, 20px));
+  height: calc(100vh - 48px - 48px - env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
 }
 
