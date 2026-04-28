@@ -51,6 +51,7 @@
                 tkBlack('memory', '记忆', 'memory') +
                 tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('exportData', '导出', 'export') +
+                 tkBlack('storage', '存储', 'storage') +
                 tkBlack('console', '控制台', 'console') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
@@ -94,6 +95,7 @@
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'exportData') { Workshop.exportData(); return; }
+           if (action === 'storage') { Workshop.close(); setTimeout(function() { Workshop.openStorage(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
         });
       });
