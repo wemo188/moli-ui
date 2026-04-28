@@ -197,139 +197,135 @@
         '</div>';
       }).join('');
 
-      Wechat.bindChatSwipe(body);
+          showAvatarMenu: function(charId, avEl) {
+      var old = document.querySelector('.wx-av-menu');
+      if (old) old.remove();
 
-      body.querySelectorAll('.wx-chat-item-inner').forEach(function(inner) {
-        inner.addEventListener('click', function() {
-          var item = inner.closest('.wx-chat-item');
-          if (!item) return;
-          var id = item.dataset.charId;
-          if (id && App.chat) App.chat.openInWechat(id);
-        });
-      });
-    },
+      var isPinned = Wechat.isCharPinned(charId);
+      var c = App.character ? App.character.getById(charId) : null;
+      var origName = c ? c.name : '未命名';
+      var alias = Wechat.getCharAlias(charId);
 
-    bindChatSwipe: function(body) {
-      body.querySelectorAll('.wx-chat-item').forEach(function(item) {
-        var inner = item.querySelector('.wx-chat-item-inner');
-        var actions = item.querySelector('.wx-swipe-actions');
-        if (!inner || !actions) return;
+      var menu = document.createElement('div');
+      menu.className = 'wx-av-menu';
+      menu.style.cssText = 'position:fixed;z-index:100020;background:#000;border-radius:10px;padding:4px 0;box-shadow:0 6px 24px rgba(0,0,0,.25);min-width:120px;';
+      menu.innerHTML =
+        '<div class="wx-av-mi" data-act="pin" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;border-bottom:1px solid rgba(255,255,255,.08);">' + (isPinned ? '取消置顶' : '置顶') + '</div>' +
+        '<div class="wx-av-mi" data-act="rename" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;border-bottom:1px solid rgba(255,255,255,.08);">备注</div>' +
+        '<div class="wx-av-mi" data-act="chat" style="padding:10px 16px;font-size:13px;color:rgba(255,255,255,.85);cursor:pointer;-webkit-tap-highlight-color:transparent;">进入聊天</div>';
 
-        var charId = item.dataset.charId;
-        var sw = { active: false, sx: 0, sy: 0, locked: false, dir: '', opened: false };
-        var OPEN_W = 140;
+      var rect = avEl.getBoundingClientRect();
+      var left = rect.right + 6;
+      var top = rect.top;
+      if (left + 130 > window.innerWidth) left = rect.left - 130;
+      if (top + 130 > window.innerHeight) top = window.innerHeight - 140;
+      if (top < 10) top = 10;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
 
-        inner.addEventListener('touchstart', function(e) {
-          var t = e.touches[0];
-          sw = { active: true, sx: t.clientX, sy: t.clientY, locked: false, dir: '', opened: inner._swipeOpened || false };
-          inner.style.transition = 'none';
-        }, { passive: true });
+      document.body.appendChild(menu);
 
-        inner.addEventListener('touchmove', function(e) {
-          if (!sw.active) return;
-          var t = e.touches[0];
-          var dx = t.clientX - sw.sx;
-          var dy = t.clientY - sw.sy;
-          if (!sw.locked) {
-            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-            sw.locked = true;
-            sw.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
-          }
-          if (sw.dir !== 'h') return;
-          e.preventDefault();
-          var base = sw.opened ? -OPEN_W : 0;
-          var nx = base + dx;
-          if (nx > 0) nx = nx * 0.2;
-          if (nx < -OPEN_W) nx = -OPEN_W + (nx + OPEN_W) * 0.2;
-          inner.style.transform = 'translateX(' + nx + 'px)';
-        }, { passive: false });
+      menu.querySelectorAll('.wx-av-mi').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var act = item.dataset.act;
+          menu.remove();
 
-        inner.addEventListener('touchend', function(e) {
-          if (!sw.active) return;
-          sw.active = false;
-          if (sw.dir !== 'h') { inner.style.transition = ''; return; }
-          var t = e.changedTouches[0];
-          var dx = t.clientX - sw.sx;
-          inner.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)';
-          if (sw.opened) {
-            if (dx > 40) {
-              inner.style.transform = 'translateX(0)';
-              inner._swipeOpened = false;
-            } else {
-              inner.style.transform = 'translateX(-' + OPEN_W + 'px)';
-              inner._swipeOpened = true;
-            }
-          } else {
-            if (dx < -40) {
-              inner.style.transform = 'translateX(-' + OPEN_W + 'px)';
-              inner._swipeOpened = true;
-            } else {
-              inner.style.transform = 'translateX(0)';
-              inner._swipeOpened = false;
-            }
-          }
-        }, { passive: true });
-
-        var pinBtn = actions.querySelector('.wx-swipe-btn.pin');
-        var renameBtn = actions.querySelector('.wx-swipe-btn.rename');
-
-        if (pinBtn) {
-          pinBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
+          if (act === 'pin') {
             Wechat.togglePin(charId);
-            inner.style.transition = 'transform .2s ease';
-            inner.style.transform = 'translateX(0)';
-            inner._swipeOpened = false;
-            setTimeout(function() { Wechat.renderTab(); }, 250);
+            Wechat.renderTab();
             App.showToast(Wechat.isCharPinned(charId) ? '已置顶' : '已取消置顶');
-          });
-        }
+          }
 
-        if (renameBtn) {
-          renameBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            inner.style.transition = 'transform .2s ease';
-            inner.style.transform = 'translateX(0)';
-            inner._swipeOpened = false;
-            var current = Wechat.getCharAlias(charId);
-            var c = App.character ? App.character.getById(charId) : null;
-            var origName = c ? c.name : '未命名';
-            var newName = prompt('备注名（留空恢复原名 "' + origName + '"）：', current || '');
+          if (act === 'rename') {
+            var newName = prompt('备注名（留空恢复原名 "' + origName + '"）：', alias || '');
             if (newName === null) return;
             Wechat.setCharAlias(charId, newName.trim());
-            setTimeout(function() { Wechat.renderTab(); }, 100);
+            Wechat.renderTab();
             App.showToast(newName.trim() ? '已备注' : '已恢复原名');
-          });
-        }
+          }
+
+          if (act === 'chat') {
+            if (App.chat) App.chat.openInWechat(charId);
+          }
+        });
       });
+
+      function dismiss(ev) {
+        if (menu.parentNode && !menu.contains(ev.target)) {
+          menu.remove();
+          document.removeEventListener('touchstart', dismiss);
+          document.removeEventListener('click', dismiss);
+        }
+      }
+      setTimeout(function() {
+        document.addEventListener('touchstart', dismiss, { passive: true });
+        document.addEventListener('click', dismiss);
+      }, 100);
     },
 
-    renderCharTab: function(body) {
+       renderChatTab: function(body) {
       var chars = App.character ? App.character.list : [];
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
+      visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
+        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
         return;
       }
 
-      var listHtml = visibleChars.map(function(c) {
+      body.innerHTML = visibleChars.map(function(c) {
+        var isPinned = Wechat.isCharPinned(c.id);
         var alias = Wechat.getCharAlias(c.id);
         var displayName = alias || c.name || '未命名';
+
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
           : '<div class="wx-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-        return '<div class="wx-chat-item" data-char-id="' + c.id + '" style="padding:12px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-          '<div class="wx-avatar">' + avatarHtml + '</div>' +
-          '<div class="wx-chat-name">' + App.esc(displayName) + '</div>' +
+
+        var lastMsg = '';
+        var lastTime = '';
+        var msgs = App.LS.get('chatMsgs_' + c.id);
+        if (msgs && msgs.length) {
+          var last = msgs[msgs.length - 1];
+          lastMsg = (last.content || '').split('|||')[0].replace(/\[sticker:[^\]]+\]/g, '[表情包]').slice(0, 25);
+          if (last.ts) {
+            var d = new Date(last.ts);
+            var now = new Date();
+            if (d.toDateString() === now.toDateString()) {
+              lastTime = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+            } else {
+              lastTime = (d.getMonth() + 1) + '/' + d.getDate();
+            }
+          }
+        }
+
+        var unread = App.chat ? App.chat.getUnread(c.id) : 0;
+        var badgeHtml = unread > 0 ? '<div class="ct-unread-badge">' + (unread > 99 ? '99+' : unread) + '</div>' : '';
+
+        return '<div class="wx-chat-item' + (isPinned ? ' pinned' : '') + '" data-char-id="' + c.id + '">' +
+          '<div class="wx-avatar wx-av-tap" data-char-id="' + c.id + '" style="position:relative;">' + avatarHtml + badgeHtml + '</div>' +
+          '<div class="wx-chat-content wx-content-tap" data-char-id="' + c.id + '">' +
+            '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(displayName) + '</span><span class="wx-chat-time">' + lastTime + '</span></div>' +
+            '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
+          '</div>' +
         '</div>';
       }).join('');
 
-      body.innerHTML = listHtml;
+      // 点击头像弹出置顶/备注菜单
+      body.querySelectorAll('.wx-av-tap').forEach(function(av) {
+        av.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var charId = av.dataset.charId;
+          Wechat.showAvatarMenu(charId, av);
+        });
+      });
 
-      body.querySelectorAll('.wx-chat-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var id = item.dataset.charId;
+      // 点击内容区进入聊天
+      body.querySelectorAll('.wx-content-tap').forEach(function(ct) {
+        ct.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var id = ct.dataset.charId;
           if (id && App.chat) App.chat.openInWechat(id);
         });
       });
