@@ -33,6 +33,43 @@
       return false;
     },
 
+    getCharAlias: function(charId) {
+      var aliases = App.LS.get('wxAliases') || {};
+      return aliases[charId] || '';
+    },
+
+    setCharAlias: function(charId, name) {
+      var aliases = App.LS.get('wxAliases') || {};
+      if (name) aliases[charId] = name;
+      else delete aliases[charId];
+      App.LS.set('wxAliases', aliases);
+    },
+
+    isCharPinned: function(charId) {
+      var pins = App.LS.get('wxPins') || [];
+      return pins.indexOf(charId) >= 0;
+    },
+
+    togglePin: function(charId) {
+      var pins = App.LS.get('wxPins') || [];
+      var idx = pins.indexOf(charId);
+      if (idx >= 0) pins.splice(idx, 1);
+      else pins.unshift(charId);
+      App.LS.set('wxPins', pins);
+    },
+
+    sortChars: function(chars) {
+      var pins = App.LS.get('wxPins') || [];
+      var pinned = [];
+      var normal = [];
+      chars.forEach(function(c) {
+        if (pins.indexOf(c.id) >= 0) pinned.push(c);
+        else normal.push(c);
+      });
+      pinned.sort(function(a, b) { return pins.indexOf(a.id) - pins.indexOf(b.id); });
+      return pinned.concat(normal);
+    },
+
     render: function() {
       var panel = Wechat.panelEl;
       if (!panel) return;
@@ -45,7 +82,10 @@
             '<button class="wx-header-btn" id="wxBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<div style="flex:1;"></div>' +
+            '<div style="flex:1;"></div>' +            '<button class="wx-me-mode-btn" id="wxModeToggle" type="button">' +
+              '<span class="wx-me-mode-val">' + (isFS ? '全屏' : '手机') + '</span>' +
+              '<span class="wx-me-mode-switch">切换</span>' +
+            '</button>' +
             '<div style="position:relative;">' +
               '<button class="wx-header-btn" id="wxAddBtn" type="button">' +
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
@@ -63,19 +103,19 @@
           '<div class="wx-body" id="wxBody"></div>' +
           '<div class="wx-tabbar">' +
             '<div class="wx-tab' + (Wechat.currentTab === 'chat' ? ' active' : '') + '" data-tab="chat">' +
-              '<svg viewBox="0 0 64 64" style="width:32px;height:32px;"><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="23" y1="28" x2="41" y2="28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="34" x2="35" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
+              '<svg viewBox="0 0 64 64" style="width:30px;height:30px;"><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="23" y1="28" x2="41" y2="28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="34" x2="35" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
               '<span>聊天</span>' +
             '</div>' +
             '<div class="wx-tab' + (Wechat.currentTab === 'char' ? ' active' : '') + '" data-tab="char">' +
-              '<svg viewBox="0 0 64 64" style="width:32px;height:32px;"><path d="M4 34H14L18 26L23 42L28 20L33 38L37 30H44" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M52 28C52 25 50 23 48 23C46 23 44.5 25 44.5 25C44.5 25 43 23 41 23C39 23 37 25 37 28C37 32 44.5 37 44.5 37C44.5 37 52 32 52 28Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="44" y1="34" x2="60" y2="34" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
+              '<svg viewBox="0 0 64 64" style="width:30px;height:30px;"><path d="M4 34H14L18 26L23 42L28 20L33 38L37 30H44" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M52 28C52 25 50 23 48 23C46 23 44.5 25 44.5 25C44.5 25 43 23 41 23C39 23 37 25 37 28C37 32 44.5 37 44.5 37C44.5 37 52 32 52 28Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="44" y1="34" x2="60" y2="34" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
               '<span>通讯录</span>' +
             '</div>' +
             '<div class="wx-tab' + (Wechat.currentTab === 'moments' ? ' active' : '') + '" data-tab="moments">' +
-              '<svg viewBox="0 0 64 64" style="width:32px;height:32px;"><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(120 32 32)"/></svg>' +
+              '<svg viewBox="0 0 64 64" style="width:30px;height:30px;"><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="18" ry="8" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(120 32 32)"/></svg>' +
               '<span>朋友圈</span>' +
             '</div>' +
             '<div class="wx-tab' + (Wechat.currentTab === 'me' ? ' active' : '') + '" data-tab="me">' +
-              '<svg viewBox="0 0 64 64" style="width:32px;height:32px;"><defs><pattern id="wx-hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="currentColor" stroke-width="2.2"/></pattern></defs><circle cx="32" cy="33" r="21" stroke="currentColor" stroke-width="2.4" fill="none"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="url(#wx-hatch)" stroke="currentColor" stroke-width="1.6"/></svg>' +
+              '<svg viewBox="0 0 64 64" style="width:30px;height:30px;"><defs><pattern id="wx-hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="currentColor" stroke-width="2.2"/></pattern></defs><circle cx="32" cy="33" r="21" stroke="currentColor" stroke-width="2.4" fill="none"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="url(#wx-hatch)" stroke="currentColor" stroke-width="1.6"/></svg>' +
               '<span>我的</span>' +
             '</div>' +
           '</div>' +
@@ -105,40 +145,28 @@
     renderChatTab: function(body) {
       var chars = App.character ? App.character.list : [];
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
+      visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
         body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
         return;
       }
 
-      // ★19 排序：置顶在前
-      var pinned = App.chat ? App.chat.getPinned() : {};
-      var sorted = visibleChars.slice().sort(function(a, b) {
-        var ap = pinned[a.id] ? 1 : 0;
-        var bp = pinned[b.id] ? 1 : 0;
-        if (ap !== bp) return bp - ap;
-        // 按最后消息时间排序
-        var aMsgs = App.LS.get('chatMsgs_' + a.id);
-        var bMsgs = App.LS.get('chatMsgs_' + b.id);
-        var aTs = aMsgs && aMsgs.length ? (aMsgs[aMsgs.length - 1].ts || 0) : 0;
-        var bTs = bMsgs && bMsgs.length ? (bMsgs[bMsgs.length - 1].ts || 0) : 0;
-        return bTs - aTs;
-      });
+      body.innerHTML = visibleChars.map(function(c) {
+        var isPinned = Wechat.isCharPinned(c.id);
+        var alias = Wechat.getCharAlias(c.id);
+        var displayName = alias || c.name || '未命名';
 
-      body.innerHTML = sorted.map(function(c) {
-        var isPinned = !!(pinned[c.id]);
-        var rename = App.chat ? App.chat.getRename(c.id) : '';
-        var displayName = rename || c.name || '未命名';
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
           : '<div class="wx-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
+
         var lastMsg = '';
         var lastTime = '';
         var msgs = App.LS.get('chatMsgs_' + c.id);
         if (msgs && msgs.length) {
           var last = msgs[msgs.length - 1];
-          var rawMsg = (last.content || '').replace(/\[sticker:[^\]]+\]/g, '[表情]').split('|||')[0].slice(0, 25);
-          lastMsg = rawMsg;
+          lastMsg = (last.content || '').split('|||')[0].replace(/\[sticker:[^\]]+\]/g, '[表情包]').slice(0, 25);
           if (last.ts) {
             var d = new Date(last.ts);
             var now = new Date();
@@ -149,12 +177,15 @@
             }
           }
         }
+
         var unread = App.chat ? App.chat.getUnread(c.id) : 0;
         var badgeHtml = unread > 0 ? '<div class="ct-unread-badge">' + (unread > 99 ? '99+' : unread) + '</div>' : '';
-        var pinnedClass = isPinned ? ' pinned' : '';
-        var renamedClass = rename ? ' wx-renamed' : '';
 
-        return '<div class="wx-chat-item' + pinnedClass + renamedClass + '" data-char-id="' + c.id + '" style="position:relative;overflow:hidden;">' +
+        return '<div class="wx-chat-item' + (isPinned ? ' pinned' : '') + '" data-char-id="' + c.id + '" style="' + (isPinned ? 'background:rgba(126,163,201,.06);' : '') + '">' +
+          '<div class="wx-swipe-actions">' +
+            '<div class="wx-swipe-btn pin">' + (isPinned ? '取消置顶' : '置顶') + '</div>' +
+            '<div class="wx-swipe-btn rename">备注</div>' +
+          '</div>' +
           '<div class="wx-chat-item-inner">' +
             '<div class="wx-avatar" style="position:relative;">' + avatarHtml + badgeHtml + '</div>' +
             '<div class="wx-chat-content">' +
@@ -162,23 +193,34 @@
               '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="wx-swipe-actions">' +
-            '<button class="wx-swipe-btn pin" data-swipe-id="' + c.id + '">' + (isPinned ? '取消置顶' : '置顶') + '</button>' +
-            '<button class="wx-swipe-btn rename" data-swipe-id="' + c.id + '">备注</button>' +
-          '</div>' +
         '</div>';
       }).join('');
 
-      // ★19 滑动操作
+      Wechat.bindChatSwipe(body);
+
+      body.querySelectorAll('.wx-chat-item-inner').forEach(function(inner) {
+        inner.addEventListener('click', function() {
+          var item = inner.closest('.wx-chat-item');
+          if (!item) return;
+          var id = item.dataset.charId;
+          if (id && App.chat) App.chat.openInWechat(id);
+        });
+      });
+    },
+
+    bindChatSwipe: function(body) {
       body.querySelectorAll('.wx-chat-item').forEach(function(item) {
         var inner = item.querySelector('.wx-chat-item-inner');
         var actions = item.querySelector('.wx-swipe-actions');
         if (!inner || !actions) return;
-        var sw = { active: false, sx: 0, moved: false, open: false };
+
+        var charId = item.dataset.charId;
+        var sw = { active: false, sx: 0, sy: 0, locked: false, dir: '', opened: false };
+        var OPEN_W = 140;
 
         inner.addEventListener('touchstart', function(e) {
           var t = e.touches[0];
-          sw = { active: true, sx: t.clientX, sy: t.clientY, moved: false, open: false, locked: false, isH: false };
+          sw = { active: true, sx: t.clientX, sy: t.clientY, locked: false, dir: '', opened: inner._swipeOpened || false };
           inner.style.transition = 'none';
         }, { passive: true });
 
@@ -186,98 +228,110 @@
           if (!sw.active) return;
           var t = e.touches[0];
           var dx = t.clientX - sw.sx;
-          var dy = Math.abs(t.clientY - sw.sy);
+          var dy = t.clientY - sw.sy;
           if (!sw.locked) {
-            if (Math.abs(dx) > 10 || dy > 10) {
-              sw.locked = true;
-              sw.isH = Math.abs(dx) > dy;
-            }
-            return;
+            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+            sw.locked = true;
+            sw.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
           }
-          if (!sw.isH) return;
+          if (sw.dir !== 'h') return;
           e.preventDefault();
-          sw.moved = true;
-          var maxSlide = -130;
-          var x = Math.max(maxSlide, Math.min(0, dx));
-          inner.style.transform = 'translateX(' + x + 'px)';
+          var base = sw.opened ? -OPEN_W : 0;
+          var nx = base + dx;
+          if (nx > 0) nx = nx * 0.2;
+          if (nx < -OPEN_W) nx = -OPEN_W + (nx + OPEN_W) * 0.2;
+          inner.style.transform = 'translateX(' + nx + 'px)';
         }, { passive: false });
 
-        inner.addEventListener('touchend', function() {
+        inner.addEventListener('touchend', function(e) {
           if (!sw.active) return;
           sw.active = false;
-          inner.style.transition = 'transform .25s ease';
-          if (sw.moved) {
-            var rect = inner.getBoundingClientRect();
-            var parent = item.getBoundingClientRect();
-            var offset = rect.left - parent.left;
-            if (offset < -50) {
-              inner.style.transform = 'translateX(-130px)';
-              sw.open = true;
+          if (sw.dir !== 'h') { inner.style.transition = ''; return; }
+          var t = e.changedTouches[0];
+          var dx = t.clientX - sw.sx;
+          inner.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)';
+          if (sw.opened) {
+            if (dx > 40) {
+              inner.style.transform = 'translateX(0)';
+              inner._swipeOpened = false;
             } else {
-              inner.style.transform = '';
-              sw.open = false;
+              inner.style.transform = 'translateX(-' + OPEN_W + 'px)';
+              inner._swipeOpened = true;
+            }
+          } else {
+            if (dx < -40) {
+              inner.style.transform = 'translateX(-' + OPEN_W + 'px)';
+              inner._swipeOpened = true;
+            } else {
+              inner.style.transform = 'translateX(0)';
+              inner._swipeOpened = false;
             }
           }
         }, { passive: true });
 
-        // 点击聊天
-        inner.addEventListener('click', function() {
-          if (sw.moved) return;
-          var id = item.dataset.charId;
-          if (id && App.chat) App.chat.openInWechat(id);
-        });
+        var pinBtn = actions.querySelector('.wx-swipe-btn.pin');
+        var renameBtn = actions.querySelector('.wx-swipe-btn.rename');
 
-        // 置顶
-        item.querySelector('.wx-swipe-btn.pin').addEventListener('click', function(e) {
-          e.stopPropagation();
-          var id = this.dataset.swipeId;
-          if (!App.chat) return;
-          var isPinned = App.chat.isPinned(id);
-          App.chat.setPinned(id, !isPinned);
-          inner.style.transform = '';
-          Wechat.renderChatTab(body);
-          App.showToast(isPinned ? '已取消置顶' : '已置顶');
-        });
+        if (pinBtn) {
+          pinBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            Wechat.togglePin(charId);
+            inner.style.transition = 'transform .2s ease';
+            inner.style.transform = 'translateX(0)';
+            inner._swipeOpened = false;
+            setTimeout(function() { Wechat.renderTab(); }, 250);
+            App.showToast(Wechat.isCharPinned(charId) ? '已置顶' : '已取消置顶');
+          });
+        }
 
-        // 备注
-        item.querySelector('.wx-swipe-btn.rename').addEventListener('click', function(e) {
-          e.stopPropagation();
-          var id = this.dataset.swipeId;
-          inner.style.transform = '';
-          var current = App.chat ? App.chat.getRename(id) : '';
-          var c = App.character ? App.character.getById(id) : null;
-          var name = prompt('输入备注名（留空恢复原名）', current || (c ? c.name : ''));
-          if (name === null) return;
-          if (App.chat) App.chat.setRename(id, name.trim());
-          Wechat.renderChatTab(body);
-          App.showToast(name.trim() ? '已备注' : '已恢复原名');
-        });
+        if (renameBtn) {
+          renameBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            inner.style.transition = 'transform .2s ease';
+            inner.style.transform = 'translateX(0)';
+            inner._swipeOpened = false;
+            var current = Wechat.getCharAlias(charId);
+            var c = App.character ? App.character.getById(charId) : null;
+            var origName = c ? c.name : '未命名';
+            var newName = prompt('备注名（留空恢复原名 "' + origName + '"）：', current || '');
+            if (newName === null) return;
+            Wechat.setCharAlias(charId, newName.trim());
+            setTimeout(function() { Wechat.renderTab(); }, 100);
+            App.showToast(newName.trim() ? '已备注' : '已恢复原名');
+          });
+        }
       });
     },
 
-    // ★18 通讯录只显示名字
     renderCharTab: function(body) {
       var chars = App.character ? App.character.list : [];
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色</div></div>';
+        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
         return;
       }
 
-      body.innerHTML = visibleChars.map(function(c) {
+      var listHtml = visibleChars.map(function(c) {
+        var alias = Wechat.getCharAlias(c.id);
+        var displayName = alias || c.name || '未命名';
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
           : '<div class="wx-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-        var rename = App.chat ? App.chat.getRename(c.id) : '';
-        var displayName = rename || c.name || '未命名';
-        return '<div class="wx-chat-item" data-char-id="' + c.id + '">' +
+        return '<div class="wx-chat-item" data-char-id="' + c.id + '" style="padding:12px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
           '<div class="wx-avatar">' + avatarHtml + '</div>' +
-          '<div class="wx-chat-content">' +
-            '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(displayName) + '</span></div>' +
-          '</div>' +
+          '<div class="wx-chat-name">' + App.esc(displayName) + '</div>' +
         '</div>';
       }).join('');
+
+      body.innerHTML = listHtml;
+
+      body.querySelectorAll('.wx-chat-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          var id = item.dataset.charId;
+          if (id && App.chat) App.chat.openInWechat(id);
+        });
+      });
     },
 
     renderMeTab: function(body) {
@@ -293,51 +347,116 @@
           '<div style="font-size:17px;font-weight:600;color:#2e4258;">' + App.esc(name) + '</div>' +
         '</div>' +
         '<div>' +
-          // ★9 收藏带删除和转发
           '<div class="wx-me-link" id="wxMeFavs">' +
             '<span class="wx-me-link-text">收藏</span>' +
             '<span class="wx-me-link-arrow">›</span>' +
+          '</div>' +
+          '<div class="wx-me-link" id="wxMeStorage">' +
+            '<span class="wx-me-link-text">存储空间</span>' +
+            '<span style="font-size:13px;color:#8aa0b8;">' + Wechat.getStorageSize() + ' ›</span>' +
           '</div>' +
         '</div>';
 
       body.querySelector('#wxMeFavs').addEventListener('click', function() {
         Wechat.renderFavsPage(body);
       });
+
+      body.querySelector('#wxMeStorage').addEventListener('click', function() {
+        Wechat.renderStoragePage(body);
+      });
     },
 
-    // ★9 收藏页面
-    renderFavsPage: function(body) {
-      var favs = App.LS.get('chatFavorites') || [];
-      if (!favs.length) {
-        body.innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:13px;">暂无收藏</div>' +
-          '<div style="padding:10px 20px;"><button id="wxFavsBack" type="button" style="padding:10px;background:none;border:1px solid #ddd;border-radius:8px;font-size:12px;color:#666;cursor:pointer;font-family:inherit;width:100%;">返回</button></div>';
-        body.querySelector('#wxFavsBack').addEventListener('click', function() { Wechat.renderMeTab(body); });
-        return;
+    getStorageSize: function() {
+      var total = 0;
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var val = localStorage.getItem(key);
+        total += key.length + (val ? val.length : 0);
       }
+      var kb = Math.round(total * 2 / 1024);
+      if (kb > 1024) return (kb / 1024).toFixed(1) + ' MB';
+      return kb + ' KB';
+    },
 
-      var html = '<div style="padding:12px 16px;font-size:14px;font-weight:700;color:#2e4258;">收藏列表</div>';
-      html += favs.map(function(f, i) {
-        var time = f.savedAt ? new Date(f.savedAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-        return '<div style="padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.04);position:relative;">' +
-          '<div style="font-size:11px;color:#999;margin-bottom:4px;">' + App.esc(f.charName || '') + ' · ' + time + '</div>' +
-          '<div style="font-size:13px;color:#333;line-height:1.5;padding-right:60px;">' + App.esc((f.content || '').slice(0, 200)) + '</div>' +
-          '<div style="position:absolute;top:12px;right:12px;display:flex;gap:6px;">' +
-            '<button class="fav-fwd" data-idx="' + i + '" type="button" style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:10px;color:#7a9ab8;cursor:pointer;font-family:inherit;">转发</button>' +
-            '<button class="fav-del" data-idx="' + i + '" type="button" style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:10px;color:#c9706b;cursor:pointer;font-family:inherit;">删除</button>' +
-          '</div>' +
+    renderStoragePage: function(body) {
+      var items = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var val = localStorage.getItem(key);
+        var size = Math.round((key.length + (val ? val.length : 0)) * 2 / 1024);
+        items.push({ key: key, size: size });
+      }
+      items.sort(function(a, b) { return b.size - a.size; });
+
+      var html = '<div style="padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,0,0,.04);cursor:pointer;-webkit-tap-highlight-color:transparent;" id="wxStorageBack">' +
+        '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;"><path d="M15 18l-6-6 6-6"/></svg>' +
+        '<span style="font-size:13px;color:#999;">返回</span></div>';
+
+      html += '<div style="padding:12px 18px;font-size:12px;color:#999;">总计：' + Wechat.getStorageSize() + '</div>';
+
+      html += items.slice(0, 50).map(function(it) {
+        var isBg = it.key.startsWith('chatBg_');
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">' +
+          '<span style="color:#333;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:10px;">' + App.esc(it.key) + '</span>' +
+          '<span style="color:#999;flex-shrink:0;">' + it.size + ' KB</span>' +
+          (isBg ? '<button data-delkey="' + App.escAttr(it.key) + '" type="button" style="margin-left:8px;background:rgba(201,112,107,.1);border:1px solid rgba(201,112,107,.3);border-radius:6px;color:#c9706b;font-size:11px;padding:3px 8px;cursor:pointer;font-family:inherit;flex-shrink:0;">清除</button>' : '') +
         '</div>';
       }).join('');
 
-      html += '<div style="padding:10px 16px;"><button id="wxFavsBack" type="button" style="padding:10px;background:none;border:1px solid #ddd;border-radius:8px;font-size:12px;color:#666;cursor:pointer;font-family:inherit;width:100%;">返回</button></div>';
+      body.innerHTML = html;
+
+      body.querySelector('#wxStorageBack').addEventListener('click', function() {
+        Wechat.renderMeTab(body);
+      });
+
+      body.querySelectorAll('[data-delkey]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var key = btn.dataset.delkey;
+          if (!confirm('清除 ' + key + '？')) return;
+          localStorage.removeItem(key);
+          Wechat.renderStoragePage(body);
+          App.showToast('已清除');
+        });
+      });
+    },
+
+    renderFavsPage: function(body) {
+      var favs = App.LS.get('chatFavorites') || [];
+
+      var html = '<div style="padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,0,0,.04);cursor:pointer;-webkit-tap-highlight-color:transparent;" id="wxFavsBack">' +
+        '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;"><path d="M15 18l-6-6 6-6"/></svg>' +
+        '<span style="font-size:13px;color:#999;">返回</span></div>';
+
+      if (!favs.length) {
+        html += '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;">暂无收藏</div>';
+      } else {
+        html += favs.map(function(f, i) {
+          var content = (f.content || '').slice(0, 100);
+          var hasSticker = content.indexOf('[sticker:') >= 0;
+          return '<div style="padding:12px 18px;border-bottom:1px solid rgba(0,0,0,.04);">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+              '<span style="font-size:11px;color:#999;">' + App.esc(f.charName || '') + '</span>' +
+              '<div style="display:flex;gap:6px;">' +
+                '<button class="fav-send" data-fav-idx="' + i + '" type="button" style="background:none;border:1px solid rgba(126,163,201,.4);border-radius:6px;color:#7a9ab8;font-size:10px;padding:2px 8px;cursor:pointer;font-family:inherit;">转发</button>' +
+                '<button class="fav-del" data-fav-idx="' + i + '" type="button" style="background:none;border:1px solid rgba(201,112,107,.3);border-radius:6px;color:#c9706b;font-size:10px;padding:2px 8px;cursor:pointer;font-family:inherit;">删除</button>' +
+              '</div>' +
+            '</div>' +
+            '<div style="font-size:13px;color:#333;line-height:1.5;">' + App.esc(content) + '</div>' +
+          '</div>';
+        }).join('');
+      }
 
       body.innerHTML = html;
 
-      body.querySelector('#wxFavsBack').addEventListener('click', function() { Wechat.renderMeTab(body); });
+      body.querySelector('#wxFavsBack').addEventListener('click', function() {
+        Wechat.renderMeTab(body);
+      });
 
       body.querySelectorAll('.fav-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var idx = parseInt(btn.dataset.idx);
+          var idx = parseInt(btn.dataset.favIdx);
           favs.splice(idx, 1);
           App.LS.set('chatFavorites', favs);
           Wechat.renderFavsPage(body);
@@ -345,42 +464,39 @@
         });
       });
 
-      body.querySelectorAll('.fav-fwd').forEach(function(btn) {
+      body.querySelectorAll('.fav-send').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var idx = parseInt(btn.dataset.idx);
+          var idx = parseInt(btn.dataset.favIdx);
           var fav = favs[idx];
           if (!fav) return;
-
-          // 选择转发目标
           var chars = App.character ? App.character.list : [];
-          var visible = chars.filter(function(c) { return Wechat.isCharVisible(c); });
-          if (!visible.length) { App.showToast('暂无可转发的角色'); return; }
+          var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
+          if (!visibleChars.length) { App.showToast('没有可转发的角色'); return; }
 
-          var overlay = document.createElement('div');
-          overlay.style.cssText = 'position:fixed;inset:0;z-index:100020;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;';
-          overlay.innerHTML =
-            '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;max-height:60vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
-              '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;margin-bottom:12px;">转发给</div>' +
-              visible.map(function(c) {
-                var rename = App.chat ? App.chat.getRename(c.id) : '';
-                var dn = rename || c.name || '?';
-                return '<div class="fav-fwd-target" data-id="' + c.id + '" style="padding:12px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:13px;color:#333;-webkit-tap-highlight-color:transparent;">' + App.esc(dn) + '</div>';
-              }).join('') +
-              '<div style="text-align:center;margin-top:10px;"><button id="fwdCancel" type="button" style="padding:8px 20px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button></div>' +
+          var picker = document.createElement('div');
+          picker.style.cssText = 'position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+          var listHtml = visibleChars.map(function(c) {
+            var alias = Wechat.getCharAlias(c.id);
+            var dn = alias || c.name || '?';
+            return '<div class="fwd-char" data-fwd-id="' + c.id + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px;color:#333;-webkit-tap-highlight-color:transparent;">' + App.esc(dn) + '</div>';
+          }).join('');
+          picker.innerHTML =
+            '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:16px;width:260px;max-height:60vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
+              '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:10px;">转发给</div>' +
+              listHtml +
+              '<div style="text-align:center;padding:10px;"><button type="button" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;" id="fwdCancel">取消</button></div>' +
             '</div>';
-          document.body.appendChild(overlay);
-          overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-          overlay.querySelector('#fwdCancel').addEventListener('click', function() { overlay.remove(); });
-
-          overlay.querySelectorAll('.fav-fwd-target').forEach(function(t) {
-            t.addEventListener('click', function() {
-              var targetId = t.dataset.id;
-              overlay.remove();
-              // 写入目标聊天记录
-              var targetMsgs = App.LS.get('chatMsgs_' + targetId) || [];
-              targetMsgs.push({ role: 'user', content: '[转发] ' + fav.content, ts: Date.now() });
-              App.LS.set('chatMsgs_' + targetId, targetMsgs);
+          document.body.appendChild(picker);
+          picker.addEventListener('click', function(ev) { if (ev.target === picker) picker.remove(); });
+          picker.querySelector('#fwdCancel').addEventListener('click', function() { picker.remove(); });
+          picker.querySelectorAll('.fwd-char').forEach(function(ch) {
+            ch.addEventListener('click', function() {
+              var targetId = ch.dataset.fwdId;
+              picker.remove();
+              var msgs = App.LS.get('chatMsgs_' + targetId) || [];
+              msgs.push({ role: 'user', content: '[转发消息] ' + fav.content, ts: Date.now() });
+              App.LS.set('chatMsgs_' + targetId, msgs);
               App.showToast('已转发');
             });
           });
