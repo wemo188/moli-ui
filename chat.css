@@ -35,7 +35,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: #000;
+  background: #fff;
 }
 
 .ct-no-bg.has-bg { background: transparent; }
