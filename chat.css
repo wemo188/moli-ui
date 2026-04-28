@@ -275,7 +275,7 @@
 }
 
 .ct-voice-btn svg { width: 22px; height: 22px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.ct-plus-btn svg { width: 28px; height: 28px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ct-plus-btn svg { width: 34px; height: 34px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .ct-input {
   flex: 1;
