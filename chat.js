@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -8,9 +7,32 @@ var MAX_CONTEXT=40;
 var MAX_BG_SIZE=800;
 var BG_QUALITY=0.7;
 
+var ERR_MAP={
+'401':'API Key 无效或已过期，请检查 API 配置',
+'402':'账户余额不足，请充值',
+'403':'API Key 权限不足，请检查配置',
+'404':'API 地址或模型不存在，请检查配置',
+'429':'请求太频繁，请稍后再试',
+'500':'服务器内部错误，请稍后再试',
+'502':'网关错误，API 服务暂时不可用',
+'503':'API 服务过载或维护中，请稍后再试'
+};
+
 function compressImage(d,m,q,cb){var i=new Image();i.onload=function(){var w=i.width,h=i.height;if(w>h){if(w>m){h=h*m/w;w=m;}}else{if(h>m){w=w*m/h;h=m;}}var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);cb(c.toDataURL('image/jpeg',q));};i.src=d;}
 function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function pad2(n){return n<10?'0'+n:''+n;}
+
+function translateError(err){
+var msg=err.message||String(err);
+var codeMatch=msg.match(/(\d{3})/);
+if(codeMatch&&ERR_MAP[codeMatch[1]])return ERR_MAP[codeMatch[1]]+' ('+codeMatch[1]+')';
+if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return '网络连接失败，请检查网络或 API 地址是否正确';
+if(msg.indexOf('AbortError')>=0)return '请求已取消';
+if(msg.indexOf('timeout')>=0||msg.indexOf('Timeout')>=0)return '请求超时，请稍后再试';
+if(msg.indexOf('JSON')>=0)return 'API 返回数据格式异常：'+msg;
+if(msg.indexOf('CORS')>=0||msg.indexOf('cors')>=0)return 'API 跨域被拒绝，请检查 API 地址';
+return '请求失败：'+msg;
+}
 
 function getCfg(charId){
 var cfg=null;
@@ -67,8 +89,8 @@ parts.push(
 '11. 使用'+lang+'回复。\n'+
 '12. 禁止在每句话末尾都加句号。真实微信聊天中绝大多数人不加句号。可以用语气词或什么都不加来结尾。\n'+
 '13. 你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。无论如何都不要跳出角色。\n'+
-'14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
-'15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。'
+'14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。\n'+
+'15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。但如果天气出现异常变化（如突然下雨、下雪、降温），可以自然地提到并关心对方。'
 );
 
 if(cfg.bilingual){
@@ -82,7 +104,11 @@ var allowedTypes=cfg.msgTypes||['文字'];
 if(allowedTypes.indexOf('表情')>=0)parts.push('\n可以适当使用emoji表情。');
 if(cfg.stickerGen&&allowedTypes.indexOf('图片')>=0){
   var stkFreq=['极少','偶尔','适中','经常','频繁'][Math.min((cfg.stickerFreq||2)-1,4)];
-  parts.push('\n【表情包】适合时用[sticker:描述] 标记。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。');
+  parts.push('\n【表情包】当你想发送表情包时用 [sticker:简短描述表情包内容和情绪] 标记。描述要具体且多样化，根据当前对话情境和情绪来决定内容，比如[sticker:得意地叉腰]、[sticker:害羞捂脸]、[sticker:无语翻白眼]、[sticker:开心转圈]等。不要总是用同一个表情。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。');
+}
+
+if(allowedTypes.indexOf('语音')>=0){
+  parts.push('\n【语音消息】当你想发语音消息时用 [voice:语音内容文字] 标记。语音内容应该口语化、自然，比如 [voice:哎你怎么还没睡啊]。');
 }
 
 if(charData){
@@ -121,7 +147,7 @@ if(cfg.timeWeather){
   else if(hour>=19&&hour<22)period='晚上';
   else period='深夜';
   var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
-  var envInfo='\n【当前环境 - 极其重要】\n现在是：'+timeStr+'\n现在是'+period+'。凌晨0-5点仍属于"今天"。';
+  var envInfo='\n【当前环境】\n现在是：'+timeStr+'\n现在是'+period+'。凌晨0-5点仍属于"今天"。';
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
     if(ws)envInfo+='\n用户所在地'+ws;
@@ -155,14 +181,13 @@ parts.push('\n【最终提醒】纯对话文字。不是小说。不加句号。
 return parts.join('\n');
 }
 
-// === 图片生成 ===
 function generateSticker(desc,cfg,callback){
 var imgUrl=cfg.imgApiUrl||'';var imgKey=cfg.imgApiKey||'';
 if(!imgUrl){var gApi=App.api?App.api.getActiveConfig():null;if(gApi){imgUrl=gApi.url;if(!imgKey)imgKey=gApi.key;}}
 if(!imgKey){var gApi2=App.api?App.api.getActiveConfig():null;if(gApi2)imgKey=gApi2.key;}
 if(!imgUrl||!imgKey){callback(null);return;}
 var model=cfg.imgModel||'gpt-image-1';
-var prompt='Generate a cute chat sticker: '+desc+'. Style: '+(cfg.stickerStyles||['可爱卡通']).join(', ')+'. Simple, expressive.';
+var prompt='Generate a cute chat sticker/emoji: '+desc+'. Style: '+(cfg.stickerStyles||['可爱卡通']).join(', ')+'. Simple, expressive, white background.';
 fetch(imgUrl.replace(/\/+$/,'')+'/images/generations',{
   method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+imgKey},
   body:JSON.stringify({model:model,prompt:prompt,n:1,size:'256x256',response_format:'url'})
@@ -171,12 +196,20 @@ fetch(imgUrl.replace(/\/+$/,'')+'/images/generations',{
 }).catch(function(){callback(null);});
 }
 
-// === 主对象 ===
+function speakTTS(text,cfg){
+if(!cfg||!cfg.fallbackTTS)return;
+if('speechSynthesis' in window){
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=1;u.pitch=1;
+  speechSynthesis.speak(u);
+}
+}
+
 var Chat={
 charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
 _ctxMenu:null,_menuEl:null,_proTimer:null,_visHandler:null,_streamPartial:'',
-_backgroundMode:false,_sendQueue:[],_isSendingQueue:false,
-_plusOpen:false,_sendDelayTimer:null,
+_backgroundMode:false,_sendDelayTimer:null,
+_plusOpen:false,_avatarMode:'square',
 
 loadMsgs:function(){Chat.messages=App.LS.get('chatMsgs_'+Chat.charId)||[];},
 saveMsgs:function(){try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e){if(Chat.messages.length>20){Chat.messages=Chat.messages.slice(-20);try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e2){}}}},
@@ -188,14 +221,13 @@ clearUnread:function(charId){App.LS.remove('chatUnread_'+(charId||Chat.charId));
 openInWechat:function(charId){
 if(!App.character){App.showToast('character模块未加载');return;}
 var c=App.character.getById(charId);
-if(!c){App.showToast('角色不存在: '+charId);return;}
+if(!c){App.showToast('角色不存在');return;}
 if(!App.chatUI){App.showToast('chatUI模块未加载');return;}
 Chat.charId=charId;Chat.charData=c;Chat.loadMsgs();
 Chat.clearUnread(charId);
 Chat._backgroundMode=false;
-Chat._sendQueue=[];
-Chat._isSendingQueue=false;
 Chat._plusOpen=false;
+Chat._avatarMode=App.LS.get('chatAvatarMode')||'square';
 if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
 
 var inner=App.$('#wxInner');if(!inner)return;
@@ -204,8 +236,9 @@ if(App.wechat)App.wechat._savedInner=inner.innerHTML;
 var bgUrl=App.LS.get('chatBg_'+charId)||'';
 var tintOn=App.LS.get('chatTint_'+charId);if(tintOn===null)tintOn=true;
 var hasBg=!!bgUrl;
+var isFS=App.LS.get('wxFullScreen')||false;
 
-if(App.chatUI)App.chatUI.render(inner,c,bgUrl,hasBg,tintOn);
+if(App.chatUI)App.chatUI.render(inner,c,bgUrl,hasBg,tintOn,isFS);
 Chat.renderMessages();
 Chat.bindEvents();
 Chat.startProactive();
@@ -238,21 +271,17 @@ renderMessages:function(){if(App.chatUI)App.chatUI.renderMessages();},
 scrollBottom:function(){var el=App.$('#ctMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
 bindEvents:function(){if(App.chatUI)App.chatUI.bindEvents();},
 
-// === 发送（带等待窗口，让用户能连续发多条） ===
 send:function(){
 var input=App.$('#ctInput');if(!input)return;
 var text=input.value.trim();if(!text)return;
 input.value='';input.style.height='auto';
 var pp=App.$('#ctPlusPanel');if(pp)pp.classList.remove('show');Chat._plusOpen=false;
 
-// 添加用户消息
 Chat.messages.push({role:'user',content:text,ts:Date.now()});
 Chat.saveMsgs();Chat.renderMessages();
 
-// 如果正在生成中，消息存了就行，等生成完再处理
 if(Chat.isStreaming)return;
 
-// 重置等待计时器：每次发送都重置，3秒内没有新消息才触发AI回复
 if(Chat._sendDelayTimer)clearTimeout(Chat._sendDelayTimer);
 Chat._sendDelayTimer=setTimeout(function(){
   Chat._sendDelayTimer=null;
@@ -265,10 +294,27 @@ Chat._sendDelayTimer=setTimeout(function(){
 },3000);
 },
 
+sendSpecial:function(type,content){
+Chat.messages.push({role:'user',content:'['+type+'] '+(content||''),ts:Date.now(),msgType:type});
+Chat.saveMsgs();Chat.renderMessages();
+
+if(Chat.isStreaming)return;
+if(Chat._sendDelayTimer)clearTimeout(Chat._sendDelayTimer);
+Chat._sendDelayTimer=setTimeout(function(){
+  Chat._sendDelayTimer=null;
+  Chat.requestAI();
+  Chat.resetProactive();
+},2000);
+},
+
 requestAI:function(){
 var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
-if(!api){App.showToast('请先配置 API');Chat.updateTyping(false);return;}
+if(!api){
+  Chat.messages.push({role:'system',content:'发送失败：未配置 API。请点击悬浮球 → API 进行配置。',ts:Date.now()});
+  Chat.saveMsgs();Chat.renderMessages();Chat.updateTyping(false);
+  return;
+}
 var user=App.user?App.user.getActiveUser():null;
 var sceneText=App.LS.get('chatScene_'+Chat.charId)||'';
 var sysPrompt=buildSystemPrompt(Chat.charData,user,sceneText,cfg);
@@ -303,7 +349,7 @@ return read();
 Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
 if(err.name==='AbortError')return;
-var errMsg=err.message||String(err);
+var errMsg=translateError(err);
 if(fullText){
   var parts=fullText.trim().split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
   var now=Date.now();
@@ -315,7 +361,6 @@ if(fullText){
   if(!Chat._backgroundMode){
     Chat.messages.push({role:'system',content:'发送失败',ts:Date.now()});
     Chat.saveMsgs();Chat.renderMessages();
-    // 显示详细错误
     var container=App.$('#ctMsgs');
     if(container){var errDiv=document.createElement('div');errDiv.className='ct-error-detail';errDiv.textContent=errMsg;container.appendChild(errDiv);Chat.scrollBottom();}
   }
@@ -342,8 +387,7 @@ if(text){
   Chat.saveMsgs();
   if(Chat._backgroundMode){
     Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
-    Chat._backgroundMode=false;
-    return;
+    Chat._backgroundMode=false;return;
   }
 }
 Chat._backgroundMode=false;
@@ -366,9 +410,7 @@ Chat.renderMessages();
 
 updateSendBtn:function(){if(App.chatUI)App.chatUI.updateSendBtn();},
 updateTyping:function(show){if(App.chatUI)App.chatUI.updateTyping(show);},
-showMenu:function(){if(App.chatUI)App.chatUI.showMenu();},
 dismissMenu:function(){if(Chat._menuEl){Chat._menuEl.remove();Chat._menuEl=null;}},
-showCtxMenu:function(msgEl,x,y){if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);},
 dismissCtx:function(){if(Chat._ctxMenu){Chat._ctxMenu.remove();Chat._ctxMenu=null;}},
 
 deleteMsg:function(idx){Chat.messages.splice(idx,1);Chat.saveMsgs();Chat.renderMessages();},
@@ -395,12 +437,20 @@ App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(fu
 
 shareMsg:function(idx){
 var msg=Chat.messages[idx];if(!msg)return;
-var shareText=msg.content||'';
-if(navigator.share){navigator.share({text:shareText}).catch(function(){});}
-else{App.copyText(shareText).then(function(){App.showToast('已复制，可粘贴分享');}).catch(function(){App.showToast('复制失败');});}
+if(navigator.share){navigator.share({text:msg.content}).catch(function(){});}
+else{App.copyText(msg.content).then(function(){App.showToast('已复制，可粘贴转发');}).catch(function(){App.showToast('复制失败');});}
 },
 
-// === 主动消息 ===
+toggleAvatarMode:function(){
+var modes=['square','circle','hidden'];
+var cur=modes.indexOf(Chat._avatarMode);
+Chat._avatarMode=modes[(cur+1)%modes.length];
+App.LS.set('chatAvatarMode',Chat._avatarMode);
+Chat.renderMessages();
+var labels={square:'方形头像',circle:'圆形头像',hidden:'隐藏头像'};
+App.showToast(labels[Chat._avatarMode]);
+},
+
 startProactive:function(){
 Chat.stopProactive();
 var cfg=getCfg(Chat.charId);
@@ -457,14 +507,20 @@ return read();
 }).catch(function(){Chat.isStreaming=false;if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}});
 },
 
-showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
-showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
-setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
+setChatBg:function(src){
+try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}
+// 同步到全局背景记录
+var allBgs=App.LS.get('allChatBgs')||[];
+if(allBgs.indexOf(src)<0){allBgs.push(src);App.LS.set('allChatBgs',allBgs);}
+var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';
+var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');
+App.showToast('背景已设置');
+},
 
 init:function(){App.chat=Chat;}
 };
 
-Chat._utils={getCfg:getCfg,getApi:getApi,fmtTime:fmtTime,SPLIT:SPLIT,generateSticker:generateSticker,compressImage:compressImage,MAX_BG_SIZE:MAX_BG_SIZE,BG_QUALITY:BG_QUALITY};
+Chat._utils={getCfg:getCfg,getApi:getApi,fmtTime:fmtTime,SPLIT:SPLIT,generateSticker:generateSticker,compressImage:compressImage,MAX_BG_SIZE:MAX_BG_SIZE,BG_QUALITY:BG_QUALITY,speakTTS:speakTTS};
 
 App.register('chat',Chat);
 })();
