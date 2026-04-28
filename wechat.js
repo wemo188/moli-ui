@@ -182,22 +182,32 @@
         var unread = App.chat ? App.chat.getUnread(c.id) : 0;
         var badgeHtml = unread > 0 ? '<div class="ct-unread-badge">' + (unread > 99 ? '99+' : unread) + '</div>' : '';
 
-        return '<div class="wx-chat-item' + (isPinned ? ' pinned' : '') + '" data-char-id="' + c.id + '" style="' + (isPinned ? 'background:rgba(126,163,201,.06);' : '') + '">' +
-          '<div class="wx-swipe-actions">' +
-            '<div class="wx-swipe-btn pin">' + (isPinned ? '取消置顶' : '置顶') + '</div>' +
-            '<div class="wx-swipe-btn rename">备注</div>' +
-          '</div>' +
-          '<div class="wx-chat-item-inner">' +
-            '<div class="wx-avatar" style="position:relative;">' + avatarHtml + badgeHtml + '</div>' +
-            '<div class="wx-chat-content">' +
-              '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(displayName) + '</span><span class="wx-chat-time">' + lastTime + '</span></div>' +
-              '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
-            '</div>' +
+        return '<div class="wx-chat-item' + (isPinned ? ' pinned' : '') + '" data-char-id="' + c.id + '">' +
+          '<div class="wx-avatar wx-av-tap" data-char-id="' + c.id + '" style="position:relative;">' + avatarHtml + badgeHtml + '</div>' +
+          '<div class="wx-chat-content wx-content-tap" data-char-id="' + c.id + '">' +
+            '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(displayName) + '</span><span class="wx-chat-time">' + lastTime + '</span></div>' +
+            '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
 
-          showAvatarMenu: function(charId, avEl) {
+      body.querySelectorAll('.wx-av-tap').forEach(function(av) {
+        av.addEventListener('click', function(e) {
+          e.stopPropagation();
+          Wechat.showAvatarMenu(av.dataset.charId, av);
+        });
+      });
+
+      body.querySelectorAll('.wx-content-tap').forEach(function(ct) {
+        ct.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var id = ct.dataset.charId;
+          if (id && App.chat) App.chat.openInWechat(id);
+        });
+      });
+    },
+
+    showAvatarMenu: function(charId, avEl) {
       var old = document.querySelector('.wx-av-menu');
       if (old) old.remove();
 
@@ -258,75 +268,38 @@
           document.removeEventListener('click', dismiss);
         }
       }
-      
       setTimeout(function() {
         document.addEventListener('touchstart', dismiss, { passive: true });
         document.addEventListener('click', dismiss);
       }, 100);
     },
 
-       renderChatTab: function(body) {
+    renderCharTab: function(body) {
       var chars = App.character ? App.character.list : [];
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
-      visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="wx-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
+        body.innerHTML = '<div class="wx-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="wx-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
         return;
       }
 
-      body.innerHTML = visibleChars.map(function(c) {
-        var isPinned = Wechat.isCharPinned(c.id);
+      var listHtml = visibleChars.map(function(c) {
         var alias = Wechat.getCharAlias(c.id);
         var displayName = alias || c.name || '未命名';
-
         var avatarHtml = c.avatar
           ? '<img src="' + App.escAttr(c.avatar) + '" alt="">'
           : '<div class="wx-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-
-        var lastMsg = '';
-        var lastTime = '';
-        var msgs = App.LS.get('chatMsgs_' + c.id);
-        if (msgs && msgs.length) {
-          var last = msgs[msgs.length - 1];
-          lastMsg = (last.content || '').split('|||')[0].replace(/\[sticker:[^\]]+\]/g, '[表情包]').slice(0, 25);
-          if (last.ts) {
-            var d = new Date(last.ts);
-            var now = new Date();
-            if (d.toDateString() === now.toDateString()) {
-              lastTime = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-            } else {
-              lastTime = (d.getMonth() + 1) + '/' + d.getDate();
-            }
-          }
-        }
-
-        var unread = App.chat ? App.chat.getUnread(c.id) : 0;
-        var badgeHtml = unread > 0 ? '<div class="ct-unread-badge">' + (unread > 99 ? '99+' : unread) + '</div>' : '';
-
-        return '<div class="wx-chat-item' + (isPinned ? ' pinned' : '') + '" data-char-id="' + c.id + '">' +
-          '<div class="wx-avatar wx-av-tap" data-char-id="' + c.id + '" style="position:relative;">' + avatarHtml + badgeHtml + '</div>' +
-          '<div class="wx-chat-content wx-content-tap" data-char-id="' + c.id + '">' +
-            '<div class="wx-chat-top"><span class="wx-chat-name">' + App.esc(displayName) + '</span><span class="wx-chat-time">' + lastTime + '</span></div>' +
-            '<div class="wx-chat-msg">' + App.esc(lastMsg || '点击开始聊天') + '</div>' +
-          '</div>' +
+        return '<div class="wx-chat-item" data-char-id="' + c.id + '" style="padding:12px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
+          '<div class="wx-avatar">' + avatarHtml + '</div>' +
+          '<div class="wx-chat-name">' + App.esc(displayName) + '</div>' +
         '</div>';
       }).join('');
 
-      // 点击头像弹出置顶/备注菜单
-      body.querySelectorAll('.wx-av-tap').forEach(function(av) {
-        av.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var charId = av.dataset.charId;
-          Wechat.showAvatarMenu(charId, av);
-        });
-      });
+      body.innerHTML = listHtml;
 
-      // 点击内容区进入聊天
-      body.querySelectorAll('.wx-content-tap').forEach(function(ct) {
-        ct.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var id = ct.dataset.charId;
+      body.querySelectorAll('.wx-chat-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          var id = item.dataset.charId;
           if (id && App.chat) App.chat.openInWechat(id);
         });
       });
