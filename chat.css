@@ -264,6 +264,7 @@
 .ct-plus-btn {
   width: 40px;
   height: 44px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
