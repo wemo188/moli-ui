@@ -62,9 +62,9 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  padding: 18px 14px 10px;
+  padding: 18px 16px 10px;
   flex-shrink: 0;
-  gap: 4px;
+  gap: 6px;
   background: rgba(255,255,255,.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -142,9 +142,6 @@
   border: 1px solid rgba(192,206,220,.5);
 }
 
-.ct-msg-av.circle { border-radius: 50%; }
-.ct-msg-av.hidden-av { visibility: hidden; }
-
 .ct-msg-av img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
@@ -192,7 +189,7 @@
   -webkit-backdrop-filter: blur(6px);
 }
 
-/* --- 消息元信息 --- */
+/* --- 消息元信息（只在最后一条的最后一个气泡显示） --- */
 .ct-msg-meta {
   display: flex;
   align-items: center;
@@ -251,8 +248,8 @@
   z-index: 10;
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  padding: 10px 10px 16px;
+  gap: 8px;
+  padding: 10px 12px 16px;
   background: rgba(255,255,255,.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -319,7 +316,6 @@
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   transition: opacity .15s;
-  align-self: flex-end;
 }
 
 .ct-send:active { opacity: .7; }
@@ -386,33 +382,28 @@
   background: rgba(126,163,201,.12);
 }
 
-/* --- 右键菜单（双行布局） --- */
+/* --- 右键菜单 --- */
 .ct-ctx {
   position: fixed;
   z-index: 100020;
   background: #000;
-  border-radius: 12px;
-  padding: 6px 6px;
+  border-radius: 10px;
+  padding: 4px 0;
   box-shadow: 0 6px 24px rgba(0,0,0,.25);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  max-width: 260px;
+  min-width: 130px;
 }
 
 .ct-ctx-item {
-  padding: 9px 12px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
   color: rgba(255,255,255,.85);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
-  border-radius: 8px;
-  text-align: center;
-  min-width: 54px;
 }
 
-.ct-ctx-item:active { background: rgba(255,255,255,.12); }
+.ct-ctx-item:active { background: rgba(255,255,255,.1); }
+.ct-ctx-item:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,.08); }
 
 /* --- 顶部菜单 --- */
 .ct-hd-menu {
@@ -586,122 +577,3 @@
   white-space: pre-wrap;
   text-align: left;
 }
-
-/* --- 语音消息气泡 --- */
-.ct-voice-bubble {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  min-width: 100px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ct-voice-waves {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 18px;
-}
-
-.ct-voice-wave {
-  width: 3px;
-  background: currentColor;
-  border-radius: 2px;
-  opacity: .5;
-}
-
-.ct-voice-wave.w1 { height: 6px; }
-.ct-voice-wave.w2 { height: 12px; }
-.ct-voice-wave.w3 { height: 18px; }
-
-@keyframes ctVoicePlay {
-  0%,100% { opacity: .3; }
-  50% { opacity: 1; }
-}
-
-.ct-voice-bubble.playing .ct-voice-wave {
-  animation: ctVoicePlay .8s ease-in-out infinite;
-}
-
-.ct-voice-bubble.playing .ct-voice-wave.w2 { animation-delay: .15s; }
-.ct-voice-bubble.playing .ct-voice-wave.w3 { animation-delay: .3s; }
-
-.ct-voice-dur {
-  font-size: 12px;
-  opacity: .7;
-}
-
-.ct-voice-text {
-  font-size: 12px;
-  color: #666;
-  padding: 4px 14px 2px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .3s ease;
-  line-height: 1.5;
-}
-
-.ct-voice-text.show { max-height: 200px; }
-
-/* --- 聊天滑动返回 --- */
-.ct-swipe-indicator {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 56px;
-  background: rgba(0,0,0,.08);
-  border-radius: 0 28px 28px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  opacity: 0;
-  transition: opacity .15s;
-  pointer-events: none;
-}
-
-.ct-swipe-indicator.show { opacity: 1; }
-
-.ct-swipe-indicator svg {
-  width: 16px; height: 16px;
-  fill: none; stroke: #666;
-  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
-}
-
-/* --- 聊天列表滑动操作 --- */
-.wx-chat-item-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.wx-chat-item-actions {
-  position: absolute;
-  top: 0; right: 0;
-  height: 100%;
-  display: flex;
-  transform: translateX(100%);
-  transition: transform .2s ease;
-}
-
-.wx-chat-item-wrap.swiped .wx-chat-item-actions {
-  transform: translateX(0);
-}
-
-.wx-item-action {
-  width: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.wx-item-action.pin { background: #7a9ab8; }
-.wx-item-action.rename { background: #d4a054; }
