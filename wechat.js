@@ -258,6 +258,7 @@
           document.removeEventListener('click', dismiss);
         }
       }
+      
       setTimeout(function() {
         document.addEventListener('touchstart', dismiss, { passive: true });
         document.addEventListener('click', dismiss);
