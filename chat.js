@@ -465,7 +465,8 @@ var params=getParams(Chat.charId);
 var ctx=Chat.messages.slice(-MAX_CONTEXT);
 var apiMsgs=[{role:'system',content:sysPrompt}];
 ctx.forEach(function(m){if(m.role==='user'||m.role==='assistant')apiMsgs.push({role:m.role,content:m.content});});
-apiMsgs.push({role:'user',content:'[系统指令：现在请你主动给用户发一条消息。保持自然简短。不要重复之前说过的话。不要说"有什么可以帮你的"这种话。就像你突然想到要跟对方说点什么一样。]'});
+apiMsgs.push({role:'user',content:'[继续]'});
+apiMsgs.push({role:'system',content:'用户发送了[继续]，这不是真正的用户消息。这是系统信号，意思是：请你以角色身份主动说一句话。根据之前的聊天上下文自然地接话或主动找话题。不要重复之前说过的内容。不要问"有什么可以帮你的"。'});
 
 var url=api.url.replace(/\/+$/,'')+'/chat/completions';
 
