@@ -13,6 +13,8 @@
   display: flex; flex-direction: column; align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* ★1 覆盖到顶部 */
+  position: fixed; inset: 0; z-index: 1;
 }
 
 /* ====== 手机框 ====== */
@@ -25,6 +27,7 @@
   border-radius: 50px;
   background: #fff;
   border: 17px solid #000;
+  /* ★1 防止溢出 */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -51,6 +54,8 @@
   display: flex; flex-direction: column;
   height: 100%; overflow: hidden;
   background: #fff;
+  /* ★1 继承圆角裁剪 */
+  border-radius: inherit;
 }
 
 .wx-inner::before {
@@ -139,6 +144,28 @@
   height: 1px; background: rgba(126,163,201,.12);
 }
 
+/* ★19 滑动操作按钮 */
+.wx-chat-item-inner {
+  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;
+  transition: transform .25s ease;
+}
+
+.wx-swipe-actions {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  display: flex; align-items: stretch;
+  transform: translateX(100%);
+}
+
+.wx-swipe-btn {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 18px; font-size: 12px; font-weight: 600;
+  color: #fff; border: none; cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wx-swipe-btn.pin { background: #c9706b; }
+.wx-swipe-btn.rename { background: #7a9ab8; }
+
 .wx-avatar {
   width: 54px; height: 54px; border-radius: 12px;
   flex-shrink: 0; position: relative; overflow: visible;
@@ -176,9 +203,24 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
+.wx-chat-time {
+  font-size: 11px; color: #a8c0d8; flex-shrink: 0; margin-left: 8px;
+}
+
 .wx-chat-msg {
   font-size: 13px; color: #8aa0b8;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;
+}
+
+/* ★19 置顶的列表项 */
+.wx-chat-item.pinned {
+  background: rgba(201,112,107,.04);
+}
+
+.wx-chat-item.pinned .wx-chat-name::before {
+  content: ""; display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; background: #c9706b; margin-right: 6px;
+  vertical-align: middle;
 }
 
 /* ====== 空状态 ====== */
@@ -202,22 +244,28 @@
 .wx-tabbar {
   position: relative; z-index: 2;
   display: flex; justify-content: space-around; align-items: flex-end;
-  padding: 6px 10px 7px;
+  /* ★2 加大底部栏 */
+  padding: 8px 10px 10px;
   background: rgba(255,255,255,1);
   backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-  border-top: 4px solid rgba(126,163,201,.18); flex-shrink: 0;
+  /* ★22 蓝色分割线 */
+  border-top: 1px solid rgba(126,163,201,.25);
+  /* ★24 删掉阴影 */
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
 .wx-tab {
   display: flex; flex-direction: column; align-items: center;
-  gap: 2px; cursor: pointer; position: relative;
+  gap: 3px; cursor: pointer; position: relative;
   padding: 3px 12px; -webkit-tap-highlight-color: transparent;
 }
 
 .wx-tab:active { opacity: 0.7; }
 
+/* ★2 图标加大 */
 .wx-tab svg {
-  width: 28px; height: 28px; fill: none;
+  width: 32px; height: 32px; fill: none;
   stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
 }
 
@@ -256,17 +304,6 @@
 }
 
 /* ====== 我的 ====== */
-.wx-me-mode-btn {
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-  padding: 5px 14px; border: 1px solid rgba(126,163,201,.2);
-  border-radius: 8px; background: none;
-  display: flex; align-items: center; gap: 6px; font-family: inherit;
-}
-
-.wx-me-mode-btn:active { background: rgba(126,163,201,.08); }
-.wx-me-mode-val { font-size: 11px; color: #8aa0b8; }
-.wx-me-mode-switch { font-size: 10px; color: #c0cedd; }
-
 .wx-me-link {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 24px; cursor: pointer;
@@ -278,107 +315,5 @@
 .wx-me-link-text { font-size: 14px; font-weight: 500; color: #2e4258; }
 .wx-me-link-arrow { font-size: 14px; color: #c0cedd; font-weight: 300; }
 
-/* ====== 微信内页晕染（跟主页一致） ====== */
-.wx-inner::before {
-  content: "";
-  position: absolute; top: 50%; left: 50%;
-  width: 140%; height: 140%;
-  transform: translate(-50%, -50%);
-  background:
-    radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),
-    radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
-    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
-  pointer-events: none; z-index: 0;
-}
-
-.wx-inner::after {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.70), transparent 42%),
-    linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
-  pointer-events: none; mix-blend-mode: screen; opacity: .72; z-index: 0;
-}
-
-/* ====== 手机框溢出修复 ====== */
-.wx-phone {
-  overflow: hidden;
-}
-
-/* ====== 底部栏加大 ====== */
-.wx-tabbar {
-  padding: 8px 10px 10px;
-}
-
-.wx-tab {
-  gap: 3px;
-  padding: 4px 14px;
-}
-
-.wx-tab svg {
-  width: 32px; height: 32px;
-}
-
-.wx-tab span {
-  font-size: 12px;
-}
-
-/* ====== 头像加大 ====== */
-.wx-avatar {
-  width: 56px; height: 56px;
-}
-
-.wx-avatar img {
-  width: 56px; height: 56px;
-}
-
-.wx-avatar-placeholder {
-  width: 56px; height: 56px;
-}
-
-.wx-avatar-placeholder svg {
-  width: 26px; height: 26px;
-}
-
-/* ====== 聊天列表滑动操作 ====== */
-.wx-chat-item-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.wx-chat-item-actions {
-  position: absolute;
-  top: 0; right: 0;
-  height: 100%;
-  display: flex;
-  transform: translateX(100%);
-  transition: transform .25s cubic-bezier(.2,.85,.2,1);
-}
-
-.wx-chat-item-wrap.swiped .wx-chat-item-actions {
-  transform: translateX(0);
-}
-
-.wx-item-action {
-  width: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.wx-item-action.pin { background: #7a9ab8; }
-.wx-item-action.rename { background: #d4a054; }
-
-/* ====== 聊天名大一号 ====== */
-.wx-chat-name {
-  font-size: 16px;
-}
-
-.wx-chat-msg {
-  font-size: 13.5px;
-}
+/* ★19 备注名显示 */
+.wx-renamed .wx-chat-name { color: #5a7a9a; }
