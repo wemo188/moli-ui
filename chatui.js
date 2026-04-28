@@ -119,11 +119,7 @@ Chat.messages.forEach(function(msg,idx){
   if(text)bubbleContent+=App.esc(text);
   if(!bubbleContent)return;
 
-  var metaHtml='<div class="ct-msg-meta">';
-  metaHtml+='<span class="ct-msg-floor">#'+floor+'</span>';
-  metaHtml+='<span class="ct-msg-time">'+timeStr+'</span>';
-  metaHtml+='</div>';
-
+  
   html+='<div class="ct-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'"><div class="ct-msg-av'+avClass+'">'+av+'</div><div class="ct-bubble-wrap"><div class="ct-bubble">'+bubbleContent+'</div>'+metaHtml+'</div></div>';
 });
 
