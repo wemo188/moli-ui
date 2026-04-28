@@ -12,7 +12,7 @@ copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/>
 edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
 resend:'<svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>',
 regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',
-quote:'<svg viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H5C3.75 3 3 3.75 3 5v4c0 1.25.75 2 2 2h2c0 4-2 6-5 7"/><path d="M14 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-3c-1.25 0-2 .75-2 2v4c0 1.25.75 2 2 2h2c0 4-2 6-5 7"/></svg>',
+quote:'<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,.7)" stroke-width="2.4" fill="none"/><path d="M18 36C18 30.5 20.5 25 25.5 22.5L27 25C23 27.5 22 30 22 33H26V39H18V36Z" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M34 36C34 30.5 36.5 25 41.5 22.5L43 25C39 27.5 38 30 38 33H42V39H34V36Z" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linejoin="round" fill="none"/></svg>',
 share:'<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
 fav:'<svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
 delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
@@ -212,7 +212,16 @@ if(input){
   });
 }
 
-App.safeOn('#ctSend','click',function(e){e.stopPropagation();if(Chat.isStreaming){Chat.stopStream();return;}Chat.send();});
+App.safeOn('#ctSend','click',function(e){
+  e.stopPropagation();
+  if(Chat.isStreaming){Chat.stopStream();return;}
+  var input=App.$('#ctInput');
+  if(input&&!input.value.trim()){
+    Chat.requestProactive();
+    return;
+  }
+  Chat.send();
+});
 
 App.safeOn('#ctPlusBtn','click',function(e){
   e.stopPropagation();
@@ -651,6 +660,7 @@ if(isUser){
 items+='<div class="ct-ctx-item" data-act="quote">'+CTX_ICONS.quote+'<span>引用</span></div>';
 items+='<div class="ct-ctx-item" data-act="share">'+CTX_ICONS.share+'<span>转发</span></div>';
 items+='<div class="ct-ctx-item" data-act="fav">'+CTX_ICONS.fav+'<span>收藏</span></div>';
+items+='<div class="ct-ctx-item" data-act="multisel">'+CTX_ICONS.multisel+'<span>多选</span></div>';
 items+='<div class="ct-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>往后全删</span></div>';
 items+='<div class="ct-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';
 menu.innerHTML=items;
@@ -671,6 +681,7 @@ menu.querySelectorAll('.ct-ctx-item').forEach(function(item){
     else if(act==='resend')Chat.resendMsg(idx);
     else if(act==='regen')Chat.regenerate(idx);
     else if(act==='share')Chat.shareMsg(idx);
+    else if(act==='multisel')App.showToast('多选功能开发中');
     else if(act==='quote'){
       var input=App.$('#ctInput');
       if(input){
