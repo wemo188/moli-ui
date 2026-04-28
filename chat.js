@@ -465,26 +465,29 @@ var params=getParams(Chat.charId);
 var ctx=Chat.messages.slice(-MAX_CONTEXT);
 var apiMsgs=[{role:'system',content:sysPrompt}];
 ctx.forEach(function(m){if(m.role==='user'||m.role==='assistant')apiMsgs.push({role:m.role,content:m.content});});
-apiMsgs.push({role:'system',content:'现在请你主动给用户发一条消息。保持自然简短。不要重复之前说过的话。'});
+apiMsgs.push({role:'user',content:'[系统指令：现在请你主动给用户发一条消息。保持自然简短。不要重复之前说过的话。不要说"有什么可以帮你的"这种话。就像你突然想到要跟对方说点什么一样。]'});
 
 var url=api.url.replace(/\/+$/,'')+'/chat/completions';
-Chat.isStreaming=true;
-if(!Chat._backgroundMode){Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(true);}
-Chat.abortCtrl=new AbortController();
 
-console.log('[主动消息] 开始请求...');
+Chat.isStreaming=true;
+if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(true);}
+
+var fullText='';
 
 fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
-body:JSON.stringify({model:api.model,messages:apiMsgs,stream:true,temperature:params.temperature,frequency_penalty:params.freqPenalty,presence_penalty:params.presPenalty}),
-signal:Chat.abortCtrl.signal
+body:JSON.stringify({model:api.model,messages:apiMsgs,stream:true,temperature:params.temperature,frequency_penalty:params.freqPenalty,presence_penalty:params.presPenalty})
 }).then(function(resp){
-if(!resp.ok)throw new Error('HTTP '+resp.status);
-var reader=resp.body.getReader(),decoder=new TextDecoder(),fullText='',buffer='';
+if(!resp.ok){
+  return resp.text().then(function(body){
+    throw new Error('HTTP '+resp.status+': '+body.slice(0,200));
+  });
+}
+var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 function read(){return reader.read().then(function(result){
-if(result.done){Chat.onStreamDone(fullText,cfg);return;}
+if(result.done){finish();return;}
 buffer+=decoder.decode(result.value,{stream:true});var lines=buffer.split('\n');buffer=lines.pop()||'';
 for(var i=0;i<lines.length;i++){var line=lines[i].trim();if(!line||!line.startsWith('data:'))continue;var data=line.slice(5).trim();
-if(data==='[DONE]'||data===''){Chat.onStreamDone(fullText,cfg);return;}
+if(data==='[DONE]'||data===''){finish();return;}
 try{var json=JSON.parse(data);var delta=json.choices&&json.choices[0]&&json.choices[0].delta;if(delta&&delta.content){fullText+=delta.content;if(!Chat._backgroundMode)Chat.updateStreamBubble(fullText);}}catch(e){}}
 return read();});}
 return read();
@@ -492,12 +495,26 @@ return read();
 Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
 var cnMsg=translateError(err.message||String(err));
-console.error('[主动消息] 失败：'+cnMsg);
-if(!Chat._backgroundMode){
-  Chat.messages.push({role:'system',content:'[主动消息失败] '+cnMsg,ts:Date.now()});
-  Chat.saveMsgs();Chat.renderMessages();
-}
+console.error('[主动消息] '+cnMsg);
+console.error('[主动消息] 原始错误: '+(err.message||err));
 });
+
+function finish(){
+  Chat.isStreaming=false;
+  if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
+  fullText=fullText.trim();
+  if(fullText){
+    var parts=fullText.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
+    var now=Date.now();
+    parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
+    Chat.saveMsgs();
+    if(Chat._backgroundMode){
+      Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
+    } else {
+      Chat.renderMessages();
+    }
+  }Chat._backgroundMode=false;
+}
 },
 
 showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
