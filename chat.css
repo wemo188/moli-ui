@@ -264,7 +264,7 @@
 .ct-plus-btn {
   width: 40px;
   height: 44px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,8 +325,8 @@
 .ct-send.stop {
   background: rgba(201,112,107,.85);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   margin-bottom: 6px;
 }
 .ct-send.stop svg { width: 18px; height: 18px; }
