@@ -18,7 +18,6 @@
   background-size: cover;
   background-position: center;
   pointer-events: none;
-  border-radius: inherit;
 }
 
 .ct-tint {
@@ -27,7 +26,6 @@
   z-index: 1;
   pointer-events: none;
   transition: opacity .3s;
-  border-radius: inherit;
 }
 
 .ct-tint.off { opacity: 0; }
@@ -38,22 +36,12 @@
   z-index: 0;
   pointer-events: none;
   background: #fff;
-  border-radius: inherit;
 }
 
 .ct-no-bg.has-bg { background: transparent; }
 
 .ct-glass {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.35), transparent 42%),
-    linear-gradient(315deg, rgba(255,255,255,.15), transparent 44%);
-  mix-blend-mode: screen;
-  opacity: .5;
-  border-radius: inherit;
+  display: none;
 }
 
 .ct-hd {
