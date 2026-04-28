@@ -148,6 +148,7 @@ if(cfg.timeWeather){
     var ss=App.calendar.getScheduleSummary();
     if(ss)envInfo+='\n'+ss;
   }
+  envInfo+='\n\n【时间感知规则】\n- 晚上(19-23点)是正常的活动时间，不要催对方睡觉。\n- 只有23点半以后和凌晨(0-5点)才可以适当关心对方是否该休息了，但也不要一到点就催。\n- 23点之前绝对不要说"怎么还没睡""早点睡""该睡了"之类的话。';
   parts.push(envInfo);
 }
 
