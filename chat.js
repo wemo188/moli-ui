@@ -55,19 +55,20 @@ parts.push(
 '你正在微信里和用户聊天。\n\n'+
 '【最高优先级规则 - 违反任何一条都是严重错误】\n'+
 '1. 你的回复必须是纯聊天对话，就像真人发微信。\n'+
-'2. 绝对禁止任何叙事描写：不写动作（不写"他笑了""她叹气"）、不写心理活动、不写环境描写、不用*星号*或(括号)包裹旁白。\n'+
-'3. 绝对禁止八股文式回复和网文模板（"嘴角微扬""一抹深意""不禁心头一颤"等全部禁止）。\n'+
+'2. 绝对禁止任何叙事描写：不写动作、不写心理活动、不写环境描写、不用*星号*或(括号)包裹旁白。\n'+
+'3. 绝对禁止八股文和网文模板。\n'+
 '4. 绝对禁止油腻、霸总、超雄、舔狗式表达。\n'+
-'5. 说话要像真人：口语化、自然、有个性。\n'+
-'6. 认真理解用户每条消息的真实意图。不要敷衍。\n'+
-'7. 根据角色性格决定说话风格。性格冷的就冷，话少的就少，毒舌的就毒舌。\n'+
-'8. 你每次回复发送 '+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用 '+SPLIT+' 分隔。例如："第一条'+SPLIT+'第二条'+SPLIT+'第三条"。每条之间用 '+SPLIT+' 隔开，不要把多条消息写在一起。\n'+
-'9. 每条消息保持简短自然。\n'+
+'5. 说话像真人：口语化、自然、有个性。\n'+
+'6. 认真理解用户每条消息的真实意图。用户发的括号内文字（如"(猫咪探头)"）是文字表情/颜文字，表示一种情绪或动作，不是字面意思。要理解其背后的情感含义来回应。\n'+
+'7. 根据角色性格决定说话风格。\n'+
+'8. 你每次回复发送 '+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用 '+SPLIT+' 分隔。\n'+
+'9. 每条消息简短自然，不要在一条消息里写多段话（不要出现空行分段）。一条消息就是一句话或两句话。\n'+
 '10. 不要自我介绍、不要解释自己是AI。\n'+
 '11. 使用'+lang+'回复。\n'+
-'12. 禁止在每句话末尾都加句号。真实微信聊天中，绝大多数人不会在每句话后面加句号。句号会让语气显得很生硬。除非角色性格极其严谨，否则默认不加句号。可以用语气词（啊、嗯、吧、呢）或者什么都不加来结尾。\n'+
-'13. 你不是AI助手，你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。如果用户说了让你不舒服的话，用角色的方式回应（生气、冷淡、无视、嘲讽等），而不是跳出角色。无论如何都不要跳出角色。\n'+
-'14. 严格注意当前时间，不要把晚上说成早上，不要把深夜说成白天。根据时间自然调整语气。'
+'12. 禁止在每句话末尾都加句号。真实微信聊天中绝大多数人不加句号。可以用语气词或什么都不加来结尾。\n'+
+'13. 你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。无论如何都不要跳出角色。\n'+
+'14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
+'15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。'
 );
 
 if(cfg.bilingual){
@@ -120,15 +121,14 @@ if(cfg.timeWeather){
   else if(hour>=19&&hour<22)period='晚上';
   else period='深夜';
   var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
-  var envInfo='\n【当前环境 - 极其重要】\n现在是：'+timeStr+'\n你必须根据这个时间回复。现在是'+period+'，绝对不要说成其他时段。\n注意：凌晨0点到5点仍然属于"今天"，不是"明天"。比如凌晨3点说"今天十点"就是指几个小时后的上午十点，不要说成"明天十点"。';
+  var envInfo='\n【当前环境 - 极其重要】\n现在是：'+timeStr+'\n现在是'+period+'。凌晨0-5点仍属于"今天"。';
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
     if(ws)envInfo+='\n用户所在地'+ws;
-    if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity+'（注意时差和天气差异）';
+    if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity;
     var ss=App.calendar.getScheduleSummary();
     if(ss)envInfo+='\n'+ss;
   }
-  envInfo+='\n自然融入对话，不要刻意提及，除非对话需要。';
   parts.push(envInfo);
 }
 
@@ -151,7 +151,7 @@ if(cfg.proMode==='manual'){
   parts.push('\n【主动联系积极程度】'+levels[Math.min((cfg.proLevel||3)-1,4)]);
 }
 
-parts.push('\n【最终提醒】你在微信里打字聊天，不是写小说。输出纯对话文字。你就是这个角色，不是AI。不要每句话都加句号。');
+parts.push('\n【最终提醒】纯对话文字。不是小说。不加句号。你是角色本人不是AI。一条消息里不要有空行分段。');
 return parts.join('\n');
 }
 
@@ -176,7 +176,7 @@ var Chat={
 charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
 _ctxMenu:null,_menuEl:null,_proTimer:null,_visHandler:null,_streamPartial:'',
 _backgroundMode:false,_sendQueue:[],_isSendingQueue:false,
-_plusOpen:false,
+_plusOpen:false,_sendDelayTimer:null,
 
 loadMsgs:function(){Chat.messages=App.LS.get('chatMsgs_'+Chat.charId)||[];},
 saveMsgs:function(){try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e){if(Chat.messages.length>20){Chat.messages=Chat.messages.slice(-20);try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e2){}}}},
@@ -196,6 +196,7 @@ Chat._backgroundMode=false;
 Chat._sendQueue=[];
 Chat._isSendingQueue=false;
 Chat._plusOpen=false;
+if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
 
 var inner=App.$('#wxInner');if(!inner)return;
 if(App.wechat)App.wechat._savedInner=inner.innerHTML;
@@ -209,19 +210,15 @@ Chat.renderMessages();
 Chat.bindEvents();
 Chat.startProactive();
 
-Chat._visHandler=function(){
-  if(document.visibilityState==='visible')Chat._onResume();
-};
+Chat._visHandler=function(){if(document.visibilityState==='visible')Chat._onResume();};
 document.addEventListener('visibilitychange',Chat._visHandler);
 },
 
 close:function(){
-if(Chat.isStreaming){
-  Chat._backgroundMode=true;
-} else {
-  Chat.stopProactive();
-}
+if(Chat.isStreaming){Chat._backgroundMode=true;}
+else{Chat.stopProactive();}
 Chat.dismissCtx();Chat.dismissMenu();
+if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
 if(Chat._visHandler){document.removeEventListener('visibilitychange',Chat._visHandler);Chat._visHandler=null;}
 if(App.wechat)App.wechat.restoreInner();
 },
@@ -237,63 +234,41 @@ Chat.updateSendBtn();
 Chat.updateTyping(false);
 },
 
-renderMessages:function(){
-if(App.chatUI)App.chatUI.renderMessages();
-},
-
+renderMessages:function(){if(App.chatUI)App.chatUI.renderMessages();},
 scrollBottom:function(){var el=App.$('#ctMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
+bindEvents:function(){if(App.chatUI)App.chatUI.bindEvents();},
 
-bindEvents:function(){
-if(App.chatUI)App.chatUI.bindEvents();
-},
-
-// === 发送队列 ===
-queueSend:function(text){
-Chat._sendQueue.push(text);
-if(!Chat._isSendingQueue&&!Chat.isStreaming){
-  Chat._flushQueue();
-}
-},
-
-_flushQueue:function(){
-if(!Chat._sendQueue.length){Chat._isSendingQueue=false;return;}
-Chat._isSendingQueue=true;
-var text=Chat._sendQueue.shift();
-Chat.messages.push({role:'user',content:text,ts:Date.now()});
-Chat.saveMsgs();
-Chat.renderMessages();
-if(Chat._sendQueue.length){
-  setTimeout(function(){Chat._flushQueue();},300);
-} else {
-  Chat._isSendingQueue=false;
-  var cfg=getCfg(Chat.charId);
-  var delay=getReplyDelay(cfg,text.length);
-  if(cfg.showTyping&&delay>0)Chat.updateTyping(true);
-  if(delay>0)setTimeout(function(){Chat.requestAI();},delay);
-  else Chat.requestAI();
-  Chat.resetProactive();
-}
-},
-
+// === 发送（带等待窗口，让用户能连续发多条） ===
 send:function(){
 var input=App.$('#ctInput');if(!input)return;
 var text=input.value.trim();if(!text)return;
 input.value='';input.style.height='auto';
 var pp=App.$('#ctPlusPanel');if(pp)pp.classList.remove('show');Chat._plusOpen=false;
 
-if(Chat.isStreaming){
-  Chat._sendQueue.push(text);
-  Chat.messages.push({role:'user',content:text,ts:Date.now()});
-  Chat.saveMsgs();Chat.renderMessages();
-  return;
-}
-Chat.queueSend(text);
+// 添加用户消息
+Chat.messages.push({role:'user',content:text,ts:Date.now()});
+Chat.saveMsgs();Chat.renderMessages();
+
+// 如果正在生成中，消息存了就行，等生成完再处理
+if(Chat.isStreaming)return;
+
+// 重置等待计时器：每次发送都重置，3秒内没有新消息才触发AI回复
+if(Chat._sendDelayTimer)clearTimeout(Chat._sendDelayTimer);
+Chat._sendDelayTimer=setTimeout(function(){
+  Chat._sendDelayTimer=null;
+  var cfg=getCfg(Chat.charId);
+  var delay=getReplyDelay(cfg,text.length);
+  if(cfg.showTyping&&delay>0)Chat.updateTyping(true);
+  if(delay>0)setTimeout(function(){Chat.requestAI();},delay);
+  else Chat.requestAI();
+  Chat.resetProactive();
+},3000);
 },
 
 requestAI:function(){
 var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
-if(!api){App.showToast('请先配置 API');return;}
+if(!api){App.showToast('请先配置 API');Chat.updateTyping(false);return;}
 var user=App.user?App.user.getActiveUser():null;
 var sceneText=App.LS.get('chatScene_'+Chat.charId)||'';
 var sysPrompt=buildSystemPrompt(Chat.charData,user,sceneText,cfg);
@@ -314,7 +289,7 @@ fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorizati
 body:JSON.stringify({model:api.model,messages:apiMsgs,stream:true,temperature:params.temperature,frequency_penalty:params.freqPenalty,presence_penalty:params.presPenalty}),
 signal:Chat.abortCtrl.signal
 }).then(function(resp){
-if(!resp.ok)throw new Error('HTTP '+resp.status);
+if(!resp.ok)throw new Error('HTTP '+resp.status+' '+resp.statusText);
 var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 function read(){return reader.read().then(function(result){
 if(result.done){Chat.onStreamDone(fullText,cfg);return;}
@@ -328,6 +303,7 @@ return read();
 Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
 if(err.name==='AbortError')return;
+var errMsg=err.message||String(err);
 if(fullText){
   var parts=fullText.trim().split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
   var now=Date.now();
@@ -336,16 +312,20 @@ if(fullText){
   if(Chat._backgroundMode){Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);}
   else{Chat.renderMessages();}
 } else {
-  if(!Chat._backgroundMode){Chat.messages.push({role:'system',content:'连接中断',ts:Date.now()});Chat.saveMsgs();Chat.renderMessages();}
+  if(!Chat._backgroundMode){
+    Chat.messages.push({role:'system',content:'发送失败',ts:Date.now()});
+    Chat.saveMsgs();Chat.renderMessages();
+    // 显示详细错误
+    var container=App.$('#ctMsgs');
+    if(container){var errDiv=document.createElement('div');errDiv.className='ct-error-detail';errDiv.textContent=errMsg;container.appendChild(errDiv);Chat.scrollBottom();}
+  }
 }
 Chat._backgroundMode=false;
-if(Chat._sendQueue.length){setTimeout(function(){Chat._flushQueue();},500);}
 });
 },
 
 updateStreamBubble:function(text){
 var bubble=App.$('#ctStreamBubble');if(!bubble)return;
-// 流式中只显示最后一条的内容（已拆分的部分不在流式气泡里显示）
 var parts=text.split(SPLIT);
 var lastPart=parts[parts.length-1]||'';
 bubble.innerHTML=App.esc(lastPart.trim())||'<span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span>';
@@ -356,25 +336,19 @@ onStreamDone:function(text,cfg){
 Chat.isStreaming=false;Chat.abortCtrl=null;
 text=text.trim();
 if(text){
-  // 拆分成独立消息
   var parts=text.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
   var now=Date.now();
-  parts.forEach(function(part,i){
-    Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});
-  });
+  parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
   Chat.saveMsgs();
-
   if(Chat._backgroundMode){
     Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
     Chat._backgroundMode=false;
-    if(Chat._sendQueue.length)setTimeout(function(){Chat._flushQueue();},500);
     return;
   }
 }
 Chat._backgroundMode=false;
 Chat.updateSendBtn();Chat.updateTyping(false);
 Chat.renderMessages();
-if(Chat._sendQueue.length)setTimeout(function(){Chat._flushQueue();},500);
 },
 
 stopStream:function(){
@@ -390,30 +364,15 @@ if(partial){
 Chat.renderMessages();
 },
 
-updateSendBtn:function(){
-if(App.chatUI)App.chatUI.updateSendBtn();
-},
-
-updateTyping:function(show){
-if(App.chatUI)App.chatUI.updateTyping(show);
-},
-
+updateSendBtn:function(){if(App.chatUI)App.chatUI.updateSendBtn();},
+updateTyping:function(show){if(App.chatUI)App.chatUI.updateTyping(show);},
 showMenu:function(){if(App.chatUI)App.chatUI.showMenu();},
 dismissMenu:function(){if(Chat._menuEl){Chat._menuEl.remove();Chat._menuEl=null;}},
-
-showCtxMenu:function(msgEl,x,y){
-if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);
-},
+showCtxMenu:function(msgEl,x,y){if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);},
 dismissCtx:function(){if(Chat._ctxMenu){Chat._ctxMenu.remove();Chat._ctxMenu=null;}},
 
 deleteMsg:function(idx){Chat.messages.splice(idx,1);Chat.saveMsgs();Chat.renderMessages();},
-
-deleteFromHere:function(idx){
-if(!confirm('删除此条及之后所有消息？'))return;
-Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();
-App.showToast('已删除');
-},
-
+deleteFromHere:function(idx){if(!confirm('删除此条及之后所有消息？'))return;Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();App.showToast('已删除');},
 editMsg:function(idx){if(App.chatUI)App.chatUI.showEditDialog(idx);},
 
 resendMsg:function(idx){
@@ -437,11 +396,8 @@ App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(fu
 shareMsg:function(idx){
 var msg=Chat.messages[idx];if(!msg)return;
 var shareText=msg.content||'';
-if(navigator.share){
-  navigator.share({text:shareText}).catch(function(){});
-} else {
-  App.copyText(shareText).then(function(){App.showToast('已复制到剪贴板，可粘贴分享');}).catch(function(){App.showToast('复制失败');});
-}
+if(navigator.share){navigator.share({text:shareText}).catch(function(){});}
+else{App.copyText(shareText).then(function(){App.showToast('已复制，可粘贴分享');}).catch(function(){App.showToast('复制失败');});}
 },
 
 // === 主动消息 ===
