@@ -465,8 +465,30 @@ var params=getParams(Chat.charId);
 var ctx=Chat.messages.slice(-MAX_CONTEXT);
 var apiMsgs=[{role:'system',content:sysPrompt}];
 ctx.forEach(function(m){if(m.role==='user'||m.role==='assistant')apiMsgs.push({role:m.role,content:m.content});});
-apiMsgs.push({role:'user',content:'[继续]'});
-apiMsgs.push({role:'system',content:'用户发送了[继续]，这不是真正的用户消息。这是系统信号，意思是：请你以角色身份主动说一句话。根据之前的聊天上下文自然地接话或主动找话题。不要重复之前说过的内容。不要问"有什么可以帮你的"。'});
+
+var lastMsg=Chat.messages.length?Chat.messages[Chat.messages.length-1]:null;
+var lastIsUser=lastMsg&&lastMsg.role==='user';
+var lastIsMe=lastMsg&&lastMsg.role==='assistant';
+var timeSinceLastMsg=lastMsg&&lastMsg.ts?(Date.now()-lastMsg.ts):999999999;
+var minsSince=Math.round(timeSinceLastMsg/60000);
+
+var proPrompt='';
+if(lastIsUser){
+  proPrompt='用户'+minsSince+'分钟前发了消息但你还没回复。请根据用户最后说的内容来回复，不要忽略它。如果用户问了问题就回答问题，如果用户在聊某个话题就接着聊。';
+} else if(lastIsMe){
+  if(minsSince<10){
+    proPrompt='你'+minsSince+'分钟前刚发过消息，用户还没回。不要连续轰炸。如果你上一条是问句，用户还没回答，就不要再发新消息了——等用户回复。只有在你上一条不是问句、且确实有新的自然想法时才发。如果决定不发，只回复[SKIP]。';
+  } else {
+    proPrompt='距离你上次发消息已经'+minsSince+'分钟了，用户一直没回。根据你的角色性格判断：是继续等，还是再主动说一句？如果角色性格不会追着人聊，就回复[SKIP]。如果决定发，不要重复之前的话题，找一个自然的新切入点。';
+  }
+} else {
+  proPrompt='这是对话开始，请根据角色性格自然地打个招呼或找个话题。';
+}
+
+proPrompt+='\n\n【重要规则】\n1. 仔细阅读上面的完整对话历史再决定说什么。\n2. 不要无视用户还没被回答的问题。\n3. 不要在用户没回复时连续换话题。\n4. 如果决定不发消息，只回复[SKIP]这四个字符，不要回复其他任何内容。\n5. 回复必须符合角色性格，不要变成讨好型人格。';
+
+apiMsgs.push({role:'user',content:'[SYSTEM_PROACTIVE]'});
+apiMsgs.push({role:'system',content:proPrompt});
 
 var url=api.url.replace(/\/+$/,'')+'/chat/completions';
 
@@ -505,6 +527,12 @@ function finish(){
   if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
   fullText=fullText.trim();
   if(fullText){
+  if(fullText){
+    fullText=fullText.trim();
+    if(fullText==='[SKIP]'||fullText.indexOf('[SKIP]')>=0){
+      Chat._backgroundMode=false;
+      return;
+    }
     var parts=fullText.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
     var now=Date.now();
     parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
