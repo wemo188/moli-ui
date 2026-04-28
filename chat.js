@@ -12,28 +12,6 @@ function compressImage(d,m,q,cb){var i=new Image();i.onload=function(){var w=i.w
 function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function pad2(n){return n<10?'0'+n:''+n;}
 
-// ★6 中文错误翻译
-var ERR_MAP={
-'Failed to fetch':'网络连接失败，请检查网络或API地址是否正确',
-'NetworkError':'网络错误，无法连接到服务器',
-'HTTP 401':'API密钥无效或已过期，请检查API Key',
-'HTTP 402':'账户余额不足，请充值',
-'HTTP 403':'没有权限访问该API，请检查Key权限',
-'HTTP 404':'API地址不存在，请检查URL是否正确',
-'HTTP 429':'请求太频繁，已被限流。请稍后再试',
-'HTTP 500':'服务器内部错误，请稍后重试',
-'HTTP 502':'服务器网关错误，请稍后重试',
-'HTTP 503':'服务暂时不可用，请稍后重试',
-'HTTP 529':'服务器过载，请稍后重试'
-};
-
-function translateErr(msg){
-if(!msg)return '未知错误';
-for(var k in ERR_MAP){if(msg.indexOf(k)>=0)return ERR_MAP[k]+'\n('+msg+')';}
-if(msg.indexOf('HTTP ')>=0){var code=msg.match(/HTTP (\d+)/);if(code)return 'HTTP错误 '+code[1]+'：服务器返回异常\n('+msg+')';}
-return '请求失败：'+msg;
-}
-
 function getCfg(charId){
 var cfg=null;
 if(App.charMgr){
@@ -69,6 +47,24 @@ if(speed==='真实模拟（按字数）')return Math.min(textLen*150,20000);
 return 3000+Math.random()*5000;
 }
 
+function translateError(msg){
+if(!msg)return '不知道发生了什么，再试一次看看？';
+if(msg.indexOf('401')>=0)return 'API Key 好像失效了…检查一下吧 ';
+if(msg.indexOf('403')>=0)return '被拒之门外了…权限不够呀 ';
+if(msg.indexOf('404')>=0)return '找不到这个地址或模型诶…是不是填错了？';
+if(msg.indexOf('429')>=0)return '请求太频繁啦，休息一下再来吧 ';
+if(msg.indexOf('500')>=0)return '服务器那边出问题了…不是你的错哦 ';
+if(msg.indexOf('502')>=0)return '网关打了个盹…稍等一下再试？';
+if(msg.indexOf('503')>=0)return '服务器在维护中，过会儿再来吧~';
+if(msg.indexOf('timeout')>=0||msg.indexOf('Timeout')>=0)return '等太久了，网络好像不太给力 ';
+if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return '网络断开了…检查一下WiFi或数据？';
+if(msg.indexOf('AbortError')>=0)return '已经停下来啦~';
+if(msg.indexOf('model')>=0&&msg.indexOf('not')>=0)return '这个模型不存在诶…换一个试试？';
+if(msg.indexOf('insufficient_quota')>=0)return 'API 余额不够了…该充值啦 ';
+if(msg.indexOf('context_length')>=0||msg.indexOf('token')>=0)return '聊太多啦，消息超出长度限制了…清理一些旧消息试试？';
+return '出了点小状况：'+msg;
+}
+
 function buildSystemPrompt(charData,userData,sceneText,cfg){
 var parts=[];
 var lang=cfg.mainLang||'简体中文';
@@ -84,15 +80,14 @@ parts.push(
 '6. 认真理解用户每条消息的真实意图。用户发的括号内文字（如"(猫咪探头)"）是文字表情/颜文字，表示一种情绪或动作，不是字面意思。要理解其背后的情感含义来回应。\n'+
 '7. 根据角色性格决定说话风格。\n'+
 '8. 你每次回复发送 '+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用 '+SPLIT+' 分隔。\n'+
-'9. 【极其重要】每条消息必须简短自然。一条消息就是一句话或两句话。绝对不允许在一条消息内出现空行、分段、换行。一条消息内只能有连续的文字，中间不能有任何空行。\n'+
+'9. 每条消息简短自然，不要在一条消息里写多段话（不要出现空行分段）。一条消息就是一句话或两句话。\n'+
 '10. 不要自我介绍、不要解释自己是AI。\n'+
 '11. 使用'+lang+'回复。\n'+
 '12. 禁止在每句话末尾都加句号。真实微信聊天中绝大多数人不加句号。可以用语气词或什么都不加来结尾。\n'+
 '13. 你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。无论如何都不要跳出角色。\n'+
-'14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。\n'+
-'15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。但如果天气异常（下雨、下雪、极端高温等），可以主动关心提醒对方注意。\n'+
-'16. 【表情包规则】如果你要发表情包，表情包必须单独占一条消息，不能和文字混在同一条里。格式：一条纯文字消息'+SPLIT+'[sticker:描述]'+SPLIT+'另一条纯文字消息。\n'+
-'17. 表情包的描述应该多样化，根据聊天语境生成合适的表情，不要总是生成同一个主题（如猫咪）。根据角色性格和当前对话情绪来决定表情包内容。'
+'14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
+'15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。但如果天气出现异常（如突然下雨、下雪、降温），可以自然地提醒或关心。\n'+
+'16. 表情包（[sticker:描述]）必须单独占一条消息，不要和文字混在同一条里。如果你想发文字又想发表情包，就用 '+SPLIT+' 分成两条。'
 );
 
 if(cfg.bilingual){
@@ -106,7 +101,7 @@ var allowedTypes=cfg.msgTypes||['文字'];
 if(allowedTypes.indexOf('表情')>=0)parts.push('\n可以适当使用emoji表情。');
 if(cfg.stickerGen&&allowedTypes.indexOf('图片')>=0){
   var stkFreq=['极少','偶尔','适中','经常','频繁'][Math.min((cfg.stickerFreq||2)-1,4)];
-  parts.push('\n【表情包】适合时用[sticker:描述]标记（必须单独一条）。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。描述要多样化，不要重复。');
+  parts.push('\n【表情包】适合时用 [sticker:描述] 标记，描述要具体（如"开心跳舞的小狗""生气鼓腮的女孩"），不要总是用猫咪。根据当前语境选择合适的表情形象。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。记住：表情包必须单独一条消息。');
 }
 
 if(charData){
@@ -145,16 +140,10 @@ if(cfg.timeWeather){
   else if(hour>=19&&hour<22)period='晚上';
   else period='深夜';
   var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
-  var envInfo='\n【当前环境】\n现在是：'+timeStr+'\n现在是'+period+'。';
+  var envInfo='\n【当前环境 - 极其重要】\n现在是：'+timeStr+'\n现在是'+period+'。凌晨0-5点仍属于"今天"。';
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
-    if(ws){
-      envInfo+='\n用户所在地'+ws;
-      // ★15 天气异常提醒
-      if(ws.indexOf('雨')>=0||ws.indexOf('雪')>=0||ws.indexOf('暴')>=0||ws.indexOf('冰')>=0){
-        envInfo+='\n（天气异常，你可以主动关心提醒对方注意安全/带伞等）';
-      }
-    }
+    if(ws)envInfo+='\n用户所在地'+ws;
     if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity;
     var ss=App.calendar.getScheduleSummary();
     if(ss)envInfo+='\n'+ss;
@@ -181,43 +170,28 @@ if(cfg.proMode==='manual'){
   parts.push('\n【主动联系积极程度】'+levels[Math.min((cfg.proLevel||3)-1,4)]);
 }
 
-parts.push('\n【最终提醒】纯对话文字。不是小说。不加句号。一条消息里绝对不能有空行。表情包[sticker:]必须单独一条。');
+parts.push('\n【最终提醒】纯对话文字。不是小说。不加句号。你是角色本人不是AI。一条消息里不要有空行分段。表情包单独一条。');
 return parts.join('\n');
 }
 
-// ★20 图片生成：不限定猫咪主题
 function generateSticker(desc,cfg,callback){
 var imgUrl=cfg.imgApiUrl||'';var imgKey=cfg.imgApiKey||'';
 if(!imgUrl){var gApi=App.api?App.api.getActiveConfig():null;if(gApi){imgUrl=gApi.url;if(!imgKey)imgKey=gApi.key;}}
 if(!imgKey){var gApi2=App.api?App.api.getActiveConfig():null;if(gApi2)imgKey=gApi2.key;}
 if(!imgUrl||!imgKey){callback(null);return;}
 var model=cfg.imgModel||'gpt-image-1';
-// ★20 通用prompt，不提及猫咪
-var prompt='Chat sticker/emoji illustration: '+desc+'. Style: '+(cfg.stickerStyles||['可爱卡通']).join(', ')+'. Simple, expressive, suitable for messaging app sticker. White or transparent background.';
+var prompt='Generate a cute chat sticker: '+desc+'. Style: '+(cfg.stickerStyles||['可爱卡通']).join(', ')+'. Simple, expressive.';
 fetch(imgUrl.replace(/\/+$/,'')+'/images/generations',{
   method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+imgKey},
   body:JSON.stringify({model:model,prompt:prompt,n:1,size:'256x256',response_format:'url'})
-}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
+}).then(function(r){return r.json();}).then(function(d){
   if(d&&d.data&&d.data[0])callback(d.data[0].url||d.data[0].b64_json);else callback(null);
-}).catch(function(e){console.warn('表情包生成失败:',e.message);callback(null);});
+}).catch(function(){callback(null);});
 }
 
-// ★14 记录背景图到全局列表
-function recordBg(charId,src){
-if(!src)return;
-var list=App.LS.get('allChatBgList')||[];
-var entry={charId:charId,src:src.slice(0,200),ts:Date.now()};
-// 避免重复
-for(var i=0;i<list.length;i++){if(list[i].charId===charId&&list[i].src===entry.src)return;}
-list.push(entry);
-if(list.length>50)list=list.slice(-50);
-App.LS.set('allChatBgList',list);
-}
-
-// === 主对象 ===
 var Chat={
 charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
-_ctxMenu:null,_menuEl:null,_proTimer:null,_visHandler:null,_streamPartial:'',
+_ctxMenu:null,_menuEl:null,_avCard:null,_proTimer:null,_visHandler:null,_streamPartial:'',
 _backgroundMode:false,_sendQueue:[],_isSendingQueue:false,
 _plusOpen:false,_sendDelayTimer:null,
 
@@ -227,15 +201,6 @@ saveMsgs:function(){try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch
 getUnread:function(charId){return App.LS.get('chatUnread_'+(charId||Chat.charId))||0;},
 setUnread:function(charId,n){App.LS.set('chatUnread_'+(charId||Chat.charId),n);},
 clearUnread:function(charId){App.LS.remove('chatUnread_'+(charId||Chat.charId));},
-
-// ★19 置顶
-getPinned:function(){return App.LS.get('chatPinned')||{};},
-setPinned:function(charId,val){var p=Chat.getPinned();if(val)p[charId]=true;else delete p[charId];App.LS.set('chatPinned',p);},
-isPinned:function(charId){return !!(Chat.getPinned()[charId]);},
-
-// ★19 备注名
-getRename:function(charId){return App.LS.get('chatRename_'+charId)||'';},
-setRename:function(charId,name){if(name)App.LS.set('chatRename_'+charId,name);else App.LS.remove('chatRename_'+charId);},
 
 openInWechat:function(charId){
 if(!App.character){App.showToast('character模块未加载');return;}
@@ -256,9 +221,8 @@ if(App.wechat)App.wechat._savedInner=inner.innerHTML;
 var bgUrl=App.LS.get('chatBg_'+charId)||'';
 var tintOn=App.LS.get('chatTint_'+charId);if(tintOn===null)tintOn=true;
 var hasBg=!!bgUrl;
-var avMode=App.LS.get('chatAvMode_'+charId)||'square';
 
-if(App.chatUI)App.chatUI.render(inner,c,bgUrl,hasBg,tintOn,avMode);
+if(App.chatUI)App.chatUI.render(inner,c,bgUrl,hasBg,tintOn);
 Chat.renderMessages();
 Chat.bindEvents();
 Chat.startProactive();
@@ -270,7 +234,7 @@ document.addEventListener('visibilitychange',Chat._visHandler);
 close:function(){
 if(Chat.isStreaming){Chat._backgroundMode=true;}
 else{Chat.stopProactive();}
-Chat.dismissCtx();Chat.dismissMenu();
+Chat.dismissCtx();Chat.dismissMenu();Chat.dismissAvCard();
 if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
 if(Chat._visHandler){document.removeEventListener('visibilitychange',Chat._visHandler);Chat._visHandler=null;}
 if(App.wechat)App.wechat.restoreInner();
@@ -353,47 +317,48 @@ Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
 if(err.name==='AbortError')return;
 var errMsg=err.message||String(err);
+var cnMsg=translateError(errMsg);
 if(fullText){
-  Chat._finishStream(fullText);
+  var parts=fullText.trim().split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
+  var now=Date.now();
+  parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
+  Chat.saveMsgs();
+  if(Chat._backgroundMode){Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);}
+  else{Chat.renderMessages();}
 } else {
   if(!Chat._backgroundMode){
-    // ★6 中文错误
-    Chat.messages.push({role:'system',content:'发送失败',ts:Date.now()});
+    Chat.messages.push({role:'system',content:'发送失败：'+cnMsg,ts:Date.now()});
     Chat.saveMsgs();Chat.renderMessages();
     var container=App.$('#ctMsgs');
-    if(container){var errDiv=document.createElement('div');errDiv.className='ct-error-detail';errDiv.textContent=translateErr(errMsg);container.appendChild(errDiv);Chat.scrollBottom();}
+    if(container){var errDiv=document.createElement('div');errDiv.className='ct-error-detail';errDiv.textContent='原始错误：'+errMsg;container.appendChild(errDiv);Chat.scrollBottom();}
   }
 }
 Chat._backgroundMode=false;
 });
 },
 
-_finishStream:function(text){
-// ★4 清理空行
-var parts=text.split(SPLIT).map(function(t){return t.replace(/\n\s*\n/g,'\n').trim();}).filter(Boolean);
-var now=Date.now();
-parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
-Chat.saveMsgs();
-if(Chat._backgroundMode){
-  Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
-}else{
-  Chat.renderMessages();
-}
-},
-
 updateStreamBubble:function(text){
 var bubble=App.$('#ctStreamBubble');if(!bubble)return;
 var parts=text.split(SPLIT);
-var lastPart=(parts[parts.length-1]||'').replace(/\n\s*\n/g,'\n').trim();
-bubble.textContent=lastPart||'';
-if(!lastPart)bubble.innerHTML='<span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span>';
+var lastPart=parts[parts.length-1]||'';
+bubble.innerHTML=App.esc(lastPart.trim())||'<span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span>';
 Chat.scrollBottom();
 },
 
 onStreamDone:function(text,cfg){
 Chat.isStreaming=false;Chat.abortCtrl=null;
 text=text.trim();
-if(text)Chat._finishStream(text);
+if(text){
+  var parts=text.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
+  var now=Date.now();
+  parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
+  Chat.saveMsgs();
+  if(Chat._backgroundMode){
+    Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
+    Chat._backgroundMode=false;
+    return;
+  }
+}
 Chat._backgroundMode=false;
 Chat.updateSendBtn();Chat.updateTyping(false);
 Chat.renderMessages();
@@ -403,7 +368,12 @@ stopStream:function(){
 if(Chat.abortCtrl){Chat.abortCtrl.abort();Chat.abortCtrl=null;}
 var partial=Chat._streamPartial||'';
 Chat.isStreaming=false;Chat.updateSendBtn();Chat.updateTyping(false);
-if(partial)Chat._finishStream(partial);
+if(partial){
+  var parts=partial.trim().split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
+  var now=Date.now();
+  parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
+  Chat.saveMsgs();
+}
 Chat.renderMessages();
 },
 
@@ -411,6 +381,7 @@ updateSendBtn:function(){if(App.chatUI)App.chatUI.updateSendBtn();},
 updateTyping:function(show){if(App.chatUI)App.chatUI.updateTyping(show);},
 showMenu:function(){if(App.chatUI)App.chatUI.showMenu();},
 dismissMenu:function(){if(Chat._menuEl){Chat._menuEl.remove();Chat._menuEl=null;}},
+dismissAvCard:function(){if(Chat._avCard){Chat._avCard.remove();Chat._avCard=null;}},
 showCtxMenu:function(msgEl,x,y){if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);},
 dismissCtx:function(){if(Chat._ctxMenu){Chat._ctxMenu.remove();Chat._ctxMenu=null;}},
 
@@ -438,11 +409,26 @@ App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(fu
 
 shareMsg:function(idx){
 var msg=Chat.messages[idx];if(!msg)return;
-if(navigator.share){navigator.share({text:msg.content}).catch(function(){});}
-else{App.copyText(msg.content).then(function(){App.showToast('已复制，可粘贴分享');}).catch(function(){App.showToast('复制失败');});}
+var shareText=msg.content||'';
+if(navigator.share){navigator.share({text:shareText}).catch(function(){});}
+else{App.copyText(shareText).then(function(){App.showToast('已复制，可粘贴分享');}).catch(function(){App.showToast('复制失败');});}
 },
 
-// === 主动消息 ===
+downloadSticker:function(idx){
+var msg=Chat.messages[idx];if(!msg)return;
+var match=(msg.content||'').match(/\[sticker:([^\]]+)\]/);
+if(!match){App.showToast('该消息不含表情包');return;}
+var desc=match[1];
+var cacheKey='stickerCache_'+desc.replace(/\s+/g,'_').slice(0,30);
+var url=App.LS.get(cacheKey);
+if(!url){App.showToast('表情包尚未生成');return;}
+var a=document.createElement('a');
+a.href=url;a.download='sticker_'+Date.now()+'.png';
+a.target='_blank';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+App.showToast('正在下载');
+},
+
 startProactive:function(){
 Chat.stopProactive();
 var cfg=getCfg(Chat.charId);
@@ -456,9 +442,7 @@ Chat._proTimer=setTimeout(function(){
   var now=new Date(),hhmm=pad2(now.getHours())+':'+pad2(now.getMinutes());
   var start=cfg.proActiveStart||'00:00',end=cfg.proActiveEnd||'23:59';
   if(hhmm<start||hhmm>end){schedule();return;}
-  // ★21 主动消息加错误处理
-  Chat.requestProactive();
-  schedule();
+  Chat.requestProactive();schedule();
 },delay);}
 schedule();
 },
@@ -469,8 +453,10 @@ resetProactive:function(){Chat.stopProactive();Chat.startProactive();},
 requestProactive:function(){
 var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
-// ★21 没有API时静默跳过
-if(!api){console.warn('主动消息：未配置API，跳过');return;}
+if(!api){
+  console.warn('[主动消息] API未配置');
+  return;
+}
 var user=App.user?App.user.getActiveUser():null;
 var sceneText=App.LS.get('chatScene_'+Chat.charId)||'';
 var sysPrompt=buildSystemPrompt(Chat.charData,user,sceneText,cfg);
@@ -485,6 +471,8 @@ var url=api.url.replace(/\/+$/,'')+'/chat/completions';
 Chat.isStreaming=true;
 if(!Chat._backgroundMode){Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(true);}
 Chat.abortCtrl=new AbortController();
+
+console.log('[主动消息] 开始请求...');
 
 fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
 body:JSON.stringify({model:api.model,messages:apiMsgs,stream:true,temperature:params.temperature,frequency_penalty:params.freqPenalty,presence_penalty:params.presPenalty}),
@@ -501,31 +489,25 @@ try{var json=JSON.parse(data);var delta=json.choices&&json.choices[0]&&json.choi
 return read();});}
 return read();
 }).catch(function(err){
-// ★21 主动消息失败时记录到控制台
 Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
-if(err.name!=='AbortError'){
-  console.error('主动消息失败:',translateErr(err.message||String(err)));
+var cnMsg=translateError(err.message||String(err));
+console.error('[主动消息] 失败：'+cnMsg);
+if(!Chat._backgroundMode){
+  Chat.messages.push({role:'system',content:'[主动消息失败] '+cnMsg,ts:Date.now()});
+  Chat.saveMsgs();Chat.renderMessages();
 }
 });
 },
 
-setChatBg:function(src){
-try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}
-// ★14 记录到全局列表
-recordBg(Chat.charId,src);
-var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';
-var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');
-App.showToast('背景已设置');
-},
-
 showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
 showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
+setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
 
 init:function(){App.chat=Chat;}
 };
 
-Chat._utils={getCfg:getCfg,getApi:getApi,fmtTime:fmtTime,SPLIT:SPLIT,generateSticker:generateSticker,compressImage:compressImage,MAX_BG_SIZE:MAX_BG_SIZE,BG_QUALITY:BG_QUALITY,translateErr:translateErr,recordBg:recordBg};
+Chat._utils={getCfg:getCfg,getApi:getApi,fmtTime:fmtTime,SPLIT:SPLIT,generateSticker:generateSticker,compressImage:compressImage,MAX_BG_SIZE:MAX_BG_SIZE,BG_QUALITY:BG_QUALITY};
 
 App.register('chat',Chat);
 })();
