@@ -49,18 +49,18 @@ return 3000+Math.random()*5000;
 
 function translateError(msg){
 if(!msg)return '不知道发生了什么，再试一次看看？';
-if(msg.indexOf('401')>=0)return 'API Key 好像失效了…检查一下吧 ';
-if(msg.indexOf('403')>=0)return '被拒之门外了…权限不够呀 ';
+if(msg.indexOf('401')>=0)return 'API Key 好像失效了…检查一下吧';
+if(msg.indexOf('403')>=0)return '被拒之门外了…权限不够呀';
 if(msg.indexOf('404')>=0)return '找不到这个地址或模型诶…是不是填错了？';
-if(msg.indexOf('429')>=0)return '请求太频繁啦，休息一下再来吧 ';
-if(msg.indexOf('500')>=0)return '服务器那边出问题了…不是你的错哦 ';
+if(msg.indexOf('429')>=0)return '请求太频繁啦，休息一下再来吧';
+if(msg.indexOf('500')>=0)return '服务器那边出问题了…不是你的错哦';
 if(msg.indexOf('502')>=0)return '网关打了个盹…稍等一下再试？';
 if(msg.indexOf('503')>=0)return '服务器在维护中，过会儿再来吧~';
-if(msg.indexOf('timeout')>=0||msg.indexOf('Timeout')>=0)return '等太久了，网络好像不太给力 ';
+if(msg.indexOf('timeout')>=0||msg.indexOf('Timeout')>=0)return '等太久了，网络好像不太给力';
 if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return '网络断开了…检查一下WiFi或数据？';
 if(msg.indexOf('AbortError')>=0)return '已经停下来啦~';
 if(msg.indexOf('model')>=0&&msg.indexOf('not')>=0)return '这个模型不存在诶…换一个试试？';
-if(msg.indexOf('insufficient_quota')>=0)return 'API 余额不够了…该充值啦 ';
+if(msg.indexOf('insufficient_quota')>=0)return 'API 余额不够了…该充值啦';
 if(msg.indexOf('context_length')>=0||msg.indexOf('token')>=0)return '聊太多啦，消息超出长度限制了…清理一些旧消息试试？';
 return '出了点小状况：'+msg;
 }
@@ -509,10 +509,10 @@ if(!resp.ok){
 }
 var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 function read(){return reader.read().then(function(result){
-if(result.done){finish();return;}
+if(result.done){proFinish();return;}
 buffer+=decoder.decode(result.value,{stream:true});var lines=buffer.split('\n');buffer=lines.pop()||'';
 for(var i=0;i<lines.length;i++){var line=lines[i].trim();if(!line||!line.startsWith('data:'))continue;var data=line.slice(5).trim();
-if(data==='[DONE]'||data===''){finish();return;}
+if(data==='[DONE]'||data===''){proFinish();return;}
 try{var json=JSON.parse(data);var delta=json.choices&&json.choices[0]&&json.choices[0].delta;if(delta&&delta.content){fullText+=delta.content;if(!Chat._backgroundMode)Chat.updateStreamBubble(fullText);}}catch(e){}}
 return read();});}
 return read();
@@ -524,7 +524,7 @@ console.error('[主动消息] '+cnMsg);
 console.error('[主动消息] 原始错误: '+(err.message||err));
 });
 
-function finish(){
+function proFinish(){
   Chat.isStreaming=false;
   if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
   fullText=fullText.trim();
@@ -545,6 +545,7 @@ function finish(){
   }
   Chat._backgroundMode=false;
 }
+},
 
 showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
 showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
