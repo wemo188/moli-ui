@@ -3,17 +3,14 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var ROBOT_SVG='<svg viewBox="0 0 64 64" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="32" y1="14" x2="32" y2="10" stroke="#1f2b38" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1f2b38"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1f2b38"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1f2b38"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1f2b38"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
+var ROBOT_SVG='<svg viewBox="0 0 64 64" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="32" y1="14" x2="32" y2="10" stroke="#1f2b38" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1f2b38"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1f2b38"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1f2b38"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1f2b38"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="18" height="18"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
-
-var SEND_SVG=ROBOT_SVG;
 
 var ChatUI={
 
 render:function(inner,charData,bgUrl,hasBg,tintOn){
 var c=charData;
-// 读取微信内部的晕染样式，直接内联复制
 var tintCSS='background:'+
 'radial-gradient(circle at 50% 48%,rgba(126,163,201,.48) 0%,rgba(126,163,201,.28) 18%,rgba(126,163,201,.14) 38%,transparent 62%),'+
 'radial-gradient(circle at 46% 44%,rgba(140,180,215,.22) 0%,rgba(140,180,215,.10) 28%,transparent 52%),'+
@@ -26,9 +23,9 @@ inner.innerHTML=
 '<div class="ct-tint'+(tintOn?'':' off')+'" id="ctTint" style="'+tintCSS+'"></div>'+
 '<div class="ct-glass"></div>'+
 '<div class="ct-hd">'+
-  '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+  '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>'+
   '<div class="ct-hd-name" id="ctName">'+App.esc(c.name||'')+'</div>'+
-  '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg></button>'+
+  '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2" fill="#1a1a1a" stroke="none"/><circle cx="12" cy="12" r="2" fill="#1a1a1a" stroke="none"/><circle cx="18" cy="12" r="2" fill="#1a1a1a" stroke="none"/></svg></button>'+
 '</div>'+
 '<div class="ct-msgs" id="ctMsgs"></div>'+
 '<div class="ct-plus-panel" id="ctPlusPanel">'+
@@ -37,8 +34,8 @@ inner.innerHTML=
 '<div class="ct-input-wrap">'+
   '<button class="ct-voice-btn" id="ctVoiceBtn" type="button"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>'+
   '<textarea class="ct-input" id="ctInput" placeholder="输入消息..." rows="1"></textarea>'+
-  '<button class="ct-send" id="ctSend" type="button">'+SEND_SVG+'</button>'+
-  '<button class="ct-plus-btn" id="ctPlusBtn" type="button"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>'+
+  '<button class="ct-send" id="ctSend" type="button">'+ROBOT_SVG+'</button>'+
+  '<button class="ct-plus-btn" id="ctPlusBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
 '</div>'+
 '</div>';
 },
@@ -72,6 +69,8 @@ if(!Chat.messages.length){
 }
 
 var html='';
+var lastTs=0;
+
 Chat.messages.forEach(function(msg,idx){
   if(msg.role==='system'){html+='<div class="ct-sys">'+App.esc(msg.content)+'</div>';return;}
 
@@ -80,37 +79,45 @@ Chat.messages.forEach(function(msg,idx){
   if(isUser){av=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';}
   else{av=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';}
 
+  // 只在距离上一条消息超过5分钟时才显示时间
+  var showTime=false;
+  if(msg.ts&&(msg.ts-lastTs>300000)){showTime=true;}
+  if(msg.ts)lastTs=msg.ts;
+
   var timeStr=msg.ts?utils.fmtTime(msg.ts):'';
-  var bubbles=(msg.content||'').split(utils.SPLIT);
+  var text=(msg.content||'').trim();
+  if(!text)return;
 
-  bubbles.forEach(function(text,bIdx){
-    text=text.trim();if(!text)return;
-    var isLast=bIdx===bubbles.length-1;
-    var bubbleContent='';
+  var bubbleContent='';
 
-    var stickerMatch=text.match(/\[sticker:([^\]]+)\]/);
-    if(stickerMatch){
-      var desc=stickerMatch[1];
-      text=text.replace(stickerMatch[0],'').trim();
-      var stickerImgUrl=App.LS.get('stickerCache_'+desc.replace(/\s+/g,'_').slice(0,30));
-      if(stickerImgUrl){
-        bubbleContent+='<img class="ct-sticker" src="'+App.escAttr(stickerImgUrl)+'" alt="sticker">';
-      } else {
-        var stickerId='stk_'+idx+'_'+bIdx;
-        bubbleContent+='<div class="ct-sticker-loading" id="'+stickerId+'" data-desc="'+App.escAttr(desc)+'" style="width:80px;height:80px;border-radius:8px;background:rgba(200,220,240,.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:#8aa0b8;">生成中...</div>';
-      }
+  var stickerMatch=text.match(/\[sticker:([^\]]+)\]/);
+  if(stickerMatch){
+    var desc=stickerMatch[1];
+    text=text.replace(stickerMatch[0],'').trim();
+    var cacheKey='stickerCache_'+desc.replace(/\s+/g,'_').slice(0,30);
+    var stickerImgUrl=App.LS.get(cacheKey);
+    if(stickerImgUrl){
+      bubbleContent+='<img class="ct-sticker" src="'+App.escAttr(stickerImgUrl)+'" alt="sticker">';
+    } else {
+      var stickerId='stk_'+idx;
+      bubbleContent+='<div class="ct-sticker-loading" id="'+stickerId+'" data-desc="'+App.escAttr(desc)+'" style="width:80px;height:80px;border-radius:8px;background:rgba(200,220,240,.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:#8aa0b8;">生成中...</div>';
     }
+  }
 
-    if(text)bubbleContent+=App.esc(text);
-    if(!bubbleContent)return;
+  if(text)bubbleContent+=App.esc(text);
+  if(!bubbleContent)return;
 
-    var metaHtml='';
-    if(isLast){
-      if(isUser)metaHtml='<div class="ct-msg-meta"><span class="ct-msg-read">已读</span><span>'+timeStr+'</span></div>';
-      else metaHtml='<div class="ct-msg-meta"><span>'+timeStr+'</span></div>';
-    }
-    html+='<div class="ct-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'"><div class="ct-msg-av">'+av+'</div><div class="ct-bubble-wrap"><div class="ct-bubble">'+bubbleContent+'</div>'+metaHtml+'</div></div>';
-  });
+  // 时间戳只在需要时显示（间隔超5分钟），且跟已读同一行
+  var metaHtml='<div class="ct-msg-meta">';
+  if(isUser){
+    metaHtml+='<span class="ct-msg-read">已读</span>';
+    if(showTime)metaHtml+='<span>'+timeStr+'</span>';
+  } else {
+    if(showTime)metaHtml+='<span>'+timeStr+'</span>';
+  }
+  metaHtml+='</div>';
+
+  html+='<div class="ct-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'"><div class="ct-msg-av">'+av+'</div><div class="ct-bubble-wrap"><div class="ct-bubble">'+bubbleContent+'</div>'+metaHtml+'</div></div>';
 });
 
 if(Chat.isStreaming&&!Chat._backgroundMode){
@@ -121,7 +128,7 @@ if(Chat.isStreaming&&!Chat._backgroundMode){
 container.innerHTML=html;
 Chat.scrollBottom();
 
-// 自动生成表情包
+// 表情包生成
 var cfg2=Chat._utils.getCfg(Chat.charId);
 container.querySelectorAll('.ct-sticker-loading').forEach(function(el){
   var desc=el.dataset.desc;if(!desc)return;
@@ -136,7 +143,6 @@ bindEvents:function(){
 var Chat=App.chat;if(!Chat)return;
 
 App.safeOn('#ctBack','click',function(){Chat.close();});
-
 App.safeOn('#ctMenuBtn','click',function(e){e.stopPropagation();if(Chat._menuEl){Chat.dismissMenu();return;}ChatUI.showMenu();});
 
 var root=App.$('#ctRoot');
@@ -145,9 +151,8 @@ if(root)root.addEventListener('click',function(){Chat.dismissMenu();Chat.dismiss
 var input=App.$('#ctInput');
 if(input){
   input.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+  // 手机端回车=换行，桌面端回车=发送
   input.addEventListener('keydown',function(e){
-    // 手机端不拦截Enter，让它正常换行
-    // 只有桌面端（有物理键盘）才用Enter发送
     if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();Chat.send();}
   });
 }
@@ -166,11 +171,22 @@ App.safeOn('#ctVoiceBtn','click',function(e){
   App.showToast('语音输入 · 开发中');
 });
 
-// 加号面板项
+// 加号面板功能
 ['piPhoto','piSticker','piVoiceMsg','piVoiceCall','piVideoCall','piRedPacket','piTransfer','piLocation'].forEach(function(id){
   App.safeOn('#'+id,'click',function(e){
     e.stopPropagation();
-    var labels={piPhoto:'图片',piSticker:'表情包',piVoiceMsg:'语音消息',piVoiceCall:'语音通话',piVideoCall:'视频通话',piRedPacket:'红包',piTransfer:'转账',piLocation:'位置'};
+    var pp=App.$('#ctPlusPanel');if(pp){pp.classList.remove('show');Chat._plusOpen=false;}
+
+    if(id==='piPhoto'){
+      ChatUI._showImagePicker(function(src){
+        if(!src)return;
+        Chat.messages.push({role:'user',content:'[用户发送了一张图片]',ts:Date.now()});
+        Chat.saveMsgs();Chat.renderMessages();
+      });
+      return;
+    }
+
+    var labels={piSticker:'表情包',piVoiceMsg:'语音消息',piVoiceCall:'语音通话',piVideoCall:'视频通话',piRedPacket:'红包',piTransfer:'转账',piLocation:'位置'};
     App.showToast((labels[id]||'功能')+' · 开发中');
   });
 });
@@ -190,11 +206,67 @@ if(mc){
 }
 },
 
+_showImagePicker:function(callback){
+var menu=document.createElement('div');
+menu.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+menu.innerHTML=
+'<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;">'+
+  '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">发送图片</div>'+
+  '<button data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>'+
+  '<button data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>'+
+  '<button data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>'+
+'</div>';
+document.body.appendChild(menu);
+menu.addEventListener('click',function(e){if(e.target===menu){menu.remove();callback(null);}});
+menu.querySelectorAll('button').forEach(function(btn){
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();var act=btn.dataset.act;menu.remove();
+    if(act==='cancel'){callback(null);return;}
+    if(act==='album'){
+      var input=document.createElement('input');input.type='file';input.accept='image/*';
+      document.body.appendChild(input);
+      input.onchange=function(ev){
+        var file=ev.target.files[0];document.body.removeChild(input);if(!file){callback(null);return;}
+        var reader=new FileReader();
+        reader.onload=function(r){
+          if(App.cropImage){App.cropImage(r.target.result,function(cropped){callback(cropped);});}
+          else{callback(r.target.result);}
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();return;
+    }
+    if(act==='url'){
+      var urlPanel=document.createElement('div');
+      urlPanel.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+      urlPanel.innerHTML=
+      '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">'+
+        '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;">输入图片URL</div>'+
+        '<input id="piUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">'+
+        '<div style="display:flex;gap:8px;">'+
+          '<button id="piUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>'+
+          '<button id="piUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
+        '</div>'+
+      '</div>';
+      document.body.appendChild(urlPanel);
+      urlPanel.addEventListener('click',function(e){if(e.target===urlPanel){urlPanel.remove();callback(null);}});
+      urlPanel.querySelector('#piUrlNo').addEventListener('click',function(){urlPanel.remove();callback(null);});
+      urlPanel.querySelector('#piUrlOk').addEventListener('click',function(){
+        var url=urlPanel.querySelector('#piUrlInput').value.trim();
+        urlPanel.remove();
+        if(!url){callback(null);return;}
+        callback(url);
+      });
+    }
+  });
+});
+},
+
 updateSendBtn:function(){
 var Chat=App.chat;if(!Chat)return;
 var btn=App.$('#ctSend');if(!btn)return;
 if(Chat.isStreaming){btn.classList.add('stop');btn.innerHTML=STOP_SVG;}
-else{btn.classList.remove('stop');btn.innerHTML=SEND_SVG;}
+else{btn.classList.remove('stop');btn.innerHTML=ROBOT_SVG;}
 },
 
 updateTyping:function(show){
@@ -236,8 +308,8 @@ menu.querySelectorAll('.ct-hd-mi').forEach(function(item){
       return;
     }
     Chat.dismissMenu();
-    if(act==='bg')Chat.showBgMenu();
-    else if(act==='scene')Chat.showSceneDialog();
+    if(act==='bg')ChatUI.showBgMenu();
+    else if(act==='scene')ChatUI.showSceneDialog();
     else if(act==='clear'){if(!confirm('确定清空所有聊天记录？'))return;Chat.messages=[];Chat.saveMsgs();Chat.renderMessages();App.showToast('已清空');}
   });
 });
@@ -251,20 +323,22 @@ var msg=Chat.messages[idx];if(!msg)return;
 var isUser=msg.role==='user';
 
 var menu=document.createElement('div');menu.className='ct-ctx';
-var items='<div class="ct-ctx-item" data-act="copy">复制</div>';
+var items='';
+items+='<div class="ct-ctx-item" data-act="copy">复制</div>';
 items+='<div class="ct-ctx-item" data-act="edit">编辑</div>';
 if(isUser){
-  items+='<div class="ct-ctx-item" data-act="resend">重发</div>';
+  items+='<div class="ct-ctx-item" data-act="resend">重新发送</div>';
+  items+='<div class="ct-ctx-item" data-act="share">转发</div>';
 } else {
   items+='<div class="ct-ctx-item" data-act="regen">重新生成</div>';
-  var cfg=Chat._utils.getCfg(Chat.charId);
-  if(cfg.fallbackTTS||cfg.minimax)items+='<div class="ct-ctx-item" data-act="speak">'+(Chat._currentTTS?'停止播放':'播放语音')+'</div>';
 }
+items+='<div class="ct-ctx-item" data-act="quote">引用</div>';
+items+='<div class="ct-ctx-item" data-act="fav">收藏</div>';
 items+='<div class="ct-ctx-item" data-act="delafter">往后全删</div>';
 items+='<div class="ct-ctx-item" data-act="del">删除</div>';
 menu.innerHTML=items;
 
-var left=Math.min(x,window.innerWidth-140),top=Math.min(y-10,window.innerHeight-250);if(top<60)top=60;
+var left=Math.min(x,window.innerWidth-140),top=Math.min(y-10,window.innerHeight-350);if(top<60)top=60;
 menu.style.left=left+'px';menu.style.top=top+'px';
 document.body.appendChild(menu);Chat._ctxMenu=menu;
 
@@ -277,7 +351,24 @@ menu.querySelectorAll('.ct-ctx-item').forEach(function(item){
     else if(act==='edit')Chat.editMsg(idx);
     else if(act==='resend')Chat.resendMsg(idx);
     else if(act==='regen')Chat.regenerate(idx);
-    else if(act==='speak')Chat.speakMsg(idx);
+    else if(act==='share')Chat.shareMsg(idx);
+    else if(act==='quote'){
+      // 引用：把引用内容填入输入框
+      var input=App.$('#ctInput');
+      if(input){
+        var quoteText='「'+msg.content.slice(0,50)+(msg.content.length>50?'...':'')+'」\n';
+        input.value=quoteText;
+        input.focus();
+        input.style.height='auto';
+        input.style.height=Math.min(input.scrollHeight,100)+'px';
+      }
+    }
+    else if(act==='fav'){
+      var favs=App.LS.get('chatFavorites')||[];
+      favs.push({content:msg.content,ts:msg.ts,charName:Chat.charData?Chat.charData.name:'',savedAt:Date.now()});
+      App.LS.set('chatFavorites',favs);
+      App.showToast('已收藏');
+    }
   });
 });
 },
@@ -301,27 +392,21 @@ overlay.innerHTML=
 '</div>';
 document.body.appendChild(overlay);
 
-// 点背景可滑动编辑面板（不关闭）
 overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-
 overlay.querySelector('#ctEditCancel').addEventListener('click',function(){overlay.remove();});
-
 overlay.querySelector('#ctEditSave').addEventListener('click',function(){
   var val=overlay.querySelector('#ctEditTA').value.trim();
   if(!val){App.showToast('内容不能为空');return;}
   Chat.messages[idx].content=val;Chat.saveMsgs();Chat.renderMessages();overlay.remove();
 });
-
 var sendNew=overlay.querySelector('#ctEditSendNew');
-if(sendNew){
-  sendNew.addEventListener('click',function(){
-    var val=overlay.querySelector('#ctEditTA').value.trim();
-    if(!val){App.showToast('内容不能为空');return;}
-    overlay.remove();Chat.messages.splice(idx);
-    Chat.messages.push({role:'user',content:val,ts:Date.now()});
-    Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();
-  });
-}
+if(sendNew){sendNew.addEventListener('click',function(){
+  var val=overlay.querySelector('#ctEditTA').value.trim();
+  if(!val){App.showToast('内容不能为空');return;}
+  overlay.remove();Chat.messages.splice(idx);
+  Chat.messages.push({role:'user',content:val,ts:Date.now()});
+  Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();
+});}
 },
 
 showSceneDialog:function(){
@@ -353,7 +438,7 @@ var menu=document.createElement('div');menu.id='ctBgMenu';
 menu.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
 menu.innerHTML=
 '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;">'+
-  '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">聊天背景</div>'+
+  '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">聊天背景</div>'+
   '<button class="ctbg-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>'+
   '<button class="ctbg-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>'+
   '<button class="ctbg-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">移除背景</button>'+
@@ -378,7 +463,13 @@ menu.querySelectorAll('.ctbg-btn').forEach(function(btn){
         var file=ev.target.files[0];document.body.removeChild(input);if(!file)return;
         var reader=new FileReader();
         reader.onload=function(r){
-          Chat._utils.compressImage(r.target.result,Chat._utils.MAX_BG_SIZE,Chat._utils.BG_QUALITY,function(c){Chat.setChatBg(c);});
+          if(App.cropImage){
+            App.cropImage(r.target.result,function(cropped){
+              Chat._utils.compressImage(cropped,Chat._utils.MAX_BG_SIZE,Chat._utils.BG_QUALITY,function(c){Chat.setChatBg(c);});
+            });
+          } else {
+            Chat._utils.compressImage(r.target.result,Chat._utils.MAX_BG_SIZE,Chat._utils.BG_QUALITY,function(c){Chat.setChatBg(c);});
+          }
         };
         reader.readAsDataURL(file);
       };
