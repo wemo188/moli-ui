@@ -51,7 +51,7 @@
                 tkBlack('memory', '记忆', 'memory') +
                 tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('exportData', '导出', 'export') +
-                 tkBlack('storage', '存储', 'storage') +
+                tkBlack('storage', '存储', 'storage') +
                 tkBlack('console', '控制台', 'console') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
@@ -95,7 +95,7 @@
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'exportData') { Workshop.exportData(); return; }
-           if (action === 'storage') { Workshop.close(); setTimeout(function() { Workshop.openStorage(); }, 220); return; }
+          if (action === 'storage') { Workshop.close(); setTimeout(function() { Workshop.openStorage(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
         });
       });
@@ -136,6 +136,96 @@
       var edenCard = App.$('#edenCard');
       if (edenCard) edenCard.style.transform = '';
       App.showToast('布局已恢复');
+    },
+
+    openStorage: function() {
+      var old = App.$('#wsStorage');
+      if (old) { old.remove(); return; }
+
+      var items = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var val = localStorage.getItem(key);
+        var size = Math.round((key.length + (val ? val.length : 0)) * 2 / 1024);
+        items.push({ key: key, size: size });
+      }
+      items.sort(function(a, b) { return b.size - a.size; });
+
+      var total = 0;
+      items.forEach(function(it) { total += it.size; });
+      var totalStr = total > 1024 ? (total / 1024).toFixed(1) + ' MB' : total + ' KB';
+
+      var panel = document.createElement('div');
+      panel.id = 'wsStorage';
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200000;background:#fff;display:flex;flex-direction:column;';
+
+      var listHtml = items.map(function(it) {
+        var canDel = it.key.startsWith('chatBg_') || it.key.startsWith('stickerCache_') || it.key.startsWith('iconImg_') || it.key.startsWith('chatMsgs_');
+        var label = '';
+        if (it.key.startsWith('chatBg_')) label = ' <span style="color:#7a9ab8;font-size:10px;">背景图</span>';
+        else if (it.key.startsWith('stickerCache_')) label = ' <span style="color:#7a9ab8;font-size:10px;">表情包</span>';
+        else if (it.key.startsWith('iconImg_')) label = ' <span style="color:#7a9ab8;font-size:10px;">图标</span>';
+        else if (it.key.startsWith('chatMsgs_')) label = ' <span style="color:#7a9ab8;font-size:10px;">聊天记录</span>';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">' +
+          '<span style="color:#333;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:10px;">' + App.esc(it.key) + label + '</span>' +
+          '<span style="color:#999;flex-shrink:0;">' + it.size + ' KB</span>' +
+          (canDel ? '<button data-delkey="' + App.escAttr(it.key) + '" type="button" style="margin-left:8px;background:rgba(201,112,107,.1);border:1px solid rgba(201,112,107,.3);border-radius:6px;color:#c9706b;font-size:11px;padding:3px 8px;cursor:pointer;font-family:inherit;flex-shrink:0;">清除</button>' : '') +
+        '</div>';
+      }).join('');
+
+      panel.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;border-bottom:1px solid #eee;flex-shrink:0;">' +
+          '<button id="wsStorageBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">存储空间</span>' +
+          '<span style="font-size:12px;color:#8aa0b8;">' + totalStr + '</span>' +
+        '</div>' +
+        '<div style="padding:8px 18px;display:flex;gap:8px;flex-shrink:0;border-bottom:1px solid #eee;">' +
+          '<button id="wsClearAllBg" type="button" style="flex:1;padding:8px;background:rgba(201,112,107,.06);border:1px solid rgba(201,112,107,.2);border-radius:8px;color:#c9706b;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">清除所有背景图</button>' +
+          '<button id="wsClearAllSticker" type="button" style="flex:1;padding:8px;background:rgba(201,112,107,.06);border:1px solid rgba(201,112,107,.2);border-radius:8px;color:#c9706b;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">清除所有表情包缓存</button>' +
+        '</div>' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">' + listHtml + '</div>';
+
+      document.body.appendChild(panel);
+
+      panel.querySelector('#wsStorageBack').addEventListener('click', function() { panel.remove(); });
+
+      panel.querySelector('#wsClearAllBg').addEventListener('click', function() {
+        if (!confirm('清除所有聊天背景图？')) return;
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k.startsWith('chatBg_')) keys.push(k);
+        }
+        keys.forEach(function(k) { localStorage.removeItem(k); });
+        panel.remove();
+        Workshop.openStorage();
+        App.showToast('已清除 ' + keys.length + ' 张背景图');
+      });
+
+      panel.querySelector('#wsClearAllSticker').addEventListener('click', function() {
+        if (!confirm('清除所有表情包缓存？')) return;
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k.startsWith('stickerCache_')) keys.push(k);
+        }
+        keys.forEach(function(k) { localStorage.removeItem(k); });
+        panel.remove();
+        Workshop.openStorage();
+        App.showToast('已清除 ' + keys.length + ' 个表情包缓存');
+      });
+
+      panel.querySelectorAll('[data-delkey]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var key = btn.dataset.delkey;
+          if (!confirm('清除 ' + key + '？')) return;
+          localStorage.removeItem(key);
+          panel.remove();
+          Workshop.openStorage();
+          App.showToast('已清除');
+        });
+      });
     },
 
     openConsole: function() {
