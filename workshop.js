@@ -42,7 +42,7 @@
 
           '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
             '<div class="bm-card">' +
-              '<div class="bm-title">♠ 悬浮助手 ♠</div>' +
+              '<div class="bm-title"> 悬浮助手 </div>' +
               '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
                 tkBlack('workshop', '工坊', 'studio') +
@@ -60,7 +60,7 @@
 
           '<div class="ball-card-page" data-page="1" style="width:' + PG1_W + 'px">' +
             '<div class="bm-card">' +
-              '<div class="bm-title">♠ 美化工坊 ♠</div>' +
+              '<div class="bm-title"> 美化工坊 </div>' +
               '<div class="bm-grid">' +
                 tkWhite('theme', '主题', 'theme') +
                 tkWhite('font', '字体', 'font') +
