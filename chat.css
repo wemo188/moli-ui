@@ -1,9 +1,8 @@
 
 /* ============================
-   聊天页面 · 全部样式
+   聊天页面样式
    ============================ */
 
-/* --- 根容器 --- */
 .ct-root {
   position: relative;
   display: flex;
@@ -16,10 +15,9 @@
   border-radius: inherit;
 }
 
-/* --- 背景层 --- */
 .ct-bg {
   position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
+  inset: 0;
   z-index: 0;
   background-size: cover;
   background-position: center;
@@ -88,8 +86,8 @@
 
 .ct-hd-btn svg {
   width: 20px; height: 20px;
-  fill: none; stroke: #7a9ab8;
-  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  fill: none; stroke: #1a1a1a;
+  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
 .ct-hd-name {
@@ -97,7 +95,7 @@
   text-align: center;
   font-size: 16px;
   font-weight: 700;
-  color: #2e4258;
+  color: #1a1a1a;
   letter-spacing: .5px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,7 +119,6 @@
   min-height: 0;
 }
 
-/* --- 消息条 --- */
 .ct-msg {
   display: flex;
   align-items: flex-start;
@@ -145,31 +142,15 @@
   border: 1px solid rgba(192,206,220,.5);
 }
 
-.ct-msg-av.circle {
-  border-radius: 50%;
-}
-
-.ct-msg-av.hidden {
-  visibility: hidden;
-  width: 0;
-  margin: 0;
-  border: none;
-  overflow: hidden;
-}
-
 .ct-msg-av img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
 }
 
 .ct-msg-av svg {
   width: 20px; height: 20px;
   margin: 11px;
-  stroke: #a8c0d8;
-  fill: none;
-  stroke-width: 1.5;
+  stroke: #a8c0d8; fill: none; stroke-width: 1.5;
 }
 
 /* --- 气泡 --- */
@@ -189,7 +170,6 @@
   white-space: pre-wrap;
   -webkit-user-select: none;
   user-select: none;
-  -webkit-touch-callout: none;
 }
 
 .ct-msg.ai .ct-bubble {
@@ -209,7 +189,7 @@
   -webkit-backdrop-filter: blur(6px);
 }
 
-/* --- 消息元信息 --- */
+/* --- 消息元信息（只在最后一条的最后一个气泡显示） --- */
 .ct-msg-meta {
   display: flex;
   align-items: center;
@@ -229,7 +209,6 @@
   font-weight: 500;
 }
 
-/* --- 系统消息 --- */
 .ct-sys {
   text-align: center;
   font-size: 11px;
@@ -238,14 +217,13 @@
   letter-spacing: .5px;
 }
 
-/* --- 表情包 --- */
 .ct-sticker {
   max-width: 120px;
   border-radius: 8px;
   margin: 4px 0;
 }
 
-/* --- 未读提示 --- */
+/* --- 未读红点 --- */
 .ct-unread-badge {
   position: absolute;
   top: -4px;
@@ -271,7 +249,7 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  padding: 10px 12px 14px;
+  padding: 10px 12px 16px;
   background: rgba(255,255,255,.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -279,9 +257,10 @@
   flex-shrink: 0;
 }
 
-.ct-voice-btn {
-  width: 36px;
-  height: 40px;
+.ct-voice-btn,
+.ct-plus-btn {
+  width: 40px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -292,19 +271,22 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.ct-voice-btn svg {
-  width: 22px; height: 22px;
-  fill: none; stroke: #7a9ab8;
-  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+.ct-voice-btn svg,
+.ct-plus-btn svg {
+  fill: none; stroke: #1a1a1a;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
+
+.ct-voice-btn svg { width: 22px; height: 22px; }
+.ct-plus-btn svg { width: 28px; height: 28px; }
 
 .ct-input {
   flex: 1;
-  min-height: 40px;
+  min-height: 44px;
   max-height: 100px;
-  padding: 10px 16px;
+  padding: 11px 16px;
   border: 1px solid rgba(200,220,240,.4);
-  border-radius: 20px;
+  border-radius: 22px;
   background: rgba(255,255,255,.9);
   font-size: 14px;
   color: #2e4258;
@@ -322,8 +304,8 @@
 }
 
 .ct-send {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: none;
   border: none;
@@ -337,38 +319,13 @@
 }
 
 .ct-send:active { opacity: .7; }
-
-.ct-send svg {
-  width: 36px; height: 36px;
-}
+.ct-send svg { width: 38px; height: 38px; }
 
 .ct-send.stop {
   background: rgba(201,112,107,.85);
   border-radius: 50%;
 }
-
-.ct-send.stop svg {
-  width: 18px; height: 18px;
-}
-
-.ct-plus-btn {
-  width: 36px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ct-plus-btn svg {
-  width: 24px; height: 24px;
-  fill: none; stroke: #7a9ab8;
-  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-}
+.ct-send.stop svg { width: 18px; height: 18px; }
 
 /* --- 加号展开面板 --- */
 .ct-plus-panel {
@@ -377,7 +334,7 @@
   display: none;
   flex-wrap: wrap;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 16px 20px 20px;
   background: rgba(255,255,255,.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -385,9 +342,7 @@
   flex-shrink: 0;
 }
 
-.ct-plus-panel.show {
-  display: flex;
-}
+.ct-plus-panel.show { display: flex; }
 
 .ct-plus-item {
   display: flex;
@@ -400,9 +355,9 @@
 }
 
 .ct-plus-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   background: rgba(255,255,255,.9);
   border: 1px solid rgba(200,220,240,.3);
   display: flex;
@@ -411,15 +366,16 @@
 }
 
 .ct-plus-icon svg {
-  width: 22px; height: 22px;
-  fill: none; stroke: #7a9ab8;
+  width: 24px; height: 24px;
+  fill: none; stroke: #1a1a1a;
   stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
 .ct-plus-label {
-  font-size: 10px;
-  color: #8aa0b8;
+  font-size: 11px;
+  color: #666;
   text-align: center;
+  font-weight: 500;
 }
 
 .ct-plus-item:active .ct-plus-icon {
@@ -434,7 +390,7 @@
   border-radius: 10px;
   padding: 4px 0;
   box-shadow: 0 6px 24px rgba(0,0,0,.25);
-  min-width: 120px;
+  min-width: 130px;
 }
 
 .ct-ctx-item {
@@ -444,7 +400,6 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
-  user-select: none;
 }
 
 .ct-ctx-item:active { background: rgba(255,255,255,.1); }
@@ -510,14 +465,13 @@
 
 .ct-hd-mi .ct-sw-track.on::after { transform: translateX(16px); }
 
-/* --- 开场白 / 空状态 --- */
+/* --- 空状态 --- */
 .ct-greeting {
   text-align: center;
   padding: 20px 30px;
   font-size: 13px;
   color: #7a9ab8;
   line-height: 1.7;
-  letter-spacing: .3px;
 }
 
 .ct-empty-text {
@@ -544,7 +498,7 @@
 .ct-typing-dot:nth-child(2) { animation-delay: .2s; }
 .ct-typing-dot:nth-child(3) { animation-delay: .4s; }
 
-/* --- 编辑弹窗 --- */
+/* --- 弹窗 --- */
 .ct-edit-overlay,
 .ct-scene-overlay {
   position: fixed;
@@ -557,18 +511,7 @@
   padding-bottom: 20px;
 }
 
-.ct-edit-panel {
-  background: rgba(255,255,255,.95);
-  backdrop-filter: blur(12px);
-  border-radius: 18px 18px 14px 14px;
-  padding: 20px;
-  width: calc(100% - 24px);
-  max-width: 400px;
-  max-height: 70vh;
-  overflow-y: auto;
-  box-shadow: 0 -4px 30px rgba(0,0,0,.15);
-}
-
+.ct-edit-panel,
 .ct-scene-panel {
   background: rgba(255,255,255,.95);
   backdrop-filter: blur(12px);
@@ -619,4 +562,18 @@
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* --- 报错详情 --- */
+.ct-error-detail {
+  font-size: 11px;
+  color: #c9706b;
+  background: rgba(201,112,107,.08);
+  border: 1px solid rgba(201,112,107,.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 20px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  text-align: left;
 }
