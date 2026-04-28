@@ -8,7 +8,6 @@
     currentTab: 'chat',
     panelEl: null,
     _savedInner: '',
-    _swipeState: {},
 
     open: function() {
       var panel = App.$('#wechatPanel');
@@ -82,10 +81,12 @@
             '<button class="wx-header-btn" id="wxBackBtn" type="button">' +
               '<svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</button>' +
-            '<div style="flex:1;"></div>' +            '<button class="wx-me-mode-btn" id="wxModeToggle" type="button">' +
+            '<div style="flex:1;"></div>' +
+            '<button class="wx-me-mode-btn" id="wxModeToggle" type="button">' +
               '<span class="wx-me-mode-val">' + (isFS ? '全屏' : '手机') + '</span>' +
               '<span class="wx-me-mode-switch">切换</span>' +
             '</button>' +
+            '<div style="flex:1;"></div>' +
             '<div style="position:relative;">' +
               '<button class="wx-header-btn" id="wxAddBtn" type="button">' +
                 '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
@@ -351,73 +352,10 @@
             '<span class="wx-me-link-text">收藏</span>' +
             '<span class="wx-me-link-arrow">›</span>' +
           '</div>' +
-          '<div class="wx-me-link" id="wxMeStorage">' +
-            '<span class="wx-me-link-text">存储空间</span>' +
-            '<span style="font-size:13px;color:#8aa0b8;">' + Wechat.getStorageSize() + ' ›</span>' +
-          '</div>' +
         '</div>';
 
       body.querySelector('#wxMeFavs').addEventListener('click', function() {
         Wechat.renderFavsPage(body);
-      });
-
-      body.querySelector('#wxMeStorage').addEventListener('click', function() {
-        Wechat.renderStoragePage(body);
-      });
-    },
-
-    getStorageSize: function() {
-      var total = 0;
-      for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        var val = localStorage.getItem(key);
-        total += key.length + (val ? val.length : 0);
-      }
-      var kb = Math.round(total * 2 / 1024);
-      if (kb > 1024) return (kb / 1024).toFixed(1) + ' MB';
-      return kb + ' KB';
-    },
-
-    renderStoragePage: function(body) {
-      var items = [];
-      for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        var val = localStorage.getItem(key);
-        var size = Math.round((key.length + (val ? val.length : 0)) * 2 / 1024);
-        items.push({ key: key, size: size });
-      }
-      items.sort(function(a, b) { return b.size - a.size; });
-
-      var html = '<div style="padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,0,0,.04);cursor:pointer;-webkit-tap-highlight-color:transparent;" id="wxStorageBack">' +
-        '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;"><path d="M15 18l-6-6 6-6"/></svg>' +
-        '<span style="font-size:13px;color:#999;">返回</span></div>';
-
-      html += '<div style="padding:12px 18px;font-size:12px;color:#999;">总计：' + Wechat.getStorageSize() + '</div>';
-
-      html += items.slice(0, 50).map(function(it) {
-        var isBg = it.key.startsWith('chatBg_');
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">' +
-          '<span style="color:#333;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:10px;">' + App.esc(it.key) + '</span>' +
-          '<span style="color:#999;flex-shrink:0;">' + it.size + ' KB</span>' +
-          (isBg ? '<button data-delkey="' + App.escAttr(it.key) + '" type="button" style="margin-left:8px;background:rgba(201,112,107,.1);border:1px solid rgba(201,112,107,.3);border-radius:6px;color:#c9706b;font-size:11px;padding:3px 8px;cursor:pointer;font-family:inherit;flex-shrink:0;">清除</button>' : '') +
-        '</div>';
-      }).join('');
-
-      body.innerHTML = html;
-
-      body.querySelector('#wxStorageBack').addEventListener('click', function() {
-        Wechat.renderMeTab(body);
-      });
-
-      body.querySelectorAll('[data-delkey]').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var key = btn.dataset.delkey;
-          if (!confirm('清除 ' + key + '？')) return;
-          localStorage.removeItem(key);
-          Wechat.renderStoragePage(body);
-          App.showToast('已清除');
-        });
       });
     },
 
@@ -433,7 +371,6 @@
       } else {
         html += favs.map(function(f, i) {
           var content = (f.content || '').slice(0, 100);
-          var hasSticker = content.indexOf('[sticker:') >= 0;
           return '<div style="padding:12px 18px;border-bottom:1px solid rgba(0,0,0,.04);">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
               '<span style="font-size:11px;color:#999;">' + App.esc(f.charName || '') + '</span>' +
@@ -506,6 +443,13 @@
 
     bindEvents: function() {
       App.safeOn('#wxBackBtn', 'click', function() { Wechat.close(); });
+
+      App.safeOn('#wxModeToggle', 'click', function(e) {
+        e.stopPropagation();
+        var cur = App.LS.get('wxFullScreen') || false;
+        App.LS.set('wxFullScreen', !cur);
+        Wechat.render();
+      });
 
       App.safeOn('#wxAddBtn', 'click', function(e) {
         e.stopPropagation();
