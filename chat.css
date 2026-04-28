@@ -180,10 +180,14 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 4px 6px;
+  padding: 0 4px 2px;
   font-size: 10px;
   color: #999;
   letter-spacing: .3px;
+}
+
+.ct-msg.user .ct-msg-meta {
+  flex-direction: row-reverse;
 }
 
 .ct-msg.user .ct-msg-meta {
