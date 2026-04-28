@@ -254,9 +254,6 @@
             App.showToast(newName.trim() ? '已备注' : '已恢复原名');
           }
 
-          if (act === 'chat') {
-            if (App.chat) App.chat.openInWechat(charId);
-          }
         });
       });
 
