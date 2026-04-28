@@ -528,8 +528,6 @@ function finish(){
   if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
   fullText=fullText.trim();
   if(fullText){
-  if(fullText){
-    fullText=fullText.trim();
     if(fullText==='[SKIP]'||fullText.indexOf('[SKIP]')>=0){
       Chat._backgroundMode=false;
       return;
@@ -543,9 +541,9 @@ function finish(){
     } else {
       Chat.renderMessages();
     }
-  }Chat._backgroundMode=false;
+  }
+  Chat._backgroundMode=false;
 }
-},
 
 showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
 showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
