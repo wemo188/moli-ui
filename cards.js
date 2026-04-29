@@ -68,12 +68,12 @@ var Cards={
                   '</svg>'+
                 '</div>'+
               '</div>'+
-              '<input type="text" class="search-input-left" placeholder="左边搜索...">'+
+              '<input type="text" class="search-input-left" placeholder="我们相识...">'+
             '</div>'+
           '</div>'+
           '<div class="search-wrapper">'+
             '<div class="search-box-right">'+
-              '<input type="text" class="search-input-right" placeholder="右边搜索...">'+
+              '<input type="text" class="search-input-right" placeholder="已经有...天">'+
               '<div class="avatar-area-right" data-side="search2">'+
                 '<div class="avatar-preview" id="avatarPreview2">'+
                   '<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
@@ -113,7 +113,7 @@ var Cards={
   },
 
   bindSearchUpload:function(){
-    // 左边搜索框文字
+    // 左边对话框文字
     var leftInput = document.querySelector('.search-input-left');
     var leftSaved = localStorage.getItem('searchText_left');
     if(leftSaved && leftInput) leftInput.value = leftSaved;
@@ -123,7 +123,7 @@ var Cards={
         });
     }
 
-    // 右边搜索框文字
+    // 右边对话框文字
     var rightInput = document.querySelector('.search-input-right');
     var rightSaved = localStorage.getItem('searchText_right');
     if(rightSaved && rightInput) rightInput.value = rightSaved;
