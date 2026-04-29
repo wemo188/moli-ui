@@ -1426,16 +1426,20 @@
         fileInput.addEventListener('change', function(e) {
           var file = e.target.files[0];
           if (!file) return;
+          var iconKey = 'iconImg_' + icon.dataset.icon;
           var reader = new FileReader();
           reader.onload = function(ev) {
+            // 先删旧图再存新图
+            var oldVal = App.LS.get(iconKey);
+            if (oldVal) App.LS.remove(iconKey);
             var imgEl = icon.querySelector('.app-icon-img');
             if (imgEl) imgEl.innerHTML = '<img src="' + ev.target.result + '">';
-            App.LS.set('iconImg_' + icon.dataset.icon, ev.target.result);
+            App.LS.set(iconKey, ev.target.result);
           };
           reader.readAsDataURL(file);
           fileInput.remove();
         });
-
+        
         App.safeOn('#iconMenuResetImg', 'click', function() {
           App.LS.remove('iconImg_' + icon.dataset.icon);
           menu.remove();
