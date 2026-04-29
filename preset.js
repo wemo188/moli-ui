@@ -6,7 +6,7 @@ var App=window.App;if(!App)return;
 var DRAG_SVG='<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>';
 var EDIT_SVG='<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 var DEL_SVG='<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>';
-var CLOSE_SVG='<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+var POWER_SVG='<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0" stroke="currentColor"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor"/></svg>';
 
 var SYS_ITEMS=[
   {id:'wb_before_char',name:'角色定义前的世界书',desc:'World Book (Before Char)'},
@@ -87,7 +87,7 @@ var Preset={
         '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
         depthTag+
         '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
-        '<div class="ps-deact-btn" data-deact-id="'+id+'" style="width:28px;height:28px;border-radius:7px;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#1a1a1a;stroke-width:2.5;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'+
+        '<div class="ps-mini-btn" data-deact-id="'+id+'" style="color:#1a1a1a;">'+POWER_SVG+'</div>'+
       '</div>';
     }else{
       return '<div class="ps-item is-user is-inactive" data-id="'+id+'">'+
@@ -96,7 +96,7 @@ var Preset={
         depthTag+
         '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
         '<div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div>'+
-        '<div class="ps-react-btn" data-react-id="'+id+'" style="width:28px;height:28px;border-radius:7px;border:1.5px solid #6bab8e;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#6bab8e;stroke-width:2.5;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'+
+        '<div class="ps-mini-btn" data-react-id="'+id+'" style="border-color:rgba(107,171,142,.3);background:rgba(107,171,142,.04);color:#6bab8e;">'+POWER_SVG+'</div>'+
       '</div>';
     }
   },
@@ -179,6 +179,7 @@ var Preset={
         '<div class="ps-divider"></div>'+
         '<div class="ps-section-label">未激活</div>'+
         inactiveHtml+
+        '<div style="height:120px;"></div>'+
       '</div>';
 
     Preset.bindListEvents(page);
@@ -207,13 +208,12 @@ var Preset={
       });
     });
 
-    // 停用按钮（黑色X，激活→未激活）
+    // 停用（关机键黑色，激活→未激活）
     page.querySelectorAll('[data-deact-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
         var id=btn.dataset.deactId;
         var up=Preset.config.userPresets[id];if(!up)return;
-        // 记住当前位置
         var idx=Preset.config.order.indexOf(id);
         if(idx>=0)Preset.config._savedPositions[id]=idx;
         up.enabled=false;
@@ -221,19 +221,17 @@ var Preset={
       });
     });
 
-    // 激活按钮（绿色X，未激活→激活，回到之前的位置）
+    // 激活（关机键绿色，未激活→激活，回到之前位置）
     page.querySelectorAll('[data-react-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
         var id=btn.dataset.reactId;
         var up=Preset.config.userPresets[id];if(!up)return;
         up.enabled=true;
-        // 恢复位置
         if(up.mode==='relative'){
           var savedIdx=Preset.config._savedPositions[id];
           var curIdx=Preset.config.order.indexOf(id);
           if(curIdx<0){
-            // 不在order里，插回去
             if(savedIdx!==undefined&&savedIdx>=0&&savedIdx<=Preset.config.order.length){
               Preset.config.order.splice(savedIdx,0,id);
             }else{
@@ -281,17 +279,19 @@ var Preset={
     }
 
     Preset.bindDrag(page);
+    Preset.bindSwipeBack(page);
   },
 
   bindDrag:function(page){
     var list=page.querySelector('#psList');if(!list)return;
-    var dragEl=null,startY=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
+    var dragEl=null,startX=0,startY=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
 
     list.addEventListener('touchstart',function(e){
       var item=e.target.closest('.ps-item.is-user:not(.is-inactive)');
       if(!item)return;
+      if(e.target.closest('.ps-mini-btn')||e.target.closest('.ps-sw'))return;
       var t=e.touches[0];
-      startY=t.clientY;moved=false;longPressed=false;
+      startX=t.clientX;startY=t.clientY;moved=false;longPressed=false;
       dragId=item.dataset.id;dragEl=item;
 
       timer=setTimeout(function(){
@@ -304,14 +304,16 @@ var Preset={
 
     list.addEventListener('touchmove',function(e){
       if(!dragEl)return;
-      var dy=Math.abs(e.touches[0].clientY-startY);
+      var t=e.touches[0];
+      var dx=Math.abs(t.clientX-startX);
+      var dy=Math.abs(t.clientY-startY);
       if(!longPressed){
-        if(dy>8){clearTimeout(timer);timer=null;dragEl=null;}
+        if(dx>8||dy>8){clearTimeout(timer);timer=null;dragEl=null;}
         return;
       }
       e.preventDefault();
       moved=true;
-      offsetY=e.touches[0].clientY-startY;
+      offsetY=t.clientY-startY;
       dragEl.style.transform='translateY('+offsetY+'px)';
     },{passive:false});
 
@@ -331,18 +333,15 @@ var Preset={
       var newOrder=[];var inserted=false;
       for(var i=0;i<ids.length;i++){
         if(ids[i]===dragId)continue;
-        if(!Preset.isSysId(ids[i])&&Preset.config.userPresets[ids[i]]&&Preset.config.userPresets[ids[i]].mode==='depth')continue;
+        // 跳过depth模式的用户预设，它们不在order里
+        var isDepthPreset=!Preset.isSysId(ids[i])&&Preset.config.userPresets[ids[i]]&&Preset.config.userPresets[ids[i]].mode==='depth';
+        if(isDepthPreset)continue;
         var mid=rects[i].top+rects[i].height/2;
         if(!inserted&&centerY<mid){newOrder.push(dragId);inserted=true;}
         newOrder.push(ids[i]);
       }
       if(!inserted)newOrder.push(dragId);
 
-      // 补回depth预设和未在newOrder里的relative预设
-      var finalOrder=[];
-      var usedIds={};
-      newOrder.forEach(function(id){usedIds[id]=true;});
-      // 用newOrder作为基础，但要确保系统项顺序没乱
       var sysInOrder=newOrder.filter(function(id){return Preset.isSysId(id);});
       var valid=true;
       for(var j=0;j<sysInOrder.length-1;j++){
@@ -359,6 +358,53 @@ var Preset={
     },{passive:true});
   },
 
+  bindSwipeBack:function(page){
+    var _swipe={active:false,sx:0,sy:0,locked:false,dir:''};
+
+    page.addEventListener('touchstart',function(e){
+      var t=e.touches[0];
+      if(t.clientX>50)return;
+      _swipe={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
+    },{passive:true});
+
+    page.addEventListener('touchmove',function(e){
+      if(!_swipe.active)return;
+      var t=e.touches[0];
+      var dx=t.clientX-_swipe.sx,dy=t.clientY-_swipe.sy;
+      if(!_swipe.locked){
+        if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+        _swipe.locked=true;
+        _swipe.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';
+      }
+      if(_swipe.dir==='h'&&dx>0){
+        e.preventDefault();
+        page.style.transform='translateX('+Math.min(dx,window.innerWidth)+'px)';
+        page.style.opacity=String(1-dx/window.innerWidth*0.5);
+      }
+    },{passive:false});
+
+    page.addEventListener('touchend',function(e){
+      if(!_swipe.active)return;
+      _swipe.active=false;
+      if(_swipe.dir!=='h'){page.style.transform='';page.style.opacity='';return;}
+      var t=e.changedTouches[0];
+      var dx=t.clientX-_swipe.sx;
+      if(dx>window.innerWidth*0.3){
+        page.style.transition='transform .25s ease, opacity .25s ease';
+        page.style.transform='translateX(100%)';
+        page.style.opacity='0';
+        setTimeout(function(){
+          page.style.transition='';page.style.transform='';page.style.opacity='';
+          Preset.close();
+        },260);
+      }else{
+        page.style.transition='transform .2s ease, opacity .2s ease';
+        page.style.transform='';page.style.opacity='';
+        setTimeout(function(){page.style.transition='';},220);
+      }
+    },{passive:true});
+  },
+
   openEdit:function(editId){
     var isNew=!editId;
     var up=isNew?{name:'',content:'',mode:'relative',depth:0,enabled:true}:Preset.config.userPresets[editId];
@@ -366,14 +412,14 @@ var Preset={
     if(!isNew)up=JSON.parse(JSON.stringify(up));
 
     var old=App.$('#presetEditPage');if(old)old.remove();
-    var page=document.createElement('div');
-    page.id='presetEditPage';
-    page.className='ps-edit-page';
-    document.body.appendChild(page);
+    var editPage=document.createElement('div');
+    editPage.id='presetEditPage';
+    editPage.className='ps-edit-page';
+    document.body.appendChild(editPage);
 
     var currentMode=up.mode||'relative';
 
-    page.innerHTML=
+    editPage.innerHTML=
       '<div class="ps-header">'+
         '<button class="ps-back" id="psEditBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
         '<span class="ps-header-title">'+(isNew?'添加预设':'编辑预设')+'</span>'+
@@ -403,10 +449,10 @@ var Preset={
 
       '</div></div>';
 
-    requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('show');});});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){editPage.classList.add('show');});});
 
     function updateTip(){
-      var tip=page.querySelector('#psModeTip');
+      var tip=editPage.querySelector('#psModeTip');
       if(currentMode==='relative'){
         tip.innerHTML='<div class="ps-edit-hint">穿插到列表中你滑动的位置，按排列顺序发送给模型。</div>';
       }else{
@@ -415,25 +461,25 @@ var Preset={
     }
     updateTip();
 
-    page.querySelectorAll('.ps-mode-btn').forEach(function(btn){
+    editPage.querySelectorAll('.ps-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(){
-        page.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});
+        editPage.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});
         btn.classList.add('active');
         currentMode=btn.dataset.mode;
-        page.querySelector('#psDepthRow').style.display=currentMode==='depth'?'':'none';
+        editPage.querySelector('#psDepthRow').style.display=currentMode==='depth'?'':'none';
         updateTip();
       });
     });
 
-    page.querySelector('#psEditBack').addEventListener('click',function(){closeEdit();});
-    page.querySelector('#psEditCancel').addEventListener('click',function(){closeEdit();});
+    editPage.querySelector('#psEditBack').addEventListener('click',function(){closeEdit();});
+    editPage.querySelector('#psEditCancel').addEventListener('click',function(){closeEdit();});
 
-    page.querySelector('#psEditSave').addEventListener('click',function(){
-      var name=page.querySelector('#psEditName').value.trim();
+    editPage.querySelector('#psEditSave').addEventListener('click',function(){
+      var name=editPage.querySelector('#psEditName').value.trim();
       if(!name){App.showToast('请输入预设名称');return;}
-      var content=page.querySelector('#psEditContent').value.trim();
+      var content=editPage.querySelector('#psEditContent').value.trim();
       if(!content){App.showToast('请输入指令内容');return;}
-      var depth=parseInt(page.querySelector('#psEditDepth').value)||0;
+      var depth=parseInt(editPage.querySelector('#psEditDepth').value)||0;
       if(depth<0)depth=0;if(depth>50)depth=50;
 
       var data={name:name,content:content,mode:currentMode,depth:depth,enabled:true};
@@ -467,9 +513,49 @@ var Preset={
       App.showToast(isNew?'已创建':'已保存');
     });
 
+    // 编辑页也支持左滑返回
+    var _eSwipe={active:false,sx:0,sy:0,locked:false,dir:''};
+    editPage.addEventListener('touchstart',function(e){
+      var t=e.touches[0];
+      if(t.clientX>50)return;
+      _eSwipe={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
+    },{passive:true});
+    editPage.addEventListener('touchmove',function(e){
+      if(!_eSwipe.active)return;
+      var t=e.touches[0];
+      var dx=t.clientX-_eSwipe.sx,dy=t.clientY-_eSwipe.sy;
+      if(!_eSwipe.locked){
+        if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+        _eSwipe.locked=true;
+        _eSwipe.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';
+      }
+      if(_eSwipe.dir==='h'&&dx>0){
+        e.preventDefault();
+        editPage.style.transform='translateX('+Math.min(dx,window.innerWidth)+'px)';
+        editPage.style.opacity=String(1-dx/window.innerWidth*0.5);
+      }
+    },{passive:false});
+    editPage.addEventListener('touchend',function(e){
+      if(!_eSwipe.active)return;
+      _eSwipe.active=false;
+      if(_eSwipe.dir!=='h'){editPage.style.transform='';editPage.style.opacity='';return;}
+      var t=e.changedTouches[0];
+      var dx=t.clientX-_eSwipe.sx;
+      if(dx>window.innerWidth*0.3){
+        editPage.style.transition='transform .25s ease, opacity .25s ease';
+        editPage.style.transform='translateX(100%)';
+        editPage.style.opacity='0';
+        setTimeout(function(){editPage.style.transition='';closeEdit();},260);
+      }else{
+        editPage.style.transition='transform .2s ease, opacity .2s ease';
+        editPage.style.transform='';editPage.style.opacity='';
+        setTimeout(function(){editPage.style.transition='';},220);
+      }
+    },{passive:true});
+
     function closeEdit(){
-      page.classList.remove('show');
-      setTimeout(function(){if(page.parentNode)page.remove();},350);
+      editPage.classList.remove('show');
+      setTimeout(function(){if(editPage.parentNode)editPage.remove();},350);
     }
   },
 
