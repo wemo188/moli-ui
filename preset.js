@@ -6,16 +6,15 @@ var App=window.App;if(!App)return;
 var DRAG_SVG='<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>';
 var EDIT_SVG='<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 var DEL_SVG='<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>';
-var POWER_SVG='<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0" stroke="currentColor"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor"/></svg>';
 var DOTS_SVG='<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#7a9ab8;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
 
 var SYS_ITEMS=[
   {id:'char_profile',name:'角色档案',desc:'Character Profile'},
-  {id:'user_info',name:'用户信息',desc:'User Profile'},
   {id:'worldbook_before',name:'世界书（前）',desc:'World Book (Before)'},
+  {id:'worldbook_after',name:'世界书（后）',desc:'World Book (After)'},
+  {id:'user_info',name:'用户信息',desc:'User Profile'},
   {id:'scene',name:'场景 / 时间线',desc:'Scene / Timeline'},
   {id:'examples',name:'示例对话',desc:'Example Dialogue'},
-  {id:'worldbook_after',name:'世界书（后）',desc:'World Book (After)'},
   {id:'memory_summary',name:'记忆总结',desc:'Memory Summary'},
   {id:'chat_history',name:'聊天历史',desc:'Chat History'},
   {id:'post_instruction',name:'角色档案的后置指令',desc:'Post Instruction'}
@@ -35,7 +34,10 @@ var Preset={
   load:function(){
     Preset.presetList=App.LS.get('presetList2');
     Preset.activeIdx=App.LS.get('presetActiveIdx')||0;
-    if(!Preset.presetList||!Preset.presetList.length){Preset.presetList=[makeDefaultConfig('默认预设')];Preset.activeIdx=0;}
+    if(!Preset.presetList||!Preset.presetList.length){
+      Preset.presetList=[makeDefaultConfig('默认预设')];
+      Preset.activeIdx=0;
+    }
     if(Preset.activeIdx>=Preset.presetList.length)Preset.activeIdx=0;
     Preset.config=Preset.presetList[Preset.activeIdx];
     if(!Preset.config.order)Preset.config.order=SYS_IDS.slice();
@@ -66,9 +68,9 @@ var Preset={
     var depthTag=up.mode==='depth'?'<span class="ps-tag depth">深度 '+(up.depth||0)+'</span>':'';
     if(isActive){
       var on=up.enabled!==false;
-      return '<div class="ps-item is-user" data-id="'+id+'"><div class="ps-drag">'+DRAG_SVG+'</div><div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+depthTag+'<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div><div class="ps-mini-btn" data-deact-id="'+id+'" style="color:#1a1a1a;">'+POWER_SVG+'</div><div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div><div class="ps-sw '+(on?'on':'off')+'" data-usw-id="'+id+'"></div></div>';
+      return '<div class="ps-item is-user" data-id="'+id+'"><div class="ps-drag">'+DRAG_SVG+'</div><div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+depthTag+'<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div><div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div><div class="ps-sw '+(on?'on':'off')+'" data-usw-id="'+id+'"></div></div>';
     }else{
-      return '<div class="ps-item is-user is-inactive" data-id="'+id+'"><div class="ps-drag" style="opacity:.25;">'+DRAG_SVG+'</div><div class="ps-info" style="opacity:.5;"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+depthTag+'<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div><div class="ps-mini-btn" data-react-id="'+id+'" style="border-color:rgba(107,171,142,.3);background:rgba(107,171,142,.04);color:#6bab8e;">'+POWER_SVG+'</div><div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div></div>';
+      return '<div class="ps-item is-user is-inactive" data-id="'+id+'"><div class="ps-drag" style="opacity:.25;">'+DRAG_SVG+'</div><div class="ps-info" style="opacity:.5;"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+depthTag+'<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div><div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div><div class="ps-sw off" data-usw-id="'+id+'"></div></div>';
     }
   },
 
@@ -96,7 +98,7 @@ var Preset={
         '</div>'+
         '<span class="ps-home-card-badge '+(isActive?'in-use':'idle')+'">'+(isActive?'使用中':'闲置')+'</span>'+
         '<div class="ps-home-actions">'+
-          '<div class="ps-mini-btn" data-use-idx="'+idx+'" style="'+(isActive?'border-color:rgba(126,163,201,.5);background:rgba(126,163,201,.1);':'')+'">'+POWER_SVG+'</div>'+
+          '<div class="ps-mini-btn" data-edit-idx="'+idx+'" title="编辑">'+EDIT_SVG+'</div>'+
           '<div class="ps-mini-btn" data-dots-idx="'+idx+'">'+DOTS_SVG+'</div>'+
         '</div>'+
       '</div>';
@@ -112,18 +114,22 @@ var Preset={
 
     home.querySelector('#psHomeBack').addEventListener('click',function(){Preset.closeHome();});
 
+    // 新建直接进编辑页
     home.querySelector('#psHomeAdd').addEventListener('click',function(){
-      var name=prompt('新预设方案名称：','预设 '+(Preset.presetList.length+1));
-      if(!name||!name.trim())return;
-      Preset.presetList.push(makeDefaultConfig(name.trim()));
-      Preset.save();Preset.renderHome(home);App.showToast('已创建');
+      var newCfg=makeDefaultConfig('预设 '+(Preset.presetList.length+1));
+      Preset.presetList.push(newCfg);
+      Preset.activeIdx=Preset.presetList.length-1;
+      Preset.config=newCfg;
+      Preset.save();
+      Preset.renderHome(home);
+      Preset.openDetail();
     });
 
-    // 点击卡片进入详情
-    home.querySelectorAll('.ps-home-card').forEach(function(card){
-      card.addEventListener('click',function(e){
-        if(e.target.closest('.ps-mini-btn'))return;
-        var idx=parseInt(card.dataset.pidx);
+    // 编辑按钮进详情
+    home.querySelectorAll('[data-edit-idx]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var idx=parseInt(btn.dataset.editIdx);
         Preset.activeIdx=idx;
         Preset.config=Preset.presetList[idx];
         Preset.save();
@@ -131,11 +137,11 @@ var Preset={
       });
     });
 
-    // 启用按钮
-    home.querySelectorAll('[data-use-idx]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        var idx=parseInt(btn.dataset.useIdx);
+    // 首页卡片点击 = 启用/切换
+    home.querySelectorAll('.ps-home-card').forEach(function(card){
+      card.addEventListener('click',function(e){
+        if(e.target.closest('.ps-mini-btn'))return;
+        var idx=parseInt(card.dataset.pidx);
         Preset.activeIdx=idx;
         Preset.config=Preset.presetList[idx];
         Preset.save();
@@ -162,7 +168,7 @@ var Preset={
     var menu=document.createElement('div');menu.className='ps-dots-menu';
     var cfg=Preset.presetList[idx];
     menu.innerHTML=
-      '<div class="ps-dots-mi" data-dact="edit">编辑</div>'+
+      '<div class="ps-dots-mi" data-dact="rename">重命名</div>'+
       '<div class="ps-dots-mi" data-dact="copy">复制</div>'+
       '<div class="ps-dots-mi" data-dact="export">导出</div>'+
       (Preset.presetList.length>1?'<div class="ps-dots-mi danger" data-dact="delete">删除</div>':'');
@@ -176,11 +182,10 @@ var Preset={
     menu.querySelectorAll('.ps-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){
         e.stopPropagation();var act=mi.dataset.dact;menu.remove();
-        if(act==='edit'){
-          Preset.activeIdx=idx;
-          Preset.config=Preset.presetList[idx];
-          Preset.save();
-          Preset.openDetail();
+        if(act==='rename'){
+          var name=prompt('预设名称：',cfg.name||'');
+          if(name===null)return;name=name.trim();
+          if(name){cfg.name=name;Preset.save();Preset.renderHome(home);}
         }
         if(act==='copy'){
           var copy=JSON.parse(JSON.stringify(cfg));
@@ -358,7 +363,6 @@ var Preset={
       if(name){Preset.config.name=name;Preset.save();Preset.renderList(page);}
     });
 
-    // 系统项开关
     page.querySelectorAll('[data-sw-id]').forEach(function(sw){
       sw.addEventListener('click',function(e){
         e.stopPropagation();
@@ -370,53 +374,18 @@ var Preset={
       });
     });
 
-    // 用户项开关
     page.querySelectorAll('[data-usw-id]').forEach(function(sw){
       sw.addEventListener('click',function(e){
         e.stopPropagation();
         var id=sw.dataset.uswId;
         var up=Preset.config.userPresets[id];if(!up)return;
-        up.enabled=!sw.classList.contains('on');
+        var on=sw.classList.contains('on');
+        up.enabled=!on;
         sw.classList.toggle('on');sw.classList.toggle('off');
         Preset.save();
       });
     });
 
-    // 停用按钮
-    page.querySelectorAll('[data-deact-id]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        var id=btn.dataset.deactId;
-        var up=Preset.config.userPresets[id];if(!up)return;
-        var idx=Preset.config.order.indexOf(id);
-        if(idx>=0)Preset.config._savedPositions[id]=idx;
-        up.enabled=false;
-        Preset.save();Preset.renderList(page);
-      });
-    });
-
-    // 重新激活
-    page.querySelectorAll('[data-react-id]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        var id=btn.dataset.reactId;
-        var up=Preset.config.userPresets[id];if(!up)return;
-        up.enabled=true;
-        if(up.mode==='relative'){
-          var savedIdx=Preset.config._savedPositions[id];
-          var curIdx=Preset.config.order.indexOf(id);
-          if(curIdx<0){
-            if(savedIdx!==undefined&&savedIdx>=0&&savedIdx<=Preset.config.order.length)
-              Preset.config.order.splice(savedIdx,0,id);
-            else Preset.config.order.unshift(id);
-          }
-        }
-        delete Preset.config._savedPositions[id];
-        Preset.save();Preset.renderList(page);
-      });
-    });
-
-    // 编辑
     page.querySelectorAll('[data-edit-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
@@ -424,7 +393,6 @@ var Preset={
       });
     });
 
-    // 删除
     page.querySelectorAll('[data-del-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
@@ -433,13 +401,12 @@ var Preset={
         if(!confirm('删除「'+(up.name||'未命名')+'」？'))return;
         delete Preset.config.userPresets[id];
         delete Preset.config._savedPositions[id];
-        var idx=Preset.config.order.indexOf(id);
-        if(idx>=0)Preset.config.order.splice(idx,1);
+        var oi=Preset.config.order.indexOf(id);
+        if(oi>=0)Preset.config.order.splice(oi,1);
         Preset.save();Preset.renderList(page);App.showToast('已删除');
       });
     });
 
-    // 搜索
     var searchInput=page.querySelector('#psSearchInput');
     if(searchInput){
       searchInput.addEventListener('input',function(){
@@ -459,37 +426,6 @@ var Preset={
     var list=page.querySelector('#psList');if(!list)return;
     var dragEl=null,startX=0,startY=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
     var itemEls=[],itemRects=[];
-    var GAP=28;
-
-    function captureRects(){
-      itemEls=[];itemRects=[];
-      list.querySelectorAll('.ps-item:not(.is-inactive)').forEach(function(it){
-        if(it===dragEl)return;
-        itemEls.push(it);
-        var rect=it.getBoundingClientRect();
-        itemRects.push({id:it.dataset.id,top:rect.top,height:rect.height,mid:rect.top+rect.height/2});
-      });
-    }
-
-    function getInsertIndex(touchY){
-      for(var i=0;i<itemRects.length;i++){if(touchY<itemRects[i].mid)return i;}
-      return itemRects.length;
-    }
-
-    function applyGap(insertIdx){
-      for(var i=0;i<itemEls.length;i++){
-        itemEls[i].style.transition='transform .18s ease';
-        itemEls[i].style.transform=i<insertIdx?'translateY(-'+GAP+'px)':'translateY('+GAP+'px)';
-      }
-    }
-
-    function clearGap(){
-      for(var i=0;i<itemEls.length;i++){
-        itemEls[i].style.transition='transform .15s ease';
-        itemEls[i].style.transform='';
-      }
-      setTimeout(function(){for(var j=0;j<itemEls.length;j++)itemEls[j].style.transition='';},160);
-    }
 
     list.addEventListener('touchstart',function(e){
       var item=e.target.closest('.ps-item:not(.is-inactive)');if(!item)return;
@@ -497,15 +433,16 @@ var Preset={
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;moved=false;longPressed=false;
       dragId=item.dataset.id;dragEl=item;
       timer=setTimeout(function(){
-        if(!dragEl||moved)return;longPressed=true;captureRects();
+        if(!dragEl||moved)return;longPressed=true;
+        itemEls=[];itemRects=[];
+        list.querySelectorAll('.ps-item:not(.is-inactive)').forEach(function(it){
+          if(it===dragEl)return;
+          itemEls.push(it);
+          var rect=it.getBoundingClientRect();
+          itemRects.push({id:it.dataset.id,mid:rect.top+rect.height/2});
+        });
         dragEl.classList.add('dragging');
-        dragEl.style.zIndex='100';dragEl.style.position='relative';
-        dragEl.style.boxShadow='0 10px 30px rgba(126,163,201,.3)';
-        dragEl.style.background='rgba(255,255,255,.98)';
-        dragEl.style.borderRadius='12px';
-        dragEl.style.border='1.5px solid rgba(126,163,201,.35)';
         if(navigator.vibrate)navigator.vibrate(15);
-        var idx=getInsertIndex(startY);applyGap(idx);
       },350);
     },{passive:true});
 
@@ -518,61 +455,47 @@ var Preset={
       e.preventDefault();e.stopPropagation();moved=true;
       offsetY=t.clientY-startY;
       dragEl.style.transform='translateY('+offsetY+'px) scale(1.03)';
-      var idx=getInsertIndex(t.clientY);applyGap(idx);
-      var listRect=list.getBoundingClientRect();
-      if(t.clientY<listRect.top+50)list.scrollTop-=8;
-      if(t.clientY>listRect.bottom-50)list.scrollTop+=8;
     },{passive:false});
 
     list.addEventListener('touchend',function(e){
       clearTimeout(timer);timer=null;
       if(!dragEl||!longPressed){
-        if(dragEl){
-          dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.boxShadow='';
-          dragEl.style.background='';dragEl.style.transform='';dragEl.style.borderRadius='';dragEl.style.border='';
-          dragEl=null;
-        }
-        clearGap();return;
+        if(dragEl){dragEl.classList.remove('dragging');dragEl.style.transform='';dragEl=null;}
+        return;
       }
-      dragEl.classList.remove('dragging');
-      dragEl.style.transform='';dragEl.style.zIndex='';dragEl.style.position='';
-      dragEl.style.boxShadow='';dragEl.style.background='';dragEl.style.borderRadius='';dragEl.style.border='';
-      clearGap();
+      dragEl.classList.remove('dragging');dragEl.style.transform='';
 
       var touchY=e.changedTouches[0].clientY;
-      var newOrder=[];var insertIdx=getInsertIndex(touchY);
+      var newOrder=[];var insertDone=false;
       for(var i=0;i<itemRects.length;i++){
-        if(i===insertIdx)newOrder.push(dragId);
+        if(!insertDone&&touchY<itemRects[i].mid){newOrder.push(dragId);insertDone=true;}
         newOrder.push(itemRects[i].id);
       }
-      if(insertIdx>=itemRects.length)newOrder.push(dragId);
+      if(!insertDone)newOrder.push(dragId);
 
       Preset.config.order=newOrder;Preset.save();Preset.renderList(page);
       dragEl=null;dragId='';offsetY=0;longPressed=false;moved=false;
     },{passive:true});
   },
 
-  // ====== 统一滑动返回 ======
   _bindSwipeToEl:function(el,closeFn){
-    var _s={active:false,sx:0,sy:0,locked:false,dir:'',startedInEdge:false};
+    var _s={active:false,sx:0,sy:0,locked:false,dir:'',edge:false};
 
     el.addEventListener('touchstart',function(e){
       var t=e.touches[0];
-      _s={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:'',startedInEdge:t.clientX<=50};
+      _s={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:'',edge:t.clientX<=50};
     },{passive:true});
 
     el.addEventListener('touchmove',function(e){
-      if(!_s.active||!_s.startedInEdge)return;
+      if(!_s.active||!_s.edge)return;
       var t=e.touches[0];
       var dx=t.clientX-_s.sx;
       var dy=t.clientY-_s.sy;
-
       if(!_s.locked){
         if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
         _s.locked=true;
         _s.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';
       }
-
       if(_s.dir==='h'&&dx>0){
         e.preventDefault();
         var w=el.offsetWidth||window.innerWidth;
@@ -583,32 +506,19 @@ var Preset={
 
     el.addEventListener('touchend',function(e){
       if(!_s.active){return;}
-      var wasActive=_s.active;
       _s.active=false;
-
-      if(!_s.startedInEdge||_s.dir!=='h'){
-        el.style.transform='';el.style.opacity='';
-        return;
-      }
-
+      if(!_s.edge||_s.dir!=='h'){el.style.transform='';el.style.opacity='';return;}
       var t=e.changedTouches[0];
       var dx=t.clientX-_s.sx;
       var w=el.offsetWidth||window.innerWidth;
-
       if(dx>w*0.3){
         el.style.transition='transform .25s ease, opacity .25s ease';
         el.style.transform='translateX(100%)';
         el.style.opacity='0';
-        setTimeout(function(){
-          el.style.transition='';
-          el.style.transform='';
-          el.style.opacity='';
-          closeFn();
-        },260);
+        setTimeout(function(){el.style.transition='';el.style.transform='';el.style.opacity='';closeFn();},260);
       }else{
         el.style.transition='transform .2s ease, opacity .2s ease';
-        el.style.transform='';
-        el.style.opacity='';
+        el.style.transform='';el.style.opacity='';
         setTimeout(function(){el.style.transition='';},220);
       }
     },{passive:true});
@@ -727,7 +637,6 @@ var Preset={
     }
   },
 
-  // ====== 对外接口 ======
   getSysOrder:function(){
     if(!Preset.config)Preset.load();
     return Preset.config.order.filter(function(id){return Preset.isSysId(id);});
