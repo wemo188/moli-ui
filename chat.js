@@ -84,7 +84,7 @@ parts.push(
 '9. 每条消息简短自然，不要在一条消息里写多段话（不要出现空行分段）。一条消息就是一句话或两句话。\n'+
 '10. 不要自我介绍、不要解释自己是AI。\n'+
 '11. 使用'+lang+'回复。\n'+
-'12. 禁止在每句话末尾都加句号。真实微信聊天中绝大多数人不加句号。可以用语气词或什么都不加来结尾。\n'+
+'12. 不要在每句话末尾都加句号。但逗号、问号、感叹号、省略号正常使用。正确做法：语气词结尾("嗯""啊""呢""吧")、什么标点都不加、或用省略号/问号/感叹号。错误做法：每句都以"。"结尾。\n'+
 '13. 你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。无论如何都不要跳出角色。\n'+
 '14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
 '15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。但如果天气出现异常（如突然下雨、下雪、降温），可以自然地提醒或关心。\n'+
@@ -195,7 +195,7 @@ var Chat={
 charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
 _ctxMenu:null,_menuEl:null,_avCard:null,_proTimer:null,_visHandler:null,_streamPartial:'',
 _backgroundMode:false,_sendQueue:[],_isSendingQueue:false,
-_plusOpen:false,_sendDelayTimer:null,
+_plusOpen:false,_sendDelayTimer:null,_multiMode:false,_multiSelected:[],
 
 loadMsgs:function(){Chat.messages=App.LS.get('chatMsgs_'+Chat.charId)||[];},
 saveMsgs:function(){try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e){if(Chat.messages.length>20){Chat.messages=Chat.messages.slice(-20);try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e2){}}}},
@@ -215,6 +215,8 @@ Chat._backgroundMode=false;
 Chat._sendQueue=[];
 Chat._isSendingQueue=false;
 Chat._plusOpen=false;
+Chat._multiMode=false;
+Chat._multiSelected=[];
 if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
 
 var inner=App.$('#wxInner');if(!inner)return;
@@ -228,6 +230,9 @@ if(App.chatUI)App.chatUI.render(inner,c,bgUrl,hasBg,tintOn);
 Chat.renderMessages();
 Chat.bindEvents();
 Chat.startProactive();
+
+var palette=App.LS.get('chatPalette_'+charId);
+if(palette&&palette.accent&&App.chatUI){App.chatUI.applyPalette(palette.accent);}
 
 Chat._visHandler=function(){if(document.visibilityState==='visible')Chat._onResume();};
 document.addEventListener('visibilitychange',Chat._visHandler);
@@ -411,9 +416,34 @@ App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(fu
 
 shareMsg:function(idx){
 var msg=Chat.messages[idx];if(!msg)return;
-var shareText=msg.content||'';
-if(navigator.share){navigator.share({text:shareText}).catch(function(){});}
-else{App.copyText(shareText).then(function(){App.showToast('已复制，可粘贴分享');}).catch(function(){App.showToast('复制失败');});}
+var chars=App.character?App.character.list:[];
+var visibleChars=chars.filter(function(c){return c.id!==Chat.charId&&(!App.wechat||App.wechat.isCharVisible(c));});
+if(!visibleChars.length){App.showToast('没有可转发的角色');return;}
+var picker=document.createElement('div');
+picker.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+var listHtml=visibleChars.map(function(c){
+  var alias=App.wechat?App.wechat.getCharAlias(c.id):'';
+  var dn=alias||c.name||'?';
+  return '<div class="fwd-char" data-fwd-id="'+c.id+'" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px;color:#333;-webkit-tap-highlight-color:transparent;">'+App.esc(dn)+'</div>';
+}).join('');
+picker.innerHTML=
+'<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:16px;width:260px;max-height:60vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">'+
+  '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:10px;">转发给</div>'+
+  listHtml+
+  '<div style="text-align:center;padding:10px;"><button type="button" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;" id="fwdCancel">取消</button></div>'+
+'</div>';
+document.body.appendChild(picker);
+picker.addEventListener('click',function(ev){if(ev.target===picker)picker.remove();});
+picker.querySelector('#fwdCancel').addEventListener('click',function(){picker.remove();});
+picker.querySelectorAll('.fwd-char').forEach(function(ch){
+  ch.addEventListener('click',function(){
+    var targetId=ch.dataset.fwdId;picker.remove();
+    var msgs=App.LS.get('chatMsgs_'+targetId)||[];
+    msgs.push({role:'user',content:'[转发消息] '+msg.content,ts:Date.now()});
+    App.LS.set('chatMsgs_'+targetId,msgs);
+    App.showToast('已转发');
+  });
+});
 },
 
 downloadSticker:function(idx){
@@ -457,6 +487,8 @@ var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
 if(!api){
   console.warn('[主动消息] API未配置');
+  Chat.isStreaming=false;
+  if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();}
   return;
 }
 var user=App.user?App.user.getActiveUser():null;
@@ -479,7 +511,7 @@ if(lastIsUser){
   proPrompt='用户'+minsSince+'分钟前发了消息但你还没回复。请根据用户最后说的内容来回复，不要忽略它。如果用户问了问题就回答问题，如果用户在聊某个话题就接着聊。';
 } else if(lastIsMe){
   if(minsSince<10){
-    proPrompt='你'+minsSince+'分钟前刚发过消息，用户还没回。不要连续轰炸。如果你上一条是问句，用户还没回答，就不要再发新消息了——等用户回复。只有在你上一条不是问句、且确实有新的自然想法时才发。如果决定不发，只回复[SKIP]。';
+    proPrompt='你'+minsSince+'分钟前刚发过消息，用户还没回。根据你的性格自然地决定是否再说一句。可以补充一句想法、发个表情、或者追问一下。直接发消息内容就好。';
   } else {
     proPrompt='距离你上次发消息已经'+minsSince+'分钟了，用户一直没回。根据你的角色性格判断：是继续等，还是再主动说一句？如果角色性格不会追着人聊，就回复[SKIP]。如果决定发，不要重复之前的话题，找一个自然的新切入点。';
   }
@@ -495,7 +527,7 @@ apiMsgs.push({role:'system',content:proPrompt});
 var url=api.url.replace(/\/+$/,'')+'/chat/completions';
 
 Chat.isStreaming=true;
-if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(true);}
+if(!Chat._backgroundMode){Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(true);}
 
 var fullText='';
 
@@ -518,7 +550,7 @@ return read();});}
 return read();
 }).catch(function(err){
 Chat.isStreaming=false;
-if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
+if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();}
 var cnMsg=translateError(err.message||String(err));
 console.error('[主动消息] '+cnMsg);
 console.error('[主动消息] 原始错误: '+(err.message||err));
@@ -528,27 +560,26 @@ function proFinish(){
   Chat.isStreaming=false;
   if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
   fullText=fullText.trim();
-  if(fullText){
-    if(fullText==='[SKIP]'||fullText.indexOf('[SKIP]')>=0){
-      Chat._backgroundMode=false;
-      return;
-    }
-    var parts=fullText.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
-    var now=Date.now();
-    parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
-    Chat.saveMsgs();
-    if(Chat._backgroundMode){
-      Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
-    } else {
-      Chat.renderMessages();
-    }
+  if(!fullText||fullText==='[SKIP]'||fullText.indexOf('[SKIP]')>=0){
+    Chat._backgroundMode=false;
+    Chat.renderMessages();
+    return;
+  }
+  var parts=fullText.split(SPLIT).map(function(t){return t.trim();}).filter(Boolean);
+  parts=parts.filter(function(p){return p!=='[SKIP]'&&p.indexOf('[SKIP]')<0;});
+  if(!parts.length){Chat._backgroundMode=false;Chat.renderMessages();return;}
+  var now=Date.now();
+  parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
+  Chat.saveMsgs();
+  if(Chat._backgroundMode){
+    Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
+  } else {
+    Chat.renderMessages();
   }
   Chat._backgroundMode=false;
 }
 },
 
-showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
-showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
 setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
 
 init:function(){App.chat=Chat;}
