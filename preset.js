@@ -181,15 +181,53 @@ var Preset={
   bindDrag:function(page){
     var list=page.querySelector('#psList');if(!list)return;
     var dragEl=null,startX=0,startY=0,startScrollTop=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
-    var itemPositions=[];
+    var itemEls=[];var itemRects=[];var indicator=null;
 
-    function capturePositions(){
-      itemPositions=[];
+    function captureRects(){
+      itemEls=[];itemRects=[];
       var items=list.querySelectorAll('.ps-item:not(.is-inactive)');
       items.forEach(function(it){
+        if(it===dragEl)return;
+        itemEls.push(it);
         var rect=it.getBoundingClientRect();
-        itemPositions.push({id:it.dataset.id,top:rect.top+list.scrollTop,height:rect.height});
+        itemRects.push({id:it.dataset.id,top:rect.top,height:rect.height,mid:rect.top+rect.height/2});
       });
+    }
+
+    function createIndicator(){
+      if(indicator)indicator.remove();
+      indicator=document.createElement('div');
+      indicator.style.cssText='position:fixed;left:18px;right:18px;height:3px;background:linear-gradient(90deg,transparent,#7a9ab8,transparent);border-radius:2px;pointer-events:none;z-index:200;opacity:0;transition:top .12s ease,opacity .1s;';
+      document.body.appendChild(indicator);
+    }
+
+    function showIndicator(y){
+      if(!indicator)return;
+      indicator.style.top=y+'px';
+      indicator.style.opacity='1';
+    }
+
+    function hideIndicator(){
+      if(!indicator){return;}
+      indicator.style.opacity='0';
+    }
+
+    function removeIndicator(){
+      if(indicator){indicator.remove();indicator=null;}
+    }
+
+    function getInsertIndex(touchY){
+      if(!itemRects.length)return 0;
+      for(var i=0;i<itemRects.length;i++){
+        if(touchY<itemRects[i].mid)return i;
+      }
+      return itemRects.length;
+    }
+
+    function getIndicatorY(insertIdx){
+      if(insertIdx<=0&&itemRects.length)return itemRects[0].top-2;
+      if(insertIdx>=itemRects.length)return itemRects[itemRects.length-1].top+itemRects[itemRects.length-1].height-1;
+      return itemRects[insertIdx].top-2;
     }
 
     list.addEventListener('touchstart',function(e){
@@ -200,11 +238,13 @@ var Preset={
       moved=false;longPressed=false;dragId=item.dataset.id;dragEl=item;
       timer=setTimeout(function(){
         if(!dragEl||moved)return;longPressed=true;
-        capturePositions();
+        captureRects();createIndicator();
         dragEl.classList.add('dragging');
         dragEl.style.zIndex='100';dragEl.style.position='relative';
-        dragEl.style.boxShadow='0 6px 20px rgba(126,163,201,.25)';
-        dragEl.style.background='rgba(255,255,255,.95)';
+        dragEl.style.boxShadow='0 8px 24px rgba(126,163,201,.3)';
+        dragEl.style.background='rgba(255,255,255,.97)';
+        dragEl.style.borderRadius='12px';
+        dragEl.style.border='1.5px solid rgba(126,163,201,.3)';
         if(navigator.vibrate)navigator.vibrate(15);
       },350);
     },{passive:true});
@@ -215,39 +255,56 @@ var Preset={
       if(!longPressed){if(dx>8||dy>8){clearTimeout(timer);timer=null;dragEl=null;}return;}
       e.preventDefault();e.stopPropagation();moved=true;
       offsetY=t.clientY-startY;
-      dragEl.style.transform='translateY('+offsetY+'px)';
-      var listRect=list.getBoundingClientRect();var touchY=t.clientY;
+      dragEl.style.transform='translateY('+offsetY+'px) scale(1.02)';
+
+      var touchY=t.clientY;
+      var insertIdx=getInsertIndex(touchY);
+      var indY=getIndicatorY(insertIdx);
+      showIndicator(indY);
+
+      // 分开动画
+      for(var i=0;i<itemEls.length;i++){
+        if(i<insertIdx){
+          itemEls[i].style.transform='translateY(-2px)';
+          itemEls[i].style.transition='transform .15s ease';
+        }else{
+          itemEls[i].style.transform='translateY(2px)';
+          itemEls[i].style.transition='transform .15s ease';
+        }
+      }
+
+      var listRect=list.getBoundingClientRect();
       if(touchY<listRect.top+50)list.scrollTop-=8;
       if(touchY>listRect.bottom-50)list.scrollTop+=8;
     },{passive:false});
 
-    list.addEventListener('touchend',function(){
+    list.addEventListener('touchend',function(e){
       clearTimeout(timer);timer=null;
       if(!dragEl||!longPressed){
-        if(dragEl){dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.boxShadow='';dragEl.style.background='';dragEl.style.transform='';dragEl=null;}
-        return;
+        if(dragEl){dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.boxShadow='';dragEl.style.background='';dragEl.style.transform='';dragEl.style.borderRadius='';dragEl.style.border='';dragEl=null;}
+        removeIndicator();return;
       }
       dragEl.classList.remove('dragging');
       dragEl.style.transform='';dragEl.style.zIndex='';dragEl.style.position='';
-      dragEl.style.boxShadow='';dragEl.style.background='';
+      dragEl.style.boxShadow='';dragEl.style.background='';dragEl.style.borderRadius='';dragEl.style.border='';
 
-      var scrollDelta=list.scrollTop-startScrollTop;
-      var dragAbsY=startY+offsetY+scrollDelta;
+      for(var k=0;k<itemEls.length;k++){itemEls[k].style.transform='';itemEls[k].style.transition='';}
 
-      var newOrder=[];var inserted=false;
-      for(var i=0;i<itemPositions.length;i++){
-        var pos=itemPositions[i];
-        if(pos.id===dragId)continue;
-        var mid=pos.top+pos.height/2-startScrollTop+list.getBoundingClientRect().top;
-        if(!inserted&&dragAbsY<(pos.top+pos.height/2)){
-          newOrder.push(dragId);inserted=true;
-        }
-        newOrder.push(pos.id);
+      hideIndicator();
+      setTimeout(function(){removeIndicator();},200);
+
+      var touchY=e.changedTouches[0].clientY;
+      var insertIdx=getInsertIndex(touchY);
+
+      var newOrder=[];
+      for(var i=0;i<itemRects.length;i++){
+        if(i===insertIdx)newOrder.push(dragId);
+        newOrder.push(itemRects[i].id);
       }
-      if(!inserted)newOrder.push(dragId);
+      if(insertIdx>=itemRects.length)newOrder.push(dragId);
 
       Preset.config.order=newOrder;Preset.save();Preset.renderList(page);
-      dragEl=null;dragId='';offsetY=0;longPressed=false;moved=false;itemPositions=[];
+      dragEl=null;dragId='';offsetY=0;longPressed=false;moved=false;itemEls=[];itemRects=[];
     },{passive:true});
   },
 
