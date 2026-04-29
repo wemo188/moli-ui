@@ -364,15 +364,6 @@ if(e.target.closest('.vf-lbl'))return;
     Cal.load();
     if(!App.$('#calPanel')){var panel=document.createElement('div');panel.id='calPanel';panel.className='fullpage-panel hidden';document.body.appendChild(panel);}
 
-    var schedArea=App.$('#wtScheduleArea');
-    if(schedArea){
-      schedArea.id='wtWeatherArea';
-      schedArea.innerHTML=
-        '<div class="wt-temp"><span id="wt-temp-val">--</span><span class="wt-deg">°</span></div>'+
-        '<div class="wt-wl"></div>'+
-        '<div class="wt-desc" id="wt-desc-val">天气</div>';
-    }
-
     Cal.applyCardConfig();
     Cal.startClock();
     Cal.initGeo();
