@@ -461,6 +461,62 @@
           });
         });
       }
+      // 左滑返回主页
+      var wxInner = App.$('#wxInner');
+      if (wxInner) {
+        var _wxSwipe = { active: false, sx: 0, sy: 0, locked: false, dir: '' };
+
+        wxInner.addEventListener('touchstart', function(e) {
+          var t = e.touches[0];
+          var rect = wxInner.getBoundingClientRect();
+          var relX = t.clientX - rect.left;
+          if (relX > 50) return;
+          _wxSwipe = { active: true, sx: t.clientX, sy: t.clientY, locked: false, dir: '' };
+        }, { passive: true });
+
+        wxInner.addEventListener('touchmove', function(e) {
+          if (!_wxSwipe.active) return;
+          var t = e.touches[0];
+          var dx = t.clientX - _wxSwipe.sx;
+          var dy = t.clientY - _wxSwipe.sy;
+          if (!_wxSwipe.locked) {
+            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+            _wxSwipe.locked = true;
+            _wxSwipe.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+          }
+          if (_wxSwipe.dir === 'h' && dx > 0) {
+            e.preventDefault();
+            var w = wxInner.offsetWidth || window.innerWidth;
+            wxInner.style.transform = 'translateX(' + Math.min(dx, w) + 'px)';
+            wxInner.style.opacity = String(1 - dx / w * 0.5);
+          }
+        }, { passive: false });
+
+        wxInner.addEventListener('touchend', function(e) {
+          if (!_wxSwipe.active) return;
+          _wxSwipe.active = false;
+          if (_wxSwipe.dir !== 'h') { wxInner.style.transform = ''; wxInner.style.opacity = ''; return; }
+          var t = e.changedTouches[0];
+          var dx = t.clientX - _wxSwipe.sx;
+          var w = wxInner.offsetWidth || window.innerWidth;
+          if (dx > w * 0.3) {
+            wxInner.style.transition = 'transform .25s ease, opacity .25s ease';
+            wxInner.style.transform = 'translateX(100%)';
+            wxInner.style.opacity = '0';
+            setTimeout(function() {
+              wxInner.style.transition = '';
+              wxInner.style.transform = '';
+              wxInner.style.opacity = '';
+              Wechat.close();
+            }, 260);
+          } else {
+            wxInner.style.transition = 'transform .2s ease, opacity .2s ease';
+            wxInner.style.transform = '';
+            wxInner.style.opacity = '';
+            setTimeout(function() { wxInner.style.transition = ''; }, 220);
+          }
+        }, { passive: true });
+      }
     },
 
     restoreInner: function() {
