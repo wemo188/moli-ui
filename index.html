@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
 
-<!-- ★ 修改：图片加载失败时的回退卡片样式 -->
 <style>
 .mmg-fallback{
   width:100%;height:100%;
@@ -49,9 +48,7 @@
 
 <script>
 (function(){
-  /* ★ 修改：CSS和JS统一使用sessionStorage版本号 */
-  var v = sessionStorage.getItem('_v');
-  if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
+  var v = Date.now();
   var css = [
     'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
@@ -69,14 +66,15 @@
 </head>
 <body>
 
-<!-- ★ 修改说明：全局图片回退函数，图片加载失败时替换为雾蓝玻璃卡片 -->
 <script>
 function imgFallback(img){
-  img.onerror=null;
-  var d=document.createElement('div');
-  d.className='mmg-fallback';
-  d.style.width=img.width?img.width+'px':'100%';
-  d.style.height=img.height?img.height+'px':'100%';
+  img.onerror = null;
+  var d = document.createElement('div');
+  d.className = 'mmg-fallback';
+  var w = img.getAttribute('width') || (img.parentElement ? img.parentElement.offsetWidth : 0) || 80;
+  var h = img.getAttribute('height') || (img.parentElement ? img.parentElement.offsetHeight : 0) || 80;
+  d.style.width = w + 'px';
+  d.style.height = h + 'px';
   img.replaceWith(d);
 }
 </script>
@@ -92,6 +90,7 @@ function imgFallback(img){
     <section class="screen-page screen-page-1">
       <div class="screen-page-inner" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
         <div>
+          <!-- 时间栏 -->
           <div class="wt-card" id="wtCard">
             <div class="wt-cw">
               <div class="vf-c tl"></div>
@@ -103,7 +102,6 @@ function imgFallback(img){
               <div class="vf-hl bot"></div>
               <div class="vf-lbl lt" id="wtSysBtn">SYSTEM ACTIVE</div>
               <div class="vf-lbl rt"><span id="location-coords">--°N --°E</span></div>
-
               <div class="wt-cd">
                 <div class="wt-l" id="wtDateArea">
                   <div class="wt-time">
@@ -117,63 +115,66 @@ function imgFallback(img){
                 </div>
                 <div class="wt-vd"></div>
                 <div class="wt-r" id="wtWeatherArea">
-  <div class="wt-temp"><span id="wt-temp-val">--</span><span class="wt-deg">°</span></div>
-  <div class="wt-wl"></div>
-  <div class="wt-desc" id="wt-desc-val">天气</div>
+                  <div class="wt-temp"><span id="wt-temp-val">--</span><span class="wt-deg">°</span></div>
+                  <div class="wt-wl"></div>
+                  <div class="wt-desc" id="wt-desc-val">天气</div>
                 </div>
               </div>
             </div>
           </div>
-         <div class="card-row" id="cardRow">
-  <div class="left-area-wrapper">
-    <div class="bx-w" id="bx-2" data-side="left">
-      <div class="bx-tag-wrap">
-        <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
-        <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
-      </div>
-      <div class="bx-cw"><div class="bx-cd">
-        <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-        <div class="bx-name-bar">
-          <div class="bx-name bx-name-placeholder">角色名</div>
-          <div class="bx-sub">✥ 同你奔赴一场风花雪月 ✥</div>
-        </div>
-      </div></div>
-    </div>
-    <div class="left-search-area">
-      <div class="search-wrapper"><div class="search-box">
-        <div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
-        <input type="text" class="search-input-left" placeholder="我们相识...">
-      </div></div>
-      <div class="search-wrapper"><div class="search-box-right">
-        <input type="text" class="search-input-right" placeholder="已经有...天">
-        <div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
-      </div></div>
-    </div>
-  </div>
-  <div class="card-right-area">
-    <div class="card-placeholder-icons">
-      <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>
-      <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>
-    </div>
-    <div class="bx-w" id="bx-1" data-side="right">
-      <div class="bx-cw"><div class="bx-cd">
-        <div class="bx-side-ribbon">
-          <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
-          <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
-        </div>
-        <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-        <div class="bx-name-bar">
-          <div class="bx-name bx-name-placeholder">角色名</div>
-          <div class="bx-sub">◈ 与你共赏一阙火树银花 ◈</div>
-        </div>
-      </div></div>
-    </div>
-  </div>
-</div>
-        <!-- ★ 修改说明：Eden卡片里包含特殊Unicode字符，部分安卓机可能显示异常，如遇问题检查此处 -->
-        <div class="eden-card" id="edenCard">
-         <div class="eden-text" id="edenText" style="font-size:38px;">全世界 最好的你˶ᵒ ᵕ ˂˶️ಣ
-</div>
+
+          <!-- 角色卡+对话框+占位符 -->
+          <div class="card-row" id="cardRow">
+            <div class="left-area-wrapper">
+              <div class="bx-w" id="bx-2" data-side="left">
+                <div class="bx-tag-wrap">
+                  <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
+                  <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
+                </div>
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-name bx-name-placeholder">角色名</div>
+                    <div class="bx-sub">✥ 同你奔赴一场风花雪月 ✥</div>
+                  </div>
+                </div></div>
+              </div>
+              <div class="left-search-area">
+                <div class="search-wrapper"><div class="search-box">
+                  <div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
+                  <input type="text" class="search-input-left" placeholder="我们相识...">
+                </div></div>
+                <div class="search-wrapper"><div class="search-box-right">
+                  <input type="text" class="search-input-right" placeholder="已经有...天">
+                  <div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
+                </div></div>
+              </div>
+            </div>
+            <div class="card-right-area">
+              <div class="card-placeholder-icons">
+                <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>
+                <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>
+              </div>
+              <div class="bx-w" id="bx-1" data-side="right">
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-side-ribbon">
+                    <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
+                    <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
+                  </div>
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-name bx-name-placeholder">角色名</div>
+                    <div class="bx-sub">◈ 与你共赏一阙火树银花 ◈</div>
+                  </div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Eden文字卡片 -->
+          <div class="eden-card" id="edenCard">
+            <div class="eden-text" id="edenText" style="font-size:38px;">全世界 最好的你˶ᵒ ᵕ ˂˶️ಣ</div>
+          </div>
         </div>
       </div>
     </section>
@@ -181,7 +182,6 @@ function imgFallback(img){
     <!-- 第二页 -->
     <section class="screen-page screen-page-2">
       <div class="screen-page-inner" style="position:relative;height:100%;">
-
         <div class="app-grid" id="appGrid">
           <div class="app-icon" id="openWorldBookBtn" data-icon="worldbook">
             <div class="app-icon-img" id="worldBookIconImg">
@@ -194,7 +194,6 @@ function imgFallback(img){
             </div>
             <div class="app-icon-label">世界书</div>
           </div>
-
           <div class="app-icon" id="openPresetBtn" data-icon="preset">
             <div class="app-icon-img" id="presetIconImg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -207,7 +206,6 @@ function imgFallback(img){
             </div>
             <div class="app-icon-label">预设</div>
           </div>
-
           <div class="app-icon" id="openRegexBtn" data-icon="regex">
             <div class="app-icon-img" id="regexIconImg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -229,7 +227,6 @@ function imgFallback(img){
 </main>
 
 <!-- ====== 底部栏 ====== -->
-<!-- ★ 修改：所有外部图片加了 onerror 回退和 loading="lazy" -->
 <div class="dock" id="dockBar">
   <div class="dock-item" id="dockMine">
     <div class="mk-card">
@@ -241,7 +238,7 @@ function imgFallback(img){
       <img src="https://iili.io/BudrfVa.md.jpg" style="transform:scale(0.8);" loading="lazy" onerror="imgFallback(this)">
     </div>
   </div>
-   <div class="dock-item" id="dockShort">
+  <div class="dock-item" id="dockShort">
     <div class="mk-card">
       <img src="https://iili.io/BghhtFn.md.jpg" style="transform:scale(0.85);" loading="lazy" onerror="imgFallback(this)">
     </div>
@@ -254,7 +251,6 @@ function imgFallback(img){
 </div>
 
 <!-- ====== 悬浮球 ====== -->
-<!-- ★ 修改：悬浮球图片加了 onerror 回退 -->
 <div id="floatingBall" class="floating-ball mascot-ball">
   <img id="mascotImg" class="mascot-img" src="https://iili.io/BzMi2Jj.md.png" alt="mascot" draggable="false" onerror="imgFallback(this)">
 </div>
@@ -268,7 +264,6 @@ function imgFallback(img){
 <div id="themePanel" class="panel hidden">
   <div class="panel-header">
     <h2>主题配色</h2>
-    <!-- ★ 修改：div改为button，增加键盘可访问性 -->
     <button class="panel-close" data-close="themePanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
@@ -305,7 +300,6 @@ function imgFallback(img){
 <div id="fontPanel" class="panel hidden">
   <div class="panel-header">
     <h2>字体设置</h2>
-    <!-- ★ 修改：div改为button -->
     <button class="panel-close" data-close="fontPanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
@@ -332,7 +326,6 @@ function imgFallback(img){
 <div id="bgPanel" class="panel hidden">
   <div class="panel-header">
     <h2>背景图片</h2>
-    <!-- ★ 修改：div改为button -->
     <button class="panel-close" data-close="bgPanel" aria-label="关闭" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
@@ -375,18 +368,25 @@ function imgFallback(img){
 <!-- ====== JS ====== -->
 <script>
 (function(){
-  /* ★ 修改：JS版本号也用sessionStorage，与CSS保持一致 */
-  var v = sessionStorage.getItem('_v');
-  if (!v) { v = Date.now(); sessionStorage.setItem('_v', v); }
-var files = [
-  'script.js','theme.js','font.js','api.js','bg.js',
-  'character.js','char-edit.js','user.js','worldbook.js','preset.js',
-  'chat.js','chatui.js','calendar.js','cards.js','frost.js','char-mgr.js',
-  'workshop.js','wechat.js','dock.js'
-];
+  var v = Date.now();
+  var files = [
+    'script.js','theme.js','font.js','api.js','bg.js',
+    'character.js','char-edit.js','user.js','worldbook.js','preset.js',
+    'chat.js','chatui.js','calendar.js','cards.js','frost.js','char-mgr.js',
+    'workshop.js','wechat.js','dock.js'
+  ];
   var idx = 0;
   function loadNext(){
-    if(idx >= files.length) return;
+    if(idx >= files.length){
+      if(document.readyState === 'complete' || document.readyState === 'interactive'){
+        App.LS.onReady(function(){ App.init(); });
+      } else {
+        window.addEventListener('DOMContentLoaded', function(){
+          App.LS.onReady(function(){ App.init(); });
+        });
+      }
+      return;
+    }
     var s = document.createElement('script');
     s.src = files[idx] + '?v=' + v;
     s.onload = function(){ idx++; loadNext(); };
@@ -394,12 +394,6 @@ var files = [
     document.body.appendChild(s);
   }
   loadNext();
-
-  window.addEventListener('load', function() {
-    App.LS.onReady(function() {
-      App.init();
-    });
-  });
 })();
 </script>
 </body>
