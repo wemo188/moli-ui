@@ -300,7 +300,10 @@
           menu.remove();
           if (act === 'cancel') return;
           if (act === 'del') { callback(''); App.showToast('已删除'); return; }
-          if (act === 'album') {
+              if (act === 'album') {
+            // 先记住旧图
+            var oldUser = User.getById(uid);
+            var oldImg = oldUser ? oldUser[field] : '';
             var input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
             document.body.appendChild(input);
@@ -308,8 +311,15 @@
               var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
               var reader = new FileReader();
               reader.onload = function(r) {
-                if (App.cropImage) App.cropImage(r.target.result, function(cropped) { callback(cropped); });
-                else callback(r.target.result);
+                if (App.cropImage) App.cropImage(r.target.result, function(cropped) {
+                  //旧图是base64就清掉
+                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
+                  callback(cropped);
+                });
+                else {
+                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
+                  callback(r.target.result);
+                }
               };
               reader.readAsDataURL(file);
             };
@@ -339,9 +349,12 @@
               if (v && v.startsWith('http')) { pImg.src = v; pBox.style.display = 'block'; pImg.onerror = function() { pBox.style.display = 'none'; }; }
               else pBox.style.display = 'none';
             });
-            urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
+             urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
               var url = urlPanel.querySelector('#ismUrlInput').value.trim();
               if (!url) { App.showToast('请输入URL'); return; }
+              //旧图是base64就清掉
+              var oldUser2 = User.getById(uid);
+              if (oldUser2 && oldUser2[field] && oldUser2[field].startsWith('data:')) { oldUser2[field] = ''; }
               urlPanel.remove(); callback(url); App.showToast('已设置');
             });
           }
