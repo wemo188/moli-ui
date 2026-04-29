@@ -14,7 +14,7 @@
   App.$ = function(s) { return document.querySelector(s); };
   App.$$ = function(s) { return document.querySelectorAll(s); };
 
-      App.LS = (function() {
+  App.LS = (function() {
     var DB_NAME = 'AppStorage';
     var STORE_NAME = 'kv';
     var _db = null;
@@ -129,7 +129,6 @@
     return d.innerHTML;
   };
 
-  /* ★ 修改：新增属性值转义函数，防止引号注入 */
   App.escAttr = function(s) {
     return (s || '').replace(/&/g, '&amp;')
                     .replace(/"/g, '&quot;')
@@ -227,7 +226,7 @@
 
       draw();
     };
-      
+
     img.src = src;
 
     function clampCrop() {
@@ -418,6 +417,8 @@
     canvas.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
         e.preventDefault();
+        /* ✅ 修复5：双指触摸时取消单指拖拽 */
+        dragMode = '';
         lastDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -495,21 +496,39 @@
         crop.x / scale, crop.y / scale, crop.w / scale, crop.h / scale,
         0, 0, outW, outH
       );
-      var data = output.toDataURL('image/jpeg', 0.92);
+
+      /* ✅ 修复6：智能判断输出格式，有透明像素用PNG，否则用JPEG */
+      var mimeType = 'image/jpeg';
+      var quality = 0.92;
+      try {
+        var imgData = outCtx.getImageData(0, 0, outW, outH);
+        var hasAlpha = false;
+        for (var i = 3; i < imgData.data.length; i += 4) {
+          if (imgData.data[i] < 255) { hasAlpha = true; break; }
+        }
+        if (hasAlpha) {
+          mimeType = 'image/png';
+          quality = undefined;
+        }
+      } catch(e) {}
+
+      var data = output.toDataURL(mimeType, quality);
       overlay.remove();
       callback(data);
     });
   };
-  
-  App.openColorPicker = function(currentColor, onConfirm, onChange) {
+
+  /* ✅ 修复8：openColorPicker 添加显式 callerId 参数 */
+  App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var old = App.$('#cpOverlay');
     if (old) {
-      var callerId = arguments[3] || currentColor;
-      if (old._callerId === callerId) {
+      /* ✅ 修复8：使用显式 callerId，保持 toggle 行为 */
+      var id = callerId || currentColor;
+      if (old._callerId === id) {
         old._doClose();
         return;
       }
-      old._callerId = callerId;
+      old._callerId = id;
       old._lastColor = currentColor;
       old._onConfirm = onConfirm;
       old._onChange = onChange;
@@ -522,13 +541,15 @@
     var overlay = document.createElement('div');
     overlay.id = 'cpOverlay';
     overlay.className = 'cp-overlay';
-    overlay._callerId = arguments[3] || currentColor;
+    overlay._callerId = callerId || currentColor;
     overlay._onConfirm = onConfirm;
     overlay._onChange = onChange;
 
+    /* ✅ 修复4：颜色预设值用 escAttr 转义 */
     function buildPresetsHtml() {
       return savedPresets.map(function(c, i) {
-        return '<div class="cp-preset" data-color="' + c + '" data-idx="' + i + '" style="background:' + c + ';"><div class="cp-preset-del">✕</div></div>';
+        var safeC = App.escAttr(c);
+        return '<div class="cp-preset" data-color="' + safeC + '" data-idx="' + i + '" style="background:' + safeC + ';"><div class="cp-preset-del">✕</div></div>';
       }).join('') +
       '<div class="cp-preset-add">+</div>';
     }
@@ -604,7 +625,6 @@
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
     }
 
-    /* ★ 修改：新增 hslToRgb 函数，供高性能光谱绘制使用 */
     function hslToRgb(h, s, l) {
       var c = (1 - Math.abs(2 * l - 1)) * s;
       var x = c * (1 - Math.abs((h / 60) % 2 - 1));
@@ -623,7 +643,6 @@
       ];
     }
 
-    /* ★ 修改：光谱绘制改用 ImageData，不再逐像素 fillRect */
     function drawSpectrum() {
       var w = specEl.clientWidth, h = specEl.clientHeight;
       specCanvas.width = w; specCanvas.height = h;
@@ -690,7 +709,6 @@
     hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
     hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
 
-    /* ★ 修改：全局事件监听器改为具名函数，方便关闭时移除 */
     function onDocMouseMove(e) { if(specDrag)specFromPos(e); if(hueDrag)hueFromPos(e); }
     function onDocMouseUp() { specDrag=false; hueDrag=false; }
     function onDocTouchMove(e) { if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);} }
@@ -751,29 +769,7 @@
       else presetsEl.classList.remove('editing');
     });
 
-    /* ★ 修改：doClose 里移除全局事件监听器，防止内存泄漏 */
-    function doClose() {
-      document.removeEventListener('mousemove', onDocMouseMove);
-      document.removeEventListener('mouseup', onDocMouseUp);
-      document.removeEventListener('touchmove', onDocTouchMove);
-      document.removeEventListener('touchend', onDocTouchEnd);
-
-      App._cpJustClosed = true;
-      setTimeout(function() { App._cpJustClosed = false; }, 200);
-      overlay.remove();
-    }
-
-    overlay._doClose = doClose;
-
-    overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
-
-    overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
-      e.stopPropagation();
-      var fn = overlay._onConfirm;
-      if (fn) fn(selectedHex);
-      doClose();
-    });
-
+    /* ✅ 修复2：颜色选择器拖拽事件改具名函数 */
     var cpPanel = overlay.querySelector('.cp-panel');
     var cpHead = overlay.querySelector('.cp-header');
     var _cpDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
@@ -791,15 +787,43 @@
       _cpDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
     }, { passive: true });
 
-    document.addEventListener('touchmove', function(e) {
+    /* ✅ 修复2：匿名函数改为具名函数，便于 doClose 移除 */
+    function onCpDragMove(e) {
       if (!_cpDrag.active) return;
       e.preventDefault();
       var t = e.touches[0];
       cpPanel.style.left = (_cpDrag.ox + t.clientX - _cpDrag.sx) + 'px';
       cpPanel.style.top = (_cpDrag.oy + t.clientY - _cpDrag.sy) + 'px';
-    }, { passive: false });
+    }
+    function onCpDragEnd() { _cpDrag.active = false; }
 
-    document.addEventListener('touchend', function() { _cpDrag.active = false; });
+    document.addEventListener('touchmove', onCpDragMove, { passive: false });
+    document.addEventListener('touchend', onCpDragEnd);
+
+    /* ✅ 修复2：doClose 里移除所有全局事件监听器，包括拖拽的 */
+    function doClose() {
+      document.removeEventListener('mousemove', onDocMouseMove);
+      document.removeEventListener('mouseup', onDocMouseUp);
+      document.removeEventListener('touchmove', onDocTouchMove);
+      document.removeEventListener('touchend', onDocTouchEnd);
+      document.removeEventListener('touchmove', onCpDragMove);
+      document.removeEventListener('touchend', onCpDragEnd);
+
+      App._cpJustClosed = true;
+      setTimeout(function() { App._cpJustClosed = false; }, 200);
+      overlay.remove();
+    }
+
+    overlay._doClose = doClose;
+
+    overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
+
+    overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
+      e.stopPropagation();
+      var fn = overlay._onConfirm;
+      if (fn) fn(selectedHex);
+      doClose();
+    });
   };
 
   App.state = {
@@ -940,7 +964,6 @@
     overlay.className = 'pc-edit-overlay';
     overlay.style.zIndex = '100020';
 
-    /* ★ 修改：innerHTML 里的属性值用 App.escAttr 替代 App.esc */
     overlay.innerHTML =
       '<div class="pc-edit-panel" style="width:300px;max-height:400px;overflow-y:auto;border-radius:14px;">' +
         '<div class="pc-edit-title">悬浮球设置</div>' +
@@ -1233,9 +1256,12 @@
       App.closePanel();
     });
 
+    /* ✅ 修复1：重置按钮同时清除 IndexedDB，而非删掉按钮 */
     App.safeOn('#clearAllBtn', 'click', function() {
-      if (!confirm('确定要重置所有设置吗？')) return;
+      if (!confirm('确定要重置所有设置吗？这将清除所有自定义配置。')) return;
       localStorage.clear();
+      sessionStorage.clear();
+      try { indexedDB.deleteDatabase('AppStorage'); } catch(e) {}
       location.reload();
     });
 
@@ -1350,6 +1376,20 @@
 
     App.mascot.init();
 
+    /* ✅ 修复7：页面不可见时暂停 mascot 定时器，恢复时重启 */
+    document.addEventListener('visibilitychange', function() {
+      if (!App.mascot) return;
+      if (document.hidden) {
+        clearTimeout(App.mascot.blinkTimer);
+        clearTimeout(App.mascot.idleTimer);
+      } else {
+        if (App.ballConfig && App.ballConfig.mode === 'mascot' && !App.mascot.animLock) {
+          App.mascot.startBlinkLoop();
+          App.mascot.startIdleActions();
+        }
+      }
+    });
+
     App.loadBallConfig();
     App.applyBallMode();
 
@@ -1433,7 +1473,6 @@
       var currentY = e.touches[0].clientY;
       var dx = Math.abs(currentX - startX);
       var dy = Math.abs(currentY - startY);
-      /* ★ 修改：方向锁定阈值从 8 改为 12，减少误触 */
       if (!directionLocked && (dx > 12 || dy > 12)) {
         directionLocked = true;
         isHorizontal = dx > dy;
@@ -1506,23 +1545,36 @@
           menu.remove();
         });
 
+        /* ✅ 修复3：图标上传加 128px 压缩 */
         fileInput.addEventListener('change', function(e) {
           var file = e.target.files[0];
           if (!file) return;
           var iconKey = 'iconImg_' + icon.dataset.icon;
           var reader = new FileReader();
           reader.onload = function(ev) {
-            // 先删旧图再存新图
-            var oldVal = App.LS.get(iconKey);
-            if (oldVal) App.LS.remove(iconKey);
-            var imgEl = icon.querySelector('.app-icon-img');
-            if (imgEl) imgEl.innerHTML = '<img src="' + ev.target.result + '">';
-            App.LS.set(iconKey, ev.target.result);
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.createElement('canvas');
+              var max = 128;
+              var w = img.width, h = img.height;
+              if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+              else { if (h > max) { w = w * max / h; h = max; } }
+              canvas.width = w;
+              canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              var compressed = canvas.toDataURL('image/png', 0.85);
+              var oldVal = App.LS.get(iconKey);
+              if (oldVal) App.LS.remove(iconKey);
+              var imgEl = icon.querySelector('.app-icon-img');
+              if (imgEl) imgEl.innerHTML = '<img src="' + compressed + '">';
+              App.LS.set(iconKey, compressed);
+            };
+            img.src = ev.target.result;
           };
           reader.readAsDataURL(file);
           fileInput.remove();
         });
-        
+
         App.safeOn('#iconMenuResetImg', 'click', function() {
           App.LS.remove('iconImg_' + icon.dataset.icon);
           menu.remove();
@@ -1590,6 +1642,5 @@
     App.runInits();
     App.initMainPages();
   };
-  
-  })();
 
+})();
