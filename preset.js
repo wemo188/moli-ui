@@ -10,12 +10,12 @@ var POWER_SVG='<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;
 var DOTS_SVG='<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#7a9ab8;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
 
 var SYS_ITEMS=[
-  {id:'worldbook_before',name:'世界书（前）',desc:'World Book (Before)'},
   {id:'char_profile',name:'角色档案',desc:'Character Profile'},
-  {id:'worldbook_after',name:'世界书（后）',desc:'World Book (After)'},
   {id:'user_info',name:'用户信息',desc:'User Profile'},
+  {id:'worldbook_before',name:'世界书（前）',desc:'World Book (Before)'},
   {id:'scene',name:'场景 / 时间线',desc:'Scene / Timeline'},
   {id:'examples',name:'示例对话',desc:'Example Dialogue'},
+  {id:'worldbook_after',name:'世界书（后）',desc:'World Book (After)'},
   {id:'memory_summary',name:'记忆总结',desc:'Memory Summary'},
   {id:'chat_history',name:'聊天历史',desc:'Chat History'},
   {id:'post_instruction',name:'角色档案的后置指令',desc:'Post Instruction'}
