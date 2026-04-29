@@ -14,17 +14,85 @@
   App.$ = function(s) { return document.querySelector(s); };
   App.$$ = function(s) { return document.querySelectorAll(s); };
 
-  App.LS = {
-    get: function(k) {
-      try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; }
-    },
-    set: function(k, v) {
-      try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
-    },
-    remove: function(k) {
-      localStorage.removeItem(k);
+    App.LS = (function() {
+    var DB_NAME = 'AppStorage';
+    var STORE_NAME = 'kv';
+    var _db = null;
+    var _cache = {};
+    var _queue = [];
+
+    function openDB(cb) {
+      if (_db) { cb(_db); return; }
+      try {
+        var req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+        };
+        req.onsuccess = function(e) {
+          _db = e.target.result;
+          // 启动时把所有数据读入内存缓存
+          try {
+            var tx = _db.transaction(STORE_NAME, 'readonly');
+            var store = tx.objectStore(STORE_NAME);
+            var all = store.openCursor();
+            all.onsuccess = function(ev) {
+              var cursor = ev.target.result;
+              if (cursor) {
+                _cache[cursor.key] = cursor.value;
+                cursor.continue();
+              } else {
+                cb(_db);
+                _queue.forEach(function(fn) { fn(_db); });
+                _queue = [];
+              }
+            };
+          } catch(ex) { cb(_db); }
+        };req.onerror = function() { console.warn('IndexedDB 打开失败'); };
+      } catch(e) { console.warn('IndexedDB 不可用'); }
     }
-  };
+
+    // 启动时立刻打开
+    openDB(function() {});
+
+    return {
+      get: function(k) {
+        if (k in _cache) return _cache[k];
+        return null;
+      },
+
+      set: function(k, v) {
+        _cache[k] = v;
+        if (_db) {
+          try { var tx = _db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(v, k); } catch(e) {}} else {
+          _queue.push(function(db) { try { var tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(v, k); } catch(e) {} });
+        }
+      },
+
+      remove: function(k) {
+        delete _cache[k];
+        if (_db) {
+          try { var tx = _db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(k); } catch(e) {}
+        } else {
+          _queue.push(function(db) { try { var tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(k); } catch(e) {} });
+        }
+      },
+
+      getSize: function(k) {
+        var val = _cache[k];
+        if (val === undefined || val === null) return 0;
+        try { return Math.round((k.length + JSON.stringify(val).length) * 2 / 1024); } catch(e) { return 0; }
+      },
+
+      getTotalSize: function() {
+        var t = 0, keys = Object.keys(_cache);
+        for (var i = 0; i < keys.length; i++) t += this.getSize(keys[i]);
+        return t;
+      },
+
+      _cache: _cache
+    };
+  })();
 
   App.showToast = function(msg, duration) {
     duration = duration || 2000;
