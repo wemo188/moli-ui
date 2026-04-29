@@ -29,7 +29,7 @@
   padding: 17px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px -30px - env(safe-area-inset-bottom, 20px));
+  height: calc(100vh - 60px - env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
 }
 
