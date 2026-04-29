@@ -5,8 +5,8 @@ var App=window.App;if(!App)return;
 
 var SPLIT='|||';
 var MAX_CONTEXT=40;
-var MAX_BG_SIZE=1280;
-var BG_QUALITY=0.85;
+var MAX_BG_SIZE=1920;
+var BG_QUALITY=0.92;
 
 function compressImage(d,m,q,cb){var i=new Image();i.onload=function(){var w=i.width,h=i.height;if(w>h){if(w>m){h=h*m/w;w=m;}}else{if(h>m){w=w*m/h;h=m;}}var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);cb(c.toDataURL('image/jpeg',q));};i.src=d;}
 function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
