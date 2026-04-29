@@ -9,6 +9,7 @@
   background: transparent;
   -webkit-touch-callout: none;
   border-radius: inherit;
+  --ct-accent: #7a9ab8;
 }
 
 .ct-bg {
@@ -44,6 +45,7 @@
   display: none;
 }
 
+/* ---顶部栏 --- */
 .ct-hd {
   position: relative;
   z-index: 10;
@@ -55,7 +57,8 @@
   background: rgba(255,255,255,.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1.5px solid rgba(126,163,201,.25);
+  border-bottom: 1.5px solid var(--ct-accent, rgba(126,163,201,.25));
+  border-bottom-color: color-mix(in srgb, var(--ct-accent) 25%, transparent);
 }
 
 .ct-hd-btn {
@@ -80,7 +83,7 @@
 .ct-hd-name {
   flex: 1;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: .5px;
@@ -91,10 +94,11 @@
 
 .ct-hd-typing {
   font-size: 11px;
-  color: #8aa0b8;
+  color: var(--ct-accent, #8aa0b8);
   font-weight: 400;
 }
 
+/* --- 消息列表 --- */
 .ct-msgs {
   position: relative;
   z-index: 5;
@@ -107,7 +111,7 @@
 
 .ct-msg {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   margin-bottom: 2px;
   max-width: 100%;
@@ -117,6 +121,7 @@
   flex-direction: row-reverse;
 }
 
+/* --- 头像 --- */
 .ct-msg-av {
   width: 50px;
   height: 50px;
@@ -141,6 +146,7 @@
   stroke: #a8c0d8; fill: none; stroke-width: 1.5;
 }
 
+/* --- 气泡 --- */
 .ct-bubble-wrap {
   max-width: 72%;
   display: flex;
@@ -169,25 +175,23 @@
 }
 
 .ct-msg.user .ct-bubble {
-  background: rgba(126,163,201,.8);
+  background: var(--ct-accent, rgba(126,163,201,.8));
   color: #fff;
   border-top-right-radius: 4px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  opacity: .85;
 }
 
+/* --- 消息元信息 --- */
 .ct-msg-meta {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 4px 2px;
+  padding: 2px 4px 6px;
   font-size: 10px;
   color: #999;
   letter-spacing: .3px;
-}
-
-.ct-msg.user .ct-msg-meta {
-  flex-direction: row-reverse;
 }
 
 .ct-msg.user .ct-msg-meta {
@@ -205,6 +209,7 @@
   font-size: 10px;
 }
 
+/* --- 系统消息 --- */
 .ct-sys {
   text-align: center;
   font-size: 11px;
@@ -213,6 +218,7 @@
   letter-spacing: .5px;
 }
 
+/* --- 时间分隔 --- */
 .ct-time-sep {
   text-align: center;
   font-size: 11px;
@@ -221,6 +227,7 @@
   letter-spacing: .5px;
 }
 
+/* --- 表情包 --- */
 .ct-sticker {
   max-width: 120px;
   border-radius: 8px;
@@ -228,6 +235,7 @@
   display: block;
 }
 
+/* --- 未读红点 --- */
 .ct-unread-badge {
   position: absolute;
   top: -4px;
@@ -246,18 +254,19 @@
   line-height: 1;
 }
 
+/* --- 底部输入区--- */
 .ct-input-wrap {
   position: relative;
   z-index: 10;
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  padding: 10px 12px 16px;
+  padding: 12px 12px 20px;
   background: rgba(255,255,255,.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1.5px solid rgba(126,163,201,.25);
-  flex-shrink: 0;
+  border-top: 1.5px solid var(--ct-accent, rgba(126,163,201,.25));
+  border-top-color: color-mix(in srgb, var(--ct-accent) 25%, transparent);flex-shrink: 0;
 }
 
 .ct-voice-btn,
@@ -275,15 +284,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.ct-voice-btn svg { width: 22px; height: 22px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.ct-plus-btn svg { width: 32px; height: 32px; fill: none; stroke: #7a9ab8; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ct-voice-btn svg { width: 22px; height: 22px; fill: none; stroke: var(--ct-accent, #7a9ab8); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ct-plus-btn svg { width: 32px; height: 32px; fill: none; stroke: var(--ct-accent, #7a9ab8); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ct-plus-btn { margin-bottom: 4px; }
 
 .ct-input {
   flex: 1;
   min-height: 44px;
   max-height: 100px;
   padding: 11px 16px;
-  border: 1.5px solid rgba(126,163,201,.4);
+  border: 1.5px solid var(--ct-accent, rgba(126,163,201,.4));
+  border-color: color-mix(in srgb, var(--ct-accent) 40%, transparent);
   border-radius: 22px;
   background: rgba(255,255,255,.9);
   font-size: 14px;
@@ -298,7 +309,8 @@
 }
 
 .ct-input:focus {
-  border-color: rgba(126,163,201,.7);
+  border-color: var(--ct-accent, rgba(126,163,201,.7));
+  border-color: color-mix(in srgb, var(--ct-accent) 70%, transparent);
 }
 
 .ct-send {
@@ -314,23 +326,23 @@
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   transition: opacity .15s;
-  align-self: flex-end;
-  margin-bottom: 0;
+  align-self: flex-end;margin-bottom: 0;
 }
 
 .ct-send:active { opacity: .7; }
 .ct-send svg { width: 38px; height: 38px; }
-.ct-send .ct-robot-svg { color: #7a9ab8; }
+.ct-send .ct-robot-svg { color: var(--ct-accent, #7a9ab8); }
 
 .ct-send.stop {
   background: rgba(201,112,107,.85);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   margin-bottom: 6px;
 }
-.ct-send.stop svg { width: 20px; height: 20px; }
+.ct-send.stop svg { width: 18px; height: 18px; }
 
+/* --- 加号展开面板 --- */
 .ct-plus-panel {
   position: relative;
   z-index: 10;
@@ -370,7 +382,7 @@
 
 .ct-plus-icon svg {
   width: 24px; height: 24px;
-  fill: none; stroke: #1a1a1a;
+  fill: none; stroke: var(--ct-accent, #7a9ab8);
   stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
@@ -385,6 +397,7 @@
   background: rgba(126,163,201,.12);
 }
 
+/* --- 长按菜单 --- */
 .ct-ctx {
   position: fixed;
   z-index: 100020;
@@ -410,8 +423,7 @@
   color: rgba(255,255,255,.85);
   cursor: pointer;
   border-radius: 8px;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;-webkit-user-select: none;
   text-align: center;
 }
 
@@ -423,6 +435,7 @@
   stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
 }
 
+/* --- 顶部菜单 --- */
 .ct-hd-menu {
   position: fixed;
   z-index: 100020;
@@ -482,6 +495,7 @@
 
 .ct-hd-mi .ct-sw-track.on::after { transform: translateX(16px); }
 
+/* --- 头像设置卡片 --- */
 .ct-av-card {
   position: fixed;
   z-index: 100020;
@@ -503,10 +517,7 @@
   pointer-events: auto;
 }
 
-.ct-av-section {
-  margin-bottom: 10px;
-}
-
+.ct-av-section { margin-bottom: 10px; }
 .ct-av-section:last-child { margin-bottom: 0; }
 
 .ct-av-label {
@@ -517,10 +528,7 @@
   margin-bottom: 6px;
 }
 
-.ct-av-opts {
-  display: flex;
-  gap: 6px;
-}
+.ct-av-opts { display: flex; gap: 6px; }
 
 .ct-av-opt {
   flex: 1;
@@ -544,11 +552,12 @@
   background: rgba(126,163,201,.25);
 }
 
+/* --- 空状态 --- */
 .ct-greeting {
   text-align: center;
   padding: 20px 30px;
   font-size: 13px;
-  color: #7a9ab8;
+  color: var(--ct-accent, #7a9ab8);
   line-height: 1.7;
 }
 
@@ -559,6 +568,7 @@
   padding: 60px 20px;
 }
 
+/* --- 打字动画 --- */
 @keyframes ctDots {
   0%, 80%, 100% { opacity: .3; }
   40% { opacity: 1; }
@@ -568,13 +578,14 @@
   display: inline-block;
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: #8aa0b8;
+  background: var(--ct-accent, #8aa0b8);
   margin: 0 2px;
   animation: ctDots 1.2s infinite;
 }
 .ct-typing-dot:nth-child(2) { animation-delay: .2s; }
 .ct-typing-dot:nth-child(3) { animation-delay: .4s; }
 
+/* --- 弹窗 --- */
 .ct-edit-overlay,
 .ct-scene-overlay {
   position: fixed;
@@ -640,6 +651,7 @@
   font-family: inherit;
 }
 
+/* --- 报错详情 --- */
 .ct-error-detail {
   font-size: 11px;
   color: #c9706b;
@@ -652,3 +664,4 @@
   white-space: pre-wrap;
   text-align: left;
 }
+
