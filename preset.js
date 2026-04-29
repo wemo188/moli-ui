@@ -9,8 +9,8 @@ var DEL_SVG='<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><
 var DOTS_SVG='<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#7a9ab8;"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
 
 var SYS_ITEMS=[
-  {id:'char_profile',name:'角色档案',desc:'Character Profile'},
   {id:'worldbook_before',name:'世界书（前）',desc:'World Book (Before)'},
+  {id:'char_profile',name:'角色档案',desc:'Character Profile'},
   {id:'worldbook_after',name:'世界书（后）',desc:'World Book (After)'},
   {id:'user_info',name:'用户信息',desc:'User Profile'},
   {id:'scene',name:'场景 / 时间线',desc:'Scene / Timeline'},
