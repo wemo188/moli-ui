@@ -64,15 +64,10 @@
     },
 
     save: function() {
-      try {
-        localStorage.setItem('cmGlobal', JSON.stringify(CharMgr.globalConfig));
-        localStorage.setItem('cmChars', JSON.stringify(CharMgr.charConfigs));
-        return true;
-      } catch (e) {
-        App.showToast('存储空间不足');
-        return false;
-      }
-    },
+  App.LS.set('cmGlobal', CharMgr.globalConfig);
+  App.LS.set('cmChars', CharMgr.charConfigs);
+  return true;
+},
 
     getCharConfig: function(charId) {
       if (CharMgr.charConfigs[charId]) return CharMgr.charConfigs[charId];
