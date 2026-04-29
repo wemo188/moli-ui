@@ -432,7 +432,7 @@ popup.addEventListener('touchstart', function(e) {
         App.showToast('已删除');
       });
 
-      menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
+        menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
         menu.remove();
         var input = document.createElement('input');
         input.type = 'file';
@@ -448,7 +448,10 @@ popup.addEventListener('touchstart', function(e) {
             if (App.cropImage) {
               App.cropImage(src, function(cropped) {
                 var c = Character.getById(charId);
-                if (c) { c[field] = cropped; Character.save(); }
+                if (c) {
+                  c[field] = cropped;
+                  Character.save();
+                }
                 box.innerHTML = '<img src="' + cropped + '">';
               });
             } else {
@@ -459,7 +462,7 @@ popup.addEventListener('touchstart', function(e) {
         };
         input.click();
       });
-
+      
       menu.querySelector('#imgFromUrl').addEventListener('click', function() {
         menu.remove();
         var urlPanel = document.createElement('div');
@@ -492,15 +495,15 @@ popup.addEventListener('touchstart', function(e) {
           }
         });
 
-        urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
+           urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
           var url = urlPanel.querySelector('#imgUrlInput').value.trim();
           if (!url) { App.showToast('请输入URL'); return; }
           urlPanel.remove();
           var c = Character.getById(charId);
-          if (c) { c[field] = url; Character.save(); }
-          /* ★ 修改：URL 确认后 img src 用 escAttr */
-          box.innerHTML = '<img src="' + App.escAttr(url) + '">';
-          App.showToast('已设置');
+          if (c) {
+            c[field] = url;
+            Character.save();}
+          box.innerHTML = '<img src="' + App.escAttr(url) + '">';App.showToast('已设置');
         });
       });
     },
