@@ -82,11 +82,13 @@ var Preset={
   _renderUserItem:function(id,up,isActive){
     var depthTag=up.mode==='depth'?'<span class="ps-tag depth">深度 '+(up.depth||0)+'</span>':'';
     if(isActive){
+      var on=up.enabled!==false;
       return '<div class="ps-item is-user" data-id="'+id+'">'+
         '<div class="ps-drag">'+DRAG_SVG+'</div>'+
         '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
         depthTag+
         '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
+        '<div class="ps-sw '+(on?'on':'off')+'" data-usw-id="'+id+'"></div>'+
         '<div class="ps-mini-btn" data-deact-id="'+id+'" style="color:#1a1a1a;">'+POWER_SVG+'</div>'+
       '</div>';
     }else{
@@ -208,6 +210,19 @@ var Preset={
       });
     });
 
+    // 用户预设开关
+    page.querySelectorAll('[data-usw-id]').forEach(function(sw){
+      sw.addEventListener('click',function(e){
+        e.stopPropagation();
+        var id=sw.dataset.uswId;
+        var up=Preset.config.userPresets[id];if(!up)return;
+        var on=sw.classList.contains('on');
+        up.enabled=!on;
+        sw.classList.toggle('on');sw.classList.toggle('off');
+        Preset.save();
+      });
+    });
+
     // 停用（关机键黑色，激活→未激活）
     page.querySelectorAll('[data-deact-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
@@ -291,13 +306,17 @@ var Preset={
       if(!item)return;
       if(e.target.closest('.ps-mini-btn')||e.target.closest('.ps-sw'))return;
       var t=e.touches[0];
-      startX=t.clientX;startY=t.clientY;moved=false;longPressed=false;
+      startX=t.clientX;startY=t.clientY;
+      moved=false;longPressed=false;
       dragId=item.dataset.id;dragEl=item;
 
       timer=setTimeout(function(){
         if(!dragEl||moved)return;
         longPressed=true;
         dragEl.classList.add('dragging');
+        dragEl.style.zIndex='100';
+        dragEl.style.position='relative';
+        dragEl.style.boxShadow='0 6px 20px rgba(126,163,201,.2)';
         if(navigator.vibrate)navigator.vibrate(15);
       },400);
     },{passive:true});
@@ -315,40 +334,81 @@ var Preset={
       moved=true;
       offsetY=t.clientY-startY;
       dragEl.style.transform='translateY('+offsetY+'px)';
+
+      var listRect=list.getBoundingClientRect();
+      var touchY=t.clientY;
+      if(touchY<listRect.top+40)list.scrollTop-=6;
+      if(touchY>listRect.bottom-40)list.scrollTop+=6;
     },{passive:false});
 
     list.addEventListener('touchend',function(){
       clearTimeout(timer);timer=null;
-      if(!dragEl||!longPressed){if(dragEl){dragEl=null;}return;}
+      if(!dragEl||!longPressed){
+        if(dragEl){dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.boxShadow='';dragEl=null;}
+        return;
+      }
       dragEl.classList.remove('dragging');
       dragEl.style.transform='';
+      dragEl.style.zIndex='';
+      dragEl.style.position='';
+      dragEl.style.boxShadow='';
 
-      var items=list.querySelectorAll('.ps-item:not(.is-inactive)');
-      var rects=[];var ids=[];
-      items.forEach(function(it){rects.push(it.getBoundingClientRect());ids.push(it.dataset.id);});
+      var activeItems=list.querySelectorAll('.ps-item:not(.is-inactive)');
+      var slots=[];
+      activeItems.forEach(function(it){
+        var id=it.dataset.id;
+        if(id===dragId)return;
+        if(!Preset.isSysId(id)){
+          var up=Preset.config.userPresets[id];
+          if(up&&up.mode==='depth')return;
+        }
+        var rect=it.getBoundingClientRect();
+        slots.push({id:id,midY:rect.top+rect.height/2});
+      });
 
       var dragRect=dragEl.getBoundingClientRect();
-      var centerY=dragRect.top+dragRect.height/2;
+      var dragMidY=dragRect.top+dragRect.height/2;
 
-      var newOrder=[];var inserted=false;
-      for(var i=0;i<ids.length;i++){
-        if(ids[i]===dragId)continue;
-        // 跳过depth模式的用户预设，它们不在order里
-        var isDepthPreset=!Preset.isSysId(ids[i])&&Preset.config.userPresets[ids[i]]&&Preset.config.userPresets[ids[i]].mode==='depth';
-        if(isDepthPreset)continue;
-        var mid=rects[i].top+rects[i].height/2;
-        if(!inserted&&centerY<mid){newOrder.push(dragId);inserted=true;}
-        newOrder.push(ids[i]);
+      var insertIdx=slots.length;
+      for(var i=0;i<slots.length;i++){
+        if(dragMidY<slots[i].midY){
+          insertIdx=i;
+          break;
+        }
       }
-      if(!inserted)newOrder.push(dragId);
 
-      var sysInOrder=newOrder.filter(function(id){return Preset.isSysId(id);});
+      var newOrder=[];
+      for(var j=0;j<slots.length;j++){
+        if(j===insertIdx)newOrder.push(dragId);
+        newOrder.push(slots[j].id);
+      }
+      if(insertIdx>=slots.length)newOrder.push(dragId);
+
+      var sysInNew=newOrder.filter(function(id){return Preset.isSysId(id);});
       var valid=true;
-      for(var j=0;j<sysInOrder.length-1;j++){
-        if(SYS_IDS.indexOf(sysInOrder[j])>SYS_IDS.indexOf(sysInOrder[j+1])){valid=false;break;}
+      for(var k=0;k<sysInNew.length-1;k++){
+        if(SYS_IDS.indexOf(sysInNew[k])>SYS_IDS.indexOf(sysInNew[k+1])){
+          valid=false;break;
+        }
       }
 
       if(valid){
+        var oldOrder=Preset.config.order;
+        oldOrder.forEach(function(id){
+          if(newOrder.indexOf(id)<0){
+            var prevSys=null;
+            var oldIdx=oldOrder.indexOf(id);
+            for(var m=oldIdx-1;m>=0;m--){
+              if(newOrder.indexOf(oldOrder[m])>=0){prevSys=oldOrder[m];break;}
+            }
+            if(prevSys){
+              var afterIdx=newOrder.indexOf(prevSys);
+              newOrder.splice(afterIdx+1,0,id);
+            }else{
+              newOrder.unshift(id);
+            }
+          }
+        });
         Preset.config.order=newOrder;
         Preset.save();
       }
@@ -513,7 +573,7 @@ var Preset={
       App.showToast(isNew?'已创建':'已保存');
     });
 
-    // 编辑页也支持左滑返回
+    // 编辑页左滑返回
     var _eSwipe={active:false,sx:0,sy:0,locked:false,dir:''};
     editPage.addEventListener('touchstart',function(e){
       var t=e.touches[0];
