@@ -67,7 +67,7 @@
 })();
 </script>
 </head>
-<body style="visibility:hidden;">
+<body>
 
 <!-- ★ 修改说明：全局图片回退函数，图片加载失败时替换为雾蓝玻璃卡片 -->
 <script>
@@ -122,7 +122,50 @@ function imgFallback(img){
               </div>
             </div>
           </div>
-          <div class="card-row" id="cardRow"></div>
+          <div class="card-row" id="cardRow">
+  <div class="left-area-wrapper">
+    <div class="bx-w" data-side="left">
+      <div class="bx-tag-wrap">
+        <div class="bx-tag bx-tag1bx-tag-placeholder">标签</div>
+        <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
+      </div>
+      <div class="bx-cw"><div class="bx-cd">
+        <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-43.6-78-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+        <div class="bx-name-bar">
+          <div class="bx-name bx-name-placeholder">角色名</div>
+          <div class="bx-sub">✥ 同你奔赴一场风花雪月 ✥</div>
+        </div>
+      </div></div>
+    </div><div class="left-search-area">
+      <div class="search-wrapper"><div class="search-box">
+        <div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
+        <input type="text" class="search-input-left" placeholder="左边搜索...">
+      </div></div>
+      <div class="search-wrapper"><div class="search-box-right">
+        <input type="text" class="search-input-right" placeholder="右边搜索...">
+        <div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="card-right-area">
+    <div class="card-placeholder-icons">
+      <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>
+      <div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div></div>
+    <div class="bx-w" data-side="right">
+      <div class="bx-cw"><div class="bx-cd">
+        <div class="bx-side-ribbon">
+          <div class="bx-ribbon-tab r1bx-ribbon-placeholder">标签</div>
+          <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
+        </div>
+        <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+        <div class="bx-name-bar">
+          <div class="bx-name bx-name-placeholder">角色名</div>
+          <div class="bx-sub">◈ 与你共赏一阙火树银花 ◈</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
         </div>
 
         <!-- ★ 修改说明：Eden卡片里包含特殊Unicode字符，部分安卓机可能显示异常，如遇问题检查此处 -->
