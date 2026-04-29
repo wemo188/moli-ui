@@ -1,3 +1,60 @@
+
+/* 预设首页 */
+.ps-home-page {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 10000;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  transform: translateX(100%);
+  opacity: 0;
+}
+.ps-home-page.show { transform: translateX(0); opacity: 1; }
+
+.ps-home-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 16px 40px; }
+
+.ps-home-card {
+  padding: 16px;
+  border: 1.5px solid rgba(126,163,201,.2);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(126,163,201,.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s;
+}
+.ps-home-card:active { background: rgba(126,163,201,.04); }
+.ps-home-card.active-preset { border-color: rgba(26,26,26,.3); background: rgba(26,26,26,.02); }
+
+.ps-home-card-info { flex: 1; min-width: 0; }
+.ps-home-card-name { font-size: 14px; font-weight: 700; color: #2e4258; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-home-card-desc { font-size: 11px; color: #a8c0d8; margin-top: 3px; }
+
+.ps-home-card-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; flex-shrink: 0; }
+.ps-home-card-badge.in-use { background: #1a1a1a; color: #fff; }
+.ps-home-card-badge.idle { background: rgba(0,0,0,.04); color: #bbb; }
+
+.ps-home-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.ps-gap-indicator {
+  position: fixed;
+  left: 18px; right: 18px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #7a9ab8, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  transition: top .1s ease, opacity .1s;
+}
+
 .ps-page {
   position: fixed;
   top: 0; left: 0;
