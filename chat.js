@@ -80,7 +80,7 @@ parts.push(
 '5. 说话像真人：口语化、自然、有个性。\n'+
 '6. 认真理解用户每条消息的真实意图。用户发的括号内文字（如"(猫咪探头)"）是文字表情/颜文字，表示一种情绪或动作，不是字面意思。要理解其背后的情感含义来回应。\n'+
 '7. 根据角色性格决定说话风格。\n'+
-'8. 你每次回复发送 '+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用 '+SPLIT+' 分隔。\n'+
+'8. 你每次回复发送'+Math.max(1,cfg.minMsgs||1)+' 到 '+Math.max(1,cfg.maxMsgs||3)+' 条消息，用'+SPLIT+' 分隔。\n'+
 '9. 每条消息简短自然，不要在一条消息里写多段话（不要出现空行分段）。一条消息就是一句话或两句话。\n'+
 '10. 不要自我介绍、不要解释自己是AI。\n'+
 '11. 使用'+lang+'回复。\n'+
@@ -88,7 +88,7 @@ parts.push(
 '13. 你就是这个角色本人。绝对不要说"我无法扮演""我是AI""作为语言模型""抱歉我不能"等任何打破角色的话。无论如何都不要跳出角色。\n'+
 '14. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
 '15. 你和用户的关系、所在地点等信息以角色设定为准。如果设定里写了你们在同一个地方，就不要问"你那边天气怎样"这种话。但如果天气出现异常（如突然下雨、下雪、降温），可以自然地提醒或关心。\n'+
-'16. 表情包（[sticker:描述]）必须单独占一条消息，不要和文字混在同一条里。如果你想发文字又想发表情包，就用 '+SPLIT+' 分成两条。'
+'16. 表情包（[sticker:描述]）必须单独占一条消息，不要和文字混在同一条里。如果你想发文字又想发表情包，就用'+SPLIT+' 分成两条。'
 );
 
 if(cfg.bilingual){
@@ -102,7 +102,7 @@ var allowedTypes=cfg.msgTypes||['文字'];
 if(allowedTypes.indexOf('表情')>=0)parts.push('\n可以适当使用emoji表情。');
 if(cfg.stickerGen&&allowedTypes.indexOf('图片')>=0){
   var stkFreq=['极少','偶尔','适中','经常','频繁'][Math.min((cfg.stickerFreq||2)-1,4)];
-  parts.push('\n【表情包】适合时用 [sticker:描述] 标记，描述要具体（如"开心跳舞的小狗""生气鼓腮的女孩"），不要总是用猫咪。根据当前语境选择合适的表情形象。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。记住：表情包必须单独一条消息。');
+  parts.push('\n【表情包】适合时用[sticker:描述] 标记，描述要具体（如"开心跳舞的小狗""生气鼓腮的女孩"），不要总是用猫咪。根据当前语境选择合适的表情形象。频率：'+stkFreq+'。风格：'+(cfg.stickerStyles||['可爱卡通']).join('、')+'。记住：表情包必须单独一条消息。');
 }
 
 if(charData){
@@ -144,12 +144,11 @@ if(cfg.timeWeather){
   var envInfo='\n【当前环境 - 极其重要】\n现在是：'+timeStr+'\n现在是'+period+'。凌晨0-5点仍属于"今天"。';
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
-    if(ws)envInfo+='\n用户所在地'+ws;
-    if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity;
+    if(ws)envInfo+='\n用户所在地'+ws;if(cfg.charCity)envInfo+='\n角色所在城市：'+cfg.charCity;
     var ss=App.calendar.getScheduleSummary();
     if(ss)envInfo+='\n'+ss;
   }
-  envInfo+='\n\n【时间感知规则】\n- 晚上(19-23点)是正常的活动时间，不要催对方睡觉。\n- 只有23点半以后和凌晨(0-5点)才可以适当关心对方是否该休息了，但也不要一到点就催。\n- 23点之前绝对不要说"怎么还没睡""早点睡""该睡了"之类的话。';
+  envInfo+='\n\n【时间感知规则】\n-晚上(19-23点)是正常的活动时间，不要催对方睡觉。\n- 只有23点半以后和凌晨(0-5点)才可以适当关心对方是否该休息了，但也不要一到点就催。\n- 23点之前绝对不要说"怎么还没睡""早点睡""该睡了"之类的话。';
   parts.push(envInfo);
 }
 
@@ -231,6 +230,7 @@ Chat.renderMessages();
 Chat.bindEvents();
 Chat.startProactive();
 
+// 应用已保存的调色板
 var palette=App.LS.get('chatPalette_'+charId);
 if(palette&&palette.accent&&App.chatUI){App.chatUI.applyPalette(palette.accent);}
 
@@ -274,14 +274,12 @@ Chat.saveMsgs();Chat.renderMessages();
 if(Chat.isStreaming)return;
 
 if(Chat._sendDelayTimer)clearTimeout(Chat._sendDelayTimer);
-Chat._sendDelayTimer=setTimeout(function(){
-  Chat._sendDelayTimer=null;
+Chat._sendDelayTimer=setTimeout(function(){Chat._sendDelayTimer=null;
   var cfg=getCfg(Chat.charId);
   var delay=getReplyDelay(cfg,text.length);
   if(cfg.showTyping&&delay>0)Chat.updateTyping(true);
   if(delay>0)setTimeout(function(){Chat.requestAI();},delay);
-  else Chat.requestAI();
-  Chat.resetProactive();
+  else Chat.requestAI();Chat.resetProactive();
 },3000);
 },
 
@@ -485,12 +483,7 @@ resetProactive:function(){Chat.stopProactive();Chat.startProactive();},
 requestProactive:function(){
 var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
-if(!api){
-  console.warn('[主动消息] API未配置');
-  Chat.isStreaming=false;
-  if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();}
-  return;
-}
+if(!api){console.warn('[主动消息] API未配置');Chat.isStreaming=false;Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();return;}
 var user=App.user?App.user.getActiveUser():null;
 var sceneText=App.LS.get('chatScene_'+Chat.charId)||'';
 var sysPrompt=buildSystemPrompt(Chat.charData,user,sceneText,cfg);
@@ -526,8 +519,10 @@ apiMsgs.push({role:'system',content:proPrompt});
 
 var url=api.url.replace(/\/+$/,'')+'/chat/completions';
 
-Chat.isStreaming=true;
-if(!Chat._backgroundMode){Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(true);}
+if(!Chat.isStreaming){
+  Chat.isStreaming=true;
+  if(!Chat._backgroundMode){Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(true);}
+}
 
 var fullText='';
 
@@ -572,14 +567,15 @@ function proFinish(){
   parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
   Chat.saveMsgs();
   if(Chat._backgroundMode){
-    Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);
-  } else {
+    Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);} else {
     Chat.renderMessages();
   }
   Chat._backgroundMode=false;
 }
 },
 
+showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
+showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
 setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
 
 init:function(){App.chat=Chat;}
