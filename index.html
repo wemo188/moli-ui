@@ -67,7 +67,7 @@
 })();
 </script>
 </head>
-<body style="opacity:0;transition:opacity .3s ease;">
+<body style="visibility:hidden;">
 
 <!-- ★ 修改说明：全局图片回退函数，图片加载失败时替换为雾蓝玻璃卡片 -->
 <script>
@@ -341,7 +341,16 @@ var files = [
 ];
   var idx = 0;
   function loadNext(){
-    if(idx >= files.length) return;
+    if(idx >= files.length){
+    requestAnimationFrame(function(){
+      document.body.style.visibility = 'visible';
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity .4s ease';requestAnimationFrame(function(){
+        document.body.style.opacity = '1';
+      });
+    });
+    return;
+  }
     var s = document.createElement('script');
     s.src = files[idx] + '?v=' + v;
     s.onload = function(){ idx++; loadNext(); };
