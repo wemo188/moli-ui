@@ -88,8 +88,8 @@ var Preset={
         '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
         depthTag+
         '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
-        '<div class="ps-sw '+(on?'on':'off')+'" data-usw-id="'+id+'"></div>'+
         '<div class="ps-mini-btn" data-deact-id="'+id+'" style="color:#1a1a1a;">'+POWER_SVG+'</div>'+
+        '<div class="ps-sw '+(on?'on':'off')+'" data-usw-id="'+id+'"></div>'+
       '</div>';
     }else{
       return '<div class="ps-item is-user is-inactive" data-id="'+id+'">'+
@@ -97,8 +97,8 @@ var Preset={
         '<div class="ps-info" style="opacity:.5;"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
         depthTag+
         '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
-        '<div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div>'+
         '<div class="ps-mini-btn" data-react-id="'+id+'" style="border-color:rgba(107,171,142,.3);background:rgba(107,171,142,.04);color:#6bab8e;">'+POWER_SVG+'</div>'+
+        '<div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div>'+
       '</div>';
     }
   },
@@ -302,7 +302,7 @@ var Preset={
     var dragEl=null,startX=0,startY=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
 
     list.addEventListener('touchstart',function(e){
-      var item=e.target.closest('.ps-item.is-user:not(.is-inactive)');
+      var item=e.target.closest('.ps-item:not(.is-inactive)');
       if(!item)return;
       if(e.target.closest('.ps-mini-btn')||e.target.closest('.ps-sw'))return;
       var t=e.touches[0];
@@ -320,6 +320,70 @@ var Preset={
         if(navigator.vibrate)navigator.vibrate(15);
       },400);
     },{passive:true});
+
+    list.addEventListener('touchmove',function(e){
+      if(!dragEl)return;
+      var t=e.touches[0];
+      var dx=Math.abs(t.clientX-startX);
+      var dy=Math.abs(t.clientY-startY);
+      if(!longPressed){
+        if(dx>8||dy>8){clearTimeout(timer);timer=null;dragEl=null;}
+        return;
+      }
+      e.preventDefault();
+      moved=true;
+      offsetY=t.clientY-startY;
+      dragEl.style.transform='translateY('+offsetY+'px)';
+
+      var listRect=list.getBoundingClientRect();
+      var touchY=t.clientY;
+      if(touchY<listRect.top+40)list.scrollTop-=6;
+      if(touchY>listRect.bottom-40)list.scrollTop+=6;
+    },{passive:false});
+
+    list.addEventListener('touchend',function(){
+      clearTimeout(timer);timer=null;
+      if(!dragEl||!longPressed){
+        if(dragEl){dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.boxShadow='';dragEl=null;}
+        return;
+      }
+      dragEl.classList.remove('dragging');
+      dragEl.style.transform='';
+      dragEl.style.zIndex='';
+      dragEl.style.position='';
+      dragEl.style.boxShadow='';
+
+      var activeItems=list.querySelectorAll('.ps-item:not(.is-inactive)');
+      var slots=[];
+      activeItems.forEach(function(it){
+        var id=it.dataset.id;
+        if(id===dragId)return;
+        var up=Preset.config.userPresets[id];
+        if(up&&up.mode==='depth')return;
+        var rect=it.getBoundingClientRect();
+        slots.push({id:id,midY:rect.top+rect.height/2});
+      });
+
+      var dragRect=dragEl.getBoundingClientRect();
+      var dragMidY=dragRect.top+dragRect.height/2;
+
+      var newOrder=[];
+      var inserted=false;
+      for(var i=0;i<slots.length;i++){
+        if(!inserted&&dragMidY<slots[i].midY){
+          newOrder.push(dragId);
+          inserted=true;
+        }
+        newOrder.push(slots[i].id);
+      }
+      if(!inserted)newOrder.push(dragId);
+
+      Preset.config.order=newOrder;
+      Preset.save();
+      Preset.renderList(page);
+      dragEl=null;dragId='';offsetY=0;longPressed=false;moved=false;
+    },{passive:true});
+  },
 
     list.addEventListener('touchmove',function(e){
       if(!dragEl)return;
