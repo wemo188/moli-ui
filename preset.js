@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -5,6 +6,7 @@ var App=window.App;if(!App)return;
 var DRAG_SVG='<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>';
 var EDIT_SVG='<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 var DEL_SVG='<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>';
+var CLOSE_SVG='<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
 var SYS_ITEMS=[
   {id:'wb_before_char',name:'角色定义前的世界书',desc:'World Book (Before Char)'},
@@ -31,13 +33,15 @@ var Preset={
         name:'默认预设',
         sysEnabled:{},
         order:SYS_IDS.slice(),
-        userPresets:{}
+        userPresets:{},
+        _savedPositions:{}
       };
       SYS_IDS.forEach(function(id){Preset.config.sysEnabled[id]=true;});
     }
     if(!Preset.config.order)Preset.config.order=SYS_IDS.slice();
     if(!Preset.config.sysEnabled){Preset.config.sysEnabled={};SYS_IDS.forEach(function(id){Preset.config.sysEnabled[id]=true;});}
     if(!Preset.config.userPresets)Preset.config.userPresets={};
+    if(!Preset.config._savedPositions)Preset.config._savedPositions={};
   },
 
   save:function(){App.LS.set('presetConfig',Preset.config);},
@@ -75,6 +79,28 @@ var Preset={
     return list;
   },
 
+  _renderUserItem:function(id,up,isActive){
+    var depthTag=up.mode==='depth'?'<span class="ps-tag depth">深度 '+(up.depth||0)+'</span>':'';
+    if(isActive){
+      return '<div class="ps-item is-user" data-id="'+id+'">'+
+        '<div class="ps-drag">'+DRAG_SVG+'</div>'+
+        '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
+        depthTag+
+        '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
+        '<div class="ps-deact-btn" data-deact-id="'+id+'" style="width:28px;height:28px;border-radius:7px;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#1a1a1a;stroke-width:2.5;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'+
+      '</div>';
+    }else{
+      return '<div class="ps-item is-user is-inactive" data-id="'+id+'">'+
+        '<div class="ps-drag" style="opacity:.25;">'+DRAG_SVG+'</div>'+
+        '<div class="ps-info" style="opacity:.5;"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
+        depthTag+
+        '<div class="ps-mini-btn edit" data-edit-id="'+id+'">'+EDIT_SVG+'</div>'+
+        '<div class="ps-mini-btn del" data-del-id="'+id+'">'+DEL_SVG+'</div>'+
+        '<div class="ps-react-btn" data-react-id="'+id+'" style="width:28px;height:28px;border-radius:7px;border:1.5px solid #6bab8e;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#6bab8e;stroke-width:2.5;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'+
+      '</div>';
+    }
+  },
+
   open:function(){
     Preset.load();
     var old=App.$('#presetPage');if(old)old.remove();
@@ -95,15 +121,16 @@ var Preset={
   renderList:function(page){
     if(!page)page=App.$('#presetPage');if(!page)return;
     var cfg=Preset.config;
-
     var orderedItems=Preset.getOrderedItems();
     var depthItems=Preset.getDepthPresets();
 
-    var mainHtml='';
+    var activeHtml='';
+    var inactiveItems=[];
+
     orderedItems.forEach(function(item){
       if(item.type==='sys'){
         var on=cfg.sysEnabled[item.id]!==false;
-        mainHtml+=
+        activeHtml+=
           '<div class="ps-item is-sys" data-id="'+item.id+'">'+
             '<div class="ps-drag">'+DRAG_SVG+'</div>'+
             '<div class="ps-info"><div class="ps-name">'+App.esc(item.data.name)+'</div><div class="ps-desc">'+App.esc(item.data.desc)+'</div></div>'+
@@ -111,36 +138,29 @@ var Preset={
           '</div>';
       }else{
         var up=item.data;
-        var on2=up.enabled!==false;
-        mainHtml+=
-          '<div class="ps-item is-user" data-id="'+item.id+'">'+
-            '<div class="ps-drag">'+DRAG_SVG+'</div>'+
-            '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
-            '<span class="ps-tag '+(on2?'on':'off')+'">'+(on2?'激活':'关闭')+'</span>'+
-            '<div class="ps-mini-btn edit" data-edit-id="'+item.id+'">'+EDIT_SVG+'</div>'+
-            '<div class="ps-mini-btn del" data-del-id="'+item.id+'">'+DEL_SVG+'</div>'+
-            '<div class="ps-sw '+(on2?'on':'off')+'" data-sw-id="'+item.id+'"></div>'+
-          '</div>';
+        if(up.enabled===false){
+          inactiveItems.push({id:item.id,data:up});
+        }else{
+          activeHtml+=Preset._renderUserItem(item.id,up,true);
+        }
       }
     });
 
-    var depthHtml='';
-    if(depthItems.length){
-      depthHtml+='<div class="ps-section-label">注入深度预设</div>';
-      depthItems.forEach(function(item){
-        var up=item.data;
-        var on3=up.enabled!==false;
-        depthHtml+=
-          '<div class="ps-item is-user" data-id="'+item.id+'" data-is-depth="1">'+
-            '<div class="ps-drag" style="opacity:.3;">'+DRAG_SVG+'</div>'+
-            '<div class="ps-info"><div class="ps-name">'+App.esc(up.name||'未命名')+'</div><div class="ps-desc">'+App.esc((up.content||'').slice(0,40))+'</div></div>'+
-            '<span class="ps-tag depth">深度 '+(up.depth||0)+'</span>'+
-            '<span class="ps-tag '+(on3?'on':'off')+'">'+(on3?'激活':'关闭')+'</span>'+
-            '<div class="ps-mini-btn edit" data-edit-id="'+item.id+'">'+EDIT_SVG+'</div>'+
-            '<div class="ps-mini-btn del" data-del-id="'+item.id+'">'+DEL_SVG+'</div>'+
-            '<div class="ps-sw '+(on3?'on':'off')+'" data-sw-id="'+item.id+'"></div>'+
-          '</div>';
+    depthItems.forEach(function(item){
+      if(item.data.enabled===false){
+        inactiveItems.push({id:item.id,data:item.data});
+      }else{
+        activeHtml+=Preset._renderUserItem(item.id,item.data,true);
+      }
+    });
+
+    var inactiveHtml='';
+    if(inactiveItems.length){
+      inactiveItems.forEach(function(item){
+        inactiveHtml+=Preset._renderUserItem(item.id,item.data,false);
       });
+    }else{
+      inactiveHtml='<div style="padding:16px 18px;font-size:11px;color:#ccc;">暂无未激活预设</div>';
     }
 
     page.innerHTML=
@@ -155,9 +175,10 @@ var Preset={
         '<button class="ps-add-btn" id="psAddBtn" type="button">+ 添加</button>'+
       '</div>'+
       '<div class="ps-list" id="psList">'+
-        mainHtml+
-        (depthItems.length?'<div class="ps-divider"></div>':'')+
-        depthHtml+
+        activeHtml+
+        '<div class="ps-divider"></div>'+
+        '<div class="ps-section-label">未激活</div>'+
+        inactiveHtml+
       '</div>';
 
     Preset.bindListEvents(page);
@@ -174,25 +195,54 @@ var Preset={
       if(name){Preset.config.name=name;Preset.save();Preset.renderList(page);}
     });
 
-    // 开关
+    // 系统项开关
     page.querySelectorAll('[data-sw-id]').forEach(function(sw){
       sw.addEventListener('click',function(e){
         e.stopPropagation();
         var id=sw.dataset.swId;
         var on=sw.classList.contains('on');
-        if(Preset.isSysId(id)){
-          Preset.config.sysEnabled[id]=!on;
-        }else{
-          var up=Preset.config.userPresets[id];
-          if(up)up.enabled=!on;
-        }
+        Preset.config.sysEnabled[id]=!on;
         sw.classList.toggle('on');sw.classList.toggle('off');
-        var tag=sw.parentElement.querySelector('.ps-tag.on,.ps-tag.off');
-        if(tag&&!tag.classList.contains('depth')){
-          tag.classList.toggle('on');tag.classList.toggle('off');
-          tag.textContent=sw.classList.contains('on')?'激活':'关闭';
-        }
         Preset.save();
+      });
+    });
+
+    // 停用按钮（黑色X，激活→未激活）
+    page.querySelectorAll('[data-deact-id]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var id=btn.dataset.deactId;
+        var up=Preset.config.userPresets[id];if(!up)return;
+        // 记住当前位置
+        var idx=Preset.config.order.indexOf(id);
+        if(idx>=0)Preset.config._savedPositions[id]=idx;
+        up.enabled=false;
+        Preset.save();Preset.renderList(page);
+      });
+    });
+
+    // 激活按钮（绿色X，未激活→激活，回到之前的位置）
+    page.querySelectorAll('[data-react-id]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var id=btn.dataset.reactId;
+        var up=Preset.config.userPresets[id];if(!up)return;
+        up.enabled=true;
+        // 恢复位置
+        if(up.mode==='relative'){
+          var savedIdx=Preset.config._savedPositions[id];
+          var curIdx=Preset.config.order.indexOf(id);
+          if(curIdx<0){
+            // 不在order里，插回去
+            if(savedIdx!==undefined&&savedIdx>=0&&savedIdx<=Preset.config.order.length){
+              Preset.config.order.splice(savedIdx,0,id);
+            }else{
+              Preset.config.order.unshift(id);
+            }
+          }
+        }
+        delete Preset.config._savedPositions[id];
+        Preset.save();Preset.renderList(page);
       });
     });
 
@@ -201,15 +251,16 @@ var Preset={
       btn.addEventListener('click',function(e){e.stopPropagation();Preset.openEdit(btn.dataset.editId);});
     });
 
-    // 删除
+    // 删除（只在未激活区域出现）
     page.querySelectorAll('[data-del-id]').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
         var id=btn.dataset.delId;
         var up=Preset.config.userPresets[id];
         if(!up)return;
-        if(!confirm('删除预设「'+up.name+'」？'))return;
+        if(!confirm('删除预设「'+(up.name||'未命名')+'」？'))return;
         delete Preset.config.userPresets[id];
+        delete Preset.config._savedPositions[id];
         var idx=Preset.config.order.indexOf(id);
         if(idx>=0)Preset.config.order.splice(idx,1);
         Preset.save();Preset.renderList(page);
@@ -229,67 +280,69 @@ var Preset={
       });
     }
 
-    // 拖拽
     Preset.bindDrag(page);
   },
 
   bindDrag:function(page){
     var list=page.querySelector('#psList');if(!list)return;
-    var dragEl=null,startY=0,offsetY=0,dragId='';
+    var dragEl=null,startY=0,offsetY=0,dragId='',longPressed=false,timer=null,moved=false;
 
     list.addEventListener('touchstart',function(e){
-      var handle=e.target.closest('.ps-drag');if(!handle)return;
-      var item=handle.closest('.ps-item');if(!item)return;
-      if(item.classList.contains('is-sys'))return;
-      if(item.dataset.isDepth)return;
+      var item=e.target.closest('.ps-item.is-user:not(.is-inactive)');
+      if(!item)return;
+      var t=e.touches[0];
+      startY=t.clientY;moved=false;longPressed=false;
+      dragId=item.dataset.id;dragEl=item;
 
-      dragId=item.dataset.id;
-      dragEl=item;
-      startY=e.touches[0].clientY;
-      offsetY=0;
-
-      setTimeout(function(){
-        if(!dragEl)return;
+      timer=setTimeout(function(){
+        if(!dragEl||moved)return;
+        longPressed=true;
         dragEl.classList.add('dragging');
-        if(navigator.vibrate)navigator.vibrate(10);
-      },120);
+        if(navigator.vibrate)navigator.vibrate(15);
+      },400);
     },{passive:true});
 
     list.addEventListener('touchmove',function(e){
       if(!dragEl)return;
+      var dy=Math.abs(e.touches[0].clientY-startY);
+      if(!longPressed){
+        if(dy>8){clearTimeout(timer);timer=null;dragEl=null;}
+        return;
+      }
       e.preventDefault();
+      moved=true;
       offsetY=e.touches[0].clientY-startY;
       dragEl.style.transform='translateY('+offsetY+'px)';
     },{passive:false});
 
     list.addEventListener('touchend',function(){
-      if(!dragEl)return;
+      clearTimeout(timer);timer=null;
+      if(!dragEl||!longPressed){if(dragEl){dragEl=null;}return;}
       dragEl.classList.remove('dragging');
       dragEl.style.transform='';
 
-      // 计算新位置
-      var items=list.querySelectorAll('.ps-item:not([data-is-depth])');
+      var items=list.querySelectorAll('.ps-item:not(.is-inactive)');
       var rects=[];var ids=[];
       items.forEach(function(it){rects.push(it.getBoundingClientRect());ids.push(it.dataset.id);});
 
       var dragRect=dragEl.getBoundingClientRect();
       var centerY=dragRect.top+dragRect.height/2;
 
-      // 找到应该插入的位置
-      var newOrder=[];
-      var inserted=false;
+      var newOrder=[];var inserted=false;
       for(var i=0;i<ids.length;i++){
         if(ids[i]===dragId)continue;
+        if(!Preset.isSysId(ids[i])&&Preset.config.userPresets[ids[i]]&&Preset.config.userPresets[ids[i]].mode==='depth')continue;
         var mid=rects[i].top+rects[i].height/2;
-        if(!inserted&&centerY<mid){
-          newOrder.push(dragId);
-          inserted=true;
-        }
+        if(!inserted&&centerY<mid){newOrder.push(dragId);inserted=true;}
         newOrder.push(ids[i]);
       }
       if(!inserted)newOrder.push(dragId);
 
-      // 验证系统项顺序没被打乱
+      // 补回depth预设和未在newOrder里的relative预设
+      var finalOrder=[];
+      var usedIds={};
+      newOrder.forEach(function(id){usedIds[id]=true;});
+      // 用newOrder作为基础，但要确保系统项顺序没乱
       var sysInOrder=newOrder.filter(function(id){return Preset.isSysId(id);});
       var valid=true;
       for(var j=0;j<sysInOrder.length-1;j++){
@@ -302,7 +355,7 @@ var Preset={
       }
 
       Preset.renderList(page);
-      dragEl=null;dragId='';offsetY=0;
+      dragEl=null;dragId='';offsetY=0;longPressed=false;moved=false;
     },{passive:true});
   },
 
@@ -362,7 +415,6 @@ var Preset={
     }
     updateTip();
 
-    // 模式切换
     page.querySelectorAll('.ps-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(){
         page.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});
@@ -390,7 +442,6 @@ var Preset={
         var id='up_'+Date.now();
         Preset.config.userPresets[id]=data;
         if(currentMode==='relative'){
-          // 插到第一行（第一个系统项之前）
           Preset.config.order.unshift(id);
         }
       }else{
@@ -398,12 +449,10 @@ var Preset={
         var oldMode=Preset.config.userPresets[editId]?Preset.config.userPresets[editId].mode:'relative';
         Preset.config.userPresets[editId]=data;
 
-        // 如果模式从relative改成depth，从order中移除
         if(oldMode==='relative'&&currentMode==='depth'){
           var oi=Preset.config.order.indexOf(editId);
           if(oi>=0)Preset.config.order.splice(oi,1);
         }
-        // 如果模式从depth改成relative，加入order第一行
         if(oldMode==='depth'&&currentMode==='relative'){
           if(Preset.config.order.indexOf(editId)<0){
             Preset.config.order.unshift(editId);
@@ -424,7 +473,6 @@ var Preset={
     }
   },
 
-  // 给 chat.js 用的接口
   getSysOrder:function(){
     if(!Preset.config)Preset.load();
     return Preset.config.order.filter(function(id){return Preset.isSysId(id);});
@@ -445,7 +493,6 @@ var Preset={
         result.push({id:id,afterId:null,content:up.content,name:up.name});
       }
     });
-    // 附加每个预设前面的系统项ID
     var order=Preset.config.order;
     for(var i=0;i<result.length;i++){
       var upId=result[i].id;
