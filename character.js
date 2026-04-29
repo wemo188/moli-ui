@@ -512,13 +512,13 @@ popup.addEventListener('touchstart', function(e) {
       var img = new Image();
       img.onload = function() {
         var canvas = document.createElement('canvas');
-        var max = field === 'avatar' ? 256 : 600;
+        var max = field === 'avatar' ? 512 : 1200;
         var w = img.width, h = img.height;
         if (w > h) { if (w > max) { h = h * max / w; w = max; } }
         else { if (h > max) { w = w * max / h; h = max; } }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.85);
+        var compressed = canvas.toDataURL('image/jpeg', 0.92);
         var c = Character.getById(charId);
         if (c) { c[field] = compressed; Character.save(); }
         box.innerHTML = '<img src="' + compressed + '">';
