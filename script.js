@@ -1590,9 +1590,6 @@
     App.runInits();
     App.initMainPages();
   };
+  
+  })();
 
-    window.addEventListener('load', function() {
-    App.LS.onReady(function() {
-      App.init();
-    });
-  });
