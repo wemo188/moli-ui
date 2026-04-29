@@ -14,15 +14,16 @@
   App.$ = function(s) { return document.querySelector(s); };
   App.$$ = function(s) { return document.querySelectorAll(s); };
 
-    App.LS = (function() {
+      App.LS = (function() {
     var DB_NAME = 'AppStorage';
     var STORE_NAME = 'kv';
     var _db = null;
     var _cache = {};
     var _queue = [];
+    var _readyCallbacks = [];
+    var _isReady = false;
 
-    function openDB(cb) {
-      if (_db) { cb(_db); return; }
+    function openDB() {
       try {
         var req = indexedDB.open(DB_NAME, 1);
         req.onupgradeneeded = function(e) {
@@ -31,7 +32,6 @@
         };
         req.onsuccess = function(e) {
           _db = e.target.result;
-          // 启动时把所有数据读入内存缓存
           try {
             var tx = _db.transaction(STORE_NAME, 'readonly');
             var store = tx.objectStore(STORE_NAME);
@@ -42,18 +42,27 @@
                 _cache[cursor.key] = cursor.value;
                 cursor.continue();
               } else {
-                cb(_db);
+                _isReady = true;
                 _queue.forEach(function(fn) { fn(_db); });
                 _queue = [];
+                _readyCallbacks.forEach(function(cb) { cb(); });
+                _readyCallbacks = [];
               }
             };
-          } catch(ex) { cb(_db); }
-        };req.onerror = function() { console.warn('IndexedDB 打开失败'); };
-      } catch(e) { console.warn('IndexedDB 不可用'); }
+            all.onerror = function() { markReady(); };
+          } catch(ex) { markReady(); }
+        };
+        req.onerror = function() { markReady(); };
+      } catch(e) { markReady(); }
     }
 
-    // 启动时立刻打开
-    openDB(function() {});
+    function markReady() {
+      _isReady = true;
+      _readyCallbacks.forEach(function(cb) { cb(); });
+      _readyCallbacks = [];
+    }
+
+    openDB();
 
     return {
       get: function(k) {
@@ -64,17 +73,18 @@
       set: function(k, v) {
         _cache[k] = v;
         if (_db) {
-          try { var tx = _db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(v, k); } catch(e) {}} else {
-          _queue.push(function(db) { try { var tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(v, k); } catch(e) {} });
+          try { _db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(v, k); } catch(e) {}
+        } else {
+          _queue.push(function(db) { try { db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(v, k); } catch(e) {} });
         }
       },
 
       remove: function(k) {
         delete _cache[k];
         if (_db) {
-          try { var tx = _db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(k); } catch(e) {}
+          try { _db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(k); } catch(e) {}
         } else {
-          _queue.push(function(db) { try { var tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).delete(k); } catch(e) {} });
+          _queue.push(function(db) { try { db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(k); } catch(e) {} });
         }
       },
 
@@ -88,6 +98,11 @@
         var t = 0, keys = Object.keys(_cache);
         for (var i = 0; i < keys.length; i++) t += this.getSize(keys[i]);
         return t;
+      },
+
+      onReady: function(cb) {
+        if (_isReady) cb();
+        else _readyCallbacks.push(cb);
       },
 
       _cache: _cache
@@ -1576,7 +1591,8 @@
     App.initMainPages();
   };
 
-  window.addEventListener('load', function() {
-    App.init();
+    window.addEventListener('load', function() {
+    App.LS.onReady(function() {
+      App.init();
+    });
   });
-})();
