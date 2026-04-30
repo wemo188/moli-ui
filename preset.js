@@ -152,12 +152,12 @@ var Preset={
           var it=p.items[o.idx];if(!it)return;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
           var swOn=it.enabled!==false?'on':'off';
-          rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-item-activate" data-iact="activate" data-ii="'+o.idx+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="7" fill="#7a9ab8" stroke="none"/><polyline points="9 12 11 14 15 10" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
+                    rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
             '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+'</div></div>'+
             '<div class="ps-item-actions">'+depthTag+
               '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
+              '<div class="ps-mini-btn active-on" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>'+
               '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>'+
             '</div>'+
           '</div>';
@@ -171,11 +171,11 @@ var Preset={
           var it=p.items[o.idx];if(!it)return;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
           rows+='<div class="ps-item is-user ps-inactive" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-item-activate" data-iact="activate" data-ii="'+o.idx+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="7" fill="none" stroke="#ccc" stroke-width="1.5"/></svg></div>'+
             '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+'</div></div>'+
             '<div class="ps-item-actions">'+depthTag+
               '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
+              '<div class="ps-mini-btn" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>'+
             '</div>'+
           '</div>';
         });
