@@ -137,9 +137,13 @@ var WB={
         WB.save();WB.closeEditBook();WB.renderHome();
         WB.openEntryList(0);
         App.showToast('已创建');
-      } else {
+            } else {
         book.name=name;
         WB.save();WB.closeEditBook();WB.renderHome();
+        // 回到条目列表而不是首页
+        var bookIdx=-1;
+        for(var i=0;i<WB.books.length;i++){if(WB.books[i].id===book.id){bookIdx=i;break;}}
+        if(bookIdx>=0)setTimeout(function(){WB.openEntryList(bookIdx);},360);
         App.showToast('已保存');
       }
     });
@@ -187,7 +191,7 @@ var WB={
         '<div class="wb-header">'+
           '<button class="wb-back" id="wbListBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
           '<div class="wb-header-title">'+App.esc(book.name||'世界书')+'</div>'+
-          '<div class="wb-header-right" id="wbListRename">编辑名称</div>'+
+          '<button class="wb-add-btn" id="wbListRename" type="button" style="background:rgba(126,163,201,.06);color:#7a9ab8;border:1px solid rgba(126,163,201,.3);">编辑名称</button>'+
         '</div>'+
         '<div class="wb-toolbar">'+
           '<div class="wb-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input type="text" id="wbListSearch" placeholder="搜索条目..."></div>'+
