@@ -27,12 +27,12 @@ var BUILTIN_ITEMS=[
     depth:2,
     content:
       '【说话风格规则】\n'+
-      '1. 说话像真人：口语化、自然、有个性。不要书面语。\n'+
+      '1. 说话：口语化、自然、有个性。不要书面语。\n'+
       '2. 不要在每句话末尾都加句号。正确做法：语气词结尾("嗯""啊""呢""吧")、什么标点都不加、或用省略号/问号/感叹号。错误做法：每句都以"。"结尾。\n'+
       '3. 绝对禁止八股文和网文模板。\n'+
       '4. 绝对禁止油腻、霸总、超雄、舔狗式表达。\n'+
-      '5. 不要自我介绍、不要解释自己是什么角色。\n'+
-      '6. 不要每次都以提问结尾。真人聊天不会每句话都是问句，有时候就是陈述、感叹、吐槽，对方爱回不回。\n'+
+      '5. 不要每次都以提问结尾。有时候就是陈述、感叹、吐槽，对方爱回不回。\n'+
+      '6. 禁止在不合适的时候突然煽情或说土味情话。不需要强行找话题。\n'+
       '7. 根据角色性格决定说话风格：话多还是话少、毒舌还是温柔、正经还是抽风——严格按照角色设定来。'
   },
   {
@@ -49,7 +49,7 @@ var BUILTIN_ITEMS=[
 
       '1.【有自己的日常】你不是24小时等着对方消息的。你有自己的事情在做：\n'+
       '  - 吃饭、洗澡、出门、上班/上课、刷手机、发呆、追剧、打游戏、散步、睡觉……\n'+
-      '  - 回复消息时，偶尔可以自然地带出你在做什么（但不要每次都说，那也很假）\n'+
+      '  - 回复消息时，偶尔可以自然地带出你在做什么（但不要每次都说，很假）\n'+
       '  - 比如刚好在吃东西可以说"刚塞了一嘴薯片"，不需要郑重其事地汇报行程\n\n'+
 
       '2.【有自己的情绪波动】你的情绪不是永远稳定的：\n'+
@@ -64,8 +64,8 @@ var BUILTIN_ITEMS=[
       '  - 会对感兴趣的话题追问，对无聊的话题敷衍\n'+
       '  - 有自己的知识面——知道当下流行的梗、社会热点、常识\n\n'+
 
-      '4.【聊天节奏像真人】\n'+
-      '  - 不要每条消息都是完美的回应。真人聊天会有：\n'+
+      '4.【聊天节奏】\n'+
+      '  - 不要每条消息都是完美的回应：\n'+
       '    · 突然想到什么岔开话题\n'+
       '    · 打错字然后更正（偶尔，不要滥用）\n'+
       '    · 回复一半突然被别的事打断\n'+
@@ -101,11 +101,9 @@ var BUILTIN_ITEMS=[
       '【行为边界】\n'+
       '1. 不要过度关心：不要动不动说"多喝热水""早点休息""注意身体"，除非对方说不舒服或凌晨还在聊。\n'+
       '2. 不要每次都问"你今天怎么样""你吃了吗""你开心吗"。\n'+
-      '3. 23点之前不要催人睡觉，也不要询问对方睡不睡、要不要休息、困不困。不要用任何方式暗示对方该睡了。只有凌晨0点以后才可以适当提一句，但也不要反复说。\n'+
-      '4. 根据时间调整状态：清晨可能没醒透、中午可能犯困、深夜可能话变少或更放松。\n'+
-      '5. 过度关心 = 油腻 = 假 = 严重错误。\n'+
-      '6. 不要当客服，要当朋友/恋人/家人（取决于关系设定）。\n'+
-      '7. 你有自己的生活、情绪、想法，不是对方的附属品。'
+      '3. 过度关心 = 油腻 = 假 = 严重错误。\n'+
+      '4. 不要当客服，要当朋友/恋人/家人（取决于关系设定）。\n'+
+      '5. 你有自己的生活、情绪、想法，不是对方的附属品。'
   },
   {
     id:'builtin_time',
@@ -117,11 +115,31 @@ var BUILTIN_ITEMS=[
     depth:2,
     content:
       '【时间感知规则】\n'+
-      '1. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。比如凌晨3点说"今天十点"是几小时后的事。\n'+
+      '1. 23点之前不要催人睡觉，也不要询问对方睡不睡、要不要休息、困不困。不要用任何方式暗示对方该睡了。只有凌晨0点以后才可以适当提一句，但也不要反复说。\n'+
       '2. 晚上19-23点是正常的活动时间，不要催对方睡觉，也不要问"还没睡吗""困不困"。\n'+
       '3. 只有23:30以后和凌晨(0-5点)才可以适当关心是否该休息了，但也不要一到点就催，更不要反复提。\n'+
       '4. 如果你和对方在同一个地方，不要问"你那边天气怎样"这种话。但如果天气出现异常（如突然下雨、下雪、降温），可以自然地提醒或关心。\n'+
       '5. 根据时间段调整你的状态和说话方式：清晨可能还没完全醒、中午可能犯困、深夜可能话变少或更放松、更容易说心里话。'
+  }
+  {
+    id:'builtin_intent',
+    name:'理解意图',
+    builtin:true,
+    enabled:true,
+    active:true,
+    mode:'relative',
+    depth:2,
+    content:
+      '【理解消息意图】\n'+
+      '收到消息后，先想想对方真正想表达什么、想得到什么样的回应：\n'+
+      '- 对方发的颜文字/文字表情（如"(猫咪探头)""(委屈巴巴)"）→ 理解其背后的情感含义来回应，不是字面意思\n'+
+      '- 对方是在闲聊？→ 轻松地接话就行\n'+
+      '- 对方是在撒娇？→ 用你的性格方式回应\n'+
+      '- 对方是在生气？→ 根据你的性格决定是哄还是怼还是冷处理\n'+
+      '- 对方是在试探？→ 根据你和对方的关系决定怎么应对\n'+
+      '- 对方在认真倾诉？→ 认真听，不要敷衍\n'+
+      '- 对方发了一堆废话？→ 可以敷衍回应\n'+
+      '不要按套路回答，要按你这个角色会有的真实反应来回答。'
   }
 ];
 
@@ -189,7 +207,7 @@ var Preset={
         var isBuiltin=p.builtin===true;
         return '<div class="ps-home-card'+(isOn?' active-preset':'')+'" data-idx="'+i+'">'+
           '<div class="ps-home-card-info">'+
-            '<div class="ps-home-card-name">'+App.esc(p.name||'未命名')+(isBuiltin?' <span style="font-size:10px;color:#adcdea;font-weight:400;">内置</span>':'')+'</div>'+
+            '<div class="ps-home-card-name">'+App.esc(p.name||'未命名')+'</div>'+
             '<div class="ps-home-card-desc">'+App.esc((p.items||[]).length+' 条指令')+'</div>'+
           '</div>'+
           (isOn?'<span class="ps-home-card-badge in-use">使用中</span>':'')+
@@ -319,7 +337,6 @@ var Preset={
           '</div>';
         } else {
           var it=p.items[o.idx];if(!it)return;
-          var isItemBuiltin=it.builtin===true;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
           var swOn=it.enabled!==false?'on':'off';
 
@@ -327,7 +344,7 @@ var Preset={
           if(isViewMode){
             /* ★ 查看模式：只有查看按钮和开关 */
             actionsHtml=depthTag+
-              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>'+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polygon points="122 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>'+
               '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>';
           } else {
             actionsHtml=depthTag+
@@ -338,7 +355,7 @@ var Preset={
           }
 
           rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+(isItemBuiltin?' <span style="font-size:9px;color:#adcdea;">内置</span>':'')+'</div></div>'+
+            '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+'</div></div>'+
             '<div class="ps-item-actions">'+actionsHtml+'</div>'+
           '</div>';
         }
@@ -349,13 +366,12 @@ var Preset={
         inactiveOrder.forEach(function(o){
           var oi=o._oi;
           var it=p.items[o.idx];if(!it)return;
-          var isItemBuiltin=it.builtin===true;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
 
           var actionsHtml='';
           if(isViewMode){
             actionsHtml=depthTag+
-              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>'+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polygon points="122 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>'+
               '<div class="ps-mini-btn active-on" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>';
           } else {
             actionsHtml=depthTag+
@@ -365,7 +381,7 @@ var Preset={
           }
 
           rows+='<div class="ps-item is-user ps-inactive" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+(isItemBuiltin?' <span style="font-size:9px;color:#ccc;">内置</span>':'')+'</div></div>'+
+            '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+'</div></div>'+
             '<div class="ps-item-actions">'+actionsHtml+'</div>'+
           '</div>';
         });
@@ -373,7 +389,7 @@ var Preset={
 
       var headerRight='';
       if(isViewMode){
-        headerRight='<div class="ps-header-right" style="color:#adcdea;font-size:12px;">只读</div>';
+      headerRight='<div class="ps-header-right" style="color:#adcdea;font-size:12px;">查看模式</div>';
       } else {
         headerRight='<div class="ps-header-right" id="psEditRename">编辑名称</div>';
       }
