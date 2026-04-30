@@ -558,8 +558,10 @@ return read();
 }).catch(function(err){
 Chat.isStreaming=false;
 if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
-if(err.name==='AbortError')return;
-var errMsg=err.message||String(err);var cnMsg=translateError(errMsg);
+if(err.name==='AbortError'){Chat._backgroundMode=false;return;}
+var errMsg=err.message||String(err);
+var cnMsg=translateError(errMsg);
+console.error('[聊天] '+cnMsg);
 if(fullText){
   var parts=smartSplitMessages(fullText);var now=Date.now();
   parts.forEach(function(part,i){Chat.messages.push({role:'assistant',content:part,ts:now+i*1000});});
@@ -568,9 +570,14 @@ if(fullText){
   else{Chat.renderMessages();}
 } else {
   if(!Chat._backgroundMode){
-    Chat.messages.push({role:'system',content:'发送失败：'+cnMsg,ts:Date.now()});Chat.saveMsgs();Chat.renderMessages();
     var container=App.$('#ctMsgs');
-    if(container){var errDiv=document.createElement('div');errDiv.className='ct-error-detail';errDiv.textContent='原始错误：'+errMsg;container.appendChild(errDiv);Chat.scrollBottom();}
+    if(container){
+      var errDiv=document.createElement('div');
+      errDiv.className='ct-error-detail';
+      errDiv.textContent=cnMsg+'\n'+errMsg;
+      container.appendChild(errDiv);
+      Chat.scrollBottom();
+    }
   }
 }
 Chat._backgroundMode=false;
@@ -702,7 +709,7 @@ var fullText='';
 fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
 body:JSON.stringify({model:api.model,messages:apiMsgs,stream:true,temperature:params.temperature,frequency_penalty:params.freqPenalty,presence_penalty:params.presPenalty})
 }).then(function(resp){
-if(!resp.ok){return resp.text().then(function(body){throw new Error('HTTP '+resp.status+': '+body.slice(0,200));});}
+if(!resp.ok){throw new Error('HTTP '+resp.status+' '+resp.statusText);
 var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 function read(){return reader.read().then(function(result){
 if(result.done){proFinish();return;}
