@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -11,18 +12,18 @@ var DEF_COLORS_R={border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2
 var DEF_SB={sb1Border:'#adcdea',sb1Shadow:'rgba(173,205,234,0.9)',sb2Border:'#adcdea',sb2Shadow:'rgba(173,205,234,0.9)'};
 
 var Cards={
-  data:{},_dragOffsets:{},_sbColors:null,
+  data:{},_dragOffsets:{},_sbData:null,
 
   load:function(){
     Cards.data=App.LS.get('profileCards')||{};
     if(!Cards.data.left){Cards.data.left=JSON.parse(JSON.stringify(EMPTY));Cards.data.left.sub=DEF_SUB_L;}
     if(!Cards.data.right){Cards.data.right=JSON.parse(JSON.stringify(EMPTY));Cards.data.right.sub=DEF_SUB_R;}
     Cards._dragOffsets=App.LS.get('cardDragOffsets')||{};
-    Cards._sbColors=App.LS.get('sbColors')||JSON.parse(JSON.stringify(DEF_SB));
+    Cards._sbData=App.LS.get('searchBoxData')||JSON.parse(JSON.stringify(DEF_SB));
   },
   save:function(){App.LS.set('profileCards',Cards.data);},
   saveDrag:function(){App.LS.set('cardDragOffsets',Cards._dragOffsets);},
-  saveSB:function(){App.LS.set('sbColors',Cards._sbColors);},
+  saveSB:function(){App.LS.set('searchBoxData',Cards._sbData);},
 
   getColors:function(side){
     var d=Cards.data[side];
@@ -33,10 +34,8 @@ var Cards={
   },
 
   applyColors:function(){
-    var lc=Cards.getColors('left');
-    var rc=Cards.getColors('right');
-    var bx2=App.$('#bx-2');
-    var bx1=App.$('#bx-1');
+    var lc=Cards.getColors('left');var rc=Cards.getColors('right');
+    var bx2=App.$('#bx-2');var bx1=App.$('#bx-1');
     if(bx2){
       bx2.style.setProperty('--bx2-border-c',lc.border);
       bx2.style.setProperty('--bx2-border-w',lc.borderW+'px');
@@ -60,8 +59,7 @@ var Cards={
   },
 
   applySBColors:function(){
-    var sb=Cards._sbColors;if(!sb)return;
-    var area=App.$('.left-search-area');if(!area)return;
+    var sb=Cards._sbData;var area=App.$('.left-search-area');if(!area)return;
     area.style.setProperty('--sb1-border',sb.sb1Border);
     area.style.setProperty('--sb1-shadow',sb.sb1Shadow);
     area.style.setProperty('--sb2-border',sb.sb2Border);
@@ -94,21 +92,12 @@ var Cards={
           '</div></div>'+
         '</div>'+
         '<div class="left-search-area" id="searchArea">'+
-          '<div class="search-wrapper" id="sw1"><div class="search-box">'+
-            '<div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>'+
-            '<input type="text" class="search-input-left" placeholder="我们相识...">'+
-          '</div></div>'+
-          '<div class="search-wrapper" id="sw2"><div class="search-box-right">'+
-            '<input type="text" class="search-input-right" placeholder="已经有...天">'+
-            '<div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div>'+
-          '</div></div>'+
+          '<div class="search-wrapper" id="searchWrap1"><div class="search-box"><div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div><input type="text" class="search-input-left" placeholder="我们相识..."></div></div>'+
+          '<div class="search-wrapper" id="searchWrap2"><div class="search-box-right"><input type="text" class="search-input-right" placeholder="已经有...天"><div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div></div></div>'+
         '</div>'+
       '</div>'+
       '<div class="card-right-area">'+
-        '<div class="card-placeholder-icons">'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-          '<div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div>'+
-        '</div>'+
+        '<div class="card-placeholder-icons"><div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div><div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div></div>'+
         '<div class="bx-w" id="bx-1" data-side="right">'+
           '<div class="bx-cw"><div class="bx-cd">'+
             '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
@@ -123,7 +112,6 @@ var Cards={
     Cards.bindDrag();
     Cards.bindSearchUpload();
     Cards.bindSearchDrag();
-    Cards.bindSearchEdit();
     Cards.applyColors();
     Cards.applySBColors();
   },
@@ -133,10 +121,12 @@ var Cards={
     var leftSaved=App.LS.get('searchText_left');
     if(leftSaved&&leftInput)leftInput.value=leftSaved;
     if(leftInput)leftInput.addEventListener('input',function(){App.LS.set('searchText_left',this.value);});
+
     var rightInput=document.querySelector('.search-input-right');
     var rightSaved=App.LS.get('searchText_right');
     if(rightSaved&&rightInput)rightInput.value=rightSaved;
     if(rightInput)rightInput.addEventListener('input',function(){App.LS.set('searchText_right',this.value);});
+
     Cards._bindSearchAvatar('.avatar-area-left[data-side="search1"]','avatarPreview1','avatar_search1');
     Cards._bindSearchAvatar('.avatar-area-right[data-side="search2"]','avatarPreview2','avatar_search2');
   },
@@ -145,16 +135,9 @@ var Cards={
     var area=document.querySelector(selector);
     var preview=document.getElementById(previewId);
     if(!area||!preview)return;
-    area.addEventListener('click',function(){
-      var input=document.createElement('input');input.type='file';input.accept='image/*';
-      input.onchange=function(e){
-        var file=e.target.files[0];if(!file)return;
-        var reader=new FileReader();
-        reader.onload=function(ev){
-          if(App.cropImage){App.cropImage(ev.target.result,function(cropped){Cards._compressAndSetSearchAvatar(cropped,preview,storageKey);});}
-          else{Cards._compressAndSetSearchAvatar(ev.target.result,preview,storageKey);}
-        };reader.readAsDataURL(file);
-      };input.click();
+    area.addEventListener('click',function(e){
+      e.stopPropagation();
+      Cards.openSearchEdit(selector==='avatar-area-left[data-side="search1"]'||selector.indexOf('search1')>=0?1:2,area);
     });
     var saved=App.LS.get(storageKey);
     if(saved){preview.innerHTML='';var img=document.createElement('img');img.src=saved;preview.appendChild(img);}
@@ -169,7 +152,178 @@ var Cards={
       var compressed=canvas.toDataURL('image/jpeg',0.85);
       preview.innerHTML='';var newImg=document.createElement('img');newImg.src=compressed;preview.appendChild(newImg);
       App.LS.set(storageKey,compressed);
-    };img.src=src;
+    };
+    img.src=src;
+  },
+
+  /* ★ 对话框拖拽 */
+  bindSearchDrag:function(){
+    ['searchWrap1','searchWrap2'].forEach(function(id){
+      var el=App.$('#'+id);if(!el)return;
+      var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
+
+      el.addEventListener('touchstart',function(e){
+        /* 点击头像区域不触发拖拽 */
+        if(e.target.closest('.avatar-area-left')||e.target.closest('.avatar-area-right'))return;
+        if(e.target.closest('input'))return;
+        var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
+        timer=setTimeout(function(){
+          longPressed=true;
+          var off=Cards._dragOffsets[id]||{x:0,y:0};
+          startOX=off.x;startOY=off.y;
+          el.style.transition='none';el.style.opacity='0.85';el.style.zIndex='999';
+          if(navigator.vibrate)navigator.vibrate(15);
+        },500);
+      },{passive:true});
+
+      el.addEventListener('touchmove',function(e){
+        var t=e.touches[0];
+        if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
+        if(!longPressed)return;
+        moved=true;e.preventDefault();e.stopPropagation();
+        var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
+        el.style.transform='translate('+nx+'px,'+ny+'px)';
+        Cards._dragOffsets[id]={x:nx,y:ny};
+      },{passive:false});
+
+      el.addEventListener('touchend',function(e){
+        clearTimeout(timer);timer=null;
+        el.style.opacity='';el.style.transition='';el.style.zIndex='';
+        if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
+        longPressed=false;moved=false;
+      });
+    });
+
+    /* 恢复已保存的位置 */
+    ['searchWrap1','searchWrap2'].forEach(function(id){
+      var el=App.$('#'+id);if(!el)return;
+      var off=Cards._dragOffsets[id];
+      if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
+    });
+  },
+
+  /* ★ 对话框编辑弹窗 */
+  openSearchEdit:function(which,anchorEl){
+    var old=App.$('#pcEditOverlay');if(old)old.remove();
+    var sb=Cards._sbData;
+    var storageKey=which===1?'avatar_search1':'avatar_search2';
+    var previewId=which===1?'avatarPreview1':'avatarPreview2';
+    var borderKey=which===1?'sb1Border':'sb2Border';
+    var shadowKey=which===1?'sb1Shadow':'sb2Shadow';
+
+    var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
+    var panel=document.createElement('div');panel.className='pc-edit-panel';
+
+    panel.innerHTML=
+      '<div class="pc-edit-title">对话框 '+(which===1?'上':'下')+'</div>'+
+      '<div class="pc-edit-group"><label class="pc-edit-label">头像</label><div class="pc-edit-btns"><button class="pc-edit-save" id="sbUploadBtn" type="button" style="font-size:11px;padding:8px;">上传头像</button><button class="pc-edit-cancel" id="sbDelBtn" type="button" style="font-size:11px;padding:8px;">删除头像</button></div></div>'+
+      '<div class="pc-palette-section" style="margin-top:8px;padding-top:8px;">'+
+        '<div class="pc-palette-label">调色板</div>'+
+        '<div class="pc-palette-row">'+
+          '<div class="pc-palette-item"><div class="pc-palette-dot" id="sbDotBorder" style="background:'+sb[borderKey]+';"></div><div class="pc-palette-dot-label">线条</div></div>'+
+          '<div class="pc-palette-item"><div class="pc-palette-dot" id="sbDotShadow" style="background:'+sb[shadowKey]+';"></div><div class="pc-palette-dot-label">阴影</div></div>'+
+        '</div>'+
+        '<button class="pc-palette-reset" id="sbResetColors" type="button">重置颜色</button>'+
+      '</div>'+
+      '<div class="pc-edit-btns" style="margin-top:10px;"><button class="pc-edit-cancel" id="sbCloseBtn" type="button">关闭</button></div>';
+
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    /* 定位 */
+    if(anchorEl){
+      var rect=anchorEl.getBoundingClientRect();
+      var left=rect.left+rect.width/2-135;
+      var top=rect.bottom+8;
+      if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
+      if(top+280>window.innerHeight)top=Math.max(10,rect.top-290);
+      panel.style.left=left+'px';panel.style.top=top+'px';
+    }
+
+    /* 拖拽 */
+    var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
+    panel.addEventListener('touchstart',function(e){
+      if(e.target.closest('button')||e.target.closest('input')||e.target.closest('.pc-palette-dot'))return;
+      var t=e.touches[0];var pr=panel.getBoundingClientRect();
+      panel.style.transform='none';panel.style.left=pr.left+'px';panel.style.top=pr.top+'px';
+      _drag={active:true,sx:t.clientX,sy:t.clientY,ox:pr.left,oy:pr.top};
+    },{passive:true});
+    var onMove=function(e){if(!_drag.active)return;e.preventDefault();var t=e.touches[0];panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';};
+    var onEnd=function(){_drag.active=false;};
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onEnd);
+    function cleanup(){document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onEnd);}
+
+    /* 上传头像 */
+    panel.querySelector('#sbUploadBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      var input=document.createElement('input');input.type='file';input.accept='image/*';
+      input.onchange=function(ev){
+        var file=ev.target.files[0];if(!file)return;
+        var reader=new FileReader();
+        reader.onload=function(r){
+          if(App.cropImage){
+            App.cropImage(r.target.result,function(cropped){
+              var preview=document.getElementById(previewId);
+              Cards._compressAndSetSearchAvatar(cropped,preview,storageKey);
+            });
+          } else {
+            var preview=document.getElementById(previewId);
+            Cards._compressAndSetSearchAvatar(r.target.result,preview,storageKey);
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    });
+
+    /* 删除头像 */
+    panel.querySelector('#sbDelBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      App.LS.remove(storageKey);
+      var preview=document.getElementById(previewId);
+      if(preview)preview.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg>';
+      App.showToast('已删除');
+    });
+
+    /* 调色 */
+    panel.querySelector('#sbDotBorder').addEventListener('click',function(e){
+      e.stopPropagation();
+      if(!App.openColorPicker)return;
+      App.openColorPicker(sb[borderKey],function(hex){
+        sb[borderKey]=hex;panel.querySelector('#sbDotBorder').style.background=hex;
+        Cards._sbData=sb;Cards.saveSB();Cards.applySBColors();
+      },function(hex){
+        sb[borderKey]=hex;panel.querySelector('#sbDotBorder').style.background=hex;
+        Cards._sbData=sb;Cards.applySBColors();
+      },'sb_'+which+'_border');
+    });
+
+    panel.querySelector('#sbDotShadow').addEventListener('click',function(e){
+      e.stopPropagation();
+      if(!App.openColorPicker)return;
+      App.openColorPicker(sb[shadowKey],function(hex){
+        sb[shadowKey]=hex;panel.querySelector('#sbDotShadow').style.background=hex;
+        Cards._sbData=sb;Cards.saveSB();Cards.applySBColors();
+      },function(hex){
+        sb[shadowKey]=hex;panel.querySelector('#sbDotShadow').style.background=hex;
+        Cards._sbData=sb;Cards.applySBColors();
+      },'sb_'+which+'_shadow');
+    });
+
+    /* 重置 */
+    panel.querySelector('#sbResetColors').addEventListener('click',function(e){
+      e.stopPropagation();
+      sb[borderKey]=DEF_SB[borderKey];sb[shadowKey]=DEF_SB[shadowKey];
+      panel.querySelector('#sbDotBorder').style.background=sb[borderKey];
+      panel.querySelector('#sbDotShadow').style.background=sb[shadowKey];
+      Cards._sbData=sb;Cards.saveSB();Cards.applySBColors();
+      App.showToast('已重置');
+    });
+
+    /* 关闭 */
+    panel.querySelector('#sbCloseBtn').addEventListener('click',function(){cleanup();overlay.remove();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay){cleanup();overlay.remove();}});
   },
 
   bindEdit:function(){
@@ -181,153 +335,8 @@ var Cards={
     });
   },
 
-  /* ★ 对话框编辑（长按） */
-  bindSearchEdit:function(){
-    ['sw1','sw2'].forEach(function(id,idx){
-      var el=App.$('#'+id);if(!el)return;
-      var timer=null,pressed=false;
-      el.addEventListener('touchstart',function(e){
-        if(e.target.closest('.avatar-area-left')||e.target.closest('.avatar-area-right')||e.target.closest('input'))return;
-        pressed=false;
-        timer=setTimeout(function(){
-          pressed=true;
-          if(navigator.vibrate)navigator.vibrate(15);
-          Cards.openSearchEdit(idx);
-        },500);
-      },{passive:true});
-      el.addEventListener('touchmove',function(){clearTimeout(timer);},{passive:true});
-      el.addEventListener('touchend',function(e){clearTimeout(timer);if(pressed){e.preventDefault();e.stopPropagation();}pressed=false;},{passive:false});
-    });
-  },
-
-  openSearchEdit:function(idx){
-    var sb=Cards._sbColors;
-    var keys=idx===0?{border:'sb1Border',shadow:'sb1Shadow'}:{border:'sb2Border',shadow:'sb2Shadow'};
-    var label=idx===0?'上方对话框':'下方对话框';
-
-    var old=App.$('#sbEditOverlay');if(old)old.remove();
-    var overlay=document.createElement('div');overlay.id='sbEditOverlay';overlay.className='pc-edit-overlay';
-    var panel=document.createElement('div');panel.className='pc-edit-panel';
-    panel.style.maxHeight='220px';
-
-    panel.innerHTML=
-      '<div class="pc-edit-title">'+label+'</div>'+
-      '<div class="pc-palette-section" style="margin-top:0;padding-top:0;border-top:none;">'+
-        '<div class="pc-palette-row">'+
-          '<div class="pc-palette-item"><div class="pc-palette-dot" data-ck="border" style="background:'+sb[keys.border]+';"></div><div class="pc-palette-dot-label">线条</div></div>'+
-          '<div class="pc-palette-item"><div class="pc-palette-dot" data-ck="shadow" style="background:'+sb[keys.shadow]+';"></div><div class="pc-palette-dot-label">阴影</div></div>'+
-        '</div>'+
-        '<button class="pc-palette-reset" id="sbReset" type="button">重置</button>'+
-      '</div>'+
-      '<div class="pc-edit-btns"><button class="pc-edit-save" id="sbSave" type="button">完成</button></div>';
-
-    overlay.appendChild(panel);document.body.appendChild(overlay);
-
-    var sw=App.$('#'+(idx===0?'sw1':'sw2'));
-    if(sw){
-      var rect=sw.getBoundingClientRect();
-      var left=rect.left+rect.width/2-135;
-      var top=rect.bottom+8;
-      if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
-      if(top+220>window.innerHeight)top=Math.max(10,rect.top-228);
-      panel.style.left=left+'px';panel.style.top=top+'px';
-    }
-
-    /* 拖拽 */
-    var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
-    panel.addEventListener('touchstart',function(e){
-      if(e.target.closest('button')||e.target.closest('.pc-palette-dot'))return;
-      var t=e.touches[0];var pr=panel.getBoundingClientRect();
-      panel.style.left=pr.left+'px';panel.style.top=pr.top+'px';
-      _drag={active:true,sx:t.clientX,sy:t.clientY,ox:pr.left,oy:pr.top};
-    },{passive:true});
-    var onMove=function(e){if(!_drag.active)return;e.preventDefault();var t=e.touches[0];panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';};
-    var onEnd=function(){_drag.active=false;};
-    document.addEventListener('touchmove',onMove,{passive:false});
-    document.addEventListener('touchend',onEnd);
-    function cleanup(){document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onEnd);}
-
-    function preview(){Cards.applySBColors();}
-
-    panel.querySelectorAll('.pc-palette-dot').forEach(function(dot){
-      dot.addEventListener('click',function(e){
-        e.stopPropagation();
-        var ck=dot.dataset.ck;
-        var realKey=ck==='border'?keys.border:keys.shadow;
-        if(!App.openColorPicker)return;
-        App.openColorPicker(sb[realKey],function(hex){
-          sb[realKey]=hex;dot.style.background=hex;Cards.saveSB();preview();
-        },function(hex){
-          sb[realKey]=hex;dot.style.background=hex;preview();
-        },'sb_'+realKey);
-      });
-    });
-
-    panel.querySelector('#sbReset').addEventListener('click',function(e){
-      e.stopPropagation();
-      var def=JSON.parse(JSON.stringify(DEF_SB));
-      sb[keys.border]=def[keys.border];sb[keys.shadow]=def[keys.shadow];
-      Cards._sbColors=sb;Cards.saveSB();preview();
-      panel.querySelectorAll('.pc-palette-dot').forEach(function(d){
-        var ck=d.dataset.ck;d.style.background=sb[ck==='border'?keys.border:keys.shadow];
-      });
-      App.showToast('已重置');
-    });
-
-    panel.querySelector('#sbSave').addEventListener('click',function(){cleanup();overlay.remove();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay){cleanup();overlay.remove();}});
-  },
-
-  /* ★ 对话框拖拽 */
-  bindSearchDrag:function(){
-    ['sw1','sw2'].forEach(function(id){
-      var el=App.$('#'+id);if(!el)return;
-      var off=Cards._dragOffsets[id]||{x:0,y:0};
-      if(off.x||off.y)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
-
-      var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
-      el.addEventListener('touchstart',function(e){
-        if(e.target.closest('.avatar-area-left')||e.target.closest('.avatar-area-right')||e.target.closest('input'))return;
-        var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
-        /* 用更长的时间来区分编辑长按 vs 拖拽长按。双击触发编辑，超长按触发拖拽 */
-      },{passive:true});
-
-      /* 拖拽用独立的双指检测：单指长按=编辑，双指=拖拽 */
-      /* 简化方案：用 avBox 同样的长按拖拽逻辑，但时间更长(800ms) */
-      var dragTimer=null,dragPressed=false,dragMoved=false,dsx,dsy,dox,doy;
-      el.addEventListener('touchstart',function(e){
-        if(e.target.closest('.avatar-area-left')||e.target.closest('.avatar-area-right')||e.target.closest('input'))return;
-        var t=e.touches[0];dsx=t.clientX;dsy=t.clientY;dragPressed=false;dragMoved=false;
-        dragTimer=setTimeout(function(){
-          /* 如果 500ms 的编辑长按已经触发了，就不触发拖拽 */
-          dragPressed=true;
-          var o=Cards._dragOffsets[id]||{x:0,y:0};dox=o.x;doy=o.y;
-          el.style.transition='none';el.style.opacity='0.85';el.style.zIndex='999';
-          if(navigator.vibrate)navigator.vibrate([15,50,15]);
-        },800);
-      },{passive:true});
-
-      el.addEventListener('touchmove',function(e){
-        var t=e.touches[0];
-        if(dragTimer&&!dragPressed){if(Math.abs(t.clientX-dsx)>8||Math.abs(t.clientY-dsy)>8){clearTimeout(dragTimer);dragTimer=null;}return;}
-        if(!dragPressed)return;
-        dragMoved=true;e.preventDefault();e.stopPropagation();
-        var nx=dox+t.clientX-dsx,ny=doy+t.clientY-dsy;
-        el.style.transform='translate('+nx+'px,'+ny+'px)';
-        Cards._dragOffsets[id]={x:nx,y:ny};
-      },{passive:false});
-
-      el.addEventListener('touchend',function(e){
-        clearTimeout(dragTimer);dragTimer=null;
-        el.style.opacity='';el.style.transition='';el.style.zIndex='';
-        if(dragPressed&&dragMoved){Cards.saveDrag();e.preventDefault();e.stopPropagation();}
-        dragPressed=false;dragMoved=false;
-      },{passive:false});
-    });
-  },
-
   applyDragOffsets:function(){
-    ['bx-1','bx-2','sw1','sw2'].forEach(function(id){
+    ['bx-1','bx-2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var off=Cards._dragOffsets[id];
       if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
@@ -364,9 +373,10 @@ var Cards={
 
   resetAllPositions:function(){
     Cards._dragOffsets={};Cards.saveDrag();
-    ['bx-1','bx-2','sw1','sw2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
+    ['bx-1','bx-2','searchWrap1','searchWrap2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
   },
 
+  /* ★ 角色卡编辑弹窗 */
   openEdit:function(side,cardEl){
     var d=Cards.data[side];
     var defSub=side==='left'?DEF_SUB_L:DEF_SUB_R;
@@ -379,14 +389,13 @@ var Cards={
 
     var paletteItems=[
       {key:'border',label:'框',value:col.border},
-      {key:'tagBg',label:'标签1',value:col.tagBg},
+      {key:'tagBg',label:'签1',value:col.tagBg},
       {key:'tagC',label:'字1',value:col.tagC},
-      {key:'tag2Bg',label:'标签2',value:col.tag2Bg},
+      {key:'tag2Bg',label:'签2',value:col.tag2Bg},
       {key:'tag2C',label:'字2',value:col.tag2C},
       {key:'nameC',label:'名',value:col.nameC},
       {key:'subC',label:'签',value:col.subC}
     ];
-
     var dotsHtml=paletteItems.map(function(p){
       return '<div class="pc-palette-item"><div class="pc-palette-dot" data-ck="'+p.key+'" style="background:'+p.value+';"></div><div class="pc-palette-dot-label">'+p.label+'</div></div>';
     }).join('');
@@ -405,7 +414,8 @@ var Cards={
       '</div>'+
       '<div class="pc-edit-btns"><button class="pc-edit-save" id="pcEditSaveBtn" type="button">保存</button><button class="pc-edit-cancel" id="pcEditCancelBtn" type="button">取消</button></div>';
 
-    overlay.appendChild(panel);document.body.appendChild(overlay);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
 
     if(cardEl){
       var rect=cardEl.getBoundingClientRect();
@@ -417,49 +427,51 @@ var Cards={
 
     /* 拖拽 */
     var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
-    var onMove=function(e){if(!_drag.active)return;e.preventDefault();var t=e.touches[0];panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';};
-    var onEnd=function(){_drag.active=false;};
-    document.addEventListener('touchmove',onMove,{passive:false});
-    document.addEventListener('touchend',onEnd);
-    function cleanup(){document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onEnd);}
-
     panel.addEventListener('touchstart',function(e){
       if(e.target.closest('button')||e.target.closest('input')||e.target.closest('label')||e.target.closest('.pc-palette-dot'))return;
       var t=e.touches[0];var pr=panel.getBoundingClientRect();
       panel.style.transform='none';panel.style.left=pr.left+'px';panel.style.top=pr.top+'px';
       _drag={active:true,sx:t.clientX,sy:t.clientY,ox:pr.left,oy:pr.top};
     },{passive:true});
+    var onMove=function(e){if(!_drag.active)return;e.preventDefault();var t=e.touches[0];panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';};
+    var onEnd=function(){_drag.active=false;};
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onEnd);
+    function cleanup(){document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onEnd);}
 
     function preview(){Cards.data[side].colors=col;Cards.applyColors();}
 
+    /* 调色圆点 */
     panel.querySelectorAll('.pc-palette-dot').forEach(function(dot){
       dot.addEventListener('click',function(e){
-        e.stopPropagation();var key=dot.dataset.ck;
-        if(!App.openColorPicker)return;
+        e.stopPropagation();var key=dot.dataset.ck;if(!App.openColorPicker)return;
         App.openColorPicker(col[key],function(hex){col[key]=hex;dot.style.background=hex;preview();},function(hex){col[key]=hex;dot.style.background=hex;preview();},'pcCard_'+side+'_'+key);
       });
     });
 
-    var bwSlider=panel.querySelector('#pcBorderW');
-    var bwVal=panel.querySelector('#pcBorderWVal');
+    /* 边框粗细 */
+    var bwSlider=panel.querySelector('#pcBorderW');var bwVal=panel.querySelector('#pcBorderWVal');
     bwSlider.addEventListener('input',function(){col.borderW=parseFloat(this.value);bwVal.textContent=col.borderW+'px';preview();});
 
+    /* 重置 */
     panel.querySelector('#pcPaletteReset').addEventListener('click',function(e){
       e.stopPropagation();col=JSON.parse(JSON.stringify(defCol));
       panel.querySelectorAll('.pc-palette-dot').forEach(function(dot){dot.style.background=col[dot.dataset.ck];});
-      bwSlider.value=col.borderW;bwVal.textContent=col.borderW+'px';
-      preview();App.showToast('已重置');
+      bwSlider.value=col.borderW;bwVal.textContent=col.borderW+'px';preview();App.showToast('已重置');
     });
 
+    /* 头像上传裁剪 */
     panel.querySelector('#pcEditFile').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
       var reader=new FileReader();
       reader.onload=function(ev){
         if(App.cropImage){App.cropImage(ev.target.result,function(cropped){Cards._compressAvatar(cropped,function(c){panel.querySelector('#pcEditAvatar').value=c;});});}
         else{Cards._compressAvatar(ev.target.result,function(c){panel.querySelector('#pcEditAvatar').value=c;});}
-      };reader.readAsDataURL(file);
+      };
+      reader.readAsDataURL(file);
     });
 
+    /* 保存 */
     panel.querySelector('#pcEditSaveBtn').addEventListener('click',function(){
       Cards.data[side]={
         avatar:panel.querySelector('#pcEditAvatar').value.trim(),
@@ -476,9 +488,7 @@ var Cards={
       Cards.data[side].colors=null;Cards.applyColors();cleanup();overlay.remove();
     });
 
-    overlay.addEventListener('click',function(e){
-      if(e.target===overlay){Cards.data[side].colors=null;Cards.applyColors();cleanup();overlay.remove();}
-    });
+    overlay.addEventListener('click',function(e){if(e.target===overlay){Cards.data[side].colors=null;Cards.applyColors();cleanup();overlay.remove();}});
   },
 
   _compressAvatar:function(src,callback){
@@ -488,7 +498,8 @@ var Cards={
       if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
       canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
       callback(canvas.toDataURL('image/jpeg',0.8));
-    };img.src=src;
+    };
+    img.src=src;
   },
 
   init:function(){Cards.load();Cards.render();}
