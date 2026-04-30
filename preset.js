@@ -305,4 +305,178 @@ var Preset={
       });
       page.querySelectorAll('[data-iact="activate"]').forEach(function(btn){
         btn.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(btn.dataset.iidx);if(p.items[ii])p.items[ii].enabled=true;renderEditPage();});
-      
+      });
+
+      // 删除指令
+      page.querySelectorAll('[data-iact="delItem"]').forEach(function(btn){
+        btn.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(btn.dataset.iidx);if(!confirm('删除这条指令？'))return;p.items.splice(ii,1);renderEditPage();});
+      });
+
+      // 搜索
+      var searchInput=page.querySelector('#psEditSearch');
+      if(searchInput){
+        searchInput.addEventListener('input',function(){
+          var q=this.value.trim().toLowerCase();
+          page.querySelectorAll('.ps-item.is-user').forEach(function(item){
+            var ii=parseInt(item.dataset.itemIdx);
+            var it=p.items[ii];
+            if(!it){item.style.display='';return;}
+            var match=!q||it.name.toLowerCase().indexOf(q)>=0||(it.content||'').toLowerCase().indexOf(q)>=0;
+            item.style.display=match?'':'none';
+          });
+        });
+      }
+    }
+
+    document.body.appendChild(page);
+    renderEditPage();
+    requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('show');});});
+
+    // 滑动返回
+    Preset.bindSwipeBack(page,function(){
+      if(isNew){if(p.name||p.items.length){Preset.list.unshift(p);Preset.save();Preset.renderHome();}}
+      else{Preset.list[idx]=p;Preset.save();Preset.renderHome();}
+      Preset.closeEdit();
+    });
+  },
+
+  closeEdit:function(){
+    var page=Preset._editEl;if(!page)return;
+    page.classList.remove('show');
+    setTimeout(function(){if(page.parentNode)page.remove();Preset._editEl=null;},350);
+  },
+
+  // ====== 添加/编辑指令页 ======
+  openAddItem:function(preset,onDone,editIdx){
+    var isEdit=typeof editIdx==='number'&&editIdx>=0;
+    var item=isEdit?JSON.parse(JSON.stringify(preset.items[editIdx])):{name:'',content:'',mode:'relative',depth:4,enabled:true};
+
+    if(Preset._addEl)Preset._addEl.remove();
+    var page=document.createElement('div');page.className='ps-add-page';Preset._addEl=page;
+
+    page.innerHTML=
+      '<div class="ps-edit-header">'+
+        '<button class="ps-back" id="psAddBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+        '<div class="ps-header-title">'+(isEdit?'编辑指令':'添加指令')+'</div>'+
+        '<div style="width:36px;"></div>'+
+      '</div>'+
+      '<div class="ps-add-body">'+
+        '<div class="ps-add-card">'+
+          '<div class="ps-add-section">'+
+            '<div class="ps-add-label"><div class="dot"></div>指令名称</div>'+
+            '<input type="text" class="ps-add-input" id="psItemName" value="'+App.escAttr(item.name||'')+'" placeholder="给这条指令起个名字...">'+
+          '</div>'+
+          '<div class="ps-add-sep"></div>'+
+          '<div class="ps-add-section">'+
+            '<div class="ps-add-label"><div class="dot"></div>预设内容</div>'+
+            '<textarea class="ps-add-textarea" id="psItemContent" placeholder="在这里写预设指令内容...">'+App.esc(item.content||'')+'</textarea>'+
+          '</div>'+
+          '<div class="ps-add-sep"></div>'+
+          '<div class="ps-add-section">'+
+            '<div class="ps-add-label"><div class="dot"></div>注入模式</div>'+
+            '<div class="ps-mode-row">'+
+              '<div class="ps-mode-btn'+(item.mode!=='depth'?' active':'')+'" data-mode="relative">相对位置</div>'+
+              '<div class="ps-mode-btn'+(item.mode==='depth'?' active':'')+'" data-mode="depth">深度注入</div>'+
+            '</div>'+
+            '<div id="psItemRelHint" style="'+(item.mode!=='depth'?'':'display:none;')+'">'+
+              '<div class="ps-add-hint">相对模式：可以任意穿插到系统预设之间，在编辑预设页拖动排列位置。</div>'+
+            '</div>'+
+            '<div id="psItemDepthRow" style="'+(item.mode==='depth'?'':'display:none;')+'">'+
+              '<div class="ps-depth-row">'+
+                '<span style="font-size:12px;color:#7a9ab8;font-weight:600;">注入深度</span>'+
+                '<input type="number" class="ps-depth-input" id="psItemDepth" value="'+(item.depth||4)+'" min="0" max="99">'+
+              '</div>'+
+              '<div class="ps-depth-hint" style="margin-top:6px;">数字越小越靠近最新消息。0 = 紧接在最后一条用户消息之前。</div>'+
+              '<div class="ps-add-hint" style="margin-top:8px;">深度注入的预设保存后会出现在聊天历史下面。</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="ps-add-btns">'+
+          '<button class="ps-save-btn" id="psItemSave" type="button">保存</button>'+
+          '<button class="ps-cancel-btn" id="psItemCancel" type="button">取消</button>'+
+        '</div>'+
+      '</div>';
+
+    document.body.appendChild(page);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('show');});});
+
+    // 模式切换
+    page.querySelectorAll('.ps-mode-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        page.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        var relHint=page.querySelector('#psItemRelHint');
+        var depthRow=page.querySelector('#psItemDepthRow');
+        if(btn.dataset.mode==='depth'){relHint.style.display='none';depthRow.style.display='';}
+        else{relHint.style.display='';depthRow.style.display='none';}
+      });
+    });
+
+    page.querySelector('#psAddBack').addEventListener('click',function(){Preset.closeAdd();});
+    page.querySelector('#psItemCancel').addEventListener('click',function(){Preset.closeAdd();});
+
+    page.querySelector('#psItemSave').addEventListener('click',function(){
+      var name=(page.querySelector('#psItemName').value||'').trim();
+      var content=(page.querySelector('#psItemContent').value||'').trim();
+      if(!name){App.showToast('请输入指令名称');return;}
+      if(!content){App.showToast('请输入预设内容');return;}
+      var modeBtn=page.querySelector('.ps-mode-btn.active');
+      var mode=modeBtn?modeBtn.dataset.mode:'relative';
+      var depth=parseInt(page.querySelector('#psItemDepth').value)||4;
+
+      var obj={name:name,content:content,mode:mode,depth:depth,enabled:true};
+      if(isEdit){preset.items[editIdx]=obj;}
+      else{preset.items.unshift(obj);}
+      Preset.closeAdd();
+      if(onDone)onDone();
+    });
+
+    // 滑动返回
+    Preset.bindSwipeBack(page,function(){Preset.closeAdd();});
+  },
+
+  closeAdd:function(){
+    var page=Preset._addEl;if(!page)return;
+    page.classList.remove('show');
+    setTimeout(function(){if(page.parentNode)page.remove();Preset._addEl=null;},350);
+  },
+
+  // ====== 通用滑动返回 ======
+  bindSwipeBack:function(page,onBack){
+    var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
+    page.addEventListener('touchstart',function(e){
+      var t=e.touches[0];var rect=page.getBoundingClientRect();
+      if(t.clientX-rect.left>50)return;
+      _sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
+    },{passive:true});
+    page.addEventListener('touchmove',function(e){
+      if(!_sw.active)return;var t=e.touches[0];var dx=t.clientX-_sw.sx,dy=t.clientY-_sw.sy;
+      if(!_sw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_sw.locked=true;_sw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}
+      if(_sw.dir==='h'&&dx>0){e.preventDefault();page.style.transform='translateX('+Math.min(dx,page.offsetWidth)+'px)';page.style.opacity=String(1-dx/page.offsetWidth*0.5);}
+    },{passive:false});
+    page.addEventListener('touchend',function(e){
+      if(!_sw.active)return;_sw.active=false;
+      if(_sw.dir!=='h'){page.style.transform='';page.style.opacity='';return;}
+      var dx=e.changedTouches[0].clientX-_sw.sx;
+      if(dx>page.offsetWidth*0.3){page.style.transition='transform .25s,opacity .25s';page.style.transform='translateX(100%)';page.style.opacity='0';setTimeout(function(){page.style.transition='';page.style.transform='';page.style.opacity='';if(onBack)onBack();},260);}
+      else{page.style.transition='transform .2s,opacity .2s';page.style.transform='';page.style.opacity='';setTimeout(function(){page.style.transition='';},220);}
+    },{passive:true});
+  },
+
+  // ====== 对外接口 ======
+  getEnabledPresets:function(){
+    return Preset.list.filter(function(p){return p.enabled!==false;});
+  },
+  isSysEnabled:function(sysId){
+    if(!Preset.config.sysToggles)return true;
+    return Preset.config.sysToggles[sysId]!==false;
+  },
+
+  init:function(){
+    Preset.load();
+    App.preset=Preset;
+  }
+};
+
+App.register('preset',Preset);
+})();
