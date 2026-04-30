@@ -334,6 +334,21 @@ if(isProactive&&proPrompt){
   apiMsgs.push({role:'user',content:'[系统指令，请勿当作用户消息回复，请以角色身份主动发一条消息]\n'+proPrompt});
 }
 
+/* ★ 记录到全局日志，供日志查看器使用 */
+if(!App._promptLogs)App._promptLogs=[];
+var logEntry={
+  ts:Date.now(),
+  charName:(charData&&charData.name)||'未知',
+  isProactive:!!isProactive,
+  msgCount:apiMsgs.length,
+  tokenEstimate:Math.round(apiMsgs.reduce(function(s,m){return s+(m.content||'').length;},0)/2),
+  messages:apiMsgs.map(function(m,i){
+    return {idx:i,role:m.role,length:m.content.length,preview:(m.content||'').replace(/\n/g,' ').slice(0,200),full:m.content};
+  })
+};
+App._promptLogs.unshift(logEntry);
+if(App._promptLogs.length>20)App._promptLogs=App._promptLogs.slice(0,20);
+
 return apiMsgs;
 }
 
