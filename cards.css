@@ -529,57 +529,33 @@
 }
 
 .search-box {
-  display: flex; align-items: center;
-  width: 100%; height: 100%;
-  border: 2px solid var(--sb1-border, #adcdea);
-  border-radius: 8px;
-  background: transparent;
-  overflow: hidden;
-  box-shadow: -4px 4px 0 var(--sb1-shadow, rgba(173, 205, 234, 0.9));
-  margin-left: -10px;
+  border: 2px solid var(--sb-border, #adcdea);
+  box-shadow: -4px 4px 0 var(--sb-shadow, rgba(173, 205, 234, 0.9));
 }
 
 .search-input-left {
-  flex: 1; min-width: 0; height: 100%;
-  padding: 0 14px; border: none; outline: none;
-  background: transparent; color: var(--sb1-border, #adcdea); font-size: 14px;
+  color: var(--sb-text, #adcdea);
 }
 
-.search-input-left::placeholder { color: var(--sb1-border, #adcdea); opacity: 0.5; }
+.search-input-left::placeholder { color: var(--sb-text, #adcdea); opacity: 0.5; }
 
 .avatar-area-left {
-  display: flex; justify-content: center; align-items: center;
-  width: 42px; min-width: 42px; flex-shrink: 0;
-  height: 100%; cursor: pointer;
-  background: transparent; padding: 4px;
-  border-right: 2px solid var(--sb1-border, #adcdea);
+  border-right: 2px solid var(--sb-border, #adcdea);
 }
 
 .search-box-right {
-  display: flex; align-items: center;
-  width: 100%; height: 100%;
-  border: 2px solid var(--sb2-border, #adcdea);
-  border-radius: 8px;
-  background: transparent;
-  overflow: hidden;
-  box-shadow: 4px 4px 0 var(--sb2-shadow, rgba(173, 205, 234, 0.9));
-  margin-right: -15px;
+  border: 2px solid var(--sb-border, #adcdea);
+  box-shadow: 4px 4px 0 var(--sb-shadow, rgba(173, 205, 234, 0.9));
 }
 
 .search-input-right {
-  flex: 1; min-width: 0; height: 100%;
-  padding: 0 14px; border: none; outline: none;
-  background: transparent; color: var(--sb2-border, #adcdea); font-size: 14px;
+  color: var(--sb-text, #adcdea);
 }
 
-.search-input-right::placeholder { color: var(--sb2-border, #adcdea); opacity: 0.5; }
+.search-input-right::placeholder { color: var(--sb-text, #adcdea); opacity: 0.5; }
 
 .avatar-area-right {
-  display: flex; justify-content: center; align-items: center;
-  width: 42px; min-width: 42px; flex-shrink: 0;
-  height: 100%; cursor: pointer;
-  background: transparent; padding: 4px;
-  border-left: 2px solid var(--sb2-border, #adcdea);
+  border-left: 2px solid var(--sb-border, #adcdea);
 }
 
 .avatar-preview {
