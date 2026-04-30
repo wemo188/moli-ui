@@ -3,37 +3,57 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var SYS_ITEMS=[
-  {id:'sys_wb_before',name:'角色定义前的世界书',en:'World Book (Before)'},
-  {id:'sys_char_profile',name:'角色档案',en:'Character Profile'},
-  {id:'sys_wb_after',name:'角色定义后的世界书',en:'World Book (After)'},
-  {id:'sys_user_info',name:'用户信息',en:'User Info'},
-  {id:'sys_scene',name:'场景/时间线',en:'Scene / Timeline'},
-  {id:'sys_examples',name:'示例对话',en:'Example Dialogue'},
-  {id:'sys_memory',name:'总结记忆',en:'Summary Memory',hasToggle:true},
-  {id:'sys_history',name:'聊天历史',en:'Chat History',hasToggle:true},
-  {id:'sys_post',name:'角色档案的后置指令',en:'Post Instruction',hasToggle:true}
+var DEFAULT_ORDER=[
+  {type:'user'},
+  {type:'sys',id:'sys_wb_before',name:'角色定义前的世界书',en:'World Book (Before)'},
+  {type:'sys',id:'sys_char_profile',name:'角色档案',en:'Character Profile'},
+  {type:'sys',id:'sys_wb_after',name:'角色定义后的世界书',en:'World Book (After)'},
+  {type:'sys',id:'sys_user_info',name:'用户信息',en:'User Info'},
+  {type:'sys',id:'sys_scene',name:'场景/时间线',en:'Scene / Timeline'},
+  {type:'sys',id:'sys_examples',name:'示例对话',en:'Example Dialogue'},
+  {type:'sys',id:'sys_memory',name:'总结记忆',en:'Summary Memory',hasToggle:true},
+  {type:'sys',id:'sys_history',name:'聊天历史',en:'Chat History',hasToggle:true},
+  {type:'sys',id:'sys_post',name:'角色档案的后置指令',en:'Post Instruction',hasToggle:true}
 ];
-var HISTORY_SYS_IDX=7;
 
 var Preset={
-  list:[],config:{},_homeEl:null,_editEl:null,_addEl:null,_expandEl:null,_dragState:null,
+  list:[],
+  config:{},
+  _homeEl:null,
+  _editEl:null,
+  _addEl:null,
+  _expandEl:null,
 
   load:function(){
     Preset.list=App.LS.get('presetList')||[];
     Preset.config=App.LS.get('presetConfig')||{};
     if(!Preset.config.sysToggles)Preset.config.sysToggles={};
-    SYS_ITEMS.forEach(function(s){if(Preset.config.sysToggles[s.id]===undefined)Preset.config.sysToggles[s.id]=true;});
+    DEFAULT_ORDER.forEach(function(s){
+      if(s.type==='sys'&&Preset.config.sysToggles[s.id]===undefined)Preset.config.sysToggles[s.id]=true;
+    });
   },
-  save:function(){App.LS.set('presetList',Preset.list);App.LS.set('presetConfig',Preset.config);},
+  save:function(){
+    App.LS.set('presetList',Preset.list);
+    App.LS.set('presetConfig',Preset.config);
+  },
 
+  // ==================== 首页 ====================
   open:function(){
-    Preset.load();if(Preset._homeEl)Preset._homeEl.remove();
-    var page=document.createElement('div');page.className='ps-home-page';Preset._homeEl=page;
-    document.body.appendChild(page);Preset.renderHome();
+    Preset.load();
+    if(Preset._homeEl)Preset._homeEl.remove();
+    var page=document.createElement('div');
+    page.className='ps-home-page';
+    Preset._homeEl=page;
+    document.body.appendChild(page);
+    Preset.renderHome();
     requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('show');});});
   },
-  close:function(){var page=Preset._homeEl;if(!page)return;page.classList.remove('show');setTimeout(function(){if(page.parentNode)page.remove();Preset._homeEl=null;},350);},
+
+  close:function(){
+    var page=Preset._homeEl;if(!page)return;
+    page.classList.remove('show');
+    setTimeout(function(){if(page.parentNode)page.remove();Preset._homeEl=null;},350);
+  },
 
   renderHome:function(){
     var page=Preset._homeEl;if(!page)return;
@@ -49,12 +69,12 @@ var Preset={
             '<div class="ps-home-card-desc">'+App.esc((p.content||'').slice(0,50))+'</div>'+
           '</div>'+
           '<div class="ps-home-actions">'+
-            '<div class="ps-mini-btn'+(isEnabled?' active-on':'')+'" data-act="enable" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="'+(isEnabled?'#7a9ab8':'#c0cedd')+'" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" '+(isEnabled?'fill="#7a9ab8"':'fill="none"')+'/></svg></div>'+
             '<div class="ps-mini-btn" data-act="dots" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="#7a9ab8" stroke="none"/></svg></div>'+
           '</div>'+
         '</div>';
       }).join('');
     }
+
     page.innerHTML=
       '<div class="ps-header">'+
         '<button class="ps-back" id="psHomeBack" type="button"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>'+
@@ -62,84 +82,139 @@ var Preset={
         '<button class="ps-create-btn" id="psHomeCreate" type="button">创建</button>'+
       '</div>'+
       '<div class="ps-home-list" id="psHomeList">'+html+'</div>';
-    Preset.bindHomeEvents(page);
-    Preset.bindSwipeBack(page,function(){Preset.close();});
-  },
 
-  bindHomeEvents:function(page){
+    var self=this;
+
     page.querySelector('#psHomeBack').addEventListener('click',function(){Preset.close();});
     page.querySelector('#psHomeCreate').addEventListener('click',function(){Preset.openEditPreset(-1);});
 
-    page.querySelectorAll('[data-act="enable"]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();var idx=parseInt(btn.dataset.idx);var p=Preset.list[idx];if(!p)return;
+    // 点击卡片 = 启用（单选）
+    page.querySelectorAll('.ps-home-card').forEach(function(card){
+      card.addEventListener('click',function(e){
+        if(e.target.closest('.ps-mini-btn'))return;
+        var idx=parseInt(card.dataset.idx);
+        var p=Preset.list[idx];if(!p)return;
         Preset.list.forEach(function(item){item.enabled=false;});
-        p.enabled=true;Preset.save();Preset.renderHome();App.showToast('已启用：'+p.name);
+        p.enabled=true;
+        Preset.save();
+        Preset.renderHome();
+        App.showToast('已启用：'+p.name);
       });
     });
 
+    // 三个点
     page.querySelectorAll('[data-act="dots"]').forEach(function(btn){
-      btn.addEventListener('click',function(e){e.stopPropagation();Preset.showDotsMenu(btn,parseInt(btn.dataset.idx));});
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        Preset.showDotsMenu(btn,parseInt(btn.dataset.idx));
+      });
     });
 
-    Preset._bindDrag(page,'.ps-home-card','.ps-home-actions',function(from,to){
-      var item=Preset.list.splice(from,1)[0];Preset.list.splice(to,0,item);Preset.save();Preset.renderHome();
+    // 首页卡片长按拖拽
+    Preset._bindListDrag(page,'.ps-home-card','.ps-home-actions',Preset.list,function(){
+      Preset.save();Preset.renderHome();
     });
+
+    Preset.bindSwipeBack(page,function(){Preset.close();});
   },
 
   showDotsMenu:function(btnEl,idx){
     var old=document.querySelector('.ps-dots-menu');if(old)old.remove();
     var menu=document.createElement('div');menu.className='ps-dots-menu';
-    menu.innerHTML='<div class="ps-dots-mi" data-mact="edit">编辑</div><div class="ps-dots-mi" data-mact="copy">复制</div><div class="ps-dots-mi" data-mact="export">导出</div><div class="ps-dots-mi danger" data-mact="delete">删除</div>';
-    var rect=btnEl.getBoundingClientRect();var left=rect.right-140,top=rect.bottom+4;
+    menu.innerHTML=
+      '<div class="ps-dots-mi" data-mact="edit">编辑</div>'+
+      '<div class="ps-dots-mi" data-mact="copy">复制</div>'+
+      '<div class="ps-dots-mi" data-mact="export">导出</div>'+
+      '<div class="ps-dots-mi danger" data-mact="delete">删除</div>';
+    var rect=btnEl.getBoundingClientRect();
+    var left=rect.right-140,top=rect.bottom+4;
     if(left<8)left=8;if(top+180>window.innerHeight)top=rect.top-180;if(top<10)top=10;
-    menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
+    menu.style.left=left+'px';menu.style.top=top+'px';
+    document.body.appendChild(menu);
+
     menu.querySelectorAll('.ps-dots-mi').forEach(function(mi){
-      mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
+      mi.addEventListener('click',function(e){
+        e.stopPropagation();var act=mi.dataset.mact;menu.remove();
         if(act==='edit')Preset.openEditPreset(idx);
         if(act==='copy'){var src=Preset.list[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='ps_'+Date.now();cp.name=cp.name+' (副本)';cp.enabled=false;Preset.list.unshift(cp);Preset.save();Preset.renderHome();App.showToast('已复制');}
         if(act==='export'){var p=Preset.list[idx];if(!p)return;var blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='preset_'+(p.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
         if(act==='delete'){if(!confirm('确定删除？'))return;Preset.list.splice(idx,1);Preset.save();Preset.renderHome();App.showToast('已删除');}
       });
     });
+
     function dismiss(ev){if(menu.parentNode&&!menu.contains(ev.target)){menu.remove();document.removeEventListener('touchstart',dismiss);document.removeEventListener('click',dismiss);}}
     setTimeout(function(){document.addEventListener('touchstart',dismiss,{passive:true});document.addEventListener('click',dismiss);},100);
   },
 
+  // ==================== 编辑预设页 ====================
   openEditPreset:function(idx){
     var isNew=idx<0;
-    var p=isNew?{id:'ps_'+Date.now(),name:'',enabled:false,items:[]}:JSON.parse(JSON.stringify(Preset.list[idx]));
+    var p=isNew?{id:'ps_'+Date.now(),name:'',enabled:false,items:[],order:null}:JSON.parse(JSON.stringify(Preset.list[idx]));
     if(!p.items)p.items=[];
+
+    // 构建统一排序列表：系统预设 + 自定义指令混在一起
+    if(!p.order){
+      p.order=[];
+      var sysInserted=false;
+      DEFAULT_ORDER.forEach(function(d){
+        if(d.type==='user'){
+          // 插入所有自定义指令
+          p.items.forEach(function(it,i){p.order.push({type:'user',idx:i});});
+          sysInserted=true;
+        } else {
+          p.order.push({type:'sys',id:d.id});
+        }
+      });
+      if(!sysInserted){
+        p.items.forEach(function(it,i){p.order.unshift({type:'user',idx:i});});
+      }
+    }
+
+    // 确保所有自定义指令都在order里
+    p.items.forEach(function(it,i){
+      var found=false;
+      p.order.forEach(function(o){if(o.type==='user'&&o.idx===i)found=true;});
+      if(!found)p.order.unshift({type:'user',idx:i});
+    });
+
+    // 清理order里已删除的指令
+    p.order=p.order.filter(function(o){
+      if(o.type==='sys')return true;
+      return o.idx>=0&&o.idx<p.items.length;
+    });
+
     if(Preset._editEl)Preset._editEl.remove();
     var page=document.createElement('div');page.className='ps-edit-page';Preset._editEl=page;
     document.body.appendChild(page);
 
     function render(){
-      var normalActive=[],depthItems=[],inactive=[];
-      p.items.forEach(function(it,i){it._idx=i;
-        if(it.enabled===false)inactive.push(it);
-        else if(it.mode==='depth')depthItems.push(it);
-        else normalActive.push(it);
-      });
-
-      var activeHtml=normalActive.map(function(it){return itemRow(it,true);}).join('');
-
-      var sysHtml='';
-      SYS_ITEMS.forEach(function(s,si){
-        var isOn=Preset.config.sysToggles[s.id]!==false;
-        sysHtml+='<div class="ps-item is-sys" data-sys-id="'+s.id+'">'+
-          '<div class="ps-info"><div class="ps-name">'+App.esc(s.name)+'</div><div class="ps-name-sub">'+App.esc(s.en)+'</div></div>'+
-          (s.hasToggle?'<div class="ps-sw '+(isOn?'on':'off')+'" data-sys-id="'+s.id+'"></div>':'')+
-        '</div>';
-        if(si===HISTORY_SYS_IDX&&depthItems.length){
-          sysHtml+=depthItems.map(function(it){return itemRow(it,true);}).join('');
+      var rows='';
+      p.order.forEach(function(o,oi){
+        if(o.type==='sys'){
+          var s=null;
+          DEFAULT_ORDER.forEach(function(d){if(d.id===o.id)s=d;});
+          if(!s)return;
+          var isOn=Preset.config.sysToggles[s.id]!==false;
+          rows+='<div class="ps-item" data-order-idx="'+oi+'" data-row-type="sys" data-sys-id="'+s.id+'">'+
+            '<div class="ps-info"><div class="ps-name">'+App.esc(s.name)+'</div><div class="ps-name-sub">'+App.esc(s.en)+'</div></div>'+
+            (s.hasToggle?'<div class="ps-item-actions"><div class="ps-sw '+(isOn?'on':'off')+'" data-sys-id="'+s.id+'"></div></div>':'')+
+          '</div>';
+        } else {
+          var it=p.items[o.idx];
+          if(!it)return;
+          var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
+          var swOn=it.enabled!==false?'on':'off';
+          rows+='<div class="ps-item is-user" data-order-idx="'+oi+'" data-row-type="user" data-item-idx="'+o.idx+'">'+
+            '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+'</div><div class="ps-name-sub">'+App.esc((it.content||'').slice(0,30))+'</div></div>'+
+            '<div class="ps-item-actions">'+
+              depthTag+
+              '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
+              '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
+              '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>'+
+            '</div>'+
+          '</div>';
         }
       });
-
-      var inactiveHtml='';
-      if(inactive.length){
-        inactiveHtml='<div class="ps-inactive-label">未激活</div>'+inactive.map(function(it){return itemRow(it,false);}).join('');
-      }
 
       page.innerHTML=
         '<div class="ps-header">'+
@@ -153,74 +228,139 @@ var Preset={
             '<button class="ps-add-btn" id="psEditAdd" type="button">添加</button>'+
           '</div>'+
           '<div class="ps-hint-bar"><div class="ps-hint-text">发送给模型读取的顺序，根据你的需求排列预设吧，关闭则不发送哦</div></div>'+
-          '<div class="ps-list" id="psEditList">'+activeHtml+sysHtml+inactiveHtml+'</div>'+
+          '<div class="ps-list" id="psEditList">'+rows+'</div>'+
         '</div>';
-      bindEv();
-    }
 
-        function itemRow(it,isActive){
-      var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
-      var ns=isActive?'':'style="color:#bbb;"';
-      var swOn=it.enabled!==false?'on':'off';
-      var activeSvg=isActive
-        ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><rect x="8" y="8" width="8" height="8" rx="1" fill="#1a1a1a"/></svg>'
-        :'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#4caf50" stroke-width="1.5"/><polygon points="10,8 16,12 10,16" fill="#4caf50"/></svg>';
-      return '<div class="ps-item is-user" data-item-idx="'+it._idx+'">'+
-        '<div class="ps-info"><div class="ps-name" '+ns+'>'+App.esc(it.name||'未命名')+'</div><div class="ps-name-sub">'+App.esc((it.content||'').slice(0,30))+'</div></div>'+
-        '<div class="ps-item-actions">'+
-          depthTag+
-          '<div class="ps-mini-btn" data-iact="edit" data-ii="'+it._idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
-          '<div class="ps-mini-btn" data-iact="toggle" data-ii="'+it._idx+'">'+activeSvg+'</div>'+
-          '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+it._idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
-          '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+it._idx+'"></div>'+
-        '</div>'+
-      '</div>';
+      bindEv();
     }
 
     function bindEv(){
       page.querySelector('#psEditBack').addEventListener('click',function(){saveBack();Preset.closeEdit();});
-      page.querySelector('#psEditAdd').addEventListener('click',function(){Preset.openAddItem(p,function(){render();});});
+      page.querySelector('#psEditAdd').addEventListener('click',function(){
+        Preset.openAddItem(p,function(){
+          // 新指令加到items末尾，order插到最前面
+          var newIdx=p.items.length-1;
+          p.order.unshift({type:'user',idx:newIdx});
+          render();
+        });
+      });
       page.querySelector('#psEditRename').addEventListener('click',function(){
-        var n=prompt('预设名称：',p.name||'');if(n===null)return;p.name=n.trim();page.querySelector('.ps-header-title').textContent=p.name||'预设名称';
+        var n=prompt('预设名称：',p.name||'');if(n===null)return;
+        p.name=n.trim();page.querySelector('.ps-header-title').textContent=p.name||'预设名称';
       });
 
+      // 系统开关
       page.querySelectorAll('.ps-sw[data-sys-id]').forEach(function(sw){
-        sw.addEventListener('click',function(e){e.stopPropagation();var id=sw.dataset.sysId;var isOn=sw.classList.contains('on');Preset.config.sysToggles[id]=!isOn;Preset.save();sw.classList.toggle('on',!isOn);sw.classList.toggle('off',isOn);});
+        sw.addEventListener('click',function(e){
+          e.stopPropagation();
+          var id=sw.dataset.sysId;var isOn=sw.classList.contains('on');
+          Preset.config.sysToggles[id]=!isOn;Preset.save();
+          sw.classList.toggle('on',!isOn);sw.classList.toggle('off',isOn);
+        });
       });
 
+      // 编辑指令
       page.querySelectorAll('[data-iact="edit"]').forEach(function(btn){
-        btn.addEventListener('click',function(e){e.stopPropagation();Preset.openAddItem(p,function(){render();},parseInt(btn.dataset.ii));});
-      });
-      page.querySelectorAll('[data-iact="del"]').forEach(function(btn){
-        btn.addEventListener('click',function(e){e.stopPropagation();if(!confirm('删除？'))return;p.items.splice(parseInt(btn.dataset.ii),1);render();});
-      });
-            page.querySelectorAll('[data-iact="toggle"]').forEach(function(btn){
         btn.addEventListener('click',function(e){
           e.stopPropagation();
           var ii=parseInt(btn.dataset.ii);
-          if(p.items[ii]){
-            p.items[ii].enabled=p.items[ii].enabled===false?true:false;
-            render();
+          Preset.openAddItem(p,function(){render();},ii);
+        });
+      });
+
+      // 删除指令
+      page.querySelectorAll('[data-iact="del"]').forEach(function(btn){
+        btn.addEventListener('click',function(e){
+          e.stopPropagation();
+          var ii=parseInt(btn.dataset.ii);
+          if(!confirm('删除？'))return;
+          p.items.splice(ii,1);
+          // 更新order：删除对应项，调整索引
+          p.order=p.order.filter(function(o){return !(o.type==='user'&&o.idx===ii);});
+          p.order.forEach(function(o){if(o.type==='user'&&o.idx>ii)o.idx--;});
+          render();
+        });
+      });
+
+      // 自定义指令开关
+      page.querySelectorAll('[data-iact="sw"]').forEach(function(sw){
+        sw.addEventListener('click',function(e){
+          e.stopPropagation();
+          var ii=parseInt(sw.dataset.ii);
+          if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}
+          render();
+        });
+      });
+
+      // 搜索
+      var si=page.querySelector('#psEditSearch');
+      if(si)si.addEventListener('input',function(){
+        var q=this.value.trim().toLowerCase();
+        page.querySelectorAll('.ps-item').forEach(function(el){
+          var rt=el.dataset.rowType;
+          if(rt==='sys'){
+            var sid=el.dataset.sysId;
+            var s=null;DEFAULT_ORDER.forEach(function(d){if(d.id===sid)s=d;});
+            el.style.display=(!q||(s&&(s.name.toLowerCase().indexOf(q)>=0||s.en.toLowerCase().indexOf(q)>=0)))?'':'none';
+          } else {
+            var ii=parseInt(el.dataset.itemIdx);var it=p.items[ii];
+            el.style.display=(!q||!it||(it.name||'').toLowerCase().indexOf(q)>=0||(it.content||'').toLowerCase().indexOf(q)>=0)?'':'none';
           }
         });
       });
-      page.querySelectorAll('[data-iact="sw"]').forEach(function(sw){
-        sw.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(sw.dataset.ii);if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}render();});
-      });
 
-      var si=page.querySelector('#psEditSearch');
-      if(si)si.addEventListener('input',function(){var q=this.value.trim().toLowerCase();page.querySelectorAll('.ps-item').forEach(function(el){
-        if(el.classList.contains('is-sys')){var sid=el.dataset.sysId||'';var sys=SYS_ITEMS.find(function(s){return s.id===sid;});el.style.display=(!q||(sys&&(sys.name.indexOf(q)>=0||sys.en.toLowerCase().indexOf(q)>=0)))?'':'none';}
-        else{var ii=parseInt(el.dataset.itemIdx);var it=p.items[ii];el.style.display=(!q||!it||(it.name||'').toLowerCase().indexOf(q)>=0||(it.content||'').toLowerCase().indexOf(q)>=0)?'':'none';}
-      });});
+      // 所有条目统一拖拽排序
+      var allItems=page.querySelectorAll('.ps-item');
+      allItems.forEach(function(el,elIdx){
+        var timer=null,pressed=false,moved=false,startY=0;
 
-      Preset._bindDrag(page,'.ps-item.is-user','.ps-item-actions',function(fromIdx,toIdx){
-        var allUserEls=page.querySelectorAll('.ps-item.is-user');
-        var indices=[];allUserEls.forEach(function(el){indices.push(parseInt(el.dataset.itemIdx));});
-        var f=indices[fromIdx],t=indices[toIdx];
-        if(f!==undefined&&t!==undefined&&f!==t&&f<p.items.length&&t<p.items.length){
-          var itm=p.items.splice(f,1)[0];p.items.splice(t,0,itm);render();
-        }
+        el.addEventListener('touchstart',function(e){
+          if(e.target.closest('.ps-mini-btn')||e.target.closest('.ps-sw')||e.target.closest('.ps-item-actions'))return;
+          moved=false;pressed=false;startY=e.touches[0].clientY;
+          timer=setTimeout(function(){
+            pressed=true;if(navigator.vibrate)navigator.vibrate(15);
+            el.classList.add('dragging');
+          },400);
+        },{passive:true});
+
+        el.addEventListener('touchmove',function(e){
+          if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
+          if(!pressed)return;moved=true;e.preventDefault();
+          var dy=e.touches[0].clientY-startY;
+          el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
+
+          var all=page.querySelectorAll('.ps-item');
+          var targetIdx=elIdx;
+          all.forEach(function(c,ci){
+            if(ci===elIdx)return;
+            var rect=c.getBoundingClientRect();var mid=rect.top+rect.height/2;
+            if(e.touches[0].clientY>mid&&ci>elIdx)targetIdx=ci;
+            if(e.touches[0].clientY<mid&&ci<elIdx)targetIdx=ci;
+          });
+
+          var h=el.offsetHeight+12;
+          all.forEach(function(c,ci){
+            if(ci===elIdx)return;
+            c.style.transition='transform .18s ease';
+            if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
+            else if(targetIdx<elIdx&&ci<elIdx&&ci>=targetIdx)c.style.transform='translateY('+h+'px)';
+            else c.style.transform='';
+          });
+          el._targetIdx=targetIdx;
+        },{passive:false});
+
+        el.addEventListener('touchend',function(){
+          clearTimeout(timer);timer=null;el.classList.remove('dragging');
+          var all=page.querySelectorAll('.ps-item');
+          all.forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
+          if(pressed&&moved&&el._targetIdx!==undefined&&el._targetIdx!==elIdx){
+            var item=p.order.splice(elIdx,1)[0];
+            p.order.splice(el._targetIdx,0,item);
+            render();
+          }
+          el._targetIdx=undefined;
+          pressed=false;moved=false;
+        },{passive:true});
       });
     }
 
@@ -235,8 +375,13 @@ var Preset={
     Preset.bindSwipeBack(page,function(){saveBack();Preset.closeEdit();});
   },
 
-  closeEdit:function(){var page=Preset._editEl;if(!page)return;page.classList.remove('show');setTimeout(function(){if(page.parentNode)page.remove();Preset._editEl=null;},350);},
+  closeEdit:function(){
+    var page=Preset._editEl;if(!page)return;
+    page.classList.remove('show');
+    setTimeout(function(){if(page.parentNode)page.remove();Preset._editEl=null;},350);
+  },
 
+  // ==================== 添加/编辑指令 ====================
   openAddItem:function(preset,onDone,editIdx){
     var isEdit=typeof editIdx==='number'&&editIdx>=0;
     var item=isEdit?JSON.parse(JSON.stringify(preset.items[editIdx])):{name:'',content:'',mode:'relative',depth:2,enabled:true};
@@ -250,49 +395,92 @@ var Preset={
         '<div style="width:36px;"></div>'+
       '</div>'+
       '<div class="ps-add-body"><div class="ps-add-card">'+
-        '<div class="ps-add-section"><div class="ps-add-label"><div class="dot"></div>指令名称</div><input type="text" class="ps-add-input" id="psItemName" value="'+App.escAttr(item.name||'')+'" placeholder="给这条指令起个名字..."></div>'+
+        '<div class="ps-add-section"><div class="ps-add-label"><div class="dot"></div>指令名称</div>'+
+          '<input type="text" class="ps-add-input" id="psItemName" value="'+App.escAttr(item.name||'')+'" placeholder="给这条指令起个名字..."></div>'+
         '<div class="ps-add-sep"></div>'+
-        '<div class="ps-add-section"><div class="ps-add-label"><div class="dot"></div>预设内容</div><div style="position:relative;"><textarea class="ps-add-textarea" id="psItemContent" placeholder="在这里写预设指令内容...">'+App.esc(item.content||'')+'</textarea><button class="ps-expand-btn" id="psExpandBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button></div></div>'+
+        '<div class="ps-add-section"><div class="ps-add-label"><div class="dot"></div>预设内容</div>'+
+          '<div style="position:relative;">'+
+            '<textarea class="ps-add-textarea" id="psItemContent" placeholder="在这里写预设指令内容...">'+App.esc(item.content||'')+'</textarea>'+
+            '<button class="ps-expand-btn" id="psExpandBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>'+
+          '</div></div>'+
         '<div class="ps-add-sep"></div>'+
         '<div class="ps-add-section"><div class="ps-add-label"><div class="dot"></div>注入模式</div>'+
-          '<div class="ps-mode-row"><div class="ps-mode-btn'+(item.mode!=='depth'?' active':'')+'" data-mode="relative">相对位置</div><div class="ps-mode-btn'+(item.mode==='depth'?' active':'')+'" data-mode="depth">深度注入</div></div>'+
-          '<div id="psRelHint" style="'+(item.mode!=='depth'?'':'display:none;')+'"><div class="ps-add-hint">相对模式：可以任意穿插到系统预设之间，在编辑预设页拖动排列位置。</div></div>'+
-          '<div id="psDepthRow" style="'+(item.mode==='depth'?'':'display:none;')+'"><div class="ps-depth-row"><span style="font-size:12px;color:#7a9ab8;font-weight:600;">注入深度</span><input type="number" class="ps-depth-input" id="psItemDepth" value="'+(item.depth!=null?item.depth:2)+'" min="0" max="99"></div><div class="ps-depth-hint" style="margin-top:6px;">数字越小越靠近最新消息。0 = 紧接在最后一条用户消息之前。</div><div class="ps-add-hint" style="margin-top:8px;">深度注入的预设保存后会出现在聊天历史下面。</div></div>'+
+          '<div class="ps-mode-row">'+
+            '<div class="ps-mode-btn'+(item.mode!=='depth'?' active':'')+'" data-mode="relative">相对位置</div>'+
+            '<div class="ps-mode-btn'+(item.mode==='depth'?' active':'')+'" data-mode="depth">深度注入</div>'+
+          '</div>'+
+          '<div id="psRelHint" style="'+(item.mode!=='depth'?'':'display:none;')+'">'+
+            '<div class="ps-add-hint">相对模式：可以任意穿插到系统预设之间，在编辑预设页拖动排列位置。</div></div>'+
+          '<div id="psDepthRow" style="'+(item.mode==='depth'?'':'display:none;')+'">'+
+            '<div class="ps-depth-row"><span style="font-size:12px;color:#7a9ab8;font-weight:600;">注入深度</span>'+
+              '<input type="number" class="ps-depth-input" id="psItemDepth" value="'+(item.depth!=null?item.depth:2)+'" min="0" max="99"></div>'+
+            '<div class="ps-depth-hint" style="margin-top:6px;">数字越小越靠近最新消息。0 = 紧接在最后一条用户消息之前。</div>'+
+            '<div class="ps-add-hint" style="margin-top:8px;">深度注入的预设保存后会出现在聊天历史下面。</div></div>'+
         '</div>'+
-      '</div><div class="ps-add-btns"><button class="ps-save-btn" id="psItemSave" type="button">保存</button><button class="ps-cancel-btn" id="psItemCancel" type="button">取消</button></div></div>';
+      '</div>'+
+      '<div class="ps-add-btns">'+
+        '<button class="ps-save-btn" id="psItemSave" type="button">保存</button>'+
+        '<button class="ps-cancel-btn" id="psItemCancel" type="button">取消</button>'+
+      '</div></div>';
 
     document.body.appendChild(page);
     requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('show');});});
 
-    page.querySelectorAll('.ps-mode-btn').forEach(function(btn){btn.addEventListener('click',function(){
-      page.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');
-      var rh=page.querySelector('#psRelHint'),dr=page.querySelector('#psDepthRow');
-      if(btn.dataset.mode==='depth'){rh.style.display='none';dr.style.display='';}else{rh.style.display='';dr.style.display='none';}
-    });});
+    page.querySelectorAll('.ps-mode-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        page.querySelectorAll('.ps-mode-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        var rh=page.querySelector('#psRelHint'),dr=page.querySelector('#psDepthRow');
+        if(btn.dataset.mode==='depth'){rh.style.display='none';dr.style.display='';}
+        else{rh.style.display='';dr.style.display='none';}
+      });
+    });
 
-    page.querySelector('#psExpandBtn').addEventListener('click',function(){Preset.openExpand(page.querySelector('#psItemContent'));});
+    page.querySelector('#psExpandBtn').addEventListener('click',function(){
+      Preset.openExpand(page.querySelector('#psItemContent'));
+    });
+
     page.querySelector('#psAddBack').addEventListener('click',function(){Preset.closeAdd();});
     page.querySelector('#psItemCancel').addEventListener('click',function(){Preset.closeAdd();});
+
     page.querySelector('#psItemSave').addEventListener('click',function(){
       var name=(page.querySelector('#psItemName').value||'').trim();
       var content=(page.querySelector('#psItemContent').value||'').trim();
-      if(!name){App.showToast('请输入指令名称');return;}if(!content){App.showToast('请输入预设内容');return;}
-      var mb=page.querySelector('.ps-mode-btn.active');var mode=mb?mb.dataset.mode:'relative';
+      if(!name){App.showToast('请输入指令名称');return;}
+      if(!content){App.showToast('请输入预设内容');return;}
+      var mb=page.querySelector('.ps-mode-btn.active');
+      var mode=mb?mb.dataset.mode:'relative';
       var depth=parseInt(page.querySelector('#psItemDepth').value)||2;
       var obj={name:name,content:content,mode:mode,depth:depth,enabled:true};
-      if(isEdit){preset.items[editIdx]=obj;}else{preset.items.unshift(obj);}
-      Preset.closeAdd();if(onDone)onDone();App.showToast(isEdit?'已保存':'已添加');
+      if(isEdit){preset.items[editIdx]=obj;}
+      else{preset.items.push(obj);}
+      Preset.closeAdd();if(onDone)onDone();
+      App.showToast(isEdit?'已保存':'已添加');
     });
+
     Preset.bindSwipeBack(page,function(){Preset.closeAdd();});
   },
 
-  closeAdd:function(){var page=Preset._addEl;if(!page)return;page.classList.remove('show');setTimeout(function(){if(page.parentNode)page.remove();Preset._addEl=null;},350);},
+  closeAdd:function(){
+    var page=Preset._addEl;if(!page)return;
+    page.classList.remove('show');
+    setTimeout(function(){if(page.parentNode)page.remove();Preset._addEl=null;},350);
+  },
 
+  // ==================== 扩展编辑 ====================
   openExpand:function(textarea){
     if(Preset._expandEl)Preset._expandEl.remove();
     var ed=document.createElement('div');Preset._expandEl=ed;
     ed.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateY(100%);opacity:0;';
-    ed.innerHTML='<div class="ps-header"><button class="ps-back" id="psExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button><div class="ps-header-title">预设内容</div><button id="psExpDone" type="button" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;padding:4px 10px;">完成</button></div><div style="flex:1;padding:12px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;"><textarea id="psExpTA" style="width:100%;min-height:calc(100vh - 120px);border:1.5px solid rgba(126,163,201,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);resize:none;line-height:1.7;box-sizing:border-box;">'+App.esc(textarea.value)+'</textarea></div>';
+    ed.innerHTML=
+      '<div class="ps-header">'+
+        '<button class="ps-back" id="psExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+        '<div class="ps-header-title">预设内容</div>'+
+        '<button id="psExpDone" type="button" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;padding:4px 10px;">完成</button>'+
+      '</div>'+
+      '<div style="flex:1;padding:12px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;">'+
+        '<textarea id="psExpTA" style="width:100%;min-height:calc(100vh - 120px);border:1.5px solid rgba(126,163,201,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);resize:none;line-height:1.7;box-sizing:border-box;">'+App.esc(textarea.value)+'</textarea>'+
+      '</div>';
     document.body.appendChild(ed);
     requestAnimationFrame(function(){requestAnimationFrame(function(){ed.style.transform='translateY(0)';ed.style.opacity='1';});});
     var ta=ed.querySelector('#psExpTA');if(ta)ta.focus();
@@ -301,97 +489,46 @@ var Preset={
     ed.querySelector('#psExpDone').addEventListener('click',done);
   },
 
-  _bindDrag:function(page,selector,excludeSelector,onSwap){
+  // ==================== 首页卡片拖拽 ====================
+  _bindListDrag:function(page,selector,excludeSelector,list,onDone){
     var els=page.querySelectorAll(selector);
-    var dragEl=null,dragIdx=-1,targetIdx=-1,startY=0,timer=null,pressed=false,moved=false;
-    var placeholder=null;
-
     els.forEach(function(el,elIdx){
+      var timer=null,pressed=false,moved=false,startY=0;
       el.addEventListener('touchstart',function(e){
-        if(e.target.closest(excludeSelector)||e.target.closest('.ps-sw'))return;
+        if(e.target.closest(excludeSelector))return;
         moved=false;pressed=false;startY=e.touches[0].clientY;
-        dragEl=el;dragIdx=elIdx;targetIdx=elIdx;
         timer=setTimeout(function(){
-          pressed=true;
-          if(navigator.vibrate)navigator.vibrate(15);
+          pressed=true;if(navigator.vibrate)navigator.vibrate(15);
           el.classList.add('dragging');
-          el.style.position='relative';
-          el.style.zIndex='100';
-          el.style.opacity='1';
-          // 创建占位符
-          placeholder=document.createElement('div');
-          placeholder.style.cssText='height:'+el.offsetHeight+'px;margin:6px 16px;border:1.5px dashed rgba(126,163,201,.3);border-radius:12px;transition:height .18s ease;';
-          el.parentNode.insertBefore(placeholder,el.nextSibling);
         },400);
       },{passive:true});
-    });
-
-    page.addEventListener('touchmove',function(e){
-      if(timer&&!pressed){
-        if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;dragEl=null;}
-        return;
-      }
-      if(!pressed||!dragEl)return;
-      moved=true;
-      e.preventDefault();
-      e.stopPropagation();
-
-      var dy=e.touches[0].clientY-startY;
-      dragEl.style.transform='translateY('+dy+'px)';
-
-      var allEls=page.querySelectorAll(selector);
-      var newTarget=dragIdx;
-      allEls.forEach(function(c,ci){
-        if(ci===dragIdx)return;
-        var rect=c.getBoundingClientRect();
-        var mid=rect.top+rect.height/2;
-        if(e.touches[0].clientY>mid&&ci>dragIdx)newTarget=ci;
-        if(e.touches[0].clientY<mid&&ci<dragIdx)newTarget=ci;
-      });
-
-      if(newTarget!==targetIdx){
-        targetIdx=newTarget;
-        // 移动占位符到目标位置
-        if(placeholder&&placeholder.parentNode){
-          var targetEl=allEls[targetIdx];
-          if(targetEl){
-            if(targetIdx>dragIdx){
-              targetEl.parentNode.insertBefore(placeholder,targetEl.nextSibling);
-            } else {
-              targetEl.parentNode.insertBefore(placeholder,targetEl);
-            }
-          }
-        }
-        // 推开动画
-        allEls.forEach(function(c,ci){
-          if(ci===dragIdx)return;
-          c.style.transition='transform .18s ease';
-          var h=dragEl.offsetHeight+12;
-          if(targetIdx>dragIdx&&ci>dragIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
-          else if(targetIdx<dragIdx&&ci<dragIdx&&ci>=targetIdx)c.style.transform='translateY('+h+'px)';
+      el.addEventListener('touchmove',function(e){
+        if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
+        if(!pressed)return;moved=true;e.preventDefault();
+        var dy=e.touches[0].clientY-startY;
+        el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
+        var all=page.querySelectorAll(selector);var targetIdx=elIdx;
+        all.forEach(function(c,ci){if(ci===elIdx)return;var rect=c.getBoundingClientRect();var mid=rect.top+rect.height/2;if(e.touches[0].clientY>mid&&ci>elIdx)targetIdx=ci;if(e.touches[0].clientY<mid&&ci<elIdx)targetIdx=ci;});
+        var h=el.offsetHeight+10;
+        all.forEach(function(c,ci){if(ci===elIdx)return;c.style.transition='transform .18s ease';
+          if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
+          else if(targetIdx<elIdx&&ci<elIdx&&ci>=targetIdx)c.style.transform='translateY('+h+'px)';
           else c.style.transform='';
         });
-      }
-    },{passive:false});
-
-    page.addEventListener('touchend',function(){
-      clearTimeout(timer);timer=null;
-      if(placeholder&&placeholder.parentNode)placeholder.remove();
-      placeholder=null;
-      if(!dragEl)return;
-      dragEl.classList.remove('dragging');
-      dragEl.style.transform='';dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.opacity='';
-
-      var allEls=page.querySelectorAll(selector);
-      allEls.forEach(function(c){c.style.transform='';c.style.transition='';});
-
-      if(pressed&&moved&&dragIdx!==targetIdx){
-        onSwap(dragIdx,targetIdx);
-      }
-      pressed=false;moved=false;dragEl=null;dragIdx=-1;targetIdx=-1;
-    },{passive:true});
+        el._targetIdx=targetIdx;
+      },{passive:false});
+      el.addEventListener('touchend',function(){
+        clearTimeout(timer);timer=null;el.classList.remove('dragging');
+        page.querySelectorAll(selector).forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
+        if(pressed&&moved&&el._targetIdx!==undefined&&el._targetIdx!==elIdx){
+          var item=list.splice(elIdx,1)[0];list.splice(el._targetIdx,0,item);if(onDone)onDone();
+        }
+        el._targetIdx=undefined;pressed=false;moved=false;
+      },{passive:true});
+    });
   },
 
+  // ==================== 滑动返回 ====================
   bindSwipeBack:function(page,onBack){
     var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
     page.addEventListener('touchstart',function(e){var t=e.touches[0];if(t.clientX-page.getBoundingClientRect().left>50)return;_sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
