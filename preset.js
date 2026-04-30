@@ -122,10 +122,25 @@ var Preset={
     var page=document.createElement('div');page.className='ps-edit-page';Preset._editEl=page;
     document.body.appendChild(page);
 
-    function render(){
+        function render(){
       Preset._syncOrder(p);
-      var rows='';
+
+      var activeOrder=[];
+      var inactiveOrder=[];
       p.order.forEach(function(o,oi){
+        o._oi=oi;
+        if(o.type==='sys'){activeOrder.push(o);}
+        else{
+          var it=p.items[o.idx];
+          if(it&&it.active===false)inactiveOrder.push(o);
+          else activeOrder.push(o);
+        }
+      });
+
+      var rows='';
+
+      activeOrder.forEach(function(o){
+        var oi=o._oi;
         if(o.type==='sys'){
           var s=getSysDef(o.id);if(!s)return;
           var isOn=Preset.config.sysToggles[s.id]!==false;
@@ -138,6 +153,7 @@ var Preset={
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
           var swOn=it.enabled!==false?'on':'off';
           rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
+            '<div class="ps-item-activate" data-iact="activate" data-ii="'+o.idx+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="7" fill="#7a9ab8" stroke="none"/><polyline points="9 12 11 14 15 10" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
             '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+'</div></div>'+
             '<div class="ps-item-actions">'+depthTag+
               '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
@@ -147,6 +163,23 @@ var Preset={
           '</div>';
         }
       });
+
+      if(inactiveOrder.length){
+        rows+='<div style="padding:14px 18px 6px;font-size:11px;font-weight:700;color:#ccc;letter-spacing:1px;border-top:2px solid rgba(0,0,0,.03);margin:8px 16px 0;">未激活</div>';
+        inactiveOrder.forEach(function(o){
+          var oi=o._oi;
+          var it=p.items[o.idx];if(!it)return;
+          var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
+          rows+='<div class="ps-item is-user ps-inactive" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
+            '<div class="ps-item-activate" data-iact="activate" data-ii="'+o.idx+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="7" fill="none" stroke="#ccc" stroke-width="1.5"/></svg></div>'+
+            '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+'</div></div>'+
+            '<div class="ps-item-actions">'+depthTag+
+              '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
+              '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
+            '</div>'+
+          '</div>';
+        });
+      }
 
       page.innerHTML=
         '<div class="ps-header">'+
@@ -189,11 +222,20 @@ var Preset={
           render();
         });
       });
-
       page.querySelectorAll('[data-iact="sw"]').forEach(function(sw){
         sw.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(sw.dataset.ii);if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}render();});
       });
-
+      page.querySelectorAll('[data-iact="activate"]').forEach(function(btn){
+        btn.addEventListener('click',function(e){
+          e.stopPropagation();
+          var ii=parseInt(btn.dataset.ii);
+          if(p.items[ii]){
+            p.items[ii].active=p.items[ii].active===false?true:false;
+          }
+          render();
+        });
+      });
+      
       var si=page.querySelector('#psEditSearch');
       if(si)si.addEventListener('input',function(){
         var q=this.value.trim().toLowerCase();
