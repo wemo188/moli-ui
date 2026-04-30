@@ -4,14 +4,15 @@
 var App=window.App;if(!App)return;
 
 var SYS_ITEMS=[
+  {id:'sys_char_worldbook_before',name:'角色世界书（前）',desc:'角色档案之前的世界书条目',enabled:true,system:true},
   {id:'sys_char_profile',name:'角色档案',desc:'角色的基础设定',enabled:true,system:true},
-  {id:'sys_char_worldbook',name:'角色世界书',desc:'角色挂载的世界书条目',enabled:true,system:true},
+  {id:'sys_char_worldbook_after',name:'角色世界书（后）',desc:'角色档案之后的世界书条目',enabled:true,system:true},
   {id:'sys_memory',name:'记忆总结',desc:'AI对历史对话的总结记忆',enabled:true,system:true},
   {id:'sys_post',name:'后置指令',desc:'在对话末尾追加的指令',enabled:true,system:true},
   {id:'sys_history',name:'聊天历史',desc:'发送给AI的历史消息',enabled:true,system:true}
 ];
 
-var HAS_TOGGLE=['sys_post','sys_memory','sys_history'];
+var HAS_TOGGLE=['sys_memory','sys_post','sys_history'];
 
 var Preset={
   list:[],
@@ -64,6 +65,7 @@ var Preset={
     var page=Preset._homeEl;
     if(!page)return;
 
+    // 系统组件
     var sysHtml=SYS_ITEMS.map(function(s){
       var isOn=Preset.config.sysToggles[s.id]!==false;
       var hasToggle=HAS_TOGGLE.indexOf(s.id)>=0;
@@ -75,6 +77,7 @@ var Preset={
       '</div>';
     }).join('');
 
+    // 用户预设卡片
     var userHtml='';
     if(!Preset.list.length){
       userHtml='<div style="padding:40px 20px;text-align:center;color:#bbb;font-size:13px;">暂无自定义预设</div>';
@@ -86,7 +89,7 @@ var Preset={
         return '<div class="ps-home-card'+(isActive?' active-preset':'')+'" data-idx="'+i+'">'+
           '<div class="ps-home-card-info">'+
             '<div class="ps-home-card-name">'+App.esc(p.name||'未命名')+depthTag+'</div>'+
-            '<div class="ps-home-card-desc">'+(p.enabled?'已启用':'已禁用')+' · '+(p.content||'').slice(0,40)+'</div>'+
+            '<div class="ps-home-card-desc">'+(p.enabled!==false?'已启用':'已禁用')+' · '+App.esc((p.content||'').slice(0,40))+'</div>'+
           '</div>'+
           '<div class="ps-home-actions">'+
             (isActive?'<div class="ps-mini-btn del" data-act="delete" data-idx="'+i+'" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>':'')+
@@ -97,12 +100,20 @@ var Preset={
       }).join('');
     }
 
+    // 搜索栏
+    var toolbarHtml=
+      '<div class="ps-toolbar">'+
+        '<div class="ps-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input type="text" id="psSearchInput" placeholder="搜索预设..."></div>'+
+        '<button class="ps-add-btn" id="psAddBtn" type="button">+ 新建</button>'+
+      '</div>';
+
     page.innerHTML=
       '<div class="ps-header">'+
         '<button class="ps-back" id="psHomeBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
         '<div class="ps-header-title">预设管理</div>'+
-        '<button class="ps-add-btn" id="psAddBtn" type="button">+ 新建</button>'+
+        '<div style="width:36px;"></div>'+
       '</div>'+
+      toolbarHtml+
       '<div class="ps-home-list" id="psHomeList">'+
         '<div class="ps-section-label">系统组件</div>'+
         sysHtml+
@@ -117,6 +128,21 @@ var Preset={
   bindHomeEvents:function(page){
     page.querySelector('#psHomeBack').addEventListener('click',function(){Preset.close();});
     page.querySelector('#psAddBtn').addEventListener('click',function(){Preset.openEdit(-1);});
+
+    // 搜索
+    var searchInput=page.querySelector('#psSearchInput');
+    if(searchInput){
+      searchInput.addEventListener('input',function(){
+        var q=this.value.trim().toLowerCase();
+        page.querySelectorAll('.ps-home-card').forEach(function(card){
+          var idx=parseInt(card.dataset.idx);
+          var p=Preset.list[idx];
+          if(!p){card.style.display='';return;}
+          var match=!q||p.name.toLowerCase().indexOf(q)>=0||(p.content||'').toLowerCase().indexOf(q)>=0;
+          card.style.display=match?'':'none';
+        });
+      });
+    }
 
     // 系统项开关
     page.querySelectorAll('.ps-sw').forEach(function(sw){
@@ -174,15 +200,14 @@ var Preset={
     });
 
     // 长按拖拽排序
-    var list=page.querySelector('#psHomeList');
-    if(!list)return;
-
-    var cards=list.querySelectorAll('.ps-home-card');
+    var cards=page.querySelectorAll('.ps-home-card');
     cards.forEach(function(card){
       var timer=null,pressed=false,moved=false,startY=0,startIdx=0;
-      var clone=null,gap=null;
+      var gap=null;
 
       card.addEventListener('touchstart',function(e){
+        if(e.target.closest('.ps-mini-btn'))return;
+        if(e.target.closest('.ps-home-actions'))return;
         moved=false;pressed=false;
         var t=e.touches[0];
         startY=t.clientY;
@@ -216,8 +241,7 @@ var Preset={
         card.style.transform='translateY('+dy+'px)';
         card.style.zIndex='100';
 
-        // 计算目标位置
-        var allCards=list.querySelectorAll('.ps-home-card');
+        var allCards=page.querySelectorAll('.ps-home-card');
         var targetIdx=startIdx;
         allCards.forEach(function(c,ci){
           if(ci===startIdx)return;
@@ -239,7 +263,7 @@ var Preset={
         Preset._dragState={from:startIdx,to:targetIdx};
       },{passive:false});
 
-      card.addEventListener('touchend',function(e){
+      card.addEventListener('touchend',function(){
         clearTimeout(timer);timer=null;
         card.classList.remove('dragging');
         card.style.transform='';
@@ -312,7 +336,7 @@ var Preset={
           var blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
           var url=URL.createObjectURL(blob);
           var a=document.createElement('a');
-          a.href=url;a.download='preset_'+p.name+'_'+Date.now()+'.json';
+          a.href=url;a.download='preset_'+(p.name||'export')+'_'+Date.now()+'.json';
           document.body.appendChild(a);a.click();document.body.removeChild(a);
           URL.revokeObjectURL(url);
           App.showToast('已导出');
