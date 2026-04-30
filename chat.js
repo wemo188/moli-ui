@@ -647,7 +647,28 @@ function schedule(){var delay=minMs+Math.random()*(maxMs-minMs);
 Chat._proTimer=setTimeout(function(){if(!Chat.charId||Chat.isStreaming){schedule();return;}
 var now=new Date(),hhmm=pad2(now.getHours())+':'+pad2(now.getMinutes());
 var start=cfg.proActiveStart||'00:00',end=cfg.proActiveEnd||'23:59';
-if(hhmm<start||hhmm>end){schedule();return;}
+var hour=now.getHours();
+
+/* ★ 凌晨保护：全天模式下 0-7 点拉长间隔，但如果用户活跃则正常 */
+if(start==='00:00'&&end==='23:59'&&hour>=0&&hour<7){
+  /* 检查用户最近是否活跃（30分钟内发过消息） */
+  var msgs=App.LS.get('chatMsgs_'+charId)||[];
+  var lastUserMsg=null;
+  for(var mi=msgs.length-1;mi>=0;mi--){
+    if(msgs[mi].role==='user'){lastUserMsg=msgs[mi];break;}
+  }
+  var userActive=lastUserMsg&&lastUserMsg.ts&&(Date.now()-lastUserMsg.ts<30*60*1000);
+  
+  if(!userActive){
+    /* 用户不活跃，30-60分钟后再检查 */
+    var sleepMs=30*60*1000+Math.random()*30*60*1000;
+    GlobalProactive.timers[charId]=setTimeout(function(){GlobalProactive.tryFire(charId);},sleepMs);
+    return;
+  }
+  /* 用户活跃，正常走下面的逻辑 */
+}
+
+if(hhmm<start||hhmm>end){GlobalProactive.scheduleChar(charId);return;}
 Chat.requestProactive();schedule();},delay);}
 schedule();
 },
