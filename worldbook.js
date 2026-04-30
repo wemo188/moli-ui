@@ -298,9 +298,9 @@ var WB={
           if(!pressed)return;moved=true;e.preventDefault();
           var dy=e.touches[0].clientY-startY;el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
           var all=page.querySelectorAll('.wb-item');targetIdx=elIdx;
-          all.forEach(function(c,ci){if(ci===elIdx)return;var rect=c.getBoundingClientRect();var mid=rect.top+rect.height/2;
-            if(e.touches[0].clientY>mid&&ci>elIdx)targetIdx=ci;if(e.touches[0].clientY<mid&&ci<elIdx)targetIdx=ci;
-          });
+          var cy=e.touches[0].clientY;
+          for(var ui=0;ui<elIdx;ui++){var r=all[ui].getBoundingClientRect();if(cy<r.top+r.height/2){targetIdx=ui;break;}}
+          if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){var r2=all[di].getBoundingClientRect();if(cy>r2.top+r2.height/2){targetIdx=di;break;}}}
           var h=el.offsetHeight+12;
           all.forEach(function(c,ci){if(ci===elIdx)return;c.style.transition='transform .18s ease';
             if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
@@ -527,8 +527,12 @@ function bindDrag(page,selector,excludeSelector,list,onDone){
       if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
       if(!pressed)return;moved=true;e.preventDefault();
       var dy=e.touches[0].clientY-startY;el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
-      var all=page.querySelectorAll(selector);targetIdx=elIdx;
-      all.forEach(function(c,ci){if(ci===elIdx)return;var rect=c.getBoundingClientRect();var mid=rect.top+rect.height/2;if(e.touches[0].clientY>mid&&ci>elIdx)targetIdx=ci;if(e.touches[0].clientY<mid&&ci<elIdx)targetIdx=ci;});
+     var all=page.querySelectorAll(selector);targetIdx=elIdx;
+      var cy=e.touches[0].clientY;
+      // 往上：找最小的ci（最上方）
+      for(var ui=0;ui<elIdx;ui++){var r=all[ui].getBoundingClientRect();if(cy<r.top+r.height/2){targetIdx=ui;break;}}
+      // 往下：找最大的ci（最下方）
+      if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){var r2=all[di].getBoundingClientRect();if(cy>r2.top+r2.height/2){targetIdx=di;break;}}}
       var h=el.offsetHeight+12;
       all.forEach(function(c,ci){if(ci===elIdx)return;c.style.transition='transform .18s ease';
         if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
