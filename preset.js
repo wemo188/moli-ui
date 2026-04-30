@@ -49,7 +49,7 @@ var Preset={
             '<div class="ps-home-card-desc">'+App.esc((p.content||'').slice(0,50))+'</div>'+
           '</div>'+
           '<div class="ps-home-actions">'+
-            '<div class="ps-mini-btn'+(isEnabled?' active-on':'')+'" data-act="enable" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" '+(isEnabled?'fill="#7a9ab8"':'fill="none" stroke="#c0cedd" stroke-width="2"')+'/></svg></div>'+
+            '<div class="ps-mini-btn'+(isEnabled?' active-on':'')+'" data-act="enable" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="'+(isEnabled?'#7a9ab8':'#c0cedd')+'" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" '+(isEnabled?'fill="#7a9ab8"':'fill="none"')+'/></svg></div>'+
             '<div class="ps-mini-btn" data-act="dots" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="#7a9ab8" stroke="none"/></svg></div>'+
           '</div>'+
         '</div>';
@@ -158,15 +158,19 @@ var Preset={
       bindEv();
     }
 
-    function itemRow(it,isActive){
+        function itemRow(it,isActive){
       var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
       var ns=isActive?'':'style="color:#bbb;"';
       var swOn=it.enabled!==false?'on':'off';
+      var activeSvg=isActive
+        ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><rect x="8" y="8" width="8" height="8" rx="1" fill="#1a1a1a"/></svg>'
+        :'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#4caf50" stroke-width="1.5"/><polygon points="10,8 16,12 10,16" fill="#4caf50"/></svg>';
       return '<div class="ps-item is-user" data-item-idx="'+it._idx+'">'+
         '<div class="ps-info"><div class="ps-name" '+ns+'>'+App.esc(it.name||'未命名')+'</div><div class="ps-name-sub">'+App.esc((it.content||'').slice(0,30))+'</div></div>'+
         '<div class="ps-item-actions">'+
           depthTag+
           '<div class="ps-mini-btn" data-iact="edit" data-ii="'+it._idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
+          '<div class="ps-mini-btn" data-iact="toggle" data-ii="'+it._idx+'">'+activeSvg+'</div>'+
           '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+it._idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
           '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+it._idx+'"></div>'+
         '</div>'+
@@ -189,6 +193,16 @@ var Preset={
       });
       page.querySelectorAll('[data-iact="del"]').forEach(function(btn){
         btn.addEventListener('click',function(e){e.stopPropagation();if(!confirm('删除？'))return;p.items.splice(parseInt(btn.dataset.ii),1);render();});
+      });
+            page.querySelectorAll('[data-iact="toggle"]').forEach(function(btn){
+        btn.addEventListener('click',function(e){
+          e.stopPropagation();
+          var ii=parseInt(btn.dataset.ii);
+          if(p.items[ii]){
+            p.items[ii].enabled=p.items[ii].enabled===false?true:false;
+            render();
+          }
+        });
       });
       page.querySelectorAll('[data-iact="sw"]').forEach(function(sw){
         sw.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(sw.dataset.ii);if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}render();});
@@ -289,55 +303,93 @@ var Preset={
 
   _bindDrag:function(page,selector,excludeSelector,onSwap){
     var els=page.querySelectorAll(selector);
+    var dragEl=null,dragIdx=-1,targetIdx=-1,startY=0,timer=null,pressed=false,moved=false;
+    var placeholder=null;
+
     els.forEach(function(el,elIdx){
-      var timer=null,pressed=false,moved=false,startY=0;
       el.addEventListener('touchstart',function(e){
         if(e.target.closest(excludeSelector)||e.target.closest('.ps-sw'))return;
         moved=false;pressed=false;startY=e.touches[0].clientY;
+        dragEl=el;dragIdx=elIdx;targetIdx=elIdx;
         timer=setTimeout(function(){
-          pressed=true;if(navigator.vibrate)navigator.vibrate(15);
-          el.classList.add('dragging');el.style.opacity='1';
+          pressed=true;
+          if(navigator.vibrate)navigator.vibrate(15);
+          el.classList.add('dragging');
+          el.style.position='relative';
+          el.style.zIndex='100';
+          el.style.opacity='1';
+          // 创建占位符
+          placeholder=document.createElement('div');
+          placeholder.style.cssText='height:'+el.offsetHeight+'px;margin:6px 16px;border:1.5px dashed rgba(126,163,201,.3);border-radius:12px;transition:height .18s ease;';
+          el.parentNode.insertBefore(placeholder,el.nextSibling);
         },400);
       },{passive:true});
+    });
 
-      el.addEventListener('touchmove',function(e){
-        if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
-        if(!pressed)return;moved=true;e.preventDefault();
-        var dy=e.touches[0].clientY-startY;
-        el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
+    page.addEventListener('touchmove',function(e){
+      if(timer&&!pressed){
+        if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;dragEl=null;}
+        return;
+      }
+      if(!pressed||!dragEl)return;
+      moved=true;
+      e.preventDefault();
+      e.stopPropagation();
 
-        var allEls=page.querySelectorAll(selector);
-        var targetElIdx=elIdx;
+      var dy=e.touches[0].clientY-startY;
+      dragEl.style.transform='translateY('+dy+'px)';
+
+      var allEls=page.querySelectorAll(selector);
+      var newTarget=dragIdx;
+      allEls.forEach(function(c,ci){
+        if(ci===dragIdx)return;
+        var rect=c.getBoundingClientRect();
+        var mid=rect.top+rect.height/2;
+        if(e.touches[0].clientY>mid&&ci>dragIdx)newTarget=ci;
+        if(e.touches[0].clientY<mid&&ci<dragIdx)newTarget=ci;
+      });
+
+      if(newTarget!==targetIdx){
+        targetIdx=newTarget;
+        // 移动占位符到目标位置
+        if(placeholder&&placeholder.parentNode){
+          var targetEl=allEls[targetIdx];
+          if(targetEl){
+            if(targetIdx>dragIdx){
+              targetEl.parentNode.insertBefore(placeholder,targetEl.nextSibling);
+            } else {
+              targetEl.parentNode.insertBefore(placeholder,targetEl);
+            }
+          }
+        }
+        // 推开动画
         allEls.forEach(function(c,ci){
-          if(ci===elIdx)return;
-          var rect=c.getBoundingClientRect();var mid=rect.top+rect.height/2;
-          if(e.touches[0].clientY>mid&&ci>elIdx)targetElIdx=ci;
-          if(e.touches[0].clientY<mid&&ci<elIdx)targetElIdx=ci;
-        });
-
-        var h=el.offsetHeight+12;
-        allEls.forEach(function(c,ci){
-          if(ci===elIdx){return;}
+          if(ci===dragIdx)return;
           c.style.transition='transform .18s ease';
-          if(targetElIdx>elIdx&&ci>elIdx&&ci<=targetElIdx)c.style.transform='translateY(-'+h+'px)';
-          else if(targetElIdx<elIdx&&ci<elIdx&&ci>=targetElIdx)c.style.transform='translateY('+h+'px)';
+          var h=dragEl.offsetHeight+12;
+          if(targetIdx>dragIdx&&ci>dragIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
+          else if(targetIdx<dragIdx&&ci<dragIdx&&ci>=targetIdx)c.style.transform='translateY('+h+'px)';
           else c.style.transform='';
         });
-        Preset._dragState={from:elIdx,to:targetElIdx};
-      },{passive:false});
+      }
+    },{passive:false});
 
-      el.addEventListener('touchend',function(){
-        clearTimeout(timer);timer=null;el.classList.remove('dragging');el.style.opacity='';
-        var allEls=page.querySelectorAll(selector);
-        allEls.forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
-        if(pressed&&moved&&Preset._dragState){
-          var f=Preset._dragState.from,t=Preset._dragState.to;
-          if(f!==t)onSwap(f,t);
-          Preset._dragState=null;
-        }
-        pressed=false;moved=false;
-      },{passive:true});
-    });
+    page.addEventListener('touchend',function(){
+      clearTimeout(timer);timer=null;
+      if(placeholder&&placeholder.parentNode)placeholder.remove();
+      placeholder=null;
+      if(!dragEl)return;
+      dragEl.classList.remove('dragging');
+      dragEl.style.transform='';dragEl.style.zIndex='';dragEl.style.position='';dragEl.style.opacity='';
+
+      var allEls=page.querySelectorAll(selector);
+      allEls.forEach(function(c){c.style.transform='';c.style.transition='';});
+
+      if(pressed&&moved&&dragIdx!==targetIdx){
+        onSwap(dragIdx,targetIdx);
+      }
+      pressed=false;moved=false;dragEl=null;dragIdx=-1;targetIdx=-1;
+    },{passive:true});
   },
 
   bindSwipeBack:function(page,onBack){
