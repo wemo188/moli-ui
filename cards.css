@@ -172,7 +172,6 @@
   margin-top: calc(-22px * var(--S));
   position: relative;
   padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(6px * var(--S));
-  background: linear-gradient(to top, rgba(248,249,250,1) 60%, rgba(248,249,250,.85) 80%, rgba(248,249,250,0) 100%);
   border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
   z-index: 3;
   cursor: pointer;
@@ -283,7 +282,6 @@
   margin-top: calc(-22px * var(--S));
   position: relative;
   padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(6px * var(--S));
-  background: linear-gradient(to top, rgba(248,249,250,1) 60%, rgba(248,249,250,.85) 80%, rgba(248,249,250,0) 100%);
   border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
   z-index: 3;
   cursor: pointer;
@@ -330,16 +328,14 @@
 .pc-edit-panel {
   position: absolute;
   pointer-events: auto;
-  background: rgba(255,255,255,.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: #fff;
   border-radius: 14px;
   width: 240px;
   max-height: 360px;
   overflow-y: auto;
   padding: 14px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.18);
-  border: 1px solid rgba(220,235,255,.6);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  border: 1px solid rgba(0,0,0,.06);
   cursor: grab;
   -webkit-overflow-scrolling: touch;
 }
