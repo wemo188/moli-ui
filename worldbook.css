@@ -142,3 +142,30 @@
   width: 14px; height: 14px; fill: none; stroke: #7a9ab8;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
+/* 首页卡片 */
+.wb-home-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 16px 80px; }
+
+.wb-home-card {
+  padding: 18px 18px; border: 1.8px solid rgba(126,163,201,.3); border-radius: 16px;
+  margin-bottom: 12px; background: #fff; box-shadow: 0 2px 12px rgba(126,163,201,.06);
+  display: flex; align-items: center; gap: 14px;
+  -webkit-tap-highlight-color: transparent; transition: transform .15s ease, box-shadow .15s ease;
+  cursor: pointer;
+}
+.wb-home-card:active { background: rgba(126,163,201,.03); }
+.wb-home-card.dragging {
+  box-shadow: 0 10px 30px rgba(126,163,201,.25); z-index: 100; position: relative;
+  background: #fff; opacity: 1 !important;
+}
+
+.wb-home-info { flex: 1; min-width: 0; }
+.wb-home-name { font-size: 16px; font-weight: 700; color: #2e4258; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-home-desc { font-size: 12px; color: #a8c0d8; margin-top: 4px; }
+
+.wb-home-actions { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
+
+.wb-dots-menu { position: fixed; z-index: 100020; background: #000; border-radius: 10px; padding: 4px 0; box-shadow: 0 6px 24px rgba(0,0,0,.25); min-width: 130px; }
+.wb-dots-mi { padding: 11px 16px; font-size: 13px; color: rgba(255,255,255,.85); cursor: pointer; -webkit-tap-highlight-color: transparent; border-bottom: 1px solid rgba(255,255,255,.08); }
+.wb-dots-mi:last-child { border-bottom: none; }
+.wb-dots-mi:active { background: rgba(255,255,255,.1); }
+.wb-dots-mi.danger { color: rgba(201,112,107,.9); }
