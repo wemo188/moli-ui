@@ -132,8 +132,14 @@ var ci='';
 if(charData.name)ci+='姓名：'+charData.name+'\n';
 if(charData.gender)ci+='性别：'+charData.gender+'\n';
 if(charData.age)ci+='年龄：'+charData.age+'\n';
-if(charData.relation)ci+='与用户的关系：'+charData.relation+'\n';
-if(charData.callName)ci+='对用户的称呼：'+charData.callName+'\n';
+/* ★ 修复：用对方的名字替代"用户" */
+var userName='对方';
+if(App.user){
+  var u=App.user.getActiveUser();
+  if(u)userName=u.nickname||u.realName||'对方';
+}
+if(charData.relation)ci+='与'+userName+'的关系：'+charData.relation+'\n';
+if(charData.callName)ci+='对'+userName+'的称呼：'+charData.callName+'\n';
 if(charData.profile)ci+='\n'+charData.profile+'\n';
 return ci;
 }
@@ -161,7 +167,7 @@ else if(hour>=8&&hour<11)period='上午';
 else if(hour>=11&&hour<13)period='中午';
 else if(hour>=13&&hour<17)period='下午';
 else if(hour>=17&&hour<19)period='傍晚';
-else if(hour>=19&&hour<22)period='晚上';
+else if(hour>=19&&hour<24)period='晚上';
 else period='深夜';
 var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
 var info='现在是：'+timeStr;
