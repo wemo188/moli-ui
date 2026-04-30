@@ -344,7 +344,7 @@ var Preset={
           if(isViewMode){
             /* ★ 查看模式：只有查看按钮和开关 */
             actionsHtml=depthTag+
-              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polygon points="122 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>'+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>'+
               '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>';
           } else {
             actionsHtml=depthTag+
@@ -371,7 +371,7 @@ var Preset={
           var actionsHtml='';
           if(isViewMode){
             actionsHtml=depthTag+
-              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><polygon points="122 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>'+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>'+
               '<div class="ps-mini-btn active-on" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>';
           } else {
             actionsHtml=depthTag+
@@ -680,60 +680,59 @@ var Preset={
 init:function(){
   Preset.load();
 
-  /* 检查是否有内置预设 */
-  var hasBuiltin=false;
   var builtinIdx=-1;
   for(var i=0;i<Preset.list.length;i++){
-    if(Preset.list[i].builtin===true&&Preset.list[i].id==='ps_default'){
-      hasBuiltin=true;builtinIdx=i;break;
-    }
+    if(Preset.list[i].builtin===true&&Preset.list[i].id==='ps_default'){builtinIdx=i;break;}
   }
 
-  if(!hasBuiltin){
+  if(builtinIdx<0){
     /* 没有内置预设，创建 */
     var defaultPreset=createDefaultPreset();
     Preset.list.forEach(function(p){p.enabled=false;});
     Preset.list.unshift(defaultPreset);
     Preset.save();
   } else {
-    /* ★ 已有内置预设，更新 items 的内容（保留用户的开关状态和排序） */
+    /* ★ 已有内置预设：用代码里最新的 BUILTIN_ITEMS 重建，但保留用户的开关状态 */
     var existing=Preset.list[builtinIdx];
-    var builtinMap={};
-    BUILTIN_ITEMS.forEach(function(b){builtinMap[b.id]=b;});
-
-    var updated=false;
+    
+    /* 收集用户对每个卡片的开关状态 */
+    var savedStates={};
     if(existing.items){
       existing.items.forEach(function(it){
-        if(it.builtin&&it.id&&builtinMap[it.id]){
-          var latest=builtinMap[it.id];
-          if(it.content!==latest.content){
-            it.content=latest.content;
-            it.name=latest.name;
-            updated=true;
-          }
-        }
+        if(it.id) savedStates[it.id]={enabled:it.enabled,active:it.active};
       });
     }
 
-    /* 检查有没有新增的内置卡片 */
-    BUILTIN_ITEMS.forEach(function(b){
-      var found=false;
-      if(existing.items){
-        for(var j=0;j<existing.items.length;j++){
-          if(existing.items[j].id===b.id){found=true;break;}
-        }
+    /* 用最新的 BUILTIN_ITEMS 重建 items */
+    var newItems=BUILTIN_ITEMS.map(function(b){
+      var item=JSON.parse(JSON.stringify(b));
+      /* 恢复用户的开关状态 */
+      if(savedStates[item.id]){
+        if(savedStates[item.id].enabled===false) item.enabled=false;
+        if(savedStates[item.id].active===false) item.active=false;
       }
-      if(!found){
-        var newItem=JSON.parse(JSON.stringify(b));
-        existing.items.push(newItem);
-        if(existing.order){
-          existing.order.push({type:'user',idx:existing.items.length-1});
-        }
-        updated=true;
+      return item;
+    });
+
+    /* 用最新的 items 重建 order */
+    var newOrder=[];
+    newItems.forEach(function(it,i){
+      if(it.mode!=='depth') newOrder.push({type:'user',idx:i});
+    });
+    DEFAULT_SYS.forEach(function(s){newOrder.push({type:'sys',id:s.id});});
+    newItems.forEach(function(it,i){
+      if(it.mode==='depth'){
+        var hIdx=-1;
+        for(var j=0;j<newOrder.length;j++){if(newOrder[j].type==='sys'&&newOrder[j].id==='sys_history'){hIdx=j;break;}}
+        if(hIdx>=0)newOrder.splice(hIdx+1,0,{type:'user',idx:i});
+        else newOrder.push({type:'user',idx:i});
       }
     });
 
-    if(updated)Preset.save();
+    existing.items=newItems;
+    existing.order=newOrder;
+    existing.name='默认预设';
+    Preset.save();
   }
 
   App.preset=Preset;
