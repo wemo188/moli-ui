@@ -170,3 +170,16 @@
   width: 14px; height: 14px; fill: none; stroke: #7a9ab8;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
+
+.wb-pos-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.wb-pos-btn {
+  flex: 1; padding: 10px; border: 1.5px solid rgba(126,163,201,.25); border-radius: 10px;
+  font-size: 12px; font-weight: 600; color: #8aa0b8; text-align: center; cursor: pointer;
+  font-family: inherit; background: rgba(126,163,201,.04); transition: all .2s; -webkit-tap-highlight-color: transparent;
+}
+.wb-pos-btn.active { border-color: #7a9ab8; background: rgba(126,163,201,.12); color: #2e4258; }
+
+.wb-tag-pos {
+  font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
+  background: rgba(155,142,196,.1); color: #9b8ec4; margin-left: 4px;
+}
