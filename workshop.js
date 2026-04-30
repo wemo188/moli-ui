@@ -51,7 +51,6 @@
                 tkBlack('worldbook', '世界书', 'lore') +
                 tkBlack('memory', '记忆', 'memory') +
                 tkBlack('data', '数据', 'data') +
-                tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('console', '控制台', 'console') +
                 tkBlack('promptlog', '日志', 'prompt') +
               '</div>' +
@@ -67,6 +66,7 @@
                 tkWhite('font', '字体', 'font') +
                 tkWhite('bg', '背景', 'image') +
                 tkWhite('ballset', '悬浮球', 'float') +
+                tkWhite('resetLayout', '恢复', 'reset') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
             '</div>' +
@@ -97,9 +97,7 @@
           if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
           if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
-          if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
-          /* ★ 新增：日志入口 */
           if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
         });
       });
@@ -109,13 +107,13 @@
           e.stopPropagation();
           var action = item.dataset.action;
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
+          if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           var panelMap = { theme: 'themePanel', font: 'fontPanel', bg: 'bgPanel' };
           if (panelMap[action]) { Workshop.close(); setTimeout(function() { App.openPanel(panelMap[action]); }, 220); }
         });
       });
     },
 
-    /* ★ 新增：Prompt 日志查看器 */
     openPromptLog: function() {
       var old = App.$('#wsPromptLog');
       if (old) { old.remove(); return; }
@@ -181,7 +179,6 @@
       renderList();
     },
 
-    /* ★ 新增：Prompt 详情页 */
     openPromptDetail: function(log) {
       var old = App.$('#wsPromptDetail');
       if (old) old.remove();
@@ -240,7 +237,6 @@
         App.copyText(fullText).then(function() { App.showToast('已复制全部 Prompt'); }).catch(function() { App.showToast('复制失败'); });
       });
 
-      /* 点击消息内容展开/折叠 */
       panel.querySelectorAll('.pl-msg-content').forEach(function(el) {
         el.addEventListener('click', function() {
           var expanded = el.dataset.expanded === 'true';
@@ -274,7 +270,6 @@
           '<div style="width:36px;"></div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;">' +
-
           '<div style="margin-bottom:20px;">' +
             '<div style="font-size:12px;font-weight:700;color:#7a9ab8;letter-spacing:1px;margin-bottom:10px;">导入 / 导出</div>' +
             '<div style="display:flex;gap:10px;">' +
@@ -284,7 +279,6 @@
             '<input type="file" id="wsImportFile" accept=".json" hidden>' +
             '<div style="font-size:11px;color:#a8c0d8;margin-top:8px;line-height:1.5;">导出会生成一个 JSON 文件，包含所有设置和数据。导入会覆盖当前所有数据。</div>' +
           '</div>' +
-
           '<div style="margin-bottom:20px;">' +
             '<div style="font-size:12px;font-weight:700;color:#7a9ab8;letter-spacing:1px;margin-bottom:10px;">存储空间</div>' +
             '<button id="wsOpenStorage" type="button" style="width:100%;padding:14px;background:rgba(126,163,201,.06);color:#2e4258;border:1.5px solid rgba(126,163,201,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;">' +
@@ -292,13 +286,11 @@
               '<span style="font-size:12px;color:#8aa0b8;" id="wsStorageSize">计算中...</span>' +
             '</button>' +
           '</div>' +
-
           '<div style="margin-bottom:20px;">' +
             '<div style="font-size:12px;font-weight:700;color:#c9706b;letter-spacing:1px;margin-bottom:10px;">危险操作</div>' +
             '<button id="wsResetAll" type="button" style="width:100%;padding:14px;background:rgba(201,112,107,.06);color:#c9706b;border:1.5px solid rgba(201,112,107,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">重置所有数据</button>' +
             '<div style="font-size:11px;color:#c9a0a0;margin-top:6px;line-height:1.5;">⚠️ 此操作不可恢复，将清除所有设置、角色、聊天记录等全部数据。</div>' +
           '</div>' +
-
         '</div>';
 
       document.body.appendChild(panel);
@@ -373,33 +365,15 @@
       if (old) { old.remove(); return; }
 
       var labelMap = {
-        'userList': '用户档案',
-        'characterList': '角色列表',
-        'bgData': '主页背景图',
-        'profileCards': '卡片组件',
-        'cmGlobal': '角色管理-全局设置',
-        'cmChars': '角色管理-个别设置',
-        'activeApi': '当前API',
-        'apiConfigs': 'API配置列表',
-        'apiParams': 'API参数',
-        'calCity': '天气城市',
-        'calWeather': '天气数据',
-        'calSchedules': '日程数据',
-        'wtCardConfig': '时间栏调色',
-        'wtCardPos': '时间栏位置',
-        'floatingBallPos': '悬浮球位置',
-        'ballConfig': '悬浮球设置',
-        'charCardMode': '角色卡片模式',
-        'activeUserId': '当前用户',
-        'wxAliases': '微信备注名',
-        'wxPins': '微信置顶',
-        'wxFullScreen': '微信全屏模式',
-        'chatFavorites': '聊天收藏',
-        'cpPresets': '调色板预设',
-        'worldbookEntries': '世界书',
-        'worldbooks': '世界书列表',
-        'presetList': '预设列表',
-        'presetConfig': '预设配置'
+        'userList': '用户档案', 'characterList': '角色列表', 'bgData': '主页背景图',
+        'profileCards': '卡片组件', 'cmGlobal': '角色管理-全局设置', 'cmChars': '角色管理-个别设置',
+        'activeApi': '当前API', 'apiConfigs': 'API配置列表', 'apiParams': 'API参数',
+        'calCity': '天气城市', 'calWeather': '天气数据', 'calSchedules': '日程数据',
+        'wtCardConfig': '时间栏调色', 'wtCardPos': '时间栏位置', 'floatingBallPos': '悬浮球位置',
+        'ballConfig': '悬浮球设置', 'charCardMode': '角色卡片模式', 'activeUserId': '当前用户',
+        'wxAliases': '微信备注名', 'wxPins': '微信置顶', 'wxFullScreen': '微信全屏模式',
+        'chatFavorites': '聊天收藏', 'cpPresets': '调色板预设', 'worldbookEntries': '世界书',
+        'worldbooks': '世界书列表', 'presetList': '预设列表', 'presetConfig': '预设配置'
       };
 
       function getLabel(key) {
@@ -462,6 +436,7 @@
       panel.querySelector('#wsStorageBack').addEventListener('click', function() { panel.remove(); });
     },
 
+    /* ★ 重写：控制台支持拖拽 + 展开/收起 */
     openConsole: function() {
       var old = App.$('#wsConsole');
       if (old) { old.remove(); return; }
@@ -469,10 +444,14 @@
       var panel = document.createElement('div');
       panel.id = 'wsConsole';
       panel.style.cssText = 'position:fixed;bottom:80px;left:10px;right:10px;max-height:50vh;z-index:200000;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.4);font-family:monospace;';
+
+      var isExpanded = false;
+
       panel.innerHTML =
-        '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;">' +
+        '<div id="wsConsoleHeader" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;cursor:grab;-webkit-tap-highlight-color:transparent;">' +
           '<span style="color:#7a9ab8;font-size:12px;font-weight:700;letter-spacing:1px;">CONSOLE</span>' +
           '<div style="display:flex;gap:8px;">' +
+            '<button id="wsExpandLog" type="button" style="background:rgba(255,255,255,.1);border:none;color:#999;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">展开</button>' +
             '<button id="wsClearLog" type="button" style="background:rgba(255,255,255,.1);border:none;color:#999;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">清空</button>' +
             '<button id="wsCloseConsole" type="button" style="background:rgba(255,255,255,.1);border:none;color:#999;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;">关闭</button>' +
           '</div>' +
@@ -485,6 +464,56 @@
       document.body.appendChild(panel);
 
       var logArea = panel.querySelector('#wsLogArea');
+      var header = panel.querySelector('#wsConsoleHeader');
+
+      /* ★ 拖拽 */
+      var _drag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0, moved: false };
+
+      header.addEventListener('touchstart', function(e) {
+        if (e.target.closest('button')) return;
+        var t = e.touches[0];
+        var rect = panel.getBoundingClientRect();
+        /* 固定宽高，脱离 right/bottom 定位 */
+        panel.style.width = rect.width + 'px';
+        panel.style.left = rect.left + 'px';
+        panel.style.top = rect.top + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+        _drag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top, moved: false };
+        header.style.cursor = 'grabbing';
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!_drag.active) return;
+        e.preventDefault();
+        var t = e.touches[0];
+        var dx = t.clientX - _drag.sx;
+        var dy = t.clientY - _drag.sy;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) _drag.moved = true;
+        panel.style.left = (_drag.ox + dx) + 'px';
+        panel.style.top = (_drag.oy + dy) + 'px';
+      }, { passive: false });
+
+      document.addEventListener('touchend', function() {
+        if (_drag.active) {
+          _drag.active = false;
+          header.style.cursor = 'grab';
+        }
+      });
+
+      /* ★ 展开/收起 */
+      panel.querySelector('#wsExpandLog').addEventListener('click', function() {
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+          panel.style.maxHeight = '80vh';
+          logArea.style.maxHeight = '70vh';
+          this.textContent = '收起';
+        } else {
+          panel.style.maxHeight = '50vh';
+          logArea.style.maxHeight = '40vh';
+          this.textContent = '展开';
+        }
+      });
 
       function addLog(text, color) {
         var div = document.createElement('div');
@@ -562,8 +591,8 @@
       });
 
       addLog('控制台已打开', '#7a9ab8');
-      addLog('所有 console.log/warn/error 会显示在这里', '#666');
-      addLog('可以输入JS表达式执行', '#666');
+      addLog('拖拽标题栏可移动位置', '#666');
+      addLog('点击「展开」可放大到屏幕一半', '#666');
     },
 
     bindSwipe: function() {
