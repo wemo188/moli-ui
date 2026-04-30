@@ -53,6 +53,7 @@
                 tkBlack('data', '数据', 'data') +
                 tkBlack('resetLayout', '恢复', 'reset') +
                 tkBlack('console', '控制台', 'console') +
+                tkBlack('promptlog', '日志', 'prompt') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
             '</div>' +
@@ -98,6 +99,8 @@
           if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
+          /* ★ 新增：日志入口 */
+          if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
         });
       });
 
@@ -108,6 +111,150 @@
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
           var panelMap = { theme: 'themePanel', font: 'fontPanel', bg: 'bgPanel' };
           if (panelMap[action]) { Workshop.close(); setTimeout(function() { App.openPanel(panelMap[action]); }, 220); }
+        });
+      });
+    },
+
+    /* ★ 新增：Prompt 日志查看器 */
+    openPromptLog: function() {
+      var old = App.$('#wsPromptLog');
+      if (old) { old.remove(); return; }
+
+      var logs = App._promptLogs || [];
+
+      var panel = document.createElement('div');
+      panel.id = 'wsPromptLog';
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200000;background:#fff;display:flex;flex-direction:column;';
+
+      function renderList() {
+        logs = App._promptLogs || [];
+        var listHtml = '';
+        if (!logs.length) {
+          listHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;">暂无日志<br>发一条消息后这里会显示 Prompt 结构</div>';
+        } else {
+          listHtml = logs.map(function(log, i) {
+            var d = new Date(log.ts);
+            var timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+            var typeTag = log.isProactive ? '<span style="background:rgba(201,112,107,.15);color:#c9706b;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">主动</span>' : '<span style="background:rgba(126,163,201,.15);color:#7a9ab8;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">回复</span>';
+            return '<div class="pl-card" data-log-idx="' + i + '" style="margin:8px 16px;padding:14px;background:rgba(126,163,201,.04);border:1px solid rgba(126,163,201,.15);border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+                '<div style="display:flex;align-items:center;gap:8px;">' +
+                  '<span style="font-size:13px;font-weight:700;color:#2e4258;">' + App.esc(log.charName) + '</span>' +
+                  typeTag +
+                '</div>' +
+                '<span style="font-size:11px;color:#aaa;">' + timeStr + '</span>' +
+              '</div>' +
+              '<div style="display:flex;gap:12px;font-size:11px;color:#8aa0b8;">' +
+                '<span>' + log.msgCount + ' 条消息</span>' +
+                '<span>~' + log.tokenEstimate + ' tokens</span>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+
+        panel.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;border-bottom:1px solid #eee;flex-shrink:0;">' +
+            '<button id="plBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+            '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">Prompt 日志</span>' +
+            '<button id="plClear" type="button" style="background:none;border:none;color:#c9706b;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">清空</button>' +
+          '</div>' +
+          '<div style="padding:8px 16px;font-size:11px;color:#8aa0b8;line-height:1.5;border-bottom:1px solid #eee;flex-shrink:0;">每次发消息时自动记录发送给 AI 的完整 Prompt 结构（最多保留 20 条）。点击查看详情。</div>' +
+          '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;" id="plList">' + listHtml + '</div>';
+
+        panel.querySelector('#plBack').addEventListener('click', function() { panel.remove(); });
+        panel.querySelector('#plClear').addEventListener('click', function() {
+          App._promptLogs = [];
+          renderList();
+          App.showToast('已清空');
+        });
+
+        panel.querySelectorAll('.pl-card').forEach(function(card) {
+          card.addEventListener('click', function() {
+            var idx = parseInt(card.dataset.logIdx);
+            var log = logs[idx];
+            if (log) Workshop.openPromptDetail(log);
+          });
+        });
+      }
+
+      document.body.appendChild(panel);
+      renderList();
+    },
+
+    /* ★ 新增：Prompt 详情页 */
+    openPromptDetail: function(log) {
+      var old = App.$('#wsPromptDetail');
+      if (old) old.remove();
+
+      var panel = document.createElement('div');
+      panel.id = 'wsPromptDetail';
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200001;background:#fff;display:flex;flex-direction:column;';
+
+      var roleColors = { system: '#e67e22', user: '#3498db', assistant: '#2ecc71' };
+      var roleLabels = { system: 'SYSTEM', user: 'USER', assistant: 'ASSISTANT' };
+
+      var msgsHtml = log.messages.map(function(m) {
+        var color = roleColors[m.role] || '#999';
+        var label = roleLabels[m.role] || m.role;
+        return '<div style="margin:8px 0;border:1px solid rgba(0,0,0,.06);border-radius:10px;overflow:hidden;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.04);">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<span style="background:' + color + ';color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">' + label + '</span>' +
+              '<span style="font-size:10px;color:#999;">#' + m.idx + '</span>' +
+            '</div>' +
+            '<span style="font-size:10px;color:#aaa;">' + m.length + ' 字</span>' +
+          '</div>' +
+          '<div class="pl-msg-content" style="padding:10px 12px;font-size:12px;color:#333;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:hidden;cursor:pointer;position:relative;" data-expanded="false">' +
+            App.esc(m.full) +
+            '<div class="pl-fade" style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,#fff);pointer-events:none;"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      var d = new Date(log.ts);
+      var timeStr = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' +
+        String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+
+      panel.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;border-bottom:1px solid #eee;flex-shrink:0;">' +
+          '<button id="pdBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">Prompt 详情</span>' +
+          '<button id="pdCopy" type="button" style="background:none;border:none;color:#7a9ab8;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">复制全部</button>' +
+        '</div>' +
+        '<div style="padding:10px 16px;display:flex;gap:16px;font-size:11px;color:#8aa0b8;border-bottom:1px solid #eee;flex-shrink:0;">' +
+          '<span>' + App.esc(log.charName) + '</span>' +
+          '<span>' + timeStr + '</span>' +
+          '<span>' + log.msgCount + ' 条</span>' +
+          '<span>~' + log.tokenEstimate + ' tokens</span>' +
+        '</div>' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 16px 20px;">' + msgsHtml + '</div>';
+
+      document.body.appendChild(panel);
+
+      panel.querySelector('#pdBack').addEventListener('click', function() { panel.remove(); });
+
+      panel.querySelector('#pdCopy').addEventListener('click', function() {
+        var fullText = log.messages.map(function(m) {
+          return '=== [' + m.role.toUpperCase() + '] ===\n' + m.full;
+        }).join('\n\n');
+        App.copyText(fullText).then(function() { App.showToast('已复制全部 Prompt'); }).catch(function() { App.showToast('复制失败'); });
+      });
+
+      /* 点击消息内容展开/折叠 */
+      panel.querySelectorAll('.pl-msg-content').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var expanded = el.dataset.expanded === 'true';
+          if (expanded) {
+            el.style.maxHeight = '120px';
+            el.dataset.expanded = 'false';
+            var fade = el.querySelector('.pl-fade');
+            if (fade) fade.style.display = '';
+          } else {
+            el.style.maxHeight = 'none';
+            el.dataset.expanded = 'true';
+            var fade2 = el.querySelector('.pl-fade');
+            if (fade2) fade2.style.display = 'none';
+          }
         });
       });
     },
@@ -163,12 +310,8 @@
       }
 
       panel.querySelector('#wsDataBack').addEventListener('click', function() { panel.remove(); });
-
       panel.querySelector('#wsExportBtn').addEventListener('click', function() { Workshop.exportData(); });
-
-      panel.querySelector('#wsImportBtn').addEventListener('click', function() {
-        panel.querySelector('#wsImportFile').click();
-      });
+      panel.querySelector('#wsImportBtn').addEventListener('click', function() { panel.querySelector('#wsImportFile').click(); });
 
       panel.querySelector('#wsImportFile').addEventListener('change', function(e) {
         var file = e.target.files[0];
@@ -178,21 +321,15 @@
         reader.onload = function(ev) {
           try {
             var data = JSON.parse(ev.target.result);
-            Object.keys(data).forEach(function(key) {
-              App.LS.set(key, data[key]);
-            });
+            Object.keys(data).forEach(function(key) { App.LS.set(key, data[key]); });
             App.showToast('导入成功，即将刷新');
             setTimeout(function() { location.reload(); }, 1000);
-          } catch(err) {
-            App.showToast('导入失败：文件格式错误');
-          }
+          } catch(err) { App.showToast('导入失败：文件格式错误'); }
         };
         reader.readAsText(file);
       });
 
-      panel.querySelector('#wsOpenStorage').addEventListener('click', function() {
-        Workshop.openStorage();
-      });
+      panel.querySelector('#wsOpenStorage').addEventListener('click', function() { Workshop.openStorage(); });
 
       panel.querySelector('#wsResetAll').addEventListener('click', function() {
         if (!confirm('确定要重置所有数据吗？此操作不可恢复。')) return;
@@ -208,9 +345,7 @@
     exportData: function() {
       var data = {};
       var keys = Object.keys(App.LS._cache || {});
-      keys.forEach(function(key) {
-        data[key] = App.LS.get(key);
-      });
+      keys.forEach(function(key) { data[key] = App.LS.get(key); });
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
@@ -262,6 +397,7 @@
         'chatFavorites': '聊天收藏',
         'cpPresets': '调色板预设',
         'worldbookEntries': '世界书',
+        'worldbooks': '世界书列表',
         'presetList': '预设列表',
         'presetConfig': '预设配置'
       };
