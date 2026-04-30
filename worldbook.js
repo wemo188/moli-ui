@@ -65,7 +65,13 @@ var WB={
       '<div class="wb-home-list" id="wbHomeList">'+html+'</div>';
 
     page.querySelector('#wbHomeBack').addEventListener('click',function(){WB.close();});
-    page.querySelector('#wbHomeCreate').addEventListener('click',function(){WB.openEditBook(-1);});
+    page.querySelector('#wbHomeCreate').addEventListener('click',function(){
+      var newBook={id:'wb_'+Date.now(),name:'未命名',entries:[]};
+      WB.books.unshift(newBook);
+      WB.save();WB.renderHome();
+      WB.openEntryList(0);
+      App.showToast('已创建，可点击编辑名称');
+    });
 
     // 点击卡片无法进入编辑，只能通过三个点
     page.querySelectorAll('[data-act="dots"]').forEach(function(btn){
