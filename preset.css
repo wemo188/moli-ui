@@ -33,43 +33,41 @@
   white-space: nowrap; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
 }
 
-.ps-home-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 16px 80px; }
+.ps-home-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 16px 80px; }
 
 .ps-home-card {
-  padding: 14px 16px; border: 1.5px solid rgba(126,163,201,.35); border-radius: 14px;
-  margin-bottom: 10px; background: #fff; box-shadow: 0 2px 12px rgba(126,163,201,.06);
-  display: flex; align-items: center; gap: 12px;
+  padding: 18px 18px; border: 1.8px solid rgba(126,163,201,.3); border-radius: 16px;
+  margin-bottom: 12px; background: #fff; box-shadow: 0 2px 12px rgba(126,163,201,.06);
+  display: flex; align-items: center; gap: 14px;
   -webkit-tap-highlight-color: transparent; transition: transform .15s ease, box-shadow .15s ease;
 }
-.ps-home-card.active-preset { border-color: rgba(126,163,201,.6); background: rgba(126,163,201,.03); }
+.ps-home-card.active-preset { border-color: rgba(126,163,201,.7); background: rgba(126,163,201,.04); box-shadow: 0 4px 16px rgba(126,163,201,.12); }
 .ps-home-card.dragging {
   box-shadow: 0 10px 30px rgba(126,163,201,.25); z-index: 100; position: relative;
   background: #fff; opacity: 1 !important;
 }
 
 .ps-home-card-info { flex: 1; min-width: 0; }
-.ps-home-card-name { font-size: 14px; font-weight: 700; color: #2e4258; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ps-home-card-desc { font-size: 11px; color: #a8c0d8; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-home-card-name { font-size: 16px; font-weight: 700; color: #2e4258; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-home-card-desc { font-size: 12px; color: #a8c0d8; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-home-card-badge {
+  font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; flex-shrink: 0;
+}
+.ps-home-card-badge.in-use { background: rgba(126,163,201,.15); color: #5a8aaf; }
 
-.ps-home-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ps-home-actions { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
 
 .ps-mini-btn {
-  width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(126,163,201,.15);
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(126,163,201,.15);
   background: rgba(126,163,201,.04); display: flex; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
 }
 .ps-mini-btn:active { background: rgba(126,163,201,.12); }
-.ps-mini-btn svg { width: 13px; height: 13px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ps-mini-btn svg { width: 15px; height: 15px; fill: none; stroke: #7a9ab8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .ps-mini-btn.active-on { border-color: rgba(126,163,201,.5); background: rgba(126,163,201,.12); }
 .ps-mini-btn.del-btn { border-color: rgba(201,112,107,.15); background: rgba(201,112,107,.04); }
 .ps-mini-btn.del-btn:active { background: rgba(201,112,107,.12); }
 .ps-mini-btn.del-btn svg { stroke: #c9706b; }
-
-.ps-gap-indicator {
-  position: fixed; left: 18px; right: 18px; height: 3px;
-  background: linear-gradient(90deg, transparent, #7a9ab8, transparent);
-  border-radius: 2px; pointer-events: none; z-index: 200; opacity: 0; transition: top .1s ease, opacity .1s;
-}
 
 .ps-dots-menu { position: fixed; z-index: 100020; background: #000; border-radius: 10px; padding: 4px 0; box-shadow: 0 6px 24px rgba(0,0,0,.25); min-width: 130px; }
 .ps-dots-mi { padding: 11px 16px; font-size: 13px; color: rgba(255,255,255,.85); cursor: pointer; -webkit-tap-highlight-color: transparent; border-bottom: 1px solid rgba(255,255,255,.08); }
@@ -129,8 +127,6 @@
 .ps-sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.12); transition: transform .2s; }
 .ps-sw.on::after { transform: translateX(18px); }
 
-.ps-inactive-label { padding: 14px 18px 4px; font-size: 10px; font-weight: 700; color: #ccc; letter-spacing: 1px; border-top: 2px solid rgba(0,0,0,.03); margin-top: 6px; }
-
 /* ====== 添加指令页 ====== */
 .ps-add-page {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10002;
@@ -184,14 +180,8 @@
 .ps-depth-hint { font-size: 11px; color: #a8c0d8; line-height: 1.4; }
 
 .ps-add-btns { display: flex; gap: 10px; margin-top: 20px; }
-.ps-save-btn {
-  flex: 1; padding: 13px; background: #2e2e2e; color: #fff; border: none; border-radius: 12px;
-  font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
-}
-.ps-cancel-btn {
-  flex: 1; padding: 13px; background: #f5f5f5; color: #666; border: 1px solid rgba(0,0,0,.06);
-  border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
-}
+.ps-save-btn { flex: 1; padding: 13px; background: #1a1a1a; color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.ps-cancel-btn { flex: 1; padding: 13px; background: #f5f5f5; color: #666; border: 1px solid rgba(0,0,0,.06); border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
 
 .ps-expand-btn {
   position: absolute; top: 8px; right: 8px;
