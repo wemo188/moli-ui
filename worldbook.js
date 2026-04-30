@@ -5,10 +5,7 @@ var App=window.App;if(!App)return;
 
 var WB={
   books:[],
-  _homeEl:null,
-  _listEl:null,
-  _editEl:null,
-  _expandEl:null,
+  _homeEl:null,_listEl:null,_editEl:null,_editBookEl:null,_expandEl:null,
 
   load:function(){WB.books=App.LS.get('worldbooks')||[];},
   save:function(){App.LS.set('worldbooks',WB.books);},
@@ -22,11 +19,7 @@ var WB={
     raf2(function(){page.classList.add('show');});
   },
 
-  close:function(){
-    var p=WB._homeEl;if(!p)return;
-    p.classList.remove('show');
-    setTimeout(function(){if(p.parentNode)p.remove();WB._homeEl=null;},350);
-  },
+  close:function(){slideOut(WB._homeEl,function(){WB._homeEl=null;});},
 
   renderHome:function(){
     var page=WB._homeEl;if(!page)return;
@@ -58,14 +51,8 @@ var WB={
       '<div class="wb-home-list" id="wbHomeList">'+html+'</div>';
 
     page.querySelector('#wbHomeBack').addEventListener('click',function(){WB.close();});
-    page.querySelector('#wbHomeCreate').addEventListener('click',function(){
-      var name=prompt('世界书名称：');
-      if(!name||!name.trim())return;
-      WB.books.unshift({id:'wb_'+Date.now(),name:name.trim(),entries:[]});
-      WB.save();WB.renderHome();App.showToast('已创建');
-    });
+    page.querySelector('#wbHomeCreate').addEventListener('click',function(){WB.openEditBook(-1);});
 
-    // 点击卡片进入条目列表
     page.querySelectorAll('.wb-home-card').forEach(function(card){
       card.addEventListener('click',function(e){
         if(e.target.closest('.wb-mini-btn'))return;
@@ -73,15 +60,10 @@ var WB={
       });
     });
 
-    // 三个点菜单
     page.querySelectorAll('[data-act="dots"]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        WB.showDotsMenu(btn,parseInt(btn.dataset.idx));
-      });
+      btn.addEventListener('click',function(e){e.stopPropagation();WB.showDotsMenu(btn,parseInt(btn.dataset.idx));});
     });
 
-    // 首页卡片拖拽
     bindDrag(page,'.wb-home-card','.wb-home-actions',WB.books,function(){WB.save();WB.renderHome();});
     WB.bindSwipeBack(page,function(){WB.close();});
   },
@@ -90,17 +72,16 @@ var WB={
     var old=document.querySelector('.wb-dots-menu');if(old)old.remove();
     var menu=document.createElement('div');menu.className='wb-dots-menu';
     menu.innerHTML=
-      '<div class="wb-dots-mi" data-mact="rename">重命名</div>'+
+      '<div class="wb-dots-mi" data-mact="edit">编辑</div>'+
       '<div class="wb-dots-mi" data-mact="copy">复制</div>'+
       '<div class="wb-dots-mi" data-mact="export">导出</div>'+
       '<div class="wb-dots-mi danger" data-mact="delete">删除</div>';
     var rect=btnEl.getBoundingClientRect();var left=rect.right-140,top=rect.bottom+4;
     if(left<8)left=8;if(top+180>window.innerHeight)top=rect.top-180;if(top<10)top=10;
     menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
-
     menu.querySelectorAll('.wb-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
-        if(act==='rename'){var n=prompt('世界书名称：',WB.books[idx].name||'');if(n===null)return;WB.books[idx].name=n.trim();WB.save();WB.renderHome();App.showToast('已重命名');}
+        if(act==='edit')WB.openEditBook(idx);
         if(act==='copy'){var src=WB.books[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='wb_'+Date.now();cp.name=cp.name+' (副本)';WB.books.unshift(cp);WB.save();WB.renderHome();App.showToast('已复制');}
         if(act==='export'){var b=WB.books[idx];if(!b)return;var blob=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='worldbook_'+(b.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
         if(act==='delete'){if(!confirm('确定删除这本世界书？'))return;WB.books.splice(idx,1);WB.save();WB.renderHome();App.showToast('已删除');}
@@ -109,6 +90,54 @@ var WB={
     function dismiss(ev){if(menu.parentNode&&!menu.contains(ev.target)){menu.remove();document.removeEventListener('touchstart',dismiss);document.removeEventListener('click',dismiss);}}
     setTimeout(function(){document.addEventListener('touchstart',dismiss,{passive:true});document.addEventListener('click',dismiss);},100);
   },
+
+  // ==================== 创建/编辑世界书 ====================
+  openEditBook:function(idx){
+    var isNew=idx<0;
+    var book=isNew?{id:'wb_'+Date.now(),name:'',entries:[]}:WB.books[idx];
+
+    if(WB._editBookEl)WB._editBookEl.remove();
+    var page=document.createElement('div');page.className='wb-edit-page';WB._editBookEl=page;
+
+    page.innerHTML=
+      '<div class="wb-header">'+
+        '<button class="wb-back" id="wbBookBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+        '<div class="wb-header-title">'+(isNew?'创建世界书':'编辑世界书')+'</div>'+
+        '<div style="width:36px;"></div>'+
+      '</div>'+
+      '<div class="wb-edit-body"><div class="wb-edit-card">'+
+        '<div class="wb-edit-section">'+
+          '<div class="wb-edit-label"><div class="dot"></div>世界书名称</div>'+
+          '<input type="text" class="wb-edit-input" id="wbBookName" value="'+App.escAttr(book.name||'')+'" placeholder="给世界书起个名字...">'+
+        '</div>'+
+      '</div>'+
+      '<div class="wb-edit-btns">'+
+        '<button class="wb-save-btn" id="wbBookSave" type="button">保存</button>'+
+        '<button class="wb-cancel-btn" id="wbBookCancel" type="button">取消</button>'+
+      '</div></div>';
+
+    document.body.appendChild(page);
+    raf2(function(){page.classList.add('show');});
+
+    page.querySelector('#wbBookBack').addEventListener('click',function(){WB.closeEditBook();});
+    page.querySelector('#wbBookCancel').addEventListener('click',function(){WB.closeEditBook();});
+    page.querySelector('#wbBookSave').addEventListener('click',function(){
+      var name=(page.querySelector('#wbBookName').value||'').trim();
+      if(!name){App.showToast('请输入名称');return;}
+      if(isNew){
+        var newBook={id:'wb_'+Date.now(),name:name,entries:[]};
+        WB.books.unshift(newBook);
+      } else {
+        book.name=name;
+      }
+      WB.save();WB.closeEditBook();WB.renderHome();
+      App.showToast(isNew?'已创建':'已保存');
+    });
+
+    WB.bindSwipeBack(page,function(){WB.closeEditBook();});
+  },
+
+  closeEditBook:function(){slideOut(WB._editBookEl,function(){WB._editBookEl=null;});},
 
   // ==================== 条目列表页 ====================
   openEntryList:function(bookIdx){
@@ -128,12 +157,15 @@ var WB={
           var kwText=e.keyword||'';
           var isOn=e.enabled!==false;
           var alwaysTag=e.always?'<span class="wb-tag-always">常驻</span>':'';
+          var posTag='';
+          if(e.position==='before')posTag='<span class="wb-tag-pos">角色前</span>';
+          else if(e.position==='after')posTag='<span class="wb-tag-pos">角色后</span>';
           return '<div class="wb-item" data-idx="'+i+'">'+
             '<div class="wb-info">'+
               '<div class="wb-name">'+App.esc(e.name||'未命名')+'</div>'+
               (kwText?'<div class="wb-keywords">关键词：'+App.esc(kwText)+'</div>':'')+
             '</div>'+
-            '<div class="wb-tags">'+alwaysTag+'</div>'+
+            '<div class="wb-tags">'+alwaysTag+posTag+'</div>'+
             '<div class="wb-actions">'+
               '<div class="wb-mini-btn" data-act="edit" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="wb-mini-btn del-btn" data-act="del" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
@@ -157,7 +189,7 @@ var WB={
 
     function bindEntryEvents(){
       page.querySelector('#wbListBack').addEventListener('click',function(){WB.closeEntryList();});
-      page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEdit(book,-1,function(){render();});});
+      page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
 
       var si=page.querySelector('#wbListSearch');
       if(si)si.addEventListener('input',function(){
@@ -171,7 +203,7 @@ var WB={
       });
 
       page.querySelectorAll('[data-act="edit"]').forEach(function(btn){
-        btn.addEventListener('click',function(e){e.stopPropagation();WB.openEdit(book,parseInt(btn.dataset.idx),function(){render();});});
+        btn.addEventListener('click',function(e){e.stopPropagation();WB.openEditEntry(book,parseInt(btn.dataset.idx),function(){render();});});
       });
 
       page.querySelectorAll('[data-act="del"]').forEach(function(btn){
@@ -229,21 +261,20 @@ var WB={
     WB.bindSwipeBack(page,function(){WB.closeEntryList();});
   },
 
-  closeEntryList:function(){
-    var p=WB._listEl;if(!p)return;
-    p.classList.remove('show');
-    setTimeout(function(){if(p.parentNode)p.remove();WB._listEl=null;},350);
-  },
+  closeEntryList:function(){slideOut(WB._listEl,function(){WB._listEl=null;});},
 
   // ==================== 新建/编辑条目 ====================
-  openEdit:function(book,idx,onDone){
+  openEditEntry:function(book,idx,onDone){
     var isNew=idx<0;
-    var entry=isNew?{name:'',content:'',keyword:'',enabled:true,always:false}:JSON.parse(JSON.stringify(book.entries[idx]));
+    var entry=isNew?{name:'',content:'',keyword:'',enabled:true,always:false,useKeyword:false,position:'before'}:JSON.parse(JSON.stringify(book.entries[idx]));
+    if(entry.useKeyword===undefined)entry.useKeyword=!!entry.keyword;
+    if(!entry.position)entry.position='before';
 
     if(WB._editEl)WB._editEl.remove();
     var page=document.createElement('div');page.className='wb-edit-page';WB._editEl=page;
 
     var alwaysOn=entry.always?'on':'off';
+    var kwOn=entry.useKeyword?'on':'off';
 
     page.innerHTML=
       '<div class="wb-header">'+
@@ -271,21 +302,33 @@ var WB={
         '<div class="wb-edit-sep"></div>'+
 
         '<div class="wb-edit-section">'+
-          '<div class="wb-edit-label"><div class="dot"></div>关键词</div>'+
-          '<input type="text" class="wb-edit-input" id="wbEditKeyword" value="'+App.escAttr(entry.keyword||'')+'" placeholder="用逗号分隔多个关键词...">'+
-          '<div class="wb-edit-hint">当聊天中出现这些关键词时，该条目会自动注入到AI的上下文中。常驻条目不需要关键词。</div>'+
+          '<div class="wb-always-row">'+
+            '<div><div class="wb-always-label">常驻</div><div class="wb-always-hint">常驻条目始终发送给AI</div></div>'+
+            '<div class="wb-sw '+alwaysOn+'" id="wbAlwaysSw"></div>'+
+          '</div>'+
         '</div>'+
 
         '<div class="wb-edit-sep"></div>'+
 
         '<div class="wb-edit-section">'+
           '<div class="wb-always-row">'+
-            '<div>'+
-              '<div class="wb-always-label">常驻</div>'+
-              '<div class="wb-always-hint">常驻条目始终发送给AI，无需关键词触发</div>'+
-            '</div>'+
-            '<div class="wb-sw '+alwaysOn+'" id="wbAlwaysSw"></div>'+
+            '<div><div class="wb-always-label">关键词触发</div><div class="wb-always-hint">聊天中出现关键词时自动注入</div></div>'+
+            '<div class="wb-sw '+kwOn+'" id="wbKwSw"></div>'+
           '</div>'+
+          '<div id="wbKwArea" style="margin-top:10px;'+(entry.useKeyword?'':'display:none;')+'">'+
+            '<input type="text" class="wb-edit-input" id="wbEditKeyword" value="'+App.escAttr(entry.keyword||'')+'" placeholder="用逗号分隔多个关键词...">'+
+          '</div>'+
+        '</div>'+
+
+        '<div class="wb-edit-sep"></div>'+
+
+        '<div class="wb-edit-section">'+
+          '<div class="wb-edit-label"><div class="dot"></div>注入位置</div>'+
+          '<div class="wb-pos-row">'+
+            '<div class="wb-pos-btn'+(entry.position==='before'?' active':'')+'" data-pos="before">角色定义之前</div>'+
+            '<div class="wb-pos-btn'+(entry.position==='after'?' active':'')+'" data-pos="after">角色定义之后</div>'+
+          '</div>'+
+          '<div class="wb-edit-hint">决定该条目在系统提示词中的位置，相对于角色档案。</div>'+
         '</div>'+
 
       '</div>'+
@@ -298,40 +341,56 @@ var WB={
     raf2(function(){page.classList.add('show');});
 
     var alwaysState=!!entry.always;
+    var kwState=!!entry.useKeyword;
 
+    // 常驻开关
     page.querySelector('#wbAlwaysSw').addEventListener('click',function(){
       alwaysState=!alwaysState;
       this.classList.toggle('on',alwaysState);this.classList.toggle('off',!alwaysState);
     });
 
+    // 关键词开关
+    page.querySelector('#wbKwSw').addEventListener('click',function(){
+      kwState=!kwState;
+      this.classList.toggle('on',kwState);this.classList.toggle('off',!kwState);
+      page.querySelector('#wbKwArea').style.display=kwState?'':'none';
+    });
+
+    // 注入位置
+    page.querySelectorAll('.wb-pos-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        page.querySelectorAll('.wb-pos-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+      });
+    });
+
+    // 扩展编辑
     page.querySelector('#wbExpandBtn').addEventListener('click',function(){
       WB.openExpand(page.querySelector('#wbEditContent'));
     });
 
-    page.querySelector('#wbEditBack').addEventListener('click',function(){WB.closeEdit();});
-    page.querySelector('#wbEditCancel').addEventListener('click',function(){WB.closeEdit();});
+    page.querySelector('#wbEditBack').addEventListener('click',function(){WB.closeEditEntry();});
+    page.querySelector('#wbEditCancel').addEventListener('click',function(){WB.closeEditEntry();});
 
     page.querySelector('#wbEditSave').addEventListener('click',function(){
       var name=(page.querySelector('#wbEditName').value||'').trim();
       var content=(page.querySelector('#wbEditContent').value||'').trim();
-      var keyword=(page.querySelector('#wbEditKeyword').value||'').trim();
+      var keyword=kwState?(page.querySelector('#wbEditKeyword').value||'').trim():'';
       if(!content){App.showToast('请输入内容');return;}
-      var obj={name:name||keyword||'未命名',content:content,keyword:keyword,enabled:true,always:alwaysState};
+      var posBtn=page.querySelector('.wb-pos-btn.active');
+      var position=posBtn?posBtn.dataset.pos:'before';
+      var obj={name:name||keyword||'未命名',content:content,keyword:keyword,enabled:true,always:alwaysState,useKeyword:kwState,position:position};
       if(isNew){book.entries.unshift(obj);}
       else{book.entries[idx]=obj;}
-      WB.save();WB.closeEdit();
+      WB.save();WB.closeEditEntry();
       if(onDone)onDone();
       App.showToast(isNew?'已添加':'已保存');
     });
 
-    WB.bindSwipeBack(page,function(){WB.closeEdit();});
+    WB.bindSwipeBack(page,function(){WB.closeEditEntry();});
   },
 
-  closeEdit:function(){
-    var p=WB._editEl;if(!p)return;
-    p.classList.remove('show');
-    setTimeout(function(){if(p.parentNode)p.remove();WB._editEl=null;},350);
-  },
+  closeEditEntry:function(){slideOut(WB._editEl,function(){WB._editEl=null;});},
 
   openExpand:function(textarea){
     if(WB._expandEl)WB._expandEl.remove();
@@ -348,7 +407,7 @@ var WB={
     ed.querySelector('#wbExpDone').addEventListener('click',done);
   },
 
-  // ==================== 获取角色挂载的世界书条目 ====================
+  // ==================== API ====================
   getEntriesForChar:function(charId){
     if(!charId)return [];
     var c=App.character?App.character.getById(charId):null;
@@ -358,9 +417,7 @@ var WB={
       var book=null;
       WB.books.forEach(function(b){if(b.id===wbId)book=b;});
       if(book&&book.entries){
-        book.entries.forEach(function(e){
-          if(e.enabled!==false)result.push(e);
-        });
+        book.entries.forEach(function(e){if(e.enabled!==false)result.push(e);});
       }
     });
     return result;
@@ -379,6 +436,7 @@ var WB={
 };
 
 function raf2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
+function slideOut(el,cb){if(!el)return;el.classList.remove('show');el.style.transform='translateX(100%)';el.style.opacity='0';setTimeout(function(){if(el.parentNode)el.remove();if(cb)cb();},350);}
 
 function bindDrag(page,selector,excludeSelector,list,onDone){
   var els=page.querySelectorAll(selector);
