@@ -136,13 +136,18 @@ function buildDefaultOrder(){
 /* ★ 新增：创建默认预设（首次打开时） */
 function createDefaultPreset(){
   var items=BUILTIN_ITEMS.map(function(b){return JSON.parse(JSON.stringify(b));});
-  var order=buildDefaultOrder();
-  /* 把内置预设 items 插到 sys_char_profile 后面 */
-  var insertIdx=2;
+  var order=[];
+
+  /* ★ 预设卡片放在最前面（角色档案之前） */
   items.forEach(function(it,i){
-    order.splice(insertIdx,0,{type:'user',idx:i});
-    insertIdx++;
+    order.push({type:'user',idx:i});
   });
+
+  /* 然后是系统槽位 */
+  DEFAULT_SYS.forEach(function(s){
+    order.push({type:'sys',id:s.id});
+  });
+
   return {
     id:'ps_default',
     name:'默认预设',
@@ -539,21 +544,30 @@ var Preset={
   },
 
   _buildOrder:function(p){
-    var o=buildDefaultOrder();
-    if(p.items&&p.items.length){
-      p.items.forEach(function(it,i){
-        if(it.mode==='depth'){
-          var hIdx=-1;
-          for(var j=0;j<o.length;j++){if(o[j].type==='sys'&&o[j].id==='sys_history'){hIdx=j;break;}}
-          if(hIdx>=0)o.splice(hIdx+1,0,{type:'user',idx:i});
-          else o.push({type:'user',idx:i});
-        } else {
-          o.unshift({type:'user',idx:i});
-        }
-      });
-    }
-    return o;
-  },
+  var o=[];
+  /* 先放用户指令 */
+  if(p.items&&p.items.length){
+    p.items.forEach(function(it,i){
+      if(it.mode!=='depth'){
+        o.push({type:'user',idx:i});
+      }
+    });
+  }
+  /* 再放系统槽位 */
+  DEFAULT_SYS.forEach(function(s){o.push({type:'sys',id:s.id});});
+  /* 深度注入放到 history 后面 */
+  if(p.items&&p.items.length){
+    p.items.forEach(function(it,i){
+      if(it.mode==='depth'){
+        var hIdx=-1;
+        for(var j=0;j<o.length;j++){if(o[j].type==='sys'&&o[j].id==='sys_history'){hIdx=j;break;}}
+        if(hIdx>=0)o.splice(hIdx+1,0,{type:'user',idx:i});
+        else o.push({type:'user',idx:i});
+      }
+    });
+  }
+  return o;
+},
 
   _syncOrder:function(p){
     p.items.forEach(function(it,i){
