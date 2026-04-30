@@ -10,6 +10,15 @@ var WB={
   load:function(){WB.books=App.LS.get('worldbooks')||[];},
   save:function(){App.LS.set('worldbooks',WB.books);},
 
+  getMountedCharNames:function(bookId){
+    var names=[];
+    if(!App.character||!App.character.list)return names;
+    App.character.list.forEach(function(c){
+      if(c.worldbookIds&&c.worldbookIds.indexOf(bookId)>=0)names.push(c.name||'未命名');
+    });
+    return names;
+  },
+
   open:function(){
     WB.load();
     if(WB._homeEl)WB._homeEl.remove();
@@ -28,10 +37,16 @@ var WB={
     } else {
       html=WB.books.map(function(b,i){
         var count=(b.entries||[]).length;
+        var mountedNames=WB.getMountedCharNames(b.id);
+        var mountHtml='';
+        if(mountedNames.length){
+          mountHtml='<div class="wb-home-mounted">'+mountedNames.map(function(n){return App.esc(n);}).join('、')+' 已启用</div>';
+        }
         return '<div class="wb-home-card" data-idx="'+i+'">'+
           '<div class="wb-home-info">'+
             '<div class="wb-home-name">'+App.esc(b.name||'未命名')+'</div>'+
             '<div class="wb-home-desc">'+count+' 个条目</div>'+
+            mountHtml+
           '</div>'+
           '<div class="wb-home-actions">'+
             '<div class="wb-mini-btn" data-act="dots" data-idx="'+i+'"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="#7a9ab8" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="#7a9ab8" stroke="none"/></svg></div>'+
@@ -52,13 +67,7 @@ var WB={
     page.querySelector('#wbHomeBack').addEventListener('click',function(){WB.close();});
     page.querySelector('#wbHomeCreate').addEventListener('click',function(){WB.openEditBook(-1);});
 
-    page.querySelectorAll('.wb-home-card').forEach(function(card){
-      card.addEventListener('click',function(e){
-        if(e.target.closest('.wb-mini-btn'))return;
-        WB.openEntryList(parseInt(card.dataset.idx));
-      });
-    });
-
+    // 点击卡片无法进入编辑，只能通过三个点
     page.querySelectorAll('[data-act="dots"]').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();WB.showDotsMenu(btn,parseInt(btn.dataset.idx));});
     });
@@ -71,7 +80,7 @@ var WB={
     var old=document.querySelector('.wb-dots-menu');if(old)old.remove();
     var menu=document.createElement('div');menu.className='wb-dots-menu';
     menu.innerHTML=
-      '<div class="wb-dots-mi" data-mact="rename">重命名</div>'+
+      '<div class="wb-dots-mi" data-mact="edit">编辑</div>'+
       '<div class="wb-dots-mi" data-mact="copy">复制</div>'+
       '<div class="wb-dots-mi" data-mact="export">导出</div>'+
       '<div class="wb-dots-mi danger" data-mact="delete">删除</div>';
@@ -80,7 +89,7 @@ var WB={
     menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
     menu.querySelectorAll('.wb-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
-        if(act==='rename'){WB.openEditBook(idx);}
+        if(act==='edit')WB.openEntryList(idx);
         if(act==='copy'){var src=WB.books[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='wb_'+Date.now();cp.name=cp.name+' (副本)';WB.books.unshift(cp);WB.save();WB.renderHome();App.showToast('已复制');}
         if(act==='export'){var b=WB.books[idx];if(!b)return;var blob=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='worldbook_'+(b.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
         if(act==='delete'){if(!confirm('确定删除？'))return;WB.books.splice(idx,1);WB.save();WB.renderHome();App.showToast('已删除');}
@@ -90,7 +99,6 @@ var WB={
     setTimeout(function(){document.addEventListener('touchstart',dismiss,{passive:true});document.addEventListener('click',dismiss);},100);
   },
 
-  // 创建世界书 → 保存后直接进入条目列表
   openEditBook:function(idx){
     var isNew=idx<0;
     var book=isNew?{id:'wb_'+Date.now(),name:'',entries:[]}:WB.books[idx];
@@ -126,16 +134,12 @@ var WB={
       if(isNew){
         var newBook={id:'wb_'+Date.now(),name:name,entries:[]};
         WB.books.unshift(newBook);
-        WB.save();
-        WB.closeEditBook();
-        WB.renderHome();
+        WB.save();WB.closeEditBook();WB.renderHome();
         WB.openEntryList(0);
         App.showToast('已创建');
       } else {
         book.name=name;
-        WB.save();
-        WB.closeEditBook();
-        WB.renderHome();
+        WB.save();WB.closeEditBook();WB.renderHome();
         App.showToast('已保存');
       }
     });
@@ -161,14 +165,15 @@ var WB={
       } else {
         rows=book.entries.map(function(e,i){
           var isOn=e.enabled!==false;
-          var alwaysTag=e.always?'<span class="wb-tag-always">常驻</span>':'';
-          var posTag='';
-          if(e.position==='before')posTag='<span class="wb-tag-pos">角色前</span>';
-          else if(e.position==='after')posTag='<span class="wb-tag-pos">角色后</span>';
-          else if(e.position==='depth')posTag='<span class="wb-tag-pos">D'+(e.depth||4)+'</span>';
+          var tags='';
+          if(e.always)tags+='<span class="wb-tag-always">常驻</span>';
+          if(e.useKeyword)tags+='<span class="wb-tag-kw">关键词</span>';
+          if(e.position==='before')tags+='<span class="wb-tag-pos">角色前</span>';
+          else if(e.position==='after')tags+='<span class="wb-tag-pos">角色后</span>';
+          else if(e.position==='depth')tags+='<span class="wb-tag-pos">D'+(e.depth||4)+'</span>';
           return '<div class="wb-item" data-idx="'+i+'">'+
             '<div class="wb-info"><div class="wb-name">'+App.esc(e.name||'未命名')+'</div></div>'+
-            '<div class="wb-tags">'+alwaysTag+posTag+'</div>'+
+            '<div class="wb-tags">'+tags+'</div>'+
             '<div class="wb-actions">'+
               '<div class="wb-mini-btn" data-act="edit" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="wb-mini-btn del-btn" data-act="del" data-idx="'+i+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
@@ -196,33 +201,30 @@ var WB={
     function bindEntryEvents(){
       page.querySelector('#wbListBack').addEventListener('click',function(){WB.closeEntryList();});
       page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
+
+      // 编辑名称 - 自定义弹窗
       page.querySelector('#wbListRename').addEventListener('click',function(){
         var old=document.querySelector('.wb-rename-overlay');if(old)old.remove();
-        var overlay=document.createElement('div');
-        overlay.className='wb-rename-overlay';
-        overlay.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
-        overlay.innerHTML=
+        var ov=document.createElement('div');ov.className='wb-rename-overlay';
+        ov.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+        ov.innerHTML=
           '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">'+
             '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;">编辑名称</div>'+
             '<input type="text" id="wbRenameInput" value="'+App.escAttr(book.name||'')+'" placeholder="世界书名称..." style="padding:11px 14px;border:1.5px solid rgba(126,163,201,.25);border-radius:12px;font-size:14px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);box-sizing:border-box;">'+
             '<div style="display:flex;gap:8px;">'+
               '<button id="wbRenameOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">保存</button>'+
-              '<button id="wbRenameCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
+              '<button id="wbRenameNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
             '</div>'+
           '</div>';
-        document.body.appendChild(overlay);
-        overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-        overlay.querySelector('#wbRenameCancel').addEventListener('click',function(){overlay.remove();});
-        overlay.querySelector('#wbRenameOk').addEventListener('click',function(){
-          var n=(overlay.querySelector('#wbRenameInput').value||'').trim();
+        document.body.appendChild(ov);
+        ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+        ov.querySelector('#wbRenameNo').addEventListener('click',function(){ov.remove();});
+        ov.querySelector('#wbRenameOk').addEventListener('click',function(){
+          var n=(ov.querySelector('#wbRenameInput').value||'').trim();
           if(!n){App.showToast('请输入名称');return;}
-          book.name=n;WB.save();
-          page.querySelector('.wb-header-title').textContent=n;
-          WB.renderHome();
-          overlay.remove();
-          App.showToast('已保存');
+          book.name=n;WB.save();page.querySelector('.wb-header-title').textContent=n;WB.renderHome();ov.remove();App.showToast('已保存');
         });
-        var inp=overlay.querySelector('#wbRenameInput');inp.focus();inp.select();
+        var inp=ov.querySelector('#wbRenameInput');inp.focus();inp.select();
       });
 
       var si=page.querySelector('#wbListSearch');
@@ -255,7 +257,6 @@ var WB={
         });
       });
 
-      // 条目拖拽
       var items=page.querySelectorAll('.wb-item');
       items.forEach(function(el,elIdx){
         var timer=null,pressed=false,moved=false,startY=0,targetIdx;
@@ -367,7 +368,7 @@ var WB={
           '<div id="wbDepthArea" style="margin-top:8px;'+(entry.position==='depth'?'':'display:none;')+'">'+
             '<div style="display:flex;align-items:center;gap:10px;">'+
               '<span style="font-size:12px;color:#7a9ab8;font-weight:600;">注入深度</span>'+
-              '<input type="number" class="wb-edit-input" id="wbEditDepth" value="'+(entry.depth||4)+'" min="0" max="99" style="width:60px;text-align:center;">'+
+              '<input type="number" class="wb-depth-input" id="wbEditDepth" value="'+(entry.depth||4)+'" min="0" max="99">'+
             '</div>'+
             '<div class="wb-edit-hint" style="margin-top:6px;">数字越小越靠近最新消息。0 = 紧接最后一条用户消息之前。</div>'+
           '</div>'+
@@ -385,11 +386,9 @@ var WB={
     var alwaysState=!!entry.always;
     var kwState=!!entry.useKeyword;
 
-    // 常驻开关
     page.querySelector('#wbAlwaysSw').addEventListener('click',function(){
       alwaysState=!alwaysState;
       this.classList.toggle('on',alwaysState);this.classList.toggle('off',!alwaysState);
-      // 开常驻时关掉关键词
       if(alwaysState&&kwState){
         kwState=false;
         var kwSw=page.querySelector('#wbKwSw');
@@ -398,12 +397,10 @@ var WB={
       }
     });
 
-    // 关键词开关
     page.querySelector('#wbKwSw').addEventListener('click',function(){
       kwState=!kwState;
       this.classList.toggle('on',kwState);this.classList.toggle('off',!kwState);
       page.querySelector('#wbKwArea').style.display=kwState?'':'none';
-      // 开关键词时关掉常驻
       if(kwState&&alwaysState){
         alwaysState=false;
         var aSw=page.querySelector('#wbAlwaysSw');
@@ -411,7 +408,6 @@ var WB={
       }
     });
 
-    // 注入位置
     page.querySelectorAll('.wb-pos-btn').forEach(function(btn){
       btn.addEventListener('click',function(){
         page.querySelectorAll('.wb-pos-btn').forEach(function(b){b.classList.remove('active');});
@@ -471,9 +467,7 @@ var WB={
     c.worldbookIds.forEach(function(wbId){
       var book=null;
       WB.books.forEach(function(b){if(b.id===wbId)book=b;});
-      if(book&&book.entries){
-        book.entries.forEach(function(e){if(e.enabled!==false)result.push(e);});
-      }
+      if(book&&book.entries){book.entries.forEach(function(e){if(e.enabled!==false)result.push(e);});}
     });
     return result;
   },
@@ -525,3 +519,4 @@ function bindDrag(page,selector,excludeSelector,list,onDone){
 
 App.register('worldbook',WB);
 })();
+
