@@ -502,18 +502,30 @@
       });
 
       /* ★ 展开/收起 */
-      panel.querySelector('#wsExpandLog').addEventListener('click', function() {
-        isExpanded = !isExpanded;
-        if (isExpanded) {
-          panel.style.maxHeight = '80vh';
-          logArea.style.maxHeight = '70vh';
-          this.textContent = '收起';
-        } else {
-          panel.style.maxHeight = '50vh';
-          logArea.style.maxHeight = '40vh';
-          this.textContent = '展开';
-        }
-      });
+panel.querySelector('#wsExpandLog').addEventListener('click', function() {
+  isExpanded = !isExpanded;
+  if (isExpanded) {
+    /* 先获取当前位置 */
+    var rect = panel.getBoundingClientRect();
+    panel.style.left = rect.left + 'px';
+    panel.style.top = '10vh';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+    panel.style.width = rect.width + 'px';
+    panel.style.maxHeight = '80vh';
+    panel.style.height = '80vh';
+    logArea.style.maxHeight = 'none';
+    logArea.style.flex = '1';
+    this.textContent = '收起';
+  } else {
+    panel.style.maxHeight = '50vh';
+    panel.style.height = '';
+    logArea.style.maxHeight = '40vh';
+    logArea.style.flex = '';
+    this.textContent = '展开';
+  }
+  logArea.scrollTop = logArea.scrollHeight;
+});
 
       function addLog(text, color) {
         var div = document.createElement('div');
