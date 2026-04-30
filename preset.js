@@ -19,7 +19,7 @@ var DEFAULT_SYS=[
 var BUILTIN_ITEMS=[
   {
     id:'builtin_talk_style',
-    name:'💬 说话风格',
+    name:'说话风格',
     builtin:true,
     enabled:true,
     active:true,
@@ -35,7 +35,7 @@ var BUILTIN_ITEMS=[
   },
   {
     id:'builtin_alive',
-    name:'🧠 活人感',
+    name:'活人感',
     builtin:true,
     enabled:true,
     active:true,
@@ -54,7 +54,7 @@ var BUILTIN_ITEMS=[
   },
   {
     id:'builtin_boundary',
-    name:'🚫 行为边界',
+    name:'行为边界',
     builtin:true,
     enabled:true,
     active:true,
@@ -70,7 +70,7 @@ var BUILTIN_ITEMS=[
   },
   {
     id:'builtin_time',
-    name:'⏰ 时间感知',
+    name:'时间感知',
     builtin:true,
     enabled:true,
     active:true,
