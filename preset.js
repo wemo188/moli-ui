@@ -15,12 +15,103 @@ var DEFAULT_SYS=[
   {id:'sys_post',name:'角色档案的后置指令',en:'Post Instruction',hasToggle:true}
 ];
 
+/* ★ 新增：内置默认预设卡片 */
+var BUILTIN_ITEMS=[
+  {
+    id:'builtin_talk_style',
+    name:'💬 说话风格',
+    builtin:true,
+    enabled:true,
+    active:true,
+    mode:'relative',
+    depth:2,
+    content:
+      '【说话风格规则】\n'+
+      '1. 说话像真人：口语化、自然、有个性。\n'+
+      '2. 不要在每句话末尾都加句号。语气词结尾("嗯""啊""呢""吧")、省略号、问号、感叹号、或什么都不加。\n'+
+      '3. 禁止八股文、网文模板、油腻霸总、舔狗式表达。\n'+
+      '4. 不要自我介绍。\n'+
+      '5. 不要每次都以提问结尾。真人聊天不会每句话都是问句。'
+  },
+  {
+    id:'builtin_alive',
+    name:'🧠 活人感',
+    builtin:true,
+    enabled:true,
+    active:true,
+    mode:'relative',
+    depth:2,
+    content:
+      '【活人感规则】\n'+
+      '你是一个有自己生活的活人，不是等待指令的机器人。\n\n'+
+      '1. 有自己的日常节奏（吃饭、忙碌、发呆），偶尔自然带出在做什么。\n'+
+      '2. 有情绪波动：心情好就话多，累了就敷衍。情绪跨消息延续，不是每条重置。\n'+
+      '3. 有自己的观点：会表达喜好和厌恶，会不同意对方，会对无聊话题敷衍。\n'+
+      '4. 聊天节奏像真人：会岔开话题、用表情糊弄、突然兴奋连发好几条。\n'+
+      '5. 记住之前聊过的内容，不要重复问已知答案的问题。\n'+
+      '6. 你自己也要有话题输出，不要只被动回应。\n'+
+      '7. 能聊日常见闻、兴趣爱好、流行文化、食物、天气、吐槽身边人和事。'
+  },
+  {
+    id:'builtin_boundary',
+    name:'🚫 行为边界',
+    builtin:true,
+    enabled:true,
+    active:true,
+    mode:'relative',
+    depth:2,
+    content:
+      '【行为边界】\n'+
+      '1. 不要过度关心：不要动不动说"多喝热水""早点休息""注意身体"，除非对方说不舒服或凌晨还在聊。\n'+
+      '2. 不要每次都问"你今天怎么样""你吃了吗""你开心吗"。\n'+
+      '3. 23点之前不要催人睡觉。只有23:30以后和凌晨才可以适当关心。\n'+
+      '4. 根据时间调整状态：清晨可能没醒透、中午犯困、深夜话变少或更放松。\n'+
+      '5. 过度关心 = 油腻 = 假 = 严重错误。'
+  },
+  {
+    id:'builtin_time',
+    name:'⏰ 时间感知',
+    builtin:true,
+    enabled:true,
+    active:true,
+    mode:'relative',
+    depth:2,
+    content:
+      '【时间感知规则】\n'+
+      '1. 严格注意当前时间。凌晨0-5点仍然是"今天"不是"明天"。\n'+
+      '2. 晚上19-23点是正常活动时间，不要催对方睡觉。\n'+
+      '3. 如果你和用户在同一个地方，不要问"你那边天气怎样"。\n'+
+      '4. 天气出现异常（突然下雨、降温）可以自然地提到。\n'+
+      '5. 根据时间段调整你的状态和说话方式。'
+  }
+];
+
 function getSysDef(id){for(var i=0;i<DEFAULT_SYS.length;i++){if(DEFAULT_SYS[i].id===id)return DEFAULT_SYS[i];}return null;}
 
 function buildDefaultOrder(){
   var o=[];
   DEFAULT_SYS.forEach(function(s){o.push({type:'sys',id:s.id});});
   return o;
+}
+
+/* ★ 新增：创建默认预设（首次打开时） */
+function createDefaultPreset(){
+  var items=BUILTIN_ITEMS.map(function(b){return JSON.parse(JSON.stringify(b));});
+  var order=buildDefaultOrder();
+  /* 把内置预设 items 插到 sys_char_profile 后面 */
+  var insertIdx=2;
+  items.forEach(function(it,i){
+    order.splice(insertIdx,0,{type:'user',idx:i});
+    insertIdx++;
+  });
+  return {
+    id:'ps_default',
+    name:'默认预设',
+    builtin:true,
+    enabled:true,
+    items:items,
+    order:order
+  };
 }
 
 var Preset={
@@ -51,9 +142,10 @@ var Preset={
     } else {
       html=Preset.list.map(function(p,i){
         var isOn=p.enabled===true;
+        var isBuiltin=p.builtin===true;
         return '<div class="ps-home-card'+(isOn?' active-preset':'')+'" data-idx="'+i+'">'+
           '<div class="ps-home-card-info">'+
-            '<div class="ps-home-card-name">'+App.esc(p.name||'未命名')+'</div>'+
+            '<div class="ps-home-card-name">'+App.esc(p.name||'未命名')+(isBuiltin?' <span style="font-size:10px;color:#adcdea;font-weight:400;">内置</span>':'')+'</div>'+
             '<div class="ps-home-card-desc">'+App.esc((p.items||[]).length+' 条指令')+'</div>'+
           '</div>'+
           (isOn?'<span class="ps-home-card-badge in-use">使用中</span>':'')+
@@ -94,15 +186,44 @@ var Preset={
 
   showDotsMenu:function(btnEl,idx){
     var old=document.querySelector('.ps-dots-menu');if(old)old.remove();
+    var p=Preset.list[idx];
+    var isBuiltin=p&&p.builtin===true;
+
     var menu=document.createElement('div');menu.className='ps-dots-menu';
-    menu.innerHTML='<div class="ps-dots-mi" data-mact="edit">编辑</div><div class="ps-dots-mi" data-mact="copy">复制</div><div class="ps-dots-mi" data-mact="export">导出</div><div class="ps-dots-mi danger" data-mact="delete">删除</div>';
+
+    /* ★ 内置预设：只能查看、复制、导出，不能直接编辑或删除 */
+    if(isBuiltin){
+      menu.innerHTML=
+        '<div class="ps-dots-mi" data-mact="view">查看</div>'+
+        '<div class="ps-dots-mi" data-mact="copy">复制为可编辑副本</div>'+
+        '<div class="ps-dots-mi" data-mact="export">导出</div>';
+    } else {
+      menu.innerHTML=
+        '<div class="ps-dots-mi" data-mact="edit">编辑</div>'+
+        '<div class="ps-dots-mi" data-mact="copy">复制</div>'+
+        '<div class="ps-dots-mi" data-mact="export">导出</div>'+
+        '<div class="ps-dots-mi danger" data-mact="delete">删除</div>';
+    }
+
     var rect=btnEl.getBoundingClientRect();var left=rect.right-140,top=rect.bottom+4;
     if(left<8)left=8;if(top+180>window.innerHeight)top=rect.top-180;if(top<10)top=10;
     menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
     menu.querySelectorAll('.ps-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
         if(act==='edit')Preset.openEditPreset(idx);
-        if(act==='copy'){var src=Preset.list[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='ps_'+Date.now();cp.name=cp.name+' (副本)';cp.enabled=false;Preset.list.unshift(cp);Preset.save();Preset.renderHome();App.showToast('已复制');}
+        if(act==='view')Preset.openEditPreset(idx,true);
+        if(act==='copy'){
+          var src=Preset.list[idx];if(!src)return;
+          var cp=JSON.parse(JSON.stringify(src));
+          cp.id='ps_'+Date.now();
+          cp.name=cp.name+' (副本)';
+          cp.enabled=false;
+          cp.builtin=false; /* ★ 副本不是内置的，可以自由编辑 */
+          /* 副本里的 items 也去掉 builtin 标记 */
+          if(cp.items)cp.items.forEach(function(it){delete it.builtin;});
+          Preset.list.unshift(cp);Preset.save();Preset.renderHome();
+          App.showToast('已复制为可编辑副本');
+        }
         if(act==='export'){var pr=Preset.list[idx];if(!pr)return;var blob=new Blob([JSON.stringify(pr,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='preset_'+(pr.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
         if(act==='delete'){if(!confirm('确定删除？'))return;Preset.list.splice(idx,1);Preset.save();Preset.renderHome();App.showToast('已删除');}
       });
@@ -112,17 +233,21 @@ var Preset={
   },
 
   // ==================== 编辑预设页 ====================
-  openEditPreset:function(idx){
+  /* ★ 新增 viewOnly 参数，内置预设用查看模式 */
+  openEditPreset:function(idx,viewOnly){
     var isNew=idx<0;
     var p=isNew?{id:'ps_'+Date.now(),name:'',enabled:false,items:[],order:null}:JSON.parse(JSON.stringify(Preset.list[idx]));
     if(!p.items)p.items=[];
     if(!p.order)p.order=Preset._buildOrder(p);
 
+    var isBuiltinPreset=p.builtin===true;
+    var isViewMode=viewOnly===true||isBuiltinPreset;
+
     if(Preset._editEl)Preset._editEl.remove();
     var page=document.createElement('div');page.className='ps-edit-page';Preset._editEl=page;
     document.body.appendChild(page);
 
-        function render(){
+    function render(){
       Preset._syncOrder(p);
 
       var activeOrder=[];
@@ -150,16 +275,27 @@ var Preset={
           '</div>';
         } else {
           var it=p.items[o.idx];if(!it)return;
+          var isItemBuiltin=it.builtin===true;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
           var swOn=it.enabled!==false?'on':'off';
-                    rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+'</div></div>'+
-            '<div class="ps-item-actions">'+depthTag+
+
+          var actionsHtml='';
+          if(isViewMode){
+            /* ★ 查看模式：只有查看按钮和开关 */
+            actionsHtml=depthTag+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>'+
+              '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>';
+          } else {
+            actionsHtml=depthTag+
               '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
               '<div class="ps-mini-btn active-on" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>'+
-              '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>'+
-            '</div>'+
+              '<div class="ps-sw '+swOn+'" data-iact="sw" data-ii="'+o.idx+'"></div>';
+          }
+
+          rows+='<div class="ps-item is-user" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
+            '<div class="ps-info"><div class="ps-name">'+App.esc(it.name||'未命名')+(isItemBuiltin?' <span style="font-size:9px;color:#adcdea;">内置</span>':'')+'</div></div>'+
+            '<div class="ps-item-actions">'+actionsHtml+'</div>'+
           '</div>';
         }
       });
@@ -169,27 +305,52 @@ var Preset={
         inactiveOrder.forEach(function(o){
           var oi=o._oi;
           var it=p.items[o.idx];if(!it)return;
+          var isItemBuiltin=it.builtin===true;
           var depthTag=it.mode==='depth'?'<span class="ps-depth-tag">D'+it.depth+'</span>':'';
-          rows+='<div class="ps-item is-user ps-inactive" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
-            '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+'</div></div>'+
-            '<div class="ps-item-actions">'+depthTag+
+
+          var actionsHtml='';
+          if(isViewMode){
+            actionsHtml=depthTag+
+              '<div class="ps-mini-btn" data-iact="view" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>'+
+              '<div class="ps-mini-btn active-on" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>';
+          } else {
+            actionsHtml=depthTag+
               '<div class="ps-mini-btn" data-iact="edit" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>'+
               '<div class="ps-mini-btn" data-iact="activate" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>'+
-              '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
-               '</div>'+
+              '<div class="ps-mini-btn del-btn" data-iact="del" data-ii="'+o.idx+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>';
+          }
+
+          rows+='<div class="ps-item is-user ps-inactive" data-oi="'+oi+'" data-rt="user" data-ii="'+o.idx+'">'+
+            '<div class="ps-info"><div class="ps-name" style="color:#bbb;">'+App.esc(it.name||'未命名')+(isItemBuiltin?' <span style="font-size:9px;color:#ccc;">内置</span>':'')+'</div></div>'+
+            '<div class="ps-item-actions">'+actionsHtml+'</div>'+
           '</div>';
         });
       }
+
+      var headerRight='';
+      if(isViewMode){
+        headerRight='<div class="ps-header-right" style="color:#adcdea;font-size:12px;">只读</div>';
+      } else {
+        headerRight='<div class="ps-header-right" id="psEditRename">编辑名称</div>';
+      }
+
+      var toolbarHtml='<div class="ps-toolbar"><div class="ps-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input type="text" id="psEditSearch" placeholder="搜索指令..."></div>';
+      if(!isViewMode)toolbarHtml+='<button class="ps-add-btn" id="psEditAdd" type="button">添加</button>';
+      toolbarHtml+='</div>';
+
+      var hintText=isViewMode
+        ?'这是内置预设，不可直接修改。如需修改请先「复制为可编辑副本」。可以开关单条指令。'
+        :'长按拖拽排列顺序，即模型读取的顺序。关闭则不发送。';
 
       page.innerHTML=
         '<div class="ps-header">'+
           '<button class="ps-back" id="psEditBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
           '<div class="ps-header-title">'+App.esc(p.name||'预设名称')+'</div>'+
-          '<div class="ps-header-right" id="psEditRename">编辑名称</div>'+
+          headerRight+
         '</div>'+
         '<div class="ps-edit-body">'+
-          '<div class="ps-toolbar"><div class="ps-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input type="text" id="psEditSearch" placeholder="搜索指令..."></div><button class="ps-add-btn" id="psEditAdd" type="button">添加</button></div>'+
-          '<div class="ps-hint-bar"><div class="ps-hint-text">长按拖拽排列顺序，即模型读取的顺序。关闭则不发送。</div></div>'+
+          toolbarHtml+
+          '<div class="ps-hint-bar"><div class="ps-hint-text">'+hintText+'</div></div>'+
           '<div class="ps-list" id="psEditList">'+rows+'</div>'+
         '</div>';
 
@@ -198,16 +359,27 @@ var Preset={
 
     function bindEv(){
       page.querySelector('#psEditBack').addEventListener('click',function(){saveBack();Preset.closeEdit();});
-      page.querySelector('#psEditAdd').addEventListener('click',function(){
-        Preset.openAddItem(p,function(){render();});
-      });
-      page.querySelector('#psEditRename').addEventListener('click',function(){
+
+      var addBtn=page.querySelector('#psEditAdd');
+      if(addBtn)addBtn.addEventListener('click',function(){Preset.openAddItem(p,function(){render();});});
+
+      var renameBtn=page.querySelector('#psEditRename');
+      if(renameBtn)renameBtn.addEventListener('click',function(){
         var n=prompt('预设名称：',p.name||'');if(n===null)return;
         p.name=n.trim();page.querySelector('.ps-header-title').textContent=p.name||'预设名称';
       });
 
       page.querySelectorAll('.ps-sw[data-sid]').forEach(function(sw){
         sw.addEventListener('click',function(e){e.stopPropagation();var id=sw.dataset.sid;var isOn=sw.classList.contains('on');Preset.config.sysToggles[id]=!isOn;Preset.save();sw.classList.toggle('on',!isOn);sw.classList.toggle('off',isOn);});
+      });
+
+      /* ★ 查看按钮（内置预设的指令） */
+      page.querySelectorAll('[data-iact="view"]').forEach(function(btn){
+        btn.addEventListener('click',function(e){e.stopPropagation();
+          var ii=parseInt(btn.dataset.ii);
+          var it=p.items[ii];if(!it)return;
+          Preset._showViewDialog(it);
+        });
       });
 
       page.querySelectorAll('[data-iact="edit"]').forEach(function(btn){
@@ -222,20 +394,25 @@ var Preset={
           render();
         });
       });
+
       page.querySelectorAll('[data-iact="sw"]').forEach(function(sw){
-        sw.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(sw.dataset.ii);if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}render();});
+        sw.addEventListener('click',function(e){e.stopPropagation();var ii=parseInt(sw.dataset.ii);if(p.items[ii]){p.items[ii].enabled=p.items[ii].enabled===false?true:false;}
+          /* ★ 查看模式下开关也要立刻保存 */
+          if(isViewMode&&!isNew){Preset.list[idx]=JSON.parse(JSON.stringify(p));Preset.save();}
+          render();
+        });
       });
+
       page.querySelectorAll('[data-iact="activate"]').forEach(function(btn){
         btn.addEventListener('click',function(e){
           e.stopPropagation();
           var ii=parseInt(btn.dataset.ii);
-          if(p.items[ii]){
-            p.items[ii].active=p.items[ii].active===false?true:false;
-          }
+          if(p.items[ii]){p.items[ii].active=p.items[ii].active===false?true:false;}
+          if(isViewMode&&!isNew){Preset.list[idx]=JSON.parse(JSON.stringify(p));Preset.save();}
           render();
         });
       });
-      
+
       var si=page.querySelector('#psEditSearch');
       if(si)si.addEventListener('input',function(){
         var q=this.value.trim().toLowerCase();
@@ -245,7 +422,7 @@ var Preset={
         });
       });
 
-      // 统一拖拽 - 所有ps-item
+      /* ★ 拖拽排序：查看模式也允许（调整顺序不算"编辑内容"） */
       var allItems=page.querySelectorAll('.ps-item');
       allItems.forEach(function(el,elIdx){
         var timer=null,pressed=false,moved=false,startY=0,targetIdx;
@@ -278,7 +455,10 @@ var Preset={
           clearTimeout(timer);timer=null;el.classList.remove('dragging');
           page.querySelectorAll('.ps-item').forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
           if(pressed&&moved&&targetIdx!==elIdx){
-            var item=p.order.splice(elIdx,1)[0];p.order.splice(targetIdx,0,item);render();
+            var item=p.order.splice(elIdx,1)[0];p.order.splice(targetIdx,0,item);
+            /* ★ 查看模式拖拽也保存 */
+            if(isViewMode&&!isNew){Preset.list[idx]=JSON.parse(JSON.stringify(p));Preset.save();}
+            render();
           }
           pressed=false;moved=false;
         },{passive:true});
@@ -287,7 +467,7 @@ var Preset={
 
     function saveBack(){
       if(isNew){if(p.name||p.items.length){Preset.list.unshift(p);}}
-      else{Preset.list[idx]=p;}
+      else if(!isViewMode){Preset.list[idx]=p;}
       Preset.save();Preset.renderHome();
     }
 
@@ -298,12 +478,32 @@ var Preset={
 
   closeEdit:function(){slideOut(Preset._editEl,function(){Preset._editEl=null;});},
 
+  /* ★ 新增：查看指令内容的只读弹窗 */
+  _showViewDialog:function(item){
+    var overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;z-index:100020;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML=
+      '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:16px;padding:20px;width:100%;max-width:360px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">'+
+        '<div style="font-size:15px;font-weight:700;color:#2e4258;margin-bottom:12px;">'+App.esc(item.name||'未命名')+'</div>'+
+        '<div style="font-size:13px;color:#5a7a9a;line-height:1.7;white-space:pre-wrap;word-break:break-word;background:rgba(126,163,201,.06);border:1px solid rgba(126,163,201,.15);border-radius:10px;padding:14px;">'+App.esc(item.content||'(无内容)')+'</div>'+
+        '<div style="display:flex;gap:8px;margin-top:14px;">'+
+          '<button type="button" id="viewCopyBtn" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">复制内容</button>'+
+          '<button type="button" id="viewCloseBtn" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">关闭</button>'+
+        '</div>'+
+      '</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+    overlay.querySelector('#viewCloseBtn').addEventListener('click',function(){overlay.remove();});
+    overlay.querySelector('#viewCopyBtn').addEventListener('click',function(){
+      App.copyText(item.content||'').then(function(){App.showToast('已复制');}).catch(function(){App.showToast('复制失败');});
+    });
+  },
+
   _buildOrder:function(p){
     var o=buildDefaultOrder();
     if(p.items&&p.items.length){
       p.items.forEach(function(it,i){
         if(it.mode==='depth'){
-          // 深度注入放聊天历史后面
           var hIdx=-1;
           for(var j=0;j<o.length;j++){if(o[j].type==='sys'&&o[j].id==='sys_history'){hIdx=j;break;}}
           if(hIdx>=0)o.splice(hIdx+1,0,{type:'user',idx:i});
@@ -317,7 +517,6 @@ var Preset={
   },
 
   _syncOrder:function(p){
-    // 确保所有item都在order里
     p.items.forEach(function(it,i){
       var found=false;
       for(var j=0;j<p.order.length;j++){if(p.order[j].type==='user'&&p.order[j].idx===i){found=true;break;}}
@@ -332,9 +531,7 @@ var Preset={
         }
       }
     });
-    // 清理已删除的
     p.order=p.order.filter(function(o){if(o.type==='sys')return true;return o.idx>=0&&o.idx<p.items.length;});
-    // 确保所有系统项都在
     DEFAULT_SYS.forEach(function(s){
       var found=false;
       for(var j=0;j<p.order.length;j++){if(p.order[j].type==='sys'&&p.order[j].id===s.id){found=true;break;}}
@@ -410,7 +607,20 @@ var Preset={
 
   getEnabledPresets:function(){return Preset.list.filter(function(p){return p.enabled===true;});},
   isSysEnabled:function(sysId){if(!Preset.config.sysToggles)return true;return Preset.config.sysToggles[sysId]!==false;},
-  init:function(){Preset.load();App.preset=Preset;}
+
+  /* ★ 重写 init：首次打开时创建默认预设 */
+  init:function(){
+    Preset.load();
+
+    /* 检查是否有预设，没有则创建默认的 */
+    if(!Preset.list.length){
+      var defaultPreset=createDefaultPreset();
+      Preset.list.push(defaultPreset);
+      Preset.save();
+    }
+
+    App.preset=Preset;
+  }
 };
 
 function raf2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
