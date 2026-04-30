@@ -1,3 +1,4 @@
+
 /* =========================
    并排容器
 ========================= */
@@ -88,11 +89,12 @@
   --W0: 190px;
   --CARD_H0: 210px;
   --PAD0: 6px;
-  --INK: #4a5a75;
-  --THEME: #bbd3ef;
-  --LABEL_C: #6a8caf;
+  --INK: var(--bx2-name-c, #4a5a75);
+  --THEME: var(--bx2-border-c, #bbd3ef);
+  --LABEL_C: var(--bx2-sub-c, #6a8caf);
   --border-c: rgba(187,211,239,.8);
   --LINE_C: rgba(187,211,239,.5);
+  --bx-border-w: var(--bx2-border-w, 3px);
   width: calc(var(--W0) * var(--S));
   flex-shrink: 0;
   user-select: none;
@@ -102,7 +104,7 @@
 
 #bx-2 .bx-cw {
   position: relative;
-  padding: calc(3px * var(--S));
+  padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--THEME) 50%, #ced4da 100%);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.15),
@@ -141,16 +143,18 @@
 
 #bx-2 .bx-tag1 {
   top: 0; right: 0;
-  background: linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%);
-  color: #fff; transform: rotate(-6deg);
+  background: var(--bx2-tag-bg, linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%));
+  color: var(--bx2-tag-c, #fff);
+  transform: rotate(-6deg);
   text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
 }
 
 #bx-2 .bx-tag2 {
   top: calc(22px * var(--S));
   right: calc(-6px * var(--S));
-  background: linear-gradient(90deg, #bbd3ef 0%, #ffffff 100%);
-  color: var(--INK); transform: rotate(2deg);
+  background: var(--bx2-tag2-bg, linear-gradient(90deg, #bbd3ef 0%, #ffffff 100%));
+  color: var(--bx2-tag2-c, var(--INK));
+  transform: rotate(2deg);
   text-shadow: 0 calc(1px * var(--S)) calc(1px * var(--S)) rgba(255,255,255,.5);
 }
 
@@ -169,10 +173,9 @@
 
 #bx-2 .bx-name-bar {
   width: 100%; text-align: center;
-  margin-top: calc(-22px * var(--S));
+  margin-top: calc(-12px * var(--S));
   position: relative;
-  padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(6px * var(--S));
-  border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
+  padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
   z-index: 3;
   cursor: pointer;
 }
@@ -185,9 +188,9 @@
 }
 
 #bx-2 .bx-sub {
-  font-size: calc(10.5px * var(--S));
+  font-size: calc(11.5px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(2px * var(--S));
+  margin-top: calc(1px * var(--S));
   letter-spacing: calc(1px * var(--S));
 }
 
@@ -197,12 +200,13 @@
   --W0: 190px;
   --CARD_H0: 210px;
   --PAD0: 6px;
-  --INK: #4a5a75;
-  --BLUE: #8ca3c2;
+  --INK: var(--bx1-name-c, #4a5a75);
+  --BLUE: var(--bx1-border-c, #8ca3c2);
   --BLUE_L: #b5c6db;
-  --LABEL_C: #5c728a;
+  --LABEL_C: var(--bx1-sub-c, #5c728a);
   --border-c: rgba(79,121,166,.55);
   --LINE_C: rgba(140,163,194,.45);
+  --bx-border-w: var(--bx1-border-w, 3px);
   width: calc(var(--W0) * var(--S));
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
@@ -212,7 +216,7 @@
 
 #bx-1 .bx-cw {
   position: relative;
-  padding: calc(3px * var(--S));
+  padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--BLUE) 50%, #ced4da 100%);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.18),
@@ -253,14 +257,14 @@
 }
 
 #bx-1 .bx-ribbon-tab.r1 {
-  background: linear-gradient(180deg, #7a9abd 0%, #8ca3c2 100%);
-  color: #fff;
+  background: var(--bx1-tag-bg, linear-gradient(180deg, #7a9abd 0%, #8ca3c2 100%));
+  color: var(--bx1-tag-c, #fff);
   text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
 }
 
 #bx-1 .bx-ribbon-tab.r2 {
-  background: linear-gradient(180deg, #dfe6ee 0%, #b5c6db 100%);
-  color: var(--INK);
+  background: var(--bx1-tag2-bg, linear-gradient(180deg, #dfe6ee 0%, #b5c6db 100%));
+  color: var(--bx1-tag2-c, var(--INK));
   font-size: calc(8.5px * var(--S));
 }
 
@@ -279,10 +283,9 @@
 
 #bx-1 .bx-name-bar {
   width: 100%; text-align: center;
-  margin-top: calc(-22px * var(--S));
+  margin-top: calc(-12px * var(--S));
   position: relative;
-  padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(6px * var(--S));
-  border-radius: 0 0 calc(8px * var(--S)) calc(8px * var(--S));
+  padding: calc(4px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
   z-index: 3;
   cursor: pointer;
 }
@@ -295,9 +298,9 @@
 }
 
 #bx-1 .bx-sub {
-  font-size: calc(10.5px * var(--S));
+  font-size: calc(11.5px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(2px * var(--S));
+  margin-top: calc(1px * var(--S));
   letter-spacing: calc(1px * var(--S));
 }
 
@@ -318,7 +321,7 @@
 
 .bx-av-placeholder span { font-size: 10px; }
 
-/* ====== 编辑弹窗（浮动小卡片） ====== */
+/* ====== 编辑弹窗 ====== */
 .pc-edit-overlay {
   position: fixed; inset: 0;
   z-index: 999;
@@ -331,7 +334,7 @@
   background: #fff;
   border-radius: 14px;
   width: 240px;
-  max-height: 360px;
+  max-height: 420px;
   overflow-y: auto;
   padding: 14px;
   box-shadow: 0 4px 16px rgba(0,0,0,.12);
@@ -405,6 +408,111 @@
 }
 
 .pc-edit-cancel:active { opacity: 0.7; }
+
+/* ====== 卡片调色板 ====== */
+.pc-palette-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+
+.pc-palette-label {
+  font-size: 10px;
+  color: #8aa0b8;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: .5px;
+}
+
+.pc-palette-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pc-palette-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.pc-palette-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,.08);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .15s, box-shadow .15s;
+}
+
+.pc-palette-dot:active {
+  transform: scale(0.9);
+}
+
+.pc-palette-dot-label {
+  font-size: 8px;
+  color: #aaa;
+  text-align: center;
+  line-height: 1;
+}
+
+.pc-palette-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pc-palette-slider-label {
+  font-size: 10px;
+  color: #8aa0b8;
+  font-weight: 600;
+  flex-shrink: 0;
+  width: 28px;
+}
+
+.pc-palette-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(126,163,201,.2);
+  outline: none;
+}
+
+.pc-palette-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #7a9ab8;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  cursor: pointer;
+}
+
+.pc-palette-slider-val {
+  font-size: 10px;
+  color: #999;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: right;
+}
+
+.pc-palette-reset {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #c9706b;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+}
 
 /* =========================
    对话框
