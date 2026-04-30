@@ -718,7 +718,15 @@ showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
 setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
 init:function(){
   App.chat=Chat;
-  setTimeout(function(){if(App.GlobalProactive)App.GlobalProactive.start();},5000);
+  /* ★ 等所有模块加载完再启动全局主动消息 */
+  var tryStart=function(){
+    if(App.character&&App.character.list&&App.character.list.length){
+      App.GlobalProactive.start();
+    } else {
+      setTimeout(tryStart,2000);
+    }
+  };
+  setTimeout(tryStart,5000);
 }
 };
 
