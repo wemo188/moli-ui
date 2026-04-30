@@ -207,28 +207,12 @@ var WB={
       page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
 
       // 编辑名称 - 自定义弹窗
-      page.querySelector('#wbListRename').addEventListener('click',function(){
-        var old=document.querySelector('.wb-rename-overlay');if(old)old.remove();
-        var ov=document.createElement('div');ov.className='wb-rename-overlay';
-        ov.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
-        ov.innerHTML=
-          '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">'+
-            '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;">编辑名称</div>'+
-            '<input type="text" id="wbRenameInput" value="'+App.escAttr(book.name||'')+'" placeholder="世界书名称..." style="padding:11px 14px;border:1.5px solid rgba(126,163,201,.25);border-radius:12px;font-size:14px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);box-sizing:border-box;">'+
-            '<div style="display:flex;gap:8px;">'+
-              '<button id="wbRenameOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">保存</button>'+
-              '<button id="wbRenameNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
-            '</div>'+
-          '</div>';
-        document.body.appendChild(ov);
-        ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
-        ov.querySelector('#wbRenameNo').addEventListener('click',function(){ov.remove();});
-        ov.querySelector('#wbRenameOk').addEventListener('click',function(){
-          var n=(ov.querySelector('#wbRenameInput').value||'').trim();
-          if(!n){App.showToast('请输入名称');return;}
-          book.name=n;WB.save();page.querySelector('.wb-header-title').textContent=n;WB.renderHome();ov.remove();App.showToast('已保存');
-        });
-        var inp=ov.querySelector('#wbRenameInput');inp.focus();inp.select();
+            page.querySelector('#wbListRename').addEventListener('click',function(){
+        WB.closeEntryList();
+        // 找到当前book在books里的索引
+        var bookIdx=-1;
+        for(var i=0;i<WB.books.length;i++){if(WB.books[i]===book||WB.books[i].id===book.id){bookIdx=i;break;}}
+        if(bookIdx>=0)setTimeout(function(){WB.openEditBook(bookIdx);},360);
       });
 
       var si=page.querySelector('#wbListSearch');
