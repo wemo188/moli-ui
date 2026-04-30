@@ -80,7 +80,7 @@ var WB={
     menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
     menu.querySelectorAll('.wb-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
-        if(act==='rename'){var n=prompt('世界书名称：',WB.books[idx].name||'');if(n===null)return;WB.books[idx].name=n.trim();WB.save();WB.renderHome();App.showToast('已重命名');}
+        if(act==='rename'){WB.openEditBook(idx);}
         if(act==='copy'){var src=WB.books[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='wb_'+Date.now();cp.name=cp.name+' (副本)';WB.books.unshift(cp);WB.save();WB.renderHome();App.showToast('已复制');}
         if(act==='export'){var b=WB.books[idx];if(!b)return;var blob=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='worldbook_'+(b.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
         if(act==='delete'){if(!confirm('确定删除？'))return;WB.books.splice(idx,1);WB.save();WB.renderHome();App.showToast('已删除');}
@@ -111,7 +111,7 @@ var WB={
         '</div>'+
       '</div>'+
       '<div class="wb-edit-btns">'+
-        '<button class="wb-save-btn" id="wbBookSave" type="button">保存并进入</button>'+
+        '<button class="wb-save-btn" id="wbBookSave" type="button">'+(isNew?'保存并进入':'保存')+'</button>'+
         '<button class="wb-cancel-btn" id="wbBookCancel" type="button">取消</button>'+
       '</div></div>';
 
@@ -126,14 +126,18 @@ var WB={
       if(isNew){
         var newBook={id:'wb_'+Date.now(),name:name,entries:[]};
         WB.books.unshift(newBook);
-        WB.save();WB.closeEditBook();WB.renderHome();
-        // 直接进入条目列表
+        WB.save();
+        WB.closeEditBook();
+        WB.renderHome();
         WB.openEntryList(0);
+        App.showToast('已创建');
       } else {
         book.name=name;
-        WB.save();WB.closeEditBook();WB.renderHome();
+        WB.save();
+        WB.closeEditBook();
+        WB.renderHome();
+        App.showToast('已保存');
       }
-      App.showToast(isNew?'已创建':'已保存');
     });
 
     WB.bindSwipeBack(page,function(){WB.closeEditBook();});
@@ -193,10 +197,32 @@ var WB={
       page.querySelector('#wbListBack').addEventListener('click',function(){WB.closeEntryList();});
       page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
       page.querySelector('#wbListRename').addEventListener('click',function(){
-        var n=prompt('世界书名称：',book.name||'');if(n===null)return;
-        book.name=n.trim();WB.save();
-        page.querySelector('.wb-header-title').textContent=book.name||'世界书';
-        WB.renderHome();
+        var old=document.querySelector('.wb-rename-overlay');if(old)old.remove();
+        var overlay=document.createElement('div');
+        overlay.className='wb-rename-overlay';
+        overlay.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+        overlay.innerHTML=
+          '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">'+
+            '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;">编辑名称</div>'+
+            '<input type="text" id="wbRenameInput" value="'+App.escAttr(book.name||'')+'" placeholder="世界书名称..." style="padding:11px 14px;border:1.5px solid rgba(126,163,201,.25);border-radius:12px;font-size:14px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);box-sizing:border-box;">'+
+            '<div style="display:flex;gap:8px;">'+
+              '<button id="wbRenameOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">保存</button>'+
+              '<button id="wbRenameCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
+            '</div>'+
+          '</div>';
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+        overlay.querySelector('#wbRenameCancel').addEventListener('click',function(){overlay.remove();});
+        overlay.querySelector('#wbRenameOk').addEventListener('click',function(){
+          var n=(overlay.querySelector('#wbRenameInput').value||'').trim();
+          if(!n){App.showToast('请输入名称');return;}
+          book.name=n;WB.save();
+          page.querySelector('.wb-header-title').textContent=n;
+          WB.renderHome();
+          overlay.remove();
+          App.showToast('已保存');
+        });
+        var inp=overlay.querySelector('#wbRenameInput');inp.focus();inp.select();
       });
 
       var si=page.querySelector('#wbListSearch');
