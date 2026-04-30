@@ -190,7 +190,7 @@
 
 .wb-tag-kw {
   font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
-  background: rgba(212,167,106,.12); color: #b8923e; margin-left: 4px;
+  background: #cccccc; color: #000000; margin-left: 4px;
 }
 
 .wb-depth-input {
