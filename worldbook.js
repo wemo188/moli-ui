@@ -5,12 +5,11 @@ var App=window.App;if(!App)return;
 
 var WB={
   books:[],
-  _homeEl:null,_listEl:null,_editEl:null,_expandEl:null,
+  _homeEl:null,_listEl:null,_editEl:null,_editBookEl:null,_expandEl:null,
 
   load:function(){WB.books=App.LS.get('worldbooks')||[];},
   save:function(){App.LS.set('worldbooks',WB.books);},
 
-  // ==================== 首页 ====================
   open:function(){
     WB.load();
     if(WB._homeEl)WB._homeEl.remove();
@@ -18,6 +17,7 @@ var WB={
     document.body.appendChild(page);WB.renderHome();
     raf2(function(){page.classList.add('show');});
   },
+
   close:function(){slideOut(WB._homeEl,function(){WB._homeEl=null;});},
 
   renderHome:function(){
@@ -39,6 +39,7 @@ var WB={
         '</div>';
       }).join('');
     }
+
     page.innerHTML=
       '<div class="wb-header">'+
         '<button class="wb-back" id="wbHomeBack" type="button"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>'+
@@ -49,12 +50,7 @@ var WB={
       '<div class="wb-home-list" id="wbHomeList">'+html+'</div>';
 
     page.querySelector('#wbHomeBack').addEventListener('click',function(){WB.close();});
-    page.querySelector('#wbHomeCreate').addEventListener('click',function(){
-      // 创建后直接进入条目列表页
-      var newBook={id:'wb_'+Date.now(),name:'',entries:[]};
-      WB.books.unshift(newBook);WB.save();WB.renderHome();
-      WB.openEntryList(0);
-    });
+    page.querySelector('#wbHomeCreate').addEventListener('click',function(){WB.openEditBook(-1);});
 
     page.querySelectorAll('.wb-home-card').forEach(function(card){
       card.addEventListener('click',function(e){
@@ -94,6 +90,57 @@ var WB={
     setTimeout(function(){document.addEventListener('touchstart',dismiss,{passive:true});document.addEventListener('click',dismiss);},100);
   },
 
+  // 创建世界书 → 保存后直接进入条目列表
+  openEditBook:function(idx){
+    var isNew=idx<0;
+    var book=isNew?{id:'wb_'+Date.now(),name:'',entries:[]}:WB.books[idx];
+
+    if(WB._editBookEl)WB._editBookEl.remove();
+    var page=document.createElement('div');page.className='wb-edit-page';WB._editBookEl=page;
+
+    page.innerHTML=
+      '<div class="wb-header">'+
+        '<button class="wb-back" id="wbBookBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+        '<div class="wb-header-title">'+(isNew?'创建世界书':'编辑世界书')+'</div>'+
+        '<div style="width:36px;"></div>'+
+      '</div>'+
+      '<div class="wb-edit-body"><div class="wb-edit-card">'+
+        '<div class="wb-edit-section">'+
+          '<div class="wb-edit-label"><div class="dot"></div>世界书名称</div>'+
+          '<input type="text" class="wb-edit-input" id="wbBookName" value="'+App.escAttr(book.name||'')+'" placeholder="给世界书起个名字...">'+
+        '</div>'+
+      '</div>'+
+      '<div class="wb-edit-btns">'+
+        '<button class="wb-save-btn" id="wbBookSave" type="button">保存并进入</button>'+
+        '<button class="wb-cancel-btn" id="wbBookCancel" type="button">取消</button>'+
+      '</div></div>';
+
+    document.body.appendChild(page);
+    raf2(function(){page.classList.add('show');});
+
+    page.querySelector('#wbBookBack').addEventListener('click',function(){WB.closeEditBook();});
+    page.querySelector('#wbBookCancel').addEventListener('click',function(){WB.closeEditBook();});
+    page.querySelector('#wbBookSave').addEventListener('click',function(){
+      var name=(page.querySelector('#wbBookName').value||'').trim();
+      if(!name){App.showToast('请输入名称');return;}
+      if(isNew){
+        var newBook={id:'wb_'+Date.now(),name:name,entries:[]};
+        WB.books.unshift(newBook);
+        WB.save();WB.closeEditBook();WB.renderHome();
+        // 直接进入条目列表
+        WB.openEntryList(0);
+      } else {
+        book.name=name;
+        WB.save();WB.closeEditBook();WB.renderHome();
+      }
+      App.showToast(isNew?'已创建':'已保存');
+    });
+
+    WB.bindSwipeBack(page,function(){WB.closeEditBook();});
+  },
+
+  closeEditBook:function(){slideOut(WB._editBookEl,function(){WB._editBookEl=null;});},
+
   // ==================== 条目列表页 ====================
   openEntryList:function(bookIdx){
     var book=WB.books[bookIdx];if(!book)return;
@@ -114,7 +161,7 @@ var WB={
           var posTag='';
           if(e.position==='before')posTag='<span class="wb-tag-pos">角色前</span>';
           else if(e.position==='after')posTag='<span class="wb-tag-pos">角色后</span>';
-          else if(e.position==='depth')posTag='<span class="wb-tag-pos">D'+(e.depth||2)+'</span>';
+          else if(e.position==='depth')posTag='<span class="wb-tag-pos">D'+(e.depth||4)+'</span>';
           return '<div class="wb-item" data-idx="'+i+'">'+
             '<div class="wb-info"><div class="wb-name">'+App.esc(e.name||'未命名')+'</div></div>'+
             '<div class="wb-tags">'+alwaysTag+posTag+'</div>'+
@@ -130,7 +177,7 @@ var WB={
       page.innerHTML=
         '<div class="wb-header">'+
           '<button class="wb-back" id="wbListBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
-          '<div class="wb-header-title">'+App.esc(book.name||'未命名')+'</div>'+
+          '<div class="wb-header-title">'+App.esc(book.name||'世界书')+'</div>'+
           '<div class="wb-header-right" id="wbListRename">编辑名称</div>'+
         '</div>'+
         '<div class="wb-toolbar">'+
@@ -143,19 +190,13 @@ var WB={
     }
 
     function bindEntryEvents(){
-      page.querySelector('#wbListBack').addEventListener('click',function(){
-        WB.save();WB.renderHome();WB.closeEntryList();
-      });
-
+      page.querySelector('#wbListBack').addEventListener('click',function(){WB.closeEntryList();});
+      page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
       page.querySelector('#wbListRename').addEventListener('click',function(){
         var n=prompt('世界书名称：',book.name||'');if(n===null)return;
         book.name=n.trim();WB.save();
-        page.querySelector('.wb-header-title').textContent=book.name||'未命名';
+        page.querySelector('.wb-header-title').textContent=book.name||'世界书';
         WB.renderHome();
-      });
-
-      page.querySelector('#wbListAdd').addEventListener('click',function(){
-        WB.openEditEntry(book,-1,function(){render();});
       });
 
       var si=page.querySelector('#wbListSearch');
@@ -225,7 +266,7 @@ var WB={
 
     render();
     raf2(function(){page.classList.add('show');});
-    WB.bindSwipeBack(page,function(){WB.save();WB.renderHome();WB.closeEntryList();});
+    WB.bindSwipeBack(page,function(){WB.closeEntryList();});
   },
 
   closeEntryList:function(){slideOut(WB._listEl,function(){WB._listEl=null;});},
@@ -233,16 +274,16 @@ var WB={
   // ==================== 新建/编辑条目 ====================
   openEditEntry:function(book,idx,onDone){
     var isNew=idx<0;
-    var entry=isNew?{name:'',content:'',keyword:'',enabled:true,always:true,useKeyword:false,position:'before',depth:2}:JSON.parse(JSON.stringify(book.entries[idx]));
+    var entry=isNew?{name:'',content:'',keyword:'',enabled:true,always:true,useKeyword:false,position:'before',depth:4}:JSON.parse(JSON.stringify(book.entries[idx]));
     if(entry.useKeyword===undefined)entry.useKeyword=!!entry.keyword;
     if(!entry.position)entry.position='before';
-    if(entry.depth===undefined)entry.depth=2;
+    if(entry.depth===undefined)entry.depth=4;
 
     if(WB._editEl)WB._editEl.remove();
     var page=document.createElement('div');page.className='wb-edit-page';WB._editEl=page;
 
-    var alwaysState=!!entry.always;
-    var kwState=!!entry.useKeyword;
+    var alwaysOn=entry.always?'on':'off';
+    var kwOn=entry.useKeyword?'on':'off';
 
     page.innerHTML=
       '<div class="wb-header">'+
@@ -271,8 +312,8 @@ var WB={
 
         '<div class="wb-edit-section">'+
           '<div class="wb-always-row">'+
-            '<div><div class="wb-always-label">常驻</div><div class="wb-always-hint">始终发送给AI</div></div>'+
-            '<div class="wb-sw '+(alwaysState?'on':'off')+'" id="wbAlwaysSw"></div>'+
+            '<div><div class="wb-always-label">常驻</div><div class="wb-always-hint">始终发送给AI，无需触发</div></div>'+
+            '<div class="wb-sw '+alwaysOn+'" id="wbAlwaysSw"></div>'+
           '</div>'+
         '</div>'+
 
@@ -281,9 +322,9 @@ var WB={
         '<div class="wb-edit-section">'+
           '<div class="wb-always-row">'+
             '<div><div class="wb-always-label">关键词触发</div><div class="wb-always-hint">聊天中出现关键词时自动注入</div></div>'+
-            '<div class="wb-sw '+(kwState?'on':'off')+'" id="wbKwSw"></div>'+
+            '<div class="wb-sw '+kwOn+'" id="wbKwSw"></div>'+
           '</div>'+
-          '<div id="wbKwArea" style="margin-top:10px;'+(kwState?'':'display:none;')+'">'+
+          '<div id="wbKwArea" style="margin-top:10px;'+(entry.useKeyword?'':'display:none;')+'">'+
             '<input type="text" class="wb-edit-input" id="wbEditKeyword" value="'+App.escAttr(entry.keyword||'')+'" placeholder="用逗号分隔多个关键词...">'+
           '</div>'+
         '</div>'+
@@ -298,11 +339,11 @@ var WB={
             '<div class="wb-pos-btn'+(entry.position==='depth'?' active':'')+'" data-pos="depth">深度注入</div>'+
           '</div>'+
           '<div id="wbDepthArea" style="margin-top:8px;'+(entry.position==='depth'?'':'display:none;')+'">'+
-            '<div class="wb-depth-row">'+
+            '<div style="display:flex;align-items:center;gap:10px;">'+
               '<span style="font-size:12px;color:#7a9ab8;font-weight:600;">注入深度</span>'+
-              '<input type="number" class="wb-depth-input" id="wbEditDepth" value="'+(entry.depth||2)+'" min="0" max="99">'+
+              '<input type="number" class="wb-edit-input" id="wbEditDepth" value="'+(entry.depth||4)+'" min="0" max="99" style="width:60px;text-align:center;">'+
             '</div>'+
-            '<div style="font-size:11px;color:#a8c0d8;margin-top:4px;">数字越小越靠近最新消息。0 = 紧接在最后一条用户消息之前。</div>'+
+            '<div class="wb-edit-hint" style="margin-top:6px;">数字越小越靠近最新消息。0 = 紧接最后一条用户消息之前。</div>'+
           '</div>'+
         '</div>'+
 
@@ -315,28 +356,32 @@ var WB={
     document.body.appendChild(page);
     raf2(function(){page.classList.add('show');});
 
-    var alwaysSw=page.querySelector('#wbAlwaysSw');
-    var kwSw=page.querySelector('#wbKwSw');
+    var alwaysState=!!entry.always;
+    var kwState=!!entry.useKeyword;
 
-    // 常驻开关：开启常驻时关闭关键词
-    alwaysSw.addEventListener('click',function(){
+    // 常驻开关
+    page.querySelector('#wbAlwaysSw').addEventListener('click',function(){
       alwaysState=!alwaysState;
-      alwaysSw.classList.toggle('on',alwaysState);alwaysSw.classList.toggle('off',!alwaysState);
+      this.classList.toggle('on',alwaysState);this.classList.toggle('off',!alwaysState);
+      // 开常驻时关掉关键词
       if(alwaysState&&kwState){
         kwState=false;
+        var kwSw=page.querySelector('#wbKwSw');
         kwSw.classList.remove('on');kwSw.classList.add('off');
         page.querySelector('#wbKwArea').style.display='none';
       }
     });
 
-    // 关键词开关：开启关键词时关闭常驻
-    kwSw.addEventListener('click',function(){
+    // 关键词开关
+    page.querySelector('#wbKwSw').addEventListener('click',function(){
       kwState=!kwState;
-      kwSw.classList.toggle('on',kwState);kwSw.classList.toggle('off',!kwState);
+      this.classList.toggle('on',kwState);this.classList.toggle('off',!kwState);
       page.querySelector('#wbKwArea').style.display=kwState?'':'none';
+      // 开关键词时关掉常驻
       if(kwState&&alwaysState){
         alwaysState=false;
-        alwaysSw.classList.remove('on');alwaysSw.classList.add('off');
+        var aSw=page.querySelector('#wbAlwaysSw');
+        aSw.classList.remove('on');aSw.classList.add('off');
       }
     });
 
@@ -363,7 +408,7 @@ var WB={
       if(!content){App.showToast('请输入内容');return;}
       var posBtn=page.querySelector('.wb-pos-btn.active');
       var position=posBtn?posBtn.dataset.pos:'before';
-      var depth=parseInt(page.querySelector('#wbEditDepth').value)||2;
+      var depth=parseInt(page.querySelector('#wbEditDepth').value)||4;
       var obj={name:name||'未命名',content:content,keyword:keyword,enabled:true,always:alwaysState,useKeyword:kwState,position:position,depth:depth};
       if(isNew){book.entries.unshift(obj);}
       else{book.entries[idx]=obj;}
@@ -400,7 +445,9 @@ var WB={
     c.worldbookIds.forEach(function(wbId){
       var book=null;
       WB.books.forEach(function(b){if(b.id===wbId)book=b;});
-      if(book&&book.entries){book.entries.forEach(function(e){if(e.enabled!==false)result.push(e);});}
+      if(book&&book.entries){
+        book.entries.forEach(function(e){if(e.enabled!==false)result.push(e);});
+      }
     });
     return result;
   },
