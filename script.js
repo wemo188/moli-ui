@@ -829,7 +829,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
   var BALL_DEFAULTS = {
     mode: 'mascot',
     ballImg: 'https://iili.io/B7m3lY7.md.png',
-    customImg: ''
+    customImg: '',
+    scale: 1
   };
 
   App.ballConfig = null;
@@ -848,6 +849,11 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     if (!ball || !img) return;
 
     var config = App.ballConfig;
+    var scale = config.scale || 1;
+    
+    /* 设定锚点为左上角，并应用缩放大小 */
+    ball.style.transformOrigin = 'top left';
+    ball.style.transform = 'scale(' + scale + ')';
 
     if (config.mode === 'ball') {
       ball.classList.add('ball-mode');
@@ -1029,6 +1035,11 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var pageTapTimer = null;
     var ballVisible = true;
 
+    /* ★ 新增：缩放参数 */
+    var initialDistance = 0;
+    var initialScale = 1;
+    var isZooming = false;
+
     function hideBall() {
       ball.style.display = 'none';
       App.closeMenu();
@@ -1043,41 +1054,103 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     }
 
     ball.addEventListener('touchstart', function(e) {
+      /* ★ 双指按下：进入缩放模式 */
+      if (e.touches.length === 2) {
+        isZooming = true;
+        App.state.isDragging = false;
+        initialDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = App.ballConfig.scale || 1;
+        e.preventDefault();
+        return;
+      }
+
+      /* 单指按下：准备拖拽 */
+      if (e.touches.length > 1) return;
       var t = e.touches[0];
-      var rect = App.getBallRect();
+      
+      /* 获取当前左上角绝对坐标，不受 scale 影响 */
+      App.state.origX = parseFloat(ball.style.left) || ball.offsetLeft || 0;
+      App.state.origY = parseFloat(ball.style.top) || ball.offsetTop || 0;
       App.state.startX = t.clientX;
       App.state.startY = t.clientY;
-      App.state.origX = rect.left;
-      App.state.origY = rect.top;
       App.state.isDragging = true;
       App.state.hasMoved = false;
-    }, { passive: true });
+    }, { passive: false });
 
     document.addEventListener('touchmove', function(e) {
+      /* ★ 双指移动：计算缩放比例 */
+      if (isZooming && e.touches.length === 2) {
+        e.preventDefault();
+        var currentDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        var newScale = initialScale * (currentDistance / initialDistance);
+        newScale = Math.max(0.3, Math.min(newScale, 3)); /* 限制 0.3倍 ~ 3倍 */
+        ball.style.transform = 'scale(' + newScale + ')';
+        return;
+      }
+
+      /* 单指移动：拖拽逻辑 */
       if (!App.state.isDragging) return;
       var t = e.touches[0];
       var dx = t.clientX - App.state.startX;
       var dy = t.clientY - App.state.startY;
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) App.state.hasMoved = true;
       if (!App.state.hasMoved) return;
-      var ballSize = ball.classList.contains('ball-mode') ? 48 : 150;
-      var nx = Math.max(0, Math.min(window.innerWidth - ballSize, App.state.origX + dx));
-      var ny = Math.max(0, Math.min(window.innerHeight - ballSize, App.state.origY + dy));
+      e.preventDefault();
+
+      var scale = App.ballConfig.scale || 1;
+      var baseSize = ball.classList.contains('ball-mode') ? 48 : 150;
+      var actualSize = baseSize * scale;
+
+      /* ★ 拖拽时动态计算边界，防止拖出屏幕 */
+      var nx = Math.max(0, Math.min(window.innerWidth - actualSize, App.state.origX + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - actualSize, App.state.origY + dy));
       ball.style.left = nx + 'px';
       ball.style.top = ny + 'px';
       ball.style.right = 'auto';
       ball.style.bottom = 'auto';
       if (App.workshop && App.workshop.isOpen) App.workshop.positionMenu();
-    }, { passive: true });
+    }, { passive: false });
 
     document.addEventListener('touchend', function(e) {
+      /* ★ 双指松开：保存比例，并校验是否缩放导致越界 */
+      if (isZooming) {
+        if (e.touches.length < 2) {
+          isZooming = false;
+          var match = ball.style.transform.match(/scale\(([^)]+)\)/);
+          if (match) {
+            App.ballConfig.scale = parseFloat(match[1]);
+            App.saveBallConfig();
+            
+            /* 校验越界 */
+            var scale = App.ballConfig.scale;
+            var baseSize = ball.classList.contains('ball-mode') ? 48 : 150;
+            var actualSize = baseSize * scale;
+            var currentX = parseFloat(ball.style.left) || ball.offsetLeft || 0;
+            var currentY = parseFloat(ball.style.top) || ball.offsetTop || 0;
+            var nx = Math.max(0, Math.min(window.innerWidth - actualSize, currentX));
+            var ny = Math.max(0, Math.min(window.innerHeight - actualSize, currentY));
+            ball.style.left = nx + 'px';
+            ball.style.top = ny + 'px';
+            App.LS.set('floatingBallPos', { left: nx, top: ny });
+          }
+        }
+        return;
+      }
+
+            /* 单指松开：判断是点击还是拖拽结束 */
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
         e.preventDefault();
         ballTapCount++;
         clearTimeout(ballTapTimer);
 
-        if (ballTapCount === 2) {
+        if (ballTapCount === 3) { /* ★ 改为连点三下隐藏 */
           hideBall();
           ballTapCount = 0;
         } else {
@@ -1087,11 +1160,10 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
             }
             App.toggleMenu();
             ballTapCount = 0;
-          }, 350);
+          }, 400); /* ★ 稍微延长判定时间，让你能从容地点完三下 */
         }
       } else {
-        var rect = App.getBallRect();
-        App.LS.set('floatingBallPos', { left: rect.left, top: rect.top });
+        App.LS.set('floatingBallPos', { left: parseFloat(ball.style.left) || 0, top: parseFloat(ball.style.top) || 0 });
       }
       App.state.isDragging = false;
       App.state.hasMoved = false;
@@ -1104,7 +1176,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       ballTapCount++;
       clearTimeout(ballTapTimer);
 
-      if (ballTapCount === 2) {
+      if (ballTapCount === 3) { /* ★ 电脑端点击也是三下隐藏 */
         hideBall();
         ballTapCount = 0;
       } else {
@@ -1114,7 +1186,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
           }
           App.toggleMenu();
           ballTapCount = 0;
-        }, 350);
+        }, 400);
       }
     });
 
@@ -1125,7 +1197,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       pageTapCount++;
       clearTimeout(pageTapTimer);
 
-      if (pageTapCount === 2) {
+      if (pageTapCount === 3) { /* ★ 屏幕空白处也是连点三下重新召唤 */
         showBall();
         pageTapCount = 0;
       } else {
@@ -1143,7 +1215,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       pageTapCount++;
       clearTimeout(pageTapTimer);
 
-      if (pageTapCount === 2) {
+      if (pageTapCount === 3) { /* ★ 电脑端也是连点三下召唤 */
         showBall();
         pageTapCount = 0;
       } else {
@@ -1179,7 +1251,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       });
     });
 
-    /* ✅ 修复1：重置按钮同时清除 IndexedDB，而非删掉按钮 */
     App.safeOn('#clearAllBtn', 'click', function() {
       if (!confirm('确定要重置所有设置吗？这将清除所有自定义配置。')) return;
       localStorage.clear();
