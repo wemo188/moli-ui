@@ -5,7 +5,7 @@
   if (!App) return;
 
 var DEFAULT_VARS = {
-  '--bg-primary': '#f0f6fb',
+  '--bg-primary': '#ffffff',
   '--bg-card': '#ffffff',
   '--accent': '#adcdea',
   '--text-primary': '#1a1a1a',
