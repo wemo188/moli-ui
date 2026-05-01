@@ -410,7 +410,7 @@ var Cards={
             '<div class="pc-palette-label">调色板</div>'+
             '<div class="pc-palette-row" id="pcDots">'+dotsHtml+'</div>'+
             '<div class="pc-palette-slider-row"><span class="pc-palette-slider-label">边框</span><input type="range" class="pc-palette-slider" id="pcBorderW" min="1" max="8" step="0.5" value="'+col.borderW+'"><span class="pc-palette-slider-val" id="pcBorderWVal">'+col.borderW+'px</span></div>'+
-            '<button class="pc-palette-reset" id="pcReset" type="button">重置颜色</button>'+
+            '<button class="pc-palette-reset" id="pcReset" type="button">⚠重置颜色</button>'+
           '</div>'+
         '</div>'+
         '<div class="pc-edit-footer">'+
