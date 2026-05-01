@@ -172,7 +172,7 @@
   flex: 1;
   height: calc(3px * var(--scale));
   -webkit-appearance: none !important;
-  background: #e0e0e0 !important;
+  background: #cfecfc !important;
   border-radius: calc(2px * var(--scale)) !important;
   outline: none !important;
 }
@@ -182,7 +182,7 @@
   height: calc(18px * var(--scale)) !important;
   border-radius: 50% !important;
   background: #fff !important;
-  border: calc(2px * var(--scale)) solid #1a1a1a !important;
+  border: calc(2px * var(--scale)) solid #45649e !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
   cursor: pointer !important;
 }
