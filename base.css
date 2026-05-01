@@ -840,3 +840,42 @@ html, body {
   background: #1a1a1a; color: #fff;
 }
 .pc-edit-save:active, .pc-edit-cancel:active { opacity: 0.7; }
+
+/* =========================
+   全局拉伸滑块统一样式 (彻底告别黑圈)
+========================= */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+}
+
+/* 滑块的轨道 (底下的细线) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(126, 163, 201, 0.25); /* 淡淡的雾蓝轨道 */
+}
+
+/* 滑动圆点 (白底蓝边) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff; /* 干净的白底 */
+  border: 2px solid #adcdea; /* 清新的蓝边 */
+  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); /* 柔和的弥散光影 */
+  cursor: pointer;
+  margin-top: -6px; /* 保持圆点在轨道上绝对居中 */
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+/* 手指按住圆点时的反馈 */
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.15); /* 按住时微微放大 */
+  background: #f0f6fb; /* 变一点点浅蓝底色 */
+}
+
