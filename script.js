@@ -519,17 +519,13 @@
   };
 
   /* ✅ 修复8：openColorPicker 添加显式 callerId 参数 */
-  App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
+  
+App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var old = App.$('#cpOverlay');
     if (old) {
-      /* ✅ 修复8：使用显式 callerId，保持 toggle 行为 */
       var id = callerId || currentColor;
-      if (old._callerId === id) {
-        old._doClose();
-        return;
-      }
+      if (old._callerId === id) { old._doClose(); return; }
       old._callerId = id;
-      old._lastColor = currentColor;
       old._onConfirm = onConfirm;
       old._onChange = onChange;
       if (old._setColor) old._setColor(currentColor);
@@ -538,6 +534,36 @@
 
     var savedPresets = App.LS.get('cpPresets') || ['#111111','#88abda','#ffffff','#9ca3af','#d1d5db','#c9706b'];
 
+    /* ★ 检测传入值是否是渐变 */
+    var initGrad = false;
+    var initAngle = 180;
+    var initStops = [{ color: '#111111', alpha: 1 }, { color: '#ffffff', alpha: 1 }];
+
+    if (currentColor && currentColor.indexOf('linear-gradient') >= 0) {
+      initGrad = true;
+      var gm = currentColor.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
+      if (gm) {
+        initAngle = parseInt(gm[1]) || 180;
+        var colorParts = gm[2].split(/,(?![^(]*\))/);
+        if (colorParts.length >= 2) {
+          initStops[0] = parseToStop(colorParts[0].trim());
+          initStops[1] = parseToStop(colorParts[1].trim());
+        }
+      }
+      currentColor = initStops[0].color;
+    }
+
+    function parseToStop(str) {
+      var rm = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);
+      if (rm) {
+        var r = parseInt(rm[1]), g = parseInt(rm[2]), b = parseInt(rm[3]);
+        var a = rm[4] !== undefined ? parseFloat(rm[4]) : 1;
+        var hex = '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+        return { color: hex, alpha: a };
+      }
+      return { color: str || '#111111', alpha: 1 };
+    }
+
     var overlay = document.createElement('div');
     overlay.id = 'cpOverlay';
     overlay.className = 'cp-overlay';
@@ -545,13 +571,12 @@
     overlay._onConfirm = onConfirm;
     overlay._onChange = onChange;
 
-    /* ✅ 修复4：颜色预设值用 escAttr 转义 */
     function buildPresetsHtml() {
       return savedPresets.map(function(c, i) {
         var safeC = App.escAttr(c);
-        return '<div class="cp-preset" data-color="' + safeC + '" data-idx="' + i + '" style="background:' + safeC + ';"><div class="cp-preset-del">✕</div></div>';
-      }).join('') +
-      '<div class="cp-preset-add">+</div>';
+        var bgStyle = c.indexOf('linear-gradient') >= 0 ? c : safeC;
+        return '<div class="cp-preset" data-color="' + safeC + '" data-idx="' + i + '" style="background:' + bgStyle + ';"><div class="cp-preset-del">✕</div></div>';
+      }).join('') + '<div class="cp-preset-add">+</div>';
     }
 
     overlay.innerHTML =
@@ -562,7 +587,11 @@
         '</div>' +
         '<div class="cp-preview-row">' +
           '<div class="cp-preview" id="cpPreview"></div>' +
-          '<input type="text" class="cp-hex-input" id="cpHexInput" maxlength="7">' +
+          '<input type="text" class="cp-hex-input" id="cpHexInput" maxlength="50">' +
+        '</div>' +
+        '<div class="cp-mode-row">' +
+          '<button class="cp-mode-btn' + (initGrad ? '' : ' active') + '" data-mode="solid" type="button">纯色</button>' +
+          '<button class="cp-mode-btn' + (initGrad ? ' active' : '') + '" data-mode="gradient" type="button">渐变</button>' +
         '</div>' +
         '<div class="cp-spectrum" id="cpSpectrum">' +
           '<canvas id="cpSpectrumCanvas"></canvas>' +
@@ -571,6 +600,22 @@
         '<div class="cp-hue-wrap" id="cpHueWrap">' +
           '<div class="cp-hue-bar"></div>' +
           '<div class="cp-hue-cursor" id="cpHueCursor"></div>' +
+        '</div>' +
+        '<div class="cp-alpha-wrap" id="cpAlphaWrap">' +
+          '<div class="cp-alpha-bar" id="cpAlphaBar"></div>' +
+          '<div class="cp-alpha-cursor" id="cpAlphaCursor"></div>' +
+        '</div>' +
+        '<div class="cp-gradient-area" id="cpGradientArea" style="' + (initGrad ? '' : 'display:none;') + '">' +
+          '<div class="cp-grad-stops">' +
+            '<div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div>' +
+            '<div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>终点</span></div>' +
+          '</div>' +
+          '<div class="cp-grad-preview" id="cpGradPreview"><div class="cp-grad-preview-inner" id="cpGradInner"></div></div>' +
+          '<div class="cp-grad-dir">' +
+            '<span style="font-size:10px;color:#999;">方向</span>' +
+            '<input type="range" class="cp-palette-slider" id="cpGradAngle" min="0" max="360" step="1" value="' + initAngle + '" style="flex:1;">' +
+            '<span id="cpGradAngleVal" style="font-size:10px;color:#999;width:30px;text-align:right;">' + initAngle + '°</span>' +
+          '</div>' +
         '</div>' +
         '<div style="display:flex;align-items:center;justify-content:space-between;">' +
           '<div class="cp-presets" id="cpPresets">' + buildPresetsHtml() + '</div>' +
@@ -589,239 +634,335 @@
     var specCursor = overlay.querySelector('#cpSpecCursor');
     var hueWrap = overlay.querySelector('#cpHueWrap');
     var hueCursor = overlay.querySelector('#cpHueCursor');
+    var alphaWrap = overlay.querySelector('#cpAlphaWrap');
+    var alphaBar = overlay.querySelector('#cpAlphaBar');
+    var alphaCursor = overlay.querySelector('#cpAlphaCursor');
     var presetsEl = overlay.querySelector('#cpPresets');
+    var gradArea = overlay.querySelector('#cpGradientArea');
+    var gradInner = overlay.querySelector('#cpGradInner');
+    var gradDot0 = overlay.querySelector('#cpGradDot0');
+    var gradDot1 = overlay.querySelector('#cpGradDot1');
+    var gradAngleInput = overlay.querySelector('#cpGradAngle');
+    var gradAngleValEl = overlay.querySelector('#cpGradAngleVal');
 
-    var currentHue = 0, currentSat = 100, currentLight = 50;
+    var currentHue = 0, currentSat = 100, currentLight = 50, currentAlpha = 1;
     var selectedHex = currentColor || '#111111';
     var editing = false;
 
-    function hexToHsl(hex) {
-      hex = hex.replace('#', '');
+    var gradMode = initGrad;
+    var gradStops = [
+      { color: initStops[0].color, alpha: initStops[0].alpha },
+      { color: initStops[1].color, alpha: initStops[1].alpha }
+    ];
+    var gradAngle = initAngle;
+    var activeStop = 0;
+
+    function parseColor(str) {
+      str = (str || '').trim();
+      var rm = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);
+      if (rm) {
+        var r = parseInt(rm[1])/255, g = parseInt(rm[2])/255, b = parseInt(rm[3])/255;
+        var a = rm[4] !== undefined ? parseFloat(rm[4]) : 1;
+        var hsl = rgbToHsl(r, g, b);
+        return { h: hsl.h, s: hsl.s, l: hsl.l, a: Math.max(0, Math.min(1, a)) };
+      }
+      var hex = str.replace('#', '');
       if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-      var r = parseInt(hex.substr(0,2),16)/255;
-      var g = parseInt(hex.substr(2,2),16)/255;
-      var b = parseInt(hex.substr(4,2),16)/255;
+      var alpha = 1;
+      if (hex.length === 8) { alpha = parseInt(hex.substr(6, 2), 16) / 255; hex = hex.substr(0, 6); }
+      if (hex.length !== 6) return { h: 0, s: 0, l: 0, a: 1 };
+      var rr = parseInt(hex.substr(0,2),16)/255, gg = parseInt(hex.substr(2,2),16)/255, bb = parseInt(hex.substr(4,2),16)/255;
+      var hsl2 = rgbToHsl(rr, gg, bb);
+      return { h: hsl2.h, s: hsl2.s, l: hsl2.l, a: Math.max(0, Math.min(1, alpha)) };
+    }
+
+    function rgbToHsl(r, g, b) {
       var max = Math.max(r,g,b), min = Math.min(r,g,b);
       var h=0, s=0, l=(max+min)/2;
       if (max !== min) {
-        var d = max - min;
-        s = l > 0.5 ? d/(2-max-min) : d/(max+min);
-        if (max === r) h = ((g-b)/d + (g<b?6:0))/6;
-        else if (max === g) h = ((b-r)/d+2)/6;
-        else h = ((r-g)/d+4)/6;
+        var d = max-min; s = l>0.5 ? d/(2-max-min) : d/(max+min);
+        if (max===r) h=((g-b)/d+(g<b?6:0))/6;
+        else if (max===g) h=((b-r)/d+2)/6;
+        else h=((r-g)/d+4)/6;
       }
       return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
     }
 
     function hslToHex(h, s, l) {
-      s /= 100; l /= 100;
-      var c = (1 - Math.abs(2*l-1)) * s;
-      var x = c * (1 - Math.abs((h/60)%2 - 1));
-      var m = l - c/2;
-      var r=0, g=0, b=0;
-      if (h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
+      s/=100; l/=100;
+      var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
+      var r=0,g=0,b=0;
+      if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
       else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
       r=Math.round((r+m)*255);g=Math.round((g+m)*255);b=Math.round((b+m)*255);
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
     }
 
     function hslToRgb(h, s, l) {
-      var c = (1 - Math.abs(2 * l - 1)) * s;
-      var x = c * (1 - Math.abs((h / 60) % 2 - 1));
-      var m = l - c / 2;
-      var r = 0, g = 0, b = 0;
-      if (h < 60)       { r = c; g = x; }
-      else if (h < 120) { r = x; g = c; }
-      else if (h < 180) { g = c; b = x; }
-      else if (h < 240) { g = x; b = c; }
-      else if (h < 300) { r = x; b = c; }
-      else              { r = c; b = x; }
-      return [
-        Math.round((r + m) * 255),
-        Math.round((g + m) * 255),
-        Math.round((b + m) * 255)
-      ];
+      var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
+      var r=0,g=0,b=0;
+      if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
+      else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
+      return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+    }
+
+    function toRgba(hex, a) {
+      hex = hex.replace('#','');
+      if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      return 'rgba('+parseInt(hex.substr(0,2),16)+','+parseInt(hex.substr(2,2),16)+','+parseInt(hex.substr(4,2),16)+','+(Math.round(a*100)/100)+')';
+    }
+
+    function getSolidOutput() {
+      if (currentAlpha >= 1) return hslToHex(currentHue, currentSat, currentLight);
+      var rgb = hslToRgb(currentHue, currentSat/100, currentLight/100);
+      return 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(Math.round(currentAlpha*100)/100)+')';
+    }
+
+    function getGradOutput() {
+      var c1 = gradStops[0].alpha<1 ? toRgba(gradStops[0].color,gradStops[0].alpha) : gradStops[0].color;
+      var c2 = gradStops[1].alpha<1 ? toRgba(gradStops[1].color,gradStops[1].alpha) : gradStops[1].color;
+      return 'linear-gradient('+gradAngle+'deg,'+c1+','+c2+')';
+    }
+
+    function getOutput() { return gradMode ? getGradOutput() : getSolidOutput(); }
+
+    function getDisplayText() {
+      if (gradMode) return getGradOutput();
+      var hex6 = hslToHex(currentHue, currentSat, currentLight);
+      if (currentAlpha >= 1) return hex6;
+      var aa = Math.round(currentAlpha*255).toString(16).padStart(2,'0');
+      return hex6 + aa;
     }
 
     function drawSpectrum() {
-      var w = specEl.clientWidth, h = specEl.clientHeight;
-      specCanvas.width = w; specCanvas.height = h;
-      var imageData = specCtx.createImageData(w, h);
-      var data = imageData.data;
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var s = x / w;
-          var l = 1 - (y / h);
-          var rgb = hslToRgb(currentHue, s, l);
-          var idx = (y * w + x) * 4;
-          data[idx]     = rgb[0];
-          data[idx + 1] = rgb[1];
-          data[idx + 2] = rgb[2];
-          data[idx + 3] = 255;
-        }
-      }
-      specCtx.putImageData(imageData, 0, 0);
+      var w=specEl.clientWidth, h=specEl.clientHeight;
+      specCanvas.width=w; specCanvas.height=h;
+      var imageData=specCtx.createImageData(w,h), data=imageData.data;
+      for(var y=0;y<h;y++){for(var x=0;x<w;x++){
+        var s=x/w,l=1-(y/h);var rgb=hslToRgb(currentHue,s,l);var idx=(y*w+x)*4;
+        data[idx]=rgb[0];data[idx+1]=rgb[1];data[idx+2]=rgb[2];data[idx+3]=255;
+      }}
+      specCtx.putImageData(imageData,0,0);
+    }
+
+    function updateAlphaBar() {
+      var hex6 = hslToHex(currentHue, currentSat, currentLight);
+      alphaBar.style.background = 'linear-gradient(to right, transparent, '+hex6+')';
+    }
+
+    function updateGradPreview() {
+      if (!gradInner) return;
+      var c1 = gradStops[0].alpha<1 ? toRgba(gradStops[0].color,gradStops[0].alpha) : gradStops[0].color;
+      var c2 = gradStops[1].alpha<1 ? toRgba(gradStops[1].color,gradStops[1].alpha) : gradStops[1].color;
+      gradInner.style.background = 'linear-gradient('+gradAngle+'deg,'+c1+','+c2+')';
+      if(gradDot0) gradDot0.style.background = gradStops[0].color;
+      if(gradDot1) gradDot1.style.background = gradStops[1].color;
     }
 
     function updateUI() {
-      selectedHex = hslToHex(currentHue, currentSat, currentLight);
-      preview.style.background = selectedHex;
-      hexInput.value = selectedHex;
+      selectedHex = getOutput();
+
+      /* 预览 */
+      var checker = 'linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%),linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%)';
+      preview.style.backgroundImage = checker;
+      preview.style.backgroundSize = '8px 8px';
+      preview.style.backgroundPosition = '0 0, 4px 4px';
+      preview.style.position = 'relative';
+      var inner = preview.querySelector('.cp-pv-inner');
+      if (!inner) { inner = document.createElement('div'); inner.className='cp-pv-inner'; inner.style.cssText='position:absolute;inset:0;border-radius:inherit;'; preview.appendChild(inner); }
+      inner.style.background = selectedHex;
+
+      hexInput.value = getDisplayText();
+
       var sw=specEl.clientWidth, sh=specEl.clientHeight;
       specCursor.style.left = (currentSat/100)*sw+'px';
       specCursor.style.top = ((100-currentLight)/100)*sh+'px';
-      specCursor.style.background = selectedHex;
+      specCursor.style.background = hslToHex(currentHue, currentSat, currentLight);
       hueCursor.style.left = (currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background = hslToHex(currentHue, 100, 50);
+      alphaCursor.style.left = currentAlpha*alphaWrap.clientWidth+'px';
+      updateAlphaBar();
+
+      if (gradMode) {
+        gradStops[activeStop].color = hslToHex(currentHue, currentSat, currentLight);
+        gradStops[activeStop].alpha = currentAlpha;
+        updateGradPreview();
+      }
+
       var changeFn = overlay._onChange;
       if (changeFn) changeFn(selectedHex);
     }
 
-    function setFromHex(hex) {
-      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
-      var hsl = hexToHsl(hex);
-      currentHue=hsl.h; currentSat=hsl.s; currentLight=hsl.l;
+    function setFromColor(colorStr) {
+      var parsed = parseColor(colorStr);
+      currentHue=parsed.h; currentSat=parsed.s; currentLight=parsed.l; currentAlpha=parsed.a;
       drawSpectrum(); updateUI();
     }
 
-    setFromHex(selectedHex);
+    setFromColor(currentColor || '#111111');
+    if (initGrad) updateGradPreview();
 
-    overlay._setColor = setFromHex;
+    overlay._setColor = function(c) {
+      if (c && c.indexOf('linear-gradient') >= 0) {
+        /* 重新解析渐变 */
+        var gm2 = c.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
+        if (gm2) {
+          gradAngle = parseInt(gm2[1]) || 180;
+          var parts = gm2[2].split(/,(?![^(]*\))/);
+          if (parts.length >= 2) { gradStops[0] = parseToStop(parts[0].trim()); gradStops[1] = parseToStop(parts[1].trim()); }
+        }
+        gradMode = true;
+        overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='gradient');});
+        if(gradArea) gradArea.style.display = '';
+        if(gradAngleInput){gradAngleInput.value=gradAngle;gradAngleValEl.textContent=gradAngle+'°';}
+        activeStop = 0;
+        setFromColor(gradStops[0].color);
+        currentAlpha = gradStops[0].alpha;
+        updateGradPreview();
+      } else {
+        gradMode = false;
+        overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='solid');});
+        if(gradArea) gradArea.style.display = 'none';
+        setFromColor(c);
+      }
+    };
 
-    var specDrag=false;
-    function specFromPos(e) {
-      var rect=specEl.getBoundingClientRect();
-      var t=e.touches?e.touches[0]:e;
-      currentSat = Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));
-      currentLight = Math.max(0,Math.min(100,100-(t.clientY-rect.top)/rect.height*100));
-      updateUI();
-    }
+    /* ====== 拖拽事件 ====== */
+    var specDrag=false, hueDrag=false, alphaDrag=false;
+
+    function specFromPos(e){var rect=specEl.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentSat=Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));currentLight=Math.max(0,Math.min(100,100-(t.clientY-rect.top)/rect.height*100));updateUI();}
     specEl.addEventListener('mousedown',function(e){e.preventDefault();specDrag=true;specFromPos(e);});
     specEl.addEventListener('touchstart',function(e){e.preventDefault();specDrag=true;specFromPos(e);},{passive:false});
 
-    var hueDrag=false;
-    function hueFromPos(e) {
-      var rect=hueWrap.getBoundingClientRect();
-      var t=e.touches?e.touches[0]:e;
-      currentHue = Math.max(0,Math.min(360,(t.clientX-rect.left)/rect.width*360));
-      drawSpectrum(); updateUI();
-    }
+    function hueFromPos(e){var rect=hueWrap.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentHue=Math.max(0,Math.min(360,(t.clientX-rect.left)/rect.width*360));drawSpectrum();updateUI();}
     hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
     hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
 
-    function onDocMouseMove(e) { if(specDrag)specFromPos(e); if(hueDrag)hueFromPos(e); }
-    function onDocMouseUp() { specDrag=false; hueDrag=false; }
-    function onDocTouchMove(e) { if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);} }
-    function onDocTouchEnd() { specDrag=false; hueDrag=false; }
+    function alphaFromPos(e){var rect=alphaWrap.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentAlpha=Math.max(0,Math.min(1,(t.clientX-rect.left)/rect.width));updateUI();}
+    alphaWrap.addEventListener('mousedown',function(e){e.preventDefault();alphaDrag=true;alphaFromPos(e);});
+    alphaWrap.addEventListener('touchstart',function(e){e.preventDefault();alphaDrag=true;alphaFromPos(e);},{passive:false});
 
-    document.addEventListener('mousemove', onDocMouseMove);
-    document.addEventListener('mouseup', onDocMouseUp);
-    document.addEventListener('touchmove', onDocTouchMove, {passive:false});
-    document.addEventListener('touchend', onDocTouchEnd);
+    function onDocMouseMove(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);if(alphaDrag)alphaFromPos(e);}
+    function onDocMouseUp(){specDrag=false;hueDrag=false;alphaDrag=false;}
+    function onDocTouchMove(e){if(specDrag||hueDrag||alphaDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);if(alphaDrag)alphaFromPos(e);}}
+    function onDocTouchEnd(){specDrag=false;hueDrag=false;alphaDrag=false;}
 
+    document.addEventListener('mousemove',onDocMouseMove);
+    document.addEventListener('mouseup',onDocMouseUp);
+    document.addEventListener('touchmove',onDocTouchMove,{passive:false});
+    document.addEventListener('touchend',onDocTouchEnd);
+
+    /* ====== Hex 输入 ====== */
     hexInput.addEventListener('input',function(){
       var v=this.value.trim();
-      if(/^#[0-9a-fA-F]{6}$/.test(v))setFromHex(v);
+      if(v.indexOf('linear-gradient')>=0){overlay._setColor(v);return;}
+      if(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(v)||/^rgba?\(.+\)$/.test(v)){setFromColor(v);}
     });
 
-    function rebindPresets() {
-      presetsEl.innerHTML = buildPresetsHtml();
-      if (editing) presetsEl.classList.add('editing');
-      else presetsEl.classList.remove('editing');
-
-      presetsEl.querySelectorAll('.cp-preset').forEach(function(p) {
-        p.addEventListener('click',function(e){
-          e.stopPropagation();
-          if (editing) return;
-          setFromHex(p.dataset.color);
-        });
-        var del = p.querySelector('.cp-preset-del');
-        if (del) {
-          del.addEventListener('click',function(e){
-            e.stopPropagation();
-            savedPresets.splice(parseInt(p.dataset.idx),1);
-            App.LS.set('cpPresets', savedPresets);
-            rebindPresets();
-          });
+    /* ====== 模式切换 ====== */
+    overlay.querySelectorAll('.cp-mode-btn').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        gradMode = btn.dataset.mode === 'gradient';
+        if(gradArea) gradArea.style.display = gradMode ? '' : 'none';
+        if(gradMode){
+          gradStops[activeStop].color = hslToHex(currentHue,currentSat,currentLight);
+          gradStops[activeStop].alpha = currentAlpha;
+          updateGradPreview();
         }
+        updateUI();
       });
+    });
 
-      var addBtn = presetsEl.querySelector('.cp-preset-add');
-      if (addBtn) {
-        addBtn.addEventListener('click',function(e){
-          e.stopPropagation();
-          if (savedPresets.indexOf(selectedHex) === -1) {
-            savedPresets.push(selectedHex);
-            App.LS.set('cpPresets', savedPresets);
-            rebindPresets();
-          }
-        });
-      }
+    /* ====== 渐变色标切换 ====== */
+    overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
+      stop.addEventListener('click',function(e){
+        e.stopPropagation();
+        overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});
+        stop.classList.add('active');
+        activeStop = parseInt(stop.dataset.stop);
+        setFromColor(gradStops[activeStop].color);
+        currentAlpha = gradStops[activeStop].alpha;
+        updateUI();
+      });
+    });
+
+    /* ====== 渐变角度 ====== */
+    if(gradAngleInput){
+      gradAngleInput.addEventListener('input',function(){
+        gradAngle=parseInt(this.value);
+        if(gradAngleValEl) gradAngleValEl.textContent=gradAngle+'°';
+        updateGradPreview();
+        selectedHex = getOutput();
+        var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);
+      });
     }
 
+    /* ====== 预设 ====== */
+    function rebindPresets(){
+      presetsEl.innerHTML=buildPresetsHtml();
+      if(editing) presetsEl.classList.add('editing');
+      else presetsEl.classList.remove('editing');
+      presetsEl.querySelectorAll('.cp-preset').forEach(function(p){
+        p.addEventListener('click',function(e){
+          e.stopPropagation();if(editing)return;
+          var c=p.dataset.color;
+          if(c.indexOf('linear-gradient')>=0){overlay._setColor(c);}
+          else{
+            if(gradMode){gradStops[activeStop]=parseToStop(c);updateGradPreview();updateUI();}
+            else{setFromColor(c);}
+          }
+        });
+        var del=p.querySelector('.cp-preset-del');
+        if(del){del.addEventListener('click',function(e){e.stopPropagation();savedPresets.splice(parseInt(p.dataset.idx),1);App.LS.set('cpPresets',savedPresets);rebindPresets();});}
+      });
+      var addBtn=presetsEl.querySelector('.cp-preset-add');
+      if(addBtn){addBtn.addEventListener('click',function(e){e.stopPropagation();var sc=getOutput();if(savedPresets.indexOf(sc)===-1){savedPresets.push(sc);App.LS.set('cpPresets',savedPresets);rebindPresets();}});}
+    }
     rebindPresets();
 
     overlay.querySelector('#cpEditBtn').addEventListener('click',function(e){
-      e.stopPropagation();
-      editing = !editing;
-      this.textContent = editing ? '完成' : '编辑';
-      if (editing) presetsEl.classList.add('editing');
-      else presetsEl.classList.remove('editing');
+      e.stopPropagation();editing=!editing;this.textContent=editing?'完成':'编辑';
+      if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');
     });
 
-    /* ✅ 修复2：颜色选择器拖拽事件改具名函数 */
-    var cpPanel = overlay.querySelector('.cp-panel');
-    var cpHead = overlay.querySelector('.cp-header');
-    var _cpDrag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0 };
+    /* ====== 面板拖拽 ====== */
+    var cpPanel=overlay.querySelector('.cp-panel');
+    var cpHead=overlay.querySelector('.cp-header');
+    var _cpDrag={active:false,sx:0,sy:0,ox:0,oy:0};
+    cpHead.addEventListener('touchstart',function(e){
+      if(e.target.closest('button'))return;
+      var t=e.touches[0];var rect=cpPanel.getBoundingClientRect();
+      cpPanel.style.bottom='auto';cpPanel.style.left=rect.left+'px';cpPanel.style.top=rect.top+'px';cpPanel.style.right='auto';cpPanel.style.margin='0';cpPanel.style.width=rect.width+'px';
+      _cpDrag={active:true,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
+    },{passive:true});
 
-    cpHead.addEventListener('touchstart', function(e) {
-      if (e.target.closest('button')) return;
-      var t = e.touches[0];
-      var rect = cpPanel.getBoundingClientRect();
-      cpPanel.style.bottom = 'auto';
-      cpPanel.style.left = rect.left + 'px';
-      cpPanel.style.top = rect.top + 'px';
-      cpPanel.style.right = 'auto';
-      cpPanel.style.margin = '0';
-      cpPanel.style.width = rect.width + 'px';
-      _cpDrag = { active: true, sx: t.clientX, sy: t.clientY, ox: rect.left, oy: rect.top };
-    }, { passive: true });
+    function onCpDragMove(e){if(!_cpDrag.active)return;e.preventDefault();var t=e.touches[0];cpPanel.style.left=(_cpDrag.ox+t.clientX-_cpDrag.sx)+'px';cpPanel.style.top=(_cpDrag.oy+t.clientY-_cpDrag.sy)+'px';}
+    function onCpDragEnd(){_cpDrag.active=false;}
+    document.addEventListener('touchmove',onCpDragMove,{passive:false});
+    document.addEventListener('touchend',onCpDragEnd);
 
-    /* ✅ 修复2：匿名函数改为具名函数，便于 doClose 移除 */
-    function onCpDragMove(e) {
-      if (!_cpDrag.active) return;
-      e.preventDefault();
-      var t = e.touches[0];
-      cpPanel.style.left = (_cpDrag.ox + t.clientX - _cpDrag.sx) + 'px';
-      cpPanel.style.top = (_cpDrag.oy + t.clientY - _cpDrag.sy) + 'px';
-    }
-    function onCpDragEnd() { _cpDrag.active = false; }
-
-    document.addEventListener('touchmove', onCpDragMove, { passive: false });
-    document.addEventListener('touchend', onCpDragEnd);
-
-    /* ✅ 修复2：doClose 里移除所有全局事件监听器，包括拖拽的 */
-    function doClose() {
-      document.removeEventListener('mousemove', onDocMouseMove);
-      document.removeEventListener('mouseup', onDocMouseUp);
-      document.removeEventListener('touchmove', onDocTouchMove);
-      document.removeEventListener('touchend', onDocTouchEnd);
-      document.removeEventListener('touchmove', onCpDragMove);
-      document.removeEventListener('touchend', onCpDragEnd);
-
-      App._cpJustClosed = true;
-      setTimeout(function() { App._cpJustClosed = false; }, 200);
+    /* ====== 关闭 ====== */
+    function doClose(){
+      document.removeEventListener('mousemove',onDocMouseMove);
+      document.removeEventListener('mouseup',onDocMouseUp);
+      document.removeEventListener('touchmove',onDocTouchMove);
+      document.removeEventListener('touchend',onDocTouchEnd);
+      document.removeEventListener('touchmove',onCpDragMove);
+      document.removeEventListener('touchend',onCpDragEnd);
+      App._cpJustClosed=true;
+      setTimeout(function(){App._cpJustClosed=false;},200);
       overlay.remove();
     }
-
-    overlay._doClose = doClose;
+    overlay._doClose=doClose;
 
     overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
-
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){
       e.stopPropagation();
-      var fn = overlay._onConfirm;
-      if (fn) fn(selectedHex);
+      var fn=overlay._onConfirm;
+      if(fn) fn(getOutput());
       doClose();
     });
   };
