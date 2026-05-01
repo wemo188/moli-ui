@@ -1578,26 +1578,12 @@ App.closePanel = function() {
 };
 
 App.init = function() {
-    alert('步骤1: init开始');
-  
   App.state.ball = App.$('#floatingBall');
 
   if (!App.state.ball) {
-    alert('错误: 找不到悬浮球元素');
+    console.warn('页面缺少核心元素');
     return;
   }
-
-  alert('步骤2: 开始初始化悬浮球');
-  App.initFloatingBall();
-  
-  alert('步骤3: 开始初始化模块');
-  App.runInits();
-  
-  alert('步骤4: 开始初始化主页');
-  App.initMainPages();
-  
-  alert('步骤5: 全部完成');
-};
 
   App.initFloatingBall();
   App.runInits();
