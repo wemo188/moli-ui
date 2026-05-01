@@ -70,12 +70,10 @@
   z-index: 100020;
   width: 300px;
   height: 400px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 16px;
-  border: 1px solid rgba(173, 205, 234, 0.6);
-  box-shadow: 0 12px 30px rgba(126, 163, 201, 0.2);
+  background: rgba(255,255,255,1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
   padding: 18px 20px;
   display: none;
   flex-direction: column;
@@ -90,23 +88,21 @@
 
 .wt-cp-title {
   text-align: center; padding: 4px 0 12px;
-  font-size: 14px; font-weight: 800;
-  color: #1a1a1a; 
+  font-size: 14px; font-weight: 700; color: #333;
   letter-spacing: 2px; position: relative;
 }
 .wt-cp-close {
   position: absolute; top: 0; right: 0;
   width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 16px; font-weight: bold;
-  color: #adcdea; 
+  cursor: pointer; font-size: 16px; color: #aaa;
   -webkit-tap-highlight-color: transparent;
 }
-.wt-cp-close:active { transform: scale(0.9); }
+.wt-cp-close:active { color: #333; }
 
 .wt-cp-scroll {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
   scrollbar-width: none; min-height: 0;
-  display: flex; flex-direction: column; gap: 10px; justify-content: space-around;
+  display: flex; flex-direction: column; gap: 10px;justify-content: space-around;
 }
 .wt-cp-scroll::-webkit-scrollbar { display: none; }
 
@@ -115,39 +111,31 @@
   margin: 6px 0 4px;
 }
 .wt-cp-section::before, .wt-cp-section::after {
-  content: ""; flex: 1; height: 1.5px;
-  background: linear-gradient(90deg, transparent, rgba(173, 205, 234, 0.8), transparent);
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 .wt-cp-section span {
-  font-size: 11px; font-weight: 800;
-  color: #1a1a1a; 
+  font-size: 11px; font-weight: 700; color: #999;
   letter-spacing: 2.5px; white-space: nowrap;
 }
 
 .wt-cp-row { display: flex; align-items: center; gap: 10px; }
 .wt-cp-label {
-  font-size: 13px; font-weight: 700;
-  color: #1a1a1a; 
+  font-size: 13px; font-weight: 600; color: #333;
   min-width: 32px; flex-shrink: 0;
 }
 .wt-cp-row input[type="range"] {
-  flex: 1; height: 6px; -webkit-appearance: none !important;
-  /* 【改动1】：135deg 改为 90deg 水平方向，渐变才能在细线上显示出来！ */
-  background: linear-gradient(90deg, #ffffff 0%, #adcdea 50%, #ffffff 100%) !important;
-  border-radius: 3px !important; outline: none !important; 
-  border: 1px solid rgba(173, 205, 234, 0.5) !important;
+  flex: 1; height: 3px; -webkit-appearance: none !important;
+  background: #e0e0e0 !important; border-radius: 2px !important; outline: none !important;
 }
 .wt-cp-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   width: 18px !important; height: 18px !important; border-radius: 50% !important;
-  background: #ffffff !important; 
-  border: 2px solid #adcdea !important;
-  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.4) !important; 
-  cursor: pointer !important; margin-top: -7px !important;
+  background: #fff !important; border: 2px solid #1a1a1a !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important; cursor: pointer !important;
 }
 .wt-cp-val {
-  font-size: 13px; font-weight: 700;
-  color: #1a1a1a; 
+  font-size: 13px; font-weight: 600; color: #333;
   min-width: 36px; text-align: right; flex-shrink: 0;
 }
 
@@ -155,70 +143,20 @@
 .wt-cp-color-item { display: flex; align-items: center; gap: 6px; }
 .wt-cp-swatch {
   width: 32px; height: 32px; border-radius: 8px;
-  border: 1px solid #dddddd; 
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 2px solid #ddd; cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: transform 0.12s;
 }
 .wt-cp-swatch:active { transform: scale(0.9); }
-.wt-cp-color-label { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+.wt-cp-color-label { font-size: 13px; font-weight: 600; color: #333; }
 
 .wt-cp-btns { display: flex; gap: 10px; flex-shrink: 0; margin-top: 10px; }
-
-/* 🌟 通用按钮基础样式 */
 .wt-cp-btn {
-  flex: 1; 
-  padding: 10px 0; 
-  border-radius: 12px; 
-  font-size: 13px; 
-  font-weight: 800; 
-  letter-spacing: 2px;
-  text-align: center; 
-  cursor: pointer; 
-  font-family: inherit; 
-  -webkit-tap-highlight-color: transparent;
-  
-  /* 基础底色与边框 */
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.9); 
-  border: 1px solid rgba(180, 205, 235, 0.5); 
-  box-shadow: 0 4px 12px rgba(20, 35, 55, 0.05); 
-  color: #1a1a1a; 
-  transition: all 0.3s ease;
-  transform: translateZ(0); 
+  flex: 1; padding: 10px 0; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 800; letter-spacing: 2px;
+  cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
+  background: #1a1a1a; color: #fff;
 }
-
-/* 🌟 选项条内部的墨晕扩散层 */
-.wt-cp-btn::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, rgba(135, 163, 201, 0.75) 0%, transparent 70%); 
-  transform: translate(-50%, -50%) scaleX(0) scaleY(0.2);
-  z-index: 0;
-  opacity: 0;
-  pointer-events: none;
-  /* 按钮点击是一瞬间的，动画必须加速到 0.4s 才能爆开 */
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease; 
-}
-
-/* 🌟 按下状态：银色线稿发光 & 字体变色 */
-.wt-cp-btn:active {
-  border: 1px solid rgba(255, 255, 255, 0.9); 
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4); 
-  background: rgba(255, 255, 255, 0.6); 
-  color: rgba(79, 121, 166, 0.95); 
-}
-
-/* 🌟 按下状态：墨晕展开 */
-.wt-cp-btn:active::before {
-  transform: translate(-50%, -50%) scaleX(2.5) scaleY(1.5); 
-  opacity: 1;
-}
+.wt-cp-btn:active { opacity: 0.7; }
 
 /* ====== 日历面板 ====== */
 #calPanel.fullpage-panel { background: #ffffff; }
@@ -323,4 +261,3 @@
 .sticker-del-btn { background: rgba(255,59,48,0.1); color: #ff6b6b; }
 @keyframes pageTurn { 0% { transform: scale(1) rotate(0); } 30% { transform: scale(0.94) rotate(-2deg); } 60% { transform: scale(0.97) rotate(1deg); } 100% { transform: scale(1) rotate(0); } }
 .sticker-paper.turning { animation: pageTurn 0.35s ease-out; }
-
