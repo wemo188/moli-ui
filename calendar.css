@@ -164,46 +164,60 @@
 .wt-cp-color-label { font-size: 13px; font-weight: 600; color: #1a1a1a; }
 
 .wt-cp-btns { display: flex; gap: 10px; flex-shrink: 0; margin-top: 10px; }
+
+/* 🌟 通用按钮基础样式 */
 .wt-cp-btn {
-  flex: 1; padding: 10px 0; border-radius: 10px;
-  font-size: 13px; font-weight: 800; letter-spacing: 2px;
-  cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent;
-  border: none; text-align: center;
-}
-.wt-cp-btn:active { opacity: 0.7; }
-
-/* 重置按钮 */
-.wt-cp-btn:first-child {
-  background: #ffffff; 
-  border: 1px solid #ddd;
-  color: #1a1a1a; 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* 保存按钮 */
-.wt-cp-btn:last-child {
-  /* 【改动2】：两端换成微弱的浅蓝，同时加了明显的蓝色边框，这样才不会和白色背景糊在一起！ */
-  background: linear-gradient(135deg, #eef5fb 0%, #adcdea 50%, #eef5fb 100%);
-  color: #1a1a1a; 
-  border: 1px solid #adcdea;
-  box-shadow: 0 4px 15px rgba(173, 205, 234, 0.3);
-}
-
-/* 重置按钮 */
-.wt-cp-btn:first-child {
+  flex: 1; 
+  padding: 10px 0; 
+  border-radius: 12px; 
+  font-size: 13px; 
+  font-weight: 800; 
+  letter-spacing: 2px;
+  text-align: center; 
+  cursor: pointer; 
+  font-family: inherit; 
+  -webkit-tap-highlight-color: transparent;
+  
+  /* 基础底色与边框 */
+  position: relative;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.9); 
-  border: 1px solid #ddd;
-  color: #1a1a1a; /* 黑色字 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(180, 205, 235, 0.5); 
+  box-shadow: 0 4px 12px rgba(20, 35, 55, 0.05); 
+  color: #1a1a1a; 
+  transition: all 0.3s ease;
+  transform: translateZ(0); 
 }
 
-/* 保存按钮 */
-.wt-cp-btn:last-child {
-  /* 按钮用你给的冰晶渐变色 */
-  background: linear-gradient(135deg, #fff 0%, #adcdea 50%, #ffffff 100%);
-  color: #1a1a1a; /* 黑色字 */
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 6px 15px rgba(173, 205, 234, 0.3);
+/* 🌟 选项条内部的墨晕扩散层 */
+.wt-cp-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(135, 163, 201, 0.75) 0%, transparent 70%); 
+  transform: translate(-50%, -50%) scaleX(0) scaleY(0.2);
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  /* 按钮点击是一瞬间的，动画必须加速到 0.4s 才能爆开 */
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease; 
+}
+
+/* 🌟 按下状态：银色线稿发光 & 字体变色 */
+.wt-cp-btn:active {
+  border: 1px solid rgba(255, 255, 255, 0.9); 
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4); 
+  background: rgba(255, 255, 255, 0.6); 
+  color: rgba(79, 121, 166, 0.95); 
+}
+
+/* 🌟 按下状态：墨晕展开 */
+.wt-cp-btn:active::before {
+  transform: translate(-50%, -50%) scaleX(2.5) scaleY(1.5); 
+  opacity: 1;
 }
 
 /* ====== 日历面板 ====== */
