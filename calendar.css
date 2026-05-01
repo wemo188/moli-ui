@@ -74,7 +74,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-radius: 16px;
-  border: 1px solid rgba(173, 205, 234, 0.6); /* 卡片边框改成1px */
+  border: 1px solid rgba(173, 205, 234, 0.6);
   box-shadow: 0 12px 30px rgba(126, 163, 201, 0.2);
   padding: 18px 20px;
   display: none;
@@ -91,7 +91,7 @@
 .wt-cp-title {
   text-align: center; padding: 4px 0 12px;
   font-size: 14px; font-weight: 800;
-  color: #1a1a1a; /* 黑色字体 */
+  color: #1a1a1a; 
   letter-spacing: 2px; position: relative;
 }
 .wt-cp-close {
@@ -120,20 +120,20 @@
 }
 .wt-cp-section span {
   font-size: 11px; font-weight: 800;
-  color: #1a1a1a; /* 黑色字体 */
+  color: #1a1a1a; 
   letter-spacing: 2.5px; white-space: nowrap;
 }
 
 .wt-cp-row { display: flex; align-items: center; gap: 10px; }
 .wt-cp-label {
   font-size: 13px; font-weight: 700;
-  color: #1a1a1a; /* 黑色字体 */
+  color: #1a1a1a; 
   min-width: 32px; flex-shrink: 0;
 }
 .wt-cp-row input[type="range"] {
   flex: 1; height: 6px; -webkit-appearance: none !important;
-  /* 轨道用你给的冰晶渐变色 */
-  background: linear-gradient(135deg, #fff 0%, #adcdea 50%, #ffffff 100%) !important;
+  /* 【改动1】：135deg 改为 90deg 水平方向，渐变才能在细线上显示出来！ */
+  background: linear-gradient(90deg, #ffffff 0%, #adcdea 50%, #ffffff 100%) !important;
   border-radius: 3px !important; outline: none !important; 
   border: 1px solid rgba(173, 205, 234, 0.5) !important;
 }
@@ -147,7 +147,7 @@
 }
 .wt-cp-val {
   font-size: 13px; font-weight: 700;
-  color: #1a1a1a; /* 黑色字体 */
+  color: #1a1a1a; 
   min-width: 36px; text-align: right; flex-shrink: 0;
 }
 
@@ -155,7 +155,7 @@
 .wt-cp-color-item { display: flex; align-items: center; gap: 6px; }
 .wt-cp-swatch {
   width: 32px; height: 32px; border-radius: 8px;
-  border: 1px solid #dddddd; /* 浅灰色边框 */
+  border: 1px solid #dddddd; 
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   -webkit-tap-highlight-color: transparent; transition: transform 0.12s;
@@ -171,6 +171,23 @@
   border: none; text-align: center;
 }
 .wt-cp-btn:active { opacity: 0.7; }
+
+/* 重置按钮 */
+.wt-cp-btn:first-child {
+  background: #ffffff; 
+  border: 1px solid #ddd;
+  color: #1a1a1a; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 保存按钮 */
+.wt-cp-btn:last-child {
+  /* 【改动2】：两端换成微弱的浅蓝，同时加了明显的蓝色边框，这样才不会和白色背景糊在一起！ */
+  background: linear-gradient(135deg, #eef5fb 0%, #adcdea 50%, #eef5fb 100%);
+  color: #1a1a1a; 
+  border: 1px solid #adcdea;
+  box-shadow: 0 4px 15px rgba(173, 205, 234, 0.3);
+}
 
 /* 重置按钮 */
 .wt-cp-btn:first-child {
