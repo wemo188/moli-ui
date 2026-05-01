@@ -1557,17 +1557,17 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     snapToPage(false);
   };
 
-  App.init = function() {
-    App.state.ball = App.$('#floatingBall');
+App.init = function() {
+  App.state.ball = App.$('#floatingBall');
 
-    if (!App.state.ball || !App.state.overlay) {
-      console.warn('页面缺少核心元素');
-      return;
-    }
+  if (!App.state.ball) {
+    console.warn('页面缺少核心元素');
+    return;
+  }
 
-    App.initFloatingBall();
-    App.runInits();
-    App.initMainPages();
-  };
+  App.initFloatingBall();
+  App.runInits();
+  App.initMainPages();
+};
 
 })();
