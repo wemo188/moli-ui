@@ -237,7 +237,7 @@ var Cards={
             '<div class="pc-palette-item"><div class="pc-palette-dot" id="sbDotShadow" style="background:'+sb.shadow+';"></div><div class="pc-palette-dot-label">阴影</div></div>'+
             '<div class="pc-palette-item"><div class="pc-palette-dot" id="sbDotText" style="background:'+sb.textC+';"></div><div class="pc-palette-dot-label">字体</div></div>'+
           '</div>'+
-          '<button class="pc-palette-reset" id="sbResetColors" type="button">重置颜色</button>'+
+          '<button class="pc-palette-reset" id="sbResetColors" type="button">⚠重置颜色</button>'+
         '</div>'+
       '</div>'+
       '<div class="pc-edit-footer"><button class="pc-edit-cancel" id="sbCloseBtn" type="button" style="flex:1;">关闭</button></div>';
