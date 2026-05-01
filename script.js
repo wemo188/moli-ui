@@ -790,7 +790,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
   App.state = {
     ball: null,
     ballMenuEl: null,
-    overlay: null,
     currentPanelEl: null,
     menuOpen: false,
     isDragging: false,
@@ -1556,6 +1555,31 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     snapToPage(false);
   };
+
+App.openPanel = function(id) {
+  if (!id) return;
+  App.closeMenu();
+  if (App.state.currentPanelEl && App.state.currentPanelEl.id !== id) {
+    App.state.currentPanelEl.classList.remove('show');
+    App.state.currentPanelEl.classList.add('hidden');
+  }
+  App.state.currentPanelEl = App.$('#' + id);
+  if (!App.state.currentPanelEl) return;
+  App.state.currentPanelEl.classList.remove('hidden');
+  requestAnimationFrame(function() {
+    App.state.currentPanelEl.classList.add('show');
+  });
+};
+
+App.closePanel = function() {
+  if (!App.state.currentPanelEl) return;
+  App.state.currentPanelEl.classList.remove('show');
+  var p = App.state.currentPanelEl;
+  setTimeout(function() {
+    p.classList.add('hidden');
+  }, 350);
+  App.state.currentPanelEl = null;
+};
 
 App.init = function() {
   App.state.ball = App.$('#floatingBall');
