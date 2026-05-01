@@ -7,8 +7,8 @@ var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
 var DEF_SUB_L='✥ 同你奔赴一场风花雪月 ✥';
 var DEF_SUB_R='◈ 与你共赏一阙火树银花 ◈';
 
-var DEF_COLORS_L={border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#6a8caf'};
-var DEF_COLORS_R={border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#5c728a'};
+var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#6a8caf'};
+var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#5c728a'};
 var DEF_SB={border:'#adcdea',shadow:'rgba(173,205,234,0.9)',textC:'#adcdea'};
 
 var DRAG_DELAY=650;
@@ -36,29 +36,31 @@ var Cards={
   },
 
   applyColors:function(){
-    var lc=Cards.getColors('left');var rc=Cards.getColors('right');
-    var bx2=App.$('#bx-2');var bx1=App.$('#bx-1');
-    if(bx2){
-      bx2.style.setProperty('--bx2-border-c',lc.border);
-      bx2.style.setProperty('--bx2-border-w',lc.borderW+'px');
-      bx2.style.setProperty('--bx2-tag-bg',lc.tagBg);
-      bx2.style.setProperty('--bx2-tag-c',lc.tagC);
-      bx2.style.setProperty('--bx2-tag2-bg',lc.tag2Bg);
-      bx2.style.setProperty('--bx2-tag2-c',lc.tag2C);
-      bx2.style.setProperty('--bx2-name-c',lc.nameC);
-      bx2.style.setProperty('--bx2-sub-c',lc.subC);
-    }
-    if(bx1){
-      bx1.style.setProperty('--bx1-border-c',rc.border);
-      bx1.style.setProperty('--bx1-border-w',rc.borderW+'px');
-      bx1.style.setProperty('--bx1-tag-bg',rc.tagBg);
-      bx1.style.setProperty('--bx1-tag-c',rc.tagC);
-      bx1.style.setProperty('--bx1-tag2-bg',rc.tag2Bg);
-      bx1.style.setProperty('--bx1-tag2-c',rc.tag2C);
-      bx1.style.setProperty('--bx1-name-c',rc.nameC);
-      bx1.style.setProperty('--bx1-sub-c',rc.subC);
-    }
-  },
+  var lc=Cards.getColors('left');var rc=Cards.getColors('right');
+  var bx2=App.$('#bx-2');var bx1=App.$('#bx-1');
+  if(bx2){
+    bx2.style.setProperty('--bx2-bg',lc.bg);
+    bx2.style.setProperty('--bx2-border-c',lc.border);
+    bx2.style.setProperty('--bx2-border-w',lc.borderW+'px');
+    bx2.style.setProperty('--bx2-tag-bg',lc.tagBg);
+    bx2.style.setProperty('--bx2-tag-c',lc.tagC);
+    bx2.style.setProperty('--bx2-tag2-bg',lc.tag2Bg);
+    bx2.style.setProperty('--bx2-tag2-c',lc.tag2C);
+    bx2.style.setProperty('--bx2-name-c',lc.nameC);
+    bx2.style.setProperty('--bx2-sub-c',lc.subC);
+  }
+  if(bx1){
+    bx1.style.setProperty('--bx1-bg',rc.bg);
+    bx1.style.setProperty('--bx1-border-c',rc.border);
+    bx1.style.setProperty('--bx1-border-w',rc.borderW+'px');
+    bx1.style.setProperty('--bx1-tag-bg',rc.tagBg);
+    bx1.style.setProperty('--bx1-tag-c',rc.tagC);
+    bx1.style.setProperty('--bx1-tag2-bg',rc.tag2Bg);
+    bx1.style.setProperty('--bx1-tag2-c',rc.tag2C);
+    bx1.style.setProperty('--bx1-name-c',rc.nameC);
+    bx1.style.setProperty('--bx1-sub-c',rc.subC);
+  }
+},
 
   applySBColors:function(){
     var sb=Cards._sbData;var area=App.$('#searchArea');if(!area)return;
@@ -381,6 +383,7 @@ var Cards={
       var col=Cards.getColors(currentSide);
 
       var paletteItems=[
+        {key:'bg',label:'底色',value:col.bg},
         {key:'border',label:'框',value:col.border},
         {key:'tagBg',label:'签1',value:col.tagBg},
         {key:'tagC',label:'字1',value:col.tagC},
