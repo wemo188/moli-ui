@@ -65,6 +65,11 @@
 </script>
 </head>
 <body>
+  <script>
+window.onerror = function(msg, url, line) {
+  alert('JS错误: ' + msg + '\n文件: ' + url.split('/').pop() + '\n行号: ' + line);
+};
+</script>
 
 <script>
 function imgFallback(img){
