@@ -1602,13 +1602,6 @@ App.init = function() {
   
   alert('步骤5: 全部完成');
 };
-  
-  App.state.ball = App.$('#floatingBall');
-
-  if (!App.state.ball) {
-    console.warn('页面缺少核心元素');
-    return;
-  }
 
   App.initFloatingBall();
   App.runInits();
