@@ -1053,7 +1053,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       pageTapCount = 0;
     }
 
-    ball.addEventListener('touchstart', function(e) {
+        ball.addEventListener('touchstart', function(e) {
       /* ★ 双指按下：进入缩放模式 */
       if (e.touches.length === 2) {
         isZooming = true;
@@ -1063,6 +1063,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
           e.touches[0].clientY - e.touches[1].clientY
         );
         initialScale = App.ballConfig.scale || 1;
+        ball.style.transition = 'none'; /* ★ 关键：手指放上去时关掉补间动画，彻底消除震颤 */
         e.preventDefault();
         return;
       }
@@ -1078,6 +1079,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       App.state.startY = t.clientY;
       App.state.isDragging = true;
       App.state.hasMoved = false;
+      ball.style.transition = 'none'; /* ★ 拖拽时也一样，关掉动画让手感绝对跟手 */
     }, { passive: false });
 
     document.addEventListener('touchmove', function(e) {
@@ -1122,6 +1124,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       if (isZooming) {
         if (e.touches.length < 2) {
           isZooming = false;
+          ball.style.transition = ''; /* ★ 关键：手指松开，恢复平滑动画属性 */
           var match = ball.style.transform.match(/scale\(([^)]+)\)/);
           if (match) {
             App.ballConfig.scale = parseFloat(match[1]);
@@ -1143,14 +1146,16 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
         return;
       }
 
-            /* 单指松开：判断是点击还是拖拽结束 */
+      ball.style.transition = ''; /* ★ 拖拽松开，也把动画还给它 */
+
+      /* 单指松开：判断是点击还是拖拽结束 */
       if (!App.state.isDragging) return;
       if (!App.state.hasMoved) {
         e.preventDefault();
         ballTapCount++;
         clearTimeout(ballTapTimer);
 
-        if (ballTapCount === 3) { /* ★ 改为连点三下隐藏 */
+        if (ballTapCount === 3) {
           hideBall();
           ballTapCount = 0;
         } else {
@@ -1160,7 +1165,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
             }
             App.toggleMenu();
             ballTapCount = 0;
-          }, 400); /* ★ 稍微延长判定时间，让你能从容地点完三下 */
+          }, 400); 
         }
       } else {
         App.LS.set('floatingBallPos', { left: parseFloat(ball.style.left) || 0, top: parseFloat(ball.style.top) || 0 });
