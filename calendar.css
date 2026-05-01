@@ -70,7 +70,7 @@
   z-index: 100020;
   width: 300px;
   height: 400px;
-  background: rgba(255,255,255,1);
+  background: rgba(255,255,255,0.45);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
@@ -126,7 +126,7 @@
 }
 .wt-cp-row input[type="range"] {
   flex: 1; height: 3px; -webkit-appearance: none !important;
-  background: #e0e0e0 !important; border-radius: 2px !important; outline: none !important;
+  background: rgba(126, 163, 201, 0.25); !important; border-radius: 2px !important; outline: none !important;
 }
 .wt-cp-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
