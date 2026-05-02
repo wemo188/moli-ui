@@ -463,13 +463,13 @@
 /* 按钮本身：固定高度，文字强制居中 */
 .pc-btn {
   flex: 1; 
-  height: 32px; /* 按钮就这么厚 */
+  height: 36px; /* 按钮就这么厚 */
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0; padding: 0;
   border-radius: 8px;
-  font-size: 13px; font-weight: 800; cursor: pointer; border: none;
+  font-size: 14px; font-weight: 800; cursor: pointer; border: none;
   letter-spacing: 1px; font-family: inherit;
 }
 
