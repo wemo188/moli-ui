@@ -1666,17 +1666,4 @@ App.init = function() {
   App.initMainPages();
 };
 
-    /* ★ 解决手机键盘收起后页面不回弹、时间栏被顶出屏幕的问题 */
-    document.addEventListener('focusout', function(e) {
-      var tag = (e.target.tagName || '').toUpperCase();
-      if (tag === 'INPUT' || tag === 'TEXTAREA') {
-        setTimeout(function() {
-          // 强制网页滚回顶部
-          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          document.body.scrollTop = 0;
-          document.documentElement.scrollTop = 0;
-        }, 150);
-      }
-    });
-
 })();
