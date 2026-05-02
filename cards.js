@@ -507,19 +507,60 @@ var Cards={
   },
 
   /* ★ 面板拖拽：把手为自身 */
+  /* ★ 面板拖拽：微延迟防误触 (约0.15秒) */
   _bindPanelDrag:function(panel){
-    var handle=panel;
-    if(!handle)return;
+    if(!panel)return;
     var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
-    handle.addEventListener('touchstart',function(e){
-      /* 排除交互元素，摸到空白处就开始拖 */
+    var timer=null;
+    var pressed=false;
+
+    panel.addEventListener('touchstart',function(e){
       if(e.target.closest('button')||e.target.closest('input')||e.target.closest('label')||e.target.closest('.pc-dot')||e.target.closest('.pc-icon-btn')||e.target.closest('.pc-close-btn')||e.target.closest('.pc-slider'))return;
-      var t=e.touches[0];var pr=panel.getBoundingClientRect();
-      panel.style.transform='none';panel.style.left=pr.left+'px';panel.style.top=pr.top+'px';
-      _drag={active:true,sx:t.clientX,sy:t.clientY,ox:pr.left,oy:pr.top};
+      
+      var t=e.touches[0];
+      _drag.sx=t.clientX;
+      _drag.sy=t.clientY;
+      pressed=false;
+      
+      /* 仅仅停顿 150毫秒 (0.15秒) 就判定为拖动 */
+      timer=setTimeout(function(){
+        pressed=true;
+        var pr=panel.getBoundingClientRect();
+        panel.style.transform='none';
+        panel.style.left=pr.left+'px';
+        panel.style.top=pr.top+'px';
+        _drag.ox=pr.left;
+        _drag.oy=pr.top;
+        _drag.active=true;
+      }, 150);
     },{passive:true});
-    var mh=function(e){if(!_drag.active)return;e.preventDefault();var t=e.touches[0];panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';};
-    var eh=function(){_drag.active=false;};
+
+    var mh=function(e){
+      var t=e.touches[0];
+      
+      /* 如果在 150毫秒 内手指滑动超过 8px，说明用户是在快速滚动内容，直接取消拖拽判定 */
+      if(timer && !pressed){
+        if(Math.abs(t.clientX-_drag.sx)>8 || Math.abs(t.clientY-_drag.sy)>8){
+          clearTimeout(timer);
+          timer=null;
+        }
+        return;
+      }
+      
+      /* 超过 150毫秒 且激活了拖拽，就跟着手指走 */
+      if(!_drag.active)return;
+      e.preventDefault();
+      panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';
+      panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';
+    };
+
+    var eh=function(){
+      clearTimeout(timer);
+      timer=null;
+      _drag.active=false;
+      pressed=false;
+    };
+
     document.addEventListener('touchmove',mh,{passive:false});
     document.addEventListener('touchend',eh);
   },
