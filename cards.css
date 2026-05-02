@@ -332,7 +332,7 @@
 .pc-edit-panel {
   position: absolute;
   pointer-events: auto;
-  width: 290px;
+  width: 280px;
   height: 350px;
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(7px);
