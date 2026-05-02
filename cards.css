@@ -350,7 +350,7 @@
 /* 头部 */
 .pc-header {
   text-align: center;
-  padding: 6px 12px; /* 上下都6px，贴紧 */
+  padding: 10px 12px; /* 上下都6px，贴紧 */
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -457,7 +457,7 @@
 
 .pc-btn {
   flex: 1; 
-  padding: 8px; /* ← 这里！原来8px，改成6px */
+  padding: 10px; /* ← 这里！原来8px，改成6px */
   border-radius: 8px;
   font-size: 13px;
   font-weight: 800; 
