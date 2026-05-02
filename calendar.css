@@ -70,7 +70,7 @@
   z-index: 100020;
   width: 300px;
   height: 400px;
-  background: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.75);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   border-radius: 14px;
@@ -131,7 +131,7 @@
 .wt-cp-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   width: 18px !important; height: 18px !important; border-radius: 50% !important;
-  background: #fff !important; border: 2px solid #1a1a1a !important;
+  background: #fff !important; border: 2px solid #adcdea !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important; cursor: pointer !important;
 }
 .wt-cp-val {
