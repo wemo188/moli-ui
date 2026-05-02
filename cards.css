@@ -188,7 +188,7 @@
 }
 
 #bx-2 .bx-sub {
-  font-size: calc(12.5px * var(--S));
+  font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
   margin-top: calc(1px * var(--S));
   letter-spacing: calc(1px * var(--S));
@@ -298,7 +298,7 @@
 }
 
 #bx-1 .bx-sub {
-  font-size: calc(12.5px * var(--S));
+  font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
   margin-top: calc(1px * var(--S));
   letter-spacing: calc(1px * var(--S));
