@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -65,15 +64,22 @@ var WB={
       '<div class="wb-home-list" id="wbHomeList">'+html+'</div>';
 
     page.querySelector('#wbHomeBack').addEventListener('click',function(){WB.close();});
+    
     page.querySelector('#wbHomeCreate').addEventListener('click',function(){
       var newBook={id:'wb_'+Date.now(),name:'未命名',entries:[]};
       WB.books.unshift(newBook);
       WB.save();WB.renderHome();
       WB.openEntryList(0);
-      App.showToast('已创建，可点击编辑名称');
+      App.showToast('已创建');
     });
 
-    // 点击卡片无法进入编辑，只能通过三个点
+    page.querySelectorAll('.wb-home-card').forEach(function(card){
+      card.addEventListener('click',function(e){
+        if(e.target.closest('.wb-mini-btn'))return;
+        WB.openEntryList(parseInt(card.dataset.idx));
+      });
+    });
+
     page.querySelectorAll('[data-act="dots"]').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();WB.showDotsMenu(btn,parseInt(btn.dataset.idx));});
     });
@@ -86,7 +92,6 @@ var WB={
     var old=document.querySelector('.wb-dots-menu');if(old)old.remove();
     var menu=document.createElement('div');menu.className='wb-dots-menu';
     menu.innerHTML=
-      '<div class="wb-dots-mi" data-mact="edit">编辑</div>'+
       '<div class="wb-dots-mi" data-mact="copy">复制</div>'+
       '<div class="wb-dots-mi" data-mact="export">导出</div>'+
       '<div class="wb-dots-mi danger" data-mact="delete">删除</div>';
@@ -95,69 +100,14 @@ var WB={
     menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);
     menu.querySelectorAll('.wb-dots-mi').forEach(function(mi){
       mi.addEventListener('click',function(e){e.stopPropagation();var act=mi.dataset.mact;menu.remove();
-        if(act==='edit')WB.openEntryList(idx);
         if(act==='copy'){var src=WB.books[idx];if(!src)return;var cp=JSON.parse(JSON.stringify(src));cp.id='wb_'+Date.now();cp.name=cp.name+' (副本)';WB.books.unshift(cp);WB.save();WB.renderHome();App.showToast('已复制');}
         if(act==='export'){var b=WB.books[idx];if(!b)return;var blob=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='worldbook_'+(b.name||'export')+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);App.showToast('已导出');}
-        if(act==='delete'){if(!confirm('确定删除？'))return;WB.books.splice(idx,1);WB.save();WB.renderHome();App.showToast('已删除');}
+        if(act==='delete'){if(!confirm('确定删除这本世界书？'))return;WB.books.splice(idx,1);WB.save();WB.renderHome();App.showToast('已删除');}
       });
     });
     function dismiss(ev){if(menu.parentNode&&!menu.contains(ev.target)){menu.remove();document.removeEventListener('touchstart',dismiss);document.removeEventListener('click',dismiss);}}
     setTimeout(function(){document.addEventListener('touchstart',dismiss,{passive:true});document.addEventListener('click',dismiss);},100);
   },
-
-  openEditBook:function(idx){
-    var isNew=idx<0;
-    var book=isNew?{id:'wb_'+Date.now(),name:'',entries:[]}:WB.books[idx];
-
-    if(WB._editBookEl)WB._editBookEl.remove();
-    var page=document.createElement('div');page.className='wb-edit-page';WB._editBookEl=page;
-
-    page.innerHTML=
-      '<div class="wb-header">'+
-        '<button class="wb-back" id="wbBookBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
-        '<div class="wb-header-title">'+(isNew?'创建世界书':'编辑世界书')+'</div>'+
-        '<div style="width:36px;"></div>'+
-      '</div>'+
-      '<div class="wb-edit-body"><div class="wb-edit-card">'+
-        '<div class="wb-edit-section">'+
-          '<div class="wb-edit-label"><div class="dot"></div>世界书名称</div>'+
-          '<input type="text" class="wb-edit-input" id="wbBookName" value="'+App.escAttr(book.name||'')+'" placeholder="给世界书起个名字...">'+
-        '</div>'+
-      '</div>'+
-      '<div class="wb-edit-btns">'+
-        '<button class="wb-save-btn" id="wbBookSave" type="button">'+(isNew?'保存并进入':'保存')+'</button>'+
-        '<button class="wb-cancel-btn" id="wbBookCancel" type="button">取消</button>'+
-      '</div></div>';
-
-    document.body.appendChild(page);
-    raf2(function(){page.classList.add('show');});
-
-    page.querySelector('#wbBookBack').addEventListener('click',function(){WB.closeEditBook();});
-    page.querySelector('#wbBookCancel').addEventListener('click',function(){WB.closeEditBook();});
-    page.querySelector('#wbBookSave').addEventListener('click',function(){
-      var name=(page.querySelector('#wbBookName').value||'').trim();
-      if(!name){App.showToast('请输入名称');return;}
-      if(isNew){
-        var newBook={id:'wb_'+Date.now(),name:name,entries:[]};
-        WB.books.unshift(newBook);
-        WB.save();WB.closeEditBook();WB.renderHome();
-        WB.openEntryList(0);
-        App.showToast('已创建');
-            } else {
-        book.name=name;
-        WB.save();WB.closeEditBook();WB.renderHome();
-        // 回到条目列表而不是首页
-        var bookIdx=-1;
-        for(var i=0;i<WB.books.length;i++){if(WB.books[i].id===book.id){bookIdx=i;break;}}
-        if(bookIdx>=0)setTimeout(function(){WB.openEntryList(bookIdx);},360);
-        App.showToast('已保存');
-      }
-    });
-
-    WB.bindSwipeBack(page,function(){WB.closeEditBook();});
-  },
-
-  closeEditBook:function(){slideOut(WB._editBookEl,function(){WB._editBookEl=null;});},
 
   // ==================== 条目列表页 ====================
   openEntryList:function(bookIdx){
@@ -197,7 +147,7 @@ var WB={
         '<div class="wb-header">'+
           '<button class="wb-back" id="wbListBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
           '<div class="wb-header-title">'+App.esc(book.name||'世界书')+'</div>'+
-          '<button class="wb-add-btn" id="wbListRename" type="button" style="background:rgba(126,163,201,.06);color:#7a9ab8;border:1px solid rgba(126,163,201,.3);">编辑名称</button>'+
+          '<div class="wb-header-right" id="wbListRename">编辑名称</div>'+
         '</div>'+
         '<div class="wb-toolbar">'+
           '<div class="wb-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input type="text" id="wbListSearch" placeholder="搜索条目..."></div>'+
@@ -212,47 +162,28 @@ var WB={
       page.querySelector('#wbListBack').addEventListener('click',function(){WB.closeEntryList();});
       page.querySelector('#wbListAdd').addEventListener('click',function(){WB.openEditEntry(book,-1,function(){render();});});
 
-      // 编辑名称 - 自定义弹窗
       page.querySelector('#wbListRename').addEventListener('click',function(){
-        var nameEl=page.querySelector('.wb-header-title');
-        var ep=document.createElement('div');ep.className='wb-edit-page';
-        ep.innerHTML=
-          '<div class="wb-header">'+
-            '<button class="wb-back" id="wbRnBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
-            '<div class="wb-header-title">编辑名称</div>'+
-            '<div style="width:36px;"></div>'+
-          '</div>'+
-          '<div class="wb-edit-body"><div class="wb-edit-card">'+
-            '<div class="wb-edit-section">'+
-              '<div class="wb-edit-label"><div class="dot"></div>世界书名称</div>'+
-              '<input type="text" class="wb-edit-input" id="wbRnInput" value="'+App.escAttr(book.name||'')+'" placeholder="世界书名称...">'+
+        var old=document.querySelector('.wb-rename-overlay');if(old)old.remove();
+        var ov=document.createElement('div');ov.className='wb-rename-overlay';
+        ov.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+        ov.innerHTML=
+          '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:12px;">'+
+            '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;">编辑名称</div>'+
+            '<input type="text" id="wbRenameInput" value="'+App.escAttr(book.name||'')+'" placeholder="世界书名称..." style="padding:11px 14px;border:1.5px solid rgba(126,163,201,.25);border-radius:12px;font-size:14px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);box-sizing:border-box;">'+
+            '<div style="display:flex;gap:8px;">'+
+              '<button id="wbRenameOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">保存</button>'+
+              '<button id="wbRenameNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>'+
             '</div>'+
-          '</div>'+
-          '<div class="wb-edit-btns">'+
-            '<button class="wb-save-btn" id="wbRnSave" type="button">保存</button>'+
-            '<button class="wb-cancel-btn" id="wbRnCancel" type="button">取消</button>'+
-          '</div></div>';
-        document.body.appendChild(ep);
-        raf2(function(){ep.classList.add('show');});
-
-        function closeRn(){
-          ep.classList.remove('show');
-          setTimeout(function(){if(ep.parentNode)ep.remove();},350);
-        }
-
-        ep.querySelector('#wbRnBack').addEventListener('click',closeRn);
-        ep.querySelector('#wbRnCancel').addEventListener('click',closeRn);
-        ep.querySelector('#wbRnSave').addEventListener('click',function(){
-          var n=(ep.querySelector('#wbRnInput').value||'').trim();
+          '</div>';
+        document.body.appendChild(ov);
+        ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+        ov.querySelector('#wbRenameNo').addEventListener('click',function(){ov.remove();});
+        ov.querySelector('#wbRenameOk').addEventListener('click',function(){
+          var n=(ov.querySelector('#wbRenameInput').value||'').trim();
           if(!n){App.showToast('请输入名称');return;}
-          book.name=n;WB.save();
-          nameEl.textContent=n;
-          WB.renderHome();
-          closeRn();
-          App.showToast('已保存');
+          book.name=n;WB.save();page.querySelector('.wb-header-title').textContent=n;WB.renderHome();ov.remove();App.showToast('已保存');
         });
-
-        WB.bindSwipeBack(ep,closeRn);
+        var inp=ov.querySelector('#wbRenameInput');inp.focus();inp.select();
       });
 
       var si=page.querySelector('#wbListSearch');
@@ -291,7 +222,13 @@ var WB={
         el.addEventListener('touchstart',function(e){
           if(e.target.closest('.wb-actions')||e.target.closest('.wb-mini-btn')||e.target.closest('.wb-sw'))return;
           moved=false;pressed=false;startY=e.touches[0].clientY;targetIdx=elIdx;
-          timer=setTimeout(function(){pressed=true;el.classList.add('dragging');},400);
+          timer=setTimeout(function(){
+            pressed=true;el.classList.add('dragging');
+            el._centers=[];
+            page.querySelectorAll('.wb-item').forEach(function(c){
+              el._centers.push(c.getBoundingClientRect().top+c.offsetHeight/2);
+            });
+          },400);
         },{passive:true});
         el.addEventListener('touchmove',function(e){
           if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
@@ -299,8 +236,10 @@ var WB={
           var dy=e.touches[0].clientY-startY;el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
           var all=page.querySelectorAll('.wb-item');targetIdx=elIdx;
           var cy=e.touches[0].clientY;
-          for(var ui=0;ui<elIdx;ui++){var r=all[ui].getBoundingClientRect();if(cy<r.top+r.height/2){targetIdx=ui;break;}}
-          if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){var r2=all[di].getBoundingClientRect();if(cy>r2.top+r2.height/2){targetIdx=di;break;}}}
+          if(el._centers){
+            for(var ui=0;ui<elIdx;ui++){if(cy<el._centers[ui]){targetIdx=ui;break;}}
+            if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){if(cy>el._centers[di]){targetIdx=di;break;}}}
+          }
           var h=el.offsetHeight+12;
           all.forEach(function(c,ci){if(ci===elIdx)return;c.style.transition='transform .18s ease';
             if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
@@ -309,7 +248,7 @@ var WB={
           });
         },{passive:false});
         el.addEventListener('touchend',function(){
-          clearTimeout(timer);timer=null;el.classList.remove('dragging');
+          clearTimeout(timer);timer=null;el.classList.remove('dragging');el._centers=null;
           page.querySelectorAll('.wb-item').forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
           if(pressed&&moved&&targetIdx!==elIdx){
             var item=book.entries.splice(elIdx,1)[0];book.entries.splice(targetIdx,0,item);WB.save();render();
@@ -514,6 +453,7 @@ var WB={
 
 function raf2(fn){requestAnimationFrame(function(){requestAnimationFrame(fn);});}
 function slideOut(el,cb){if(!el)return;el.classList.remove('show');el.style.transform='translateX(100%)';el.style.opacity='0';setTimeout(function(){if(el.parentNode)el.remove();if(cb)cb();},350);}
+
 function bindDrag(page,selector,excludeSelector,list,onDone){
   var els=page.querySelectorAll(selector);
   els.forEach(function(el,elIdx){
@@ -521,18 +461,24 @@ function bindDrag(page,selector,excludeSelector,list,onDone){
     el.addEventListener('touchstart',function(e){
       if(e.target.closest(excludeSelector))return;
       moved=false;pressed=false;startY=e.touches[0].clientY;targetIdx=elIdx;
-      timer=setTimeout(function(){pressed=true;el.classList.add('dragging');},400);
+      timer=setTimeout(function(){
+        pressed=true;el.classList.add('dragging');
+        el._centers=[];
+        page.querySelectorAll(selector).forEach(function(c){
+          el._centers.push(c.getBoundingClientRect().top+c.offsetHeight/2);
+        });
+      },400);
     },{passive:true});
     el.addEventListener('touchmove',function(e){
       if(timer&&!pressed){if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
       if(!pressed)return;moved=true;e.preventDefault();
       var dy=e.touches[0].clientY-startY;el.style.transform='translateY('+dy+'px)';el.style.zIndex='100';
-     var all=page.querySelectorAll(selector);targetIdx=elIdx;
+      var all=page.querySelectorAll(selector);targetIdx=elIdx;
       var cy=e.touches[0].clientY;
-      // 往上：找最小的ci（最上方）
-      for(var ui=0;ui<elIdx;ui++){var r=all[ui].getBoundingClientRect();if(cy<r.top+r.height/2){targetIdx=ui;break;}}
-      // 往下：找最大的ci（最下方）
-      if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){var r2=all[di].getBoundingClientRect();if(cy>r2.top+r2.height/2){targetIdx=di;break;}}}
+      if(el._centers){
+        for(var ui=0;ui<elIdx;ui++){if(cy<el._centers[ui]){targetIdx=ui;break;}}
+        if(targetIdx===elIdx){for(var di=all.length-1;di>elIdx;di--){if(cy>el._centers[di]){targetIdx=di;break;}}}
+      }
       var h=el.offsetHeight+12;
       all.forEach(function(c,ci){if(ci===elIdx)return;c.style.transition='transform .18s ease';
         if(targetIdx>elIdx&&ci>elIdx&&ci<=targetIdx)c.style.transform='translateY(-'+h+'px)';
@@ -541,7 +487,7 @@ function bindDrag(page,selector,excludeSelector,list,onDone){
       });
     },{passive:false});
     el.addEventListener('touchend',function(){
-      clearTimeout(timer);timer=null;el.classList.remove('dragging');
+      clearTimeout(timer);timer=null;el.classList.remove('dragging');el._centers=null;
       page.querySelectorAll(selector).forEach(function(c){c.style.transform='';c.style.transition='';c.style.zIndex='';});
       if(pressed&&moved&&targetIdx!==elIdx){var item=list.splice(elIdx,1)[0];list.splice(targetIdx,0,item);if(onDone)onDone();}
       pressed=false;moved=false;
@@ -551,4 +497,3 @@ function bindDrag(page,selector,excludeSelector,list,onDone){
 
 App.register('worldbook',WB);
 })();
-
