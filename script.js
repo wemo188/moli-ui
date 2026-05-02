@@ -161,6 +161,61 @@
     });
   };
 
+App.bindSwipeBack = function(el, onClose, opts) {
+  if (!el) return;
+  opts = opts || {};
+  var edgeWidth = opts.edge || 50;        // 左边缘触发区域宽度
+  var threshold = opts.threshold || 0.3;  // 滑动超过30%宽度触发关闭
+  var _sw = { active: false, sx: 0, sy: 0, locked: false, dir: '' };
+
+  el.addEventListener('touchstart', function(e) {
+    var t = e.touches[0];
+    var rect = el.getBoundingClientRect();
+    if (t.clientX - rect.left > edgeWidth) return;
+    _sw = { active: true, sx: t.clientX, sy: t.clientY, locked: false, dir: '' };
+  }, { passive: true });
+
+  el.addEventListener('touchmove', function(e) {
+    if (!_sw.active) return;
+    var t = e.touches[0];
+    var dx = t.clientX - _sw.sx;
+    var dy = t.clientY - _sw.sy;
+    if (!_sw.locked) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      _sw.locked = true;
+      _sw.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    if (_sw.dir === 'h' && dx > 0) {
+      e.preventDefault();
+      var w = el.offsetWidth || window.innerWidth;
+      el.style.transform = 'translateX(' + Math.min(dx, w) + 'px)';
+      el.style.opacity = String(1 - dx / w * 0.5);
+    }
+  }, { passive: false });
+
+  el.addEventListener('touchend', function(e) {
+    if (!_sw.active) return;
+    _sw.active = false;
+    if (_sw.dir !== 'h') { el.style.transform = ''; el.style.opacity = ''; return; }
+    var t = e.changedTouches[0];
+    var dx = t.clientX - _sw.sx;
+    var w = el.offsetWidth || window.innerWidth;
+    if (dx > w * threshold) {
+      el.style.transition = 'transform .25s ease, opacity .25s ease';
+      el.style.transform = 'translateX(100%)';
+      el.style.opacity = '0';
+      setTimeout(function() {
+        el.style.transition = ''; el.style.transform = ''; el.style.opacity = '';
+        if (onClose) onClose();
+      }, 260);
+    } else {
+      el.style.transition = 'transform .2s ease, opacity .2s ease';
+      el.style.transform = ''; el.style.opacity = '';
+      setTimeout(function() { el.style.transition = ''; }, 220);
+    }
+  }, { passive: true });
+};
+
   App.cropImage = function(src, callback) {
     var overlay = document.createElement('div');
     overlay.className = 'crop-overlay';
