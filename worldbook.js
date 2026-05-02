@@ -1,5 +1,3 @@
-世界书
-
 
 (function(){
 'use strict';
