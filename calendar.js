@@ -183,6 +183,177 @@ if(e.target.closest('.vf-lbl'))return;
     });
   },
 
+if(longPressed&&moved)App.LS.set('wtCardPos',{x:Cal._dragOffsetX,y:Cal._dragOffsetY});
+      longPressed=false;moved=false;
+    });
+  },
+
+  // ====== 调色面板 ======
+  toggleColorPanel: function(){
+    if(Cal._colorPanelEl){
+      Cal._colorPanelEl.remove();
+      Cal._colorPanelEl = null;
+      return;
+    }
+
+    var card = App.$('#wtCard');
+    if(!card) return;
+    var c = Cal.cardConfig;
+
+    var _colors = {
+      bg: c.colorHex || '#ffffff',
+      font: c.fontColor || '#1a1a1a',
+      line: c.lineColor || '#1a1a1a'
+    };
+
+    var overlay = document.createElement('div');
+    overlay.id = 'wtColorOverlay';
+    overlay.className = 'pc-edit-overlay';
+    overlay.style.zIndex = '100020';
+    Cal._colorPanelEl = overlay;
+
+    var panel = document.createElement('div');
+    panel.className = 'pc-edit-panel';
+    panel.style.width = '280px';
+    panel.style.height = 'auto';
+    panel.style.maxHeight = '400px';
+
+    panel.innerHTML =
+      '<div class="pc-header">时间栏调色<div class="pc-close-btn" id="wcpClose">×</div></div>' +
+      '<div class="pc-body" style="gap:10px;">' +
+
+        '<div class="pc-group"><span class="pc-label">缩放</span>' +
+          '<div class="pc-slider-row"><input type="range" class="pc-slider" id="wcpScale" min="50" max="100" value="' + c.scale + '"><span class="pc-slider-val" id="wcpScaleVal">' + (c.scale/100).toFixed(2) + '</span></div></div>' +
+
+        '<div class="pc-group"><span class="pc-label">圆角</span>' +
+          '<div class="pc-slider-row"><input type="range" class="pc-slider" id="wcpRadius" min="0" max="40" value="' + c.radius + '"><span class="pc-slider-val" id="wcpRadiusVal">' + c.radius + 'px</span></div></div>' +
+
+        '<div class="pc-group"><span class="pc-label">边框</span>' +
+          '<div class="pc-slider-row"><input type="range" class="pc-slider" id="wcpBorder" min="0" max="100" value="' + c.borderAlpha + '"><span class="pc-slider-val" id="wcpBorderVal">' + c.borderAlpha + '%</span></div></div>' +
+
+        '<div class="pc-group"><span class="pc-label">透明</span>' +
+          '<div class="pc-slider-row"><input type="range" class="pc-slider" id="wcpAlpha" min="0" max="100" value="' + c.alpha + '"><span class="pc-slider-val" id="wcpAlphaVal">' + c.alpha + '%</span></div></div>' +
+
+        '<div class="pc-group"><span class="pc-label">模糊</span>' +
+          '<div class="pc-slider-row"><input type="range" class="pc-slider" id="wcpBlur" min="0" max="50" value="' + c.blur + '"><span class="pc-slider-val" id="wcpBlurVal">' + c.blur + 'px</span></div></div>' +
+
+        '<div class="pc-group"><span class="pc-label">颜色</span>' +
+          '<div class="pc-palette-grid" style="grid-template-columns:repeat(3,1fr);">' +
+            '<div class="pc-palette-item"><div class="pc-dot" id="wcpBgSwatch" data-key="bg" style="background:' + _colors.bg + '"></div><span class="pc-dot-lbl">底色</span></div>' +
+            '<div class="pc-palette-item"><div class="pc-dot" id="wcpFontSwatch" data-key="font" style="background:' + _colors.font + '"></div><span class="pc-dot-lbl">字体</span></div>' +
+            '<div class="pc-palette-item"><div class="pc-dot" id="wcpLineSwatch" data-key="line" style="background:' + _colors.line + '"></div><span class="pc-dot-lbl">线条</span></div>' +
+          '</div></div>' +
+
+      '</div>' +
+      '<div class="pc-footer">' +
+        '<button class="pc-btn pc-btn-save" id="wcpSave" type="button">保存</button>' +
+        '<button class="pc-btn pc-btn-cancel" id="wcpReset" type="button">重置</button>' +
+      '</div>';
+
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    var cardRect = card.getBoundingClientRect();
+    var left = cardRect.left + cardRect.width/2 - 140;
+    if(left < 8) left = 8;
+    if(left + 280 > window.innerWidth - 8) left = window.innerWidth - 288;
+    var top = cardRect.bottom + 8;
+    if(top + 400 > window.innerHeight - 10) top = cardRect.top - 408;
+    if(top < 10) top = 10;
+    panel.style.left = left + 'px';
+    panel.style.top = top + 'px';
+
+    if(App.modules.cards && App.modules.cards._bindPanelDrag){
+      App.modules.cards._bindPanelDrag(panel);
+    }
+
+    function getCfg(){
+      return {
+        scale: parseInt(App.$('#wcpScale').value),
+        radius: parseInt(App.$('#wcpRadius').value),
+        borderAlpha: parseInt(App.$('#wcpBorder').value),
+        alpha: parseInt(App.$('#wcpAlpha').value),
+        blur: parseInt(App.$('#wcpBlur').value),
+        colorHex: _colors.bg,
+        fontColor: _colors.font,
+        lineColor: _colors.line
+      };
+    }
+
+    function pv(){
+      App.$('#wcpScaleVal').textContent = (App.$('#wcpScale').value/100).toFixed(2);
+      App.$('#wcpRadiusVal').textContent = App.$('#wcpRadius').value + 'px';
+      App.$('#wcpBorderVal').textContent = App.$('#wcpBorder').value + '%';
+      App.$('#wcpAlphaVal').textContent = App.$('#wcpAlpha').value + '%';
+      App.$('#wcpBlurVal').textContent = App.$('#wcpBlur').value + 'px';
+      Cal.applyCardConfig(getCfg());
+    }
+
+    ['wcpScale','wcpRadius','wcpBorder','wcpAlpha','wcpBlur'].forEach(function(id){
+      var el = App.$('#' + id);
+      if(el) el.addEventListener('input', pv);
+    });
+
+    panel.querySelectorAll('.pc-dot').forEach(function(swatch){
+      swatch.addEventListener('click', function(e){
+        e.stopPropagation();
+        var key = swatch.dataset.key;
+        if(!App.openColorPicker) return;
+        App.openColorPicker(_colors[key], function(hex){
+          _colors[key] = hex;
+          swatch.style.background = hex;
+          Cal.applyCardConfig(getCfg());
+        }, function(hex){
+          _colors[key] = hex;
+          swatch.style.background = hex;
+          Cal.applyCardConfig(getCfg());
+        }, 'wt-' + key);
+      });
+    });
+
+    panel.querySelector('#wcpClose').addEventListener('click', function(e){
+      e.stopPropagation();
+      Cal.toggleColorPanel();
+    });
+
+    panel.querySelector('#wcpSave').addEventListener('click', function(e){
+      e.stopPropagation();
+      Cal.cardConfig = getCfg();
+      Cal.saveCardConfig();
+      Cal.applyCardConfig();
+      Cal.toggleColorPanel();
+      App.showToast('已保存');
+    });
+
+    panel.querySelector('#wcpReset').addEventListener('click', function(e){
+      e.stopPropagation();
+      App.LS.remove('wtCardConfig');
+      Cal.cardConfig = JSON.parse(JSON.stringify(CARD_DEFAULTS));
+      Cal.saveCardConfig();
+      var card2 = App.$('#wtCard');
+      if(card2){
+        var cw = card2.querySelector('.wt-cw');
+        if(cw) cw.removeAttribute('style');
+        card2.querySelectorAll('.wt-time,.wt-time span,.wt-sec,.wt-sec span,.wt-date,.wt-date span,.wt-wk,.vf-lbl,.wt-tl,.wt-wl,.wt-vd,.vf-hl,#location-coords,.wt-temp,.wt-desc,.wt-deg').forEach(function(el){
+          el.removeAttribute('style');
+        });
+      }
+      Cal.applyCardConfig();
+      Cal._dragOffsetX = 0;
+      Cal._dragOffsetY = 0;
+      App.LS.remove('wtCardPos');
+      if(card2) card2.style.transform = '';
+      Cal.toggleColorPanel();
+      App.showToast('已重置');
+    });
+
+    overlay.addEventListener('click', function(e){
+      if(e.target === overlay) Cal.toggleColorPanel();
+    });
+
+    panel.addEventListener('click', function(e){ e.stopPropagation(); });
+  },
+
   // ====== 天气面板 ======
   openWeatherPanel:function(){
     var panel=App.$('#calPanel');if(!panel)return;
