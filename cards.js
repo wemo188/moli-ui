@@ -392,15 +392,15 @@ var Cards={
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
 
-    var paletteItems=[
-      {key:'bg',label:'底色',value:col.bg},
-      {key:'border',label:'外框',value:col.border},
-      {key:'tagBg',label:'签1',value:col.tagBg},
-      {key:'tagC',label:'字1',value:col.tagC},
-      {key:'tag2Bg',label:'签2',value:col.tag2Bg},
-      {key:'tag2C',label:'字2',value:col.tag2C},
-      {key:'nameC',label:'名字',value:col.nameC},
-      {key:'subC',label:'签名',value:col.subC}
+        var paletteItems=[
+      {key:'bg',label:'卡片底色',value:col.bg},
+      {key:'border',label:'外框颜色',value:col.border},
+      {key:'tagBg',label:'标签1底',value:col.tagBg},
+      {key:'tagC',label:'标签1字',value:col.tagC},
+      {key:'tag2Bg',label:'标签2底',value:col.tag2Bg},
+      {key:'tag2C',label:'标签2字',value:col.tag2C},
+      {key:'nameC',label:'名字颜色',value:col.nameC},
+      {key:'subC',label:'签名颜色',value:col.subC}
     ];
     var dotsHtml=paletteItems.map(function(p){
       return '<div class="pc-palette-item"><div class="pc-dot" data-ck="'+p.key+'" style="background:'+p.value+';"></div><span class="pc-dot-lbl">'+p.label+'</span></div>';
