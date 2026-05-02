@@ -94,3 +94,166 @@
 .font-item.active .font-item-check::after { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
 
 .empty-hint { text-align: center; color: var(--text-muted); font-size: 13px; padding: 60px 20px; }
+
+/* =========================
+   编辑卡片（公共组件）
+========================= */
+.pc-edit-overlay {
+  position: fixed; inset: 0;
+  z-index: 999;
+  pointer-events: auto;
+  background: transparent;
+}
+
+.pc-edit-panel {
+  position: absolute;
+  pointer-events: auto;
+  width: 270px;
+  height: 350px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #000000;
+  padding: 0 !important;
+}
+
+.pc-header {
+  text-align: center;
+  padding: 13px 12px;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  position: relative;
+  line-height: 1.2;
+}
+
+.pc-close-btn {
+  position: absolute;
+  top: 0; right: 5px;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #000; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.pc-close-btn:active { background: rgba(0,0,0,0.05); }
+
+.pc-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+  gap: 10px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.pc-body::-webkit-scrollbar { display: none; }
+
+.pc-group { display: flex; flex-direction: column; gap: 4px; }
+
+.pc-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #000;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pc-label::before {
+  content: '★';
+  font-size: 5px;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.pc-input {
+  width: 100%; padding: 7px 10px;
+  font-size: 12px;
+  color: #000;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.pc-input:focus { border-color: #000; background: rgba(255, 255, 255, 0.8); }
+
+.pc-av-row { display: flex; gap: 6px; }
+.pc-av-row .pc-input { flex: 1; min-width: 0; }
+
+.pc-icon-btn {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px; cursor: pointer; color: #000;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.pc-icon-btn:active { background: rgba(0,0,0,0.05); }
+.pc-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pc-icon-btn.danger { color: #c9706b; border-color: rgba(201,112,107,0.3); background: rgba(201,112,107,0.1); }
+.pc-icon-btn.danger:active { background: rgba(201,112,107,0.2); }
+
+.pc-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px 4px;
+  margin-top: 2px;
+}
+.pc-palette-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.pc-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.2); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.pc-dot:active { transform: scale(0.9); }
+.pc-dot-lbl { font-size: 9px; font-weight: 700; color: #000; }
+
+.pc-slider-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.pc-slider {
+  flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px;
+  background: rgba(0, 0, 0, 0.15); outline: none;
+}
+.pc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; border: 2px solid #000; cursor: pointer;
+  margin-top: -5px;
+}
+.pc-slider-val { font-size: 11px; font-weight: 700; width: 30px; text-align: right; }
+
+.pc-footer {
+  display: flex; gap: 8px;
+  padding: 10px 16px 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.pc-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 1px;
+  font-family: inherit;
+}
+
+.pc-btn-save { background: #000; color: #fff; }
+.pc-btn-save:active { background: #333; }
+.pc-btn-cancel { background: rgba(255, 255, 255, 0.5); color: #000; border: 1px solid rgba(0, 0, 0, 0.2); }
+.pc-btn-cancel:active { background: rgba(0,0,0,0.05); }
+
+
