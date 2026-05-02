@@ -183,11 +183,6 @@ if(e.target.closest('.vf-lbl'))return;
     });
   },
 
-if(longPressed&&moved)App.LS.set('wtCardPos',{x:Cal._dragOffsetX,y:Cal._dragOffsetY});
-      longPressed=false;moved=false;
-    });
-  },
-
   // ====== 调色面板 ======
   toggleColorPanel: function(){
     if(Cal._colorPanelEl){
