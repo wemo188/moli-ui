@@ -350,7 +350,7 @@
 /* 头部 */
 .pc-header {
   text-align: center;
-  padding: 10px 12px; /* 上下都6px，贴紧 */
+  padding: 13px 12px; /* 上下都6px，贴紧 */
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 1px;
