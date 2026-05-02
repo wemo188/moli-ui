@@ -348,22 +348,24 @@
 
 /* 头部 */
 .pc-header {
-  text-align: center;
-  padding: 6px 0; /* 上下各10px，左右0 */
-  font-size: 13px; /* 字体稍微调小一点点，显得更精致 */
+  height: 38px; /* 固定高度，压扁它 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; padding: 0;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 1px;
-  line-height: 1; /* 消除字体自带的上下留白 */
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
   position: relative;
 }
 
-/* × 关闭按钮同步居中 */
+/* × 关闭按钮：和头部一样高 */
 .pc-close-btn {
   position: absolute;
-  top: 0; right: 4px;
-  width: 32px; height: 100%;
+  top: 0; right: 0;
+  width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px; color: #000; cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -447,21 +449,28 @@
 }
 .pc-slider-val { font-size: 11px; font-weight: 700; width: 30px; text-align: right; }
 
-/* 底部按钮 */
 .pc-footer {
-  display: flex; gap: 12px; 
-  padding: 6px 16px; /* 上下10px，左右16px，完美对称 */
+  height: 50px; /* 固定总高度 */
+  display: flex; 
+  align-items: center; /* 按钮在区域内绝对居中 */
+  gap: 12px; 
+  margin: 0; 
+  padding: 0 16px; /* 只有左右边距，不给上下留任何趁虚而入的机会 */
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
 }
 
+/* 按钮本身：固定高度，文字强制居中 */
 .pc-btn {
   flex: 1; 
-  padding: 8px 0; /* 压缩按钮本身的厚度 */
-  border-radius: 8px; /* 圆角稍微收敛一点 */
+  height: 32px; /* 按钮就这么厚 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; padding: 0;
+  border-radius: 8px;
   font-size: 13px; font-weight: 800; cursor: pointer; border: none;
   letter-spacing: 1px; font-family: inherit;
-  line-height: 1; /* 让文字在按钮里绝对居中 */
 }
 
 .pc-btn-save { background: #000; color: #fff; }
