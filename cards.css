@@ -450,14 +450,14 @@
 
 .pc-footer {
   display: flex; gap: 8px;
-  padding: 6px 16px 8px; /* 上6下8，刚好 */
+  padding: 10px 16px 10px; /* 上6下8，刚好 */
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
 }
 
 .pc-btn {
   flex: 1; 
-  padding: 10px; /* ← 这里！原来8px，改成6px */
+  padding: 8px; /* ← 这里！原来8px，改成6px */
   border-radius: 8px;
   font-size: 13px;
   font-weight: 800; 
