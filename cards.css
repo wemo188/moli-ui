@@ -346,24 +346,31 @@
   color: #000000;
 }
 
-/* 头部 */
+/* 头部 (高度压缩到 40px，强制定制居中) */
 .pc-header {
-  text-align: center;
-  padding: 10px 0; /* 上下各10px，左右0 */
-  font-size: 13px; /* 字体稍微调小一点点，显得更精致 */
+  height: 40px; /* 固定高度，再也不会头重脚轻 */
+  display: flex;
+  align-items: center; /* 绝对垂直居中 */
+  justify-content: center; /* 绝对水平居中 */
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 1px;
-  line-height: 1; /* 消除字体自带的上下留白 */
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
   position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
 }
+.pc-header:active { cursor: grabbing; }
 
-/* × 关闭按钮同步居中 */
+/* × 关闭按钮 (完美贴合头部高度) */
 .pc-close-btn {
   position: absolute;
   top: 0; right: 4px;
-  width: 32px; height: 100%;
+  width: 36px; height: 100%;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px; color: #000; cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -447,21 +454,31 @@
 }
 .pc-slider-val { font-size: 11px; font-weight: 700; width: 30px; text-align: right; }
 
-/* 底部按钮 */
+/* 底部按钮区 (高度压缩到 50px，上下边距彻底锁死) */
 .pc-footer {
-  display: flex; gap: 12px; 
-  padding: 10px 16px; /* 上下10px，左右16px，完美对称 */
+  height: 50px; /* 固定高度，不再受任何多余边距影响 */
+  display: flex; 
+  align-items: center; /* 绝对垂直居中 */
+  gap: 12px; 
+  padding: 0 16px; /* 上下0，左右16px */
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
+  box-sizing: border-box;
+  margin: 0;
 }
 
+/* 按钮本身 (固定高度 32px，在 50px 的底栏里绝对居中) */
 .pc-btn {
   flex: 1; 
-  padding: 8px 0; /* 压缩按钮本身的厚度 */
-  border-radius: 8px; /* 圆角稍微收敛一点 */
+  height: 32px; /* 压缩按钮厚度 */
+  display: flex;
+  align-items: center; /* 按钮里的文字绝对居中 */
+  justify-content: center;
+  border-radius: 8px;
   font-size: 13px; font-weight: 800; cursor: pointer; border: none;
   letter-spacing: 1px; font-family: inherit;
-  line-height: 1; /* 让文字在按钮里绝对居中 */
+  box-sizing: border-box;
+  margin: 0; padding: 0;
 }
 
 .pc-btn-save { background: #000; color: #fff; }
