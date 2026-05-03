@@ -114,7 +114,13 @@
 .cal-day-num { font-size: 15px; font-weight: 500; color: #1a1a1a; line-height: 1; }
 .cal-day-cell.cal-day-other .cal-day-num { color: #ccc; }
 .cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: #4f79a6; }
-.cal-selected-section { margin: 10px -16px -20px; padding: 24px 16px 30px; background: #1a1a1a; border-radius: 20px 20px 0 0; min-height: 200px; }
+.cal-selected-section { 
+  margin: 10px -16px -20px;   /* 顶部的 margin 从 20 缩到 10，让黑块往上挪 */
+  padding: 44px 16px 16px;    /* 恢复顶部的 44px 保护胶带，底部的 40px 砍成 16px 去掉留白 */
+  background: #1a1a1a; 
+  border-radius: 20px 20px 0 0; 
+  min-height: 200px; 
+}
 .cal-empty-dark { text-align: center; color: #555; font-size: 13px; padding: 50px 20px; }
 .cal-schedule-date { font-size: 14px; color: #999; margin-bottom: 20px; font-weight: 500; }
 .cal-schedule-list { display: flex; flex-direction: column; gap: 0; position: relative; }
