@@ -204,11 +204,11 @@
 
 .sticker-text-zh {
   position: absolute;
-  top: 18px; left: 18px; right: 18px; bottom: 18px;
+  top: 10px; left: 10px; right: 10px; bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 10px;
   font-size: 15px;
   font-weight: 500;
   color: #1a1a1a;
