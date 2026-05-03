@@ -1,100 +1,119 @@
 /* =========================
-   底部 Dock 栏
+   底部 Dock 栏主容器
 ========================= */
-.dock {
+#dockBar {
   position: fixed;
   bottom: calc(14px + env(safe-area-inset-bottom, 20px));
   left: 50%;
-  transform: translateX(-50%);
+  /* 缩放变量由JS动态注入，保持居中基准点 */
+  transform: translateX(-50%) scale(var(--dock-scale, 1));
+  transform-origin: bottom center;
   z-index: 900;
   border-radius: 28px;
-  padding: 15px 35px;
+  padding: 15px 24px;
   display: flex;
   gap: 20px;
-  background: rgba(255,255,255,0.01);
+  /* 背景/边框/毛玻璃 会被 JS 动态覆盖 */
+  background: rgba(255,255,255,0.4);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  box-shadow:
-    0 12px 40px rgba(0,0,0,0.10),
-    0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease;
 }
 
-.dock-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.dock-item:active .mk-card {
-  transform: scale(0.90);
-}
-
-/* mk-card 样式（你提供的） */
-.mk-card {
-  position: relative;
-  border-radius: 12px;
+/* =========================
+   固定的机库插槽（保证占位永不坍塌）
+========================= */
+.dock-slot {
   width: 56px;
   height: 56px;
-  background: #fff;
-  border: 1px solid rgba(220,235,255,.55);
-  box-shadow: 0 10px 24px rgba(20,35,55,.14);
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: transform 0.15s;
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 12px;
+  /* 淡淡的占位底色，方便拖拽时看清坑位 */
+  background: rgba(0,0,0,0.03); 
 }
 
-.mk-card img {
+/* =========================
+   桌面图标（双形态实体）
+========================= */
+.desktop-icon {
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* 极速膨胀/缩小动画 */
+  transition: width 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              height 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              transform 0.15s ease;
+  z-index: 100;
+}
+
+.desktop-icon:active { transform: scale(0.92); }
+
+/* --- 1. 停靠在机库内时的形态 --- */
+.dock-slot .desktop-icon {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
+}
+.dock-slot .desktop-icon .di-label {
+  display: none; /* 在底部栏隐藏文字 */
+}
+.dock-slot .desktop-icon .mk-card {
+  border-radius: 12px;
 }
 
-.mk-card::after {
-  content: "";
+/* --- 2. 拖出后变成悬浮APP的形态 --- */
+.desktop-icon.is-floating {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  /* 让鼠标/手指刚好按在中心点 */
+  margin-left: -40px;
+  margin-top: -40px;
+  z-index: 100015; /* 保证漂浮在所有界面之上 */
+}
+.desktop-icon.is-floating .mk-card {
+  border-radius: 20px; /* 变大后圆角更圆润 */
+  box-shadow: 0 14px 30px rgba(20,35,55,.2);
+}
+.desktop-icon.is-floating .di-label {
+  display: block;
   position: absolute;
-  inset: 0;
+  bottom: -24px;
+  left: -20px;
+  right: -20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #2e4258;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,1);
+  pointer-events: none;
+}
+
+/* =========================
+   卡片内部图片样式
+========================= */
+.mk-card {
+  width: 100%; height: 100%;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  transition: border-radius 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mk-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none !important; /* 护甲 */
+  -webkit-user-drag: none !important;
+}
+
+/* 玻璃反光 */
+.mk-card::after {
+  content: ""; position: absolute; inset: 0;
   background:
     linear-gradient(135deg, rgba(255,255,255,.42), transparent 42%),
     linear-gradient(315deg, rgba(255,255,255,.20), transparent 44%);
-  pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: .82;
-}
-
-.dock-icon svg {
-  position: relative;
-  z-index: 2;
-  width: 32px;
-  height: 32px;
-  filter: drop-shadow(0 2px 6px rgba(40,70,110,.18));
-}
-
-.dock-icon img {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-}
-
-.dock-label {
-  font-size: 11px;
-  color: #1f2b38;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* ★ 底部栏防原生菜单，允许纯净拖拽 */
-.dock-item {
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-}
-.mk-card img {
-  pointer-events: none !important; /* 关键：穿透图片，避免长按跳出保存菜单 */
-  -webkit-user-drag: none !important;
+  pointer-events: none; mix-blend-mode: screen; opacity: .82;
 }
