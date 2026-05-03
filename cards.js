@@ -191,7 +191,18 @@ var Cards={
         if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
         if(!longPressed)return;
         moved=true;e.preventDefault();e.stopPropagation();
-        var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
+        var nx=startOX+t.clientX-startX, ny=startOY+t.clientY-startY;
+
+        /* ★ 磁吸对齐魔法：定位平行 */
+        // 找到对方兄弟图标的 ID
+        var otherId = (id === 'cardIcon1') ? 'cardIcon2' : 'cardIcon1';
+        // 获取对方兄弟当前的 Y 轴高度
+        var otherOff = Cards._dragOffsets[otherId] || {x:0, y:0};
+        // 如果你拖拽的图标 Y轴 距离对方的 Y轴 不到 15px，直接强制吸附到同一水平线！
+        if (Math.abs(ny - otherOff.y) < 15) {
+          ny = otherOff.y;
+        }
+
         el.style.transform='translate('+nx+'px,'+ny+'px)';
         Cards._dragOffsets[id]={x:nx,y:ny};
       },{passive:false});
