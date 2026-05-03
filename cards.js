@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -6,7 +7,6 @@ var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
 var DEF_SUB_L='✥同你奔赴一场风花雪月✥';
 var DEF_SUB_R='◈与你共赏一阙火树银花◈';
 
-/* ★ 默认颜色补充了 bg: '#ffffff' */
 var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#6a8caf'};
 var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#5c728a'};
 var DEF_SB={border:'#adcdea',shadow:'rgba(173,205,234,0.9)',textC:'#adcdea'};
@@ -35,12 +35,11 @@ var Cards={
     return c;
   },
 
-    applyColors:function(){
+  applyColors:function(){
     var lc=Cards.getColors('left');var rc=Cards.getColors('right');
     var bx2=App.$('#bx-2');var bx1=App.$('#bx-1');
-
     if(bx2){
-      bx2.style.setProperty('--bx2-bg',lc.bg); /* 直接传值，不管纯色还是渐变！ */
+      bx2.style.setProperty('--bx2-bg',lc.bg);
       bx2.style.setProperty('--bx2-border-c',lc.border);
       bx2.style.setProperty('--bx2-border-w',lc.borderW+'px');
       bx2.style.setProperty('--bx2-tag-bg',lc.tagBg);
@@ -51,7 +50,7 @@ var Cards={
       bx2.style.setProperty('--bx2-sub-c',lc.subC);
     }
     if(bx1){
-      bx1.style.setProperty('--bx1-bg',rc.bg); /* 直接传值！ */
+      bx1.style.setProperty('--bx1-bg',rc.bg);
       bx1.style.setProperty('--bx1-border-c',rc.border);
       bx1.style.setProperty('--bx1-border-w',rc.borderW+'px');
       bx1.style.setProperty('--bx1-tag-bg',rc.tagBg);
@@ -65,7 +64,6 @@ var Cards={
 
   applySBColors:function(){
     var sb=Cards._sbData;var area=App.$('#searchArea');if(!area)return;
-    /* 对话框也一样，去掉愚蠢的判断，直接传值 */
     area.style.setProperty('--sb-border',sb.border);
     area.style.setProperty('--sb-shadow',sb.shadow);
     area.style.setProperty('--sb-text',sb.textC);
@@ -86,6 +84,9 @@ var Cards={
     var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
     var rNameC=R.name?'':' bx-name-placeholder';
 
+    var icon1=App.LS.get('customIcon_cg')||'https://iili.io/BsSI1j9.md.jpg';
+    var icon2=App.LS.get('customIcon_lt')||'https://iili.io/BQ98Pxp.md.jpg';
+
     container.innerHTML=
       '<div class="left-area-wrapper">'+
         '<div class="bx-w" id="bx-2" data-side="left">'+
@@ -101,7 +102,10 @@ var Cards={
         '</div>'+
       '</div>'+
       '<div class="card-right-area">'+
-        '<div class="card-placeholder-icons"><div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div><div class="card-ph-item"><div class="card-ph-icon"></div><div class="card-ph-label">占位符</div></div></div>'+
+        '<div class="card-icons-wrap">'+
+          '<div class="card-icon-item" id="cardIcon1"><div class="card-icon-img"><img src="'+App.escAttr(icon1)+'" onerror="imgFallback(this)"></div><div class="card-icon-label">查岗</div></div>'+
+          '<div class="card-icon-item" id="cardIcon2"><div class="card-icon-img"><img src="'+App.escAttr(icon2)+'" onerror="imgFallback(this)"></div><div class="card-icon-label">论坛</div></div>'+
+        '</div>'+
         '<div class="bx-w" id="bx-1" data-side="right">'+
           '<div class="bx-cw"><div class="bx-cd">'+
             '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
@@ -118,6 +122,7 @@ var Cards={
     Cards.bindSearchDrag();
     Cards.applyColors();
     Cards.applySBColors();
+    Cards.bindIconsDragAndUpload();
   },
 
   bindSearchUpload:function(){
@@ -207,12 +212,12 @@ var Cards={
     });
   },
 
-    openSearchEdit:function(anchorEl){
+  openSearchEdit:function(anchorEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
-    var sbSnapshot = JSON.parse(JSON.stringify(Cards._sbData));
-    var sb = JSON.parse(JSON.stringify(Cards._sbData));
-    var tempAv1 = null, av1Changed = false;
-    var tempAv2 = null, av2Changed = false;
+    var sbSnapshot=JSON.parse(JSON.stringify(Cards._sbData));
+    var sb=JSON.parse(JSON.stringify(Cards._sbData));
+    var tempAv1=null,av1Changed=false;
+    var tempAv2=null,av2Changed=false;
 
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
@@ -258,30 +263,28 @@ var Cards={
 
     Cards._bindPanelDrag(panel,'#sbDragHandle');
 
-    function closeAndRevert() {
-      Cards._sbData = sbSnapshot; Cards.applySBColors(); overlay.remove();
-    }
-    panel.querySelector('#sbCloseBtnTop').addEventListener('click', function(e){ e.stopPropagation(); closeAndRevert(); });
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAndRevert(); });
+    function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();overlay.remove();}
+    panel.querySelector('#sbCloseBtnTop').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closeAndRevert();});
 
-    function handleAv(which, act) {
-      if (act === 'del') {
-        if (which === 1) { tempAv1 = ''; av1Changed = true; } else { tempAv2 = ''; av2Changed = true; }
+    function handleAv(which,act){
+      if(act==='del'){
+        if(which===1){tempAv1='';av1Changed=true;}else{tempAv2='';av2Changed=true;}
         App.showToast('头像已清除，点保存生效');
-      } else if (act === 'url') {
-        var url = prompt('输入头像URL：');
-        if (url !== null) {
-          if (which === 1) { tempAv1 = url.trim(); av1Changed = true; } else { tempAv2 = url.trim(); av2Changed = true; }
+      }else if(act==='url'){
+        var url=prompt('输入头像URL：');
+        if(url!==null){
+          if(which===1){tempAv1=url.trim();av1Changed=true;}else{tempAv2=url.trim();av2Changed=true;}
           App.showToast('头像已暂存，点保存生效');
         }
-      } else if (act === 'upload') {
-        var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
-        input.onchange = function(e){
-          var file = e.target.files[0]; if(!file) return;
-          var reader = new FileReader();
-          reader.onload = function(r){
-            if(App.cropImage){ App.cropImage(r.target.result, function(c){ if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;} App.showToast('头像已暂存，点保存生效'); }); }
-            else{ Cards._compressAvatar(r.target.result, function(c){ if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;} App.showToast('头像已暂存，点保存生效'); }); }
+      }else if(act==='upload'){
+        var input=document.createElement('input');input.type='file';input.accept='image/*';
+        input.onchange=function(e){
+          var file=e.target.files[0];if(!file)return;
+          var reader=new FileReader();
+          reader.onload=function(r){
+            if(App.cropImage){App.cropImage(r.target.result,function(c){if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;}App.showToast('头像已暂存，点保存生效');});}
+            else{Cards._compressAvatar(r.target.result,function(c){if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;}App.showToast('头像已暂存，点保存生效');});}
           };
           reader.readAsDataURL(file);
         };
@@ -309,24 +312,24 @@ var Cards={
 
     panel.querySelector('#sbResetBtn').addEventListener('click',function(e){
       e.stopPropagation();
-      sb.border='#adcdea'; sb.shadow='rgba(173,205,234,0.9)'; sb.textC='#adcdea';
+      sb.border='#adcdea';sb.shadow='rgba(173,205,234,0.9)';sb.textC='#adcdea';
       panel.querySelector('#sbDotBorder').style.background=sb.border;
       panel.querySelector('#sbDotShadow').style.background=sb.shadow;
       panel.querySelector('#sbDotText').style.background=sb.textC;
-      Cards._sbData=sb; Cards.applySBColors(); App.showToast('已重置');
+      Cards._sbData=sb;Cards.applySBColors();App.showToast('已重置');
     });
 
     panel.querySelector('#sbSaveBtn').addEventListener('click',function(e){
       e.stopPropagation();
-      if (av1Changed) {
-        if (tempAv1) Cards._setSearchAvatar(tempAv1, 'avatarPreview1', 'avatar_search1');
-        else Cards._clearSearchAvatar('avatarPreview1', 'avatar_search1');
+      if(av1Changed){
+        if(tempAv1)Cards._setSearchAvatar(tempAv1,'avatarPreview1','avatar_search1');
+        else Cards._clearSearchAvatar('avatarPreview1','avatar_search1');
       }
-      if (av2Changed) {
-        if (tempAv2) Cards._setSearchAvatar(tempAv2, 'avatarPreview2', 'avatar_search2');
-        else Cards._clearSearchAvatar('avatarPreview2', 'avatar_search2');
+      if(av2Changed){
+        if(tempAv2)Cards._setSearchAvatar(tempAv2,'avatarPreview2','avatar_search2');
+        else Cards._clearSearchAvatar('avatarPreview2','avatar_search2');
       }
-      Cards._sbData = sb; Cards.saveSB(); overlay.remove(); App.showToast('已保存');
+      Cards._sbData=sb;Cards.saveSB();overlay.remove();App.showToast('已保存');
     });
   },
 
@@ -340,7 +343,7 @@ var Cards={
   },
 
   applyDragOffsets:function(){
-    ['bx-1','bx-2'].forEach(function(id){
+    ['bx-1','bx-2','cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var off=Cards._dragOffsets[id];
       if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
@@ -377,10 +380,73 @@ var Cards={
 
   resetAllPositions:function(){
     Cards._dragOffsets={};Cards.saveDrag();
-    ['bx-1','bx-2','searchWrap1','searchWrap2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
+    ['bx-1','bx-2','searchWrap1','searchWrap2','cardIcon1','cardIcon2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
   },
 
-  /* ★ 竖版全览编辑弹窗 (上下排布，无切换) */
+  bindIconsDragAndUpload:function(){
+    ['cardIcon1','cardIcon2'].forEach(function(id){
+      var el=App.$('#'+id);if(!el)return;
+      var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
+      var lastTap=0;
+
+      el.addEventListener('touchstart',function(e){
+        var now=Date.now();
+        if(now-lastTap<300){
+          clearTimeout(timer);e.preventDefault();
+          triggerUpload(id);lastTap=0;return;
+        }
+        lastTap=now;
+        var t=e.touches[0];startX=t.clientX;startY=t.clientY;
+        longPressed=false;moved=false;
+        timer=setTimeout(function(){
+          longPressed=true;
+          var off=Cards._dragOffsets[id]||{x:0,y:0};
+          startOX=off.x;startOY=off.y;
+          el.style.transition='none';el.style.opacity='0.85';el.style.zIndex='999';
+          if(navigator.vibrate)navigator.vibrate(15);
+        },DRAG_DELAY);
+      },{passive:false});
+
+      el.addEventListener('touchmove',function(e){
+        var t=e.touches[0];
+        if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
+        if(!longPressed)return;
+        moved=true;e.preventDefault();e.stopPropagation();
+        var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
+        el.style.transform='translate('+nx+'px,'+ny+'px)';
+        Cards._dragOffsets[id]={x:nx,y:ny};
+      },{passive:false});
+
+      el.addEventListener('touchend',function(e){
+        clearTimeout(timer);timer=null;
+        el.style.opacity='';el.style.transition='';el.style.zIndex='';
+        if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
+        longPressed=false;moved=false;
+      });
+    });
+
+    function triggerUpload(id){
+      var input=document.createElement('input');input.type='file';input.accept='image/*';
+      input.onchange=function(e){
+        var file=e.target.files[0];if(!file)return;
+        var reader=new FileReader();
+        reader.onload=function(ev){
+          var processImage=function(src){
+            var lsKey=id==='cardIcon1'?'customIcon_cg':'customIcon_lt';
+            App.LS.set(lsKey,src);
+            var imgEl=App.$('#'+id+' img');
+            if(imgEl)imgEl.src=src;
+            App.showToast('图标已更换');
+          };
+          if(App.cropImage){App.cropImage(ev.target.result,function(c){Cards._compressAvatar(c,processImage);});}
+          else{Cards._compressAvatar(ev.target.result,processImage);}
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+  },
+
   openEdit:function(side,cardEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
 
@@ -392,7 +458,7 @@ var Cards={
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
 
-        var paletteItems=[
+    var paletteItems=[
       {key:'bg',label:'卡片底色',value:col.bg},
       {key:'border',label:'外框颜色',value:col.border},
       {key:'tagBg',label:'标签1底',value:col.tagBg},
@@ -409,7 +475,7 @@ var Cards={
     panel.innerHTML=
       '<div class="pc-header">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>'+
       '<div class="pc-body">'+
-      '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">'+
+        '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">'+
           '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">上传</button>'+
           '<button class="pc-btn pc-btn-cancel" id="pcUrlBtn" type="button" style="padding:8px;font-size:12px;">URL</button>'+
           '<div class="pc-icon-btn danger" id="pcDelAvatar" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
@@ -429,7 +495,6 @@ var Cards={
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    /* 定位居中一点 */
     if(cardEl){
       var rect=cardEl.getBoundingClientRect();
       var left=rect.left+rect.width/2-150;var top=rect.bottom+8;
@@ -438,7 +503,6 @@ var Cards={
       panel.style.left=left+'px';panel.style.top=top+'px';
     }
 
-    /* ★ 拖拽：整个卡片都是把手 */
     Cards._bindPanelDrag(panel);
 
     /* 颜色点 */
@@ -454,7 +518,7 @@ var Cards={
     var bwSlider=panel.querySelector('#pcBorderW');var bwVal=panel.querySelector('#pcBorderWVal');
     if(bwSlider)bwSlider.addEventListener('input',function(){col.borderW=parseFloat(this.value);bwVal.textContent=col.borderW+'px';Cards.data[side].colors=col;Cards.applyColors();});
 
-    /* ★ 重置按钮：恢复默认颜色 */
+    /* 重置按钮 */
     panel.querySelector('#pcResetColors').addEventListener('click',function(e){
       e.stopPropagation();var defCol=side==='left'?DEF_COLORS_L:DEF_COLORS_R;
       col=JSON.parse(JSON.stringify(defCol));
@@ -463,41 +527,41 @@ var Cards={
       Cards.data[side].colors=col;Cards.applyColors();App.showToast('已重置默认配色');
     });
 
-        /* 头像按钮事件 */
-    var tempAvatar = d.avatar || '';
+    /* 头像按钮事件 */
+    var tempAvatar=d.avatar||'';
 
-    var uploadBtn = panel.querySelector('#pcUploadBtn');
-    if(uploadBtn) uploadBtn.addEventListener('click', function(e){
+    var uploadBtn=panel.querySelector('#pcUploadBtn');
+    if(uploadBtn)uploadBtn.addEventListener('click',function(e){
       e.stopPropagation();
-      var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
-      input.onchange = function(ev){
-        var file = ev.target.files[0]; if(!file) return;
-        var reader = new FileReader();
-        reader.onload = function(r){
-          if(App.cropImage){ App.cropImage(r.target.result, function(c){ tempAvatar = c; App.showToast('头像已暂存，点保存生效'); }); }
-          else{ Cards._compressAvatar(r.target.result, function(c){ tempAvatar = c; App.showToast('头像已暂存，点保存生效'); }); }
+      var input=document.createElement('input');input.type='file';input.accept='image/*';
+      input.onchange=function(ev){
+        var file=ev.target.files[0];if(!file)return;
+        var reader=new FileReader();
+        reader.onload=function(r){
+          if(App.cropImage){App.cropImage(r.target.result,function(c){tempAvatar=c;App.showToast('头像已暂存，点保存生效');});}
+          else{Cards._compressAvatar(r.target.result,function(c){tempAvatar=c;App.showToast('头像已暂存，点保存生效');});}
         };
         reader.readAsDataURL(file);
       };
       input.click();
     });
 
-    var urlBtn = panel.querySelector('#pcUrlBtn');
-    if(urlBtn) urlBtn.addEventListener('click', function(e){
+    var urlBtn=panel.querySelector('#pcUrlBtn');
+    if(urlBtn)urlBtn.addEventListener('click',function(e){
       e.stopPropagation();
-      var url = prompt('输入头像URL：', tempAvatar);
-      if(url !== null){ tempAvatar = url.trim(); App.showToast('头像已暂存，点保存生效'); }
+      var url=prompt('输入头像URL：',tempAvatar);
+      if(url!==null){tempAvatar=url.trim();App.showToast('头像已暂存，点保存生效');}
     });
 
-    var delBtn = panel.querySelector('#pcDelAvatar');
-    if(delBtn) delBtn.addEventListener('click', function(e){
-      e.stopPropagation(); tempAvatar = ''; App.showToast('头像已清除，点保存生效');
+    var delBtn=panel.querySelector('#pcDelAvatar');
+    if(delBtn)delBtn.addEventListener('click',function(e){
+      e.stopPropagation();tempAvatar='';App.showToast('头像已清除，点保存生效');
     });
 
-    /* ★ 保存 */
+    /* 保存 */
     panel.querySelector('#pcSaveBtn').addEventListener('click',function(){
       Cards.data[side]={
-        avatar: tempAvatar,
+        avatar:tempAvatar,
         name:((panel.querySelector('#pcName')||{}).value||'').trim(),
         sub:((panel.querySelector('#pcSub')||{}).value||'').trim(),
         tag1:((panel.querySelector('#pcTag1')||{}).value||'').trim(),
@@ -507,7 +571,7 @@ var Cards={
       Cards.save();Cards.render();overlay.remove();App.showToast('已保存');
     });
 
-    /* ★ × 关闭按钮：取消更改 */
+    /* × 关闭按钮：取消更改 */
     panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){
       e.stopPropagation();
       Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();
@@ -519,8 +583,6 @@ var Cards={
     });
   },
 
-  /* ★ 面板拖拽：把手为自身 */
-  /* ★ 面板拖拽：微延迟防误触 (约0.15秒) */
   _bindPanelDrag:function(panel){
     if(!panel)return;
     var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
@@ -529,51 +591,31 @@ var Cards={
 
     panel.addEventListener('touchstart',function(e){
       if(e.target.closest('button')||e.target.closest('input')||e.target.closest('label')||e.target.closest('.pc-dot')||e.target.closest('.pc-icon-btn')||e.target.closest('.pc-close-btn')||e.target.closest('.pc-slider'))return;
-      
       var t=e.touches[0];
-      _drag.sx=t.clientX;
-      _drag.sy=t.clientY;
+      _drag.sx=t.clientX;_drag.sy=t.clientY;
       pressed=false;
-      
-      /* 仅仅停顿 150毫秒 (0.15秒) 就判定为拖动 */
       timer=setTimeout(function(){
         pressed=true;
         var pr=panel.getBoundingClientRect();
         panel.style.transform='none';
-        panel.style.left=pr.left+'px';
-        panel.style.top=pr.top+'px';
-        _drag.ox=pr.left;
-        _drag.oy=pr.top;
-        _drag.active=true;
-      }, 150);
+        panel.style.left=pr.left+'px';panel.style.top=pr.top+'px';
+        _drag.ox=pr.left;_drag.oy=pr.top;_drag.active=true;
+      },150);
     },{passive:true});
 
     var mh=function(e){
       var t=e.touches[0];
-      
-      /* 如果在 150毫秒 内手指滑动超过 8px，说明用户是在快速滚动内容，直接取消拖拽判定 */
-      if(timer && !pressed){
-        if(Math.abs(t.clientX-_drag.sx)>8 || Math.abs(t.clientY-_drag.sy)>8){
-          clearTimeout(timer);
-          timer=null;
-        }
+      if(timer&&!pressed){
+        if(Math.abs(t.clientX-_drag.sx)>8||Math.abs(t.clientY-_drag.sy)>8){clearTimeout(timer);timer=null;}
         return;
       }
-      
-      /* 超过 150毫秒 且激活了拖拽，就跟着手指走 */
       if(!_drag.active)return;
       e.preventDefault();
       panel.style.left=(_drag.ox+t.clientX-_drag.sx)+'px';
       panel.style.top=(_drag.oy+t.clientY-_drag.sy)+'px';
     };
 
-    var eh=function(){
-      clearTimeout(timer);
-      timer=null;
-      _drag.active=false;
-      pressed=false;
-    };
-
+    var eh=function(){clearTimeout(timer);timer=null;_drag.active=false;pressed=false;};
     document.addEventListener('touchmove',mh,{passive:false});
     document.addEventListener('touchend',eh);
   },
