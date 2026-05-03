@@ -886,3 +886,21 @@ input[type="range"]::-webkit-slider-thumb:active {
   background: #f0f6fb; /* 变一点点浅蓝底色 */
 }
 
+/* =========================
+   ★ 全局可拖拽组件防误触护城河
+========================= */
+.floating-ball,       
+.bx-w,                
+.search-wrapper,      
+.card-icon-item,      
+.eden-card,           
+#wtCard,              
+.pc-header,           
+.cp-header,           
+#wsConsoleHeader,
+.desktop-icon {       /* ★ 补上底部栏图标 */
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
