@@ -175,8 +175,8 @@
 
 .sticker-text-en {
   font-family: inherit;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 400;
   color: #1a1a1a;
   text-align: center;
   line-height: 1.6;
@@ -195,6 +195,11 @@
 
 .sticker-en-letter {
   font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+}
+
+.sticker-num {
+  font-size: 0.82em;
 }
 
 .sticker-text-zh {
