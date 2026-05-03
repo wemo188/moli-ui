@@ -138,7 +138,7 @@
 .sticker-wrap {
   position: relative;
   width: 230px;
-  min-height: 230px;
+  height: 230px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -154,15 +154,21 @@
   flex-direction: column; 
   align-items: center; 
   justify-content: center; 
-  padding: 24px 16px 36px; /* 恢复原生内边距 */
+  /* 极致压榨上下空间：上16 左右12 下28 */
+  padding: 16px 12px 28px; 
   cursor: pointer; 
   user-select: none; 
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3)); 
 }
 
 .sticker-paper::before { content: ''; position: absolute; inset: -3px; background: #fff; z-index: -1; mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E"); -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E"); mask-size: cover; -webkit-mask-size: cover; }
-.sticker-paper::after { top: 12px; left: 12px; right: 12px; bottom: 12px; }
-.paper-lines { top: 12px; left: 12px; right: 12px; bottom: 12px; }
+
+/* 恢复了 border 属性的完整代码，并且向外扩张到 10px */
+.sticker-paper::after { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 1px; pointer-events: none; }
+
+/* 恢复了 background 属性的完整代码，并且向外扩张到 10px */
+.paper-lines { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; pointer-events: none; z-index: 0; background: repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(0,0,0,0.06) 31px, rgba(0,0,0,0.06) 32px); }
+
 .tape { position: absolute; top: -20px; left: 35px; width: 70px; height: 35px; z-index: 10; }
 .tape-body { position: relative; width: 100%; height: 100%; background: #1e3c6e; }
 .tape-tear-l { position: absolute; left: -5px; top: 0; bottom: 0; width: 6px; background: #1e3c6e; clip-path: polygon(100% 0%, 30% 0%, 70% 8%, 20% 14%, 60% 22%, 10% 28%, 50% 36%, 25% 42%, 65% 50%, 15% 58%, 55% 64%, 30% 72%, 70% 78%, 20% 86%, 60% 92%, 40% 100%, 100% 100%); }
@@ -185,9 +191,9 @@
   z-index: 1;
   word-break: break-word;
   overflow-wrap: break-word;
-  max-height: 165px; /* ← 关键：从 130 扩大到 165 */
+  max-height: 175px; /* 把可用高度拉满 */
   width: 100%;
-  padding: 0 8px;
+  padding: 0 4px;
   box-sizing: border-box;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -198,6 +204,7 @@
 .sticker-en-letter {
   font-family: 'Dancing Script', cursive;
   font-weight: 800;
+  font-size: 1.15em;
 }
 
 .sticker-num {
@@ -206,7 +213,7 @@
 
 .sticker-text-zh {
   position: absolute;
-  top: 12px; left: 12px; right: 12px; bottom: 12px; /* ← 贴合虚线框 */
+  top: 10px; left: 10px; right: 10px; bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,7 +221,7 @@
   font-size: 15px;
   font-weight: 500;
   color: #1a1a1a;
-  background: rgba(255,255,255,0.5); /* 背景稍微加深一点点，防止透字 */
+  background: rgba(255,255,255,0.6);
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
@@ -231,10 +238,13 @@
 .sticker-paper.show-zh .sticker-text-en { opacity: 0.1; }
 .sticker-paper.show-zh .sticker-text-zh { opacity: 1; pointer-events: auto; }
 .sticker-time { font-size: 10px; color: #ccc; margin-top: 4px; position: relative; z-index: 1; }
-.sticker-pager { position: absolute; bottom: 16px; right: 16px; display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; z-index: 6; }
+
+/* 页码贴到底角 */
+.sticker-pager { position: absolute; bottom: 12px; right: 12px; display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; z-index: 6; }
 .sticker-pager:active { opacity: 0.5; }
 .sticker-spade { font-size: 18px; color: #1a1a1a; line-height: 1; }
 .sticker-page-num { font-size: 9px; color: #aaa; font-weight: 500; }
+
 .sticker-actions { display: flex; justify-content: center; gap: 20px; margin-top: 16px; }
 .sticker-action-btn { display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 500; font-family: inherit; transition: opacity 0.15s; }
 .sticker-action-btn:active { opacity: 0.6; }
