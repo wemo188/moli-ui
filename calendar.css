@@ -186,6 +186,9 @@
   z-index: 1;
   word-break: break-word;
   overflow-wrap: break-word;
+  max-height: 130px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   max-width: 100%;
 }
 
@@ -193,7 +196,7 @@
   position: absolute;
   top: 18px; left: 18px; right: 18px; bottom: 18px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 20px;
   font-size: 15px;
