@@ -330,10 +330,6 @@ var Cards={
     });
   },
 
-    panel.querySelector('#sbCloseBtn').addEventListener('click',function(){overlay.remove();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-  },
-
   bindEdit:function(){
     document.querySelectorAll('#cardRow .bx-w').forEach(function(card){
       var nameBar=card.querySelector('.bx-name-bar');
