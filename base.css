@@ -67,6 +67,24 @@ body {
 }
 
 /* =========================
+   ★ 全局可拖拽组件防误触/防选词护城河
+========================= */
+.floating-ball,       /* 悬浮球 */
+.bx-w,                /* 左右角色卡 */
+.search-wrapper,      /* 对话框 */
+.card-icon-item,      /* 查岗/论坛图标 */
+.eden-card,           /* 文字卡片 */
+#wtCard,              /* 时间天气卡片 */
+.pc-header,           /* 各类弹窗的拖拽头部 */
+.cp-header,           /* 调色盘的拖拽头部 */
+#wsConsoleHeader {    /* 控制台拖拽头部 */
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+/* =========================
    悬浮球
 ========================= */
 .floating-ball {
