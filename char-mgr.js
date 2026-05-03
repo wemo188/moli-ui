@@ -38,6 +38,7 @@
     momentsImg: 'AI 生成',
     timeWeather: true,
     charCity: '',
+    charRealCity: '',
     imgApiUrl: '',
     imgApiKey: '',
     imgModel: 'dall-e-3',
@@ -319,11 +320,12 @@
 
           '<!-- CARD 4 · 情境感知 -->' +
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-red">情境感知</div></div><div class="cm-section-body">' +
-            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
-            '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
-              '<div class="cm-field"><div class="cm-field-label">角色所在城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="如：东京、首尔..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
-              '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">设置不同城市后，角色会感知两地时差和天气差异。</div></div>' +
-            '</div>' +
+          '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
+          '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
+          '<div class="cm-field"><div class="cm-field-label">角色真实城市（获取天气数据）</div><input type="text" class="cm-field-input" id="cmCharRealCity" placeholder="如：Tokyo、Seoul..." value="' + App.escAttr(cfg.charRealCity||'') + '"></div>' +
+          '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">角色虚拟城市（发给AI的地名）</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="留空则用真实城市名..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
+          '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">真实城市用于获取实际天气数据。虚拟城市是AI看到的地名（如"长安""霍格沃茨"）。留空虚拟城市则直接用真实城市名。</div></div>' +
+          '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           '<!-- CARD 5 · 高级设定 -->' +
@@ -403,6 +405,7 @@
         momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'),
         charCity: gv('cmCharCity'),
+        charRealCity: gv('cmCharRealCity'),
         imgApiUrl: gv('cmImgApiUrl'),
         imgApiKey: gv('cmImgApiKey'),
         imgModel: gv('cmImgModel') || 'dall-e-3',
