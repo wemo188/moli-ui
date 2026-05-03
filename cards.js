@@ -388,21 +388,14 @@ var Cards={
     ['bx-1','bx-2','searchWrap1','searchWrap2','cardIcon1','cardIcon2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
   },
 
-    bindIconsDragAndUpload:function(){
+      bindIconsDragAndUpload:function(){
     if(this._iconsBound)return; this._iconsBound=true;
     ['cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
-      var lastTap=0;
-
+      
       el.addEventListener('touchstart',function(e){
-        e.preventDefault(); // ★ 封死系统菜单，保证双击流畅
-        var now=Date.now();
-        if(now-lastTap<300){
-          clearTimeout(timer);
-          triggerUpload(id);lastTap=0;return;
-        }
-        lastTap=now;
+        e.preventDefault(); 
         var t=e.touches[0];startX=t.clientX;startY=t.clientY;
         longPressed=false;moved=false;
         timer=setTimeout(function(){
@@ -421,7 +414,6 @@ var Cards={
         moved=true;e.preventDefault();e.stopPropagation();
         var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
 
-        /* 磁吸对齐魔法：定位平行 */
         var otherId = (id === 'cardIcon1') ? 'cardIcon2' : 'cardIcon1';
         var otherOff = Cards._dragOffsets[otherId] || {x:0, y:0};
         if (Math.abs(ny - otherOff.y) < 15) { ny = otherOff.y; }
@@ -437,28 +429,8 @@ var Cards={
         longPressed=false;moved=false;
       });
     });
-
-    function triggerUpload(id){
-      var input=document.createElement('input');input.type='file';input.accept='image/*';
-      input.onchange=function(e){
-        var file=e.target.files[0];if(!file)return;
-        var reader=new FileReader();
-        reader.onload=function(ev){
-          var processImage=function(src){
-            var lsKey=id==='cardIcon1'?'customIcon_cg':'customIcon_lt';
-            App.LS.set(lsKey,src);
-            var imgEl=App.$('#'+id+' img');
-            if(imgEl)imgEl.src=src;
-            App.showToast('图标已更换');
-          };
-          if(App.cropImage){App.cropImage(ev.target.result,function(c){Cards._compressAvatar(c,processImage);});}
-          else{Cards._compressAvatar(ev.target.result,processImage);}
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    }
   },
+  
   openEdit:function(side,cardEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
 
