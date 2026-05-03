@@ -227,7 +227,7 @@ body {
   align-items: flex-start;
   justify-content: center;
   padding: 20px 18px calc(34px + var(--safe-bottom));
-  overflow: hidden;
+  overflow: visible; /* ★ 监狱大门打开，允许组件穿越到第二页 */
 }
 
 .screen-page-inner {
