@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -69,51 +68,45 @@ var Cards={
     area.style.setProperty('--sb-text',sb.textC);
   },
 
+  /* ★ 重写：只更新内部数据，绝不摧毁你的 HTML 结构 */
   render:function(){
-    var container=App.$('#cardRow');if(!container)return;
     var L=Cards.data.left,R=Cards.data.right;
-    var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
-    var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
-    var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
-    var lName=L.name||'角色名',lSub=L.sub||DEF_SUB_L;
-    var lNameC=L.name?'':' bx-name-placeholder';
 
-    var rt1=R.tag1||'标签',rt2=R.tag2||'标签';
-    var rt1C=R.tag1?'':' bx-ribbon-placeholder',rt2C=R.tag2?'':' bx-ribbon-placeholder';
-    var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
-    var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
-    var rNameC=R.name?'':' bx-name-placeholder';
+    var bx2=App.$('#bx-2');
+    if(bx2){
+      var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
+      var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
+      var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
+      var lName=L.name||'角色名',lSub=L.sub||DEF_SUB_L;
+      var lNameC=L.name?'':' bx-name-placeholder';
+      bx2.innerHTML=
+        '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div></div>'+
+        '<div class="bx-cw"><div class="bx-cd">'+
+          '<div class="bx-av-box">'+lFront+'</div>'+
+          '<div class="bx-name-bar"><div class="bx-name'+lNameC+'">'+App.esc(lName)+'</div><div class="bx-sub">'+App.esc(lSub)+'</div></div>'+
+        '</div></div>';
+    }
 
-    var icon1=App.LS.get('customIcon_cg')||'https://iili.io/BsSI1j9.md.jpg';
-    var icon2=App.LS.get('customIcon_lt')||'https://iili.io/BQ98Pxp.md.jpg';
+    var bx1=App.$('#bx-1');
+    if(bx1){
+      var rt1=R.tag1||'标签',rt2=R.tag2||'标签';
+      var rt1C=R.tag1?'':' bx-ribbon-placeholder',rt2C=R.tag2?'':' bx-ribbon-placeholder';
+      var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div>';
+      var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
+      var rNameC=R.name?'':' bx-name-placeholder';
+      bx1.innerHTML=
+        '<div class="bx-cw"><div class="bx-cd">'+
+          '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
+          '<div class="bx-av-box">'+rFront+'</div>'+
+          '<div class="bx-name-bar"><div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div><div class="bx-sub">'+App.esc(rSub)+'</div></div>'+
+        '</div></div>';
+    }
 
-    container.innerHTML=
-      '<div class="left-area-wrapper">'+
-        '<div class="bx-w" id="bx-2" data-side="left">'+
-          '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div></div>'+
-          '<div class="bx-cw"><div class="bx-cd">'+
-            '<div class="bx-av-box">'+lFront+'</div>'+
-            '<div class="bx-name-bar"><div class="bx-name'+lNameC+'">'+App.esc(lName)+'</div><div class="bx-sub">'+App.esc(lSub)+'</div></div>'+
-          '</div></div>'+
-        '</div>'+
-        '<div class="left-search-area" id="searchArea">'+
-          '<div class="search-wrapper" id="searchWrap1"><div class="search-box"><div class="avatar-area-left" data-side="search1"><div class="avatar-preview" id="avatarPreview1"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div><input type="text" class="search-input-left" placeholder="我们相识..."></div></div>'+
-          '<div class="search-wrapper" id="searchWrap2"><div class="search-box-right"><input type="text" class="search-input-right" placeholder="已经有...天"><div class="avatar-area-right" data-side="search2"><div class="avatar-preview" id="avatarPreview2"><svg viewBox="0 0 24 24" fill="none" stroke="#adcdea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg></div></div></div></div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="card-right-area">'+
-      '<div class="card-icons-wrap">'+
-          '<div class="card-icon-item" id="cardIcon1"><div class="card-icon-img" style="background-image:url(\''+App.escAttr(icon1)+'\'); background-size:cover; background-position:center;"></div><div class="card-icon-label">查岗</div></div>'+
-          '<div class="card-icon-item" id="cardIcon2"><div class="card-icon-img" style="background-image:url(\''+App.escAttr(icon2)+'\'); background-size:cover; background-position:center;"></div><div class="card-icon-label">论坛</div></div>'+
-        '</div>'+
-        '<div class="bx-w" id="bx-1" data-side="right">'+
-          '<div class="bx-cw"><div class="bx-cd">'+
-            '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
-            '<div class="bx-av-box">'+rFront+'</div>'+
-            '<div class="bx-name-bar"><div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div><div class="bx-sub">'+App.esc(rSub)+'</div></div>'+
-          '</div></div>'+
-        '</div>'+
-      '</div>';
+    /* 注入自定义图标 */
+    var icon1=App.LS.get('customIcon_cg');
+    var icon2=App.LS.get('customIcon_lt');
+    if(icon1){ var img1=App.$('#cardIcon1 img'); if(img1) img1.src=icon1; }
+    if(icon2){ var img2=App.$('#cardIcon2 img'); if(img2) img2.src=icon2; }
 
     Cards.bindEdit();
     Cards.applyDragOffsets();
@@ -126,6 +119,7 @@ var Cards={
   },
 
   bindSearchUpload:function(){
+    if(this._searchBound)return; this._searchBound=true;
     var leftInput=document.querySelector('.search-input-left');
     var leftSaved=App.LS.get('searchText_left');
     if(leftSaved&&leftInput)leftInput.value=leftSaved;
@@ -145,7 +139,7 @@ var Cards={
     if(area2)area2.addEventListener('click',function(e){e.stopPropagation();Cards.openSearchEdit(area2);});
   },
 
-    _restoreSearchAvatar:function(previewId,storageKey){
+  _restoreSearchAvatar:function(previewId,storageKey){
     var preview=document.getElementById(previewId);if(!preview)return;
     var saved=App.LS.get(storageKey);
     if(saved){
@@ -174,6 +168,7 @@ var Cards={
   },
 
   bindSearchDrag:function(){
+    if(this._searchDragBound)return; this._searchDragBound=true;
     ['searchWrap1','searchWrap2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
@@ -208,9 +203,6 @@ var Cards={
         if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
         longPressed=false;moved=false;
       });
-
-      var off=Cards._dragOffsets[id];
-      if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
     });
   },
 
@@ -345,7 +337,7 @@ var Cards={
   },
 
   applyDragOffsets:function(){
-    ['bx-1','bx-2','cardIcon1','cardIcon2'].forEach(function(id){
+    ['bx-1','bx-2','searchWrap1','searchWrap2','cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var off=Cards._dragOffsets[id];
       if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
@@ -386,6 +378,7 @@ var Cards={
   },
 
   bindIconsDragAndUpload:function(){
+    if(this._iconsBound)return; this._iconsBound=true;
     ['cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
@@ -436,8 +429,8 @@ var Cards={
           var processImage=function(src){
             var lsKey=id==='cardIcon1'?'customIcon_cg':'customIcon_lt';
             App.LS.set(lsKey,src);
-                        var imgDiv = App.$('#' + id + ' .card-icon-img');
-            if(imgDiv) imgDiv.style.backgroundImage = 'url(' + src + ')';
+            var imgEl=App.$('#'+id+' img');
+            if(imgEl)imgEl.src=src;
             App.showToast('图标已更换');
           };
           if(App.cropImage){App.cropImage(ev.target.result,function(c){Cards._compressAvatar(c,processImage);});}
@@ -475,7 +468,7 @@ var Cards={
     }).join('');
 
     panel.innerHTML=
-      '<div class="pc-header">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>'+
+      '<div class="pc-header" id="ccDragHandle">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>'+
       '<div class="pc-body">'+
         '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">'+
           '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">上传</button>'+
@@ -505,7 +498,7 @@ var Cards={
       panel.style.left=left+'px';panel.style.top=top+'px';
     }
 
-    Cards._bindPanelDrag(panel);
+    Cards._bindPanelDrag(panel,'#ccDragHandle');
 
     /* 颜色点 */
     panel.querySelectorAll('.pc-dot').forEach(function(dot){
@@ -561,7 +554,8 @@ var Cards={
     });
 
     /* 保存 */
-    panel.querySelector('#pcSaveBtn').addEventListener('click',function(){
+    panel.querySelector('#pcSaveBtn').addEventListener('click',function(e){
+      e.stopPropagation();
       Cards.data[side]={
         avatar:tempAvatar,
         name:((panel.querySelector('#pcName')||{}).value||'').trim(),
@@ -574,24 +568,20 @@ var Cards={
     });
 
     /* × 关闭按钮：取消更改 */
-    panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){
-      e.stopPropagation();
-      Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();
-    });
-
-    /* 点击外部取消 */
-    overlay.addEventListener('click',function(e){
-      if(e.target===overlay){Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();}
-    });
+    function closeAndRevert(){Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();}
+    panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closeAndRevert();});
   },
 
-  _bindPanelDrag:function(panel){
+  _bindPanelDrag:function(panel, handleSelector){
     if(!panel)return;
     var _drag={active:false,sx:0,sy:0,ox:0,oy:0};
     var timer=null;
     var pressed=false;
 
     panel.addEventListener('touchstart',function(e){
+      // 如果指定了拖拽把手，且点击的不是把手，则忽略
+      if(handleSelector && !e.target.closest(handleSelector)) return;
       if(e.target.closest('button')||e.target.closest('input')||e.target.closest('label')||e.target.closest('.pc-dot')||e.target.closest('.pc-icon-btn')||e.target.closest('.pc-close-btn')||e.target.closest('.pc-slider'))return;
       var t=e.touches[0];
       _drag.sx=t.clientX;_drag.sy=t.clientY;
