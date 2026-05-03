@@ -199,14 +199,14 @@
 }
 
 .sticker-num {
-  font-size: 0.76em;
+  font-size: 0.82em;
 }
 
 .sticker-text-zh {
   position: absolute;
   top: 18px; left: 18px; right: 18px; bottom: 18px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 20px;
   font-size: 15px;
@@ -224,6 +224,7 @@
   word-break: break-word;
   scrollbar-width: none;
 }
+
 .sticker-text-zh::-webkit-scrollbar { display: none; }
 
 .sticker-paper.show-zh .sticker-text-en { opacity: 0.1; }
