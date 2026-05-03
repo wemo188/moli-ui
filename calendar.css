@@ -136,8 +136,31 @@
 .cal-empty { text-align: center; color: #ccc; font-size: 13px; padding: 50px 20px; }
 
 /* ====== 贴纸 ====== */
-.sticker-wrap { position: relative; width: 230px; height: 230px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
-.sticker-paper { width: 230px; height: 230px; background: #fff; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px 44px; cursor: pointer; user-select: none; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3)); }
+.sticker-wrap {
+  position: relative;
+  width: 230px;
+  min-height: 230px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticker-paper {
+  width: 230px;
+  min-height: 230px;
+  background: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 44px;
+  cursor: pointer;
+  user-select: none;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3));
+}
+
 .sticker-paper::before { content: ''; position: absolute; inset: -3px; background: #fff; z-index: -1; mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E"); -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.04' numOctaves='5' seed='2'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23t)' fill='white'/%3E%3C/svg%3E"); mask-size: cover; -webkit-mask-size: cover; }
 .sticker-paper::after { content: ''; position: absolute; top: 18px; left: 18px; right: 18px; bottom: 18px; border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 1px; pointer-events: none; }
 .paper-lines { position: absolute; top: 18px; left: 18px; right: 18px; bottom: 18px; pointer-events: none; z-index: 0; background: repeating-linear-gradient(180deg, transparent, transparent 31px, rgba(0,0,0,0.06) 31px, rgba(0,0,0,0.06) 32px); }
@@ -150,8 +173,44 @@
 .torn-bottom { bottom: -4px; left: 0; right: 0; height: 6px; clip-path: polygon(0% 0%, 0% 60%, 2% 30%, 4% 70%, 6% 40%, 8% 75%, 10% 45%, 12% 65%, 14% 35%, 16% 75%, 18% 50%, 20% 70%, 22% 30%, 24% 80%, 26% 45%, 28% 60%, 30% 35%, 32% 80%, 34% 50%, 36% 65%, 38% 40%, 40% 75%, 42% 45%, 44% 70%, 46% 30%, 48% 80%, 50% 50%, 52% 65%, 54% 35%, 56% 75%, 58% 45%, 60% 60%, 62% 40%, 64% 80%, 66% 50%, 68% 65%, 70% 35%, 72% 75%, 74% 45%, 76% 70%, 78% 30%, 80% 80%, 82% 50%, 84% 60%, 86% 35%, 88% 75%, 90% 45%, 92% 65%, 94% 40%, 96% 80%, 98% 50%, 100% 65%, 100% 0%); }
 .torn-left { top: 0; left: -4px; bottom: 0; width: 6px; clip-path: polygon(100% 0%, 40% 0%, 70% 2%, 30% 4%, 60% 6%, 20% 8%, 55% 10%, 35% 12%, 65% 14%, 25% 16%, 50% 18%, 30% 20%, 70% 22%, 20% 24%, 55% 26%, 40% 28%, 65% 30%, 15% 32%, 50% 34%, 35% 36%, 60% 38%, 25% 40%, 55% 42%, 30% 44%, 70% 46%, 20% 48%, 50% 50%, 35% 52%, 65% 54%, 25% 56%, 55% 58%, 40% 60%, 60% 62%, 20% 64%, 50% 66%, 35% 68%, 65% 70%, 25% 72%, 55% 74%, 30% 76%, 70% 78%, 20% 80%, 50% 82%, 40% 84%, 65% 86%, 25% 88%, 55% 90%, 35% 92%, 60% 94%, 20% 96%, 50% 98%, 35% 100%, 100% 100%); }
 .torn-right { top: 0; right: -4px; bottom: 0; width: 6px; clip-path: polygon(0% 0%, 60% 0%, 30% 2%, 70% 4%, 40% 6%, 80% 8%, 45% 10%, 65% 12%, 35% 14%, 75% 16%, 50% 18%, 70% 20%, 30% 22%, 80% 24%, 45% 26%, 60% 28%, 35% 30%, 85% 32%, 50% 34%, 65% 36%, 40% 38%, 75% 40%, 45% 42%, 70% 44%, 30% 46%, 80% 48%, 50% 50%, 65% 52%, 35% 54%, 75% 56%, 45% 58%, 60% 60%, 40% 62%, 80% 64%, 50% 66%, 65% 68%, 35% 70%, 75% 72%, 45% 74%, 70% 76%, 30% 78%, 80% 80%, 50% 82%, 60% 84%, 35% 86%, 75% 88%, 45% 90%, 65% 92%, 40% 94%, 80% 96%, 50% 98%, 65% 100%, 0% 100%); }
-.sticker-text-en { font-family: 'Dancing Script', cursive; font-size: 20px; font-weight: 600; color: #1a1a1a; text-align: center; line-height: 1.4; transition: opacity 0.3s; position: relative; z-index: 1; }
-.sticker-text-zh { position: absolute; top: 18px; left: 18px; right: 18px; bottom: 18px; display: flex; align-items: center; justify-content: center; padding: 20px; font-size: 15px; font-weight: 500; color: #1a1a1a; background: rgba(255,255,255,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; line-height: 1.6; z-index: 5; }
+
+.sticker-text-en {
+  font-family: 'Dancing Script', cursive;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.4;
+  transition: opacity 0.3s;
+  position: relative;
+  z-index: 1;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.sticker-text-zh {
+  position: absolute;
+  top: 18px; left: 18px; right: 18px; bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: rgba(255,255,255,0.3);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.6;
+  z-index: 5;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  word-break: break-word;
+}
+
 .sticker-paper.show-zh .sticker-text-en { opacity: 0.1; }
 .sticker-paper.show-zh .sticker-text-zh { opacity: 1; pointer-events: auto; }
 .sticker-time { font-size: 10px; color: #ccc; margin-top: 8px; position: relative; z-index: 1; }
