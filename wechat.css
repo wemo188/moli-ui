@@ -20,7 +20,7 @@
 /* ====== 手机框 ====== */
 .wx-phone {
   position: relative;
-  width: 100%;
+  width: calc(100% - 10px)
   max-width: 100%;
   margin: 10px auto;
   margin-bottom: calc(45px + env(safe-area-inset-bottom, 20px));
