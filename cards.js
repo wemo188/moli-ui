@@ -388,7 +388,7 @@ var Cards={
     ['bx-1','bx-2','searchWrap1','searchWrap2','cardIcon1','cardIcon2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
   },
 
-  bindIconsDragAndUpload:function(){
+    bindIconsDragAndUpload:function(){
     if(this._iconsBound)return; this._iconsBound=true;
     ['cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
@@ -396,9 +396,10 @@ var Cards={
       var lastTap=0;
 
       el.addEventListener('touchstart',function(e){
+        e.preventDefault(); // ★ 封死系统菜单，保证双击流畅
         var now=Date.now();
         if(now-lastTap<300){
-          clearTimeout(timer);e.preventDefault();
+          clearTimeout(timer);
           triggerUpload(id);lastTap=0;return;
         }
         lastTap=now;
@@ -419,6 +420,12 @@ var Cards={
         if(!longPressed)return;
         moved=true;e.preventDefault();e.stopPropagation();
         var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
+
+        /* 磁吸对齐魔法：定位平行 */
+        var otherId = (id === 'cardIcon1') ? 'cardIcon2' : 'cardIcon1';
+        var otherOff = Cards._dragOffsets[otherId] || {x:0, y:0};
+        if (Math.abs(ny - otherOff.y) < 15) { ny = otherOff.y; }
+
         el.style.transform='translate('+nx+'px,'+ny+'px)';
         Cards._dragOffsets[id]={x:nx,y:ny};
       },{passive:false});
@@ -452,7 +459,6 @@ var Cards={
       input.click();
     }
   },
-
   openEdit:function(side,cardEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
 
