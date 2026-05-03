@@ -207,16 +207,19 @@ var Cards={
     });
   },
 
-  openSearchEdit:function(anchorEl){
+    openSearchEdit:function(anchorEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
-    var sb=Cards._sbData;
+    var sbSnapshot = JSON.parse(JSON.stringify(Cards._sbData));
+    var sb = JSON.parse(JSON.stringify(Cards._sbData));
+    var tempAv1 = null, av1Changed = false;
+    var tempAv2 = null, av2Changed = false;
 
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
-    panel.style.width='280px';panel.style.height='auto'; /* 对话框小一点 */
+    panel.style.width='280px';panel.style.height='auto';
 
     panel.innerHTML=
-      '<div class="pc-header" id="sbDragHandle">对话框设置</div>'+
+      '<div class="pc-header" id="sbDragHandle">对话框设置<div class="pc-close-btn" id="sbCloseBtnTop">×</div></div>'+
       '<div class="pc-body" style="flex-direction:column;gap:12px;">'+
         '<div class="pc-group"><span class="pc-label">上方头像</span><div class="pc-av-row">'+
           '<button class="pc-btn pc-btn-save" id="sbUpload1" type="button" style="padding:8px;font-size:12px;">上传</button>'+
@@ -235,10 +238,12 @@ var Cards={
             '<div class="pc-palette-item"><div class="pc-dot" id="sbDotShadow" style="background:'+sb.shadow+';"></div><span class="pc-dot-lbl">阴影</span></div>'+
             '<div class="pc-palette-item"><div class="pc-dot" id="sbDotText" style="background:'+sb.textC+';"></div><span class="pc-dot-lbl">字体</span></div>'+
           '</div>'+
-          '<button class="pc-reset-btn" id="sbResetColors" type="button">重置颜色</button>'+
         '</div>'+
       '</div>'+
-      '<div class="pc-footer"><button class="pc-btn pc-btn-cancel" id="sbCloseBtn" type="button" style="flex:1;">关闭</button></div>';
+      '<div class="pc-footer">'+
+        '<button class="pc-btn pc-btn-save" id="sbSaveBtn" type="button">保 存</button>'+
+        '<button class="pc-btn pc-btn-cancel" id="sbResetBtn" type="button">重 置</button>'+
+      '</div>';
 
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
@@ -253,41 +258,48 @@ var Cards={
 
     Cards._bindPanelDrag(panel,'#sbDragHandle');
 
-    function uploadAvatar(which){
-      var previewId=which===1?'avatarPreview1':'avatarPreview2';
-      var storageKey=which===1?'avatar_search1':'avatar_search2';
-      var input=document.createElement('input');input.type='file';input.accept='image/*';
-      input.onchange=function(e){
-        var file=e.target.files[0];if(!file)return;
-        var reader=new FileReader();
-        reader.onload=function(r){
-          if(App.cropImage){App.cropImage(r.target.result,function(cropped){Cards._setSearchAvatar(cropped,previewId,storageKey);});}
-          else{Cards._setSearchAvatar(r.target.result,previewId,storageKey);}
+    function closeAndRevert() {
+      Cards._sbData = sbSnapshot; Cards.applySBColors(); overlay.remove();
+    }
+    panel.querySelector('#sbCloseBtnTop').addEventListener('click', function(e){ e.stopPropagation(); closeAndRevert(); });
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAndRevert(); });
+
+    function handleAv(which, act) {
+      if (act === 'del') {
+        if (which === 1) { tempAv1 = ''; av1Changed = true; } else { tempAv2 = ''; av2Changed = true; }
+        App.showToast('头像已清除，点保存生效');
+      } else if (act === 'url') {
+        var url = prompt('输入头像URL：');
+        if (url !== null) {
+          if (which === 1) { tempAv1 = url.trim(); av1Changed = true; } else { tempAv2 = url.trim(); av2Changed = true; }
+          App.showToast('头像已暂存，点保存生效');
+        }
+      } else if (act === 'upload') {
+        var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+        input.onchange = function(e){
+          var file = e.target.files[0]; if(!file) return;
+          var reader = new FileReader();
+          reader.onload = function(r){
+            if(App.cropImage){ App.cropImage(r.target.result, function(c){ if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;} App.showToast('头像已暂存，点保存生效'); }); }
+            else{ Cards._compressAvatar(r.target.result, function(c){ if(which===1){tempAv1=c;av1Changed=true;}else{tempAv2=c;av2Changed=true;} App.showToast('头像已暂存，点保存生效'); }); }
+          };
+          reader.readAsDataURL(file);
         };
-        reader.readAsDataURL(file);
-      };
-      input.click();
+        input.click();
+      }
     }
 
-    function urlAvatar(which){
-      var previewId=which===1?'avatarPreview1':'avatarPreview2';
-      var storageKey=which===1?'avatar_search1':'avatar_search2';
-      var url=prompt('输入头像URL：');
-      if(!url||!url.trim())return;
-      Cards._setSearchAvatar(url.trim(),previewId,storageKey);
-    }
-
-    panel.querySelector('#sbUpload1').addEventListener('click',function(e){e.stopPropagation();uploadAvatar(1);});
-    panel.querySelector('#sbUpload2').addEventListener('click',function(e){e.stopPropagation();uploadAvatar(2);});
-    panel.querySelector('#sbUrl1').addEventListener('click',function(e){e.stopPropagation();urlAvatar(1);});
-    panel.querySelector('#sbUrl2').addEventListener('click',function(e){e.stopPropagation();urlAvatar(2);});
-    panel.querySelector('#sbDel1').addEventListener('click',function(e){e.stopPropagation();Cards._clearSearchAvatar('avatarPreview1','avatar_search1');App.showToast('已删除');});
-    panel.querySelector('#sbDel2').addEventListener('click',function(e){e.stopPropagation();Cards._clearSearchAvatar('avatarPreview2','avatar_search2');App.showToast('已删除');});
+    panel.querySelector('#sbUpload1').addEventListener('click',function(e){e.stopPropagation();handleAv(1,'upload');});
+    panel.querySelector('#sbUpload2').addEventListener('click',function(e){e.stopPropagation();handleAv(2,'upload');});
+    panel.querySelector('#sbUrl1').addEventListener('click',function(e){e.stopPropagation();handleAv(1,'url');});
+    panel.querySelector('#sbUrl2').addEventListener('click',function(e){e.stopPropagation();handleAv(2,'url');});
+    panel.querySelector('#sbDel1').addEventListener('click',function(e){e.stopPropagation();handleAv(1,'del');});
+    panel.querySelector('#sbDel2').addEventListener('click',function(e){e.stopPropagation();handleAv(2,'del');});
 
     function bindColorDot(dotId,key,callerId){
       panel.querySelector(dotId).addEventListener('click',function(e){
         e.stopPropagation();if(!App.openColorPicker)return;
-        App.openColorPicker(sb[key],function(hex){sb[key]=hex;panel.querySelector(dotId).style.background=hex;Cards._sbData=sb;Cards.saveSB();Cards.applySBColors();},
+        App.openColorPicker(sb[key],function(hex){sb[key]=hex;panel.querySelector(dotId).style.background=hex;Cards._sbData=sb;Cards.applySBColors();},
         function(hex){sb[key]=hex;panel.querySelector(dotId).style.background=hex;Cards._sbData=sb;Cards.applySBColors();},callerId);
       });
     }
@@ -295,14 +307,28 @@ var Cards={
     bindColorDot('#sbDotShadow','shadow','sb_shadow');
     bindColorDot('#sbDotText','textC','sb_text');
 
-    panel.querySelector('#sbResetColors').addEventListener('click',function(e){
+    panel.querySelector('#sbResetBtn').addEventListener('click',function(e){
       e.stopPropagation();
-      sb.border=DEF_SB.border;sb.shadow=DEF_SB.shadow;sb.textC=DEF_SB.textC;
+      sb.border='#adcdea'; sb.shadow='rgba(173,205,234,0.9)'; sb.textC='#adcdea';
       panel.querySelector('#sbDotBorder').style.background=sb.border;
       panel.querySelector('#sbDotShadow').style.background=sb.shadow;
       panel.querySelector('#sbDotText').style.background=sb.textC;
-      Cards._sbData=sb;Cards.saveSB();Cards.applySBColors();App.showToast('已重置');
+      Cards._sbData=sb; Cards.applySBColors(); App.showToast('已重置');
     });
+
+    panel.querySelector('#sbSaveBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      if (av1Changed) {
+        if (tempAv1) Cards._setSearchAvatar(tempAv1, 'avatarPreview1', 'avatar_search1');
+        else Cards._clearSearchAvatar('avatarPreview1', 'avatar_search1');
+      }
+      if (av2Changed) {
+        if (tempAv2) Cards._setSearchAvatar(tempAv2, 'avatarPreview2', 'avatar_search2');
+        else Cards._clearSearchAvatar('avatarPreview2', 'avatar_search2');
+      }
+      Cards._sbData = sb; Cards.saveSB(); overlay.remove(); App.showToast('已保存');
+    });
+  },
 
     panel.querySelector('#sbCloseBtn').addEventListener('click',function(){overlay.remove();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
@@ -387,9 +413,9 @@ var Cards={
     panel.innerHTML=
       '<div class="pc-header">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>'+
       '<div class="pc-body">'+
-        '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">'+
-          '<input type="text" class="pc-input" id="pcAvatar" placeholder="图片URL..." value="'+App.escAttr(d.avatar||'')+'">'+
-          '<label class="pc-icon-btn" for="pcFile" title="上传"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></label><input type="file" id="pcFile" accept="image/*" hidden>'+
+      '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">'+
+          '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">上传</button>'+
+          '<button class="pc-btn pc-btn-cancel" id="pcUrlBtn" type="button" style="padding:8px;font-size:12px;">URL</button>'+
           '<div class="pc-icon-btn danger" id="pcDelAvatar" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
         '</div></div>'+
         '<div class="pc-group"><span class="pc-label">名字</span><input type="text" class="pc-input" id="pcName" value="'+App.escAttr(d.name||'')+'"></div>'+
@@ -441,28 +467,41 @@ var Cards={
       Cards.data[side].colors=col;Cards.applyColors();App.showToast('已重置默认配色');
     });
 
-    /* 上传 */
-    var fileInput=panel.querySelector('#pcFile');
-    if(fileInput)fileInput.addEventListener('change',function(e){
-      var file=e.target.files[0];if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(ev){
-        if(App.cropImage){App.cropImage(ev.target.result,function(cropped){Cards._compressAvatar(cropped,function(c){panel.querySelector('#pcAvatar').value=c;});});}
-        else{Cards._compressAvatar(ev.target.result,function(c){panel.querySelector('#pcAvatar').value=c;});}
+        /* 头像按钮事件 */
+    var tempAvatar = d.avatar || '';
+
+    var uploadBtn = panel.querySelector('#pcUploadBtn');
+    if(uploadBtn) uploadBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+      input.onchange = function(ev){
+        var file = ev.target.files[0]; if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(r){
+          if(App.cropImage){ App.cropImage(r.target.result, function(c){ tempAvatar = c; App.showToast('头像已暂存，点保存生效'); }); }
+          else{ Cards._compressAvatar(r.target.result, function(c){ tempAvatar = c; App.showToast('头像已暂存，点保存生效'); }); }
+        };
+        reader.readAsDataURL(file);
       };
-      reader.readAsDataURL(file);
+      input.click();
     });
 
-    /* 删除头像 */
-    var delBtn=panel.querySelector('#pcDelAvatar');
-    if(delBtn)delBtn.addEventListener('click',function(e){
-      e.stopPropagation();panel.querySelector('#pcAvatar').value='';App.showToast('头像已清除，点保存生效');
+    var urlBtn = panel.querySelector('#pcUrlBtn');
+    if(urlBtn) urlBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var url = prompt('输入头像URL：', tempAvatar);
+      if(url !== null){ tempAvatar = url.trim(); App.showToast('头像已暂存，点保存生效'); }
+    });
+
+    var delBtn = panel.querySelector('#pcDelAvatar');
+    if(delBtn) delBtn.addEventListener('click', function(e){
+      e.stopPropagation(); tempAvatar = ''; App.showToast('头像已清除，点保存生效');
     });
 
     /* ★ 保存 */
     panel.querySelector('#pcSaveBtn').addEventListener('click',function(){
       Cards.data[side]={
-        avatar:(panel.querySelector('#pcAvatar')||{}).value||'',
+        avatar: tempAvatar,
         name:((panel.querySelector('#pcName')||{}).value||'').trim(),
         sub:((panel.querySelector('#pcSub')||{}).value||'').trim(),
         tag1:((panel.querySelector('#pcTag1')||{}).value||'').trim(),
