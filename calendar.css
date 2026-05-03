@@ -106,6 +106,7 @@
 .cal-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
 .cal-day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; position: relative; transition: background 0.15s; gap: 4px; }
 .cal-day-cell:active { background: rgba(0,0,0,0.04); }
+.cal-day-cell.cal-day-selected { background: rgba(0,0,0,0.08); }
 .cal-day-cell.cal-day-empty { cursor: default; }
 .cal-day-cell.cal-day-today { background: #1a1a1a; }
 .cal-day-cell.cal-day-today .cal-day-num { color: #fff; }
