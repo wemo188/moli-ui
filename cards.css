@@ -53,13 +53,15 @@
 }
 
 .card-icon-img {
-  width: 65px;
-  height: 65px;
+  width: 80px;
+  height: 80px;
   border-radius: 15px;
   background: #fff;
   border: 1.3px solid rgba(220,235,255,.9);
-  box-shadow: 0 14px 30px rgba(20,35,55,.14);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-icon-img img {
@@ -67,6 +69,8 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  pointer-events: none !important; /* ★ 这条命根子：让长按穿透图片，只触发拖拽，绝对不弹菜单 */
+  -webkit-user-drag: none !important;
 }
 
 .card-icon-label {
