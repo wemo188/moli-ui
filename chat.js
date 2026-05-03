@@ -233,6 +233,8 @@ var timeStr=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 
 var info='现在是：'+timeStr;
 if(App.calendar){
   var ws=App.calendar.getWeatherSummary();if(ws)info+='\n'+ws;
+  var userCity=App.calendar?App.calendar.getLocationForAI():'';
+  if(userCity)info+='\n你（用户）所在城市：'+userCity;
   if(cfg.charCity)info+='\n角色所在城市：'+cfg.charCity;
   var ss=App.calendar.getScheduleSummary();if(ss)info+='\n'+ss;
 }
