@@ -209,9 +209,6 @@ if(e.target.closest('.vf-lbl'))return;
 
     var panel = document.createElement('div');
     panel.className = 'pc-edit-panel';
-    panel.style.width = '280px';
-    panel.style.height = 'auto';
-    panel.style.maxHeight = '400px';
 
     panel.innerHTML =
       '<div class="pc-header">时间栏调色<div class="pc-close-btn" id="wcpClose">×</div></div>' +
