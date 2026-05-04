@@ -94,7 +94,6 @@
 .api-fl-param { margin-bottom: 10px; }
 .api-fl-param-title {
   font-size: 13px; font-weight: 700; color: #333;
-  font-family: "SF Mono","Menlo",monospace;
 }
 .api-fl-param-desc { font-size: 10px; color: #999; margin-top: 2px; }
 .api-fl-param-slider { margin-top: 6px; }
