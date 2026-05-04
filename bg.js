@@ -8,7 +8,7 @@
       var bgData = App.LS.get('bgData') || {};
       Bg.applyBg(bgData);
       
-      var iconConfig = App.LS.get('topIconConfig') || { borderW: 1.5, shadow: 4, borderColor: '#dcebff', shadowColor: '#dcebff' };
+      var iconConfig = App.LS.get('topIconConfig') || { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
       if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
       if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
       if(App.LS.get('topIconConfig')) Bg.applyTopIconStyle(iconConfig);
@@ -196,10 +196,10 @@
       // 恢复默认颜色
       panel.querySelector('#bgResetColor').addEventListener('click', function(e){
         e.stopPropagation();
-        iconConfig.borderColor='#dcebff'; iconConfig.shadowColor='#dcebff'; iconConfig.borderW=1.5; iconConfig.shadow=4;
+        iconConfig.borderColor='#dcebff'; iconConfig.shadowColor='#dcebff'; iconConfig.borderW=1; iconConfig.shadow=0;
         panel.querySelector('#bgDotUnified').style.background='#dcebff';
-        bSlider.value=1.5; panel.querySelector('#bgNewIconBorderVal').textContent='1.5px';
-        sSlider.value=4; panel.querySelector('#bgNewIconShadowVal').textContent='4px';
+        bSlider.value=1; panel.querySelector('#bgNewIconBorderVal').textContent='1px';
+        sSlider.value=0; panel.querySelector('#bgNewIconShadowVal').textContent='0px';
         App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig); updateIconStyle();
         App.showToast('已恢复默认颜色');
       });
