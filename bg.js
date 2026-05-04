@@ -3,16 +3,6 @@
   'use strict';
   var App = window.App; if(!App)return;
 
-  // ★ 真正的默认图，永远不受 localStorage 影响
-  var ICON_DEFAULTS = {
-    cg: 'https://iili.io/BsSI1j9.md.jpg',
-    lt: 'https://iili.io/BQ98Pxp.md.jpg',
-    d1: 'https://iili.io/B5DgD5N.jpg',
-    d2: 'https://iili.io/BudrfVa.md.jpg',
-    d3: 'https://iili.io/BsZkNx1.md.jpg',
-    d4: 'https://iili.io/BghjowQ.md.jpg'
-  };
-
   var Bg = {
     init: function() {
       var bgData = App.LS.get('bgData') || {};
@@ -29,16 +19,25 @@
       panel.className = 'fullpage-panel hidden';
       panel.style.background = '#f4f7fb';
 
+      // ★ 从 HTML 里实时读取默认图，不硬编码
+      function getOrigSrc(selector) {
+        var el = document.querySelector(selector);
+        return el ? el.getAttribute('src') : '';
+      }
+
       var iconList = [
-        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: ICON_DEFAULTS.cg },
-        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: ICON_DEFAULTS.lt },
-        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: ICON_DEFAULTS.d1 },
-        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: ICON_DEFAULTS.d2 },
-        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: ICON_DEFAULTS.d3 },
-        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: ICON_DEFAULTS.d4 }
+        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: getOrigSrc('#cardIcon1 img') },
+        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: getOrigSrc('#cardIcon2 img') },
+        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: getOrigSrc('#dockMine img') },
+        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: getOrigSrc('#dockLong img') },
+        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: getOrigSrc('#dockShort img') },
+        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: getOrigSrc('#dockCheck img') }
       ];
 
       var noImgDrag = 'pointer-events:none; -webkit-touch-callout:none; user-select:none; -webkit-user-drag:none;';
+
+      var liveSrc1 = App.LS.get('customIcon_cg') || getOrigSrc('#cardIcon1 img');
+      var liveSrc2 = App.LS.get('customIcon_lt') || getOrigSrc('#cardIcon2 img');
 
       panel.innerHTML = 
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;background:#fff;border-bottom:1px solid rgba(126,163,201,.2);flex-shrink:0;z-index:10;">' +
@@ -74,8 +73,8 @@
             '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#88abda;border-radius:2px;"></div>上侧图标样式</div>' +
             
             '<div style="background:linear-gradient(135deg,#f0f5fa,#e1edf7);border-radius:14px;padding:30px 0 40px;display:flex;justify-content:center;gap:40px;margin-bottom:20px;border:1px solid rgba(126,163,201,.2);box-shadow:inset 0 4px 12px rgba(0,0,0,0.02);">' +
-               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_cg')||ICON_DEFAULTS.cg)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
-               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_lt')||ICON_DEFAULTS.lt)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
+               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="'+App.escAttr(liveSrc1)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
+               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="'+App.escAttr(liveSrc2)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
@@ -172,9 +171,9 @@
         var w=bSlider.value, s=sSlider.value;
         panel.querySelector('#bgNewIconBorderVal').textContent=w+'px';
         panel.querySelector('#bgNewIconShadowVal').textContent=s+'px';
-        var css = 'border:'+w+'px solid '+iconConfig.borderColor+'; box-shadow:'+s+'px '+s+'px 0 '+iconConfig.shadowColor+'; border-radius:15px;';
-        live1.style.cssText = 'width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;overflow:hidden;'+css;
-        live2.style.cssText = 'width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;overflow:hidden;'+css;
+        var css = 'width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;overflow:hidden;border:'+w+'px solid '+iconConfig.borderColor+';box-shadow:'+s+'px '+s+'px 0 '+iconConfig.shadowColor+';';
+        live1.style.cssText = css;
+        live2.style.cssText = css;
         iconConfig.borderW=parseFloat(w); iconConfig.shadow=parseInt(s);
         App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
       };
@@ -233,21 +232,21 @@
           menu.addEventListener('click', function(e){ if(e.target===menu) menu.remove(); });
           menu.querySelector('#icCancel').addEventListener('click', function(){ menu.remove(); });
 
-          // ★ 恢复默认：删除存储 → 用硬编码默认图 → 去掉 img-fill 类名
+          // ★ 恢复默认：删存储，src 设回 def（从 HTML 读到的原始值）
           menu.querySelector('#icDefault').addEventListener('click', function(){
             menu.remove();
             App.LS.remove(ic.id);
-            // 网格小图恢复
+            // 网格小图
             box.querySelector('img').src = ic.def;
-            // 页面上的真身恢复
+            // 页面真身
             var tEl = document.querySelector(ic.target);
-            if(tEl){ tEl.src = ic.def; tEl.classList.remove('img-fill'); }
-            // 预览台恢复
+            if(tEl) tEl.src = ic.def;
+            // 预览台
             if(ic.live){ var liveImg = panel.querySelector(ic.live); if(liveImg) liveImg.src = ic.def; }
             App.showToast('已恢复默认图标');
           });
 
-          // ★ 上传新图：存储 → 更新所有位置 → 加上 img-fill 类名撑满
+          // ★ 上传新图
           menu.querySelector('#icUpload').addEventListener('click', function(){
             menu.remove();
             var ipt = document.createElement('input'); ipt.type='file'; ipt.accept='image/*';
@@ -261,7 +260,7 @@
                   box.querySelector('img').src = c;
                   // 页面真身
                   var tEl = document.querySelector(ic.target);
-                  if(tEl){ tEl.src = c; tEl.classList.add('img-fill'); }
+                  if(tEl) tEl.src = c;
                   // 预览台
                   if(ic.live){ var liveImg = panel.querySelector(ic.live); if(liveImg) liveImg.src = c; }
                   App.showToast(ic.label+' 图标已更换');
