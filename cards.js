@@ -350,13 +350,22 @@ var Cards={
     });
   },
 
-  applyDragOffsets:function(){
+      applyDragOffsets:function(){
     ['bx-1','bx-2','searchWrap1','searchWrap2','cardIcon1','cardIcon2'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var off=Cards._dragOffsets[id];
       if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
     });
-  },
+    // 恢复上次拖拽的卡片层级
+    var topCard=Cards._dragOffsets._topCard;
+    if(topCard){
+      var topEl=App.$('#'+topCard);
+      if(topEl) topEl.style.zIndex='50';
+      ['bx-1','bx-2'].forEach(function(sid){
+        if(sid!==topCard){ var s=App.$('#'+sid); if(s) s.style.zIndex='1'; }
+      });
+    }
+},
 
   bindDrag:function(){
     ['bx-1','bx-2'].forEach(function(id){
@@ -380,9 +389,20 @@ var Cards={
         el.style.transform='translate('+nx+'px,'+ny+'px)';Cards._dragOffsets[id]={x:nx,y:ny};
       },{passive:false});
       avBox.addEventListener('touchend',function(e){
-        clearTimeout(timer);timer=null;el.style.opacity='';el.style.transition='';el.style.zIndex='';
-        if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}longPressed=false;moved=false;
-      });
+    clearTimeout(timer);timer=null;el.style.opacity='';el.style.transition='';
+    if(longPressed&&moved){
+        // 被拖的卡保持在最上层
+        el.style.zIndex='50';
+        ['bx-1','bx-2'].forEach(function(sid){
+            if(sid!==id){ var s=App.$('#'+sid); if(s) s.style.zIndex='1'; }
+        });
+        Cards._dragOffsets._topCard=id;
+        Cards.saveDrag();e.stopPropagation();
+    } else {
+        el.style.zIndex='';
+    }
+    longPressed=false;moved=false;
+});
     });
   },
 
