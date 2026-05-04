@@ -5,22 +5,20 @@
 
   var Bg = {
     init: function() {
-      // 1. 初始化并读取数据
+      // 1. 初始化并应用数据
       var bgData = App.LS.get('bgData') || {};
       Bg.applyBg(bgData);
       
-      var iconConfig = App.LS.get('topIconConfig') || { borderW: 1.3, shadow: 14 };
+      var iconConfig = App.LS.get('topIconConfig') || { borderW: 1.5, shadow: 4 };
       Bg.applyTopIconStyle(iconConfig);
 
-      // 2. 强行“夺舍”原有的背景面板，将其改造成全屏豪华视图！
+      // 2. 改造面板为标准全屏
       var panel = App.$('#bgPanel');
       if(!panel) return;
       
-      // 抹去原有的底部小面板属性，赋予全屏属性
       panel.className = 'fullpage-panel hidden';
       panel.style.background = '#f4f7fb';
 
-      // 准备好图标的最新图片源
       var iconDef = {
         cg: App.LS.get('customIcon_cg') || 'https://iili.io/BsSI1j9.md.jpg',
         lt: App.LS.get('customIcon_lt') || 'https://iili.io/BQ98Pxp.md.jpg',
@@ -30,20 +28,25 @@
         d4: App.LS.get('customIcon_dockCheck') || 'https://iili.io/BghjowQ.md.jpg'
       };
 
-      // 注入震撼的全屏 HTML
+      // 注入全屏 HTML
       panel.innerHTML = 
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;background:#fff;border-bottom:1px solid rgba(126,163,201,.2);flex-shrink:0;z-index:10;">' +
-          '<button id="bgCloseBtnTop" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          '<button id="bgCloseBtnTop" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#7a9ab8;stroke-width:2.5;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
           '<span style="font-size:16px;font-weight:800;color:#2e4258;letter-spacing:1px;">背景与图标管理</span>' +
           '<div style="width:36px;"></div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;">' +
           
-          '<!-- 模块一：背景图管理 -->' +
+          '<!-- 模块一：超大背景图管理与实时滤镜 -->' +
           '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
-            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#7a9ab8;border-radius:2px;"></div>背景墙纸</div>' +
-            '<div id="bgNewUploadArea" style="width:100%;height:60px;border:2px dashed rgba(126,163,201,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;color:#7a9ab8;cursor:pointer;background:rgba(126,163,201,.05);margin-bottom:16px;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>点击上传背景图片</div>' +
-            '<div id="bgNewPreview" style="width:100%;height:140px;border-radius:12px;overflow:hidden;margin-bottom:16px;border:1px solid #eee;display:none;"><img id="bgNewPreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
+            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#7a9ab8;border-radius:2px;"></div>背景墙纸 (实时预览)</div>' +
+            
+            '<div id="bgNewUploadArea" style="width:100%;height:54px;border:2px dashed rgba(126,163,201,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;color:#7a9ab8;cursor:pointer;background:rgba(126,163,201,.05);margin-bottom:16px;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>点击上传并裁剪新壁纸</div>' +
+            
+            '<div id="bgNewPreview" style="width:100%;height:220px;border-radius:12px;overflow:hidden;margin-bottom:16px;border:1px solid #eee;display:none;background:#111;position:relative;">' +
+               '<img id="bgNewPreviewImg" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.05);">' +
+            '</div>' +
+            
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
               '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:40px;">虚化</span>' +
               '<input type="range" id="bgNewBlur" min="0" max="30" value="'+(bgData.blur||0)+'" style="flex:1;">' +
@@ -54,21 +57,17 @@
               '<input type="range" id="bgNewDark" min="0" max="80" value="'+(bgData.dark||30)+'" style="flex:1;">' +
               '<span id="bgNewDarkVal" style="font-size:12px;font-weight:700;color:#2e4258;width:30px;text-align:right;">'+(bgData.dark||30)+'%</span>' +
             '</div>' +
-            '<div style="display:flex;gap:10px;">' +
-              '<button id="bgNewApplyBtn" type="button" style="flex:1;padding:12px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">应用背景</button>' +
-              '<button id="bgNewRemoveBtn" type="button" style="flex:1;padding:12px;border:1.5px solid rgba(126,163,201,.4);border-radius:10px;background:none;color:#5a7a9a;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">移除背景</button>' +
-            '</div>' +
+            '<button id="bgNewRemoveBtn" type="button" style="width:100%;padding:12px;border:1.5px solid rgba(201,112,107,.4);border-radius:10px;background:rgba(201,112,107,.05);color:#c9706b;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">移除背景墙纸</button>' +
           '</div>' +
 
-          '<!-- 模块二：上侧图标实时预览台 -->' +
+          '<!-- 模块二：上侧图标硬阴影预览台 -->' +
           '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
-            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#88abda;border-radius:2px;"></div>上侧图标全局样式</div>' +
-            '<div style="font-size:11px;color:#8aa0b8;margin-bottom:16px;line-height:1.5;">在此调整边框与阴影，下方预览台会实时反馈效果。仅对主页上方的图标生效。</div>' +
+            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#88abda;border-radius:2px;"></div>上侧图标框线与阴影</div>' +
             
-            '<!-- 华丽的预览台 -->' +
-            '<div style="background:linear-gradient(135deg,#f0f5fa,#e1edf7);border-radius:14px;padding:30px 0;display:flex;justify-content:center;gap:40px;margin-bottom:20px;border:1px solid rgba(126,163,201,.2);box-shadow:inset 0 4px 12px rgba(0,0,0,0.02);">' +
-               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;overflow:hidden;border:'+iconConfig.borderW+'px solid rgba(220,235,255,.9);box-shadow:0 '+iconConfig.shadow+'px 30px rgba(20,35,55,.14);transition:all 0.1s;"><img src="'+iconDef.cg+'" style="width:100%;height:100%;object-fit:cover;"></div>' +
-               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;overflow:hidden;border:'+iconConfig.borderW+'px solid rgba(220,235,255,.9);box-shadow:0 '+iconConfig.shadow+'px 30px rgba(20,35,55,.14);transition:all 0.1s;"><img src="'+iconDef.lt+'" style="width:100%;height:100%;object-fit:cover;"></div>' +
+            '<!-- 预览台 -->' +
+            '<div style="background:linear-gradient(135deg,#f0f5fa,#e1edf7);border-radius:14px;padding:30px 0 40px;display:flex;justify-content:center;gap:40px;margin-bottom:20px;border:1px solid rgba(126,163,201,.2);box-shadow:inset 0 4px 12px rgba(0,0,0,0.02);">' +
+               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;"><img src="'+iconDef.cg+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;pointer-events:none;"></div>' +
+               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;"><img src="'+iconDef.lt+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;pointer-events:none;"></div>' +
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
@@ -77,39 +76,92 @@
               '<span id="bgNewIconBorderVal" style="font-size:12px;font-weight:700;color:#2e4258;width:30px;text-align:right;">'+iconConfig.borderW+'px</span>' +
             '</div>' +
             '<div style="display:flex;align-items:center;gap:12px;">' +
-              '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:50px;">阴影强度</span>' +
-              '<input type="range" id="bgNewIconShadow" min="0" max="40" step="1" value="'+iconConfig.shadow+'" style="flex:1;">' +
+              '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:50px;">阴影偏移</span>' +
+              '<input type="range" id="bgNewIconShadow" min="0" max="16" step="1" value="'+iconConfig.shadow+'" style="flex:1;">' +
               '<span id="bgNewIconShadowVal" style="font-size:12px;font-weight:700;color:#2e4258;width:30px;text-align:right;">'+iconConfig.shadow+'px</span>' +
             '</div>' +
           '</div>' +
 
           '<!-- 模块三：单独图片替换网格 -->' +
           '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:30px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
-            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#c9706b;border-radius:2px;"></div>单独替换图片</div>' +
-            '<div style="font-size:11px;color:#8aa0b8;margin-bottom:16px;line-height:1.5;">点击下方对应的方块，即可从相册选择新图片替换。</div>' +
-            
-            '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px 12px;" id="bgIconGridManager">' +
-              // 这里的项由JS注入
-            '</div>' +
+            '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#c9706b;border-radius:2px;"></div>点击对应方块裁切替换图标</div>' +
+            '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px 12px;" id="bgIconGridManager"></div>' +
           '</div>' +
 
         '</div>';
 
-      // ==================== 事件绑定区 ====================
+      // ==================== 事件绑定与逻辑 ====================
       
       // 1. 关闭全屏面板
-      panel.querySelector('#bgCloseBtnTop').addEventListener('click', function() {
-        if(App.closePanel) App.closePanel();
+      function closePanel() {
+        if(App.closePanel) { App.closePanel(); }
         else {
-           panel.classList.remove('show');
-           setTimeout(function(){ panel.classList.add('hidden'); }, 350);
+           panel.style.transform = 'translateX(100%)';
+           panel.style.opacity = '0';
+           setTimeout(function(){ panel.classList.remove('show'); panel.classList.add('hidden'); }, 350);
         }
-      });
+      }
+      panel.querySelector('#bgCloseBtnTop').addEventListener('click', closePanel);
 
-      // 2. 背景图相关逻辑
+      // 2. 右滑返回手势绑定
+      var _sw = {active: false, sx: 0, sy: 0, locked: false, dir: ''};
+      panel.addEventListener('touchstart', function(e){
+        var t = e.touches[0];
+        // 只有从屏幕左侧边缘 (<= 50px) 向右滑才生效
+        if(t.clientX - panel.getBoundingClientRect().left > 50) return;
+        _sw = {active: true, sx: t.clientX, sy: t.clientY, locked: false, dir: ''};
+      }, {passive: true});
+
+      panel.addEventListener('touchmove', function(e){
+        if(!_sw.active) return;
+        var t = e.touches[0];
+        var dx = t.clientX - _sw.sx;
+        var dy = t.clientY - _sw.sy;
+        if(!_sw.locked){
+          if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+          _sw.locked = true;
+          _sw.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        }
+        if(_sw.dir === 'h' && dx > 0){
+          e.preventDefault();
+          panel.style.transform = 'translateX(' + Math.min(dx, panel.offsetWidth) + 'px)';
+          panel.style.opacity = String(1 - dx / panel.offsetWidth * 0.5);
+        }
+      }, {passive: false});
+
+      panel.addEventListener('touchend', function(e){
+        if(!_sw.active) return;
+        _sw.active = false;
+        if(_sw.dir !== 'h') { panel.style.transform = ''; panel.style.opacity = ''; return; }
+        var dx = e.changedTouches[0].clientX - _sw.sx;
+        if(dx > panel.offsetWidth * 0.3){
+          panel.style.transition = 'transform .25s, opacity .25s';
+          panel.style.transform = 'translateX(100%)';
+          panel.style.opacity = '0';
+          setTimeout(function(){
+            panel.style.transition = ''; panel.style.transform = ''; panel.style.opacity = '';
+            closePanel();
+          }, 260);
+        } else {
+          panel.style.transition = 'transform .2s, opacity .2s';
+          panel.style.transform = ''; panel.style.opacity = '';
+          setTimeout(function(){ panel.style.transition = ''; }, 220);
+        }
+      }, {passive: true});
+
+      // 3. 背景图上传与大框实时滤镜预览
       var pImg = panel.querySelector('#bgNewPreviewImg');
       var pBox = panel.querySelector('#bgNewPreview');
-      if(bgData.src) { pImg.src = bgData.src; pBox.style.display = 'block'; }
+      
+      var applyLiveFilter = function(blur, dark) {
+         pImg.style.filter = 'blur(' + blur + 'px) brightness(' + (100 - dark) + '%)';
+      };
+
+      if(bgData.src) { 
+         pImg.src = bgData.src; 
+         pBox.style.display = 'block'; 
+         applyLiveFilter(bgData.blur||0, bgData.dark||30);
+      }
 
       var fileInput = document.createElement('input'); 
       fileInput.type = 'file'; fileInput.accept = 'image/*';
@@ -117,25 +169,45 @@
          var f = e.target.files[0]; if(!f) return;
          var r = new FileReader();
          r.onload = function(ev) {
-            Bg.compress(ev.target.result, function(c){
+            var process = function(c) {
+               var currentData = App.LS.get('bgData') || { blur: 0, dark: 30 };
+               currentData.src = c;
+               App.LS.set('bgData', currentData);
+               
+               // 更新大预览框
                pImg.src = c; pBox.style.display = 'block';
-            });
+               applyLiveFilter(currentData.blur||0, currentData.dark||30);
+               
+               Bg.applyBg(currentData); // 瞬间上主墙！
+               App.showToast('背景已更换');
+            };
+            // 强制裁剪
+            if(App.cropImage) App.cropImage(ev.target.result, process);
+            else process(ev.target.result);
          };
          r.readAsDataURL(f);
       };
 
       panel.querySelector('#bgNewUploadArea').addEventListener('click', function(){ fileInput.click(); });
       
-      panel.querySelector('#bgNewBlur').addEventListener('input', function(){ panel.querySelector('#bgNewBlurVal').textContent = this.value + 'px'; });
-      panel.querySelector('#bgNewDark').addEventListener('input', function(){ panel.querySelector('#bgNewDarkVal').textContent = this.value + '%'; });
-      
-      panel.querySelector('#bgNewApplyBtn').addEventListener('click', function(){
-         if(!pImg.src || pImg.src.indexOf('index.html') !== -1) { App.showToast('请先上传图片'); return; }
-         var data = { src: pImg.src, blur: panel.querySelector('#bgNewBlur').value, dark: panel.querySelector('#bgNewDark').value };
+      var handleBgSlider = function() {
+         var blurV = panel.querySelector('#bgNewBlur').value;
+         var darkV = panel.querySelector('#bgNewDark').value;
+         panel.querySelector('#bgNewBlurVal').textContent = blurV + 'px';
+         panel.querySelector('#bgNewDarkVal').textContent = darkV + '%';
+         
+         // 实时改变内部预览
+         applyLiveFilter(blurV, darkV);
+
+         // 实时改变外层真实背景
+         var data = App.LS.get('bgData') || {};
+         data.blur = blurV; data.dark = darkV;
          App.LS.set('bgData', data);
-         Bg.applyBg(data);
-         App.showToast('背景已应用');
-      });
+         Bg.applyBg(data); 
+      };
+      panel.querySelector('#bgNewBlur').addEventListener('input', handleBgSlider);
+      panel.querySelector('#bgNewDark').addEventListener('input', handleBgSlider);
+      
       panel.querySelector('#bgNewRemoveBtn').addEventListener('click', function(){
          App.LS.remove('bgData');
          pImg.src = ''; pBox.style.display = 'none';
@@ -143,22 +215,28 @@
          App.showToast('背景已移除');
       });
 
-      // 3. 上侧图标实时预览与滑块逻辑
+      // 4. 上侧图标的硬阴影与边框控制
       var bSlider = panel.querySelector('#bgNewIconBorder');
       var sSlider = panel.querySelector('#bgNewIconShadow');
       var live1 = panel.querySelector('#bgLiveIcon1');
       var live2 = panel.querySelector('#bgLiveIcon2');
+
+      // 组装硬阴影和边框的 CSS 字符串
+      var getShadowCss = function(w, s) {
+        var borderColor = 'rgba(220,235,255,0.9)'; 
+        var shadowColor = 'rgba(173,205,234,0.9)'; 
+        return 'border: ' + w + 'px solid ' + borderColor + '; ' +
+               'box-shadow: ' + s + 'px ' + s + 'px 0 ' + shadowColor + '; ';
+      };
 
       var updateIconStyle = function() {
         var w = bSlider.value, s = sSlider.value;
         panel.querySelector('#bgNewIconBorderVal').textContent = w + 'px';
         panel.querySelector('#bgNewIconShadowVal').textContent = s + 'px';
         
-        // 实时渲染内部的预览台
-        live1.style.borderWidth = w + 'px';
-        live1.style.boxShadow = '0 ' + s + 'px 30px rgba(20,35,55,0.14)';
-        live2.style.borderWidth = w + 'px';
-        live2.style.boxShadow = '0 ' + s + 'px 30px rgba(20,35,55,0.14)';
+        // 实时渲染内部的预览台 (赋予硬阴影)
+        live1.style.cssText += getShadowCss(w, s);
+        live2.style.cssText += getShadowCss(w, s);
 
         // 同步保存并应用到外部真实环境
         var cfg = { borderW: parseFloat(w), shadow: parseInt(s) };
@@ -166,18 +244,21 @@
         Bg.applyTopIconStyle(cfg);
       };
 
+      // 初始化预览台样式
+      updateIconStyle();
+
       bSlider.addEventListener('input', updateIconStyle);
       sSlider.addEventListener('input', updateIconStyle);
 
-      // 4. 图片更换网格逻辑
+      // 5. 所有图标替换网格 (全部强制裁剪)
       var grid = panel.querySelector('#bgIconGridManager');
       var iconList = [
         { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg },
         { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt },
-        { id: 'customIcon_dockMine', label: '助手(底部)', target: '#dockMine img', def: iconDef.d1 },
-        { id: 'customIcon_dockLong', label: '角色(底部)', target: '#dockLong img', def: iconDef.d2 },
+        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1 },
+        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2 },
         { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3 },
-        { id: 'customIcon_dockCheck', label: '查岗(底部)', target: '#dockCheck img', def: iconDef.d4 }
+        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4 }
       ];
 
       iconList.forEach(function(ic) {
@@ -190,28 +271,25 @@
           '<div style="font-size:10px;font-weight:700;color:#5a7a9a;">'+ic.label+'</div>';
         
         box.addEventListener('click', function() {
-           var ipt = document.createElement('input'); inp.type = 'file'; input.accept = 'image/*';
+           var ipt = document.createElement('input'); ipt.type = 'file'; ipt.accept = 'image/*';
            ipt.onchange = function(e) {
               var f2 = e.target.files[0]; if(!f2) return;
               var rd = new FileReader();
               rd.onload = function(ev) {
                  var process = function(c) {
-                    // 保存数据
                     App.LS.set(ic.id, c);
-                    // 1. 替换网格里的小图
-                    box.querySelector('img').src = c;
-                    // 2. 替换首页外面的真身
+                    box.querySelector('img').src = c; // 更新面板里的小图
                     var tEl = document.querySelector(ic.target);
-                    if(tEl) tEl.src = c;
-                    // 3. 如果是上侧图标，还要顺便替换上面那个沉浸式预览台的图片
+                    if(tEl) tEl.src = c; // 更新外部的真实图标
                     if(ic.live) {
                       var liveImg = panel.querySelector(ic.live);
-                      if(liveImg) liveImg.src = c;
+                      if(liveImg) liveImg.src = c; // 如果是上方图标，更新预览台图片
                     }
-                    App.showToast(ic.label + ' 图片已更换');
+                    App.showToast(ic.label + ' 图标已更换');
                  };
-                 if(App.cropImage) App.cropImage(ev.target.result, function(c){ Bg.compress(c, process); });
-                 else Bg.compress(ev.target.result, process);
+                 // 强制走裁剪逻辑
+                 if(App.cropImage) App.cropImage(ev.target.result, process);
+                 else process(ev.target.result);
               };
               rd.readAsDataURL(f2);
            };
@@ -219,10 +297,9 @@
         });
         grid.appendChild(box);
       });
-
     },
 
-    // 辅助方法：压缩背景图
+    // 辅助方法：压缩
     compress: function(src, cb) {
        var img = new Image();
        img.onload = function() {
@@ -244,16 +321,25 @@
          layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100 - (data.dark||0)) + '%)';
        } else {
          layer.style.backgroundImage = '';
-         layer.style.filter = '';
+         layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100 - (data.dark||0)) + '%)'; 
        }
     },
 
-    // 注入全站通用的上侧图标强力 CSS
+    // 注入外部上侧图标的硬阴影与淡蓝边框
     applyTopIconStyle: function(cfg) {
       var styleId = 'topIconDynamicStyle';
       var styleEl = document.getElementById(styleId);
       if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
-      styleEl.innerHTML = '.card-icon-img { border-width: ' + cfg.borderW + 'px !important; box-shadow: 0 ' + cfg.shadow + 'px 30px rgba(20,35,55,.14) !important; }';
+      
+      var borderColor = 'rgba(220,235,255,0.9)'; 
+      var shadowColor = 'rgba(173,205,234,0.9)'; 
+
+      styleEl.innerHTML = 
+        '.card-icon-img { ' +
+          'border: ' + cfg.borderW + 'px solid ' + borderColor + ' !important; ' +
+          'box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + shadowColor + ' !important; ' +
+          'border-radius: 15px !important; ' +
+        '}';
     }
   };
 
