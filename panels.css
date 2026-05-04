@@ -504,3 +504,238 @@
   transform: translateY(0);
   opacity: 1;
 }
+
+.bg-header {
+  flex-shrink: 0;
+}
+
+.bg-drag-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0,0,0,.12);
+  margin: 10px auto 8px;
+}
+
+.bg-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 14px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.bg-header-row h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bg-close-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bg-close-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.bg-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 20px 0;
+}
+
+.bg-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.bg-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  border: 2px dashed rgba(173,205,234,.5);
+  border-radius: 12px;
+  background: rgba(173,205,234,.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a9ab8;
+}
+
+.bg-upload:active { border-color: var(--accent); }
+
+.bg-upload svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bg-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bg-slider-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a7a9a;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.bg-slider-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bg-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.bg-btn {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: 1px;
+}
+
+.bg-btn:active { opacity: .7; }
+
+.bg-btn-apply {
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
+}
+
+.bg-btn-remove {
+  background: none;
+  color: #c9706b;
+  border: 1.5px solid rgba(201,112,107,.3);
+}
+
+.bg-divider {
+  height: 1px;
+  background: rgba(173,205,234,.2);
+  margin: 4px 0 14px;
+}
+
+.bg-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bg-color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bg-color-dot:active { transform: scale(.9); }
+
+.bg-btn-reset {
+  margin-left: auto;
+  padding: 5px 12px;
+  border: 1px solid rgba(201,112,107,.3);
+  border-radius: 8px;
+  background: rgba(201,112,107,.05);
+  color: #c9706b;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bg-btn-reset:active { opacity: .7; }
+
+.bg-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 10px;
+  margin-bottom: 16px;
+}
+
+.bg-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bg-icon-item:active { opacity: .7; }
+
+.bg-icon-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(173,205,234,.3);
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.bg-icon-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.bg-icon-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5a7a9a;
+}
+
+.bg-bottom-spacer {
+  height: calc(40px + env(safe-area-inset-bottom, 20px));
+  flex-shrink: 0;
+}
