@@ -142,34 +142,26 @@ var Font={
       }).join('');
     }
 
-    panel.innerHTML=
-      '<div class="ft-header">' +
-        '<div class="ft-drag-handle"></div>' +
-        '<div class="ft-header-row">' +
-          '<h2>字体</h2>' +
-          '<button class="ft-close-btn" id="ftCloseBtn" type="button">' +
-            '<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
-          '</button>' +
-        '</div>' +
+        panel.innerHTML=
+      '<div class="hp-handle"></div>' +
+      '<div class="hp-header">' +
+        '<h2>字体</h2>' +
+        '<button class="hp-close" id="ftCloseBtn" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
       '</div>' +
-      '<div class="ft-body">' +
-
-        '<div id="ftUploadArea" class="ft-upload">' +
+      '<div class="hp-body">' +
+        '<div class="hp-upload" id="ftUploadArea">' +
           '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
           '<span>上传字体文件</span>' +
         '</div>' +
         '<input type="file" id="ftFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>' +
-
-        (customHtml?'<div class="ft-section-label">自定义字体</div><div class="ft-list">'+customHtml+'</div>':'') +
-
-        '<div class="ft-section-label">内置字体</div>' +
-        '<div class="ft-list">'+builtinHtml+'</div>' +
-
-        '<div class="ft-bottom-spacer"></div>' +
+        (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list">' + customHtml + '</div>' : '') +
+        '<div class="hp-section-label">内置字体</div>' +
+        '<div class="ft-list">' + builtinHtml + '</div>' +
+        '<div class="hp-bottom-spacer"></div>' +
       '</div>';
 
     Font.bindEvents(panel);
-  },
+},
 
   bindEvents:function(panel){
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
