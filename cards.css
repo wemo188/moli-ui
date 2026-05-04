@@ -103,6 +103,7 @@
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
+  z-index: 1;    /* ← 加这一行 */
 }
 
 #bx-2 .bx-cw {
@@ -215,6 +216,7 @@
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
   transform: translateY(1px);
+  z-index: 2;    /* ← 加这一行 */
 }
 
 #bx-1 .bx-cw {
