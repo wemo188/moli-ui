@@ -243,11 +243,9 @@ var Cards={
         '</div></div>'+
         '<div class="pc-group" style="margin-top:4px;">'+
           '<span class="pc-label">统一配色（同步变化）</span>'+
-          '<div class="pc-palette-grid">'+
-            '<div class="pc-palette-item"><div class="pc-dot" id="sbDotBorder" style="background:'+sb.border+';"></div><span class="pc-dot-lbl">线条</span></div>'+
-            '<div class="pc-palette-item"><div class="pc-dot" id="sbDotShadow" style="background:'+sb.shadow+';"></div><span class="pc-dot-lbl">阴影</span></div>'+
-            '<div class="pc-palette-item"><div class="pc-dot" id="sbDotText" style="background:'+sb.textC+';"></div><span class="pc-dot-lbl">字体</span></div>'+
-          '</div>'+
+         '<div class="pc-palette-grid">'+
+  '<div class="pc-palette-item"><div class="pc-dot" id="sbDotUnified" style="background:'+sb.border+';"></div><span class="pc-dot-lbl">统一配色</span></div>'+
+'</div>'
         '</div>'+
       '</div>'+
       '<div class="pc-footer">'+
