@@ -2,21 +2,25 @@
   'use strict';
   var App = window.App; if (!App) return;
 
-  var DRAG_DELAY = 600;
-  var DEF_CFG = { bgColor: '#ffffff', bgAlpha: 1, blur: 5, borderColor: '#dcebff', borderW: 1 };
+  var DEF_CFG = { bgColor: '#ffffff', bgAlpha: 1, blur: 5, borderColor: '#dcebff', borderW: 1, hideLabels: false };
 
   var Dock = {
-    _dragOffsets: {}, config: {},
+    config: {},
     load: function() {
-      Dock._dragOffsets = App.LS.get('dockDragOffsets') || {};
       Dock.config = App.LS.get('dockConfig') || JSON.parse(JSON.stringify(DEF_CFG));
     },
-    saveDrag: function() { App.LS.set('dockDragOffsets', Dock._dragOffsets); },
     saveConfig: function() { App.LS.set('dockConfig', Dock.config); },
     applyConfig: function(c) {
       c = c || Dock.config;
+      var dockBar = App.$('#dockBar');
+      if (!dockBar) return;
+
+      if (c.hideLabels) dockBar.classList.add('hide-labels');
+      else dockBar.classList.remove('hide-labels');
+
       var style = document.getElementById('dockCustomStyle');
       if(!style) { style = document.createElement('style'); style.id = 'dockCustomStyle'; document.head.appendChild(style); }
+      
       var hexToRgb = function(hex) {
         if(hex.length===4) hex = '#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
         var r = parseInt(hex.slice(1,3), 16) || 255, g = parseInt(hex.slice(3,5), 16) || 255, b = parseInt(hex.slice(5,7), 16) || 255;
@@ -24,7 +28,7 @@
       };
       var bgRgb = hexToRgb(c.bgColor);
       style.innerHTML = 
-        '#dockBar { background: rgba(' + bgRgb + ',' + (c.bgAlpha/100) + ') !important; backdrop-filter: blur(' + c.blur + 'px) !important; -webkit-backdrop-filter: blur(' + c.blur + 'px) !important; border: ' + c.borderW + 'px solid ' + c.borderColor + ' !important; }' +
+        '#dockBar { background: rgba(' + bgRgb + ',' + (c.bgAlpha/100) + ') !important; backdrop-filter: blur(' + c.blur + 'px) !important; -webkit-backdrop-filter: blur(' + c.blur + 'px) !important; }' +
         '#dockBar .mk-card { border: ' + c.borderW + 'px solid ' + c.borderColor + ' !important; }'+
         '.dock-item { -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important; }' +
         '.mk-card img { pointer-events: none !important; -webkit-user-drag: none !important; }';
@@ -40,8 +44,11 @@
       panel.innerHTML =
         '<div class="pc-header" id="dockDragHandle">底部栏设置<div class="pc-close-btn" id="dockCloseBtnTop">×</div></div>'+
         '<div class="pc-body" style="flex-direction:column;gap:12px;">'+
+          '<div class="pc-group"><span class="pc-label">图标名称显示</span>'+
+            '<button class="pc-btn pc-btn-cancel" id="dockHideToggle" type="button" style="border:1px solid rgba(0,0,0,0.1);">' + (cfg.hideLabels ? '已隐藏' : '显示中') + '</button>'+
+          '</div>'+
           '<div class="pc-group" style="margin-top:4px;">'+
-            '<span class="pc-label">颜色（同步边框）</span>'+
+            '<span class="pc-label">颜色</span>'+
             '<div class="pc-palette-grid" style="grid-template-columns: repeat(2, 1fr);">'+
               '<div class="pc-palette-item"><div class="pc-dot" id="dockDotBg" style="background:'+cfg.bgColor+';"></div><span class="pc-dot-lbl">底色</span></div>'+
               '<div class="pc-palette-item"><div class="pc-dot" id="dockDotBorder" style="background:'+cfg.borderColor+';"></div><span class="pc-dot-lbl">边框色</span></div>'+
@@ -49,7 +56,7 @@
           '</div>'+
           '<div class="pc-group"><span class="pc-label">背景透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="dockAlpha" min="0" max="100" value="'+cfg.bgAlpha+'"><span class="pc-slider-val" id="dockAlphaVal">'+cfg.bgAlpha+'%</span></div></div>'+
           '<div class="pc-group"><span class="pc-label">毛玻璃模糊度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="dockBlur" min="0" max="50" value="'+cfg.blur+'"><span class="pc-slider-val" id="dockBlurVal">'+cfg.blur+'px</span></div></div>'+
-          '<div class="pc-group"><span class="pc-label">边框粗细 (0为无边框)</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="dockBorderW" min="0" max="5" step="0.5" value="'+cfg.borderW+'"><span class="pc-slider-val" id="dockBorderWVal">'+cfg.borderW+'px</span></div></div>'+
+          '<div class="pc-group"><span class="pc-label">卡片边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="dockBorderW" min="0" max="5" step="0.5" value="'+cfg.borderW+'"><span class="pc-slider-val" id="dockBorderWVal">'+cfg.borderW+'px</span></div></div>'+
         '</div>'+
         '<div class="pc-footer">'+
           '<button class="pc-btn pc-btn-save" id="dockSaveBtn" type="button">保 存</button>'+
@@ -66,6 +73,13 @@
 
       panel.querySelector('#dockCloseBtnTop').addEventListener('click', function(e){ e.stopPropagation(); closeAndRevert(); });
       overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAndRevert(); });
+
+      panel.querySelector('#dockHideToggle').addEventListener('click', function(e){
+        e.stopPropagation();
+        cfg.hideLabels = !cfg.hideLabels;
+        this.textContent = cfg.hideLabels ? '已隐藏' : '显示中';
+        preview();
+      });
 
       ['dockAlpha', 'dockBlur', 'dockBorderW'].forEach(function(id) {
         var slider = panel.querySelector('#' + id); var valEl = panel.querySelector('#' + id + 'Val');
@@ -92,15 +106,17 @@
         panel.querySelector('#dockAlpha').value = cfg.bgAlpha; panel.querySelector('#dockAlphaVal').textContent = cfg.bgAlpha + '%';
         panel.querySelector('#dockBlur').value = cfg.blur; panel.querySelector('#dockBlurVal').textContent = cfg.blur + 'px';
         panel.querySelector('#dockBorderW').value = cfg.borderW; panel.querySelector('#dockBorderWVal').textContent = cfg.borderW + 'px';
+        panel.querySelector('#dockHideToggle').textContent = '显示中';
         preview(); App.showToast('已恢复默认');
       });
 
       panel.querySelector('#dockSaveBtn').addEventListener('click', function(e){
-        e.stopPropagation(); Dock.config = cfg; Dock.saveConfig(); overlay.remove(); App.showToast('底部栏设置已保存');
+        e.stopPropagation(); Dock.config = cfg; Dock.saveConfig(); overlay.remove(); App.showToast('设置已保存');
       });
     },
     init: function() {
       Dock.load(); Dock.applyConfig();
+      
       var items = [
         { id: 'dockMine', action: function(){ if(App.user) App.user.open(); } },
         { id: 'dockLong', action: function(){ if(App.character) App.character.open(); } },
@@ -112,43 +128,11 @@
         var el = App.$('#' + item.id); if (!el) return;
         var savedImg = App.LS.get('customIcon_' + item.id);
         if (savedImg) { var imgEl = el.querySelector('img'); if (imgEl) imgEl.src = savedImg; }
-        var off = Dock._dragOffsets[item.id];
-        if (off) el.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
-
-        var startX, startY, startOX, startOY, longPressed = false, timer = null, moved = false;
-        el.addEventListener('touchstart', function(e) {
-          e.preventDefault(); 
-          var t = e.touches[0]; startX = t.clientX; startY = t.clientY; longPressed = false; moved = false;
-          timer = setTimeout(function() {
-            longPressed = true; var curOff = Dock._dragOffsets[item.id] || {x:0, y:0}; startOX = curOff.x; startOY = curOff.y;
-            el.style.transition = 'none'; el.style.zIndex = '999'; if(navigator.vibrate) navigator.vibrate(15);
-          }, DRAG_DELAY);
-        }, {passive: false});
-
-        el.addEventListener('touchmove', function(e) {
-          var t = e.touches[0];
-          if (timer && !longPressed) {
-            if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { clearTimeout(timer); timer = null; }
-            return;
-          }
-          if (!longPressed) return;
-          moved = true; e.preventDefault(); e.stopPropagation();
-          var nx = startOX + t.clientX - startX, ny = startOY + t.clientY - startY;
-          items.forEach(function(other) {
-            if (other.id !== item.id) {
-              var otherOff = Dock._dragOffsets[other.id] || {x:0, y:0};
-              if (Math.abs(ny - otherOff.y) < 15) { ny = otherOff.y; }
-            }
-          });
-          el.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
-          Dock._dragOffsets[item.id] = {x: nx, y: ny};
-        }, {passive: false});
-
-        el.addEventListener('touchend', function(e) {
-          clearTimeout(timer); timer = null; el.style.transition = ''; el.style.zIndex = '';
-          if (longPressed && moved) { Dock.saveDrag(); e.stopPropagation(); } 
-          else if (!longPressed && !moved) { item.action(); } 
-          longPressed = false; moved = false;
+        
+        // 彻底取消拖拽，只保留简单的单击触发
+        el.addEventListener('click', function(e) {
+          e.stopPropagation();
+          item.action();
         });
       });
 
