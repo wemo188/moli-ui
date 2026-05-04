@@ -88,8 +88,17 @@ var Font={
   var scale = Font.getScale(name);
   document.body.style.fontFamily = family;
   
-  // 用 CSS 变量控制全局字体缩放
   document.documentElement.style.setProperty('--font-scale', scale);
+
+  // 强制竖排标签重排，防止切换字体后变横
+  setTimeout(function(){
+    var ribbons = document.querySelectorAll('.bx-ribbon-tab');
+    ribbons.forEach(function(el){
+      el.style.display = 'none';
+      el.offsetHeight; // 触发回流
+      el.style.display = '';
+    });
+  }, 100);
 },
 
   open:function(){
