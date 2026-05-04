@@ -229,7 +229,6 @@ var Cards={
 
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
-    panel.style.width='280px';panel.style.height='auto';
 
     panel.innerHTML=
       '<div class="pc-header" id="sbDragHandle">对话框设置<div class="pc-close-btn" id="sbCloseBtnTop">×</div></div>'+
