@@ -84,6 +84,8 @@ body {
   -webkit-user-drag: none !important;
 }
 
+img.img-fill { transform: none !important; }
+
 /* =========================
    悬浮球
 ========================= */
