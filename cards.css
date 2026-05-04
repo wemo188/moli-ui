@@ -357,6 +357,7 @@
   flex: 1; min-width: 0; height: 100%;
   padding: 0 14px; border: none; outline: none;
   background: transparent; color: var(--sb-text, #adcdea); font-size: 14px;
+  font-family: inherit;
   pointer-events: auto;
 }
 
@@ -385,6 +386,7 @@
   flex: 1; min-width: 0; height: 100%;
   padding: 0 14px; border: none; outline: none;
   background: transparent; color: var(--sb-text, #adcdea); font-size: 14px;
+  font-family: inherit;
   pointer-events: auto;
 }
 
