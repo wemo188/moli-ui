@@ -128,20 +128,14 @@ var Font={
     if(Font.customList.length){
       customHtml=Font.customList.map(function(f,ci){
         var isActive=selected===f.name;
-        var sc=f.scale!=null?f.scale:1;
         return '<div class="ft-custom-card'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
           '<div class="ft-custom-top">' +
-            '<div class="ft-item-preview" style="font-family:'+f.family+';font-size:'+Math.round(17*sc)+'px;">你好世界 Hello</div>' +
+          '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello</div>' +
             '<div class="ft-item-name">'+App.esc(f.fileName||f.name)+'</div>' +
             '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">' +
               '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
             '</div>' +
             '<div class="ft-item-check"></div>' +
-          '</div>' +
-          '<div class="ft-scale-row">' +
-            '<span class="ft-scale-label">视觉补偿</span>' +
-            '<input type="range" class="ft-scale-slider" data-ci="'+ci+'" min="0.6" max="1.6" step="0.05" value="'+sc+'">' +
-            '<span class="ft-scale-val" id="ftScaleVal'+ci+'">'+sc+'x</span>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -213,28 +207,6 @@ var Font={
         Font.config.selected=card.dataset.fname;
         Font.save();Font.apply();Font.render(panel);
       });
-    });
-
-    // 缩放滑块
-    panel.querySelectorAll('.ft-scale-slider').forEach(function(slider){
-      slider.addEventListener('input',function(e){
-        e.stopPropagation();
-        var ci=parseInt(slider.dataset.ci);
-        var val=parseFloat(slider.value);
-        var valEl=panel.querySelector('#ftScaleVal'+ci);
-        if(valEl)valEl.textContent=val+'x';
-
-        if(Font.customList[ci]){
-          Font.customList[ci].scale=val;
-          Font.save();
-        }
-
-        // 更新卡片内预览字大小
-        var card=slider.closest('.ft-custom-card');
-        if(card){var prev=card.querySelector('.ft-item-preview');if(prev)prev.style.fontSize=Math.round(17*val)+'px';}
-      });
-      slider.addEventListener('click',function(e){e.stopPropagation();});
-      slider.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
     });
 
     // 删除
