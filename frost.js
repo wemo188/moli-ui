@@ -307,8 +307,9 @@ if (el) {
       Eden.openEdit();
     }
   });
-    }
-  };
+  }
+ }
+};
 
   App.register('eden', Eden);
 })();
