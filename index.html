@@ -273,30 +273,7 @@ function imgFallback(img){
 <!-- ====== 面板 ====== -->
 
 <!-- 字体设置 -->
-<div id="fontPanel" class="panel hidden">
-  <div class="panel-header">
-    <h2>字体设置</h2>
-    <button class="panel-close" data-close="fontPanel" aria-label="关闭" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-  <div class="panel-body">
-    <div id="fontList" class="font-list"></div>
-    <div class="divider"></div>
-    <div class="upload-area" id="fontUploadArea">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-      <p>上传字体文件</p>
-      <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>
-    </div>
-    <div id="customFonts" class="font-list"></div>
-  </div>
-</div>
+<div id="fontPanel" class="fullpage-panel hidden"></div>
 
 <!-- 背景图片 -->
 <div id="bgPanel" class="panel hidden">
