@@ -229,6 +229,10 @@
 .pc-btn-cancel:active { background: rgba(0,0,0,0.05); }
 
 /* ====== 字体面板 ====== */
+#fontPanel {
+  background: #f4f7fb !important;
+}
+
 .ft-list {
   display: flex;
   flex-direction: column;
@@ -238,8 +242,8 @@
 .ft-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 14px 14px;
   background: rgba(126,163,201,.04);
   border: 1.5px solid rgba(126,163,201,.12);
   border-radius: 12px;
@@ -256,9 +260,36 @@
   box-shadow: 0 2px 8px rgba(46,66,88,.08);
 }
 
+/* ★ 自定义字体卡片（带缩放滑块） */
+.ft-custom-card {
+  padding: 0;
+  background: rgba(126,163,201,.04);
+  border: 1.5px solid rgba(126,163,201,.12);
+  border-radius: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .15s;
+  overflow: hidden;
+}
+
+.ft-custom-card:active { background: rgba(126,163,201,.1); }
+
+.ft-custom-card.active {
+  border-color: #2e4258;
+  background: rgba(46,66,88,.04);
+  box-shadow: 0 2px 8px rgba(46,66,88,.08);
+}
+
+.ft-custom-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 8px;
+}
+
 .ft-item-preview {
   flex: 1;
-  font-size: 15px;
+  font-size: 17px;
   color: #2e4258;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -266,35 +297,27 @@
   min-width: 0;
 }
 
-.ft-item-info {
-  flex-shrink: 0;
-}
-
 .ft-item-name {
   font-size: 10px;
   color: #8aa0b8;
   font-weight: 600;
   letter-spacing: .5px;
-  max-width: 80px;
+  max-width: 70px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ft-item-actions {
   flex-shrink: 0;
-  display: flex;
-  gap: 4px;
 }
 
 .ft-del-btn {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   cursor: pointer;
+  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -319,8 +342,37 @@
   transition: all .15s;
 }
 
-.ft-item.active .ft-item-check {
+.ft-item.active .ft-item-check,
+.ft-custom-card.active .ft-item-check {
   border-color: #2e4258;
   background: #2e4258;
   box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* ★ 缩放滑块行 */
+.ft-scale-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 12px;
+}
+
+.ft-scale-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8aa0b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ft-scale-slider {
+  flex: 1;
+}
+
+.ft-scale-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2e4258;
+  min-width: 32px;
+  text-align: right;
 }
