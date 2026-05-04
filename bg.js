@@ -326,13 +326,13 @@
            menu.querySelector('#icCancel').addEventListener('click', function(){ menu.remove(); });
            
            // 恢复默认：只更新链接，绝对不管缩放
-                      menu.querySelector('#icDefault').addEventListener('click', function(){
+              menu.querySelector('#icDefault').addEventListener('click', function(){
                menu.remove();
                App.LS.remove(ic.id);
                box.querySelector('img').src = ic.def;
                
                var tEl = document.querySelector(ic.target);
-               if(tEl) { tEl.src = ic.def; tEl.style.transform = ''; }
+               if(tEl) { tEl.src = ic.def; tEl.classList.remove('img-fill'); }
                if(ic.live) {
                    var liveImg = panel.querySelector(ic.live);
                    if(liveImg) { liveImg.src = ic.def; }
@@ -348,12 +348,12 @@
                   var f2 = e.target.files[0]; if(!f2) return;
                   var rd = new FileReader();
                   rd.onload = function(ev) {
-                            var process = function(c) {
+                      var process = function(c) {
                         App.LS.set(ic.id, c);
                         box.querySelector('img').src = c;
 
                         var tEl = document.querySelector(ic.target);
-                        if(tEl) { tEl.src = c; tEl.style.transform = 'none'; }
+                        if(tEl) { tEl.src = c; tEl.classList.add('img-fill'); }
                         if(ic.live) {
                           var liveImg = panel.querySelector(ic.live);
                           if(liveImg) { liveImg.src = c; }
