@@ -887,3 +887,5 @@ input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(1.15); /* 按住时微微放大 */
   background: #f0f6fb; /* 变一点点浅蓝底色 */
 }
+input[type="range"] { flex: 1; min-width: 0; }
+
