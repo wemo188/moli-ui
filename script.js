@@ -573,8 +573,6 @@ App.bindSwipeBack = function(el, onClose, opts) {
     });
   };
 
-  /* ✅ 修复8：openColorPicker 添加显式 callerId 参数 */
-  
 App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var old = App.$('#cpOverlay');
     if (old) {
@@ -589,47 +587,40 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     var savedPresets = App.LS.get('cpPresets') || ['#111111','#88abda','#ffffff','#9ca3af','#d1d5db','#c9706b'];
 
-    /* 颜色工具函数 */
     function rgbToHsl(r,g,b){var max=Math.max(r,g,b),min=Math.min(r,g,b);var h=0,s=0,l=(max+min)/2;if(max!==min){var d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);if(max===r)h=((g-b)/d+(g<b?6:0))/6;else if(max===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6;}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};}
-
     function hslToHex(h,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}r=Math.round((r+m)*255);g=Math.round((g+m)*255);b=Math.round((b+m)*255);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
-
     function hslToRgb(h,s,l){var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];}
 
-    function toRgba(hex,a){hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];return 'rgba('+parseInt(hex.substr(0,2),16)+','+parseInt(hex.substr(2,2),16)+','+parseInt(hex.substr(4,2),16)+','+(Math.round(a*100)/100)+')';}
+    function parseToStop(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1]),g=parseInt(rm[2]),b=parseInt(rm[3]);var hex='#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);return{color:hex,alpha:1};}return{color:str||'#111111',alpha:1};}
 
-    function parseToStop(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1]),g=parseInt(rm[2]),b=parseInt(rm[3]);var a=rm[4]!==undefined?parseFloat(rm[4]):1;var hex='#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);return{color:hex,alpha:a};}return{color:str||'#111111',alpha:1};}
+    function parseColor(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1])/255,g=parseInt(rm[2])/255,b=parseInt(rm[3])/255;var hsl=rgbToHsl(r,g,b);return{h:hsl.h,s:hsl.s,l:hsl.l};}var hex=str.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length===8)hex=hex.substr(0,6);if(hex.length!==6)return{h:0,s:0,l:0};var rr=parseInt(hex.substr(0,2),16)/255,gg=parseInt(hex.substr(2,2),16)/255,bb=parseInt(hex.substr(4,2),16)/255;var hsl2=rgbToHsl(rr,gg,bb);return{h:hsl2.h,s:hsl2.s,l:hsl2.l};}
 
-    function parseColor(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1])/255,g=parseInt(rm[2])/255,b=parseInt(rm[3])/255;var a=rm[4]!==undefined?parseFloat(rm[4]):1;var hsl=rgbToHsl(r,g,b);return{h:hsl.h,s:hsl.s,l:hsl.l,a:Math.max(0,Math.min(1,a))};}var hex=str.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];var alpha=1;if(hex.length===8){alpha=parseInt(hex.substr(6,2),16)/255;hex=hex.substr(0,6);}if(hex.length!==6)return{h:0,s:0,l:0,a:1};var rr=parseInt(hex.substr(0,2),16)/255,gg=parseInt(hex.substr(2,2),16)/255,bb=parseInt(hex.substr(4,2),16)/255;var hsl2=rgbToHsl(rr,gg,bb);return{h:hsl2.h,s:hsl2.s,l:hsl2.l,a:Math.max(0,Math.min(1,alpha))};}
-
-    /* 解析传入值 */
     var initGrad=false,initAngle=180;
-    var initStops=[{color:'#111111',alpha:1},{color:'#ffffff',alpha:1}];
+    var initStops=[{color:'#111111'},{color:'#888888'},{color:'#ffffff'}];
     if(currentColor&&currentColor.indexOf('linear-gradient')>=0){
       initGrad=true;
       var gm=currentColor.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
-      if(gm){initAngle=parseInt(gm[1])||180;var cp=gm[2].split(/,(?![^(]*\))/);if(cp.length>=2){initStops[0]=parseToStop(cp[0].trim());initStops[1]=parseToStop(cp[1].trim());}}
+      if(gm){initAngle=parseInt(gm[1])||180;var cp=gm[2].split(/,(?![^(]*\))/);if(cp.length>=2){initStops[0]=parseToStop(cp[0].trim());initStops[1]=parseToStop(cp[1].trim());if(cp.length>=3)initStops[2]=parseToStop(cp[2].trim());else initStops[2]=parseToStop(cp[cp.length-1].trim());}}
       currentColor=initStops[0].color;
     }
 
     var overlay=document.createElement('div');overlay.id='cpOverlay';overlay.className='cp-overlay';
     overlay._callerId=callerId||currentColor;overlay._onConfirm=onConfirm;overlay._onChange=onChange;
 
-    /* 状态 */
-    var currentHue=0,currentSat=100,currentLight=50,currentAlpha=1;
+    var currentHue=0,currentSat=100,currentLight=50;
     var selectedHex=currentColor||'#111111';
     var editing=false;
     var gradMode=initGrad;
-    var gradStops=[{color:initStops[0].color,alpha:initStops[0].alpha},{color:initStops[1].color,alpha:initStops[1].alpha}];
+    var gradStops=[{color:initStops[0].color},{color:initStops[1].color},{color:initStops[2].color}];
     var gradAngle=initAngle;
     var activeStop=0;
 
-    function getSolidOutput(){if(currentAlpha>=1)return hslToHex(currentHue,currentSat,currentLight);var rgb=hslToRgb(currentHue,currentSat/100,currentLight/100);return 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(Math.round(currentAlpha*100)/100)+')';}
-    function getGradOutput(){var c1=gradStops[0].alpha<1?toRgba(gradStops[0].color,gradStops[0].alpha):gradStops[0].color;var c2=gradStops[1].alpha<1?toRgba(gradStops[1].color,gradStops[1].alpha):gradStops[1].color;return 'linear-gradient('+gradAngle+'deg,'+c1+','+c2+')';}
+    function getSolidOutput(){return hslToHex(currentHue,currentSat,currentLight);}
+    function getGradOutput(){return 'linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+','+gradStops[2].color+')';}
     function getOutput(){return gradMode?getGradOutput():getSolidOutput();}
-    function getDisplayText(){if(gradMode)return getGradOutput();var hex6=hslToHex(currentHue,currentSat,currentLight);if(currentAlpha>=1)return hex6;return toRgba(hex6,currentAlpha);}
+    function getDisplayText(){return getOutput();}
 
-    function buildPresetsHtml(){return savedPresets.map(function(c,i){var safeC=App.escAttr(c);var bgStyle=c.indexOf('gradient')>=0?c:c.indexOf('rgba')>=0?c:safeC;return '<div class="cp-preset" data-color="'+safeC+'" data-idx="'+i+'" style="background:'+bgStyle+';"><div class="cp-preset-del">✕</div></div>';}).join('')+'<div class="cp-preset-add">+</div>';}
+    function buildPresetsHtml(){return savedPresets.map(function(c,i){var safeC=App.escAttr(c);var bgStyle=c.indexOf('gradient')>=0?c:safeC;return '<div class="cp-preset" data-color="'+safeC+'" data-idx="'+i+'" style="background:'+bgStyle+';"><div class="cp-preset-del">✕</div></div>';}).join('')+'<div class="cp-preset-add">+</div>';}
 
     overlay.innerHTML=
       '<div class="cp-panel">'+
@@ -639,14 +630,10 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
         '<div class="cp-spectrum" id="cpSpectrum"><canvas id="cpSpectrumCanvas"></canvas><div class="cp-spectrum-cursor" id="cpSpecCursor"></div></div>'+
         '<span class="cp-bar-label">色相</span>'+
         '<div class="cp-hue-wrap" id="cpHueWrap"><div class="cp-hue-bar"></div><div class="cp-hue-cursor" id="cpHueCursor"></div></div>'+
-        '<span class="cp-bar-label">亮度</span>'+
-        '<div class="cp-light-wrap" id="cpLightWrap"><div class="cp-light-bar" id="cpLightBar"></div><div class="cp-light-cursor" id="cpLightCursor"></div></div>'+
-        '<span class="cp-bar-label">透明度</span>'+
-        '<div class="cp-alpha-wrap" id="cpAlphaWrap"><div class="cp-alpha-bar" id="cpAlphaBar"></div><div class="cp-alpha-cursor" id="cpAlphaCursor"></div></div>'+
         '<div class="cp-gradient-area" id="cpGradientArea" style="'+(initGrad?'':'display:none;')+'">'+
-          '<div class="cp-grad-stops"><div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div><div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>终点</span></div></div>'+
+          '<div class="cp-grad-stops"><div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div><div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>中间</span></div><div class="cp-grad-stop" id="cpStop2" data-stop="2"><div class="cp-grad-dot" id="cpGradDot2"></div><span>终点</span></div></div>'+
           '<div class="cp-grad-preview" id="cpGradPreview"><div class="cp-grad-preview-inner" id="cpGradInner"></div></div>'+
-          '<div class="cp-grad-dir"><span style="font-size:10px;color:#999;">方向</span><input type="range" id="cpGradAngle" min="0" max="360" step="1" value="'+initAngle+'"><span id="cpGradAngleVal" style="font-size:10px;color:#999;width:30px;text-align:right;">'+initAngle+'°</span></div>'+
+          '<div class="cp-grad-dir"><span style="font-size:10px;color:#111;font-weight:600;">方向</span><input type="range" id="cpGradAngle" min="0" max="360" step="1" value="'+initAngle+'"><span id="cpGradAngleVal" style="font-size:10px;color:#111;font-weight:600;width:30px;text-align:right;">'+initAngle+'°</span></div>'+
         '</div>'+
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;"><div class="cp-presets" id="cpPresets">'+buildPresetsHtml()+'</div><button class="cp-preset-edit-btn" id="cpEditBtn" type="button">编辑</button></div>'+
         '<button class="cp-confirm" id="cpConfirm" type="button">确 定</button>'+
@@ -654,7 +641,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     document.body.appendChild(overlay);
 
-    /* DOM 引用 */
     var preview=overlay.querySelector('#cpPreview');
     var pvInner=preview.querySelector('.cp-pv-inner');
     var hexInput=overlay.querySelector('#cpHexInput');
@@ -664,17 +650,9 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var specCursor=overlay.querySelector('#cpSpecCursor');
     var hueWrap=overlay.querySelector('#cpHueWrap');
     var hueCursor=overlay.querySelector('#cpHueCursor');
-    var lightWrap=overlay.querySelector('#cpLightWrap');
-    var lightBar=overlay.querySelector('#cpLightBar');
-    var lightCursor=overlay.querySelector('#cpLightCursor');
-    var alphaWrap=overlay.querySelector('#cpAlphaWrap');
-    var alphaBar=overlay.querySelector('#cpAlphaBar');
-    var alphaCursor=overlay.querySelector('#cpAlphaCursor');
     var presetsEl=overlay.querySelector('#cpPresets');
     var gradArea=overlay.querySelector('#cpGradientArea');
     var gradInner=overlay.querySelector('#cpGradInner');
-    var gradDot0=overlay.querySelector('#cpGradDot0');
-    var gradDot1=overlay.querySelector('#cpGradDot1');
     var gradAngleInput=overlay.querySelector('#cpGradAngle');
     var gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
 
@@ -688,9 +666,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       specCtx.putImageData(imageData,0,0);
     }
 
-    function updateAlphaBar(){var hex6=hslToHex(currentHue,currentSat,currentLight);alphaBar.style.background='linear-gradient(to right, transparent, '+hex6+')';}
-    function updateLightBar(){var hx=hslToHex(currentHue,currentSat,50);lightBar.style.background='linear-gradient(to right, #000, '+hx+', #fff)';}
-    function updateGradPreview(){if(!gradInner)return;var c1=gradStops[0].alpha<1?toRgba(gradStops[0].color,gradStops[0].alpha):gradStops[0].color;var c2=gradStops[1].alpha<1?toRgba(gradStops[1].color,gradStops[1].alpha):gradStops[1].color;gradInner.style.background='linear-gradient('+gradAngle+'deg,'+c1+','+c2+')';if(gradDot0)gradDot0.style.background=gradStops[0].color;if(gradDot1)gradDot1.style.background=gradStops[1].color;}
+    function updateGradPreview(){if(!gradInner)return;gradInner.style.background='linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+','+gradStops[2].color+')';var d0=overlay.querySelector('#cpGradDot0');var d1=overlay.querySelector('#cpGradDot1');var d2=overlay.querySelector('#cpGradDot2');if(d0)d0.style.background=gradStops[0].color;if(d1)d1.style.background=gradStops[1].color;if(d2)d2.style.background=gradStops[2].color;}
 
     function updateUI(){
       selectedHex=getOutput();
@@ -703,21 +679,16 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       specCursor.style.background=hslToHex(currentHue,currentSat,currentLight);
       hueCursor.style.left=(currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background=hslToHex(currentHue,100,50);
-      lightCursor.style.left=(currentLight/100)*lightWrap.clientWidth+'px';
-      alphaCursor.style.left=currentAlpha*alphaWrap.clientWidth+'px';
-      updateAlphaBar();
-      updateLightBar();
 
       if(gradMode){
         gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);
-        gradStops[activeStop].alpha=currentAlpha;
         updateGradPreview();
       }
 
       var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);
     }
 
-    function setFromColor(colorStr){var parsed=parseColor(colorStr);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;currentAlpha=parsed.a;drawSpectrum();updateUI();}
+    function setFromColor(colorStr){var parsed=parseColor(colorStr);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;drawSpectrum();updateUI();}
 
     setFromColor(currentColor||'#111111');
     if(initGrad)updateGradPreview();
@@ -725,19 +696,18 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     overlay._setColor=function(c){
       if(c&&c.indexOf('linear-gradient')>=0){
         var gm2=c.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
-        if(gm2){gradAngle=parseInt(gm2[1])||180;var parts=gm2[2].split(/,(?![^(]*\))/);if(parts.length>=2){gradStops[0]=parseToStop(parts[0].trim());gradStops[1]=parseToStop(parts[1].trim());}}
+        if(gm2){gradAngle=parseInt(gm2[1])||180;var parts=gm2[2].split(/,(?![^(]*\))/);if(parts.length>=2){gradStops[0]=parseToStop(parts[0].trim());gradStops[1]=parseToStop(parts[1].trim());if(parts.length>=3)gradStops[2]=parseToStop(parts[2].trim());else gradStops[2]=parseToStop(parts[parts.length-1].trim());}}
         gradMode=true;overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='gradient');});
         if(gradArea)gradArea.style.display='';
         if(gradAngleInput){gradAngleInput.value=gradAngle;gradAngleValEl.textContent=gradAngle+'°';}
-        activeStop=0;setFromColor(gradStops[0].color);currentAlpha=gradStops[0].alpha;updateGradPreview();
+        activeStop=0;setFromColor(gradStops[0].color);updateGradPreview();
       } else {
         gradMode=false;overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='solid');});
         if(gradArea)gradArea.style.display='none';setFromColor(c);
       }
     };
 
-    /* ====== 拖拽事件 ====== */
-    var specDrag=false,hueDrag=false,alphaDrag=false,lightDrag=false;
+    var specDrag=false,hueDrag=false;
 
     function specFromPos(e){var rect=specEl.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentSat=Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));var rawL=100-(t.clientY-rect.top)/rect.height*100;currentLight=Math.max(0,Math.min(100,rawL));updateUI();}
     specEl.addEventListener('mousedown',function(e){e.preventDefault();specDrag=true;specFromPos(e);});
@@ -747,57 +717,44 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
     hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
 
-    function lightFromPos(e){var rect=lightWrap.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentLight=Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));updateUI();}
-    lightWrap.addEventListener('mousedown',function(e){e.preventDefault();lightDrag=true;lightFromPos(e);});
-    lightWrap.addEventListener('touchstart',function(e){e.preventDefault();lightDrag=true;lightFromPos(e);},{passive:false});
-
-    function alphaFromPos(e){var rect=alphaWrap.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentAlpha=Math.max(0,Math.min(1,(t.clientX-rect.left)/rect.width));updateUI();}
-    alphaWrap.addEventListener('mousedown',function(e){e.preventDefault();alphaDrag=true;alphaFromPos(e);});
-    alphaWrap.addEventListener('touchstart',function(e){e.preventDefault();alphaDrag=true;alphaFromPos(e);},{passive:false});
-
-    function onDocMouseMove(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);if(lightDrag)lightFromPos(e);if(alphaDrag)alphaFromPos(e);}
-    function onDocMouseUp(){specDrag=false;hueDrag=false;lightDrag=false;alphaDrag=false;}
-    function onDocTouchMove(e){if(specDrag||hueDrag||lightDrag||alphaDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);if(lightDrag)lightFromPos(e);if(alphaDrag)alphaFromPos(e);}}
-    function onDocTouchEnd(){specDrag=false;hueDrag=false;lightDrag=false;alphaDrag=false;}
+    function onDocMouseMove(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}
+    function onDocMouseUp(){specDrag=false;hueDrag=false;}
+    function onDocTouchMove(e){if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}}
+    function onDocTouchEnd(){specDrag=false;hueDrag=false;}
 
     document.addEventListener('mousemove',onDocMouseMove);
     document.addEventListener('mouseup',onDocMouseUp);
     document.addEventListener('touchmove',onDocTouchMove,{passive:false});
     document.addEventListener('touchend',onDocTouchEnd);
 
-    /* ====== Hex 输入 ====== */
-    hexInput.addEventListener('input',function(){var v=this.value.trim();if(v.indexOf('linear-gradient')>=0){overlay._setColor(v);return;}if(/^#[0-9a-fA-F]{6,8}$/.test(v)||/^rgba?\(.+\)$/.test(v)){setFromColor(v);}});
+    hexInput.addEventListener('input',function(){var v=this.value.trim();if(v.indexOf('linear-gradient')>=0){overlay._setColor(v);return;}if(/^#[0-9a-fA-F]{6}$/.test(v)){setFromColor(v);}});
 
-    /* ====== 模式切换 ====== */
     overlay.querySelectorAll('.cp-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();
         overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');
         gradMode=btn.dataset.mode==='gradient';
         if(gradArea)gradArea.style.display=gradMode?'':'none';
-        if(gradMode){gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);gradStops[activeStop].alpha=currentAlpha;updateGradPreview();}
+        if(gradMode){gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);updateGradPreview();}
         updateUI();
       });
     });
 
-    /* ====== 渐变色标切换 ====== */
     overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
       stop.addEventListener('click',function(e){e.stopPropagation();
         overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});stop.classList.add('active');
-        activeStop=parseInt(stop.dataset.stop);setFromColor(gradStops[activeStop].color);currentAlpha=gradStops[activeStop].alpha;updateUI();
+        activeStop=parseInt(stop.dataset.stop);setFromColor(gradStops[activeStop].color);updateUI();
       });
     });
 
-    /* ====== 渐变角度 ====== */
     if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=parseInt(this.value);if(gradAngleValEl)gradAngleValEl.textContent=gradAngle+'°';updateGradPreview();selectedHex=getOutput();var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);});}
 
-    /* ====== 预设 ====== */
     function rebindPresets(){
       presetsEl.innerHTML=buildPresetsHtml();
       if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');
       presetsEl.querySelectorAll('.cp-preset').forEach(function(p){
         p.addEventListener('click',function(e){e.stopPropagation();if(editing)return;var c=p.dataset.color;
           if(c.indexOf('linear-gradient')>=0){overlay._setColor(c);}
-          else{if(gradMode){gradStops[activeStop]=parseToStop(c);updateGradPreview();updateUI();}else{setFromColor(c);}}
+          else{if(gradMode){gradStops[activeStop].color=c;updateGradPreview();updateUI();}else{setFromColor(c);}}
         });
         var del=p.querySelector('.cp-preset-del');
         if(del){del.addEventListener('click',function(e){e.stopPropagation();savedPresets.splice(parseInt(p.dataset.idx),1);App.LS.set('cpPresets',savedPresets);rebindPresets();});}
@@ -809,7 +766,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     overlay.querySelector('#cpEditBtn').addEventListener('click',function(e){e.stopPropagation();editing=!editing;this.textContent=editing?'完成':'编辑';if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');});
 
-    /* ====== 面板拖拽 ====== */
     var cpPanel=overlay.querySelector('.cp-panel');
     var cpHead=overlay.querySelector('.cp-header');
     var _cpDrag={active:false,sx:0,sy:0,ox:0,oy:0};
@@ -825,7 +781,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     document.addEventListener('touchmove',onCpDragMove,{passive:false});
     document.addEventListener('touchend',onCpDragEnd);
 
-    /* ====== 关闭 ====== */
     function doClose(){
       document.removeEventListener('mousemove',onDocMouseMove);document.removeEventListener('mouseup',onDocMouseUp);
       document.removeEventListener('touchmove',onDocTouchMove);document.removeEventListener('touchend',onDocTouchEnd);
@@ -837,7 +792,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){e.stopPropagation();var fn=overlay._onConfirm;if(fn)fn(getOutput());doClose();});
   };
-
+      
   App.state = {
     ball: null,
     ballMenuEl: null,
