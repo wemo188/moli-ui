@@ -1,3 +1,4 @@
+
 (function(){
   'use strict';
   var App = window.App; if(!App) return;
@@ -12,6 +13,19 @@
       if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
       if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
       if(App.LS.get('topIconConfig')) Bg.applyTopIconStyle(iconConfig);
+
+      // 页面加载时，给已有自定义图标加上 custom-icon 标记
+      ['customIcon_cg','customIcon_lt','customIcon_dockMine','customIcon_dockLong','customIcon_dockShort','customIcon_dockCheck'].forEach(function(iconId) {
+        if(App.LS.get(iconId)) {
+          var targetMap = {
+            'customIcon_cg': '#cardIcon1 .card-icon-img',
+            'customIcon_lt': '#cardIcon2 .card-icon-img'
+          };
+          var sel = targetMap[iconId];
+          if(sel) { var el = document.querySelector(sel); if(el) el.classList.add('custom-icon'); }
+        }
+      });
+
       App.bg = Bg;
     },
 
@@ -22,7 +36,6 @@
       if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
       if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
 
-      // 保存当前状态（关闭时恢复用）
       Bg._savedData = JSON.parse(JSON.stringify(bgData));
 
       var hasBg = !!bgData.src;
@@ -98,7 +111,6 @@
     },
 
     close: function() {
-      // ★ 恢复到打开面板前的状态
       if(Bg._savedData) Bg.applyBg(Bg._savedData);
       var panel = App.$('#bgPanel'); if(!panel) return;
       panel.classList.remove('show');
@@ -147,7 +159,12 @@
           if(act === 'cancel') return;
           if(act === 'reset') {
             App.LS.remove(iconId);
-            var tEl = document.querySelector(target); if(tEl) tEl.src = def;
+            var tEl = document.querySelector(target);
+            if(tEl) {
+              tEl.src = def;
+              var wrapper = tEl.closest('.card-icon-img');
+              if(wrapper) wrapper.classList.remove('custom-icon');
+            }
             var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = def;
             App.showToast('已恢复'); return;
           }
@@ -159,7 +176,12 @@
               rd.onload = function(r) {
                 var process = function(c) {
                   App.LS.set(iconId, c);
-                  var tEl = document.querySelector(target); if(tEl) tEl.src = c;
+                  var tEl = document.querySelector(target);
+                  if(tEl) {
+                    tEl.src = c;
+                    var wrapper = tEl.closest('.card-icon-img');
+                    if(wrapper) wrapper.classList.add('custom-icon');
+                  }
                   var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = c;
                   App.showToast('图标已更换');
                 };
@@ -174,10 +196,8 @@
     },
 
     bindEvents: function(panel, iconConfig) {
-      // 关闭（恢复）
       panel.querySelector('#bgCloseBtn').addEventListener('click', function() { Bg.close(); });
 
-      // 上传背景
       var fileInput = panel.querySelector('#bgFileInput');
       panel.querySelector('#bgUploadArea').addEventListener('click', function() { fileInput.click(); });
       fileInput.addEventListener('change', function(e) {
@@ -197,7 +217,6 @@
         e.target.value = '';
       });
 
-      // 滑块实时预览
       function previewBg() {
         var blur = parseInt(panel.querySelector('#bgBlurSlider').value);
         var dark = parseInt(panel.querySelector('#bgDarkSlider').value);
@@ -209,24 +228,22 @@
       panel.querySelector('#bgBlurSlider').addEventListener('input', previewBg);
       panel.querySelector('#bgDarkSlider').addEventListener('input', previewBg);
 
-      // ★ 应用背景（真正保存）
       panel.querySelector('#bgApplyBtn').addEventListener('click', function() {
         var src = Bg._tempSrc || (Bg._savedData || {}).src || '';
         if(!src) { App.showToast('请先上传图片'); return; }
         var d = { src: src, blur: parseInt(panel.querySelector('#bgBlurSlider').value), dark: parseInt(panel.querySelector('#bgDarkSlider').value) };
         try {
           App.LS.set('bgData', d);
-          Bg._savedData = d; // ★ 更新保存点，这样关闭时不会恢复旧的
+          Bg._savedData = d;
           Bg.applyBg(d);
           App.showToast('背景已应用');
         } catch(e) { App.showToast('图片太大，请压缩后重试'); }
       });
 
-      // 移除背景
       panel.querySelector('#bgRemoveBtn').addEventListener('click', function() {
         App.LS.remove('bgData');
         Bg._tempSrc = '';
-        Bg._savedData = {}; // ★ 清空保存点
+        Bg._savedData = {};
         Bg.applyBg({});
         panel.querySelector('#bgBlurSlider').value = 0;
         panel.querySelector('#bgDarkSlider').value = 0;
@@ -236,7 +253,6 @@
         App.showToast('背景已移除');
       });
 
-      // 图标样式（这些是即时保存的，不需要"应用"按钮）
       function updateIcon() {
         var bw = parseFloat(panel.querySelector('#bgIconBorderSlider').value);
         var sw = parseInt(panel.querySelector('#bgIconShadowSlider').value);
@@ -249,7 +265,6 @@
       panel.querySelector('#bgIconBorderSlider').addEventListener('input', updateIcon);
       panel.querySelector('#bgIconShadowSlider').addEventListener('input', updateIcon);
 
-      // 颜色
       panel.querySelector('#bgColorDot').addEventListener('click', function(e) {
         e.stopPropagation(); if(!App.openColorPicker) return;
         App.openColorPicker(iconConfig.borderColor, function(hex) {
@@ -263,7 +278,6 @@
         });
       });
 
-      // 恢复默认
       panel.querySelector('#bgResetColorBtn').addEventListener('click', function() {
         iconConfig = { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
         panel.querySelector('#bgColorDot').style.background = '#dcebff';
@@ -291,7 +305,9 @@
       var styleId = 'topIconDynamicStyle';
       var styleEl = document.getElementById(styleId);
       if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
-      styleEl.innerHTML = '.card-icon-img { border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor || '#dcebff') + ' !important; box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor || '#dcebff') + ' !important; border-radius: 15px !important; }';
+      styleEl.innerHTML =
+        '.card-icon-img { border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor || '#dcebff') + ' !important; box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor || '#dcebff') + ' !important; border-radius: 15px !important; overflow: hidden !important; }' +
+        ' .card-icon-img.custom-icon img { width: 100% !important; height: 100% !important; object-fit: cover !important; transform: none !important; }';
     }
   };
 
