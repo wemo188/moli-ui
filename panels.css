@@ -217,8 +217,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 55vh;
-  background: rgba(255,255,255,.22);
+  max-height: 45vh;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 24px 24px 0 0;
   z-index: 9995;
   display: flex;
@@ -482,8 +484,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 55vh;
-  background: rgba(255,255,255,.32);
+  max-height: 45vh;
+  background: rgba(255,255,255,.42);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px 24px 0 0;
