@@ -216,7 +216,7 @@
   padding: 12px 14px; margin-bottom: 10px;
 }
 .cm-param:last-child { margin-bottom: 0; }
-.cm-param-title { font-size: 13px; font-weight: 700; color: #111; letter-spacing: .5px; font-family: "SF Mono","Menlo",monospace; }
+.cm-param-title { font-size: 13px; font-weight: 700; color: #111; letter-spacing: .5px; }
 .cm-param-desc { font-size: 10px; color: #999; margin-top: 2px; line-height: 1.4; }
 .cm-param-slider { margin-top: 8px; }
 
