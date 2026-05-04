@@ -18,7 +18,7 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-  font-size: calc(15px * var(--font-scale));
+  font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   margin: 0;
@@ -26,7 +26,6 @@ body {
 }
 
 :root {
-  --font-scale: 1;
   --bg-primary: #ffffff;
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
