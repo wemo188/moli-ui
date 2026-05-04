@@ -15,6 +15,8 @@
       if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
       if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
       if(App.LS.get('topIconConfig')) Bg.applyTopIconStyle(iconConfig);
+      
+      App.bg = Bg;  // ← 加这行
     },
 
     open: function() {
