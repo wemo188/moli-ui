@@ -32,12 +32,12 @@
 
       // 移除了所有越界的 scale 控制属性
       var iconList = [
-        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg },
-        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt },
-        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1 },
-        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2 },
-        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3 },
-        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4 }
+        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg, origScale: '' },
+        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt, origScale: '' },
+        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1, origScale: 'scale(0.8)' },
+        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2, origScale: 'scale(0.8)' },
+        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3, origScale: 'scale(1)' },
+        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4, origScale: 'scale(0.85)' }
       ];
 
       var noImgDrag = 'pointer-events:none; -webkit-touch-callout:none; user-select:none; -webkit-user-drag:none;';
@@ -309,7 +309,7 @@
                box.querySelector('img').src = ic.def;
                
                var tEl = document.querySelector(ic.target);
-               if(tEl) { tEl.src = ic.def; }
+               if(tEl) { tEl.src = ic.def; tEl.style.transform = ic.origScale || ''; }
                if(ic.live) {
                    var liveImg = panel.querySelector(ic.live);
                    if(liveImg) { liveImg.src = ic.def; }
@@ -325,12 +325,12 @@
                   var f2 = e.target.files[0]; if(!f2) return;
                   var rd = new FileReader();
                   rd.onload = function(ev) {
-                     var process = function(c) {
+                            var process = function(c) {
                         App.LS.set(ic.id, c);
                         box.querySelector('img').src = c;
 
                         var tEl = document.querySelector(ic.target);
-                        if(tEl) { tEl.src = c; }
+                        if(tEl) { tEl.src = c; tEl.style.transform = 'none'; }
                         if(ic.live) {
                           var liveImg = panel.querySelector(ic.live);
                           if(liveImg) { liveImg.src = c; }
