@@ -63,11 +63,13 @@ var Cards={
   },
 
   applySBColors:function(){
-    var sb=Cards._sbData;var area=App.$('#searchArea');if(!area)return;
+    var sb=Cards._sbData;
+    var area=App.$('.left-search-area');  // ← 改这里
+    if(!area)return;
     area.style.setProperty('--sb-border',sb.border);
     area.style.setProperty('--sb-shadow',sb.shadow);
     area.style.setProperty('--sb-text',sb.textC);
-  },
+},
 
   /* ★ 重写：只更新内部数据，绝不摧毁你的 HTML 结构 */
   render:function(){
