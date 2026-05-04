@@ -21,23 +21,24 @@
       panel.className = 'fullpage-panel hidden';
       panel.style.background = '#f4f7fb';
 
-      var iconDef = {
-        cg: App.LS.get('customIcon_cg') || 'https://iili.io/BsSI1j9.md.jpg',
-        lt: App.LS.get('customIcon_lt') || 'https://iili.io/BQ98Pxp.md.jpg',
-        d1: App.LS.get('customIcon_dockMine') || 'https://iili.io/B5DgD5N.jpg',
-        d2: App.LS.get('customIcon_dockLong') || 'https://iili.io/BudrfVa.md.jpg',
-        d3: App.LS.get('customIcon_dockShort') || 'https://iili.io/BsZkNx1.md.jpg',
-        d4: App.LS.get('customIcon_dockCheck') || 'https://iili.io/BghjowQ.md.jpg'
+            // ★ 真正的默认图，永远不受 localStorage 影响
+      var ICON_DEFAULTS = {
+        cg: 'https://iili.io/BsSI1j9.md.jpg',
+        lt: 'https://iili.io/BQ98Pxp.md.jpg',
+        d1: 'https://iili.io/B5DgD5N.jpg',
+        d2: 'https://iili.io/BudrfVa.md.jpg',
+        d3: 'https://iili.io/BsZkNx1.md.jpg',
+        d4: 'https://iili.io/BghjowQ.md.jpg'
       };
 
       // 移除了所有越界的 scale 控制属性
-      var iconList = [
-        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg, origScale: '' },
-        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt, origScale: '' },
-        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1, origScale: 'scale(0.8)' },
-        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2, origScale: 'scale(0.8)' },
-        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3, origScale: 'scale(1)' },
-        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4, origScale: 'scale(0.85)' }
+            var iconList = [
+        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: ICON_DEFAULTS.cg },
+        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: ICON_DEFAULTS.lt },
+        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: ICON_DEFAULTS.d1 },
+        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: ICON_DEFAULTS.d2 },
+        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: ICON_DEFAULTS.d3 },
+        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: ICON_DEFAULTS.d4 }
       ];
 
       var noImgDrag = 'pointer-events:none; -webkit-touch-callout:none; user-select:none; -webkit-user-drag:none;';
@@ -79,8 +80,8 @@
             
             '<!-- 预览台 -->' +
             '<div style="background:linear-gradient(135deg,#f0f5fa,#e1edf7);border-radius:14px;padding:30px 0 40px;display:flex;justify-content:center;gap:40px;margin-bottom:20px;border:1px solid rgba(126,163,201,.2);box-shadow:inset 0 4px 12px rgba(0,0,0,0.02);">' +
-               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_cg')||iconDef.cg)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
-               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_lt')||iconDef.lt)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
+               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_cg')||ICON_DEFAULTS.cg)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
+               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_lt')||ICON_DEFAULTS.lt)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
