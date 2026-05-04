@@ -307,16 +307,27 @@ var Cards={
     panel.querySelector('#sbDel1').addEventListener('click',function(e){e.stopPropagation();handleAv(1,'del');});
     panel.querySelector('#sbDel2').addEventListener('click',function(e){e.stopPropagation();handleAv(2,'del');});
 
-    function bindColorDot(dotId,key,callerId){
-      panel.querySelector(dotId).addEventListener('click',function(e){
+    // 统一配色：点任意一个色块，三个同步变
+var allDots = ['#sbDotBorder','#sbDotShadow','#sbDotText'];
+var allKeys = ['border','shadow','textC'];
+
+allDots.forEach(function(dotId){
+    panel.querySelector(dotId).addEventListener('click',function(e){
         e.stopPropagation();if(!App.openColorPicker)return;
-        App.openColorPicker(sb[key],function(hex){sb[key]=hex;panel.querySelector(dotId).style.background=hex;Cards._sbData=sb;Cards.applySBColors();},
-        function(hex){sb[key]=hex;panel.querySelector(dotId).style.background=hex;Cards._sbData=sb;Cards.applySBColors();},callerId);
-      });
-    }
-    bindColorDot('#sbDotBorder','border','sb_border');
-    bindColorDot('#sbDotShadow','shadow','sb_shadow');
-    bindColorDot('#sbDotText','textC','sb_text');
+        var currentColor = sb.border; // 以边框色为基准
+        App.openColorPicker(currentColor, function(hex){
+            // 确认：三个全改
+            allKeys.forEach(function(k){ sb[k]=hex; });
+            allDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
+            Cards._sbData=sb; Cards.applySBColors();
+        }, function(hex){
+            // 实时预览：三个全改
+            allKeys.forEach(function(k){ sb[k]=hex; });
+            allDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
+            Cards._sbData=sb; Cards.applySBColors();
+        }, 'sb_unified');
+    });
+});
 
     panel.querySelector('#sbResetBtn').addEventListener('click',function(e){
       e.stopPropagation();
