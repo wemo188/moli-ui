@@ -84,17 +84,10 @@
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
-              '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:50px;">颜色设置</span>' +
-              '<div style="display:flex;gap:16px;">' +
-                '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">' +
-                  '<div id="bgDotBorder" style="width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.1);background:'+iconConfig.borderColor+';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
-                  '<span style="font-size:9px;font-weight:700;color:#555;">边框色</span>' +
-                '</div>' +
-                '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">' +
-                  '<div id="bgDotShadow" style="width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.1);background:'+iconConfig.shadowColor+';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
-                  '<span style="font-size:9px;font-weight:700;color:#555;">阴影色</span>' +
-                '</div>' +
-              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:50px;">统一颜色</span>' +
+              '<div id="bgDotUnified" style="width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.1);background:'+iconConfig.borderColor+';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
+              '<span style="font-size:10px;color:#999;">边框 + 阴影</span>' +
+              '<button id="bgResetColor" type="button" style="margin-left:auto;padding:6px 12px;border:1px solid rgba(201,112,107,.3);border-radius:8px;background:rgba(201,112,107,.05);color:#c9706b;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">恢复默认</button>' +
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
@@ -273,8 +266,38 @@
           });
         });
       }
-      bindColorDot('#bgDotBorder', 'borderColor');
-      bindColorDot('#bgDotShadow', 'shadowColor');
+            // ★ 统一颜色：一个色块同时控制边框和阴影
+      panel.querySelector('#bgDotUnified').addEventListener('click', function(e) {
+        e.stopPropagation();
+        if(!App.openColorPicker) return;
+        App.openColorPicker(iconConfig.borderColor, function(hex){
+          iconConfig.borderColor = hex;
+          iconConfig.shadowColor = hex;
+          panel.querySelector('#bgDotUnified').style.background = hex;
+          updateIconStyle();
+        }, function(hex){
+          iconConfig.borderColor = hex;
+          iconConfig.shadowColor = hex;
+          panel.querySelector('#bgDotUnified').style.background = hex;
+          updateIconStyle();
+        });
+      });
+
+      // ★ 恢复默认颜色
+      panel.querySelector('#bgResetColor').addEventListener('click', function(e) {
+        e.stopPropagation();
+        iconConfig.borderColor = '#dcebff';
+        iconConfig.shadowColor = '#dcebff';
+        iconConfig.borderW = 1.5;
+        iconConfig.shadow = 4;
+        panel.querySelector('#bgDotUnified').style.background = '#dcebff';
+        bSlider.value = 1.5; panel.querySelector('#bgNewIconBorderVal').textContent = '1.5px';
+        sSlider.value = 4; panel.querySelector('#bgNewIconShadowVal').textContent = '4px';
+        App.LS.set('topIconConfig', iconConfig);
+        Bg.applyTopIconStyle(iconConfig);
+        updateIconStyle();
+        App.showToast('已恢复默认颜色');
+      });
 
       var grid = panel.querySelector('#bgIconGridManager');
 
@@ -303,13 +326,13 @@
            menu.querySelector('#icCancel').addEventListener('click', function(){ menu.remove(); });
            
            // 恢复默认：只更新链接，绝对不管缩放
-           menu.querySelector('#icDefault').addEventListener('click', function(){
+                      menu.querySelector('#icDefault').addEventListener('click', function(){
                menu.remove();
                App.LS.remove(ic.id);
                box.querySelector('img').src = ic.def;
                
                var tEl = document.querySelector(ic.target);
-               if(tEl) { tEl.src = ic.def; tEl.style.transform = ic.origScale || ''; }
+               if(tEl) { tEl.src = ic.def; tEl.style.transform = ''; }
                if(ic.live) {
                    var liveImg = panel.querySelector(ic.live);
                    if(liveImg) { liveImg.src = ic.def; }
