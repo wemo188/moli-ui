@@ -113,7 +113,7 @@ var Font={
     var builtinHtml=BUILTIN.map(function(f){
       var isActive=selected===f.name;
       return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
-        '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello 永</div>' +
+        '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello</div>' +
         '<div class="ft-item-name">'+App.esc(f.name)+'</div>' +
         '<div class="ft-item-check"></div>' +
       '</div>';
@@ -126,7 +126,7 @@ var Font={
         var sc=f.scale!=null?f.scale:1;
         return '<div class="ft-custom-card'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
           '<div class="ft-custom-top">' +
-            '<div class="ft-item-preview" style="font-family:'+f.family+';font-size:'+Math.round(17*sc)+'px;">你好世界 Hello 永</div>' +
+            '<div class="ft-item-preview" style="font-family:'+f.family+';font-size:'+Math.round(17*sc)+'px;">你好世界 Hello</div>' +
             '<div class="ft-item-name">'+App.esc(f.fileName||f.name)+'</div>' +
             '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">' +
               '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
