@@ -142,7 +142,7 @@ var Font={
       }).join('');
     }
 
-        panel.innerHTML=
+            panel.innerHTML=
       '<div class="hp-handle"></div>' +
       '<div class="hp-header">' +
         '<h2>字体</h2>' +
