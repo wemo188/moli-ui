@@ -29,34 +29,28 @@
         d4: App.LS.get('customIcon_dockCheck') || 'https://iili.io/BghjowQ.md.jpg'
       };
 
-      // 图标全配置（附带默认缩放比例，解决白边问题）
+      // 移除了所有越界的 scale 控制属性
       var iconList = [
-        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg, scale: 'scale(0.85)' },
-        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt, scale: 'scale(0.85)' },
-        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1, scale: 'scale(0.8)' },
-        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2, scale: 'scale(0.8)' },
-        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3, scale: 'scale(1)' },
-        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4, scale: 'scale(0.85)' }
+        { id: 'customIcon_cg', label: '查岗(上侧)', target: '#cardIcon1 img', live: '#bgLiveIcon1 img', def: iconDef.cg },
+        { id: 'customIcon_lt', label: '论坛(上侧)', target: '#cardIcon2 img', live: '#bgLiveIcon2 img', def: iconDef.lt },
+        { id: 'customIcon_dockMine', label: 'User(底部)', target: '#dockMine img', def: iconDef.d1 },
+        { id: 'customIcon_dockLong', label: 'Char(底部)', target: '#dockLong img', def: iconDef.d2 },
+        { id: 'customIcon_dockShort', label: '聊天(底部)', target: '#dockShort img', def: iconDef.d3 },
+        { id: 'customIcon_dockCheck', label: '线下(底部)', target: '#dockCheck img', def: iconDef.d4 }
       ];
 
-      // ★ 初始化时，自动修正所有真实图标的缩放状态，完美解决留白！
+      // ★ 仅初始化图片链接，绝不动 transform
       iconList.forEach(function(ic) {
         var saved = App.LS.get(ic.id);
         var tEl = document.querySelector(ic.target);
         if (tEl) {
-          if (saved) {
-             tEl.src = saved;
-             tEl.style.transform = 'none'; // 自定义图强制填满
-          } else {
-             tEl.src = ic.def;
-             tEl.style.transform = ic.scale; // 默认图恢复缩放
-          }
+          if (saved) tEl.src = saved;
+          else tEl.src = ic.def;
         }
       });
 
       var noImgDrag = 'pointer-events:none; -webkit-touch-callout:none; user-select:none; -webkit-user-drag:none;';
 
-      // 注入全屏 HTML
       panel.innerHTML = 
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;background:#fff;border-bottom:1px solid rgba(126,163,201,.2);flex-shrink:0;z-index:10;">' +
           '<button id="bgCloseBtnTop" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>' +
@@ -94,8 +88,8 @@
             
             '<!-- 预览台 -->' +
             '<div style="background:linear-gradient(135deg,#f0f5fa,#e1edf7);border-radius:14px;padding:30px 0 40px;display:flex;justify-content:center;gap:40px;margin-bottom:20px;border:1px solid rgba(126,163,201,.2);box-shadow:inset 0 4px 12px rgba(0,0,0,0.02);">' +
-               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_cg')||iconDef.cg)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + (App.LS.get('customIcon_cg')?'':'transform:scale(0.85);') + '"></div>' +
-               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_lt')||iconDef.lt)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + (App.LS.get('customIcon_lt')?'':'transform:scale(0.85);') + '"></div>' +
+               '<div id="bgLiveIcon1" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_cg')||iconDef.cg)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
+               '<div id="bgLiveIcon2" style="width:65px;height:65px;border-radius:15px;background:#fff;transition:all 0.1s;display:flex;align-items:center;justify-content:center;"><img src="'+(App.LS.get('customIcon_lt')||iconDef.lt)+'" style="width:100%;height:100%;object-fit:cover;border-radius:15px;' + noImgDrag + '"></div>' +
             '</div>' +
 
             '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
@@ -298,12 +292,11 @@
         box.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
         box.innerHTML = 
           '<div style="width:54px;height:54px;border-radius:14px;border:1px solid rgba(126,163,201,.3);overflow:hidden;background:#f5f5f5;box-shadow:0 4px 10px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;">' +
-            '<img src="' + App.escAttr(App.LS.get(ic.id) || ic.def) + '" style="width:100%;height:100%;object-fit:cover;display:block;' + noImgDrag + (App.LS.get(ic.id)?'':'transform:'+ic.scale+';') + '">' +
+            '<img src="' + App.escAttr(App.LS.get(ic.id) || ic.def) + '" style="width:100%;height:100%;object-fit:cover;display:block;' + noImgDrag + '">' +
           '</div>' +
           '<div style="font-size:10px;font-weight:700;color:#5a7a9a;">'+ic.label+'</div>';
         
         box.addEventListener('click', function() {
-           // 弹出专属菜单：上传 / 恢复默认 / 取消
            var menu = document.createElement('div');
            menu.style.cssText = 'position:fixed;inset:0;z-index:100030;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
            menu.innerHTML = 
@@ -318,24 +311,22 @@
            menu.addEventListener('click', function(e){ if(e.target===menu) menu.remove(); });
            menu.querySelector('#icCancel').addEventListener('click', function(){ menu.remove(); });
            
+           // 恢复默认：只更新链接，绝对不管缩放
            menu.querySelector('#icDefault').addEventListener('click', function(){
                menu.remove();
                App.LS.remove(ic.id);
                box.querySelector('img').src = ic.def;
-               box.querySelector('img').style.transform = ic.scale; // 网格里的小图恢复缩放
                
                var tEl = document.querySelector(ic.target);
-               if(tEl) {
-                   tEl.src = ic.def;
-                   tEl.style.transform = ic.scale; // 外面的真身恢复缩放
-               }
+               if(tEl) { tEl.src = ic.def; }
                if(ic.live) {
                    var liveImg = panel.querySelector(ic.live);
-                   if(liveImg) { liveImg.src = ic.def; liveImg.style.transform = ic.scale; }
+                   if(liveImg) { liveImg.src = ic.def; }
                }
                App.showToast('已恢复默认图标');
            });
 
+           // 上传新图：只更新链接，绝对不管缩放
            menu.querySelector('#icUpload').addEventListener('click', function(){
                menu.remove();
                var ipt = document.createElement('input'); ipt.type = 'file'; ipt.accept = 'image/*';
@@ -346,13 +337,12 @@
                      var process = function(c) {
                         App.LS.set(ic.id, c);
                         box.querySelector('img').src = c;
-                        box.querySelector('img').style.transform = 'none'; // 新图填满
 
                         var tEl = document.querySelector(ic.target);
-                        if(tEl) { tEl.src = c; tEl.style.transform = 'none'; }
+                        if(tEl) { tEl.src = c; }
                         if(ic.live) {
                           var liveImg = panel.querySelector(ic.live);
-                          if(liveImg) { liveImg.src = c; liveImg.style.transform = 'none'; }
+                          if(liveImg) { liveImg.src = c; }
                         }
                         App.showToast(ic.label + ' 图标已更换');
                      };
