@@ -19,7 +19,7 @@
     data: {},
 
     DEFAULTS: {
-      text: '全世界 最好的你˶ᵒ ᵕ ˂˶️ಣ',
+      text: '文字填写区域，可以多行',
       fontSize: 38,
       rotate: 0,
       spacing: 2,
