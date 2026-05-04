@@ -1,4 +1,3 @@
-
 /* --- 全屏面板壳（日历/微信等用） --- */
 .fullpage-panel {
   position: fixed; inset: 0; z-index: 10000;
@@ -8,62 +7,6 @@
 }
 .fullpage-panel.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
 .fullpage-panel.show { transform: translateX(0); opacity: 1; }
-
-/* --- 通用表单 --- */
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
-.form-group input[type="text"],
-.form-group input[type="url"],
-.form-group input[type="password"],
-.form-group input[type="number"] {
-  width: 100%; padding: 10px 14px; background: var(--bg-card);
-  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  color: var(--text-primary); font-size: 14px; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
-}
-.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(173,205,234,0.25); }
-
-/* --- 通用按钮 --- */
-.btn {
-  padding: 10px 20px; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s;
-}
-.btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--accent); border: 1.5px solid var(--border); color: #fff; }
-.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-primary); }
-.btn-row { display: flex; gap: 10px; }
-.divider { height: 1.5px; background: var(--border); margin: 20px 0; }
-
-/* --- 上传区 --- */
-.upload-area {
-  border: 2px dashed var(--border); border-radius: var(--radius);
-  padding: 30px 20px; text-align: center; cursor: pointer;
-  transition: border-color 0.2s; margin-bottom: 16px; background: var(--bg-card);
-}
-.upload-area:active { border-color: var(--accent); }
-.upload-area svg { width: 36px; height: 36px; color: var(--text-muted); margin-bottom: 10px; }
-.upload-area p { font-size: 13px; color: var(--text-muted); }
-.bg-preview { margin-bottom: 16px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); }
-.bg-preview.hidden { display: none; }
-.bg-preview img { width: 100%; height: 160px; object-fit: cover; display: block; }
-
-/* --- 字体列表 --- */
-.font-list { display: flex; flex-direction: column; gap: 6px; }
-.font-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px; background: var(--bg-card);
-  border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
-}
-.font-item.active { box-shadow: 0 0 0 2px var(--accent); }
-.font-item-preview { font-size: 15px; color: var(--text-primary); }
-.font-item-name { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.font-item-check {
-  width: 20px; height: 20px; border-radius: 50%;
-  border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: all 0.2s;
-}
-.font-item.active .font-item-check { border-color: var(--accent); background: var(--accent); }
-.font-item.active .font-item-check::after { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
 
 .empty-hint { text-align: center; color: var(--text-muted); font-size: 13px; padding: 60px 20px; }
 
@@ -230,8 +173,20 @@
 
 /* ====== 字体半屏面板 ====== */
 #fontPanel {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
   max-height: 65vh;
+  background: var(--bg-secondary);
+  border-radius: 24px 24px 0 0;
+  border-top: 2px solid var(--border);
+  z-index: 9995;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 30px var(--shadow);
 }
+#fontPanel.hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+#fontPanel.show { transform: translateY(0); opacity: 1; }
 
 .ft-header {
   flex-shrink: 0;
@@ -466,9 +421,7 @@
   text-align: right;
 }
 
-/* ★ 底部安全距离，保证最后的滑块能拉到 */
 .ft-bottom-spacer {
   height: calc(40px + env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
 }
-
