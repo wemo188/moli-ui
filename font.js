@@ -1,228 +1,332 @@
-(function() {
-  'use strict';
+(function(){
+'use strict';
+var App=window.App;if(!App)return;
 
-  var App = window.App;
-  if (!App) return;
+var DB_NAME='GlobalFontDB';
+var STORE_NAME='fontFiles';
 
-  var Font = {
-    builtinFonts: [
-      { name: '系统默认', family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif', preview: '系统默认字体 ABCabc' },
-      { name: '霞鹜文楷', family: '"LXGW WenKai", serif', preview: '霞鹜文楷 落霞与孤鹜齐飞' },
-      { name: '思源宋体', family: '"Noto Serif SC", serif', preview: '思源宋体 秋水共长天一色' },
-      { name: '思源黑体', family: '"Noto Sans SC", sans-serif', preview: '思源黑体 千里之行始于足下' },
-      { name: '站酷小薇', family: '"ZCOOL XiaoWei", serif', preview: '站酷小薇 山高月小水落石出' },
-      { name: '马善政楷体', family: '"Ma Shan Zheng", cursive', preview: '马善政楷 清风明月本无价' }
-    ],
+var BUILTIN=[
+  {name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},
+  {name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},
+  {name:'思源宋体',family:'"Noto Serif SC",serif'},
+  {name:'思源黑体',family:'"Noto Sans SC",sans-serif'},
+  {name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},
+  {name:'马善政楷',family:'"Ma Shan Zheng",cursive'}
+];
 
-    currentFontIndex: null,
-    currentFontCustom: null,
-    customFontMetas: [],
-    fontStyleEl: null,
+var DEF_CFG={selected:'系统默认',fontSize:15,fontWeight:400,lineHeight:1.6};
 
-    DB: {
-      db: null,
-      open: function() {
-        return new Promise(function(resolve) {
-          if (Font.DB.db) return resolve(Font.DB.db);
-          var req = indexedDB.open('MonoSpaceDB', 2);
-          req.onupgradeneeded = function(e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains('fonts')) {
-              db.createObjectStore('fonts', { keyPath: 'id' });
-            }
-          };
-          req.onsuccess = function(e) {
-            Font.DB.db = e.target.result;
-            resolve(Font.DB.db);
-          };
-          req.onerror = function() { resolve(null); };
-        });
-      },
-      saveFont: async function(obj) {
-        var db = await Font.DB.open();
-        if (!db) return false;
-        return new Promise(function(resolve) {
-          var tx = db.transaction('fonts', 'readwrite');
-          tx.objectStore('fonts').put(obj);
-          tx.oncomplete = function() { resolve(true); };
-          tx.onerror = function() { resolve(false); };
-        });
-      },
-      getAllFonts: async function() {
-        var db = await Font.DB.open();
-        if (!db) return [];
-        return new Promise(function(resolve) {
-          var tx = db.transaction('fonts', 'readonly');
-          var req = tx.objectStore('fonts').getAll();
-          req.onsuccess = function() { resolve(req.result || []); };
-          req.onerror = function() { resolve([]); };
-        });
-      }
-    },
+/* ====== IndexedDB for font files ====== */
+var _db=null;
 
-    registerFont: function(name, url) {
-      Font.fontStyleEl.textContent += '@font-face{font-family:"' + name + '";src:url(' + url + ');font-display:swap;}';
-    },
+function openDB(cb){
+  try{
+    var req=indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME,{keyPath:'name'});};
+    req.onsuccess=function(e){_db=e.target.result;if(cb)cb();};
+    req.onerror=function(){if(cb)cb();};
+  }catch(e){if(cb)cb();}
+}
 
-    applyFontByIndex: function(idx) {
-      Font.currentFontIndex = idx;
-      Font.currentFontCustom = null;
-      document.body.style.fontFamily = Font.builtinFonts[idx].family;
-      App.LS.set('currentFontIndex', idx);
-      App.LS.remove('currentFontCustom');
-    },
+function saveFont(name,dataUrl,cb){
+  if(!_db){if(cb)cb(false);return;}
+  var tx=_db.transaction(STORE_NAME,'readwrite');
+  tx.objectStore(STORE_NAME).put({name:name,dataUrl:dataUrl,time:Date.now()});
+  tx.oncomplete=function(){if(cb)cb(true);};
+  tx.onerror=function(){if(cb)cb(false);};
+}
 
-    applyFontByCustom: function(name) {
-      Font.currentFontIndex = null;
-      Font.currentFontCustom = name;
-      document.body.style.fontFamily = '"' + name + '", sans-serif';
-      App.LS.remove('currentFontIndex');
-      App.LS.set('currentFontCustom', name);
-    },
+function deleteFont(name,cb){
+  if(!_db){if(cb)cb();return;}
+  var tx=_db.transaction(STORE_NAME,'readwrite');
+  tx.objectStore(STORE_NAME).delete(name);
+  tx.oncomplete=function(){if(cb)cb();};
+  tx.onerror=function(){if(cb)cb();};
+}
 
-    renderFontList: function() {
-      var c = App.$('#fontList');
-      if (!c) return;
+function getAllFonts(cb){
+  if(!_db){cb([]);return;}
+  var tx=_db.transaction(STORE_NAME,'readonly');
+  var req=tx.objectStore(STORE_NAME).getAll();
+  req.onsuccess=function(){cb(req.result||[]);};
+  req.onerror=function(){cb([]);};
+}
 
-      c.innerHTML = Font.builtinFonts.map(function(f, idx) {
-        var active = (Font.currentFontCustom === null && Font.currentFontIndex === idx);
-        return '<div class="font-item' + (active ? ' active' : '') + '" data-idx="' + idx + '">' +
-          '<div>' +
-            '<div class="font-item-preview" style="font-family:' + f.family + '">' + f.preview + '</div>' +
-            '<div class="font-item-name">' + f.name + '</div>' +
-          '</div>' +
-          '<div class="font-item-check"></div>' +
-        '</div>';
-      }).join('');
+function loadFontFace(name,dataUrl){
+  var ff=new FontFace(name,'url('+dataUrl+')');
+  return ff.load().then(function(loaded){document.fonts.add(loaded);return true;}).catch(function(){return false;});
+}
 
-      c.querySelectorAll('.font-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var idx = parseInt(item.dataset.idx, 10);
-          Font.applyFontByIndex(idx);
-          Font.renderFontList();
-          Font.renderCustomFonts();
-          App.showToast('已切换: ' + Font.builtinFonts[idx].name);
-        });
-      });
-    },
+/* ====== Font Module ====== */
+var Font={
+  config:{},
+  customList:[], // [{name,family}]
 
-    renderCustomFonts: function() {
-      var c = App.$('#customFonts');
-      if (!c) return;
+  load:function(){
+    Font.config=App.LS.get('fontConfig')||JSON.parse(JSON.stringify(DEF_CFG));
+    Font.customList=App.LS.get('fontCustomList')||[];
+  },
 
-      if (!Font.customFontMetas.length) {
-        c.innerHTML = '';
-        return;
-      }
+  save:function(){
+    App.LS.set('fontConfig',Font.config);
+    App.LS.set('fontCustomList',Font.customList);
+  },
 
-      c.innerHTML = Font.customFontMetas.map(function(f, idx) {
-        var active = (Font.currentFontCustom === f.familyName);
-        return '<div class="font-item' + (active ? ' active' : '') + '" data-cidx="' + idx + '">' +
-          '<div>' +
-            '<div class="font-item-preview" style="font-family:\'' + f.familyName + '\'">' + App.esc(f.name) + ' 永远相信美好</div>' +
-            '<div class="font-item-name">' + App.esc(f.name) + ' (自定义)</div>' +
-          '</div>' +
-          '<div class="font-item-check"></div>' +
-        '</div>';
-      }).join('');
+  apply:function(){
+    var c=Font.config;
+    var selected=c.selected||'系统默认';
+    var family='';
 
-      c.querySelectorAll('.font-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          var idx = parseInt(item.dataset.cidx, 10);
-          Font.applyFontByCustom(Font.customFontMetas[idx].familyName);
-          Font.renderFontList();
-          Font.renderCustomFonts();
-          App.showToast('已切换: ' + Font.customFontMetas[idx].name);
-        });
-      });
-    },
-
-    restoreCustomFontsFromDB: async function() {
-      try {
-        var fonts = await Font.DB.getAllFonts();
-        for (var i = 0; i < fonts.length; i++) {
-          Font.registerFont(fonts[i].familyName, fonts[i].dataUrl);
-        }
-
-        if (Font.currentFontCustom) {
-          try {
-            await document.fonts.load('16px "' + Font.currentFontCustom + '"');
-            document.body.style.fontFamily = '"' + Font.currentFontCustom + '", sans-serif';
-          } catch (e) {}
-        }
-
-        Font.renderCustomFonts();
-      } catch (e) {
-        console.warn('restoreCustomFontsFromDB', e);
-      }
-    },
-
-    bindEvents: function() {
-      App.safeOn('#fontUploadArea', 'click', function() {
-        if (App.$('#fontFileInput')) App.$('#fontFileInput').click();
-      });
-
-      App.safeOn('#fontFileInput', 'change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-
-        var fontName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '');
-        var familyName = 'Custom-' + fontName + '-' + Date.now();
-        var fontId = 'font-' + Date.now();
-
-        App.showToast('正在加载字体（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）...');
-
-        var reader = new FileReader();
-        reader.onload = async function(ev) {
-          var dataUrl = ev.target.result;
-          Font.registerFont(familyName, dataUrl);
-          await Font.DB.saveFont({ id: fontId, familyName: familyName, name: fontName, dataUrl: dataUrl });
-
-          Font.customFontMetas.push({
-            id: fontId,
-            name: fontName,
-            familyName: familyName
-          });
-          App.LS.set('customFontMetas', Font.customFontMetas);
-
-          try { await document.fonts.load('16px "' + familyName + '"'); } catch (e) {}
-          Font.applyFontByCustom(familyName);
-          Font.renderFontList();
-          Font.renderCustomFonts();
-          App.showToast('字体已添加');
-        };
-
-        reader.onerror = function() {
-          App.showToast('读取字体失败');
-        };
-
-        reader.readAsDataURL(file);
-        if (App.$('#fontFileInput')) App.$('#fontFileInput').value = '';
-      });
-    },
-
-    init: function() {
-      Font.currentFontIndex = App.LS.get('currentFontIndex');
-      Font.currentFontCustom = App.LS.get('currentFontCustom') || null;
-      Font.customFontMetas = App.LS.get('customFontMetas') || [];
-
-      Font.fontStyleEl = document.getElementById('custom-font-faces');
-      if (!Font.fontStyleEl) {
-        Font.fontStyleEl = document.createElement('style');
-        Font.fontStyleEl.id = 'custom-font-faces';
-        document.head.appendChild(Font.fontStyleEl);
-      }
-
-      Font.renderFontList();
-      Font.restoreCustomFontsFromDB();
-
-      if (Font.currentFontCustom === null && Font.currentFontIndex !== null && Font.currentFontIndex !== undefined && Font.builtinFonts[Font.currentFontIndex]) {
-        document.body.style.fontFamily = Font.builtinFonts[Font.currentFontIndex].family;
-      }
-
-      Font.bindEvents();
+    // 查找内置
+    for(var i=0;i<BUILTIN.length;i++){
+      if(BUILTIN[i].name===selected){family=BUILTIN[i].family;break;}
     }
-  };
+    // 查找自定义
+    if(!family){
+      for(var j=0;j<Font.customList.length;j++){
+        if(Font.customList[j].name===selected){family=Font.customList[j].family;break;}
+      }
+    }
+    if(!family)family=BUILTIN[0].family;
 
-  App.register('font', Font);
+    document.body.style.fontFamily=family;
+    document.body.style.fontSize=(c.fontSize||15)+'px';
+    document.body.style.fontWeight=c.fontWeight||400;
+    document.body.style.lineHeight=c.lineHeight||1.6;
+  },
+
+  open:function(){
+    Font.load();
+    var panel=App.$('#fontPanel');if(!panel)return;
+
+    // 先加载所有自定义字体到浏览器
+    getAllFonts(function(fonts){
+      var loadPromises=[];
+      fonts.forEach(function(f){
+        loadPromises.push(loadFontFace(f.name,f.dataUrl));
+      });
+      Promise.all(loadPromises).then(function(){
+        Font.render(panel);
+        panel.classList.remove('hidden');
+        setTimeout(function(){panel.classList.add('show');},20);
+      });
+    });
+  },
+
+  close:function(){
+    var panel=App.$('#fontPanel');if(!panel)return;
+    panel.classList.remove('show');
+    setTimeout(function(){panel.classList.add('hidden');},350);
+  },
+
+  render:function(panel){
+    var c=Font.config;
+    var selected=c.selected||'系统默认';
+
+    // 内置字体列表
+    var builtinHtml=BUILTIN.map(function(f){
+      var isActive=selected===f.name;
+      return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'" data-family="'+App.escAttr(f.family)+'">' +
+        '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello</div>' +
+        '<div class="ft-item-info"><div class="ft-item-name">'+App.esc(f.name)+'</div></div>' +
+        '<div class="ft-item-check"></div>' +
+      '</div>';
+    }).join('');
+
+    // 自定义字体列表
+    var customHtml='';
+    if(Font.customList.length){
+      customHtml=Font.customList.map(function(f){
+        var isActive=selected===f.name;
+        return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'" data-family="'+App.escAttr(f.family)+'" data-custom="1">' +
+          '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello</div>' +
+          '<div class="ft-item-info"><div class="ft-item-name">'+App.esc(f.name)+'</div></div>' +
+          '<div class="ft-item-actions"><div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div></div>' +
+          '<div class="ft-item-check"></div>' +
+        '</div>';
+      }).join('');
+    }
+
+    panel.innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;background:#fff;border-bottom:1px solid rgba(126,163,201,.2);flex-shrink:0;z-index:10;">' +
+        '<button id="ftCloseBtn" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></button>' +
+        '<span style="font-size:16px;font-weight:800;color:#2e4258;letter-spacing:1px;">字体设置</span>' +
+        '<div style="width:36px;"></div>' +
+      '</div>' +
+      '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;">' +
+
+        /* 预览区 */
+        '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
+          '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#7a9ab8;border-radius:2px;"></div>预览</div>' +
+          '<div id="ftPreview" style="padding:16px;background:rgba(126,163,201,.04);border:1px solid rgba(126,163,201,.12);border-radius:12px;min-height:60px;transition:all .2s;">'+
+            '<div style="margin-bottom:6px;">你好世界，这是一段预览文字。</div>'+
+            '<div style="font-size:0.85em;color:#8aa0b8;">Hello World, The quick brown fox jumps over the lazy dog.</div>'+
+          '</div>' +
+        '</div>' +
+
+        /* 样式控制 */
+        '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
+          '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#88abda;border-radius:2px;"></div>样式调整 (实时预览)</div>' +
+
+          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
+            '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:40px;">字号</span>' +
+            '<input type="range" id="ftSize" min="12" max="22" step="0.5" value="'+(c.fontSize||15)+'" style="flex:1;">' +
+            '<span id="ftSizeVal" style="font-size:12px;font-weight:700;color:#2e4258;width:36px;text-align:right;">'+(c.fontSize||15)+'px</span>' +
+          '</div>' +
+
+          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
+            '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:40px;">粗细</span>' +
+            '<input type="range" id="ftWeight" min="100" max="900" step="100" value="'+(c.fontWeight||400)+'" style="flex:1;">' +
+            '<span id="ftWeightVal" style="font-size:12px;font-weight:700;color:#2e4258;width:36px;text-align:right;">'+(c.fontWeight||400)+'</span>' +
+          '</div>' +
+
+          '<div style="display:flex;align-items:center;gap:12px;">' +
+            '<span style="font-size:12px;font-weight:700;color:#5a7a9a;width:40px;">行距</span>' +
+            '<input type="range" id="ftLineH" min="1" max="2.5" step="0.05" value="'+(c.lineHeight||1.6)+'" style="flex:1;">' +
+            '<span id="ftLineHVal" style="font-size:12px;font-weight:700;color:#2e4258;width:36px;text-align:right;">'+(c.lineHeight||1.6)+'</span>' +
+          '</div>' +
+        '</div>' +
+
+        /* 内置字体 */
+        '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
+          '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#5a9e6f;border-radius:2px;"></div>内置字体</div>' +
+          '<div class="ft-list" id="ftBuiltinList">'+builtinHtml+'</div>' +
+        '</div>' +
+
+        /* 自定义字体 */
+        '<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:30px;box-shadow:0 4px 20px rgba(126,163,201,.08);border:1px solid rgba(126,163,201,.15);">' +
+          '<div style="font-size:14px;font-weight:800;color:#2e4258;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><div style="width:4px;height:12px;background:#c9706b;border-radius:2px;"></div>自定义字体</div>' +
+
+          '<div id="ftUploadArea" style="width:100%;height:54px;border:2px dashed rgba(126,163,201,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;color:#7a9ab8;cursor:pointer;background:rgba(126,163,201,.05);margin-bottom:16px;-webkit-tap-highlight-color:transparent;">' +
+            '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+            '上传字体文件 (.ttf .otf .woff .woff2)' +
+          '</div>' +
+          '<input type="file" id="ftFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>' +
+
+          '<div class="ft-list" id="ftCustomList">'+(customHtml||'<div style="text-align:center;color:#bbb;font-size:12px;padding:16px 0;">暂无自定义字体</div>')+'</div>' +
+        '</div>' +
+
+      '</div>';
+
+    Font.bindEvents(panel);
+    Font.updatePreview(panel);
+  },
+
+  updatePreview:function(panel){
+    var preview=panel.querySelector('#ftPreview');if(!preview)return;
+    var c=Font.config;
+    var selected=c.selected||'系统默认';
+    var family='';
+
+    for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===selected){family=BUILTIN[i].family;break;}}
+    if(!family){for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===selected){family=Font.customList[j].family;break;}}}
+    if(!family)family=BUILTIN[0].family;
+
+    preview.style.fontFamily=family;
+    preview.style.fontSize=(c.fontSize||15)+'px';
+    preview.style.fontWeight=c.fontWeight||400;
+    preview.style.lineHeight=c.lineHeight||1.6;
+  },
+
+  bindEvents:function(panel){
+    // 关闭
+    panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
+
+    // 右滑返回
+    App.bindSwipeBack(panel,function(){Font.close();});
+
+    // 上传
+    panel.querySelector('#ftUploadArea').addEventListener('click',function(){panel.querySelector('#ftFileInput').click();});
+    panel.querySelector('#ftFileInput').addEventListener('change',function(e){
+      var file=e.target.files[0];if(!file)return;
+      var rawName=file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_');
+      var fontName='Custom_'+rawName+'_'+Date.now();
+      App.showToast('加载字体中...');
+
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var dataUrl=ev.target.result;
+        loadFontFace(fontName,dataUrl).then(function(ok){
+          if(!ok){App.showToast('字体加载失败');return;}
+          saveFont(fontName,dataUrl,function(success){
+            if(!success){App.showToast('保存失败');return;}
+            var family="'"+fontName+"',sans-serif";
+            Font.customList.push({name:fontName,family:family,fileName:file.name});
+            Font.config.selected=fontName;
+            Font.save();
+            Font.apply();
+            Font.render(panel);
+            App.showToast('字体已添加：'+file.name);
+          });
+        });
+      };
+      reader.readAsDataURL(file);
+      e.target.value='';
+    });
+
+    // 滑块
+    var sizeSlider=panel.querySelector('#ftSize');
+    var weightSlider=panel.querySelector('#ftWeight');
+    var lineHSlider=panel.querySelector('#ftLineH');
+
+    function onSlider(){
+      Font.config.fontSize=parseFloat(sizeSlider.value);
+      Font.config.fontWeight=parseInt(weightSlider.value);
+      Font.config.lineHeight=parseFloat(lineHSlider.value);
+      panel.querySelector('#ftSizeVal').textContent=sizeSlider.value+'px';
+      panel.querySelector('#ftWeightVal').textContent=weightSlider.value;
+      panel.querySelector('#ftLineHVal').textContent=lineHSlider.value;
+      Font.save();
+      Font.apply();
+      Font.updatePreview(panel);
+    }
+
+    sizeSlider.addEventListener('input',onSlider);
+    weightSlider.addEventListener('input',onSlider);
+    lineHSlider.addEventListener('input',onSlider);
+
+    // 选择字体
+    panel.querySelectorAll('.ft-item').forEach(function(item){
+      item.addEventListener('click',function(e){
+        if(e.target.closest('.ft-del-btn'))return;
+        Font.config.selected=item.dataset.fname;
+        Font.save();
+        Font.apply();
+        Font.render(panel);
+      });
+    });
+
+    // 删除自定义字体
+    panel.querySelectorAll('.ft-del-btn').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var name=btn.dataset.del;if(!name)return;
+        if(!confirm('删除字体 "'+name+'" ？'))return;
+        deleteFont(name,function(){
+          Font.customList=Font.customList.filter(function(f){return f.name!==name;});
+          if(Font.config.selected===name)Font.config.selected='系统默认';
+          Font.save();
+          Font.apply();
+          Font.render(panel);
+          App.showToast('已删除');
+        });
+      });
+    });
+  },
+
+  init:function(){
+    openDB(function(){
+      Font.load();
+
+      // 恢复自定义字体到浏览器
+      getAllFonts(function(fonts){
+        fonts.forEach(function(f){loadFontFace(f.name,f.dataUrl);});
+        Font.apply();
+      });
+    });
+    App.font=Font;
+  }
+};
+
+App.register('font',Font);
 })();
