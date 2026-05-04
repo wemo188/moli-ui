@@ -475,3 +475,32 @@
   height: calc(40px + env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
 }
+
+/* ====== 背景半屏面板 ====== */
+#bgPanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 55vh;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  z-index: 9995;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0,0,0,.1);
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+}
+
+#bgPanel.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#bgPanel.show {
+  transform: translateY(0);
+  opacity: 1;
+}
