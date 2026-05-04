@@ -109,7 +109,7 @@
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
           if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
-          if (action === 'bg') { Workshop.close(); setTimeout(function() { App.openPanel('bgPanel'); }, 220); return; }
+          if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
           var panelMap = { theme: 'themePanel' };
           if (panelMap[action]) { Workshop.close(); setTimeout(function() { App.openPanel(panelMap[action]); }, 220); }
         });
