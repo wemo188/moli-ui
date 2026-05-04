@@ -269,7 +269,7 @@ var Cards={
       panel.style.left=left+'px';panel.style.top=top+'px';
     }
 
-    Cards._bindPanelDrag(panel,'#sbDragHandle');
+    Cards._bindPanelDrag(panel);
 
     function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();overlay.remove();}
     panel.querySelector('#sbCloseBtnTop').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
@@ -521,7 +521,7 @@ allDots.forEach(function(dotId){
       panel.style.left=left+'px';panel.style.top=top+'px';
     }
 
-    Cards._bindPanelDrag(panel,'#ccDragHandle');
+    Cards._bindPanelDrag(panel);
 
     /* 颜色点 */
     panel.querySelectorAll('.pc-dot').forEach(function(dot){
