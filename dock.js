@@ -39,7 +39,7 @@
       var cfg = JSON.parse(JSON.stringify(Dock.config));
 
       var overlay = document.createElement('div'); overlay.id = 'dockEditOverlay'; overlay.className = 'pc-edit-overlay';
-      var panel = document.createElement('div'); panel.className = 'pc-edit-panel'; panel.style.width = '280px'; panel.style.height = 'auto';
+      var panel = document.createElement('div'); panel.className = 'pc-edit-panel';
 
       panel.innerHTML =
         '<div class="pc-header" id="dockDragHandle">底部栏设置<div class="pc-close-btn" id="dockCloseBtnTop">×</div></div>'+
