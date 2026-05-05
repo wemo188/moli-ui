@@ -93,14 +93,16 @@ var Cards={
     area.style.setProperty('--sb-text',sb.textC);
   },
 
-  updateSearchTexts:function(){
+  updateSearchTexts:function(force){
     var sb=Cards._sbData;
     var leftInput=document.querySelector('.search-input-left');
     var rightInput=document.querySelector('.search-input-right');
     
     if(!sb.charId||!sb.nickname1||!sb.nickname2){
-      if(leftInput){leftInput.value='';leftInput.placeholder='我们相识...';App.LS.remove('searchText_left');}
-      if(rightInput){rightInput.value='';rightInput.placeholder='已经有...天★';App.LS.remove('searchText_right');}
+      if(force){
+        if(leftInput){leftInput.value='';leftInput.placeholder='我们相识...';App.LS.remove('searchText_left');}
+        if(rightInput){rightInput.value='';rightInput.placeholder='已经有...天★';App.LS.remove('searchText_right');}
+      }
       return;
     }
     
@@ -108,8 +110,16 @@ var Cards={
     var dayStr=days>0?days:'0';
     var leftText=sb.nickname1+'，我们已经';
     var rightText='相识'+dayStr+'天了，'+sb.nickname2;
-    if(leftInput){leftInput.value=leftText;leftInput.placeholder='';App.LS.set('searchText_left',leftText);}
-    if(rightInput){rightInput.value=rightText;rightInput.placeholder='';App.LS.set('searchText_right',rightText);}
+    
+    if(force){
+      if(leftInput){leftInput.value=leftText;leftInput.placeholder='';App.LS.set('searchText_left',leftText);}
+      if(rightInput){rightInput.value=rightText;rightInput.placeholder='';App.LS.set('searchText_right',rightText);}
+    } else {
+      var savedLeft=App.LS.get('searchText_left');
+      var savedRight=App.LS.get('searchText_right');
+      if(!savedLeft&&leftInput){leftInput.value=leftText;App.LS.set('searchText_left',leftText);}
+      if(!savedRight&&rightInput){rightInput.value=rightText;App.LS.set('searchText_right',rightText);}
+    }
   },
 
   render:function(){
@@ -326,7 +336,7 @@ var Cards={
 
     Cards._bindPanelDrag(panel);
 
-    function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();Cards.updateSearchTexts();overlay.remove();}
+    function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();Cards.updateSearchTexts(true);overlay.remove();}
     panel.querySelector('#sbCloseBtnTop').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
     overlay.addEventListener('click',function(e){if(e.target===overlay&&!document.querySelector('.crop-overlay'))closeAndRevert();});
 
@@ -391,7 +401,7 @@ var Cards={
       panel.querySelector('#sbCharSelect').value='';
       panel.querySelector('#sbNickname1').value='';
       panel.querySelector('#sbNickname2').value='';
-      Cards._sbData=sb;Cards.applySBColors();Cards.updateSearchTexts();App.showToast('已重置');
+      Cards._sbData=sb;Cards.applySBColors();Cards.updateSearchTexts(true);App.showToast('已重置');
     });
 
     panel.querySelector('#sbSaveBtn').addEventListener('click',function(e){
@@ -407,7 +417,7 @@ var Cards={
       sb.charId=(panel.querySelector('#sbCharSelect')||{}).value||'';
       sb.nickname1=((panel.querySelector('#sbNickname1')||{}).value||'').trim();
       sb.nickname2=((panel.querySelector('#sbNickname2')||{}).value||'').trim();
-      Cards._sbData=sb;Cards.saveSB();Cards.updateSearchTexts();overlay.remove();App.showToast('已保存');
+      Cards._sbData=sb;Cards.saveSB();Cards.updateSearchTexts(true);overlay.remove();App.showToast('已保存');
     });
   },
 
@@ -601,7 +611,7 @@ var Cards={
 
     var tempAvatar=d.avatar||'';
 
-        function previewAvatar(){
+    function previewAvatar(){
       var cardId=side==='left'?'#profileCard-L':'#profileCard-R';
       var avFront=document.querySelector(cardId+' .bx-av-front');
       if(!avFront)return;
@@ -657,7 +667,7 @@ var Cards={
 
     function closeAndRevert(){Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();}
     panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)closeAndRevert();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay&&!document.querySelector('.crop-overlay'))closeAndRevert();});
   },
 
   _bindPanelDrag:function(panel, handleSelector){
