@@ -309,11 +309,16 @@ var Cards={
           '<button class="pc-btn pc-btn-cancel" id="sbUrl2" type="button" style="padding:8px;font-size:12px;">URL</button>'+
           '<div class="pc-icon-btn danger" id="sbDel2" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
         '</div></div>'+
-        '<div class="pc-group" style="margin-top:4px;">'+
-          '<span class="pc-label">统一配色（同步变化）</span>'+
+                '<div class="pc-group" style="margin-top:4px;">'+
+          '<span class="pc-label">线条 / 阴影（同步变化）</span>'+
           '<div class="pc-palette-grid">'+
             '<div class="pc-palette-item"><div class="pc-dot" id="sbDotBorder" style="background:'+sb.border+';"></div><span class="pc-dot-lbl">线条</span></div>'+
             '<div class="pc-palette-item"><div class="pc-dot" id="sbDotShadow" style="background:'+sb.shadow+';"></div><span class="pc-dot-lbl">阴影</span></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">字体颜色</span>'+
+          '<div class="pc-palette-grid">'+
             '<div class="pc-palette-item"><div class="pc-dot" id="sbDotText" style="background:'+sb.textC+';"></div><span class="pc-dot-lbl">字体</span></div>'+
           '</div>'+
         '</div>'+
@@ -372,23 +377,36 @@ var Cards={
     panel.querySelector('#sbDel1').addEventListener('click',function(e){e.stopPropagation();handleAv(1,'del');});
     panel.querySelector('#sbDel2').addEventListener('click',function(e){e.stopPropagation();handleAv(2,'del');});
 
-    var allDots = ['#sbDotBorder','#sbDotShadow','#sbDotText'];
-    var allKeys = ['border','shadow','textC'];
+        var lineDots = ['#sbDotBorder','#sbDotShadow'];
+    var lineKeys = ['border','shadow'];
 
-    allDots.forEach(function(dotId){
+    lineDots.forEach(function(dotId){
       panel.querySelector(dotId).addEventListener('click',function(e){
         e.stopPropagation();if(!App.openColorPicker)return;
         var currentColor = sb.border;
         App.openColorPicker(currentColor, function(hex){
-          allKeys.forEach(function(k){ sb[k]=hex; });
-          allDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
+          lineKeys.forEach(function(k){ sb[k]=hex; });
+          lineDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
           Cards._sbData=sb; Cards.applySBColors();
         }, function(hex){
-          allKeys.forEach(function(k){ sb[k]=hex; });
-          allDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
+          lineKeys.forEach(function(k){ sb[k]=hex; });
+          lineDots.forEach(function(d){ panel.querySelector(d).style.background=hex; });
           Cards._sbData=sb; Cards.applySBColors();
-        }, 'sb_unified');
+        }, 'sb_line');
       });
+    });
+
+    panel.querySelector('#sbDotText').addEventListener('click',function(e){
+      e.stopPropagation();if(!App.openColorPicker)return;
+      App.openColorPicker(sb.textC, function(hex){
+        sb.textC=hex;
+        panel.querySelector('#sbDotText').style.background=hex;
+        Cards._sbData=sb; Cards.applySBColors();
+      }, function(hex){
+        sb.textC=hex;
+        panel.querySelector('#sbDotText').style.background=hex;
+        Cards._sbData=sb; Cards.applySBColors();
+      }, 'sb_text');
     });
 
     panel.querySelector('#sbResetBtn').addEventListener('click',function(e){
