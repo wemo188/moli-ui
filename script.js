@@ -791,9 +791,9 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       presetsEl.innerHTML=buildPresetsHtml();
       if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');
       presetsEl.querySelectorAll('.cp-preset').forEach(function(p){
-        p.addEventListener('click',function(e){e.stopPropagation();if(editing)return;var c=p.dataset.color;
+          p.addEventListener('click',function(e){e.stopPropagation();if(editing)return;var c=p.dataset.color;
           if(c.indexOf('linear-gradient')>=0){overlay._setColor(c);}
-          else{if(gradMode){gradStops[activeStop].color=c;updateGradPreview();updateUI();}else{setFromColor(c);}}
+          else{if(gradMode){setFromColor(c);}else{setFromColor(c);}}
         });
         var del=p.querySelector('.cp-preset-del');
         if(del){del.addEventListener('click',function(e){e.stopPropagation();savedPresets.splice(parseInt(p.dataset.idx),1);App.LS.set('cpPresets',savedPresets);rebindPresets();});}
