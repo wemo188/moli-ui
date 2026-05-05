@@ -1,31 +1,23 @@
-
 (function(){
   'use strict';
   var App = window.App; if(!App) return;
 
   var Bg = {
     _savedData: null,
+    _defaultIcons: {},
 
     init: function() {
+      document.querySelectorAll('#cardIcon1 img, #cardIcon2 img, #dockMine img, #dockLong img, #dockCheck img, #dockShort img').forEach(function(img) {
+        var key = img.closest('[id]');
+        if (key) Bg._defaultIcons[key.id] = { src: img.getAttribute('src'), transform: img.style.transform || '' };
+      });
+
       var bgData = App.LS.get('bgData') || {};
       Bg.applyBg(bgData);
       var iconConfig = App.LS.get('topIconConfig') || { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
       if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
       if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
       if(App.LS.get('topIconConfig')) Bg.applyTopIconStyle(iconConfig);
-
-      // 页面加载时，给已有自定义图标加上 custom-icon 标记
-      ['customIcon_cg','customIcon_lt','customIcon_dockMine','customIcon_dockLong','customIcon_dockShort','customIcon_dockCheck'].forEach(function(iconId) {
-        if(App.LS.get(iconId)) {
-          var targetMap = {
-            'customIcon_cg': '#cardIcon1 .card-icon-img',
-            'customIcon_lt': '#cardIcon2 .card-icon-img'
-          };
-          var sel = targetMap[iconId];
-          if(sel) { var el = document.querySelector(sel); if(el) el.classList.add('custom-icon'); }
-        }
-      });
-
       App.bg = Bg;
     },
 
@@ -119,37 +111,34 @@
 
     renderIconGrid: function(panel) {
       var grid = panel.querySelector('#bgIconGrid'); if(!grid) return;
-var defaultIcons = {
-  'customIcon_cg': 'https://iili.io/BQdQf1a.md.jpg',
-  'customIcon_lt': 'https://iili.io/BQdQpGn.jpg',
-  'customIcon_dockMine': 'https://iili.io/B5DgD5N.jpg',
-  'customIcon_dockLong': 'https://iili.io/BudrfVa.md.jpg',
-  'customIcon_dockCheck': 'https://iili.io/BghjowQ.md.jpg',
-  'customIcon_dockShort': 'https://iili.io/BQuivII.md.png'
-};
+
+      function getDefault(parentId) { var d = Bg._defaultIcons[parentId]; return d ? d.src : ''; }
+
       var icons = [
-  { id: 'customIcon_cg', label: '查岗', target: '#cardIcon1 img', def: defaultIcons['customIcon_cg'] },
-  { id: 'customIcon_lt', label: '论坛', target: '#cardIcon2 img', def: defaultIcons['customIcon_lt'] },
-  { id: 'customIcon_dockMine', label: 'User', target: '#dockMine img', def: defaultIcons['customIcon_dockMine'] },
-  { id: 'customIcon_dockLong', label: 'Char', target: '#dockLong img', def: defaultIcons['customIcon_dockLong'] },
-  { id: 'customIcon_dockCheck', label: '线下', target: '#dockCheck img', def: defaultIcons['customIcon_dockCheck'] },
-  { id: 'customIcon_dockShort', label: '微信', target: '#dockShort img', def: defaultIcons['customIcon_dockShort'] }
-];
+        { id: 'customIcon_cg', label: '查岗', target: '#cardIcon1 img', parentId: 'cardIcon1', def: getDefault('cardIcon1') },
+        { id: 'customIcon_lt', label: '论坛', target: '#cardIcon2 img', parentId: 'cardIcon2', def: getDefault('cardIcon2') },
+        { id: 'customIcon_dockMine', label: 'User', target: '#dockMine img', parentId: 'dockMine', def: getDefault('dockMine') },
+        { id: 'customIcon_dockLong', label: 'Char', target: '#dockLong img', parentId: 'dockLong', def: getDefault('dockLong') },
+        { id: 'customIcon_dockCheck', label: '线下', target: '#dockCheck img', parentId: 'dockCheck', def: getDefault('dockCheck') },
+        { id: 'customIcon_dockShort', label: '微信', target: '#dockShort img', parentId: 'dockShort', def: getDefault('dockShort') }
+      ];
+
       grid.innerHTML = icons.map(function(ic) {
         var src = App.LS.get(ic.id) || ic.def;
-        return '<div class="bg-icon-item" data-icon-id="' + ic.id + '" data-icon-target="' + App.escAttr(ic.target) + '" data-icon-def="' + App.escAttr(ic.def) + '">' +
+        return '<div class="bg-icon-item" data-icon-id="' + ic.id + '" data-icon-target="' + App.escAttr(ic.target) + '" data-icon-def="' + App.escAttr(ic.def) + '" data-icon-parent="' + ic.parentId + '">' +
           '<div class="bg-icon-thumb"><img src="' + App.escAttr(src) + '" draggable="false"></div>' +
           '<div class="bg-icon-label">' + ic.label + '</div>' +
         '</div>';
       }).join('');
+
       grid.querySelectorAll('.bg-icon-item').forEach(function(item) {
         item.addEventListener('click', function() {
-          Bg.showIconMenu(item.dataset.iconId, item.dataset.iconTarget, item.dataset.iconDef, item);
+          Bg.showIconMenu(item.dataset.iconId, item.dataset.iconTarget, item.dataset.iconDef, item, item.dataset.iconParent);
         });
       });
     },
 
-    showIconMenu: function(iconId, target, def, itemEl) {
+    showIconMenu: function(iconId, target, def, itemEl, parentId) {
       var menu = document.createElement('div');
       menu.style.cssText = 'position:fixed;inset:0;z-index:100030;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
       menu.innerHTML =
@@ -160,23 +149,26 @@ var defaultIcons = {
         '</div>';
       document.body.appendChild(menu);
       menu.addEventListener('click', function(e) { if(e.target === menu) menu.remove(); });
+
+      var defaultTransform = (Bg._defaultIcons[parentId] && Bg._defaultIcons[parentId].transform) || '';
+
       menu.querySelectorAll('button').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation(); var act = btn.dataset.act; menu.remove();
           if(act === 'cancel') return;
           if(act === 'reset') {
-  App.LS.remove(iconId);
-  var tEl = document.querySelector(target);
-  if(tEl) {
-    tEl.src = def;
-    tEl.style.transform = '';
-    tEl.style.width = '';
-    tEl.style.height = '';
-    tEl.style.objectFit = '';
-  }
-  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = def;
-  App.showToast('已恢复'); return;
-}
+            App.LS.remove(iconId);
+            var tEl = document.querySelector(target);
+            if(tEl) {
+              tEl.src = def;
+              tEl.style.transform = defaultTransform;
+              tEl.style.width = '';
+              tEl.style.height = '';
+              tEl.style.objectFit = '';
+            }
+            var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = def;
+            App.showToast('已恢复'); return;
+          }
           if(act === 'upload') {
             var ipt = document.createElement('input'); ipt.type = 'file'; ipt.accept = 'image/*';
             ipt.onchange = function(ev) {
@@ -184,18 +176,18 @@ var defaultIcons = {
               var rd = new FileReader();
               rd.onload = function(r) {
                 var process = function(c) {
-  App.LS.set(iconId, c);
-  var tEl = document.querySelector(target);
-  if(tEl) {
-    tEl.src = c;
-    tEl.style.transform = 'none';
-    tEl.style.width = '100%';
-    tEl.style.height = '100%';
-    tEl.style.objectFit = 'cover';
-  }
-  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = c;
-  App.showToast('图标已更换');
-};
+                  App.LS.set(iconId, c);
+                  var tEl = document.querySelector(target);
+                  if(tEl) {
+                    tEl.src = c;
+                    tEl.style.transform = 'none';
+                    tEl.style.width = '100%';
+                    tEl.style.height = '100%';
+                    tEl.style.objectFit = 'cover';
+                  }
+                  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = c;
+                  App.showToast('图标已更换');
+                };
                 if(App.cropImage) App.cropImage(r.target.result, process); else process(r.target.result);
               };
               rd.readAsDataURL(f);
@@ -316,9 +308,7 @@ var defaultIcons = {
       var styleId = 'topIconDynamicStyle';
       var styleEl = document.getElementById(styleId);
       if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
-      styleEl.innerHTML =
-        '.card-icon-img { border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor || '#dcebff') + ' !important; box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor || '#dcebff') + ' !important; border-radius: 15px !important; overflow: hidden !important; }' +
-        ' .card-icon-img.custom-icon img { width: 100% !important; height: 100% !important; object-fit: cover !important; transform: none !important; }';
+      styleEl.innerHTML = '.card-icon-img { border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor || '#dcebff') + ' !important; box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor || '#dcebff') + ' !important; border-radius: 15px !important; }';
     }
   };
 
