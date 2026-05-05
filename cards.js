@@ -171,25 +171,28 @@ var Cards={
     Cards.updateSearchTexts();
   },
 
-  bindSearchUpload:function(){
-    if(this._searchBound)return; this._searchBound=true;
+    bindSearchUpload:function(){
     var leftInput=document.querySelector('.search-input-left');
-    var leftSaved=App.LS.get('searchText_left');
-    if(leftSaved&&leftInput)leftInput.value=leftSaved;
-    if(leftInput)leftInput.addEventListener('input',function(){App.LS.set('searchText_left',this.value);});
-
     var rightInput=document.querySelector('.search-input-right');
+
+    var leftSaved=App.LS.get('searchText_left');
     var rightSaved=App.LS.get('searchText_right');
+    if(leftSaved&&leftInput)leftInput.value=leftSaved;
     if(rightSaved&&rightInput)rightInput.value=rightSaved;
+
+    if(leftInput)leftInput.addEventListener('input',function(){App.LS.set('searchText_left',this.value);});
     if(rightInput)rightInput.addEventListener('input',function(){App.LS.set('searchText_right',this.value);});
 
-    Cards._restoreSearchAvatar('avatarPreview1','avatar_search1');
-    Cards._restoreSearchAvatar('avatarPreview2','avatar_search2');
+    if(!this._searchAvatarBound){
+      this._searchAvatarBound=true;
+      Cards._restoreSearchAvatar('avatarPreview1','avatar_search1');
+      Cards._restoreSearchAvatar('avatarPreview2','avatar_search2');
 
-    var area1=document.querySelector('.avatar-area-left[data-side="search1"]');
-    var area2=document.querySelector('.avatar-area-right[data-side="search2"]');
-    if(area1)area1.addEventListener('click',function(e){e.stopPropagation();Cards.openSearchEdit(area1);});
-    if(area2)area2.addEventListener('click',function(e){e.stopPropagation();Cards.openSearchEdit(area2);});
+      var area1=document.querySelector('.avatar-area-left[data-side="search1"]');
+      var area2=document.querySelector('.avatar-area-right[data-side="search2"]');
+      if(area1)area1.addEventListener('click',function(e){e.stopPropagation();Cards.openSearchEdit(area1);});
+      if(area2)area2.addEventListener('click',function(e){e.stopPropagation();Cards.openSearchEdit(area2);});
+    }
   },
 
   _restoreSearchAvatar:function(previewId,storageKey){
