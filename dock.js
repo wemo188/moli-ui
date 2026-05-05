@@ -193,7 +193,16 @@
       items.forEach(function(item) {
         var el = App.$('#' + item.id); if (!el) return;
         var savedImg = App.LS.get('customIcon_' + item.id);
-        if (savedImg) { var imgEl = el.querySelector('img'); if (imgEl) imgEl.src = savedImg; }
+if (savedImg) {
+  var imgEl = el.querySelector('img');
+  if (imgEl) {
+    imgEl.src = savedImg;
+    imgEl.style.transform = 'none';
+    imgEl.style.width = '100%';
+    imgEl.style.height = '100%';
+    imgEl.style.objectFit = 'cover';
+  }
+}
         
         el.addEventListener('click', function(e) {
           e.stopPropagation();
