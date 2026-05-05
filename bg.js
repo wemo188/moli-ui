@@ -119,15 +119,22 @@
 
     renderIconGrid: function(panel) {
       var grid = panel.querySelector('#bgIconGrid'); if(!grid) return;
-      function getOrigSrc(sel) { var el = document.querySelector(sel); return el ? el.getAttribute('src') : ''; }
+var defaultIcons = {
+  'customIcon_cg': 'https://iili.io/BQdQf1a.md.jpg',
+  'customIcon_lt': 'https://iili.io/BQdQpGn.jpg',
+  'customIcon_dockMine': 'https://iili.io/B5DgD5N.jpg',
+  'customIcon_dockLong': 'https://iili.io/BudrfVa.md.jpg',
+  'customIcon_dockCheck': 'https://iili.io/BghjowQ.md.jpg',
+  'customIcon_dockShort': 'https://iili.io/BQuivII.md.png'
+};
       var icons = [
-        { id: 'customIcon_cg', label: '查岗', target: '#cardIcon1 img', def: getOrigSrc('#cardIcon1 img') },
-        { id: 'customIcon_lt', label: '论坛', target: '#cardIcon2 img', def: getOrigSrc('#cardIcon2 img') },
-        { id: 'customIcon_dockMine', label: 'User', target: '#dockMine img', def: getOrigSrc('#dockMine img') },
-        { id: 'customIcon_dockLong', label: 'Char', target: '#dockLong img', def: getOrigSrc('#dockLong img') },
-        { id: 'customIcon_dockCheck', label: '线下', target: '#dockCheck img', def: getOrigSrc('#dockCheck img') },
-        { id: 'customIcon_dockShort', label: '微信', target: '#dockShort img', def: getOrigSrc('#dockShort img') }
-      ];
+  { id: 'customIcon_cg', label: '查岗', target: '#cardIcon1 img', def: defaultIcons['customIcon_cg'] },
+  { id: 'customIcon_lt', label: '论坛', target: '#cardIcon2 img', def: defaultIcons['customIcon_lt'] },
+  { id: 'customIcon_dockMine', label: 'User', target: '#dockMine img', def: defaultIcons['customIcon_dockMine'] },
+  { id: 'customIcon_dockLong', label: 'Char', target: '#dockLong img', def: defaultIcons['customIcon_dockLong'] },
+  { id: 'customIcon_dockCheck', label: '线下', target: '#dockCheck img', def: defaultIcons['customIcon_dockCheck'] },
+  { id: 'customIcon_dockShort', label: '微信', target: '#dockShort img', def: defaultIcons['customIcon_dockShort'] }
+];
       grid.innerHTML = icons.map(function(ic) {
         var src = App.LS.get(ic.id) || ic.def;
         return '<div class="bg-icon-item" data-icon-id="' + ic.id + '" data-icon-target="' + App.escAttr(ic.target) + '" data-icon-def="' + App.escAttr(ic.def) + '">' +
