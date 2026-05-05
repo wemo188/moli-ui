@@ -596,6 +596,19 @@ var Cards={
 
     var tempAvatar=d.avatar||'';
 
+        function previewAvatar(){
+      var cardId=side==='left'?'#profileCard-L':'#profileCard-R';
+      var avFront=document.querySelector(cardId+' .bx-av-front');
+      if(!avFront)return;
+      if(tempAvatar){
+        avFront.innerHTML='';
+        avFront.style.backgroundImage='url(\''+tempAvatar+'\')';
+      }else{
+        avFront.style.backgroundImage='';
+        avFront.innerHTML='<div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div>';
+      }
+    }
+
     var uploadBtn=panel.querySelector('#pcUploadBtn');
     if(uploadBtn)uploadBtn.addEventListener('click',function(e){
       e.stopPropagation();
@@ -604,8 +617,8 @@ var Cards={
         var file=ev.target.files[0];if(!file)return;
         var reader=new FileReader();
         reader.onload=function(r){
-          if(App.cropImage){App.cropImage(r.target.result,function(c){tempAvatar=c;App.showToast('头像已暂存，点保存生效');});}
-          else{Cards._compressAvatar(r.target.result,function(c){tempAvatar=c;App.showToast('头像已暂存，点保存生效');});}
+          if(App.cropImage){App.cropImage(r.target.result,function(c){tempAvatar=c;previewAvatar();});}
+          else{Cards._compressAvatar(r.target.result,function(c){tempAvatar=c;previewAvatar();});}
         };
         reader.readAsDataURL(file);
       };
@@ -616,12 +629,12 @@ var Cards={
     if(urlBtn)urlBtn.addEventListener('click',function(e){
       e.stopPropagation();
       var url=prompt('输入头像URL：',tempAvatar);
-      if(url!==null){tempAvatar=url.trim();App.showToast('头像已暂存，点保存生效');}
+      if(url!==null){tempAvatar=url.trim();previewAvatar();}
     });
 
     var delBtn=panel.querySelector('#pcDelAvatar');
     if(delBtn)delBtn.addEventListener('click',function(e){
-      e.stopPropagation();tempAvatar='';App.showToast('头像已清除，点保存生效');
+      e.stopPropagation();tempAvatar='';previewAvatar();
     });
 
     panel.querySelector('#pcSaveBtn').addEventListener('click',function(e){
