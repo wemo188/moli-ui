@@ -93,18 +93,23 @@ var Cards={
     area.style.setProperty('--sb-text',sb.textC);
   },
 
-    updateSearchTexts:function(){
+  updateSearchTexts:function(){
     var sb=Cards._sbData;
     var leftInput=document.querySelector('.search-input-left');
     var rightInput=document.querySelector('.search-input-right');
-    if(!sb.charId||!sb.nickname1||!sb.nickname2){return;}
-    var days=Cards.getDaysSinceFirstChat();
-    if(days>0){
-      var leftText=sb.nickname1+'，我们已经';
-      var rightText='相识'+days+'天了，'+sb.nickname2;
-      if(leftInput){leftInput.value=leftText;App.LS.set('searchText_left',leftText);}
-      if(rightInput){rightInput.value=rightText;App.LS.set('searchText_right',rightText);}
+    
+    if(!sb.charId||!sb.nickname1||!sb.nickname2){
+      if(leftInput){leftInput.value='';leftInput.placeholder='我们相识...';App.LS.remove('searchText_left');}
+      if(rightInput){rightInput.value='';rightInput.placeholder='已经有...天★';App.LS.remove('searchText_right');}
+      return;
     }
+    
+    var days=Cards.getDaysSinceFirstChat();
+    var dayStr=days>0?days:'0';
+    var leftText=sb.nickname1+'，我们已经';
+    var rightText='相识'+dayStr+'天了，'+sb.nickname2;
+    if(leftInput){leftInput.value=leftText;leftInput.placeholder='';App.LS.set('searchText_left',leftText);}
+    if(rightInput){rightInput.value=rightText;rightInput.placeholder='';App.LS.set('searchText_right',rightText);}
   },
 
   render:function(){
