@@ -9,7 +9,7 @@
   padding: 10px 0 0;
   width: 100%;
   margin-top: 5px;
-  pointer-events: none; /* ★ 魔法穿透层：让隐形框变空气 */
+  pointer-events: none;
 }
 
 .left-area-wrapper {
@@ -17,7 +17,7 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  pointer-events: none; /* ★ 穿透 */
+  pointer-events: none;
 }
 
 .card-right-area {
@@ -27,17 +27,16 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  pointer-events: none; /* ★ 穿透 */
+  pointer-events: none;
 }
 
-/* ★ 恢复所有实体卡片的物理触碰 */
-#bx-1, #bx-2, .search-wrapper, .card-icon-item {
+#profileCard-L, #profileCard-R, .search-wrapper, .card-icon-item {
   pointer-events: auto; 
 }
 
 .card-icons-wrap {
   display: flex;
-  gap: 15px; /* ★ 这里改间距：数字越大离得越远。原来是30px，现在我改成了15px，你可以随便调 */
+  gap: 15px;
   justify-content: center;
   margin-bottom: 10px;
   margin-top: 10px;
@@ -66,8 +65,8 @@
 
 .card-icon-img img {
   height: 100%;
-  width: auto; /* ★ 图片宽度根据原始比例自动铺开 */
-  object-fit: contain; /* ★ 原比例装入，绝不强行拉伸或裁剪 */
+  width: auto;
+  object-fit: contain;
   display: block;
   pointer-events: none !important; 
   -webkit-user-drag: none !important;
@@ -86,27 +85,27 @@
 .bx-ribbon-tab.bx-ribbon-placeholder { opacity: 0.3; }
 .bx-name.bx-name-placeholder { opacity: 0.25; }
 
-/* ====== bx-2 左卡片 ====== */
-#bx-2 {
+/* ====== profileCard-L 左卡片 ====== */
+#profileCard-L {
   --S: 1;
   --W0: 190px;
   --CARD_H0: 210px;
   --PAD0: 6px;
-  --INK: var(--bx2-name-c, #4a5a75);
-  --THEME: var(--bx2-border-c, #bbd3ef);
-  --LABEL_C: var(--bx2-sub-c, #6a8caf);
+  --INK: var(--profileCard-L-name-c, #4a5a75);
+  --THEME: var(--profileCard-L-border-c, #bbd3ef);
+  --LABEL_C: var(--profileCard-L-sub-c, #6a8caf);
   --border-c: rgba(187,211,239,.8);
   --LINE_C: rgba(187,211,239,.5);
-  --bx-border-w: var(--bx2-border-w, 3px);
+  --bx-border-w: var(--profileCard-L-border-w, 3px);
   width: calc(var(--W0) * var(--S));
   flex-shrink: 0;
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
-  z-index: 1;    /* ← 加这一行 */
+  z-index: 1;
 }
 
-#bx-2 .bx-cw {
+#profileCard-L .bx-cw {
   position: relative;
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
@@ -116,8 +115,8 @@
   overflow: visible;
 }
 
-#bx-2 .bx-cd {
-  background: var(--bx2-bg, #ffffff);
+#profileCard-L .bx-cd {
+  background: var(--profileCard-L-bg, #ffffff);
   position: relative; z-index: 2;
   border-radius: calc(11px * var(--S));
   overflow: visible;
@@ -126,7 +125,7 @@
   box-sizing: border-box;
 }
 
-#bx-2 .bx-tag-wrap {
+#profileCard-L .bx-tag-wrap {
   position: absolute;
   top: calc(-6px * var(--S));
   right: calc(-10px * var(--S));
@@ -134,7 +133,7 @@
   pointer-events: none;
 }
 
-#bx-2 .bx-tag {
+#profileCard-L .bx-tag {
   --arrow: calc(10px * var(--S));
   position: absolute; white-space: nowrap;
   font-size: calc(9.5px * var(--S));
@@ -145,37 +144,37 @@
   clip-path: polygon(var(--arrow) 0%, 100% 0%, 100% 100%, var(--arrow) 100%, 0% 50%);
 }
 
-#bx-2 .bx-tag1 {
+#profileCard-L .bx-tag1 {
   top: 0; right: 0;
-  background: var(--bx2-tag-bg, linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%));
-  color: var(--bx2-tag-c, #fff);
+  background: var(--profileCard-L-tag-bg, linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%));
+  color: var(--profileCard-L-tag-c, #fff);
   transform: rotate(-6deg);
   text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
 }
 
-#bx-2 .bx-tag2 {
+#profileCard-L .bx-tag2 {
   top: calc(22px * var(--S));
   right: calc(-6px * var(--S));
-  background: var(--bx2-tag2-bg, linear-gradient(90deg, #bbd3ef 0%, #ffffff 100%));
-  color: var(--bx2-tag2-c, var(--INK));
+  background: var(--profileCard-L-tag2-bg, linear-gradient(90deg, #bbd3ef 0%, #ffffff 100%));
+  color: var(--profileCard-L-tag2-c, var(--INK));
   transform: rotate(2deg);
   text-shadow: 0 calc(1px * var(--S)) calc(1px * var(--S)) rgba(255,255,255,.5);
 }
 
-#bx-2 .bx-av-box {
+#profileCard-L .bx-av-box {
   width: 100%;
   height: calc(var(--CARD_H0) * var(--S));
   cursor: pointer; display: block;
 }
 
-#bx-2 .bx-av-front {
+#profileCard-L .bx-av-front {
   width: 100%; height: 100%;
   border-radius: calc(8px * var(--S));
   background-size: cover; background-position: center;
   background-color: #e8edf2;
 }
 
-#bx-2 .bx-name-bar {
+#profileCard-L .bx-name-bar {
   width: 100%; text-align: center;
   margin-top: calc(-10px * var(--S));
   position: relative;
@@ -184,42 +183,42 @@
   cursor: pointer;
 }
 
-#bx-2 .bx-name {
+#profileCard-L .bx-name {
   font-size: calc(15px * var(--S));
   font-weight: 600;
   color: var(--INK);
   letter-spacing: calc(3px * var(--S));
 }
 
-#bx-2 .bx-sub {
+#profileCard-L .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
   margin-top: calc(1px * var(--S));
   letter-spacing: calc(1px * var(--S));
 }
 
-/* ====== bx-1 右卡片 ====== */
-#bx-1 {
+/* ====== profileCard-R 右卡片 ====== */
+#profileCard-R {
   --S: 1;
   --W0: 190px;
   --CARD_H0: 210px;
   --PAD0: 6px;
-  --INK: var(--bx1-name-c, #4a5a75);
-  --BLUE: var(--bx1-border-c, #8ca3c2);
+  --INK: var(--profileCard-R-name-c, #4a5a75);
+  --BLUE: var(--profileCard-R-border-c, #8ca3c2);
   --BLUE_L: #b5c6db;
-  --LABEL_C: var(--bx1-sub-c, #5c728a);
+  --LABEL_C: var(--profileCard-R-sub-c, #5c728a);
   --border-c: rgba(79,121,166,.55);
   --LINE_C: rgba(140,163,194,.45);
-  --bx-border-w: var(--bx1-border-w, 3px);
+  --bx-border-w: var(--profileCard-R-border-w, 3px);
   width: calc(var(--W0) * var(--S));
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
   transform: translateY(1px);
-  z-index: 2;    /* ← 加这一行 */
+  z-index: 2;
 }
 
-#bx-1 .bx-cw {
+#profileCard-R .bx-cw {
   position: relative;
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
@@ -229,8 +228,8 @@
   overflow: visible;
 }
 
-#bx-1 .bx-cd {
-  background: var(--bx1-bg, #ffffff);
+#profileCard-R .bx-cd {
+  background: var(--profileCard-R-bg, #ffffff);
   position: relative; z-index: 2;
   border-radius: calc(11px * var(--S));
   overflow: visible;
@@ -239,7 +238,7 @@
   box-sizing: border-box;
 }
 
-#bx-1 .bx-side-ribbon {
+#profileCard-R .bx-side-ribbon {
   position: absolute;
   left: calc(-14px * var(--S));
   bottom: calc(15px * var(--S));
@@ -249,7 +248,7 @@
   pointer-events: none;
 }
 
-#bx-1 .bx-ribbon-tab {
+#profileCard-R .bx-ribbon-tab {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   font-size: calc(10px * var(--S));
@@ -261,32 +260,32 @@
   line-height: 1;
 }
 
-#bx-1 .bx-ribbon-tab.r1 {
-  background: var(--bx1-tag-bg, linear-gradient(180deg, #7a9abd 0%, #8ca3c2 100%));
-  color: var(--bx1-tag-c, #fff);
+#profileCard-R .bx-ribbon-tab.r1 {
+  background: var(--profileCard-R-tag-bg, linear-gradient(180deg, #7a9abd 0%, #8ca3c2 100%));
+  color: var(--profileCard-R-tag-c, #fff);
   text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
 }
 
-#bx-1 .bx-ribbon-tab.r2 {
-  background: var(--bx1-tag2-bg, linear-gradient(180deg, #dfe6ee 0%, #b5c6db 100%));
-  color: var(--bx1-tag2-c, var(--INK));
+#profileCard-R .bx-ribbon-tab.r2 {
+  background: var(--profileCard-R-tag2-bg, linear-gradient(180deg, #dfe6ee 0%, #b5c6db 100%));
+  color: var(--profileCard-R-tag2-c, var(--INK));
   font-size: calc(9px * var(--S));
 }
 
-#bx-1 .bx-av-box {
+#profileCard-R .bx-av-box {
   width: 100%;
   height: calc(var(--CARD_H0) * var(--S));
   cursor: pointer; display: block;
 }
 
-#bx-1 .bx-av-front {
-  width: 100%; height: 100%;
+#profileCard-R .bx-av-front {
+  width: 100%; height: calc(100% + 1px);
   border-radius: calc(8px * var(--S));
   background-size: cover; background-position: center;
   background-color: #e8edf2;
 }
 
-#bx-1 .bx-name-bar {
+#profileCard-R .bx-name-bar {
   width: 100%; text-align: center;
   margin-top: calc(-10px * var(--S));
   position: relative;
@@ -295,14 +294,14 @@
   cursor: pointer;
 }
 
-#bx-1 .bx-name {
+#profileCard-R .bx-name {
   font-size: calc(15px * var(--S));
   font-weight: 600;
   color: var(--INK);
   letter-spacing: calc(3px * var(--S));
 }
 
-#bx-1 .bx-sub {
+#profileCard-R .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
   margin-top: calc(1px * var(--S));
