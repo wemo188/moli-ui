@@ -93,15 +93,15 @@ var Cards={
     area.style.setProperty('--sb-text',sb.textC);
   },
 
-  updateSearchTexts:function(){
+    updateSearchTexts:function(){
     var sb=Cards._sbData;
     var leftInput=document.querySelector('.search-input-left');
     var rightInput=document.querySelector('.search-input-right');
     if(!sb.charId||!sb.nickname1||!sb.nickname2){return;}
     var days=Cards.getDaysSinceFirstChat();
     if(days>0){
-      var leftText=sb.nickname2+'，我们已经';
-      var rightText='相识'+days+'天了，'+sb.nickname1;
+      var leftText=sb.nickname1+'，我们已经';
+      var rightText='相识'+days+'天了，'+sb.nickname2;
       if(leftInput){leftInput.value=leftText;App.LS.set('searchText_left',leftText);}
       if(rightInput){rightInput.value=rightText;App.LS.set('searchText_right',rightText);}
     }
