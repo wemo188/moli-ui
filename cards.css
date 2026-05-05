@@ -113,6 +113,8 @@
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.15),
               0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 #profileCard-L .bx-cd {
@@ -226,6 +228,8 @@
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.18),
               0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 #profileCard-R .bx-cd {
