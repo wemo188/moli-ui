@@ -160,8 +160,8 @@ var Cards={
 
     var icon1=App.LS.get('customIcon_cg');
     var icon2=App.LS.get('customIcon_lt');
-    if(icon1){ var img1=App.$('#cardIcon1 img'); if(img1) img1.src=icon1; }
-    if(icon2){ var img2=App.$('#cardIcon2 img'); if(img2) img2.src=icon2; }
+    if(icon1){ var img1=App.$('#cardIcon1 img'); if(img1){ img1.src=icon1; img1.style.transform='none'; img1.style.width='100%'; img1.style.height='100%'; img1.style.objectFit='cover'; }}
+    if(icon2){ var img2=App.$('#cardIcon2 img'); if(img2){ img2.src=icon2; img2.style.transform='none'; img2.style.width='100%'; img2.style.height='100%'; img2.style.objectFit='cover'; }}
 
     Cards.bindEdit();
     Cards.applyDragOffsets();
