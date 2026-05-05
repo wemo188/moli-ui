@@ -102,7 +102,7 @@
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 #profileCard-L .bx-cw {
