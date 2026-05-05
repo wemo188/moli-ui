@@ -158,16 +158,18 @@
           e.stopPropagation(); var act = btn.dataset.act; menu.remove();
           if(act === 'cancel') return;
           if(act === 'reset') {
-            App.LS.remove(iconId);
-            var tEl = document.querySelector(target);
-            if(tEl) {
-              tEl.src = def;
-              var wrapper = tEl.closest('.card-icon-img');
-              if(wrapper) wrapper.classList.remove('custom-icon');
-            }
-            var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = def;
-            App.showToast('已恢复'); return;
-          }
+  App.LS.remove(iconId);
+  var tEl = document.querySelector(target);
+  if(tEl) {
+    tEl.src = def;
+    tEl.style.transform = '';
+    tEl.style.width = '';
+    tEl.style.height = '';
+    tEl.style.objectFit = '';
+  }
+  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = def;
+  App.showToast('已恢复'); return;
+}
           if(act === 'upload') {
             var ipt = document.createElement('input'); ipt.type = 'file'; ipt.accept = 'image/*';
             ipt.onchange = function(ev) {
@@ -175,16 +177,18 @@
               var rd = new FileReader();
               rd.onload = function(r) {
                 var process = function(c) {
-                  App.LS.set(iconId, c);
-                  var tEl = document.querySelector(target);
-                  if(tEl) {
-                    tEl.src = c;
-                    var wrapper = tEl.closest('.card-icon-img');
-                    if(wrapper) wrapper.classList.add('custom-icon');
-                  }
-                  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = c;
-                  App.showToast('图标已更换');
-                };
+  App.LS.set(iconId, c);
+  var tEl = document.querySelector(target);
+  if(tEl) {
+    tEl.src = c;
+    tEl.style.transform = 'none';
+    tEl.style.width = '100%';
+    tEl.style.height = '100%';
+    tEl.style.objectFit = 'cover';
+  }
+  var thumb = itemEl.querySelector('img'); if(thumb) thumb.src = c;
+  App.showToast('图标已更换');
+};
                 if(App.cropImage) App.cropImage(r.target.result, process); else process(r.target.result);
               };
               rd.readAsDataURL(f);
