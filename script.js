@@ -754,10 +754,21 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       });
     });
 
-    overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
+        overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
       stop.addEventListener('click',function(e){e.stopPropagation();
+        gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);
         overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});stop.classList.add('active');
-        activeStop=parseInt(stop.dataset.stop);setFromColor(gradStops[activeStop].color);updateUI();
+        activeStop=parseInt(stop.dataset.stop);
+        var parsed=parseColor(gradStops[activeStop].color);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;
+        drawSpectrum();
+        var sw=specEl.clientWidth,sh=specEl.clientHeight;
+        specCursor.style.left=(currentSat/100)*sw+'px';
+        specCursor.style.top=((100-currentLight)/100)*sh+'px';
+        specCursor.style.background=hslToHex(currentHue,currentSat,currentLight);
+        hueCursor.style.left=(currentHue/360)*hueWrap.clientWidth+'px';
+        hueCursor.style.background=hslToHex(currentHue,100,50);
+        selectedHex=getOutput();pvInner.style.background=selectedHex;hexInput.value=getDisplayText();
+        updateGradPreview();
       });
     });
 
