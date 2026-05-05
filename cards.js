@@ -323,7 +323,7 @@ var Cards={
 
     function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();Cards.updateSearchTexts();overlay.remove();}
     panel.querySelector('#sbCloseBtnTop').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)closeAndRevert();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay&&!document.querySelector('.crop-overlay'))closeAndRevert();});
 
     function handleAv(which,act){
       if(act==='del'){
