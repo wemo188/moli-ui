@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -8,7 +9,7 @@ var DEF_SUB_R='◈与你共赏一阙火树银花◈';
 
 var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#6a8caf'};
 var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',nameC:'#4a5a75',subC:'#5c728a'};
-var DEF_SB={border:'#adcdea',shadow:'rgba(173,205,234,0.9)',textC:'#adcdea'};
+var DEF_SB={border:'#adcdea',shadow:'rgba(173,205,234,0.9)',textC:'#adcdea',charId:'',nickname1:'',nickname2:''};
 
 var DRAG_DELAY=650;
 
@@ -20,11 +21,33 @@ var Cards={
     if(!Cards.data.left){Cards.data.left=JSON.parse(JSON.stringify(EMPTY));Cards.data.left.sub=DEF_SUB_L;}
     if(!Cards.data.right){Cards.data.right=JSON.parse(JSON.stringify(EMPTY));Cards.data.right.sub=DEF_SUB_R;}
     Cards._dragOffsets=App.LS.get('cardDragOffsets')||{};
-    Cards._sbData=App.LS.get('searchBoxData')||JSON.parse(JSON.stringify(DEF_SB));
+    var saved=App.LS.get('searchBoxData')||JSON.parse(JSON.stringify(DEF_SB));
+    if(saved.charId===undefined)saved.charId='';
+    if(saved.nickname1===undefined)saved.nickname1='';
+    if(saved.nickname2===undefined)saved.nickname2='';
+    Cards._sbData=saved;
   },
   save:function(){App.LS.set('profileCards',Cards.data);},
   saveDrag:function(){App.LS.set('cardDragOffsets',Cards._dragOffsets);},
   saveSB:function(){App.LS.set('searchBoxData',Cards._sbData);},
+
+  getDaysSinceFirstChat:function(){
+    var sb=Cards._sbData;
+    if(!sb||!sb.charId)return 0;
+    var msgs=App.LS.get('chatMsgs_'+sb.charId);
+    if(!msgs||!msgs.length)return 0;
+    var firstTs=null;
+    for(var i=0;i<msgs.length;i++){
+      if(msgs[i].ts){firstTs=msgs[i].ts;break;}
+    }
+    if(!firstTs)return 0;
+    var now=new Date();
+    var first=new Date(firstTs);
+    var nowDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var firstDay=new Date(first.getFullYear(),first.getMonth(),first.getDate());
+    var diff=Math.floor((nowDay-firstDay)/(1000*60*60*24))+1;
+    return Math.max(1,diff);
+  },
 
   getColors:function(side){
     var d=Cards.data[side];
@@ -68,6 +91,20 @@ var Cards={
     area.style.setProperty('--sb-border',sb.border);
     area.style.setProperty('--sb-shadow',sb.shadow);
     area.style.setProperty('--sb-text',sb.textC);
+  },
+
+  updateSearchTexts:function(){
+    var sb=Cards._sbData;
+    var leftInput=document.querySelector('.search-input-left');
+    var rightInput=document.querySelector('.search-input-right');
+    if(!sb.charId||!sb.nickname1||!sb.nickname2){return;}
+    var days=Cards.getDaysSinceFirstChat();
+    if(days>0){
+      var leftText=sb.nickname2+'，我们已经';
+      var rightText='相识'+days+'天了，'+sb.nickname1;
+      if(leftInput){leftInput.value=leftText;App.LS.set('searchText_left',leftText);}
+      if(rightInput){rightInput.value=rightText;App.LS.set('searchText_right',rightText);}
+    }
   },
 
   render:function(){
@@ -116,6 +153,7 @@ var Cards={
     Cards.applyColors();
     Cards.applySBColors();
     Cards.bindIconsDragAndUpload();
+    Cards.updateSearchTexts();
   },
 
   bindSearchUpload:function(){
@@ -220,12 +258,32 @@ var Cards={
     var tempAv1=null,av1Changed=false;
     var tempAv2=null,av2Changed=false;
 
+    var chars=App.character&&App.character.list?App.character.list:[];
+    var charOptionsHtml='<option value="">不绑定</option>';
+    chars.forEach(function(c){
+      var sel=sb.charId===c.id?' selected':'';
+      charOptionsHtml+='<option value="'+App.escAttr(c.id)+'"'+sel+'>'+App.esc(c.name||'未命名')+'</option>';
+    });
+
     var overlay=document.createElement('div');overlay.id='pcEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
 
     panel.innerHTML=
       '<div class="pc-header" id="sbDragHandle">对话框设置<div class="pc-close-btn" id="sbCloseBtnTop">×</div></div>'+
       '<div class="pc-body" style="flex-direction:column;gap:12px;">'+
+
+        '<div class="pc-group"><span class="pc-label">绑定角色</span>'+
+          '<select id="sbCharSelect" style="width:100%;padding:7px 10px;font-size:12px;color:#000;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.15);border-radius:8px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;cursor:pointer;">'+charOptionsHtml+'</select>'+
+        '</div>'+
+
+        '<div class="pc-group"><span class="pc-label">上方称呼（对TA的昵称）</span>'+
+          '<input type="text" class="pc-input" id="sbNickname1" placeholder="例：老公、哥哥..." value="'+App.escAttr(sb.nickname1||'')+'">'+
+        '</div>'+
+
+        '<div class="pc-group"><span class="pc-label">下方称呼（TA对你的昵称）</span>'+
+          '<input type="text" class="pc-input" id="sbNickname2" placeholder="例：宝贝、墨墨..." value="'+App.escAttr(sb.nickname2||'')+'">'+
+        '</div>'+
+
         '<div class="pc-group"><span class="pc-label">上方头像</span><div class="pc-av-row">'+
           '<button class="pc-btn pc-btn-save" id="sbUpload1" type="button" style="padding:8px;font-size:12px;">上传</button>'+
           '<button class="pc-btn pc-btn-cancel" id="sbUrl1" type="button" style="padding:8px;font-size:12px;">URL</button>'+
@@ -263,7 +321,7 @@ var Cards={
 
     Cards._bindPanelDrag(panel);
 
-    function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();overlay.remove();}
+    function closeAndRevert(){Cards._sbData=sbSnapshot;Cards.applySBColors();Cards.updateSearchTexts();overlay.remove();}
     panel.querySelector('#sbCloseBtnTop').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)closeAndRevert();});
 
@@ -321,10 +379,14 @@ var Cards={
     panel.querySelector('#sbResetBtn').addEventListener('click',function(e){
       e.stopPropagation();
       sb.border='#adcdea';sb.shadow='rgba(173,205,234,0.9)';sb.textC='#adcdea';
+      sb.charId='';sb.nickname1='';sb.nickname2='';
       panel.querySelector('#sbDotBorder').style.background=sb.border;
       panel.querySelector('#sbDotShadow').style.background=sb.shadow;
       panel.querySelector('#sbDotText').style.background=sb.textC;
-      Cards._sbData=sb;Cards.applySBColors();App.showToast('已重置');
+      panel.querySelector('#sbCharSelect').value='';
+      panel.querySelector('#sbNickname1').value='';
+      panel.querySelector('#sbNickname2').value='';
+      Cards._sbData=sb;Cards.applySBColors();Cards.updateSearchTexts();App.showToast('已重置');
     });
 
     panel.querySelector('#sbSaveBtn').addEventListener('click',function(e){
@@ -337,7 +399,10 @@ var Cards={
         if(tempAv2)Cards._setSearchAvatar(tempAv2,'avatarPreview2','avatar_search2');
         else Cards._clearSearchAvatar('avatarPreview2','avatar_search2');
       }
-      Cards._sbData=sb;Cards.saveSB();overlay.remove();App.showToast('已保存');
+      sb.charId=(panel.querySelector('#sbCharSelect')||{}).value||'';
+      sb.nickname1=((panel.querySelector('#sbNickname1')||{}).value||'').trim();
+      sb.nickname2=((panel.querySelector('#sbNickname2')||{}).value||'').trim();
+      Cards._sbData=sb;Cards.saveSB();Cards.updateSearchTexts();overlay.remove();App.showToast('已保存');
     });
   },
 
@@ -585,7 +650,7 @@ var Cards={
 
     panel.addEventListener('touchstart',function(e){
       if(handleSelector && !e.target.closest(handleSelector)) return;
-      if(e.target.closest('button')||e.target.closest('input')||e.target.closest('label')||e.target.closest('.pc-dot')||e.target.closest('.pc-icon-btn')||e.target.closest('.pc-close-btn')||e.target.closest('.pc-slider'))return;
+      if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('label')||e.target.closest('.pc-dot')||e.target.closest('.pc-icon-btn')||e.target.closest('.pc-close-btn')||e.target.closest('.pc-slider'))return;
       var t=e.touches[0];
       _drag.sx=t.clientX;_drag.sy=t.clientY;
       pressed=false;
