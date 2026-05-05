@@ -108,8 +108,8 @@ var Cards={
     
     var days=Cards.getDaysSinceFirstChat();
     var dayStr=days>0?days:'0';
-    var leftText=sb.nickname1+'，我们已经';
-    var rightText='相识'+dayStr+'天了，'+sb.nickname2;
+    var leftText=sb.nickname1+'，我们已经_';
+    var rightText='_相识'+dayStr+'天了，'+sb.nickname2;
     
     if(force){
       if(leftInput){leftInput.value=leftText;leftInput.placeholder='';App.LS.set('searchText_left',leftText);}
