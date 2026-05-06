@@ -378,7 +378,7 @@
         'dockConfig', 'ballConfig', 'floatingBallPos', 'wtCardPos', 'wtCardConfig',
         'fontConfig', 'fontCustomList'
       ];
-      var MAX_SLOTS = 5;
+      var MAX_SLOTS = 10;
 
       function getSnapshots() { return App.LS.get('layoutSnapshots') || []; }
       function saveSnapshots(list) { App.LS.set('layoutSnapshots', list); }
