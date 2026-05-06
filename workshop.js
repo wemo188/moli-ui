@@ -67,6 +67,7 @@
                 tkWhite('bg', '背景', '图标') +
                 tkWhite('ballset', '悬浮球', '样式') +
                 tkWhite('resetLayout', '恢复', '布局') +
+                tkWhite('snapshot', '存档', '排版') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
             '</div>' +
@@ -108,6 +109,7 @@
           var action = item.dataset.action;
           if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
           if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
+          if (action === 'snapshot') { Workshop.close(); setTimeout(function() { Workshop.openSnapshot(); }, 220); return; }
           if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
           if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
           var panelMap = { theme: 'themePanel' };
@@ -360,6 +362,172 @@
       var edenCard = App.$('#edenCard');
       if (edenCard) edenCard.style.transform = '';
       App.showToast('布局已恢复');
+    },
+    
+      openSnapshot: function() {
+      var old = App.$('#wsSnapshot');
+      if (old) { old.remove(); return; }
+
+      var LAYOUT_KEYS = [
+        'profileCards', 'cardDragOffsets', 'searchBoxData',
+        'searchText_left', 'searchText_right', 'searchText_left_manual', 'searchText_right_manual',
+        'avatar_search1', 'avatar_search2',
+        'edenCard', 'bgData', 'topIconConfig',
+        'customIcon_cg', 'customIcon_lt',
+        'customIcon_dockMine', 'customIcon_dockLong', 'customIcon_dockShort', 'customIcon_dockCheck',
+        'dockConfig', 'ballConfig', 'floatingBallPos', 'wtCardPos', 'wtCardConfig',
+        'fontConfig', 'fontCustomList'
+      ];
+      var MAX_SLOTS = 5;
+
+      function getSnapshots() { return App.LS.get('layoutSnapshots') || []; }
+      function saveSnapshots(list) { App.LS.set('layoutSnapshots', list); }
+
+      function captureNow() {
+        var data = {};
+        LAYOUT_KEYS.forEach(function(k) {
+          var v = App.LS.get(k);
+          if (v !== null && v !== undefined) data[k] = v;
+        });
+        return data;
+      }
+
+      function restoreSnapshot(snap) {
+        LAYOUT_KEYS.forEach(function(k) { App.LS.remove(k); });
+        Object.keys(snap.data).forEach(function(k) { App.LS.set(k, snap.data[k]); });
+        App.showToast('已恢复，即将刷新');
+        setTimeout(function() { location.reload(); }, 800);
+      }
+
+      function fmtTime(ts) {
+        var d = new Date(ts);
+        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' +
+          String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      }
+
+      var panel = document.createElement('div');
+      panel.id = 'wsSnapshot';
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200000;background:#fff;display:flex;flex-direction:column;';
+
+      function renderPanel() {
+        var snaps = getSnapshots();
+        var listHtml = '';
+        if (!snaps.length) {
+          listHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;">还没有存档<br>点击上方按钮保存当前排版</div>';
+        } else {
+          listHtml = snaps.map(function(s, i) {
+            return '<div style="margin:8px 16px;padding:14px;background:rgba(126,163,201,.04);border:1px solid rgba(126,163,201,.15);border-radius:12px;">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+                '<div>' +
+                  '<div style="font-size:14px;font-weight:700;color:#2e4258;">' + App.esc(s.name) + '</div>' +
+                  '<div style="font-size:11px;color:#8aa0b8;margin-top:2px;">' + fmtTime(s.ts) + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div style="display:flex;gap:8px;">' +
+                '<button class="snap-restore" data-idx="' + i + '" type="button" style="flex:1;padding:10px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">恢复</button>' +
+                '<button class="snap-export" data-idx="' + i + '" type="button" style="padding:10px 14px;background:rgba(126,163,201,.08);color:#5a7a9a;border:1px solid rgba(126,163,201,.2);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">导出</button>' +
+                '<button class="snap-del" data-idx="' + i + '" type="button" style="padding:10px 14px;background:rgba(201,112,107,.06);color:#c9706b;border:1px solid rgba(201,112,107,.2);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">删除</button>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+
+        panel.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;border-bottom:1px solid #eee;flex-shrink:0;">' +
+            '<button id="snapBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#7a9ab8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+            '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">排版存档</span>' +
+            '<div style="width:36px;"></div>' +
+          '</div>' +
+          '<div style="padding:12px 16px;display:flex;gap:8px;border-bottom:1px solid #eee;flex-shrink:0;">' +
+            '<button id="snapSaveBtn" type="button" style="flex:1;padding:12px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">保存当前排版</button>' +
+            '<button id="snapImportBtn" type="button" style="padding:12px 16px;background:rgba(126,163,201,.08);color:#5a7a9a;border:1px solid rgba(126,163,201,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">导入</button>' +
+            '<input type="file" id="snapImportFile" accept=".json" hidden>' +
+          '</div>' +
+          '<div style="padding:8px 16px;font-size:11px;color:#8aa0b8;line-height:1.5;flex-shrink:0;">最多保存 ' + MAX_SLOTS + ' 个存档。包含卡片、背景、图标、字体、位置等全部排版数据。</div>' +
+          '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;" id="snapList">' + listHtml + '</div>';
+
+        panel.querySelector('#snapBack').addEventListener('click', function() { panel.remove(); });
+
+        panel.querySelector('#snapSaveBtn').addEventListener('click', function() {
+          var snaps = getSnapshots();
+          if (snaps.length >= MAX_SLOTS) {
+            if (!confirm('已达到 ' + MAX_SLOTS + ' 个存档上限，将覆盖最早的存档。继续？')) return;
+            snaps.shift();
+          }
+          var name = prompt('给这个存档起个名字：', '存档 ' + (snaps.length + 1));
+          if (name === null) return;
+          name = name.trim() || ('存档 ' + new Date().toLocaleDateString());
+          var snap = { name: name, ts: Date.now(), data: captureNow() };
+          snaps.push(snap);
+          saveSnapshots(snaps);
+          renderPanel();
+          App.showToast('已保存');
+        });
+
+        panel.querySelector('#snapImportBtn').addEventListener('click', function() {
+          panel.querySelector('#snapImportFile').click();
+        });
+
+        panel.querySelector('#snapImportFile').addEventListener('change', function(e) {
+          var file = e.target.files[0]; if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            try {
+              var snap = JSON.parse(ev.target.result);
+              if (!snap.data || !snap.name) throw new Error();
+              var snaps = getSnapshots();
+              if (snaps.length >= MAX_SLOTS) snaps.shift();
+              snap.ts = Date.now();
+              snaps.push(snap);
+              saveSnapshots(snaps);
+              renderPanel();
+              App.showToast('已导入：' + snap.name);
+            } catch (err) { App.showToast('文件格式错误'); }
+          };
+          reader.readAsText(file);
+        });
+
+        panel.querySelectorAll('.snap-restore').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var idx = parseInt(btn.dataset.idx);
+            var snaps = getSnapshots();
+            if (!snaps[idx]) return;
+            if (!confirm('恢复此存档将覆盖当前排版，确定？')) return;
+            restoreSnapshot(snaps[idx]);
+          });
+        });
+
+        panel.querySelectorAll('.snap-export').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var idx = parseInt(btn.dataset.idx);
+            var snaps = getSnapshots();
+            if (!snaps[idx]) return;
+            var blob = new Blob([JSON.stringify(snaps[idx], null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'layout-' + snaps[idx].name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_') + '.json';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            App.showToast('已导出');
+          });
+        });
+
+        panel.querySelectorAll('.snap-del').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var idx = parseInt(btn.dataset.idx);
+            if (!confirm('确定删除这个存档？')) return;
+            var snaps = getSnapshots();
+            snaps.splice(idx, 1);
+            saveSnapshots(snaps);
+            renderPanel();
+            App.showToast('已删除');
+          });
+        });
+      }
+
+      document.body.appendChild(panel);
+      renderPanel();
     },
 
     openStorage: function() {
