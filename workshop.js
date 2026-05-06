@@ -419,7 +419,7 @@
             return '<div style="margin:8px 16px;padding:14px;background:rgba(126,163,201,.04);border:1px solid rgba(126,163,201,.15);border-radius:12px;">' +
               '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
                 '<div>' +
-                  '<div style="font-size:14px;font-weight:700;color:#2e4258;">' + App.esc(s.name) + '</div>' +
+                 '<div class="snap-name" data-idx="' + i + '" style="font-size:14px;font-weight:700;color:#2e4258;cursor:pointer;" title="点击重命名">' + App.esc(s.name) + '</div>' +
                   '<div style="font-size:11px;color:#8aa0b8;margin-top:2px;">' + fmtTime(s.ts) + '</div>' +
                 '</div>' +
               '</div>' +
@@ -524,6 +524,24 @@
             App.showToast('已删除');
           });
         });
+        
+        panel.querySelectorAll('.snap-name').forEach(function(el) {
+          el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var idx = parseInt(el.dataset.idx);
+            var snaps = getSnapshots();
+            if (!snaps[idx]) return;
+            var newName = prompt('修改存档名字：', snaps[idx].name);
+            if (newName === null) return;
+            newName = newName.trim();
+            if (!newName) return;
+            snaps[idx].name = newName;
+            saveSnapshots(snaps);
+            renderPanel();
+            App.showToast('已重命名');
+          });
+        });
+        
       }
 
       document.body.appendChild(panel);
