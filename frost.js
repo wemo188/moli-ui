@@ -93,14 +93,31 @@
       if (!card) return;
       var startX, startY, startPosX, startPosY, longPressed = false, timer, moved = false;
 
-       card.addEventListener('touchstart', function(e) {
+        card.addEventListener('touchstart', function(e) {
         if (e.target.closest('#edenEditOverlay')) return;
         var textEl = card.querySelector('#edenText');
         if (!textEl || !textEl.textContent.trim()) return;
-        if (e.target === card) return;
+        if (e.target !== textEl) return;
         var touch = e.touches[0];
-        var range = document.caretRangeFromPoint(touch.clientX, touch.clientY);
-        if (!range || !textEl.contains(range.startContainer)) return;
+        var hit = false;
+        var textNode = textEl.firstChild;
+        if (textNode && textNode.nodeType === 3) {
+          var r = document.createRange();
+          var len = textNode.textContent.length;
+          for (var i = 0; i < len; i++) {
+            r.setStart(textNode, i);
+            r.setEnd(textNode, Math.min(i + 1, len));
+            var rects = r.getClientRects();
+            for (var j = 0; j < rects.length; j++) {
+              var rc = rects[j];
+              if (touch.clientX >= rc.left && touch.clientX <= rc.right && touch.clientY >= rc.top && touch.clientY <= rc.bottom) {
+                hit = true; break;
+              }
+            }
+            if (hit) break;
+          }
+        }
+        if (!hit) return;
         startX = touch.clientX; startY = touch.clientY;
         longPressed = false; moved = false;
         var match = (card.style.transform || '').match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
