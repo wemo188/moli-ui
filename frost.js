@@ -95,6 +95,7 @@
 
       card.addEventListener('touchstart', function(e) {
         if (e.target.closest('#edenEditOverlay')) return;
+        if (e.target === card) return;
         var touch = e.touches[0];
         startX = touch.clientX; startY = touch.clientY;
         longPressed = false; moved = false;
