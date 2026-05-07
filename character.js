@@ -129,9 +129,9 @@
             : '<div class="cl-cover-empty"></div>';
 
           var wbCount = (c.worldbookIds && c.worldbookIds.length) || 0;
-          var wbMounted = wbCount > 0;
-          var wbClass = wbMounted ? ' mounted' : '';
-          var wbText = wbMounted ? wbCount + '本' : '世界书';
+var wbMounted = wbCount > 0;
+var wbClass = wbMounted ? ' mounted' : '';
+var wbText = wbMounted ? '已加载' : '世界书';
 
           return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
             '<div class="cl-top-bar"></div>' +
@@ -285,14 +285,14 @@
             Character.save();
 
             if (selected.length > 0) {
-              btn.classList.add('mounted');
-              btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>' + selected.length + '本';
-            } else {
-              btn.classList.remove('mounted');
-              btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
-            }
+  btn.classList.add('mounted');
+  btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已加载';
+} else {
+  btn.classList.remove('mounted');
+  btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
+}
             overlay.remove();
-            App.showToast(selected.length ? '已挂载 ' + selected.length + ' 本世界书' : '已取消挂载');
+            App.showToast(selected.length ? '已加载 ' + selected.length + ' 本世界书' : '已取消挂载');
           });
         });
       });
