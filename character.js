@@ -179,7 +179,7 @@ var wbText = wbMounted ? '已加载' : '世界书';
       '</div>';
 
       panel.innerHTML =
-        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:52px 16px 40px;background:#fff;">' +
+        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:30px 16px 40px;background:#fff;">' +
         '<div class="cl-topbar-wrap">' +
   '<div class="cl-esc" id="clEsc"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
   '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
