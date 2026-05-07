@@ -919,7 +919,6 @@ html.frame-mode body {
     inset 0 -1px 0 rgba(0,0,0,.03);
 }
 
-/* 左侧按键组 */
 .phone-frame .pf-btn-left {
   position: absolute;
   left: -3.5px;
@@ -947,7 +946,6 @@ html.frame-mode body {
   box-shadow: inset 1px 0 0 rgba(255,255,255,.7), -1px 0 3px rgba(0,0,0,.08);
 }
 
-/* 右侧电源键 */
 .phone-frame .pf-btn-right {
   position: absolute;
   right: -3.5px;
@@ -963,7 +961,6 @@ html.frame-mode body {
   box-shadow: inset -1px 0 0 rgba(255,255,255,.7), 1px 0 3px rgba(0,0,0,.08);
 }
 
-/* 屏幕区域 */
 .phone-frame .pf-screen {
   width: 100%;
   height: 100%;
@@ -974,10 +971,7 @@ html.frame-mode body {
   box-shadow: inset 0 0 0 1.5px rgba(200,205,215,.35);
 }
 
-/* 缩放容器 */
 .phone-frame .pf-viewport {
-  width: 100vw;
-  height: 100vh;
   transform-origin: top left;
   position: absolute;
   top: 0;
@@ -986,7 +980,6 @@ html.frame-mode body {
   background: var(--bg-primary, #ffffff);
 }
 
-/* 框内的元素全部从 fixed 变 absolute */
 .phone-frame .pf-viewport .bg-layer,
 .phone-frame .pf-viewport .floating-ball,
 .phone-frame .pf-viewport .dock,
@@ -1004,22 +997,22 @@ html.frame-mode body {
 .phone-frame .pf-viewport .main-content {
   position: absolute !important;
   inset: 0;
-  min-height: 100vh;
-  height: 100vh;
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
 .phone-frame .pf-viewport .page-slider-main {
-  min-height: 100vh;
-  height: 100vh;
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
 .phone-frame .pf-viewport .page-slider {
-  height: 100vh;
-  min-height: 100vh;
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
 .phone-frame .pf-viewport .screen-page {
-  height: 100vh;
-  min-height: 100vh;
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
