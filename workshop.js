@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -45,8 +44,8 @@
               '<div class="bm-title">悬浮助手</div>' +
               '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
+                tkBlack('mode', '模式', 'mode') +
                 tkBlack('workshop', '美化', 'studio') +
-                tkBlack('character', '角色', 'role') +
                 tkBlack('preset', '预设', 'preset') +
                 tkBlack('worldbook', '世界书', 'lore') +
                 tkBlack('memory', '记忆', 'memory') +
@@ -93,7 +92,7 @@
           var action = item.dataset.action;
           if (action === 'workshop') { Workshop.goToPage(1); return; }
           if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
-          if (action === 'character') { Workshop.close(); setTimeout(function() { if (App.charMgr) App.charMgr.open(); }, 220); return; }
+          if (action === 'mode') { Workshop.close(); setTimeout(function() { Workshop.openModeSwitcher(); }, 220); return; }
           if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
           if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
           if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
@@ -115,6 +114,74 @@
           var panelMap = { theme: 'themePanel' };
           if (panelMap[action]) { Workshop.close(); setTimeout(function() { App.openPanel(panelMap[action]); }, 220); }
         });
+      });
+    },
+
+    /* ★ 新增：模式切换面板 */
+    openModeSwitcher: function() {
+      var old = App.$('#modeOverlay');
+      if (old) { old.remove(); return; }
+
+      var currentMode = App.LS.get('phoneFrameMode') ? 'frame' : 'normal';
+
+      var overlay = document.createElement('div');
+      overlay.id = 'modeOverlay';
+      overlay.className = 'pc-edit-overlay';
+      overlay.style.zIndex = '100020';
+
+      overlay.innerHTML =
+        '<div class="pc-edit-panel" style="width:300px;max-height:320px;overflow-y:auto;border-radius:14px;left:50%;top:50%;transform:translate(-50%,-50%);">' +
+          '<div class="pc-edit-title" style="text-align:center;padding:18px 12px 12px;font-size:15px;font-weight:800;letter-spacing:1px;color:#2e4258;">模式切换</div>' +
+
+          '<div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;">' +
+
+            '<div class="mode-opt" data-mode="normal" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;cursor:pointer;border:1.5px solid ' + (currentMode === 'normal' ? '#1a1a1a' : 'rgba(0,0,0,.08)') + ';background:' + (currentMode === 'normal' ? 'rgba(0,0,0,.03)' : '#fff') + ';transition:all .15s;-webkit-tap-highlight-color:transparent;">' +
+              '<div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (currentMode === 'normal' ? '#1a1a1a' : '#ccc') + ';background:' + (currentMode === 'normal' ? '#1a1a1a' : '#fff') + ';box-shadow:' + (currentMode === 'normal' ? 'inset 0 0 0 3px #fff' : 'none') + ';flex-shrink:0;transition:all .15s;"></div>' +
+              '<div><div style="font-size:14px;font-weight:700;color:#1a1a1a;">普通模式</div><div style="font-size:11px;color:#999;margin-top:2px;">默认全屏显示</div></div>' +
+            '</div>' +
+
+            '<div class="mode-opt" data-mode="frame" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;cursor:pointer;border:1.5px solid ' + (currentMode === 'frame' ? '#1a1a1a' : 'rgba(0,0,0,.08)') + ';background:' + (currentMode === 'frame' ? 'rgba(0,0,0,.03)' : '#fff') + ';transition:all .15s;-webkit-tap-highlight-color:transparent;">' +
+              '<div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (currentMode === 'frame' ? '#1a1a1a' : '#ccc') + ';background:' + (currentMode === 'frame' ? '#1a1a1a' : '#fff') + ';box-shadow:' + (currentMode === 'frame' ? 'inset 0 0 0 3px #fff' : 'none') + ';flex-shrink:0;transition:all .15s;"></div>' +
+              '<div><div style="font-size:14px;font-weight:700;color:#1a1a1a;">手机框模式</div><div style="font-size:11px;color:#999;margin-top:2px;">白色手机外壳包裹</div></div>' +
+            '</div>' +
+
+            '<button id="modeSaveBtn" type="button" style="width:100%;padding:12px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;font-family:inherit;margin-top:6px;">确 定</button>' +
+
+          '</div>' +
+        '</div>';
+
+      document.body.appendChild(overlay);
+
+      var selectedMode = currentMode;
+
+      overlay.querySelectorAll('.mode-opt').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          selectedMode = opt.dataset.mode;
+          overlay.querySelectorAll('.mode-opt').forEach(function(o) {
+            var isActive = o.dataset.mode === selectedMode;
+            o.style.borderColor = isActive ? '#1a1a1a' : 'rgba(0,0,0,.08)';
+            o.style.background = isActive ? 'rgba(0,0,0,.03)' : '#fff';
+            var dot = o.querySelector('div:first-child');
+            dot.style.borderColor = isActive ? '#1a1a1a' : '#ccc';
+            dot.style.background = isActive ? '#1a1a1a' : '#fff';
+            dot.style.boxShadow = isActive ? 'inset 0 0 0 3px #fff' : 'none';
+          });
+        });
+      });
+
+      overlay.querySelector('#modeSaveBtn').addEventListener('click', function() {
+        if (selectedMode === 'frame') {
+          App.LS.set('phoneFrameMode', true);
+        } else {
+          App.LS.remove('phoneFrameMode');
+        }
+        overlay.remove();
+        App.applyPhoneFrame();
+        App.showToast(selectedMode === 'frame' ? '已切换 · 手机框模式' : '已切换 · 普通模式');
+      });
+
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
       });
     },
 
@@ -292,7 +359,7 @@
           '</div>' +
           '<div style="margin-bottom:20px;">' +
             '<div style="font-size:12px;font-weight:700;color:#c9706b;letter-spacing:1px;margin-bottom:10px;">危险操作</div>' +
-            '<button id="wsResetAll" type="button" style="width:100%;padding:14px;background:rgba(201,112,107,.06);color:#c9706b;border:1.5px solid rgba(201,112,107,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">重置所有数据</button>' +
+            '<button id="wsResetAll" type="button" style="width:100%;padding:14px;background:rgba(201,112,107,.06);color:#c9706b;border:1px solid rgba(201,112,107,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">重置所有数据</button>' +
             '<div style="font-size:11px;color:#c9a0a0;margin-top:6px;line-height:1.5;">⚠️ 此操作不可恢复，将清除所有设置、角色、聊天记录等全部数据。</div>' +
           '</div>' +
         '</div>';
@@ -363,8 +430,8 @@
       if (edenCard) edenCard.style.transform = '';
       App.showToast('布局已恢复');
     },
-    
-      openSnapshot: function() {
+
+    openSnapshot: function() {
       var old = App.$('#wsSnapshot');
       if (old) { old.remove(); return; }
 
@@ -524,7 +591,7 @@
             App.showToast('已删除');
           });
         });
-        
+
         panel.querySelectorAll('.snap-name').forEach(function(el) {
           el.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -541,7 +608,6 @@
             App.showToast('已重命名');
           });
         });
-        
       }
 
       document.body.appendChild(panel);
@@ -624,7 +690,6 @@
       panel.querySelector('#wsStorageBack').addEventListener('click', function() { panel.remove(); });
     },
 
-    /* ★ 重写：控制台支持拖拽 + 展开/收起 */
     openConsole: function() {
       var old = App.$('#wsConsole');
       if (old) { old.remove(); return; }
@@ -654,14 +719,12 @@
       var logArea = panel.querySelector('#wsLogArea');
       var header = panel.querySelector('#wsConsoleHeader');
 
-      /* ★ 拖拽 */
       var _drag = { active: false, sx: 0, sy: 0, ox: 0, oy: 0, moved: false };
 
       header.addEventListener('touchstart', function(e) {
         if (e.target.closest('button')) return;
         var t = e.touches[0];
         var rect = panel.getBoundingClientRect();
-        /* 固定宽高，脱离 right/bottom 定位 */
         panel.style.width = rect.width + 'px';
         panel.style.left = rect.left + 'px';
         panel.style.top = rect.top + 'px';
@@ -689,35 +752,34 @@
         }
       });
 
-      /* ★ 展开/收起 */
-panel.querySelector('#wsExpandLog').addEventListener('click', function() {
-  isExpanded = !isExpanded;
-  var execInput = panel.querySelector('#wsExecInput');
-  if (isExpanded) {
-    var rect = panel.getBoundingClientRect();
-    panel.style.left = rect.left + 'px';
-    panel.style.top = '10vh';
-    panel.style.right = 'auto';
-    panel.style.bottom = 'auto';
-    panel.style.width = rect.width + 'px';
-    panel.style.maxHeight = '80vh';
-    panel.style.height = '80vh';
-    logArea.style.maxHeight = 'none';
-    logArea.style.flex = '1';
-    execInput.style.fontSize = '14px';
-    execInput.style.padding = '14px 16px';
-    this.textContent = '收起';
-  } else {
-    panel.style.maxHeight = '50vh';
-    panel.style.height = '';
-    logArea.style.maxHeight = '40vh';
-    logArea.style.flex = '';
-    execInput.style.fontSize = '12px';
-    execInput.style.padding = '10px 14px';
-    this.textContent = '展开';
-  }
-  logArea.scrollTop = logArea.scrollHeight;
-});
+      panel.querySelector('#wsExpandLog').addEventListener('click', function() {
+        isExpanded = !isExpanded;
+        var execInput = panel.querySelector('#wsExecInput');
+        if (isExpanded) {
+          var rect = panel.getBoundingClientRect();
+          panel.style.left = rect.left + 'px';
+          panel.style.top = '10vh';
+          panel.style.right = 'auto';
+          panel.style.bottom = 'auto';
+          panel.style.width = rect.width + 'px';
+          panel.style.maxHeight = '80vh';
+          panel.style.height = '80vh';
+          logArea.style.maxHeight = 'none';
+          logArea.style.flex = '1';
+          execInput.style.fontSize = '14px';
+          execInput.style.padding = '14px 16px';
+          this.textContent = '收起';
+        } else {
+          panel.style.maxHeight = '50vh';
+          panel.style.height = '';
+          logArea.style.maxHeight = '40vh';
+          logArea.style.flex = '';
+          execInput.style.fontSize = '12px';
+          execInput.style.padding = '10px 14px';
+          this.textContent = '展开';
+        }
+        logArea.scrollTop = logArea.scrollHeight;
+      });
 
       function addLog(text, color) {
         var div = document.createElement('div');
