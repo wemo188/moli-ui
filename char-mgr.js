@@ -124,7 +124,7 @@
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
 
           // ========== 基础信息 ==========
-          '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">基础信息</div></div><div class="cm-section-body">' +
+          '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
             '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
               '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
               '<div style="flex:1;"><div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div></div>' +
