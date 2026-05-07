@@ -28,15 +28,17 @@
     _expandEl: null,
     editingCharId: null,
     tempAvatar: '',
+    charConfigs: {},
 
-    load: function() {
-      CharMgr.charConfigs = App.LS.get('cmChars') || {};
-    },
+    load: function() { CharMgr.charConfigs = App.LS.get('cmChars') || {}; },
     save: function() { App.LS.set('cmChars', CharMgr.charConfigs); },
 
     getCharConfig: function(charId) {
-      return CharMgr.charConfigs[charId] || JSON.parse(JSON.stringify(DEFAULTS));
+      if (CharMgr.charConfigs && CharMgr.charConfigs[charId]) return CharMgr.charConfigs[charId];
+      return JSON.parse(JSON.stringify(DEFAULTS));
     },
+    hasCustom: function(charId) { return !!CharMgr.charConfigs[charId]; },
+    get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     open: function(charId) {
       CharMgr.load();
@@ -110,7 +112,7 @@
       var apiOptionsHtml = '<option value="">使用全局 API</option>';
       apiList.forEach(function(a) {
         var sel = cfg.apiSelect === a.name ? ' selected' : '';
-        apiOptionsHtml += '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + '</option>';
+        apiOptionsHtml += '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + ' (' + App.esc(a.model || '') + ')</option>';
       });
 
       page.innerHTML =
@@ -128,24 +130,25 @@
               '<div style="flex:1;"><div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div></div>' +
             '</div>' +
             '<div class="cm-field-grid">' +
-              '<div class="cm-field"><div class="cm-field-label">性别</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">年龄</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">生日</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">对你的称呼</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">年龄 AGE</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">生日 BIRTHDAY</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">对你的称呼 CALL</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
             '</div>' +
-            '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
+            '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系 RELATION</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
             '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
             '<div class="cm-field-grid">' +
-              '<div class="cm-field"><div class="cm-field-label">手机号</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机" value="' + v('charPhone') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">微信号</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机" value="' + v('charWechat') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">手机号 PHONE</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + v('charPhone') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">微信号 WECHAT</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + v('charWechat') + '"></div>' +
             '</div>' +
             '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
-            '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录</div>' +
+            '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录 CONTACT</div>' +
             '<div class="cm-radio-row">' +
               '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC1" value="direct"' + rc('direct') + '><label class="cm-radio-label" for="cmC1">直接添加</label></div>' +
-              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待来加</label></div>' +
-              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">主动添加</label></div>' +
+              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待对方来加</label></div>' +
+              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">由你主动添加</label></div>' +
             '</div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 角色档案 ==========
@@ -153,30 +156,30 @@
             '<div class="cm-ta-wrap"><button class="cm-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmProfile" placeholder="角色性格、背景、习惯...">' + v('profile') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 示例对话 ==========
+          // ========== 示例对话（黑色标题） ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">示例对话</div></div><div class="cm-section-body">' +
             '<div class="cm-ta-wrap cm-ta-dialogue"><button class="cm-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmDialog" placeholder="示例对话...">' + v('dialogExamples') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 后置指令 ==========
+          // ========== 后置指令（蓝色标题） ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-blue">后置指令</div></div><div class="cm-section-body">' +
             '<div class="cm-ta-wrap"><button class="cm-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmPost" placeholder="每轮必须遵守的指令...">' + v('postInstruction') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 语言与语音 ==========
+          // ========== 语言与语音（删掉了备用TTS） ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-green">语言与语音</div></div><div class="cm-section-body">' +
-            '<div class="cm-field" style="margin-bottom:12px"><div class="cm-field-label">主要语言</div><select class="cm-select" id="cmMainLang"><option' + sv('mainLang','简体中文') + '>简体中文</option><option' + sv('mainLang','繁體中文') + '>繁體中文</option><option' + sv('mainLang','English') + '>English</option><option' + sv('mainLang','日本語') + '>日本語</option><option' + sv('mainLang','한국어') + '>한국어</option></select></div>' +
+            '<div class="cm-field" style="margin-bottom:12px"><div class="cm-field-label">主要语言</div><select class="cm-select" id="cmMainLang"><option' + sv('mainLang','简体中文') + '>简体中文</option><option' + sv('mainLang','繁體中文') + '>繁體中文</option><option' + sv('mainLang','粤语') + '>粤语</option><option' + sv('mainLang','English') + '>English</option><option' + sv('mainLang','日本語') + '>日本語</option><option' + sv('mainLang','한국어') + '>한국어</option></select></div>' +
             '<div class="cm-sep"></div>' +
             '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">双语模式</span><span class="cm-sw-desc">每条消息附带翻译</span></div><label class="cm-sw"><input type="checkbox" id="cmBiToggle"' + ck('bilingual') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.bilingual ? ' cm-open' : '') + '" id="cmBiSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">翻译为</div><select class="cm-select" id="cmBiLang"><option' + sv('biLang','English') + '>English</option><option' + sv('biLang','日本語') + '>日本語</option><option' + sv('biLang','한국어') + '>한국어</option></select></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">翻译为</div><select class="cm-select" id="cmBiLang"><option' + sv('biLang','English') + '>English</option><option' + sv('biLang','日本語') + '>日本語</option><option' + sv('biLang','한국어') + '>한국어</option><option' + sv('biLang','繁體中文') + '>繁體中文</option><option' + sv('biLang','粤语') + '>粤语</option></select></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field-label" style="margin-bottom:4px">显示方式</div><div class="cm-radio-row"><div class="cm-radio-item"><input type="radio" name="cmBiStyle" id="cmBiA" value="bracket"' + (cfg.biStyle==='bracket'?' checked':'') + '><label class="cm-radio-label" for="cmBiA">括号附注</label></div><div class="cm-radio-item"><input type="radio" name="cmBiStyle" id="cmBiB" value="newline"' + (cfg.biStyle==='newline'?' checked':'') + '><label class="cm-radio-label" for="cmBiB">另起一行</label></div></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">MiniMax 语音</span><span class="cm-sw-desc">使用 MiniMax TTS</span></div><label class="cm-sw"><input type="checkbox" id="cmMmToggle"' + ck('minimax') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">MiniMax 语音</span><span class="cm-sw-desc">使用 MiniMax TTS 生成角色语音</span></div><label class="cm-sw"><input type="checkbox" id="cmMmToggle"' + ck('minimax') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.minimax ? ' cm-open' : '') + '" id="cmMmSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">Voice ID</div><input type="text" class="cm-field-input" id="cmMmVoice" placeholder="MiniMax Voice ID..." value="' + App.escAttr(cfg.mmVoiceId||'') + '"></div></div>' +
-              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmMmKey" value="' + App.escAttr(cfg.mmApiKey||'') + '"></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">Voice ID</div><input type="text" class="cm-field-input" id="cmMmVoice" placeholder="粘贴 MiniMax Voice ID..." value="' + App.escAttr(cfg.mmVoiceId||'') + '"></div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmMmKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.mmApiKey||'') + '"></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">语速</div><div class="cm-range-wrap"><span class="cm-range-hint">慢</span><input type="range" class="cm-range" id="cmMmSpeed" min="0.5" max="2" step="0.1" value="' + cfg.mmSpeed + '"><span class="cm-range-val" id="cmMmSpeedVal">' + cfg.mmSpeed + 'x</span><span class="cm-range-hint">快</span></div></div>' +
               '<div class="cm-sub-row" style="margin-top:6px"><div class="cm-sub-label">音调</div><div class="cm-range-wrap"><span class="cm-range-hint">低</span><input type="range" class="cm-range" id="cmMmPitch" min="-12" max="12" step="1" value="' + cfg.mmPitch + '"><span class="cm-range-val" id="cmMmPitchVal">' + (cfg.mmPitch>0?'+':'') + cfg.mmPitch + '</span><span class="cm-range-hint">高</span></div></div>' +
             '</div>' +
@@ -193,17 +196,23 @@
               '</div>' +
               '<div class="cm-sub-label" style="margin-top:10px">活跃时段</div>' +
               '<div class="cm-radio-row" style="margin-top:4px"><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmAll" value="allday"' + (isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmAll">全天</label></div><div class="cm-radio-item"><input type="radio" name="cmActiveMode" id="cmAmCustom" value="custom"' + (!isAllDay?' checked':'') + '><label class="cm-radio-label" for="cmAmCustom">自定义</label></div></div>' +
-              '<div id="cmActiveCustom" style="display:flex;align-items:center;gap:6px;margin-top:6px;' + (isAllDay?'display:none;':'') + '"><input type="time" class="cm-field-input" id="cmProStart" value="' + App.escAttr(cfg.proActiveStart) + '" style="width:100px;text-align:center;"><span style="font-size:11px;color:#999;">至</span><input type="time" class="cm-field-input" id="cmProEnd" value="' + App.escAttr(cfg.proActiveEnd) + '" style="width:100px;text-align:center;"></div>' +
-              '<div class="cm-sub-label" style="margin-top:10px">积极程度</div>' +
+              '<div id="cmActiveCustom" style="display:flex;align-items:center;gap:6px;margin-top:6px;' + (isAllDay?'display:none;':'') + '">' +
+                '<input type="time" class="cm-field-input" id="cmProStart" value="' + App.escAttr(cfg.proActiveStart) + '" style="width:100px;text-align:center;">' +
+                '<span style="font-size:11px;color:#999;font-weight:600;">至</span>' +
+                '<input type="time" class="cm-field-input" id="cmProEnd" value="' + App.escAttr(cfg.proActiveEnd) + '" style="width:100px;text-align:center;">' +
+              '</div>' +
+              '<div class="cm-sub-label" style="margin-top:10px">消息积极程度</div>' +
               '<div class="cm-radio-row" style="margin-top:4px"><div class="cm-radio-item"><input type="radio" name="cmProMode" id="cmPmA" value="manual"' + (proManual?' checked':'') + '><label class="cm-radio-label" for="cmPmA">手动设定</label></div><div class="cm-radio-item"><input type="radio" name="cmProMode" id="cmPmB" value="auto"' + (!proManual?' checked':'') + '><label class="cm-radio-label" for="cmPmB">角色性格决定</label></div></div>' +
               '<div id="cmProManual" style="margin-top:8px;' + (proManual?'':'display:none;') + '"><div class="cm-range-wrap"><span class="cm-range-hint">佛系</span><input type="range" class="cm-range" id="cmProLevel" min="1" max="5" step="1" value="' + cfg.proLevel + '"><span class="cm-range-val" id="cmProLevelVal">' + PRO_LEVEL_NAMES[cfg.proLevel-1] + '</span><span class="cm-range-hint">粘人</span></div></div>' +
+              '<div id="cmProAuto" style="margin-top:8px;' + (!proManual?'':'display:none;') + '"><div class="cm-tip" style="margin:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">由角色的性格设定自动决定消息频率和主动程度，无需手动调节。</div></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sub-label" style="margin-bottom:6px">每次回复条数</div>' +
+            '<div class="cm-sub-label" style="margin-bottom:6px">每次回复消息条数</div>' +
             '<div style="display:flex;gap:14px">' +
               '<div class="cm-field" style="flex:1"><div class="cm-field-label">最少</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMinMsgs" value="' + cfg.minMsgs + '" min="1" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条</span></div></div>' +
               '<div class="cm-field" style="flex:1"><div class="cm-field-label">最多</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMaxMsgs" value="' + cfg.maxMsgs + '" min="1" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条</span></div></div>' +
             '</div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">角色每次回复会随机发送该范围内的消息条数，模拟真实聊天节奏。</div></div>' +
             '<div class="cm-sep"></div>' +
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">回复速度</div><select class="cm-select" id="cmReplySpeed"><option' + sv('replySpeed','即时回复') + '>即时回复</option><option' + sv('replySpeed','快速（1-3秒）') + '>快速（1-3秒）</option><option' + sv('replySpeed','正常（3-8秒）') + '>正常（3-8秒）</option><option' + sv('replySpeed','慢速（5-15秒）') + '>慢速（5-15秒）</option><option' + sv('replySpeed','真实模拟（按字数）') + '>真实模拟（按字数）</option></select></div>' +
             '<div class="cm-field"><div class="cm-field-label">「对方正在输入」</div><select class="cm-select" id="cmShowTyping"><option' + (cfg.showTyping?' selected':'') + '>显示</option><option' + (!cfg.showTyping?' selected':'') + '>不显示</option></select></div>' +
@@ -214,48 +223,51 @@
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">朋友圈</span><span class="cm-sw-desc">角色自动发朋友圈</span></div><label class="cm-sw"><input type="checkbox" id="cmMomToggle"' + ck('moments') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">朋友圈生成</span><span class="cm-sw-desc">角色自动发朋友圈动态</span></div><label class="cm-sw"><input type="checkbox" id="cmMomToggle"' + ck('moments') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.moments ? ' cm-open' : '') + '" id="cmMomSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">每日最多</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMomMax" value="' + cfg.momentsMax + '" min="0" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条/天</span></div></div></div>' +
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">每日最多发布</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMomMax" value="' + cfg.momentsMax + '" min="0" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条/天</span></div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">内容类型</div><div class="cm-tag-row" style="margin-top:4px" id="cmMomTypes">' + momTypesHtml + '</div></div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">配图生成</div><select class="cm-select" id="cmMomImg"><option' + sv('momentsImg','AI 生成') + '>AI 生成</option><option' + sv('momentsImg','使用预设图库') + '>使用预设图库</option></select></div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 情境感知 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-red">情境感知</div></div><div class="cm-section-body">' +
-            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">时间 & 天气感知</span><span class="cm-sw-desc">角色知道当前时间和天气</span></div><label class="cm-sw"><input type="checkbox" id="cmTwToggle"' + ck('timeWeather') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.timeWeather ? ' cm-open' : '') + '" id="cmTwSub">' +
-              '<div class="cm-field"><div class="cm-field-label">角色真实城市</div><input type="text" class="cm-field-input" id="cmCharRealCity" placeholder="如：Tokyo、Seoul..." value="' + App.escAttr(cfg.charRealCity||'') + '"></div>' +
-              '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">角色虚拟城市</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="留空则用真实城市名..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">角色真实城市（获取天气数据）</div><input type="text" class="cm-field-input" id="cmCharRealCity" placeholder="如：Tokyo、Seoul..." value="' + App.escAttr(cfg.charRealCity||'') + '"></div>' +
+              '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">角色虚拟城市（发给AI的地名）</div><input type="text" class="cm-field-input" id="cmCharCity" placeholder="留空则用真实城市名..." value="' + App.escAttr(cfg.charCity||'') + '"></div>' +
+              '<div class="cm-tip" style="margin-top:10px;margin-bottom:0"><div class="cm-tip-icon">i</div><div class="cm-tip-text">真实城市用于获取实际天气数据。虚拟城市是AI看到的地名（如"长安""霍格沃茨"）。留空虚拟城市则直接用真实城市名。</div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 高级设定 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">高级设定</div><div class="cm-section-badge">ADVANCED</div></div><div class="cm-section-body">' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">图片 API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">图片 API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" placeholder="留空用全局" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">图片模型</div><input type="text" class="cm-field-input" id="cmImgModel" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key <span class="cm-opt">(留空用全局)</span></div><input type="text" class="cm-field-input" id="cmImgApiKey" placeholder="留空则使用全局 API Key" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>单独配置</option></select></div>' +
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度。</div></div>' +
             '<div id="cmAdvancedSub" style="' + (isIndividual ? '' : 'display:none;') + '">' +
-              '<div class="cm-field" style="margin-bottom:10px"><div class="cm-field-label">选择 API</div><select class="cm-select" id="cmApiSelect">' + apiOptionsHtml + '</select></div>' +
+              '<div class="cm-field" style="margin-bottom:10px"><div class="cm-field-label">选择已保存的 API</div><select class="cm-select" id="cmApiSelect">' + apiOptionsHtml + '</select></div>' +
               '<div class="cm-sep"></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Temperature</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">精确</span><input type="range" class="cm-range" id="cmTemp" min="0" max="2" step="0.05" value="' + cfg.temperature + '"><span class="cm-range-val" id="cmTempVal">' + cfg.temperature + '</span><span class="cm-range-hint">创意</span></div></div></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Freq Penalty</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">重复</span><input type="range" class="cm-range" id="cmFreq" min="0" max="2" step="0.1" value="' + cfg.freqPenalty + '"><span class="cm-range-val" id="cmFreqVal">' + cfg.freqPenalty + '</span><span class="cm-range-hint">避免</span></div></div></div>' +
-              '<div class="cm-param"><div class="cm-param-title">Pres Penalty</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">保守</span><input type="range" class="cm-range" id="cmPres" min="0" max="2" step="0.1" value="' + cfg.presPenalty + '"><span class="cm-range-val" id="cmPresVal">' + cfg.presPenalty + '</span><span class="cm-range-hint">创新</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Temperature</div><div class="cm-param-desc">贴合人设 ↔ 有创意</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">精确</span><input type="range" class="cm-range" id="cmTemp" min="0" max="2" step="0.05" value="' + cfg.temperature + '"><span class="cm-range-val" id="cmTempVal">' + cfg.temperature + '</span><span class="cm-range-hint">创意</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Frequency Penalty</div><div class="cm-param-desc">避免重复词汇</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">重复</span><input type="range" class="cm-range" id="cmFreq" min="0" max="2" step="0.1" value="' + cfg.freqPenalty + '"><span class="cm-range-val" id="cmFreqVal">' + cfg.freqPenalty + '</span><span class="cm-range-hint">避免</span></div></div></div>' +
+              '<div class="cm-param"><div class="cm-param-title">Presence Penalty</div><div class="cm-param-desc">鼓励新词汇</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">保守</span><input type="range" class="cm-range" id="cmPres" min="0" max="2" step="0.1" value="' + cfg.presPenalty + '"><span class="cm-range-val" id="cmPresVal">' + cfg.presPenalty + '</span><span class="cm-range-hint">创新</span></div></div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 保存 ==========
-          '<div class="cm-save-row">' +
-            '<button class="cm-save-btn" id="cmSaveBtn" type="button">保 存</button>' +
-          '</div>' +
+          '<div class="cm-save-row"><button class="cm-save-btn" id="cmSaveBtn" type="button">保 存</button></div>' +
 
         '</div>';
 
@@ -266,9 +278,7 @@
       page.querySelector('#cmBackBtn').addEventListener('click', function() { CharMgr.close(); });
 
       // 头像
-      page.querySelector('#cmAvatarBox').addEventListener('click', function() {
-        CharMgr._showAvatarMenu(this);
-      });
+      page.querySelector('#cmAvatarBox').addEventListener('click', function() { CharMgr._showAvatarMenu(this); });
 
       // 开关联动
       function bindToggle(tid, sid) {
@@ -283,35 +293,24 @@
       bindToggle('cmStkToggle', 'cmStkSub');
       bindToggle('cmMomToggle', 'cmMomSub');
 
-      // 活跃时段
       page.querySelectorAll('input[name="cmActiveMode"]').forEach(function(r) {
-        r.addEventListener('change', function() {
-          var c = page.querySelector('#cmActiveCustom');
-          if (c) c.style.display = this.value === 'allday' ? 'none' : 'flex';
-        });
+        r.addEventListener('change', function() { var c = page.querySelector('#cmActiveCustom'); if (c) c.style.display = this.value === 'allday' ? 'none' : 'flex'; });
       });
 
-      // 积极程度
       page.querySelectorAll('input[name="cmProMode"]').forEach(function(r) {
         r.addEventListener('change', function() {
-          var m = page.querySelector('#cmProManual');
-          if (m) m.style.display = this.value === 'manual' ? '' : 'none';
+          var m = page.querySelector('#cmProManual'); var a = page.querySelector('#cmProAuto');
+          if (this.value === 'manual') { if (m) m.style.display = ''; if (a) a.style.display = 'none'; }
+          else { if (m) m.style.display = 'none'; if (a) a.style.display = ''; }
         });
       });
 
-      // API模式
       var apiModeEl = page.querySelector('#cmApiMode');
       var advSub = page.querySelector('#cmAdvancedSub');
-      if (apiModeEl && advSub) {
-        apiModeEl.addEventListener('change', function() {
-          advSub.style.display = this.value === 'individual' ? '' : 'none';
-        });
-      }
+      if (apiModeEl && advSub) { apiModeEl.addEventListener('change', function() { advSub.style.display = this.value === 'individual' ? '' : 'none'; }); }
 
-      // Range绑定
       function bindRange(iid, vid, fmt) {
-        var i = page.querySelector('#' + iid);
-        var v = page.querySelector('#' + vid);
+        var i = page.querySelector('#' + iid); var v = page.querySelector('#' + vid);
         if (i && v) i.addEventListener('input', function() { v.textContent = fmt(this.value); });
       }
       bindRange('cmMmSpeed', 'cmMmSpeedVal', function(v) { return v + 'x'; });
@@ -322,14 +321,60 @@
       bindRange('cmFreq', 'cmFreqVal', function(v) { return v; });
       bindRange('cmPres', 'cmPresVal', function(v) { return v; });
 
+      // 图片模型获取
+      var imgFetchBtn = page.querySelector('#cmImgFetchModels');
+      if (imgFetchBtn) {
+        imgFetchBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var url = (page.querySelector('#cmImgApiUrl') || {}).value || '';
+          var key = (page.querySelector('#cmImgApiKey') || {}).value || '';
+          if (!url) { var gApi = App.api ? App.api.getActiveConfig() : null; if (gApi) { url = gApi.url; if (!key) key = gApi.key; } }
+          if (!key) { var gApi2 = App.api ? App.api.getActiveConfig() : null; if (gApi2) key = gApi2.key; }
+          if (!url || !key) { App.showToast('请先填写图片API地址和Key，或配置全局API'); return; }
+          App.showToast('获取模型列表...');
+          fetch(url.replace(/\/+$/, '') + '/models', { headers: { 'Authorization': 'Bearer ' + key } })
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(data) {
+              var raw = data.data || data; var models = [];
+              if (Array.isArray(raw)) { for (var i = 0; i < raw.length; i++) { var id = raw[i].id || raw[i].name || raw[i]; if (id) models.push(id); } }
+              if (!models.length) { App.showToast('未找到模型'); return; }
+              var list = page.querySelector('#cmImgModelList'); if (!list) return;
+              var currentVal = (page.querySelector('#cmImgModel') || {}).value || '';
+              var searchHtml = '<input type="text" id="cmImgModelSearch" placeholder="搜索模型..." style="width:calc(100% - 16px);margin:6px 8px;padding:6px 10px;border:1px solid #eee;border-radius:6px;font-size:12px;outline:none;font-family:inherit;color:#333;box-sizing:border-box;">';
+              var itemsHtml = models.map(function(m) {
+                var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
+                return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>';
+              }).join('');
+              list.innerHTML = searchHtml + '<div id="cmImgModelResults">' + itemsHtml + '</div>';
+              list.style.display = 'block';
+              function bindClicks() {
+                list.querySelectorAll('.cm-img-model-item').forEach(function(item) {
+                  item.addEventListener('click', function() { var inp = page.querySelector('#cmImgModel'); if (inp) inp.value = item.dataset.model; list.style.display = 'none'; });
+                });
+              }
+              bindClicks();
+              var searchInput = list.querySelector('#cmImgModelSearch');
+              if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                  var kw = this.value.trim().toLowerCase();
+                  var filtered = kw ? models.filter(function(m) { return m.toLowerCase().indexOf(kw) >= 0; }) : models;
+                  var results = list.querySelector('#cmImgModelResults');
+                  if (results) { results.innerHTML = filtered.map(function(m) { var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : ''; return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>'; }).join(''); bindClicks(); }
+                });
+                searchInput.addEventListener('click', function(e) { e.stopPropagation(); });
+              }
+              App.showToast(models.length + ' 个模型');
+            }).catch(function(err) { App.showToast('获取失败: ' + err.message); });
+        });
+      }
+
       // 展开按钮
       page.querySelectorAll('.cm-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var f = btn.dataset.field;
           var map = { profile: '#cmProfile', dialogExamples: '#cmDialog', postInstruction: '#cmPost' };
-          var ta = page.querySelector(map[f]);
-          if (ta) CharMgr.openExpand(ta);
+          var ta = page.querySelector(map[f]); if (ta) CharMgr.openExpand(ta);
         });
       });
 
@@ -343,7 +388,6 @@
       if (!name) { App.showToast('请输入角色名'); return; }
       if (!App.character) return;
 
-      // 收集基础字段
       var d = {};
       page.querySelectorAll('.cm-field-input[data-key]').forEach(function(el) { d[el.dataset.key] = (el.value || '').trim(); });
       var cr = page.querySelector('input[name="cmContact"]:checked');
@@ -390,7 +434,7 @@
         msgTypes: msgTypes, stickerGen: gc('cmStkToggle'),
         stickerStyles: stkStyles.length ? stkStyles : ['可爱卡通'], stickerFreq: parseInt(gv('cmStkFreq') || 2),
         moments: gc('cmMomToggle'), momentsMax: parseInt(gv('cmMomMax') || 2),
-        momentsTypes: momTypes, momentsImg: 'AI 生成',
+        momentsTypes: momTypes, momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'), charCity: gv('cmCharCity'), charRealCity: gv('cmCharRealCity'),
         imgApiUrl: gv('cmImgApiUrl'), imgApiKey: gv('cmImgApiKey'), imgModel: gv('cmImgModel') || 'gpt-image-1',
         apiMode: gv('cmApiMode') || 'global', apiSelect: gv('cmApiSelect') || '',
@@ -398,7 +442,7 @@
         presPenalty: parseFloat(gv('cmPres') || 0.3)
       };
 
-      // 保存角色数据
+      // 保存角色
       if (CharMgr.editingCharId) {
         var ex = App.character.getById(CharMgr.editingCharId);
         if (ex) {
@@ -418,27 +462,26 @@
         CharMgr.editingCharId = charObj.id;
       }
 
-      // 保存设置数据
+      // 保存设置
       CharMgr.charConfigs[CharMgr.editingCharId] = cfgObj;
       CharMgr.save();
 
       CharMgr.close();
       if (App.character) App.character.renderList();
-      App.showToast(charObj.id ? '角色已更新' : '角色已创建');
+      App.showToast('角色已保存');
     },
 
     _showAvatarMenu: function(box) {
-      var old = App.$('#avatarSourceMenu');
-      if (old) old.remove();
+      var old = App.$('#avatarSourceMenu'); if (old) old.remove();
       var menu = document.createElement('div');
       menu.id = 'avatarSourceMenu';
       menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
       menu.innerHTML =
-        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
+        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
           '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">选择头像来源</div>' +
-          '<button id="avFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
-          '<button id="avFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
-          '<button id="avFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除头像</button>' +
+          '<button id="avFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
+          '<button id="avFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
+          '<button id="avFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除头像</button>' +
           '<button id="avFromCancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
         '</div>';
       document.body.appendChild(menu);
@@ -461,10 +504,35 @@
       });
       menu.querySelector('#avFromUrl').addEventListener('click', function() {
         menu.remove();
-        var url = prompt('输入头像URL：');
-        if (!url) return;
-        CharMgr.tempAvatar = url.trim();
-        box.innerHTML = '<img src="' + App.escAttr(url.trim()) + '">';
+        var urlPanel = document.createElement('div');
+        urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+        urlPanel.innerHTML =
+          '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
+            '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;">输入头像URL</div>' +
+            '<input id="avUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
+            '<div id="avUrlPreview" style="display:none;width:80px;height:80px;border-radius:50%;overflow:hidden;border:1px solid #eee;background:#f5f5f5;margin:0 auto;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
+            '<div style="display:flex;gap:8px;">' +
+              '<button id="avUrlConfirm" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
+              '<button id="avUrlCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(urlPanel);
+        urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
+        urlPanel.querySelector('#avUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
+        var previewBox = urlPanel.querySelector('#avUrlPreview'); var previewImg = previewBox.querySelector('img');
+        urlPanel.querySelector('#avUrlInput').addEventListener('input', function() {
+          var val = this.value.trim();
+          if (val && (val.startsWith('http://') || val.startsWith('https://'))) { previewImg.src = val; previewBox.style.display = 'block'; previewImg.onerror = function() { previewBox.style.display = 'none'; }; }
+          else { previewBox.style.display = 'none'; }
+        });
+        urlPanel.querySelector('#avUrlConfirm').addEventListener('click', function() {
+          var url = urlPanel.querySelector('#avUrlInput').value.trim();
+          if (!url) { App.showToast('请输入URL'); return; }
+          urlPanel.remove();
+          CharMgr.tempAvatar = url;
+          box.innerHTML = '<img src="' + App.escAttr(url) + '">';
+          App.showToast('头像已设置');
+        });
       });
     },
 
@@ -488,16 +556,6 @@
       ed.querySelector('#cmExpBack').addEventListener('click', done);
       ed.querySelector('#cmExpDone').addEventListener('click', done);
     },
-
-    // 兼容旧的调用方式
-    hasCustom: function(charId) { return !!CharMgr.charConfigs[charId]; },
-    getCharConfig: function(charId) {
-      if (CharMgr.charConfigs && CharMgr.charConfigs[charId]) return CharMgr.charConfigs[charId];
-      return JSON.parse(JSON.stringify(DEFAULTS));
-    },
-
-    // 给 chat.js 用的全局配置兼容
-    get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     init: function() {
       CharMgr.load();
