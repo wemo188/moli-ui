@@ -889,3 +889,174 @@ input[type="range"]::-webkit-slider-thumb:active {
 }
 input[type="range"] { flex: 1; min-width: 0; }
 
+/* =========================
+   手机框模式
+========================= */
+.phone-frame {
+  position: relative;
+  width: 320px;
+  height: 640px;
+  margin: 40px auto;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa, #f0f2f5);
+  border-radius: 40px;
+  padding: 12px;
+  box-sizing: border-box;
+  box-shadow:
+    0 0 0 1px rgba(200,205,215,.5),
+    0 2px 4px rgba(0,0,0,.04),
+    0 8px 24px rgba(0,0,0,.08),
+    0 20px 60px rgba(0,0,0,.1),
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -1px 0 rgba(0,0,0,.03);
+}
+
+.phone-frame .pf-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  box-shadow: inset 0 0 0 1.5px rgba(200,205,215,.35);
+}
+
+/* 解除内部元素的 fixed 定位 */
+.phone-frame .pf-screen .bg-layer {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .main-content {
+  position: absolute;
+  inset: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+.phone-frame .pf-screen .page-slider-main {
+  min-height: 100%;
+  height: 100%;
+}
+
+.phone-frame .pf-screen .page-slider {
+  height: 100%;
+  min-height: 100%;
+}
+
+.phone-frame .pf-screen .screen-page {
+  height: 100%;
+  min-height: 100%;
+}
+
+.phone-frame .pf-screen .floating-ball {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .dock {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .screen-indicators {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .toast {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .half-panel {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .fullpage-panel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.phone-frame .pf-screen .ball-card-menu {
+  position: absolute;
+}
+
+.phone-frame .pf-screen .cp-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.phone-frame .pf-screen .pc-edit-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* 灵动岛 */
+.phone-frame .pf-notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 22px;
+  background: #1a1a1a;
+  border-radius: 20px;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+
+/* Home 横杠 */
+.phone-frame .pf-home-bar {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(0,0,0,.12);
+  z-index: 100;
+}
+
+/* 左侧按键组 */
+.phone-frame .pf-btn-left {
+  position: absolute;
+  left: -3px;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1;
+}
+
+.phone-frame .pf-btn-silent {
+  width: 3.5px;
+  height: 18px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(180deg, #e0e0e0, #cccccc, #e0e0e0);
+  box-shadow: inset 1px 0 0 rgba(255,255,255,.6), -1px 0 3px rgba(0,0,0,.08);
+}
+
+.phone-frame .pf-btn-vol-up,
+.phone-frame .pf-btn-vol-down {
+  width: 3.5px;
+  height: 32px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(180deg, #e8e8e8, #d4d4d4, #e8e8e8);
+  box-shadow: inset 1px 0 0 rgba(255,255,255,.7), -1px 0 3px rgba(0,0,0,.08);
+}
+
+/* 右侧电源键 */
+.phone-frame .pf-btn-right {
+  position: absolute;
+  right: -3px;
+  top: 118px;
+  z-index: 1;
+}
+
+.phone-frame .pf-btn-power {
+  width: 3.5px;
+  height: 40px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, #e8e8e8, #d4d4d4, #e8e8e8);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,.7), 1px 0 3px rgba(0,0,0,.08);
+}
+
