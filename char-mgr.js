@@ -370,13 +370,15 @@
 
       // 展开按钮
       page.querySelectorAll('.cm-expand-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var f = btn.dataset.field;
-          var map = { profile: '#cmProfile', dialogExamples: '#cmDialog', postInstruction: '#cmPost' };
-          var ta = page.querySelector(map[f]); if (ta) CharMgr.openExpand(ta);
-        });
-      });
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var f = btn.dataset.field;
+    var map = { profile: '#cmProfile', dialogExamples: '#cmDialog', postInstruction: '#cmPost' };
+    var names = { profile: '角色档案', dialogExamples: '示例对话', postInstruction: '后置指令' };
+    var ta = page.querySelector(map[f]);
+    if (ta) CharMgr.openExpand(ta, f === 'dialogExamples');
+  });
+});
 
       // 保存
       page.querySelector('#cmSaveBtn').addEventListener('click', function() { CharMgr.doSave(page); });
@@ -536,26 +538,40 @@
       });
     },
 
-    openExpand: function(textarea) {
-      if (CharMgr._expandEl) CharMgr._expandEl.remove();
-      var ed = document.createElement('div'); CharMgr._expandEl = ed;
-      ed.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateY(100%);opacity:0;';
-      ed.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;">' +
-          '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<span style="font-size:16px;font-weight:700;color:#2e4258;">编辑内容</span>' +
-          '<button id="cmExpDone" type="button" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;padding:4px 10px;font-family:inherit;">完成</button>' +
+    openExpand: function(textarea, isDialogue) {
+  if (CharMgr._expandEl) CharMgr._expandEl.remove();
+  var ed = document.createElement('div'); CharMgr._expandEl = ed;
+  ed.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateY(100%);opacity:0;overflow:hidden;';
+  ed.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+      '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+      '<div class="cc-expand-title-tag' + (isDialogue ? '' : ' blue') + '">' + (isDialogue ? '示例对话' : '编辑内容') + '</div>' +
+      '<button class="cc-top-btn" id="cmExpDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
+    '</div>' +
+    '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
+      '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
+        '<div style="background:#111;height:4px;width:100%;"></div>' +
+        '<div style="position:absolute;top:4px;right:0;width:40px;height:40px;background:repeating-linear-gradient(-45deg,transparent,transparent 3px,#88abda 3px,#88abda 5px);opacity:.35;pointer-events:none;"></div>' +
+        '<div style="min-height:calc(100vh - 220px);border:1.5px dashed #c8d4e2;margin:14px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#eef2f7 22px,#eef2f7 23px);position:relative;">' +
+          (isDialogue ? '<div style="position:absolute;top:8px;left:6px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">「</div><div style="position:absolute;bottom:4px;right:10px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">」</div>' : '') +
+          '<textarea id="cmExpTA" style="width:100%;min-height:calc(100vh - 250px);border:none;background:transparent;padding:12px ' + (isDialogue ? '14px 12px 26px' : '14px') + ';font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="">' + App.esc(textarea.value) + '</textarea>' +
         '</div>' +
-        '<div style="flex:1;padding:12px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;">' +
-          '<textarea id="cmExpTA" style="width:100%;min-height:calc(100vh - 120px);border:1.5px solid rgba(126,163,201,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#2e4258;outline:none;font-family:inherit;background:rgba(126,163,201,.04);resize:none;line-height:1.7;box-sizing:border-box;">' + App.esc(textarea.value) + '</textarea>' +
-        '</div>';
-      document.body.appendChild(ed);
-      requestAnimationFrame(function() { requestAnimationFrame(function() { ed.style.transform = 'translateY(0)'; ed.style.opacity = '1'; }); });
-      var ta = ed.querySelector('#cmExpTA'); if (ta) ta.focus();
-      function done() { textarea.value = ed.querySelector('#cmExpTA').value; ed.style.transform = 'translateY(100%)'; ed.style.opacity = '0'; setTimeout(function() { if (ed.parentNode) ed.remove(); CharMgr._expandEl = null; }, 350); }
-      ed.querySelector('#cmExpBack').addEventListener('click', done);
-      ed.querySelector('#cmExpDone').addEventListener('click', done);
-    },
+        '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(ed);
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+    ed.style.transform = 'translateY(0)'; ed.style.opacity = '1';
+  }); });
+  var ta = ed.querySelector('#cmExpTA'); if (ta) ta.focus();
+  function done() {
+    textarea.value = ed.querySelector('#cmExpTA').value;
+    ed.style.transform = 'translateY(100%)'; ed.style.opacity = '0';
+    setTimeout(function() { if (ed.parentNode) ed.remove(); CharMgr._expandEl = null; }, 350);
+  }
+  ed.querySelector('#cmExpBack').addEventListener('click', done);
+  ed.querySelector('#cmExpDone').addEventListener('click', done);
+},
 
     init: function() {
       CharMgr.load();
