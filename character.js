@@ -179,7 +179,7 @@
       '</div>';
 
       panel.innerHTML =
-        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:56px 16px 40px;background:#fff;">' +
+        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:40px 16px 40px;background:#fff;">' +
           '<div class="cl-topbar-wrap">' +
             '<div class="cl-esc" id="clEsc">ESC</div>' +
             '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
