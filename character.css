@@ -6,7 +6,7 @@
 
 /* ====== 顶部栏 ====== */
 .cl-topbar-wrap {
-  margin: 0 auto 16px; max-width: 400px;
+  margin: 0 auto 12px; max-width: 400px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 4px; gap: 8px; height: 36px;
 }
@@ -30,21 +30,13 @@
 .cl-mode-btn:active { opacity: 0.5; }
 .cl-new-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 6px 14px; height: 36px;
-  border: none;
-  background: var(--page-dark);
-  border-radius: 8px;
-  font-size: 12px; font-weight: 900; letter-spacing: 1.5px;
-  color: var(--page-light); cursor: pointer;
+  padding: 0 14px; height: 36px;
+  border: none; background: none;
+  font-size: 13px; font-weight: 900; letter-spacing: 1.5px;
+  color: var(--page-dark); cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: all 0.2s; font-family: inherit;
 }
-.cl-new-btn:active { opacity: 0.7; transform: scale(0.95); }
-
-/* frost 顶部 */
-.mode-frost .cl-new-btn { background: #9ca3af; border-radius: 8px; }
-
-/* mono 顶部 */
-.mode-mono .cl-new-btn { border-radius: 10px; }
+.cl-new-btn:active { opacity: 0.5; }
 
 /* ====== 角色卡 · 默认漫画 ====== */
 .char-list-wrap {
@@ -72,8 +64,8 @@
 
 /* 卡片头部 */
 .cl-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 20px 6px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 6px 20px 6px;
   border-bottom: var(--card-line) solid var(--card-border-c);
   position: relative; overflow: hidden; transition: all 0.3s;
 }
@@ -83,12 +75,13 @@
   background: repeating-linear-gradient(-45deg, transparent, transparent 4px, var(--card-accent) 4px, var(--card-accent) 6px);
   opacity: .12; pointer-events: none;
 }
+.cl-header-left { padding-top: 2px; }
 .cl-header-left h2 {
   margin: 0; font-size: 20px; font-weight: 900;
   letter-spacing: 2px; color: #111; position: relative; transition: all 0.3s;
 }
 .cl-header-left h2::after {
-  content: ""; position: absolute; left: -4px; bottom: -4px;
+  content: ""; position: absolute; left: -4px; bottom: -2px;
   width: calc(100% + 8px); height: var(--card-line);
   background: var(--card-accent); transition: all 0.3s;
 }
