@@ -427,7 +427,7 @@ var FIELDS_SHORT = [
             '<div class="up-name-area"><div class="up-name-label">姓名 NAME </div>' +
               (User.sealed
                 ? '<div style="font-size:15px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;">' + App.esc(user.realName || '—') + '</div>'
-                : '<input type="text" class="up-name-input" data-key="realName" placeholder="输入姓名..." value="' + App.esc(user.realName || '') + '">') +
+                : '<input type="text" class="up-name-input" data-key="realName" value="' + App.esc(user.realName || '') + '">') +
               '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
             '</div>' +
             shortHtml +
