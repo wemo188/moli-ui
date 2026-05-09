@@ -34,6 +34,7 @@
   }
 
   var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
+  var BACK_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
 
   var User = {
     list: [],
@@ -47,14 +48,11 @@
     getActiveUser: function() { var id = App.LS.get('activeUserId'); if (id) { var u = User.getById(id); if (u) return u; } return User.list[0] || null; },
     setActive: function(id) { App.LS.set('activeUserId', id); },
 
-    /* ★ pushPage 接受第二个参数：滑动返回的回调 */
     _pushPage: function(page, onSwipeBack) {
       User._pages.push(page);
       document.body.appendChild(page);
       if (onSwipeBack) {
         App.bindSwipeBack(page, function() {
-          /* bindSwipeBack 已经做了滑出动画（translateX(100%) + opacity 0）
-             所以这里只需要从栈里移除 DOM，不要再触发 _popPage 的动画 */
           var idx = User._pages.indexOf(page);
           if (idx !== -1) User._pages.splice(idx, 1);
           setTimeout(function() { if (page.parentNode) page.remove(); }, 260);
@@ -81,23 +79,71 @@
       });
     },
 
-    /* ★ 直接移除页面（不做动画，配合 bindSwipeBack 使用） */
-    _removePage: function(page) {
-      var idx = User._pages.indexOf(page);
-      if (idx !== -1) User._pages.splice(idx, 1);
-      setTimeout(function() { if (page.parentNode) page.remove(); }, 260);
-    },
-
-    _refreshListContent: function() {
-      if (!User._pages.length) return;
-      var page = User._pages[User._pages.length - 1];
-      var scrollArea = page.querySelector('.up-list-scroll');
-      if (!scrollArea) return;
+    /* ★ 精准更新单张卡片，不闪烁 */
+    _updateSingleCard: function(page, uid) {
       User.load();
       var activeUser = User.getActiveUser();
       var activeId = activeUser ? activeUser.id : '';
-      scrollArea.innerHTML = User._buildCardsHtml(activeId);
-      User._bindCardEvents(page);
+      var u = User.getById(uid);
+      var oldCard = page.querySelector('.p14-card[data-uid="' + uid + '"]');
+      if (!oldCard || !u) return;
+
+      /* 更新 ACTIVE 徽标 */
+      var isActive = u.id === activeId;
+      var badge = oldCard.querySelector('.p14-screen-badge');
+      if (badge) badge.innerHTML = isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '';
+
+      /* 更新 LED */
+      var leds = oldCard.querySelectorAll('.p14-led');
+      if (leds.length) { leds[0].classList.toggle('p14-led-on', isActive); }
+
+      /* 更新启用按钮文字 */
+      var actBtn = oldCard.querySelector('.p14-side-activate');
+      if (actBtn) actBtn.textContent = isActive ? '当前' : '启用';
+
+      /* 更新颜色 */
+      var hue = u.cardHue != null ? u.cardHue : 210;
+      var sat = u.cardSat != null ? u.cardSat : 80;
+      var lit = u.cardLit != null ? u.cardLit : 87;
+      oldCard.style.background = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
+      oldCard.style.borderColor = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
+      setPcVars(oldCard, hue, sat, lit);
+
+      /* 更新颜色滑块和预览 */
+      var hueSlider = oldCard.querySelector('.p14-hue');
+      var satSlider = oldCard.querySelector('.p14-sat');
+      var litSlider = oldCard.querySelector('.p14-lit');
+      if (hueSlider) { hueSlider.value = hue; }
+      if (satSlider) { satSlider.value = sat; }
+      if (litSlider) { litSlider.value = lit; }
+      var hueVal = oldCard.querySelector('.p14-hue-val');
+      var satVal = oldCard.querySelector('.p14-sat-val');
+      var litVal = oldCard.querySelector('.p14-lit-val');
+      if (hueVal) hueVal.textContent = hue;
+      if (satVal) satVal.textContent = sat;
+      if (litVal) litVal.textContent = lit;
+      var preview = oldCard.querySelector('.p14-color-preview');
+      if (preview) preview.style.background = 'hsl(' + hue + ',' + sat + '%,' + lit + '%)';
+    },
+
+    /* ★ 更新所有卡片的 active 状态（不重建DOM） */
+    _updateAllActiveStates: function(page) {
+      User.load();
+      var activeUser = User.getActiveUser();
+      var activeId = activeUser ? activeUser.id : '';
+      page.querySelectorAll('.p14-card').forEach(function(card) {
+        var uid = card.dataset.uid;
+        var isActive = uid === activeId;
+
+        var badge = card.querySelector('.p14-screen-badge');
+        if (badge) badge.innerHTML = isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '';
+
+        var leds = card.querySelectorAll('.p14-led');
+        if (leds.length) leds[0].classList.toggle('p14-led-on', isActive);
+
+        var actBtn = card.querySelector('.p14-side-activate');
+        if (actBtn) actBtn.textContent = isActive ? '当前' : '启用';
+      });
     },
 
     _makePage: function() {
@@ -112,67 +158,72 @@
       else User.openListPage();
     },
 
+    _buildSingleCardHtml: function(u, activeId) {
+      var isActive = u.id === activeId;
+      var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
+      var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
+      var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
+      var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
+      var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
+      var vars = pcVars(hue, sat, lit);
+
+      return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
+        bgImgHtml +
+        '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
+        '<div class="p14-body">' +
+          '<div class="p14-left">' +
+            '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
+            '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+            '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
+          '</div>' +
+          '<div class="p14-screen-wrap"><div class="p14-screen">' +
+            '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
+            '<div class="p14-screen-content">' +
+              '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
+              '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
+                (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
+                (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div></div>' +
+          '<div class="p14-right">' +
+            '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
+            '<div class="p14-dpad">' +
+              '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
+              '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
+              '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
+              '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
+            '</div>' +
+            '<div class="p14-side-btn p14-side-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
+          '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
+          '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
+          '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
+            '<div class="p14-slider-wrap">' +
+              '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
+              '<div class="p14-slider-item"><span class="p14-slider-name">S</span><input type="range" class="p14-slider p14-sat" data-uid="' + u.id + '" min="0" max="100" value="' + sat + '"><span class="p14-slider-val p14-sat-val">' + sat + '</span></div>' +
+              '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
+            '</div>' +
+            '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    },
+
     _buildCardsHtml: function(activeId) {
       if (!User.list.length) {
         return '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:14px;">暂无用户，点击右上角创建</div>';
       }
       return User.list.map(function(u) {
-        var isActive = u.id === activeId;
-        var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-        var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
-        var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
-        var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
-        var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
-        var vars = pcVars(hue, sat, lit);
-
-        return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
-          bgImgHtml +
-          '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
-          '<div class="p14-body">' +
-            '<div class="p14-left">' +
-              '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
-              '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
-              '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
-            '</div>' +
-            '<div class="p14-screen-wrap"><div class="p14-screen">' +
-              '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
-              '<div class="p14-screen-content">' +
-                '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
-                '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
-                  (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
-                  (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
-                '</div>' +
-              '</div>' +
-            '</div></div>' +
-            '<div class="p14-right">' +
-              '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
-              '<div class="p14-dpad">' +
-                '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
-                '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
-                '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
-                '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
-              '</div>' +
-              '<div class="p14-side-btn p14-side-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
-            '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
-            '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
-            '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
-              '<div class="p14-slider-wrap">' +
-                '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
-                '<div class="p14-slider-item"><span class="p14-slider-name">S</span><input type="range" class="p14-slider p14-sat" data-uid="' + u.id + '" min="0" max="100" value="' + sat + '"><span class="p14-slider-val p14-sat-val">' + sat + '</span></div>' +
-                '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
-              '</div>' +
-              '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+        return User._buildSingleCardHtml(u, activeId);
       }).join('');
     },
 
     _bindCardEvents: function(page) {
       page.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var uid = btn.dataset.uid;
@@ -186,6 +237,7 @@
       });
 
       page.querySelectorAll('.p14-avatar-wrap').forEach(function(wrap) {
+        if (wrap._bound) return; wrap._bound = true;
         wrap.addEventListener('click', function(e) {
           e.stopPropagation();
           User.showImgMenu(wrap.dataset.uid, 'avatar', function(src) {
@@ -198,6 +250,7 @@
       });
 
       page.querySelectorAll('.p14-bg-upload-btn').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           User.showImgMenu(btn.dataset.uid, 'cardBg', function(src) {
@@ -210,6 +263,7 @@
       });
 
       page.querySelectorAll('.p14-hue,.p14-sat,.p14-lit').forEach(function(slider) {
+        if (slider._bound) return; slider._bound = true;
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
           var card = page.querySelector('[data-uid="' + uid + '"]');
@@ -231,43 +285,57 @@
       });
 
       page.querySelectorAll('.p14-side-edit').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           User.openProfile(btn.dataset.uid);
         });
       });
 
+      /* ★ 启用：精准更新所有卡片的 active 状态 */
       page.querySelectorAll('.p14-side-activate').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          User.setActive(btn.dataset.uid);
-          User._refreshListContent();
+          User.setActive(btn.closest('.p14-card').dataset.uid);
+          User._updateAllActiveStates(page);
           App.showToast('已切换用户');
         });
       });
 
+      /* ★ 重置：精准更新单张卡片 */
       page.querySelectorAll('.p14-side-reset').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var u = User.getById(btn.dataset.uid);
+          var uid = btn.dataset.uid;
+          var u = User.getById(uid);
           if (!u) return;
           u.cardHue = 210; u.cardSat = 80; u.cardLit = 87;
           User.save();
-          User._refreshListContent();
+          User._updateSingleCard(page, uid);
           App.showToast('已重置配色');
         });
       });
 
+      /* ★ 删除：直接移除该卡片DOM节点 */
       page.querySelectorAll('.p14-del-text').forEach(function(btn) {
+        if (btn._bound) return; btn._bound = true;
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
-          User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
+          var uid = btn.dataset.uid;
+          User.list = User.list.filter(function(u) { return u.id !== uid; });
           User.save();
+          var card = page.querySelector('.p14-card[data-uid="' + uid + '"]');
+          if (card) {
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(function() { if (card.parentNode) card.remove(); }, 300);
+          }
           if (!User.list.length) {
-            User._popAll();
-          } else {
-            User._refreshListContent();
+            setTimeout(function() { User._popAll(); }, 350);
           }
           App.showToast('已删除');
         });
@@ -289,9 +357,7 @@
         '</div>' +
         '<div class="up-list-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + User._buildCardsHtml(activeId) + '</div>';
 
-      /* ★ 列表页：滑动返回 → 关闭全部 */
       User._pushPage(page, function() {
-        /* 滑动返回时，如果栈里还有残留页面也一起清掉 */
         var rest = User._pages.splice(0);
         rest.forEach(function(p) {
           p.style.transform = 'translateX(100%)'; p.style.opacity = '0';
@@ -399,8 +465,6 @@
       var today = new Date();
       var dateStr = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
 
-      /* ★ 创建页和编辑页都不显示头像框（头像在列表页PSP卡片上改） */
-
       var shortHtml = FIELDS_SHORT.map(function(f) {
         var val = user[f.key] || '';
         var ph = (f.key === 'phone') ? '输入十位虚拟数字，或者留空随机生成'
@@ -427,20 +491,13 @@
       page.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<div class="up-profile-back" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
-            POWER_ICON +
+            BACK_ICON +
           '</div>' +
-          '<div style="font-size:11px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div class="up-profile-rebuild" style="font-size:11px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+          '<div style="font-size:13px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
+          '<div class="up-profile-rebuild" style="font-size:13px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
         '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
+        '<div class="up-profile-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;position:relative;">' +
           '<div class="up-card" id="upCard">' +
-            '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
-              '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
-                '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
-                '<div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
-                '<div class="up-seal-date">' + dateStr + '</div>' +
-              '</div></div><div class="up-seal-noise"></div>' +
-            '</div>' +
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
             '<div class="up-sign-area">' +
@@ -460,14 +517,19 @@
             '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
             '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
           '</div>' +
+          /* ★ 封存印章移到滚动区域外层，用 fixed 定位始终居中 */
+          '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
+            '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
+              '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
+              '<div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
+              '<div class="up-seal-date">' + dateStr + '</div>' +
+            '</div></div><div class="up-seal-noise"></div>' +
+          '</div>' +
         '</div>';
 
-      /* ★ 编辑/创建页：滑动返回 → 只退一层回到列表页 */
-      User._pushPage(page, function() {
-        /* 什么都不用做，bindSwipeBack 的回调里已经把这个 page 从栈里移除了 */
-      });
+      User._pushPage(page, function() { });
 
-      /* ★ 点击关机按钮 → 只退一层 */
+      /* ★ 返回箭头 → 只退一层 */
       page.querySelector('.up-profile-back').addEventListener('click', function() {
         User._popPage();
       });
