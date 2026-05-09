@@ -1,10 +1,9 @@
-
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
 
-var FIELDS_SHORT = [
+  var FIELDS_SHORT = [
     { key: 'nickname', en: 'NICKNAME', cn: '昵称' },
     { key: 'gender', en: 'GENDER', cn: '性别' },
     { key: 'age', en: 'AGE', cn: '年龄' },
@@ -34,6 +33,9 @@ var FIELDS_SHORT = [
     card.style.setProperty('--pc1', 'hsla('+h+','+bs+'%,'+bl+'%,0.1)');
   }
 
+  /* ★ 关机图标 SVG（统一复用） */
+  var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
+
   var User = {
     list: [],
     sealed: false,
@@ -41,7 +43,7 @@ var FIELDS_SHORT = [
     _pages: [],
 
     load: function() { User.list = App.LS.get('userList') || []; },
-        save: function() {
+    save: function() {
       App.LS.set('userList', User.list);
     },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
@@ -51,6 +53,10 @@ var FIELDS_SHORT = [
     _pushPage: function(page) {
       User._pages.push(page);
       document.body.appendChild(page);
+      /* ★ 绑定滑动返回 */
+      App.bindSwipeBack(page, function() {
+        User._popAll();
+      });
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         page.style.transform = 'translateX(0)'; page.style.opacity = '1';
       }); });
@@ -71,6 +77,19 @@ var FIELDS_SHORT = [
       });
     },
 
+    /* ★ 新增：替换列表页内容而不销毁/重建页面，避免闪过主页 */
+    _refreshListContent: function() {
+      if (!User._pages.length) return;
+      var page = User._pages[User._pages.length - 1];
+      var scrollArea = page.querySelector('.up-list-scroll');
+      if (!scrollArea) return;
+      User.load();
+      var activeUser = User.getActiveUser();
+      var activeId = activeUser ? activeUser.id : '';
+      scrollArea.innerHTML = User._buildCardsHtml(activeId);
+      User._bindCardEvents(page, activeId);
+    },
+
     _makePage: function() {
       var page = document.createElement('div');
       page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
@@ -83,85 +102,68 @@ var FIELDS_SHORT = [
       else User.openListPage();
     },
 
-    // ====== 列表页 ======
-    openListPage: function() {
-      User.load();
-      var page = User._makePage();
-      var activeUser = User.getActiveUser();
-      var activeId = activeUser ? activeUser.id : '';
-
-      var cardsHtml = '';
+    /* ★ 抽取卡片 HTML 生成逻辑 */
+    _buildCardsHtml: function(activeId) {
       if (!User.list.length) {
-        cardsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;">暂无用户，点击右上角创建</div>';
-      } else {
-        cardsHtml = User.list.map(function(u, i) {
-          var isActive = u.id === activeId;
-          var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
-          var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
-          var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
-          var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
-          var vars = pcVars(hue, sat, lit);
-
-          return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
-            bgImgHtml +
-            '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
-            '<div class="p14-body">' +
-              '<div class="p14-left">' +
-                '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
-                '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
-                '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
-              '</div>' +
-              '<div class="p14-screen-wrap"><div class="p14-screen">' +
-                '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
-                '<div class="p14-screen-content">' +
-                  '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
-                  '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
-                    (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
-                    (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
-                  '</div>' +
-                '</div>' +
-              '</div></div>' +
-              '<div class="p14-right">' +
-                '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
-                '<div class="p14-dpad">' +
-                  '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
-                '</div>' +
-                '<div class="p14-side-btn p14-side-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
-              '</div>' +
-            '</div>' +
-            '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
-              '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
-              '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
-              '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
-                '<div class="p14-slider-wrap">' +
-                  '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
-                  '<div class="p14-slider-item"><span class="p14-slider-name">S</span><input type="range" class="p14-slider p14-sat" data-uid="' + u.id + '" min="0" max="100" value="' + sat + '"><span class="p14-slider-val p14-sat-val">' + sat + '</span></div>' +
-                  '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
-                '</div>' +
-                '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-        }).join('');
+        return '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:14px;">暂无用户，点击右上角创建</div>';
       }
+      return User.list.map(function(u) {
+        var isActive = u.id === activeId;
+        var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
+        var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
+        var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
+        var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
+        var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
+        var vars = pcVars(hue, sat, lit);
 
-      page.innerHTML =
-        '<div class="up-list-header">' +
-          '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span>返回</span></div>' +
-          '<div class="up-list-title">用户列表</div>' +
-          '<div class="up-list-add" id="upListAdd">+</div>' +
-        '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + cardsHtml + '</div>';
+        return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
+          bgImgHtml +
+          '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
+          '<div class="p14-body">' +
+            '<div class="p14-left">' +
+              '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
+              '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+              '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
+            '</div>' +
+            '<div class="p14-screen-wrap"><div class="p14-screen">' +
+              '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
+              '<div class="p14-screen-content">' +
+                '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
+                '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
+                  (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
+                  (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
+                '</div>' +
+              '</div>' +
+            '</div></div>' +
+            '<div class="p14-right">' +
+              '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
+              '<div class="p14-dpad">' +
+                '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
+                '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
+                '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
+                '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
+              '</div>' +
+              '<div class="p14-side-btn p14-side-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
+            '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
+            '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
+            '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
+              '<div class="p14-slider-wrap">' +
+                '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
+                '<div class="p14-slider-item"><span class="p14-slider-name">S</span><input type="range" class="p14-slider p14-sat" data-uid="' + u.id + '" min="0" max="100" value="' + sat + '"><span class="p14-slider-val p14-sat-val">' + sat + '</span></div>' +
+                '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
+              '</div>' +
+              '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    },
 
-      User._pushPage(page);
-
-      page.querySelector('#upListBack').addEventListener('click', function() { User._popAll(); });
-      page.querySelector('#upListAdd').addEventListener('click', function() { User.openProfile(null); });
-
+    /* ★ 抽取卡片事件绑定逻辑 */
+    _bindCardEvents: function(page, activeId) {
       // 猫爪
       page.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -235,18 +237,17 @@ var FIELDS_SHORT = [
         });
       });
 
-      // 启用
+      // ★ 启用（原地刷新，不销毁页面）
       page.querySelectorAll('.p14-side-activate').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           User.setActive(btn.dataset.uid);
-          User._popPage();
-          User.openListPage();
+          User._refreshListContent();
           App.showToast('已切换用户');
         });
       });
 
-      // 重置
+      // ★ 重置（原地刷新）
       page.querySelectorAll('.p14-side-reset').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -254,24 +255,49 @@ var FIELDS_SHORT = [
           if (!u) return;
           u.cardHue = 210; u.cardSat = 80; u.cardLit = 87;
           User.save();
-          User._popPage();
-          User.openListPage();
+          User._refreshListContent();
           App.showToast('已重置配色');
         });
       });
 
-      // 删除
+      // ★ 删除（原地刷新）
       page.querySelectorAll('.p14-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
           User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
           User.save();
-          User._popPage();
-          if (User.list.length) User.openListPage();
+          if (!User.list.length) {
+            User._popAll();
+          } else {
+            User._refreshListContent();
+          }
           App.showToast('已删除');
         });
       });
+    },
+
+    // ====== 列表页 ======
+    openListPage: function() {
+      User.load();
+      var page = User._makePage();
+      var activeUser = User.getActiveUser();
+      var activeId = activeUser ? activeUser.id : '';
+
+      page.innerHTML =
+        '<div class="up-list-header">' +
+          '<div class="up-list-back" id="upListBack">' + POWER_ICON + '</div>' +
+          '<div class="up-list-title">用户列表</div>' +
+          '<div class="up-list-add" id="upListAdd">+</div>' +
+        '</div>' +
+        '<div class="up-list-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + User._buildCardsHtml(activeId) + '</div>';
+
+      User._pushPage(page);
+
+      page.querySelector('#upListBack').addEventListener('click', function() { User._popAll(); });
+      page.querySelector('#upListAdd').addEventListener('click', function() { User.openProfile(null); });
+
+      User._bindCardEvents(page, activeId);
     },
 
     // ====== 图片菜单 ======
@@ -283,11 +309,11 @@ var FIELDS_SHORT = [
       menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
       menu.innerHTML =
         '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
-          '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
-          '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
-          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+          '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
+          '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
+          '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
+          '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
+          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
         '</div>';
       document.body.appendChild(menu);
       menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
@@ -298,8 +324,7 @@ var FIELDS_SHORT = [
           menu.remove();
           if (act === 'cancel') return;
           if (act === 'del') { callback(''); App.showToast('已删除'); return; }
-              if (act === 'album') {
-            // 先记住旧图
+          if (act === 'album') {
             var oldUser = User.getById(uid);
             var oldImg = oldUser ? oldUser[field] : '';
             var input = document.createElement('input');
@@ -310,7 +335,6 @@ var FIELDS_SHORT = [
               var reader = new FileReader();
               reader.onload = function(r) {
                 if (App.cropImage) App.cropImage(r.target.result, function(cropped) {
-                  //旧图是base64就清掉
                   if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
                   callback(cropped);
                 });
@@ -329,12 +353,12 @@ var FIELDS_SHORT = [
             urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
             urlPanel.innerHTML =
               '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
-                '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;">输入图片URL</div>' +
-                '<input id="ismUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
+                '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;">输入图片URL</div>' +
+                '<input id="ismUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;outline:none;font-family:inherit;color:#333;">' +
                 '<div id="ismUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
                 '<div style="display:flex;gap:8px;">' +
-                  '<button id="ismUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
-                  '<button id="ismUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+                  '<button id="ismUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
+                  '<button id="ismUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
                 '</div>' +
               '</div>';
             document.body.appendChild(urlPanel);
@@ -347,10 +371,9 @@ var FIELDS_SHORT = [
               if (v && v.startsWith('http')) { pImg.src = v; pBox.style.display = 'block'; pImg.onerror = function() { pBox.style.display = 'none'; }; }
               else pBox.style.display = 'none';
             });
-             urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
+            urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
               var url = urlPanel.querySelector('#ismUrlInput').value.trim();
               if (!url) { App.showToast('请输入URL'); return; }
-              //旧图是base64就清掉
               var oldUser2 = User.getById(uid);
               if (oldUser2 && oldUser2[field] && oldUser2[field].startsWith('data:')) { oldUser2[field] = ''; }
               urlPanel.remove(); callback(url); App.showToast('已设置');
@@ -371,16 +394,23 @@ var FIELDS_SHORT = [
       var today = new Date();
       var dateStr = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
 
-      var avatarHtml = user.avatar
-        ? '<img src="' + App.esc(user.avatar) + '">'
-        : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      /* ★ 创建页面：头像框已删除，只在编辑已有用户时显示头像区域 */
+      var showAvatar = !!editId;
 
-      var shortHtml = FIELDS_SHORT.map(function(f, idx) {
+      var avatarAreaHtml = '';
+      if (showAvatar) {
+        var avatarHtml = user.avatar
+          ? '<img src="' + App.esc(user.avatar) + '">'
+          : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+        avatarAreaHtml = '<div class="up-avatar-area"><div class="up-avatar-box" id="upAvatarBox">' + avatarHtml + '</div></div>';
+      }
+
+      var shortHtml = FIELDS_SHORT.map(function(f) {
         var val = user[f.key] || '';
         var ph = (f.key === 'phone') ? '输入十位虚拟数字，或者留空随机生成'
-       : (f.key === 'wechatId') ? '留空随机生成'
-       : (f.key === 'wechatPwd') ? '必须手动填写'
-       : '';
+         : (f.key === 'wechatId') ? '留空随机生成'
+         : (f.key === 'wechatPwd') ? '必须手动填写'
+         : '';
         if (User.sealed) {
           return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
@@ -401,11 +431,10 @@ var FIELDS_SHORT = [
       page.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<div class="up-profile-back" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
-            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
-            '<span style="font-size:12px;color:#999;">返回</span>' +
+            POWER_ICON +
           '</div>' +
-          '<div style="font-size:10px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div class="up-profile-rebuild" style="font-size:10px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+          '<div style="font-size:11px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
+          '<div class="up-profile-rebuild" style="font-size:11px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
           '<div class="up-card" id="upCard">' +
@@ -418,15 +447,15 @@ var FIELDS_SHORT = [
             '</div>' +
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
-            '<div class="up-avatar-area"><div class="up-avatar-box" id="upAvatarBox">' + avatarHtml + '</div></div>' +
+            avatarAreaHtml +
             '<div class="up-sign-area">' +
               (User.sealed
-                ? '<div style="font-size:11px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
+                ? '<div style="font-size:12px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
                 : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') +
             '</div>' +
             '<div class="up-name-area"><div class="up-name-label">姓名 NAME </div>' +
               (User.sealed
-                ? '<div style="font-size:15px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;">' + App.esc(user.realName || '—') + '</div>'
+                ? '<div style="font-size:16px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;">' + App.esc(user.realName || '—') + '</div>'
                 : '<input type="text" class="up-name-input" data-key="realName" value="' + App.esc(user.realName || '') + '">') +
               '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
             '</div>' +
@@ -440,7 +469,7 @@ var FIELDS_SHORT = [
 
       User._pushPage(page);
 
-      if (!User.sealed) {
+      if (!User.sealed && showAvatar) {
         page.querySelector('#upAvatarBox').addEventListener('click', function() {
           var box = this;
           User.showImgMenu(editId || '__new__', 'avatar', function(src) {
@@ -451,8 +480,9 @@ var FIELDS_SHORT = [
         });
       }
 
+      /* ★ 返回按钮现在是关机符号，关闭所有页面 */
       page.querySelector('.up-profile-back').addEventListener('click', function() {
-        User._popPage();
+        User._popAll();
       });
 
       page.querySelector('.up-profile-rebuild').addEventListener('click', function() {
@@ -488,14 +518,14 @@ var FIELDS_SHORT = [
       editor.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button id="upExpBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<div style="font-size:12px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
+          '<div style="font-size:13px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
           '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
         '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;">' +
           '<div style="border:1px solid #e0e0e0;min-height:calc(100vh - 160px);background:#fff;position:relative;">' +
             '<div style="border-top:3px solid #1a1a1a;"></div>' +
             '<div style="min-height:calc(100vh - 200px);border:1px dashed #e0e0e0;margin:12px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#f5f5f5 22px,#f5f5f5 23px);">' +
-              '<textarea id="upExpTA" style="width:100%;min-height:calc(100vh - 220px);border:none;background:transparent;padding:12px 14px;font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="输入内容...">' + App.esc(textarea.value) + '</textarea>' +
+              '<textarea id="upExpTA" style="width:100%;min-height:calc(100vh - 220px);border:none;background:transparent;padding:12px 14px;font-size:15px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="输入内容...">' + App.esc(textarea.value) + '</textarea>' +
             '</div>' +
             '<div style="border-bottom:3px solid #1a1a1a;"></div>' +
           '</div>' +
@@ -539,10 +569,10 @@ var FIELDS_SHORT = [
         data[el.dataset.key] = (el.value || '').trim();
       });
 
-     if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
-if (!data.wechatId) data.wechatId = 'wx_' + Math.random().toString(36).substring(2, 4);
-if (!data.wechatPwd) { App.showToast('请填写微信密码'); return; }
-if (!data.realName) { App.showToast('请输入姓名'); return; }
+      if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
+      if (!data.wechatId) data.wechatId = 'wx_' + Math.random().toString(36).substring(2, 4);
+      if (!data.wechatPwd) { App.showToast('请填写微信密码'); return; }
+      if (!data.realName) { App.showToast('请输入姓名'); return; }
 
       var editId = page._editId;
       if (editId) {
@@ -579,7 +609,7 @@ if (!data.realName) { App.showToast('请输入姓名'); return; }
       var nameEl = card.querySelector('.up-name-input');
       if (nameEl) {
         var div = document.createElement('div');
-        div.style.cssText = 'font-size:15px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;';
+        div.style.cssText = 'font-size:16px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;';
         div.textContent = nameEl.value.trim() || '—';
         nameEl.parentNode.replaceChild(div, nameEl);
       }
