@@ -41,7 +41,6 @@
     list: [],
     sealed: false,
     tempAvatar: '',
-    _currentView: '', // 'list' or 'profile'
 
     load: function() { User.list = App.LS.get('userList') || []; },
     save: function() { App.LS.set('userList', User.list); },
@@ -50,26 +49,21 @@
     setActive: function(id) { App.LS.set('activeUserId', id); },
 
     open: function() {
-  User.load();
-  var panel = App.$('#userPanel');
-  if (!panel) return;
-  panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
-  if (!User.list.length) User.renderProfile(null);
-  else User.renderList();
-  requestAnimationFrame(function() { requestAnimationFrame(function() {
-    panel.style.transform = 'translateX(0)';
-    panel.style.opacity = '1';
-  }); });
-  App.bindSwipeBack(panel, function() {
-    /* ★ 如果当前在编辑页，滑动返回到列表页；如果在列表页，关闭面板 */
-    if (User._currentView === 'profile') {
-      if (User.list.length) User.renderList();
-      else User.close();
-    } else {
-      User.close();
-    }
-  });
-},
+      User.load();
+      var panel = App.$('#userPanel');
+      if (!panel) return;
+      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      if (!User.list.length) {
+        User.renderProfile(null);
+        return;
+      }
+      User.renderList();
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        panel.style.transform = 'translateX(0)';
+        panel.style.opacity = '1';
+      }); });
+      App.bindSwipeBack(panel, function() { User.close(); });
+    },
 
     close: function() {
       var panel = App.$('#userPanel');
@@ -79,10 +73,8 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-    /* ====== 列表页 ====== */
     renderList: function() {
       User.load();
-      User._currentView = 'list';
       var panel = App.$('#userPanel');
       if (!panel) return;
 
@@ -258,13 +250,8 @@
       });
     },
 
-    /* ====== 档案编辑页 ====== */
     renderProfile: function(editId) {
       User.load();
-      User._currentView = 'profile';
-      var panel = App.$('#userPanel');
-      if (!panel) return;
-
       var existing = editId ? User.getById(editId) : null;
       var user = existing || {};
       User.sealed = !!(user._sealed);
@@ -292,15 +279,22 @@
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
-      panel.innerHTML =
+      var old = App.$('#userProfilePanel');
+      if (old) old.remove();
+
+      var pp = document.createElement('div');
+      pp.id = 'userProfilePanel';
+      pp.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+
+      pp.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          '<div class="up-profile-back" id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+          '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             BACK_ICON +
           '</div>' +
           '<div style="font-size:13px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div class="up-profile-rebuild" id="upRebuild" data-edit-id="' + (editId || '') + '" style="font-size:13px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+          '<div id="upRebuild" data-edit-id="' + (editId || '') + '" style="font-size:13px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
         '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;position:relative;">' +
+        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
           '<div class="up-card" id="upCard" data-edit-id="' + (editId || '') + '">' +
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
@@ -321,7 +315,6 @@
             '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
             '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
           '</div>' +
-          /* ★ 印章用 fixed 定位，完全脱离文档流 */
           '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
             '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
               '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
@@ -331,38 +324,53 @@
           '</div>' +
         '</div>';
 
-      /* 返回按钮 */
-      panel.querySelector('#upProfileBack').addEventListener('click', function() {
-        if (User.list.length) User.renderList();
-        else User.close();
+      document.body.appendChild(pp);
+
+      function closeProfile() {
+        pp.style.transform = 'translateX(100%)';
+        pp.style.opacity = '0';
+        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+      }
+
+      App.bindSwipeBack(pp, function() { closeProfile(); });
+
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        pp.style.transform = 'translateX(0)';
+        pp.style.opacity = '1';
+      }); });
+
+      pp.querySelector('#upProfileBack').addEventListener('click', function() {
+        closeProfile();
+        if (!User.list.length) {
+          setTimeout(function() { User.close(); }, 100);
+        } else {
+          User.renderList();
+        }
       });
 
-      /* 重建按钮 */
-      panel.querySelector('#upRebuild').addEventListener('click', function() {
+      pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        User.renderProfile(eid);
+        closeProfile();
+        setTimeout(function() { User.renderProfile(eid); }, 100);
         App.showToast('已解除封存');
       });
 
-      /* 展开编辑 */
-      panel.querySelectorAll('.up-expand-btn').forEach(function(btn) {
+      pp.querySelectorAll('.up-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var field = btn.dataset.field;
-          var ta = panel.querySelector('textarea[data-key="' + field + '"]');
+          var ta = pp.querySelector('textarea[data-key="' + field + '"]');
           if (!ta) return;
           var f = FIELDS_LONG.filter(function(x) { return x.key === field; })[0];
           User.openExpandEditor(f ? f.cn : field, ta);
         });
       });
 
-      /* 羽毛笔保存 */
-      var quill = panel.querySelector('#upQuill');
-      if (quill) quill.addEventListener('click', function() { User.saveProfile(panel); });
+      var quill = pp.querySelector('#upQuill');
+      if (quill) quill.addEventListener('click', function() { User.saveProfile(pp); });
     },
 
-    /* ====== 展开编辑器 ====== */
     openExpandEditor: function(title, textarea) {
       var old = App.$('#upExpandEditor');
       if (old) old.remove();
@@ -399,9 +407,8 @@
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
-    /* ====== 保存 ====== */
-    saveProfile: function(panel) {
-      var card = panel.querySelector('#upCard');
+    saveProfile: function(pp) {
+      var card = pp.querySelector('#upCard');
       if (!card) return;
       var editId = card.dataset.editId || '';
       var data = {};
@@ -440,12 +447,11 @@
         if (User.list.length === 1) User.setActive(data.id);
       }
 
-      /* 封存动画 */
-      var seal = panel.querySelector('#upSeal');
+      var seal = pp.querySelector('#upSeal');
       if (seal) requestAnimationFrame(function() { seal.classList.add('show'); });
-      var quill = panel.querySelector('#upQuill');
+      var quill = pp.querySelector('#upQuill');
       if (quill) quill.style.display = 'none';
-      var rebuild = panel.querySelector('#upRebuild');
+      var rebuild = pp.querySelector('#upRebuild');
       if (rebuild) rebuild.style.visibility = '';
 
       card.querySelectorAll('input[data-key]').forEach(function(el) {
@@ -471,11 +477,23 @@
 
       App.showToast('档案已封存');
 
-      /* ★ 1.5秒后直接切换到列表视图，不销毁不重建面板 */
-      setTimeout(function() { User.renderList(); }, 1500);
+      setTimeout(function() {
+        pp.style.transform = 'translateX(100%)';
+        pp.style.opacity = '0';
+        setTimeout(function() {
+          if (pp.parentNode) pp.remove();
+          /* 确保列表页面板是可见的并且内容是最新的 */
+          var panel = App.$('#userPanel');
+          if (panel) {
+            User.renderList();
+            panel.style.display = 'flex';
+            panel.style.transform = 'translateX(0)';
+            panel.style.opacity = '1';
+          }
+        }, 350);
+      }, 1500);
     },
 
-    /* ====== 图片菜单 ====== */
     showImgMenu: function(uid, field, callback) {
       var old = App.$('#imgSourceMenu');
       if (old) old.remove();
