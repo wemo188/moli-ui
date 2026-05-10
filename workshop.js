@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -44,11 +45,10 @@
               '<div class="bm-title">悬浮助手</div>' +
               '<div class="bm-grid">' +
                 tkBlack('api', 'API', 'config') +
-                tkBlack('mode', '模式', 'mode') +
-                tkBlack('workshop', '美化', 'studio') +
                 tkBlack('preset', '预设', 'preset') +
                 tkBlack('worldbook', '世界书', 'lore') +
                 tkBlack('memory', '记忆', 'memory') +
+                tkBlack('workshop', '美化', 'studio') +
                 tkBlack('data', '数据', 'data') +
                 tkBlack('console', '控制台', 'console') +
                 tkBlack('promptlog', '日志', 'prompt') +
@@ -92,10 +92,9 @@
           var action = item.dataset.action;
           if (action === 'workshop') { Workshop.goToPage(1); return; }
           if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
-          if (action === 'mode') { Workshop.close(); setTimeout(function() { Workshop.openModeSwitcher(); }, 220); return; }
           if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
           if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
-          if (action === 'memory') { App.showToast('记忆功能开发中'); return; }
+          if (action === 'memory') { Workshop.close(); setTimeout(function() { Workshop.openMemoryPicker(); }, 220); return; }
           if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
           if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
@@ -117,71 +116,65 @@
       });
     },
 
-    /* ★ 新增：模式切换面板 */
-    openModeSwitcher: function() {
-      var old = App.$('#modeOverlay');
-      if (old) { old.remove(); return; }
+    openMemoryPicker: function() {
+      var chars = App.character ? App.character.list : [];
+      if (!chars || !chars.length) {
+        App.showToast('请先添加角色');
+        return;
+      }
 
-      var currentMode = App.LS.get('phoneFrameMode') ? 'frame' : 'normal';
+      if (App.chat && App.chat.charId) {
+        if (App.memory) App.memory.open(App.chat.charId);
+        return;
+      }
 
-      var overlay = document.createElement('div');
-      overlay.id = 'modeOverlay';
-      overlay.className = 'pc-edit-overlay';
-      overlay.style.zIndex = '100020';
+      var old = App.$('#memCharPicker');
+      if (old) old.remove();
 
-      overlay.innerHTML =
-        '<div class="pc-edit-panel" style="width:300px;max-height:320px;overflow-y:auto;border-radius:14px;left:50%;top:50%;transform:translate(-50%,-50%);">' +
-          '<div class="pc-edit-title" style="text-align:center;padding:18px 12px 12px;font-size:15px;font-weight:800;letter-spacing:1px;color:#2e4258;">模式切换</div>' +
+      var picker = document.createElement('div');
+      picker.id = 'memCharPicker';
+      picker.style.cssText = 'position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
 
-          '<div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;">' +
+      var listHtml = chars.map(function(c) {
+        var avatarHtml = c.avatar
+          ? '<img src="' + App.escAttr(c.avatar) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
+          : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.15);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:1.8;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
+        var memCount = App.memory ? App.memory.getAll(c.id).length : 0;
+        return '<div class="mem-pick-char" data-cid="' + c.id + '" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);-webkit-tap-highlight-color:transparent;">' +
+          avatarHtml +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:14px;font-weight:600;color:#2e4258;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + App.esc(c.name || '未命名') + '</div>' +
+            '<div style="font-size:11px;color:#8aa0b8;margin-top:2px;">' + memCount + ' 条记忆</div>' +
+          '</div>' +
+          '<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#ccc;stroke-width:2;flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>';
+      }).join('');
 
-            '<div class="mode-opt" data-mode="normal" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;cursor:pointer;border:1.5px solid ' + (currentMode === 'normal' ? '#1a1a1a' : 'rgba(0,0,0,.08)') + ';background:' + (currentMode === 'normal' ? 'rgba(0,0,0,.03)' : '#fff') + ';transition:all .15s;-webkit-tap-highlight-color:transparent;">' +
-              '<div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (currentMode === 'normal' ? '#1a1a1a' : '#ccc') + ';background:' + (currentMode === 'normal' ? '#1a1a1a' : '#fff') + ';box-shadow:' + (currentMode === 'normal' ? 'inset 0 0 0 3px #fff' : 'none') + ';flex-shrink:0;transition:all .15s;"></div>' +
-              '<div><div style="font-size:14px;font-weight:700;color:#1a1a1a;">普通模式</div><div style="font-size:11px;color:#999;margin-top:2px;">默认全屏显示</div></div>' +
-            '</div>' +
-
-            '<div class="mode-opt" data-mode="frame" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;cursor:pointer;border:1.5px solid ' + (currentMode === 'frame' ? '#1a1a1a' : 'rgba(0,0,0,.08)') + ';background:' + (currentMode === 'frame' ? 'rgba(0,0,0,.03)' : '#fff') + ';transition:all .15s;-webkit-tap-highlight-color:transparent;">' +
-              '<div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (currentMode === 'frame' ? '#1a1a1a' : '#ccc') + ';background:' + (currentMode === 'frame' ? '#1a1a1a' : '#fff') + ';box-shadow:' + (currentMode === 'frame' ? 'inset 0 0 0 3px #fff' : 'none') + ';flex-shrink:0;transition:all .15s;"></div>' +
-              '<div><div style="font-size:14px;font-weight:700;color:#1a1a1a;">手机框模式</div><div style="font-size:11px;color:#999;margin-top:2px;">白色手机外壳包裹</div></div>' +
-            '</div>' +
-
-            '<button id="modeSaveBtn" type="button" style="width:100%;padding:12px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;font-family:inherit;margin-top:6px;">确 定</button>' +
-
+      picker.innerHTML =
+        '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:16px 0;width:280px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
+          '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;padding:0 16px 12px;border-bottom:1px solid rgba(0,0,0,.04);">选择角色</div>' +
+          listHtml +
+          '<div style="text-align:center;padding:12px;">' +
+            '<button type="button" id="memPickCancel" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">取消</button>' +
           '</div>' +
         '</div>';
 
-      document.body.appendChild(overlay);
+      document.body.appendChild(picker);
 
-      var selectedMode = currentMode;
+      picker.addEventListener('click', function(e) {
+        if (e.target === picker) picker.remove();
+      });
 
-      overlay.querySelectorAll('.mode-opt').forEach(function(opt) {
-        opt.addEventListener('click', function() {
-          selectedMode = opt.dataset.mode;
-          overlay.querySelectorAll('.mode-opt').forEach(function(o) {
-            var isActive = o.dataset.mode === selectedMode;
-            o.style.borderColor = isActive ? '#1a1a1a' : 'rgba(0,0,0,.08)';
-            o.style.background = isActive ? 'rgba(0,0,0,.03)' : '#fff';
-            var dot = o.querySelector('div:first-child');
-            dot.style.borderColor = isActive ? '#1a1a1a' : '#ccc';
-            dot.style.background = isActive ? '#1a1a1a' : '#fff';
-            dot.style.boxShadow = isActive ? 'inset 0 0 0 3px #fff' : 'none';
-          });
+      picker.querySelector('#memPickCancel').addEventListener('click', function() {
+        picker.remove();
+      });
+
+      picker.querySelectorAll('.mem-pick-char').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var cid = el.dataset.cid;
+          picker.remove();
+          if (App.memory) App.memory.open(cid);
         });
-      });
-
-      overlay.querySelector('#modeSaveBtn').addEventListener('click', function() {
-        if (selectedMode === 'frame') {
-          App.LS.set('phoneFrameMode', true);
-        } else {
-          App.LS.remove('phoneFrameMode');
-        }
-        overlay.remove();
-        App.applyPhoneFrame();
-        App.showToast(selectedMode === 'frame' ? '已切换 · 手机框模式' : '已切换 · 普通模式');
-      });
-
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) overlay.remove();
       });
     },
 
@@ -486,7 +479,7 @@
             return '<div style="margin:8px 16px;padding:14px;background:rgba(126,163,201,.04);border:1px solid rgba(126,163,201,.15);border-radius:12px;">' +
               '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
                 '<div>' +
-                 '<div class="snap-name" data-idx="' + i + '" style="font-size:14px;font-weight:700;color:#2e4258;cursor:pointer;" title="点击重命名">' + App.esc(s.name) + '</div>' +
+                  '<div class="snap-name" data-idx="' + i + '" style="font-size:14px;font-weight:700;color:#2e4258;cursor:pointer;" title="点击重命名">' + App.esc(s.name) + '</div>' +
                   '<div style="font-size:11px;color:#8aa0b8;margin-top:2px;">' + fmtTime(s.ts) + '</div>' +
                 '</div>' +
               '</div>' +
@@ -647,6 +640,8 @@
         if (key.startsWith('searchText_')) return '对话框文字';
         if (key.startsWith('avatar_search')) return '对话框头像';
         if (key.startsWith('cardDragOffsets')) return '卡片拖拽位置';
+        if (key.startsWith('memories_')) return '角色记忆';
+        if (key.startsWith('memorySendConfig_')) return '记忆发送设置';
         return '其他';
       }
 
