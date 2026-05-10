@@ -1,0 +1,223 @@
+
+/* =========================
+   记忆系统 Memory
+========================= */
+
+/* 统计标签 */
+.mem-stat-chip {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7a9ab8;
+  background: rgba(126,163,201,.08);
+  border: 1px solid rgba(126,163,201,.2);
+}
+
+/* 发送配置栏 */
+.mem-send-config {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(126,163,201,.04);
+  border: 1px solid rgba(126,163,201,.12);
+  border-radius: 10px;
+}
+
+/* 操作按钮 */
+.mem-action-btn {
+  flex: 1;
+  padding: 11px;
+  background: rgba(26,26,26,.04);
+  color: #2e4258;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mem-action-btn:active {
+  opacity: 0.7;
+}
+
+/* 分组 */
+.mem-group {
+  margin-bottom: 16px;
+}
+
+.mem-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7a9ab8;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(126,163,201,.12);
+}
+
+.mem-group-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: #aaa;
+  background: rgba(0,0,0,.04);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* 记忆条目 */
+.mem-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(126,163,201,.12);
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.mem-item:active {
+  background: rgba(126,163,201,.08);
+}
+
+.mem-item-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.mem-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mem-item-content {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2e4258;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.mem-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.mem-meta-imp {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mem-meta-src {
+  font-size: 10px;
+  font-weight: 500;
+  color: #aaa;
+  background: rgba(0,0,0,.03);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* 自动发送开关 */
+.mem-item-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mem-auto-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+
+.mem-auto-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s;
+}
+
+.mem-auto-toggle.on svg {
+  stroke: #7a9ab8;
+}
+
+.mem-auto-toggle:active {
+  transform: scale(0.9);
+}
+
+/* 编辑弹窗 - 标签选择 */
+.mem-tag-chip {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  background: rgba(0,0,0,.03);
+  border: 1.5px solid rgba(0,0,0,.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.mem-tag-chip:active {
+  opacity: 0.7;
+}
+
+.mem-tag-chip.mem-tag-sel {
+  color: #2e4258;
+  background: rgba(126,163,201,.12);
+  border-color: rgba(126,163,201,.4);
+}
+
+/* 编辑弹窗 - 重要度按钮 */
+.mem-imp-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.mem-imp-btn:active {
+  opacity: 0.7;
+}
+
+.mem-imp-btn.active {
+  color: #fff;
+  background: #2e4258;
+  border-color: #2e4258;
+}
+
+
