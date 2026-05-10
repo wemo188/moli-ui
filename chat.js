@@ -323,7 +323,7 @@ var slotContent={
   sys_user_info:buildUserInfo(userData),
   sys_scene:sceneText,
   sys_examples:charData&&charData.dialogExamples?charData.dialogExamples:'',
-  sys_memory: App.memory ? App.memory.buildMemoryText(charData.id) : '',
+  sys_memory: App.memory ? App.memory.buildMemoryText(charData ? charData.id : null) : '',
   sys_post:charData&&charData.postInstruction?charData.postInstruction:''
 };
 
