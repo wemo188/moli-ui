@@ -59,7 +59,7 @@ container.innerHTML=
 '</div>'+
 
 '<div class="ol-input-wrap">'+
-  '<button class="ol-btn" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
+ '<button class="ol-btn-plus" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
   '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
   '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
   '<button class="ol-btn ol-btn-send" id="olSendBtn" type="button"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'+
