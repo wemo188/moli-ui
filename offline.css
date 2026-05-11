@@ -1,6 +1,6 @@
 
 /* =========================
-   线下面板（独立全屏，不依赖 fullpage-panel）
+   线下面板（独立全屏）
 ========================= */
 .ol-panel {
   position: fixed;
@@ -289,8 +289,8 @@
   z-index: 10;
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  padding: 8px 10px 12px;
+  gap: 4px;
+  padding: 8px 8px 12px;
   background: rgba(255,255,255,.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -300,9 +300,9 @@
 
 .ol-input {
   flex: 1;
-  min-height: 42px;
+  min-height: 40px;
   max-height: 120px;
-  padding: 10px 14px;
+  padding: 9px 14px;
   border: 1.5px solid rgba(126,163,201,.35);
   border-radius: 20px;
   background: rgba(255,255,255,.9);
@@ -321,8 +321,9 @@
   border-color: rgba(126,163,201,.65);
 }
 
+/* 通用按钮基础 */
 .ol-btn {
-  width: 38px; height: 38px;
+  width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
   background: none; border: none; cursor: pointer; flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
@@ -338,34 +339,92 @@
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-.ol-btn-robot { width: 38px; height: 38px; }
-.ol-btn-robot svg { width: 34px; height: 34px; }
-
-.ol-btn-send {
-  background: rgba(126,163,201,.85);
+/* 加号按钮 */
+.ol-btn-plus {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
   border-radius: 50%;
+  transition: opacity .15s;
 }
+
+.ol-btn-plus:active { opacity: .6; }
+
+.ol-btn-plus svg {
+  width: 28px; height: 28px;
+  fill: none; stroke: #7a9ab8;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* 机器人按钮 */
+.ol-btn-robot {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  transition: opacity .15s;
+}
+
+.ol-btn-robot:active { opacity: .6; }
+
+.ol-btn-robot .ol-robot-svg {
+  width: 34px; height: 34px;
+}
+
+.ol-btn-robot .ol-robot-svg line[stroke="#7a9ab8"],
+.ol-btn-robot .ol-robot-svg ellipse,
+.ol-btn-robot .ol-robot-svg rect[fill="#7a9ab8"] {
+  stroke: rgba(126,163,201,.85);
+  fill: rgba(126,163,201,.85);
+}
+
+.ol-btn-robot .ol-robot-svg line[stroke="white"] {
+  stroke: white;
+  fill: none;
+}
+
+/* 发送按钮 */
+.ol-btn-send {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(126,163,201,.85);
+  border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  transition: opacity .15s;
+}
+
+.ol-btn-send:active { opacity: .6; }
 
 .ol-btn-send svg {
-  stroke: #fff;
-  width: 18px; height: 18px;
+  width: 16px; height: 16px;
+  fill: none; stroke: #fff;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-.ol-btn-send:active { background: rgba(126,163,201,.65); }
-
+/* 停止按钮 */
 .ol-btn-stop {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
   background: rgba(201,112,107,.85);
+  border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
   border-radius: 50%;
-  width: 32px; height: 32px;
-  margin-bottom: 3px;
+  transition: opacity .15s;
 }
+
+.ol-btn-stop:active { opacity: .6; }
 
 .ol-btn-stop svg {
-  stroke: none; fill: #fff;
   width: 14px; height: 14px;
+  stroke: none; fill: #fff;
 }
 
-/* 加号面板 */
+/* =========================
+   加号面板
+========================= */
 .ol-plus-panel {
   position: relative;
   z-index: 10;
