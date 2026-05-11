@@ -1,6 +1,26 @@
 
 /* =========================
-   线下剧情 - 根容器
+   线下面板（独立全屏，不依赖 fullpage-panel）
+========================= */
+.ol-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+}
+
+.ol-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* =========================
+   根容器
 ========================= */
 .ol-root {
   width: 100%;
@@ -9,10 +29,10 @@
   flex-direction: column;
   overflow: hidden;
   background: #fff;
-  position: relative;
   -webkit-touch-callout: none;
 }
 
+/* 晕染 */
 .ol-tint {
   position: absolute;
   inset: 0;
@@ -48,6 +68,7 @@
 
 .ol-tint.off { opacity: 0; }
 
+/* 背景图 */
 .ol-bg {
   position: absolute;
   inset: 0;
@@ -58,20 +79,20 @@
 }
 
 /* =========================
-   顶部栏（无横线）
+   顶部栏
 ========================= */
 .ol-hd {
   position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
-  height: 88px;
-  padding: 40px 12px 12px;
+  padding: 16px 12px 10px;
   flex-shrink: 0;
   gap: 6px;
   background: rgba(255,255,255,.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid rgba(126,163,201,.2);
 }
 
 .ol-hd-btn {
@@ -268,8 +289,7 @@
   display: flex;
   align-items: flex-end;
   gap: 6px;
-  height: 70px;
-  padding: 8px 10px 20px;
+  padding: 8px 10px 12px;
   background: rgba(255,255,255,.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -351,7 +371,7 @@
   display: none;
   flex-wrap: wrap;
   gap: 16px;
-  padding: 16px 20px 24px;
+  padding: 16px 20px 16px;
   background: rgba(255,255,255,.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -397,13 +417,13 @@
 }
 
 /* =========================
-   右侧侧边栏（黑色底 + 蓝色填充按钮）
+   右侧侧边栏（蓝色填充风格）
 ========================= */
 .ol-sidebar-mask {
   position: absolute;
   inset: 0;
   z-index: 50;
-  background: rgba(0,0,0,.4);
+  background: rgba(0,0,0,.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s;
@@ -419,7 +439,7 @@
   top: 0; right: 0; bottom: 0;
   width: 270px;
   z-index: 51;
-  background: rgba(10,10,10,.95);
+  background: rgba(240,246,252,.97);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
@@ -427,6 +447,7 @@
   transform: translateX(100%);
   transition: transform .32s cubic-bezier(.32,.72,0,1);
   overflow: hidden;
+  border-left: 1px solid rgba(126,163,201,.2);
 }
 
 .ol-sidebar.show {
@@ -437,28 +458,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 56px 16px 14px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #fff;
   flex-shrink: 0;
 }
 
 .ol-sb-title {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: #2e4258;
   letter-spacing: 1px;
 }
 
 .ol-sb-close {
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,.1);
+  background: rgba(126,163,201,.12);
   border: none; border-radius: 50%;
-  cursor: pointer; color: rgba(255,255,255,.6);
+  cursor: pointer; color: #7a9ab8;
   font-size: 16px;
   -webkit-tap-highlight-color: transparent;
 }
 
-.ol-sb-close:active { background: rgba(255,255,255,.2); }
+.ol-sb-close:active { background: rgba(126,163,201,.2); }
 
 .ol-sb-body {
   flex: 1;
@@ -468,13 +490,19 @@
 }
 
 .ol-sb-section {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #fff;
+}
+
+.ol-sb-section:last-child {
+  border-bottom: none;
 }
 
 .ol-sb-label {
   font-size: 10px;
   font-weight: 700;
-  color: rgba(255,255,255,.35);
+  color: #7a9ab8;
   letter-spacing: 1.5px;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -483,11 +511,10 @@
 .ol-sb-sub-label {
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255,255,255,.5);
+  color: #7a9ab8;
   margin-bottom: 6px;
 }
 
-/* 模式切换按钮（蓝色填充） */
 .ol-sb-mode-row {
   display: flex;
   gap: 6px;
@@ -501,25 +528,21 @@
   font-weight: 600;
   text-align: center;
   cursor: pointer;
-  border: none;
-  background: rgba(126,163,201,.12);
-  color: rgba(255,255,255,.5);
+  border: 1.5px solid rgba(126,163,201,.25);
+  background: rgba(255,255,255,.6);
+  color: #7a9ab8;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   transition: all .15s;
 }
 
 .ol-sb-mode-btn.active {
-  background: rgba(126,163,201,.35);
-  color: #fff;
+  background: rgba(126,163,201,.18);
+  border-color: rgba(126,163,201,.6);
+  color: #2e4258;
   font-weight: 700;
 }
 
-.ol-sb-mode-btn:active {
-  opacity: .7;
-}
-
-/* 侧边栏通用按钮（蓝色填充） */
 .ol-sb-btn {
   width: 100%;
   padding: 11px;
@@ -528,9 +551,9 @@
   font-weight: 600;
   text-align: center;
   cursor: pointer;
-  border: none;
-  background: rgba(126,163,201,.15);
-  color: rgba(255,255,255,.75);
+  border: 1.5px solid rgba(126,163,201,.25);
+  background: rgba(255,255,255,.7);
+  color: #2e4258;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   margin-bottom: 8px;
@@ -538,10 +561,9 @@
 }
 
 .ol-sb-btn:active {
-  background: rgba(126,163,201,.25);
+  background: rgba(126,163,201,.12);
 }
 
-/* 开关行 */
 .ol-sb-switch {
   display: flex;
   align-items: center;
@@ -552,7 +574,7 @@
 .ol-sb-switch-name {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,.7);
+  color: #2e4258;
 }
 
 .ol-sb-sw-track {
@@ -565,7 +587,7 @@
 }
 
 .ol-sb-sw-track.on { background: rgba(126,163,201,.7); }
-.ol-sb-sw-track.off { background: rgba(255,255,255,.15); }
+.ol-sb-sw-track.off { background: rgba(126,163,201,.2); }
 
 .ol-sb-sw-track::after {
   content: "";
@@ -574,19 +596,19 @@
   width: 18px; height: 18px;
   border-radius: 50%;
   background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
   transition: transform .2s;
 }
 
 .ol-sb-sw-track.on::after { transform: translateX(18px); }
 
-/* 输入框 */
 .ol-sb-input {
   width: 100%;
   padding: 9px 12px;
   border-radius: 8px;
-  border: none;
-  background: rgba(126,163,201,.12);
-  color: rgba(255,255,255,.85);
+  border: 1.5px solid rgba(126,163,201,.25);
+  background: rgba(255,255,255,.8);
+  color: #2e4258;
   font-size: 13px;
   font-family: inherit;
   outline: none;
@@ -594,16 +616,16 @@
 }
 
 .ol-sb-input:focus {
-  background: rgba(126,163,201,.2);
+  border-color: rgba(126,163,201,.6);
 }
 
 .ol-sb-input::placeholder {
-  color: rgba(255,255,255,.25);
+  color: #a8c0d8;
 }
 
 .ol-sb-hint {
   font-size: 10px;
-  color: rgba(255,255,255,.3);
+  color: #a8c0d8;
   margin-top: 4px;
   line-height: 1.4;
 }
