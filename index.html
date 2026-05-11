@@ -53,7 +53,7 @@
     'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
     'cards.css','workshop.css','user.css','memory.css',
-    'wechat.css','char-mgr.css','api.css'
+    'wechat.css','char-mgr.css','api.css','chess.css'
   ];
   css.forEach(function(href){
     var link = document.createElement('link');
@@ -190,44 +190,18 @@ function imgFallback(img){
     </section>
 
     <!-- 第二页 -->
-    <section class="screen-page screen-page-2">
-      <div class="screen-page-inner" style="position:relative;height:100%;">
-        <div class="app-grid" id="appGrid">
-          <div class="app-icon" id="openWorldBookBtn" data-icon="worldbook">
-            <div class="app-icon-img" id="worldBookIconImg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                <path d="M8 7h8"/>
-                <path d="M8 11h6"/>
-              </svg>
-            </div>
-            <div class="app-icon-label">世界书</div>
-          </div>
-          <div class="app-icon" id="openPresetBtn" data-icon="preset">
-            <div class="app-icon-img" id="presetIconImg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
-            </div>
-            <div class="app-icon-label">预设</div>
-          </div>
-          <div class="app-icon" id="openRegexBtn" data-icon="regex">
-            <div class="app-icon-img" id="regexIconImg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="4 17 10 11 4 5"/>
-                <line x1="12" y1="19" x2="20" y2="19"/>
-              </svg>
-            </div>
-            <div class="app-icon-label">正则</div>
-          </div>
+<section class="screen-page screen-page-2">
+  <div class="screen-page-inner" style="position:relative;height:100%;">
+    <div class="app-grid" id="appGrid">
+      <div class="app-icon" id="openChessBtn" data-icon="chess">
+        <div class="app-icon-img" id="chessIconImg" style="width:80px;height:80px;border-radius:15px;background:#fff;border:1.3px solid rgba(220,235,255,.9);">
+          <img src="https://iili.io/BDOUYOv.md.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="imgFallback(this)">
         </div>
+        <div class="app-icon-label">象棋</div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
   </div>
   <div class="screen-indicators">
@@ -289,7 +263,7 @@ function imgFallback(img){
     'script.js','theme.js','font.js','api.js','bg.js',
     'character.js','user.js','worldbook.js','preset.js',
     'chat.js','chatui.js','calendar.js','cards.js','frost.js','char-mgr.js',
-    'workshop.js','wechat.js','dock.js','memory.js'
+    'workshop.js','wechat.js','dock.js','memory.js','chess-rules.js','chess.js'
   ];
   var idx = 0;
   function loadNext(){
