@@ -343,40 +343,37 @@ var Offline={
     }
   },
 
-  openFor:function(charId){
-    if(!App.character)return;
-    var c=App.character.getById(charId);
-    if(!c){App.showToast('角色不存在');return;}
-    Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
-    Offline._backgroundMode=false;Offline._plusOpen=false;
+  
+openFor:function(charId){
+  if(!App.character)return;
+  var c=App.character.getById(charId);
+  if(!c){App.showToast('角色不存在');return;}
+  Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
+  Offline._backgroundMode=false;Offline._plusOpen=false;
 
-    var panel=App.$('#offlinePanel');
-    if(!panel){
-      panel=document.createElement('div');
-      panel.id='offlinePanel';
-      document.body.appendChild(panel);
-    }
+  var panel=App.$('#offlinePanel');
+  if(panel)panel.remove();
 
-    panel.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;overflow:hidden;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
-    panel.innerHTML='';
+  panel=document.createElement('div');
+  panel.id='offlinePanel';
+  panel.className='ol-panel';
+  document.body.appendChild(panel);
 
-    if(App.offlineUI)App.offlineUI.render(panel,c);
-    if(App.offlineUI)App.offlineUI.renderMessages();
-    if(App.offlineUI)App.offlineUI.bindEvents();
+  if(App.offlineUI)App.offlineUI.render(panel,c);
+  if(App.offlineUI)App.offlineUI.renderMessages();
+  if(App.offlineUI)App.offlineUI.bindEvents();
 
-    requestAnimationFrame(function(){requestAnimationFrame(function(){
-      panel.style.transform='translateX(0)';
-      panel.style.opacity='1';
-    });});
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    panel.classList.add('show');
+  });});
 },
 
 close:function(){
-    Offline.dismissCtx();
-    var panel=App.$('#offlinePanel');
-    if(!panel)return;
-    panel.style.transform='translateX(100%)';
-    panel.style.opacity='0';
-    setTimeout(function(){if(panel)panel.style.display='none';},350);
+  Offline.dismissCtx();
+  var panel=App.$('#offlinePanel');
+  if(!panel)return;
+  panel.classList.remove('show');
+  setTimeout(function(){if(panel.parentNode)panel.remove();},350);
 },
 
   sendUser:function(){
