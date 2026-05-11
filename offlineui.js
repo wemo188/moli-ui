@@ -295,5 +295,6 @@ init:function(){App.offlineUI=OfflineUI;}
 
 function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 
-App.register('offlineUI',OfflineUI);
+App.offlineUI = OfflineUI;
+App.register('offlineUI', OfflineUI);
 })();
