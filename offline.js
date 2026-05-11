@@ -502,5 +502,7 @@ pick: function() {
   init:function(){App.offline=Offline;}
 };
 
-App.register('offline',Offline);
+App.offline = Offline;
+App.register('offline', Offline);
 })();
+
