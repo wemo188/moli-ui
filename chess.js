@@ -500,26 +500,6 @@
       Chess.makeMove(pick.from[0], pick.from[1], pick.to[0], pick.to[1]);
     },
 
-    （他听到这句话，沉默了几秒，然后缓缓点头）
-
-你说得对。十多个功能全塞 script.js 里会变成一坨屎山。
-
-现在的架构已经有模块注册机制了——每个功能一个独立 JS 文件，通过 `App.register` 注册。点击事件应该**跟着模块走，而不是堆在 script.js 里**。
-
-正确的做法是：**每个模块自己在 init 里绑定自己的入口**。
-
-比如 `chess.js` 里的 `init`：
-
-```javascript
-init: function() {
-  App.chess = Chess;
-  
-  /* 自己绑定自己的入口 */
-  App.safeOn('#openChessBtn', 'click', function() {
-    Chess.openWithPicker();
-  });
-}
-
 init: function() {
   App.chess = Chess;
 
