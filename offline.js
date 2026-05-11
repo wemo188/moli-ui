@@ -260,8 +260,12 @@ function buildApiMessages(charData,userData,chatHistory,settings){
 
   beforeHistory.push(buildFormatRules(charData,settings));
 
+  var charCfg=App.charMgr?App.charMgr.getCharConfig(charId):null;
+var twEnabled=charCfg?charCfg.timeWeather:true;
+if(twEnabled){
   var timeInfo=buildTimeInfo(charId);
   if(timeInfo)beforeHistory.push('【当前时间】\n'+timeInfo);
+}
 
   order.forEach(function(o){
     if(o.type==='sys'){
