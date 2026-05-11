@@ -356,7 +356,7 @@ var Offline={
       document.body.appendChild(panel);
     }
 
-    varvar inner=document.createElement('div');
+    var inner=document.createElement('div');
     inner.style.cssText='position:absolute;inset:0;overflow:hidden;';
     panel.innerHTML='';panel.appendChild(inner);
 
