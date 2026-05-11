@@ -24,7 +24,7 @@ render:function(panel,charData){
   var tintCSS='background:radial-gradient(circle at 50% 48%,rgba(126,163,201,.48) 0%,rgba(126,163,201,.14) 38%,transparent 62%);';
 
   panel.innerHTML=
-  '<div class="ct-root" id="olRoot">'+
+  '<div class="ct-root" id="olRoot" style="height:100vh;max-height:100vh;">'+
   '<div class="ct-no-bg'+(bgUrl?' has-bg':'')+'" id="olNoBg"></div>'+
   '<div class="ct-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');':'')+'"></div>'+
   '<div class="ct-tint'+(tintOn?'':' off')+'" id="olTint" style="'+tintCSS+'"></div>'+
@@ -35,7 +35,7 @@ render:function(panel,charData){
     '<button class="ct-hd-btn" id="olMenuBtn" type="button"><svg viewBox="0 0 28 24"><circle cx="4" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="14" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="24" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/></svg></button>'+
   '</div>'+
   '<div class="ct-msgs" id="olMsgs"></div>'+
-  '<div class="ct-input-wrap">'+
+  '<div class="ct-input-wrap" style="padding-bottom:calc(12px + env(safe-area-inset-bottom, 8px));">'+
     '<button class="ct-send" id="olRobot" type="button" style="align-self:flex-end;margin-bottom:0;">'+ROBOT_SVG+'</button>'+
     '<textarea class="ct-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
     '<button class="ct-send" id="olSend" type="button" style="align-self:flex-end;margin-bottom:0;width:40px;height:40px;background:none;">'+SEND_SVG+'</button>'+
@@ -187,12 +187,12 @@ showMenu:function(){
       }
 
       if(act==='wordcount'){
-        var wc=prompt('设置长文字数（100-2000）：',OL.wordCount);
-        if(wc===null)return;wc=parseInt(wc);
-        if(isNaN(wc)||wc<100||wc>2000){App.showToast('请输入 100-2000 之间的数字');return;}
-        OL.setWordCount(wc);App.showToast('已设置：'+wc+'字');
-        return;
-      }
+  var wc=prompt('设置长文字数（100 起，不设上限）：',OL.wordCount);
+  if(wc===null)return;wc=parseInt(wc);
+  if(isNaN(wc)||wc<100){App.showToast('请输入 100 以上的数字');return;}
+  OL.setWordCount(wc);App.showToast('已设置：'+wc+'字');
+  return;
+}
 
       if(act==='avatar'){OfflineUI.showAvCard();return;}
       if(act==='bg'){OfflineUI.showBgMenu();return;}
