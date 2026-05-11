@@ -348,6 +348,8 @@
   background: none;
   border-radius: 50%;
   margin-bottom: 3px;
+  margin-left: -2px;
+
 }
 
 .ol-btn.ol-btn-send svg {
