@@ -186,8 +186,7 @@
       var items = [
         { id: 'dockMine', action: function() { if (App.user) App.user.open(); } },
         { id: 'dockLong', action: function() { if (App.character) App.character.open(); } },
-        { id: 'dockShort', action: function() { if (App.wechat) App.wechat.open(); } },
-        { id: 'dockCheck', action: function() { App.showToast('查岗 - 开发中'); } }
+        { id: 'dockShort', action: function() { if (App.wechat) App.wechat.open(); } }
       ];
 
       items.forEach(function(item) {
