@@ -328,29 +328,37 @@ pick: function() {
 },
 
   open:function(charId){
-    if(!App.character){App.showToast('character模块未加载');return;}
-    var c=App.character.getById(charId);if(!c){App.showToast('角色不存在');return;}
-    if(!App.offlineUI){App.showToast('offlineUI模块未加载');return;}
-    Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
-    Offline.mode=Offline.getMode();Offline.wordCount=Offline.getWordCount();
+  if(!App.character){App.showToast('character模块未加载');return;}
+  var c=App.character.getById(charId);if(!c){App.showToast('角色不存在');return;}
+  if(!App.offlineUI){App.showToast('offlineUI模块未加载');return;}
+  Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
+  Offline.mode=Offline.getMode();Offline.wordCount=Offline.getWordCount();
 
-    var old=App.$('#offlinePanel');if(old)old.remove();
-    var panel=document.createElement('div');panel.id='offlinePanel';panel.className='fullpage-panel hidden';
-    document.body.appendChild(panel);
-    App.offlineUI.render(panel,c);
-    Offline.renderMessages();App.offlineUI.bindEvents(panel);
-    panel.classList.remove('hidden');
-    requestAnimationFrame(function(){panel.classList.add('show');});
-    App.bindSwipeBack(panel,function(){Offline.close();});
-  },
+  var old=App.$('#offlinePanel');if(old)old.remove();
+  var panel=document.createElement('div');
+  panel.id='offlinePanel';
+  document.body.appendChild(panel);
 
-  close:function(){
-    if(Offline.isStreaming&&Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;Offline.isStreaming=false;}
-    Offline.dismissCtx();Offline.dismissMenu();Offline.dismissAvCard();
-    var panel=App.$('#offlinePanel');if(!panel)return;
-    panel.classList.remove('show');
-    setTimeout(function(){if(panel.parentNode)panel.remove();},350);
-  },
+  App.offlineUI.render(panel,c);
+  Offline.renderMessages();
+  App.offlineUI.bindEvents(panel);
+
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    panel.style.transform='translateX(0)';
+    panel.style.opacity='1';
+  });});
+
+  App.bindSwipeBack(panel,function(){Offline.close();});
+},
+
+close:function(){
+  if(Offline.isStreaming&&Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;Offline.isStreaming=false;}
+  Offline.dismissCtx();Offline.dismissMenu();Offline.dismissAvCard();
+  var panel=App.$('#offlinePanel');if(!panel)return;
+  panel.style.transform='translateX(100%)';
+  panel.style.opacity='0';
+  setTimeout(function(){if(panel.parentNode)panel.remove();},350);
+},
 
   renderMessages:function(){if(App.offlineUI)App.offlineUI.renderMessages();},
   scrollBottom:function(){var el=App.$('#olMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
