@@ -1,0 +1,683 @@
+
+/* =========================
+   线下剧情 - 根容器
+========================= */
+.ol-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  -webkit-touch-callout: none;
+}
+
+/* 蓝色晕染底层 */
+.ol-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+.ol-tint::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140%; height: 140%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),
+    radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
+    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
+  pointer-events: none;
+}
+
+.ol-tint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.70), transparent 42%),
+    linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .72;
+}
+
+.ol-tint.off { opacity: 0; }
+
+/* 背景图 */
+.ol-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+/* =========================
+   顶部栏
+========================= */
+.ol-hd {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 18px 12px 10px;
+  flex-shrink: 0;
+  gap: 6px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid rgba(126,163,201,.2);
+}
+
+.ol-hd-btn {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ol-hd-btn svg {
+  width: 20px; height: 20px;
+  fill: none; stroke: #1a1a1a;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.ol-hd-name {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: .5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ol-hd-typing {
+  font-size: 11px;
+  color: #8aa0b8;
+  font-weight: 400;
+  display: block;
+}
+
+/* =========================
+   消息区
+========================= */
+.ol-msgs {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px 16px;
+  min-height: 0;
+}
+
+.ol-empty {
+  font-size: 12px;
+  color: #a8c0d8;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* =========================
+   短言模式 - 对话气泡
+========================= */
+.ol-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+  max-width: 100%;
+}
+
+.ol-msg.user { flex-direction: row-reverse; }
+
+.ol-msg-av {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(202,223,242,.15);
+  border: 1px solid rgba(192,206,220,.5);
+}
+
+.ol-msg-av img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+.ol-msg-av svg {
+  width: 20px; height: 20px;
+  margin: 12px;
+  stroke: #a8c0d8; fill: none; stroke-width: 1.5;
+}
+
+.ol-bubble-wrap {
+  max-width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ol-bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+  white-space: pre-wrap;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* AI 气泡 */
+.ol-msg.ai .ol-bubble {
+  background: rgba(255,255,255,.82);
+  color: #2e4258;
+  border: 1px solid rgba(200,220,240,.35);
+  border-top-left-radius: 4px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* 用户气泡 */
+.ol-msg.user .ol-bubble {
+  background: rgba(126,163,201,.75);
+  color: #fff;
+  border-top-right-radius: 4px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* 旁白（粗体段落） */
+.ol-narration {
+  font-weight: 700;
+  color: #5a7a9a;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+  padding: 8px 20px;
+  margin: 6px 0;
+}
+
+/* 时间分隔线 */
+.ol-time-sep {
+  text-align: center;
+  font-size: 11px;
+  color: #a8c0d8;
+  margin: 14px 20px 8px;
+  letter-spacing: .5px;
+}
+
+/* 消息元信息 */
+.ol-msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 6px;
+  font-size: 10px;
+  color: #b0b8c4;
+}
+
+.ol-msg.user .ol-msg-meta {
+  flex-direction: row-reverse;
+}
+
+/* =========================
+   长文模式 - 叙事段落
+========================= */
+.ol-prose {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(200,220,240,.25);
+  border-radius: 14px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.ol-prose.is-user {
+  background: rgba(126,163,201,.06);
+  border-color: rgba(126,163,201,.2);
+}
+
+.ol-prose-content {
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: #2e4258;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.ol-prose-meta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #b0b8c4;
+}
+
+/* =========================
+   底部输入区
+========================= */
+.ol-input-wrap {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 10px 10px 18px;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1.5px solid rgba(126,163,201,.2);
+  flex-shrink: 0;
+}
+
+.ol-input {
+  flex: 1;
+  min-height: 42px;
+  max-height: 120px;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(126,163,201,.35);
+  border-radius: 20px;
+  background: rgba(255,255,255,.9);
+  font-size: 14px;
+  color: #2e4258;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+  font-family: inherit;
+  overflow-y: auto;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.ol-input:focus {
+  border-color: rgba(126,163,201,.65);
+}
+
+.ol-btn {
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  transition: opacity .15s;
+}
+
+.ol-btn:active { opacity: .6; }
+
+.ol-btn svg {
+  width: 22px; height: 22px;
+  fill: none; stroke: #7a9ab8;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.ol-btn-robot {
+  width: 38px; height: 38px;
+}
+
+.ol-btn-robot svg {
+  width: 34px; height: 34px;
+}
+
+.ol-btn-send {
+  background: rgba(126,163,201,.85);
+  border-radius: 50%;
+}
+
+.ol-btn-send svg {
+  stroke: #fff;
+  width: 18px; height: 18px;
+}
+
+.ol-btn-send:active {
+  background: rgba(126,163,201,.65);
+}
+
+.ol-btn-stop {
+  background: rgba(201,112,107,.85);
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  margin-bottom: 3px;
+}
+
+.ol-btn-stop svg {
+  stroke: none;
+  fill: #fff;
+  width: 14px; height: 14px;
+}
+
+/* 加号面板 */
+.ol-plus-panel {
+  position: relative;
+  z-index: 10;
+  display: none;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 20px 20px;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(200,220,240,.15);
+  flex-shrink: 0;
+}
+
+.ol-plus-panel.show { display: flex; }
+
+.ol-plus-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 56px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ol-plus-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(200,220,240,.3);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.ol-plus-icon svg {
+  width: 22px; height: 22px;
+  fill: none; stroke: #7a9ab8;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.ol-plus-label {
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.ol-plus-item:active .ol-plus-icon {
+  background: rgba(126,163,201,.12);
+}
+
+/* =========================
+   右侧侧边栏
+========================= */
+.ol-sidebar-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+.ol-sidebar-mask.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ol-sidebar {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 260px;
+  z-index: 51;
+  background: rgba(18,18,18,.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .32s cubic-bezier(.32,.72,0,1);
+  overflow: hidden;
+}
+
+.ol-sidebar.show {
+  transform: translateX(0);
+}
+
+.ol-sb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
+}
+
+.ol-sb-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  letter-spacing: 1px;
+}
+
+.ol-sb-close {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.1);
+  border: none; border-radius: 50%;
+  cursor: pointer; color: rgba(255,255,255,.6);
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ol-sb-close:active { background: rgba(255,255,255,.2); }
+
+.ol-sb-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px 40px;
+}
+
+.ol-sb-section {
+  margin-bottom: 20px;
+}
+
+.ol-sb-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,.35);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+/* 模式切换 */
+.ol-sb-mode-row {
+  display: flex;
+  gap: 6px;
+}
+
+.ol-sb-mode-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.5);
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: all .15s;
+}
+
+.ol-sb-mode-btn.active {
+  background: rgba(126,163,201,.25);
+  border-color: rgba(126,163,201,.6);
+  color: #fff;
+}
+
+/* 侧边栏通用按钮 */
+.ol-sb-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.7);
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: 8px;
+  transition: all .15s;
+}
+
+.ol-sb-btn:active {
+  background: rgba(255,255,255,.12);
+}
+
+/* 侧边栏开关行 */
+.ol-sb-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.ol-sb-switch-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+}
+
+.ol-sb-sw-track {
+  width: 40px; height: 22px;
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: background .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ol-sb-sw-track.on { background: rgba(126,163,201,.8); }
+.ol-sb-sw-track.off { background: rgba(255,255,255,.15); }
+
+.ol-sb-sw-track::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s;
+}
+
+.ol-sb-sw-track.on::after { transform: translateX(18px); }
+
+/* 字数输入 */
+.ol-sb-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.85);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ol-sb-input:focus {
+  border-color: rgba(126,163,201,.5);
+}
+
+.ol-sb-input::placeholder {
+  color: rgba(255,255,255,.25);
+}
+
+.ol-sb-hint {
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* 侧边栏危险按钮 */
+.ol-sb-btn-danger {
+  border-color: rgba(201,112,107,.3);
+  color: rgba(201,112,107,.7);
+}
+
+.ol-sb-btn-danger:active {
+  background: rgba(201,112,107,.12);
+}
+
+/* =========================
+   长按菜单（复用 chat 的样式结构）
+========================= */
+.ol-ctx {
+  position: fixed;
+  z-index: 100020;
+  background: #000;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  min-width: 260px;
+  max-width: 300px;
+}
+
+.ol-ctx-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 6px;
+  font-size: 11px;
+  color: rgba(255,255,255,.85);
+  cursor: pointer;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+
+.ol-ctx-item:active { background: rgba(255,255,255,.1); }
+
+.ol-ctx-item svg {
+  width: 18px; height: 18px;
+  fill: none; stroke: rgba(255,255,255,.7);
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* =========================
+   打字动画
+========================= */
+@keyframes olDots {
+  0%, 80%, 100% { opacity: .3; }
+  40% { opacity: 1; }
+}
+
+.ol-typing-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #8aa0b8;
+  margin: 0 2px;
+  animation: olDots 1.2s infinite;
+}
+
+.ol-typing-dot:nth-child(2) { animation-delay: .2s; }
+.ol-typing-dot:nth-child(3) { animation-delay: .4s; }
