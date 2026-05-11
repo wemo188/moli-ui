@@ -381,14 +381,15 @@ close:function(){
 },
 
   sendUser:function(){
-    var input=App.$('#olInput');if(!input)return;
-    var text=input.value.trim();if(!text)return;
-    input.value='';input.style.height='auto';
-    var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');Offline._plusOpen=false;}
-    Offline.messages.push({role:'user',content:text,ts:Date.now()});
-    Offline.saveMsgs();
-    if(App.offlineUI)App.offlineUI.renderMessages();
-  },
+  var input=App.$('#olInput');if(!input)return;
+  var text=input.value.trim();if(!text)return;
+  input.value='';input.style.height='auto';
+  var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');Offline._plusOpen=false;}
+  Offline.messages.push({role:'user',content:text,ts:Date.now()});
+  Offline.saveMsgs();
+  if(App.offlineUI)App.offlineUI.renderMessages();
+  Offline.requestAI();
+},
 
   requestAI:function(){
     var api=getApi(Offline.charId);
