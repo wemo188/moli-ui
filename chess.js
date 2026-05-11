@@ -1,18 +1,19 @@
+
 (function() {
   'use strict';
   var App = window.App;
   if (!App) return;
   var R = window.ChessRules;
 
-  var CELL = 0; /* 动态计算 */
+  var CELL = 0;
   var PIECE_SIZE = 0;
   var PADDING = 20;
 
   var Chess = {
     _pageEl: null,
     board: null,
-    turn: 'red',        /* 'red' 或 'black' */
-    playerColor: 'red', /* 玩家执红 */
+    turn: 'red',
+    playerColor: 'red',
     selectedPos: null,
     hints: [],
     history: [],
@@ -25,7 +26,6 @@
       if (!R) { App.showToast('规则引擎未加载'); return; }
       Chess.charId = charId || (App.chat ? App.chat.charId : null);
       Chess.charData = Chess.charId && App.character ? App.character.getById(Chess.charId) : null;
-
       if (!Chess.charData) { App.showToast('请先选择角色'); return; }
 
       var old = document.querySelector('#chessPage');
@@ -124,7 +124,6 @@
       ctx.strokeStyle = '#5a4020';
       ctx.lineWidth = 1;
 
-      /* 画横线 */
       for (var r = 0; r <= 9; r++) {
         ctx.beginPath();
         ctx.moveTo(PADDING, PADDING + r * CELL);
@@ -132,7 +131,6 @@
         ctx.stroke();
       }
 
-      /* 画竖线 */
       for (var c = 0; c <= 8; c++) {
         ctx.beginPath();
         ctx.moveTo(PADDING + c * CELL, PADDING);
@@ -144,7 +142,6 @@
         ctx.stroke();
       }
 
-      /* 边框竖线贯通 */
       ctx.beginPath();
       ctx.moveTo(PADDING, PADDING);
       ctx.lineTo(PADDING, PADDING + 9 * CELL);
@@ -154,7 +151,6 @@
       ctx.lineTo(PADDING + 8 * CELL, PADDING + 9 * CELL);
       ctx.stroke();
 
-      /* 九宫格斜线 */
       ctx.beginPath();
       ctx.moveTo(PADDING + 3 * CELL, PADDING);
       ctx.lineTo(PADDING + 5 * CELL, PADDING + 2 * CELL);
@@ -166,7 +162,6 @@
       ctx.lineTo(PADDING + 3 * CELL, PADDING + 9 * CELL);
       ctx.stroke();
 
-      /* 楚河汉界 */
       ctx.font = '600 ' + Math.floor(CELL * 0.45) + 'px "Noto Serif SC", serif';
       ctx.fillStyle = '#8b6914';
       ctx.textAlign = 'center';
@@ -179,7 +174,6 @@
 
     renderPieces: function() {
       var boardEl = Chess._pageEl.querySelector('#chessBoard');
-      /* 清除旧棋子和提示 */
       boardEl.querySelectorAll('.chess-piece, .chess-hint').forEach(function(el) { el.remove(); });
 
       for (var r = 0; r <= 9; r++) {
@@ -210,7 +204,6 @@
         }
       }
 
-      /* 渲染合法落点提示 */
       Chess.hints.forEach(function(h) {
         var dot = document.createElement('div');
         dot.className = 'chess-hint';
@@ -253,7 +246,6 @@
         var row = Math.round((y - PADDING) / CELL);
 
         if (row < 0 || row > 9 || col < 0 || col > 8) return;
-
         Chess.handleClick(row, col);
       });
     },
@@ -261,7 +253,6 @@
     handleClick: function(row, col) {
       var piece = Chess.board[row][col];
 
-      /* 如果点击了合法落点 */
       if (Chess.selectedPos) {
         var isHint = Chess.hints.some(function(h) { return h[0] === row && h[1] === col; });
         if (isHint) {
@@ -270,7 +261,6 @@
         }
       }
 
-      /* 选择己方棋子 */
       if (piece && ((Chess.playerColor === 'red' && R.isRed(piece)) || (Chess.playerColor === 'black' && R.isBlack(piece)))) {
         Chess.selectedPos = [row, col];
         Chess.hints = R.getLegalMoves(Chess.board, row, col);
@@ -298,25 +288,19 @@
       Chess.board[fromR][fromC] = 0;
       Chess.selectedPos = null;
       Chess.hints = [];
-
-      /* 切换回合 */
       Chess.turn = Chess.turn === 'red' ? 'black' : 'red';
       Chess.renderPieces();
 
-      /* 检查将军/将死 */
       var opponentRed = Chess.turn === 'red';
       if (R.isInCheck(Chess.board, opponentRed)) {
         if (R.isCheckmate(Chess.board, opponentRed)) {
           Chess.gameOver = true;
-          setTimeout(function() {
-            Chess.showResult(opponentRed ? 'black' : 'red');
-          }, 500);
+          setTimeout(function() { Chess.showResult(opponentRed ? 'black' : 'red'); }, 500);
           return;
         }
         Chess.showCheckAlert();
       }
 
-      /* 如果轮到 AI */
       if (Chess.turn !== Chess.playerColor && !Chess.gameOver) {
         Chess.requestAIMove();
       }
@@ -326,7 +310,6 @@
       if (Chess.history.length < 2) { App.showToast('没有可悔的棋'); return; }
       if (Chess.isThinking) return;
 
-      /* 撤销两步（AI一步 + 玩家一步） */
       for (var i = 0; i < 2 && Chess.history.length > 0; i++) {
         var last = Chess.history.pop();
         Chess.board[last.from[0]][last.from[1]] = last.piece;
@@ -384,23 +367,17 @@
       }
     },
 
-    /* ★ 核心：请求 AI 走棋 */
     requestAIMove: function() {
       Chess.isThinking = true;
       var bubble = Chess._pageEl ? Chess._pageEl.querySelector('#chessChatBubble') : null;
       if (bubble) { bubble.textContent = '思考中...'; bubble.classList.add('thinking'); }
 
       var api = App.api ? App.api.getActiveConfig() : null;
-      if (!api) {
-        App.showToast('请先配置 API');
-        Chess.isThinking = false;
-        return;
-      }
+      if (!api) { App.showToast('请先配置 API'); Chess.isThinking = false; return; }
 
       var charName = Chess.charData ? Chess.charData.name : '对手';
       var boardText = R.boardToText(Chess.board);
 
-      /* 构建历史着法 */
       var moveHistory = Chess.history.map(function(h, i) {
         var who = i % 2 === 0 ? '红方' : '黑方';
         return who + '：' + h.moveText;
@@ -415,7 +392,7 @@
         '【你的任务】\n' +
         '1. 分析局面，选择你（黑方）的最佳走法\n' +
         '2. 用坐标格式回复走法：fromRow,fromCol,toRow,toCol\n' +
-        '3. 然后用角色的语气说一句话（可以吐槽、挑衅、感叹）\n\n' +
+        '3. 然后用角色的语气说一句话\n\n' +
         '【回复格式】严格按此格式，第一行是走法坐标，第二行是说的话：\n' +
         'fromRow,fromCol,toRow,toCol\n' +
         '你想说的话\n\n' +
@@ -448,10 +425,8 @@
         var content = '';
         try { content = data.choices[0].message.content || ''; } catch (e) {}
         content = content.trim();
-
         Chess.isThinking = false;
 
-        /* 解析走法 */
         var lines = content.split('\n').filter(function(l) { return l.trim(); });
         var moveStr = lines[0] || '';
         var chatStr = lines.slice(1).join(' ').trim() || '嗯。';
@@ -459,10 +434,8 @@
         var move = R.parseAIMove(Chess.board, moveStr, false);
 
         if (move) {
-          /* 验证合法性 */
           var legal = R.getLegalMoves(Chess.board, move.fromR, move.fromC);
           var isLegal = legal.some(function(m) { return m[0] === move.toR && m[1] === move.toC; });
-
           if (isLegal) {
             Chess.setChatText(chatStr);
             Chess.makeMove(move.fromR, move.fromC, move.toR, move.toC);
@@ -470,21 +443,18 @@
           }
         }
 
-        /* AI 走法不合法，随机走一步 */
-        console.warn('[象棋] AI 走法无效，随机落子。原始回复:', content);
+        console.warn('[象棋] AI走法无效，随机落子。原始回复:', content);
         Chess.setChatText(chatStr || '让我想想...');
         Chess.makeRandomMove();
 
       }).catch(function(err) {
         Chess.isThinking = false;
-        console.error('[象棋] AI 请求失败:', err.message);
+        console.error('[象棋] AI请求失败:', err.message);
         Chess.setChatText('等一下...网络好像不太好。');
-        /* 失败时随机走 */
         setTimeout(function() { Chess.makeRandomMove(); }, 1000);
       });
     },
 
-    /* 备用：随机走合法的一步 */
     makeRandomMove: function() {
       var allMoves = [];
       for (var r = 0; r <= 9; r++) {
@@ -500,57 +470,57 @@
       Chess.makeMove(pick.from[0], pick.from[1], pick.to[0], pick.to[1]);
     },
 
-init: function() {
-  App.chess = Chess;
+    /* ★ init 在 Chess 对象里面 */
+    init: function() {
+      App.chess = Chess;
 
-  App.safeOn('#openChessBtn', 'click', function() {
-    /* 如果正在聊天页，直接用当前角色 */
-    if (App.chat && App.chat.charId) {
-      Chess.open(App.chat.charId);
-      return;
-    }
+      App.safeOn('#openChessBtn', 'click', function() {
+        if (App.chat && App.chat.charId) {
+          Chess.open(App.chat.charId);
+          return;
+        }
 
-    /* 否则弹出角色选择器 */
-    var chars = App.character ? App.character.list : [];
-    if (!chars || !chars.length) { App.showToast('请先添加角色'); return; }
+        var chars = App.character ? App.character.list : [];
+        if (!chars || !chars.length) { App.showToast('请先添加角色'); return; }
 
-    var old = App.$('#chessCharPicker');
-    if (old) old.remove();
+        var old = App.$('#chessCharPicker');
+        if (old) old.remove();
 
-    var picker = document.createElement('div');
-    picker.id = 'chessCharPicker';
-    picker.style.cssText = 'position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+        var picker = document.createElement('div');
+        picker.id = 'chessCharPicker';
+        picker.style.cssText = 'position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
 
-    var listHtml = chars.map(function(c) {
-      var avatarHtml = c.avatar
-        ? '<img src="' + App.escAttr(c.avatar) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
-        : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.15);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:1.8;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
-      return '<div class="chess-pick-char" data-cid="' + c.id + '" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);-webkit-tap-highlight-color:transparent;">' +
-        avatarHtml +
-        '<div style="flex:1;font-size:14px;font-weight:600;color:#2e4258;">' + App.esc(c.name || '未命名') + '</div>' +
-        '<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#ccc;stroke-width:2;flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>' +
-      '</div>';
-    }).join('');
+        var listHtml = chars.map(function(c) {
+          var avatarHtml = c.avatar
+            ? '<img src="' + App.escAttr(c.avatar) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
+            : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.15);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:1.8;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
+          return '<div class="chess-pick-char" data-cid="' + c.id + '" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);-webkit-tap-highlight-color:transparent;">' +
+            avatarHtml +
+            '<div style="flex:1;font-size:14px;font-weight:600;color:#2e4258;">' + App.esc(c.name || '未命名') + '</div>' +
+            '<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#ccc;stroke-width:2;flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>' +
+          '</div>';
+        }).join('');
 
-    picker.innerHTML =
-      '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:16px 0;width:280px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
-        '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;padding:0 16px 12px;border-bottom:1px solid rgba(0,0,0,.04);">选择对弈角色</div>' +
-        listHtml +
-        '<div style="text-align:center;padding:12px;"><button type="button" id="chessPickCancel" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">取消</button></div>' +
-      '</div>';
+        picker.innerHTML =
+          '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:16px 0;width:280px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
+            '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;padding:0 16px 12px;border-bottom:1px solid rgba(0,0,0,.04);">选择对弈角色</div>' +
+            listHtml +
+            '<div style="text-align:center;padding:12px;"><button type="button" id="chessPickCancel" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">取消</button></div>' +
+          '</div>';
 
-    document.body.appendChild(picker);
-    picker.addEventListener('click', function(e) { if (e.target === picker) picker.remove(); });
-    picker.querySelector('#chessPickCancel').addEventListener('click', function() { picker.remove(); });
-    picker.querySelectorAll('.chess-pick-char').forEach(function(el) {
-      el.addEventListener('click', function() {
-        var cid = el.dataset.cid;
-        picker.remove();
-        Chess.open(cid);
+        document.body.appendChild(picker);
+        picker.addEventListener('click', function(e) { if (e.target === picker) picker.remove(); });
+        picker.querySelector('#chessPickCancel').addEventListener('click', function() { picker.remove(); });
+        picker.querySelectorAll('.chess-pick-char').forEach(function(el) {
+          el.addEventListener('click', function() {
+            var cid = el.dataset.cid;
+            picker.remove();
+            Chess.open(cid);
+          });
+        });
       });
-    });
-  });
-}
+    }
+  };
 
   App.register('chess', Chess);
 })();
