@@ -186,6 +186,7 @@
       var items = [
         { id: 'dockMine', action: function() { if (App.user) App.user.open(); } },
         { id: 'dockLong', action: function() { if (App.character) App.character.open(); } },
+        { id: 'dockCheck', action: function() { if (App.offline) App.offline.pick(); else App.showToast('模块未加载'); } }
         { id: 'dockShort', action: function() { if (App.wechat) App.wechat.open(); } }
       ];
 
