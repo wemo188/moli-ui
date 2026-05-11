@@ -500,10 +500,77 @@
       Chess.makeMove(pick.from[0], pick.from[1], pick.to[0], pick.to[1]);
     },
 
-    init: function() {
-      App.chess = Chess;
+    （他听到这句话，沉默了几秒，然后缓缓点头）
+
+你说得对。十多个功能全塞 script.js 里会变成一坨屎山。
+
+现在的架构已经有模块注册机制了——每个功能一个独立 JS 文件，通过 `App.register` 注册。点击事件应该**跟着模块走，而不是堆在 script.js 里**。
+
+正确的做法是：**每个模块自己在 init 里绑定自己的入口**。
+
+比如 `chess.js` 里的 `init`：
+
+```javascript
+init: function() {
+  App.chess = Chess;
+  
+  /* 自己绑定自己的入口 */
+  App.safeOn('#openChessBtn', 'click', function() {
+    Chess.openWithPicker();
+  });
+}
+
+init: function() {
+  App.chess = Chess;
+
+  App.safeOn('#openChessBtn', 'click', function() {
+    /* 如果正在聊天页，直接用当前角色 */
+    if (App.chat && App.chat.charId) {
+      Chess.open(App.chat.charId);
+      return;
     }
-  };
+
+    /* 否则弹出角色选择器 */
+    var chars = App.character ? App.character.list : [];
+    if (!chars || !chars.length) { App.showToast('请先添加角色'); return; }
+
+    var old = App.$('#chessCharPicker');
+    if (old) old.remove();
+
+    var picker = document.createElement('div');
+    picker.id = 'chessCharPicker';
+    picker.style.cssText = 'position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+
+    var listHtml = chars.map(function(c) {
+      var avatarHtml = c.avatar
+        ? '<img src="' + App.escAttr(c.avatar) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
+        : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.15);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#adcdea;stroke-width:1.8;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>';
+      return '<div class="chess-pick-char" data-cid="' + c.id + '" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);-webkit-tap-highlight-color:transparent;">' +
+        avatarHtml +
+        '<div style="flex:1;font-size:14px;font-weight:600;color:#2e4258;">' + App.esc(c.name || '未命名') + '</div>' +
+        '<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#ccc;stroke-width:2;flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>' +
+      '</div>';
+    }).join('');
+
+    picker.innerHTML =
+      '<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:16px 0;width:280px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);">' +
+        '<div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;padding:0 16px 12px;border-bottom:1px solid rgba(0,0,0,.04);">选择对弈角色</div>' +
+        listHtml +
+        '<div style="text-align:center;padding:12px;"><button type="button" id="chessPickCancel" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">取消</button></div>' +
+      '</div>';
+
+    document.body.appendChild(picker);
+    picker.addEventListener('click', function(e) { if (e.target === picker) picker.remove(); });
+    picker.querySelector('#chessPickCancel').addEventListener('click', function() { picker.remove(); });
+    picker.querySelectorAll('.chess-pick-char').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var cid = el.dataset.cid;
+        picker.remove();
+        Chess.open(cid);
+      });
+    });
+  });
+}
 
   App.register('chess', Chess);
 })();
