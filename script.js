@@ -1563,7 +1563,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
           var saved = App.LS.get('iconImg_' + key);
           if (saved) {
             var imgEl = icon.querySelector('.app-icon-img');
-            if (imgEl) imgEl.innerHTML = '<img src="' + saved + '">';
+            if (imgEl) imgEl.innerHTML = '<img src="' + saved + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">';
           }
         });
       }
@@ -1593,7 +1593,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
           menu.remove();
         });
 
-        /* ✅ 修复3：图标上传加 128px 压缩 */
         fileInput.addEventListener('change', function(e) {
           var file = e.target.files[0];
           if (!file) return;
@@ -1614,7 +1613,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
               var oldVal = App.LS.get(iconKey);
               if (oldVal) App.LS.remove(iconKey);
               var imgEl = icon.querySelector('.app-icon-img');
-              if (imgEl) imgEl.innerHTML = '<img src="' + compressed + '">';
+              if (imgEl) imgEl.innerHTML = '<img src="' + compressed + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">';
               App.LS.set(iconKey, compressed);
             };
             img.src = ev.target.result;
@@ -1669,6 +1668,11 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
             pressed = false;
           }
         }, { passive: false });
+      });
+
+      App.safeOn('#openChessBtn', 'click', function() {
+        if (App.chess) App.chess.open();
+        else App.showToast('象棋模块未加载');
       });
 
       restoreIconImages();
