@@ -1,10 +1,11 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
 
 var ROBOT_SVG='<svg class="ct-robot-svg" viewBox="0 0 64 64" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="32" y1="14" x2="32" y2="10" stroke="#7a9ab8" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#7a9ab8"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#7a9ab8"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#7a9ab8"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#7a9ab8"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='<svg viewBox="0 0 24 24" width="18" height="18"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
-var SEND_SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#7a9ab8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+var SEND_SVG='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#7a9ab8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
 
 var CTX_ICONS={
   copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
@@ -13,6 +14,8 @@ var CTX_ICONS={
   del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
   delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>'
 };
+
+function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 
 var OfflineUI={
 
@@ -23,23 +26,35 @@ render:function(panel,charData){
   var tintOn=App.LS.get('offlineTint_'+c.id);if(tintOn===null)tintOn=true;
   var tintCSS='background:radial-gradient(circle at 50% 48%,rgba(126,163,201,.48) 0%,rgba(126,163,201,.14) 38%,transparent 62%);';
 
+  panel.style.cssText='position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;background:#fff;transform:translateX(100%);opacity:0;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;';
+
   panel.innerHTML=
-  '<div class="ct-root" id="olRoot" style="height:100vh;max-height:100vh;">'+
-  '<div class="ct-no-bg'+(bgUrl?' has-bg':'')+'" id="olNoBg"></div>'+
-  '<div class="ct-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');':'')+'"></div>'+
-  '<div class="ct-tint'+(tintOn?'':' off')+'" id="olTint" style="'+tintCSS+'"></div>'+
-  '<div class="ct-glass"></div>'+
-  '<div class="ct-hd">'+
-    '<button class="ct-hd-btn" id="olBack" type="button"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke-width:3;"><path d="M15 18l-6-6 6-6"/></svg></button>'+
-    '<div class="ct-hd-name" id="olName">'+App.esc(displayName)+'</div>'+
-    '<button class="ct-hd-btn" id="olMenuBtn" type="button"><svg viewBox="0 0 28 24"><circle cx="4" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="14" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="24" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/></svg></button>'+
-  '</div>'+
-  '<div class="ct-msgs" id="olMsgs"></div>'+
-  '<div class="ct-input-wrap" style="padding-bottom:calc(12px + env(safe-area-inset-bottom, 8px));">'+
-    '<button class="ct-send" id="olRobot" type="button" style="align-self:flex-end;margin-bottom:0;">'+ROBOT_SVG+'</button>'+
-    '<textarea class="ct-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
-    '<button class="ct-send" id="olSend" type="button" style="align-self:flex-end;margin-bottom:0;width:40px;height:40px;background:none;">'+SEND_SVG+'</button>'+
-  '</div>'+
+  '<div style="position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden;">'+
+    '<div class="ct-no-bg'+(bgUrl?' has-bg':'')+'" id="olNoBg"></div>'+
+    '<div class="ct-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');':'')+'"></div>'+
+    '<div class="ct-tint'+(tintOn?'':' off')+'" id="olTint" style="'+tintCSS+'"></div>'+
+    '<div class="ct-glass"></div>'+
+
+    '<div class="ct-hd" style="position:relative;z-index:10;flex-shrink:0;padding-top:env(safe-area-inset-top,44px);">'+
+      '<button class="ct-hd-btn" id="olBack" type="button"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke-width:3;"><path d="M15 18l-6-6 6-6"/></svg></button>'+
+      '<div class="ct-hd-name" id="olName">'+App.esc(displayName)+'</div>'+
+      '<button class="ct-hd-btn" id="olMenuBtn" type="button"><svg viewBox="0 0 28 24"><circle cx="4" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="14" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="24" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/></svg></button>'+
+    '</div>'+
+
+    '<div class="ct-msgs" id="olMsgs" style="position:relative;z-index:5;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 14px;min-height:0;"></div>'+
+
+    '<div class="ct-plus-panel" id="olPlusPanel">'+
+      '<div class="ct-plus-item" id="olPiScene"><div class="ct-plus-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="ct-plus-label">场景</div></div>'+
+      '<div class="ct-plus-item" id="olPiBg"><div class="ct-plus-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="ct-plus-label">背景</div></div>'+
+      '<div class="ct-plus-item" id="olPiClear"><div class="ct-plus-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div><div class="ct-plus-label">清空</div></div>'+
+    '</div>'+
+
+    '<div class="ct-input-wrap" style="position:relative;z-index:10;display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,8px));flex-shrink:0;">'+
+      '<button class="ct-plus-btn" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
+      '<textarea class="ct-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
+      '<button id="olRobot" type="button" style="width:44px;height:44px;border-radius:50%;background:none;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;">'+ROBOT_SVG+'</button>'+
+      '<button id="olSend" type="button" style="width:40px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;">'+SEND_SVG+'</button>'+
+    '</div>'+
   '</div>';
 },
 
@@ -74,8 +89,10 @@ renderMessages:function(){
     if(msg.ts){var prevMsg=null;for(var pi=idx-1;pi>=0;pi--){if(OL.messages[pi].role!=='system'){prevMsg=OL.messages[pi];break;}}if(!prevMsg||!prevMsg.ts||msg.ts-prevMsg.ts>300000)showTimeSep=true;}
     if(showTimeSep&&timeStr)html+='<div class="ct-time-sep">'+timeStr+'</div>';
 
+    var bubbleContent=App.esc(text).replace(/\n/g,'<br>');
     var metaHtml='<div class="ct-msg-meta"><span class="ct-msg-floor">#'+floor+'</span><span class="ct-msg-time">'+timeStr+'</span></div>';
-    html+='<div class="ct-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'"><div class="ct-msg-av'+avClass+'">'+av+'</div><div class="ct-bubble-wrap"><div class="ct-bubble">'+App.esc(text).replace(/\n/g,'<br>')+'</div>'+metaHtml+'</div></div>';
+
+    html+='<div class="ct-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'"><div class="ct-msg-av'+avClass+'">'+av+'</div><div class="ct-bubble-wrap"><div class="ct-bubble">'+bubbleContent+'</div>'+metaHtml+'</div></div>';
   });
 
   if(OL.isStreaming){
@@ -89,6 +106,7 @@ renderMessages:function(){
 
 bindEvents:function(panel){
   var OL=App.offline;if(!OL)return;
+  OL._plusOpen=false;
 
   App.safeOn('#olBack','click',function(){OL.close();});
   App.safeOn('#olMenuBtn','click',function(e){e.stopPropagation();if(OL._menuEl){OL.dismissMenu();return;}OfflineUI.showMenu();});
@@ -99,10 +117,8 @@ bindEvents:function(panel){
     input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();OL.send();}});
   }
 
-  /* 发送按钮 = 用户发消息 */
   App.safeOn('#olSend','click',function(e){e.stopPropagation();OL.send();});
 
-  /* 机器人按钮 = 催角色自动回复 或 停止流式 */
   App.safeOn('#olRobot','click',function(e){
     e.stopPropagation();
     if(OL.isStreaming){OL.stopStream();return;}
@@ -110,7 +126,17 @@ bindEvents:function(panel){
     OL.requestProactive();
   });
 
-  /* 长按菜单 */
+  App.safeOn('#olPlusBtn','click',function(e){
+    e.stopPropagation();
+    var pp=App.$('#olPlusPanel');if(!pp)return;
+    OL._plusOpen=!OL._plusOpen;
+    if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');
+  });
+
+  App.safeOn('#olPiScene','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}OfflineUI.showSceneDialog();});
+  App.safeOn('#olPiBg','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}OfflineUI.showBgMenu();});
+  App.safeOn('#olPiClear','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}if(!confirm('确定清空所有记录？'))return;OL.messages=[];OL.saveMsgs();OL.renderMessages();App.showToast('已清空');});
+
   var mc=App.$('#olMsgs');
   if(mc){
     var lt=null,lTarget=null,moved=false;
@@ -123,16 +149,23 @@ bindEvents:function(panel){
     mc.addEventListener('touchend',function(){clearTimeout(lt);lTarget=null;},{passive:true});
   }
 
-  /* 点击空白关闭菜单 */
-  var root=App.$('#olRoot');
-  if(root)root.addEventListener('click',function(){OL.dismissMenu();OL.dismissCtx();OL.dismissAvCard();});
+  if(mc)mc.addEventListener('click',function(){OL.dismissMenu();OL.dismissCtx();OL.dismissAvCard();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});
 },
 
 updateSendBtn:function(){
   var OL=App.offline;if(!OL)return;
   var btn=App.$('#olRobot');if(!btn)return;
-  if(OL.isStreaming){btn.classList.add('stop');btn.innerHTML=STOP_SVG;}
-  else{btn.classList.remove('stop');btn.innerHTML=ROBOT_SVG;}
+  if(OL.isStreaming){
+    btn.style.background='rgba(201,112,107,.85)';
+    btn.style.width='32px';
+    btn.style.height='32px';
+    btn.innerHTML=STOP_SVG;
+  } else {
+    btn.style.background='none';
+    btn.style.width='44px';
+    btn.style.height='44px';
+    btn.innerHTML=ROBOT_SVG;
+  }
 },
 
 updateTyping:function(show){
@@ -187,12 +220,12 @@ showMenu:function(){
       }
 
       if(act==='wordcount'){
-  var wc=prompt('设置长文字数（100 起，不设上限）：',OL.wordCount);
-  if(wc===null)return;wc=parseInt(wc);
-  if(isNaN(wc)||wc<100){App.showToast('请输入 100 以上的数字');return;}
-  OL.setWordCount(wc);App.showToast('已设置：'+wc+'字');
-  return;
-}
+        var wc=prompt('设置长文字数（100 起，不设上限）：',OL.wordCount);
+        if(wc===null)return;wc=parseInt(wc);
+        if(isNaN(wc)||wc<100){App.showToast('请输入 100 以上的数字');return;}
+        OL.setWordCount(wc);App.showToast('已设置：'+wc+'字');
+        return;
+      }
 
       if(act==='avatar'){OfflineUI.showAvCard();return;}
       if(act==='bg'){OfflineUI.showBgMenu();return;}
@@ -252,7 +285,6 @@ showCtxMenu:function(msgEl,x,y){
 showEditDialog:function(idx){
   var OL=App.offline;if(!OL)return;
   var msg=OL.messages[idx];if(!msg)return;
-  var isUser=msg.role==='user';
   var overlay=document.createElement('div');overlay.className='ct-edit-overlay';
   overlay.innerHTML='<div class="ct-edit-panel"><div style="font-size:14px;font-weight:700;color:#2e4258;text-align:center;margin-bottom:12px;">编辑消息</div><textarea class="ct-edit-ta" id="olEditTA">'+App.esc(msg.content)+'</textarea><div class="ct-edit-btns"><button class="ct-edit-btn" id="olEditSave" type="button" style="background:#1a1a1a;color:#fff;">保存</button><button class="ct-edit-btn" id="olEditCancel" type="button" style="background:#f5f5f5;color:#666;border:1px solid #ddd;">取消</button></div></div>';
   document.body.appendChild(overlay);
@@ -277,7 +309,7 @@ showBgMenu:function(){
   var OL=App.offline;if(!OL)return;
   var menu=document.createElement('div');
   menu.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
-  menu.innerHTML='<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;"><div style="font-size:13px;font-weight:700;color:#333;text-align:center;">线下背景</div><button data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button><button data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button><button data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;color:#bbb;cursor:pointer;font-family:inherit;">移除背景</button><button data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button></div>';
+  menu.innerHTML='<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;"><div style="font-size:13px;font-weight:700;color:#333;text-align:center;">线下背景</div><button data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button><button data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button><button data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;color:#bbb;cursor:pointer;font-family:inherit;">移除背景</button><button data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button></div>';
   document.body.appendChild(menu);
   menu.addEventListener('click',function(e){if(e.target===menu)menu.remove();});
   menu.querySelectorAll('button').forEach(function(btn){
@@ -285,7 +317,7 @@ showBgMenu:function(){
       if(act==='cancel')return;
       if(act==='del'){App.LS.remove('offlineBg_'+OL.charId);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='';var nb=App.$('#olNoBg');if(nb)nb.classList.remove('has-bg');App.showToast('已移除');return;}
       if(act==='album'){var input=document.createElement('input');input.type='file';input.accept='image/*';document.body.appendChild(input);input.onchange=function(ev){var file=ev.target.files[0];document.body.removeChild(input);if(!file)return;var reader=new FileReader();reader.onload=function(r){if(App.cropImage){App.cropImage(r.target.result,function(cropped){OL.setChatBg(cropped);});}else{OL.setChatBg(r.target.result);}};reader.readAsDataURL(file);};input.click();return;}
-      if(act==='url'){var val=prompt('输入背景图URL：');if(val)OL.setChatBg(val.trim());}
+      if(act==='url'){var val=prompt('输入背景图URL：');if(val&&val.trim())OL.setChatBg(val.trim());}
     });
   });
 },
@@ -293,8 +325,6 @@ showBgMenu:function(){
 init:function(){App.offlineUI=OfflineUI;}
 };
 
-function fmtTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
-
-App.offlineUI = OfflineUI;
-App.register('offlineUI', OfflineUI);
+App.offlineUI=OfflineUI;
+App.register('offlineUI',OfflineUI);
 })();
