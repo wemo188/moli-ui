@@ -7,6 +7,8 @@ var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="34" height="
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
+var WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="2.4" fill="none"/><line x1="20" y1="48" x2="38" y2="22" stroke="#2a2a2a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#2a2a2a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#2a2a2a"/><circle cx="30" cy="30" r="0.8" fill="#2a2a2a"/></svg>';
+
 var CTX_ICONS={
 copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
 edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
@@ -23,22 +25,6 @@ var displayName=c.name||'';
 var bgUrl=App.LS.get('olBg_'+c.id)||'';
 var tintOn=App.LS.get('olTint_'+c.id);if(tintOn===null)tintOn=true;
 var settings=App.LS.get('olSettings_'+c.id)||{};
-var storyMode=settings.mode||'short';
-
-var countSectionHtml='';
-if(storyMode==='long'){
-  countSectionHtml='<div class="ol-sb-sub-label">期望字数</div>'+
-    '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
-    '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>';
-} else {
-  countSectionHtml='<div class="ol-sb-sub-label">每次回复条数</div>'+
-    '<div style="display:flex;gap:10px;align-items:center;">'+
-      '<input type="number" class="ol-sb-input" id="olMinMsgs" placeholder="最少" value="'+(settings.minMsgs||1)+'" min="1" max="10" style="width:70px;text-align:center;">'+
-      '<span style="font-size:12px;color:#7a9ab8;">到</span>'+
-      '<input type="number" class="ol-sb-input" id="olMaxMsgs" placeholder="最多" value="'+(settings.maxMsgs||4)+'" min="1" max="10" style="width:70px;text-align:center;">'+
-      '<span style="font-size:11px;color:#a8c0d8;">条</span>'+
-    '</div>';
-}
 
 container.innerHTML=
 '<div class="ol-root" id="olRoot">'+
@@ -46,9 +32,8 @@ container.innerHTML=
 '<div class="ol-tint'+(tintOn?'':' off')+'" id="olTint"></div>'+
 
 '<div class="ol-hd">'+
-  '<button class="ol-hd-btn" id="olBack" type="button"><svg viewBox="0 0 24 24" style="stroke-width:3;"><path d="M15 18l-6-6 6-6"/></svg></button>'+
   '<div class="ol-hd-name" id="olName">'+App.esc(displayName)+'</div>'+
-  '<button class="ol-hd-btn" id="olWandBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8L19 13"/><path d="M15 9h0"/><path d="M17.8 6.2L19 5"/><path d="M11 6.2L9.7 5"/><path d="M11 11.8L9.7 13"/><path d="m21 21-9-9"/></svg></button>'+
+  '<button class="ol-hd-btn" id="olWandBtn" type="button">'+WAND_SVG+'</button>'+
 '</div>'+
 
 '<div class="ol-msgs" id="olMsgs"></div>'+
@@ -59,7 +44,7 @@ container.innerHTML=
 '</div>'+
 
 '<div class="ol-input-wrap">'+
-'<button class="ol-btn ol-btn-plus" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
+  '<button class="ol-btn ol-btn-plus" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
   '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
   '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
   '<button class="ol-btn ol-btn-send" id="olSendBtn" type="button"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'+
@@ -72,14 +57,6 @@ container.innerHTML=
     '<button class="ol-sb-close" id="olSbClose" type="button">×</button>'+
   '</div>'+
   '<div class="ol-sb-body">'+
-
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">叙事模式</div>'+
-      '<div class="ol-sb-mode-row">'+
-        '<div class="ol-sb-mode-btn'+(storyMode==='short'?' active':'')+'" data-smode="short">短言叙事</div>'+
-        '<div class="ol-sb-mode-btn'+(storyMode==='long'?' active':'')+'" data-smode="long">长文叙事</div>'+
-      '</div>'+
-    '</div>'+
 
     '<div class="ol-sb-section">'+
       '<div class="ol-sb-label">聊天设置</div>'+
@@ -99,7 +76,11 @@ container.innerHTML=
           '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='corner'?' active':'')+'" data-quote="corner">「」</div>'+
         '</div>'+
       '</div>'+
-      '<div id="olCountSection">'+countSectionHtml+'</div>'+
+      '<div>'+
+        '<div class="ol-sb-sub-label">期望字数</div>'+
+        '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
+        '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>'+
+      '</div>'+
     '</div>'+
 
     '<div class="ol-sb-section">'+
@@ -122,7 +103,6 @@ container.innerHTML=
 '</div>';
 },
 
-/* ★ 思维链解析：把 <think>...</think> 提取出来 */
 parseThinking:function(text){
   var thinkContent='';
   var mainContent=text;
@@ -131,7 +111,6 @@ parseThinking:function(text){
     thinkContent=thinkMatch[1].trim();
     mainContent=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
   }
-  /* 兼容未闭合的 <think>（流式输出中途） */
   if(!thinkMatch){
     var openMatch=text.match(/<think>([\s\S]*)$/i);
     if(openMatch){
@@ -142,7 +121,6 @@ parseThinking:function(text){
   return{think:thinkContent,main:mainContent};
 },
 
-/* ★ 思维链 HTML */
 buildThinkHtml:function(thinkText){
   if(!thinkText)return '';
   return '<details class="ol-think-block" style="margin-bottom:6px;">'+
@@ -156,8 +134,6 @@ var OL=App.offline;if(!OL)return;
 var container=App.$('#olMsgs');if(!container)return;
 var c=OL.charData;
 var user=App.user?App.user.getActiveUser():null;
-var settings=App.LS.get('olSettings_'+(OL.charId||''))||{};
-var storyMode=settings.mode||'short';
 
 if(!OL.messages.length){
   container.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';
@@ -173,7 +149,6 @@ OL.messages.forEach(function(msg,idx){
   var isUser=msg.role==='user';
   var timeStr=msg.ts?OfflineUI.fmtTime(msg.ts):'';
 
-  /* 时间分隔 */
   var showTimeSep=false;
   if(msg.ts){
     var prev=null;
@@ -184,55 +159,23 @@ OL.messages.forEach(function(msg,idx){
 
   var rawText=(msg.content||'').trim();if(!rawText)return;
 
-  /* ★ 解析思维链 */
   var parsed=OfflineUI.parseThinking(rawText);
   var text=parsed.main;
   var thinkHtml=(!isUser&&parsed.think)?OfflineUI.buildThinkHtml(parsed.think):'';
 
-  if(storyMode==='long'){
-    html+='<div class="ol-prose'+(isUser?' is-user':'')+'" data-msg-idx="'+idx+'">'+
-      thinkHtml+
-      '<div class="ol-prose-content">'+OfflineUI.formatProse(text)+'</div>'+
-      '<div class="ol-prose-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
-    '</div>';
-  } else {
-    var av='';
-    if(isUser){av=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';}
-    else{av=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';}
-
-    html+='<div class="ol-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'">'+
-      '<div class="ol-msg-av">'+av+'</div>'+
-      '<div class="ol-bubble-wrap">'+
-        thinkHtml+
-        '<div class="ol-bubble">'+OfflineUI.formatShort(text)+'</div>'+
-        '<div class="ol-msg-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
-      '</div>'+
-    '</div>';
-  }
+  html+='<div class="ol-prose'+(isUser?' is-user':'')+'" data-msg-idx="'+idx+'">'+
+    thinkHtml+
+    '<div class="ol-prose-content">'+OfflineUI.formatProse(text)+'</div>'+
+    '<div class="ol-prose-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
+  '</div>';
 });
 
-/* 流式气泡 */
 if(OL.isStreaming&&!OL._backgroundMode){
-  if(storyMode==='long'){
-    html+='<div class="ol-prose" id="olStreamProse"><div class="ol-prose-content" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div>';
-  } else {
-    var sav=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
-    html+='<div class="ol-msg ai" id="olStreamMsg"><div class="ol-msg-av">'+sav+'</div><div class="ol-bubble-wrap"><div class="ol-bubble" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div>';
-  }
+  html+='<div class="ol-prose" id="olStreamProse"><div class="ol-prose-content" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div>';
 }
 
 container.innerHTML=html;
 OfflineUI.scrollBottom();
-},
-
-formatShort:function(text){
-  text=App.esc(text);
-  /* 中文括号动作 */
-  text=text.replace(/（([^）]+)）/g,'<span style="color:#8aa0b8;font-style:italic;">（$1）</span>');
-  text=text.replace(/\(([^)]+)\)/g,'<span style="color:#8aa0b8;font-style:italic;">($1)</span>');
-  /* 双星号旁白 */
-  text=text.replace(/\*\*([^*]+)\*\*/g,'<span style="font-weight:700;color:#5a7a9a;">$1</span>');
-  return text;
 },
 
 formatProse:function(text){
@@ -305,7 +248,6 @@ if(root){
   root.addEventListener('touchend',function(){_rsw.active=false;},{passive:true});
 }
 
-App.safeOn('#olBack','click',function(){OL.close();});
 App.safeOn('#olWandBtn','click',function(e){e.stopPropagation();OfflineUI.openSidebar();});
 
 /* 输入框 */
@@ -327,7 +269,6 @@ App.safeOn('#olPlusBtn','click',function(e){
 
 App.safeOn('#olPiPhoto','click',function(e){
   e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}
-  /* 相册+URL 选择 */
   var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
   menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
     '<div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div>'+
@@ -360,40 +301,6 @@ App.safeOn('#olPiFile','click',function(e){
 App.safeOn('#olSbClose','click',function(){OfflineUI.closeSidebar();});
 App.safeOn('#olSbMask','click',function(){OfflineUI.closeSidebar();});
 
-/* ★ 模式切换 + 提示 + 动态切换条数/字数 */
-App.$$('.ol-sb-mode-btn[data-smode]').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var prevMode=(OfflineUI.getSettings().mode)||'short';
-    App.$$('.ol-sb-mode-btn[data-smode]').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    var s=OfflineUI.getSettings();s.mode=btn.dataset.smode;OfflineUI.saveSettings(s);
-    OfflineUI.renderMessages();
-
-    if(btn.dataset.smode!==prevMode){
-      App.showToast(btn.dataset.smode==='long'?'已切换为长文叙事模式':'已切换为短言叙事模式');
-    }
-
-    var sec=App.$('#olCountSection');
-    if(sec){
-      if(btn.dataset.smode==='long'){
-        sec.innerHTML='<div class="ol-sb-sub-label">期望字数</div>'+
-          '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(s.wordCount||'')+'">'+
-          '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>';
-        var wci=sec.querySelector('#olWordCount');
-        if(wci)wci.addEventListener('change',function(){var ss=OfflineUI.getSettings();ss.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(ss);});
-      } else {
-        sec.innerHTML='<div class="ol-sb-sub-label">每次回复条数</div>'+
-          '<div style="display:flex;gap:10px;align-items:center;">'+
-            '<input type="number" class="ol-sb-input" id="olMinMsgs" placeholder="最少" value="'+(s.minMsgs||1)+'" min="1" max="10" style="width:70px;text-align:center;">'+
-            '<span style="font-size:12px;color:#7a9ab8;">到</span>'+
-            '<input type="number" class="ol-sb-input" id="olMaxMsgs" placeholder="最多" value="'+(s.maxMsgs||4)+'" min="1" max="10" style="width:70px;text-align:center;">'+
-            '<span style="font-size:11px;color:#a8c0d8;">条</span></div>';
-        OfflineUI._bindCountInputs(sec);
-      }
-    }
-  });
-});
-
 /* 人称 */
 App.$$('.ol-pov-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
@@ -412,10 +319,9 @@ App.$$('.ol-quote-btn').forEach(function(btn){
   });
 });
 
-/* 字数/条数初始绑定 */
+/* 字数 */
 var wcInit=App.$('#olWordCount');
 if(wcInit)wcInit.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
-OfflineUI._bindCountInputs(App.$('#olCountSection'));
 
 /* 晕染 */
 App.safeOn('#olSbTint','click',function(){
@@ -437,7 +343,7 @@ var mc=App.$('#olMsgs');
 if(mc){
   var lt=null,lTarget=null,moved=false;
   mc.addEventListener('touchstart',function(e){
-    var b=e.target.closest('.ol-bubble')||e.target.closest('.ol-prose');
+    var b=e.target.closest('.ol-prose');
     var m=e.target.closest('[data-msg-idx]');
     if(!b||!m)return;moved=false;
     var t=e.touches[0];lTarget={el:m,x:t.clientX,y:t.clientY};
@@ -453,13 +359,6 @@ if(root){root.addEventListener('click',function(){
   var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}
 });}
 
-},
-
-_bindCountInputs:function(sec){
-  if(!sec)return;
-  var mi=sec.querySelector('#olMinMsgs'),mx=sec.querySelector('#olMaxMsgs');
-  if(mi)mi.addEventListener('change',function(){var s=OfflineUI.getSettings();s.minMsgs=parseInt(this.value)||1;OfflineUI.saveSettings(s);});
-  if(mx)mx.addEventListener('change',function(){var s=OfflineUI.getSettings();s.maxMsgs=parseInt(this.value)||4;OfflineUI.saveSettings(s);});
 },
 
 getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
