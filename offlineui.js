@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -23,6 +24,21 @@ var bgUrl=App.LS.get('olBg_'+c.id)||'';
 var tintOn=App.LS.get('olTint_'+c.id);if(tintOn===null)tintOn=true;
 var settings=App.LS.get('olSettings_'+c.id)||{};
 var storyMode=settings.mode||'short';
+
+var countSectionHtml='';
+if(storyMode==='long'){
+  countSectionHtml='<div class="ol-sb-sub-label">期望字数</div>'+
+    '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
+    '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>';
+} else {
+  countSectionHtml='<div class="ol-sb-sub-label">每次回复条数</div>'+
+    '<div style="display:flex;gap:10px;align-items:center;">'+
+      '<input type="number" class="ol-sb-input" id="olMinMsgs" placeholder="最少" value="'+(settings.minMsgs||1)+'" min="1" max="10" style="width:70px;text-align:center;">'+
+      '<span style="font-size:12px;color:#7a9ab8;">到</span>'+
+      '<input type="number" class="ol-sb-input" id="olMaxMsgs" placeholder="最多" value="'+(settings.maxMsgs||4)+'" min="1" max="10" style="width:70px;text-align:center;">'+
+      '<span style="font-size:11px;color:#a8c0d8;">条</span>'+
+    '</div>';
+}
 
 container.innerHTML=
 '<div class="ol-root" id="olRoot">'+
@@ -67,27 +83,23 @@ container.innerHTML=
 
     '<div class="ol-sb-section">'+
       '<div class="ol-sb-label">聊天设置</div>'+
-      '<div style="margin-bottom:10px;">'+
-        '<div class="ol-sb-switch-name" style="margin-bottom:6px;font-size:12px;color:rgba(255,255,255,.5);">人称视角</div>'+
+      '<div style="margin-bottom:12px;">'+
+        '<div class="ol-sb-sub-label">人称视角</div>'+
         '<div class="ol-sb-mode-row">'+
           '<div class="ol-sb-mode-btn ol-pov-btn'+((!settings.pov||settings.pov==='second')?' active':'')+'" data-pov="second">第二人称</div>'+
           '<div class="ol-sb-mode-btn ol-pov-btn'+(settings.pov==='first'?' active':'')+'" data-pov="first">第一人称</div>'+
           '<div class="ol-sb-mode-btn ol-pov-btn'+(settings.pov==='third'?' active':'')+'" data-pov="third">第三人称</div>'+
         '</div>'+
       '</div>'+
-      '<div style="margin-bottom:10px;">'+
-        '<div class="ol-sb-switch-name" style="margin-bottom:6px;font-size:12px;color:rgba(255,255,255,.5);">对话引号</div>'+
+      '<div style="margin-bottom:12px;">'+
+        '<div class="ol-sb-sub-label">对话引号</div>'+
         '<div class="ol-sb-mode-row">'+
-          '<div class="ol-sb-mode-btn ol-quote-btn'+((!settings.quoteStyle||settings.quoteStyle==='corner')?' active':'')+'" data-quote="corner">「」</div>'+
-          '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='double'?' active':'')+'" data-quote="double">\u201C\u201D</div>'+
+          '<div class="ol-sb-mode-btn ol-quote-btn'+((!settings.quoteStyle||settings.quoteStyle==='smart')?' active':'')+'" data-quote="smart">\u201C\u201D</div>'+
           '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='straight'?' active':'')+'" data-quote="straight">&quot;&quot;</div>'+
+          '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='corner'?' active':'')+'" data-quote="corner">「」</div>'+
         '</div>'+
       '</div>'+
-      '<div style="margin-bottom:6px;">'+
-        '<div class="ol-sb-switch-name" style="margin-bottom:6px;font-size:12px;color:rgba(255,255,255,.5);">期望字数（长文模式）</div>'+
-        '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空则不限" value="'+(settings.wordCount||'')+'">'+
-        '<div class="ol-sb-hint">填写后 AI 将严格遵守该字数范围</div>'+
-      '</div>'+
+      '<div id="olCountSection">'+countSectionHtml+'</div>'+
     '</div>'+
 
     '<div class="ol-sb-section">'+
@@ -104,15 +116,39 @@ container.innerHTML=
       '</div>'+
     '</div>'+
 
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">数据</div>'+
-      '<button class="ol-sb-btn ol-sb-btn-danger" id="olSbClear" type="button">清空聊天记录</button>'+
-    '</div>'+
-
   '</div>'+
 '</div>'+
 
 '</div>';
+},
+
+/* ★ 思维链解析：把 <think>...</think> 提取出来 */
+parseThinking:function(text){
+  var thinkContent='';
+  var mainContent=text;
+  var thinkMatch=text.match(/<think>([\s\S]*?)<\/think>/i);
+  if(thinkMatch){
+    thinkContent=thinkMatch[1].trim();
+    mainContent=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
+  }
+  /* 兼容未闭合的 <think>（流式输出中途） */
+  if(!thinkMatch){
+    var openMatch=text.match(/<think>([\s\S]*)$/i);
+    if(openMatch){
+      thinkContent=openMatch[1].trim();
+      mainContent=text.replace(/<think>[\s\S]*$/i,'').trim();
+    }
+  }
+  return{think:thinkContent,main:mainContent};
+},
+
+/* ★ 思维链 HTML */
+buildThinkHtml:function(thinkText){
+  if(!thinkText)return '';
+  return '<details class="ol-think-block" style="margin-bottom:6px;">'+
+    '<summary style="font-size:11px;color:#a8c0d8;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;">💭 思维过程（点击展开）</summary>'+
+    '<div style="font-size:12px;color:#8aa0b8;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(126,163,201,.06);border-radius:8px;border:1px solid rgba(126,163,201,.12);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">'+App.esc(thinkText)+'</div>'+
+  '</details>';
 },
 
 renderMessages:function(){
@@ -137,18 +173,25 @@ OL.messages.forEach(function(msg,idx){
   var isUser=msg.role==='user';
   var timeStr=msg.ts?OfflineUI.fmtTime(msg.ts):'';
 
+  /* 时间分隔 */
   var showTimeSep=false;
   if(msg.ts){
     var prev=null;
     for(var pi=idx-1;pi>=0;pi--){if(OL.messages[pi].role!=='system'){prev=OL.messages[pi];break;}}
     if(!prev||!prev.ts||msg.ts-prev.ts>300000)showTimeSep=true;
   }
-  if(showTimeSep&&timeStr) html+='<div class="ol-time-sep">'+timeStr+'</div>';
+  if(showTimeSep&&timeStr)html+='<div class="ol-time-sep">'+timeStr+'</div>';
 
-  var text=(msg.content||'').trim();if(!text)return;
+  var rawText=(msg.content||'').trim();if(!rawText)return;
+
+  /* ★ 解析思维链 */
+  var parsed=OfflineUI.parseThinking(rawText);
+  var text=parsed.main;
+  var thinkHtml=(!isUser&&parsed.think)?OfflineUI.buildThinkHtml(parsed.think):'';
 
   if(storyMode==='long'){
     html+='<div class="ol-prose'+(isUser?' is-user':'')+'" data-msg-idx="'+idx+'">'+
+      thinkHtml+
       '<div class="ol-prose-content">'+OfflineUI.formatProse(text)+'</div>'+
       '<div class="ol-prose-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
     '</div>';
@@ -160,6 +203,7 @@ OL.messages.forEach(function(msg,idx){
     html+='<div class="ol-msg '+(isUser?'user':'ai')+'" data-msg-idx="'+idx+'">'+
       '<div class="ol-msg-av">'+av+'</div>'+
       '<div class="ol-bubble-wrap">'+
+        thinkHtml+
         '<div class="ol-bubble">'+OfflineUI.formatShort(text)+'</div>'+
         '<div class="ol-msg-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
       '</div>'+
@@ -167,6 +211,7 @@ OL.messages.forEach(function(msg,idx){
   }
 });
 
+/* 流式气泡 */
 if(OL.isStreaming&&!OL._backgroundMode){
   if(storyMode==='long'){
     html+='<div class="ol-prose" id="olStreamProse"><div class="ol-prose-content" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div>';
@@ -182,16 +227,18 @@ OfflineUI.scrollBottom();
 
 formatShort:function(text){
   text=App.esc(text);
-  text=text.replace(/\(([^)]+)\)/g,'<span style="color:#8aa0b8;font-style:italic;">($1)</span>');
+  /* 中文括号动作 */
   text=text.replace(/（([^）]+)）/g,'<span style="color:#8aa0b8;font-style:italic;">（$1）</span>');
+  text=text.replace(/\(([^)]+)\)/g,'<span style="color:#8aa0b8;font-style:italic;">($1)</span>');
+  /* 双星号旁白 */
   text=text.replace(/\*\*([^*]+)\*\*/g,'<span style="font-weight:700;color:#5a7a9a;">$1</span>');
   return text;
 },
 
 formatProse:function(text){
   text=App.esc(text);
-  text=text.replace(/\*([^*]+)\*/g,'<em style="color:#7a9ab8;">$1</em>');
   text=text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  text=text.replace(/\*([^*]+)\*/g,'<em style="color:#7a9ab8;">$1</em>');
   return text;
 },
 
@@ -222,8 +269,7 @@ var root=App.$('#olRoot');
 var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
 if(root){
   root.addEventListener('touchstart',function(e){
-    var t=e.touches[0];
-    var rect=root.getBoundingClientRect();
+    var t=e.touches[0];var rect=root.getBoundingClientRect();
     if(t.clientX-rect.left>50)return;
     _sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
   },{passive:true});
@@ -269,28 +315,40 @@ if(input){
   input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();OL.sendUser();}});
 }
 
-/* 发送按钮 → 发用户消息 */
 App.safeOn('#olSendBtn','click',function(e){e.stopPropagation();OL.sendUser();});
-
-/* 机器人按钮 → AI 回复 / 停止 */
-App.safeOn('#olAiBtn','click',function(e){
-  e.stopPropagation();
-  if(OL.isStreaming){OL.stopStream();return;}
-  OL.requestAI();
-});
+App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}OL.requestAI();});
 
 /* 加号 */
 App.safeOn('#olPlusBtn','click',function(e){
-  e.stopPropagation();
-  var pp=App.$('#olPlusPanel');if(!pp)return;
+  e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;
   OL._plusOpen=!OL._plusOpen;
   if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');
 });
 
 App.safeOn('#olPiPhoto','click',function(e){
   e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}
-  OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});
-  OL.saveMsgs();OfflineUI.renderMessages();
+  /* 相册+URL 选择 */
+  var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
+    '<div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div>'+
+    '<div class="pc-body" style="gap:8px;">'+
+      '<button class="pc-btn pc-btn-save" id="olPhAlbum" type="button" style="width:100%;">从相册选择</button>'+
+      '<button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button" style="width:100%;">输入图片URL</button>'+
+    '</div></div>';
+  document.body.appendChild(menu);
+  menu.addEventListener('click',function(ev){if(ev.target===menu)menu.remove();});
+  menu.querySelector('#olPhX').addEventListener('click',function(){menu.remove();});
+  menu.querySelector('#olPhAlbum').addEventListener('click',function(){
+    menu.remove();
+    var inp2=document.createElement('input');inp2.type='file';inp2.accept='image/*';document.body.appendChild(inp2);
+    inp2.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp2);if(!f)return;
+      OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();
+    };inp2.click();
+  });
+  menu.querySelector('#olPhUrl').addEventListener('click',function(){
+    menu.remove();var url=prompt('输入图片URL：');if(!url)return;
+    OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();
+  });
 });
 
 App.safeOn('#olPiFile','click',function(e){
@@ -302,13 +360,37 @@ App.safeOn('#olPiFile','click',function(e){
 App.safeOn('#olSbClose','click',function(){OfflineUI.closeSidebar();});
 App.safeOn('#olSbMask','click',function(){OfflineUI.closeSidebar();});
 
-/* 模式切换 */
+/* ★ 模式切换 + 提示 + 动态切换条数/字数 */
 App.$$('.ol-sb-mode-btn[data-smode]').forEach(function(btn){
   btn.addEventListener('click',function(){
+    var prevMode=(OfflineUI.getSettings().mode)||'short';
     App.$$('.ol-sb-mode-btn[data-smode]').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
     var s=OfflineUI.getSettings();s.mode=btn.dataset.smode;OfflineUI.saveSettings(s);
     OfflineUI.renderMessages();
+
+    if(btn.dataset.smode!==prevMode){
+      App.showToast(btn.dataset.smode==='long'?'已切换为长文叙事模式':'已切换为短言叙事模式');
+    }
+
+    var sec=App.$('#olCountSection');
+    if(sec){
+      if(btn.dataset.smode==='long'){
+        sec.innerHTML='<div class="ol-sb-sub-label">期望字数</div>'+
+          '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(s.wordCount||'')+'">'+
+          '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>';
+        var wci=sec.querySelector('#olWordCount');
+        if(wci)wci.addEventListener('change',function(){var ss=OfflineUI.getSettings();ss.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(ss);});
+      } else {
+        sec.innerHTML='<div class="ol-sb-sub-label">每次回复条数</div>'+
+          '<div style="display:flex;gap:10px;align-items:center;">'+
+            '<input type="number" class="ol-sb-input" id="olMinMsgs" placeholder="最少" value="'+(s.minMsgs||1)+'" min="1" max="10" style="width:70px;text-align:center;">'+
+            '<span style="font-size:12px;color:#7a9ab8;">到</span>'+
+            '<input type="number" class="ol-sb-input" id="olMaxMsgs" placeholder="最多" value="'+(s.maxMsgs||4)+'" min="1" max="10" style="width:70px;text-align:center;">'+
+            '<span style="font-size:11px;color:#a8c0d8;">条</span></div>';
+        OfflineUI._bindCountInputs(sec);
+      }
+    }
   });
 });
 
@@ -330,9 +412,10 @@ App.$$('.ol-quote-btn').forEach(function(btn){
   });
 });
 
-/* 字数 */
-var wcInput=App.$('#olWordCount');
-if(wcInput){wcInput.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});}
+/* 字数/条数初始绑定 */
+var wcInit=App.$('#olWordCount');
+if(wcInit)wcInit.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
+OfflineUI._bindCountInputs(App.$('#olCountSection'));
 
 /* 晕染 */
 App.safeOn('#olSbTint','click',function(){
@@ -348,12 +431,6 @@ App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.sh
 
 /* 背景 */
 App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
-
-/* 清空 */
-App.safeOn('#olSbClear','click',function(){
-  if(!confirm('确定清空所有聊天记录？'))return;
-  OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI.closeSidebar();App.showToast('已清空');
-});
 
 /* 长按菜单 */
 var mc=App.$('#olMsgs');
@@ -378,6 +455,13 @@ if(root){root.addEventListener('click',function(){
 
 },
 
+_bindCountInputs:function(sec){
+  if(!sec)return;
+  var mi=sec.querySelector('#olMinMsgs'),mx=sec.querySelector('#olMaxMsgs');
+  if(mi)mi.addEventListener('change',function(){var s=OfflineUI.getSettings();s.minMsgs=parseInt(this.value)||1;OfflineUI.saveSettings(s);});
+  if(mx)mx.addEventListener('change',function(){var s=OfflineUI.getSettings();s.maxMsgs=parseInt(this.value)||4;OfflineUI.saveSettings(s);});
+},
+
 getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
 saveSettings:function(s){var OL=App.offline;if(OL)App.LS.set('olSettings_'+OL.charId,s);},
 
@@ -396,7 +480,6 @@ showCtxMenu:function(msgEl,x,y){
   var idx=parseInt(msgEl.dataset.msgIdx);if(isNaN(idx))return;
   var msg=OL.messages[idx];if(!msg)return;
   var isUser=msg.role==='user';
-
   var menu=document.createElement('div');menu.className='ol-ctx';
   var items='';
   items+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';
@@ -405,12 +488,10 @@ showCtxMenu:function(msgEl,x,y){
   items+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';
   items+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>往后全删</span></div>';
   menu.innerHTML=items;
-
   var left=Math.max(8,Math.min(x-150,window.innerWidth-308));
   var top=y-100;if(top<60)top=y+10;
   menu.style.left=left+'px';menu.style.top=top+'px';
   document.body.appendChild(menu);OL._ctxMenu=menu;
-
   menu.querySelectorAll('.ol-ctx-item').forEach(function(item){
     item.addEventListener('click',function(e){e.stopPropagation();var act=item.dataset.act;OL.dismissCtx();
       if(act==='copy'){App.copyText(msg.content).then(function(){App.showToast('已复制');});}
@@ -423,14 +504,12 @@ showCtxMenu:function(msgEl,x,y){
 },
 
 showEditDialog:function(idx){
-  var OL=App.offline;if(!OL)return;
-  var msg=OL.messages[idx];if(!msg)return;
+  var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;
   var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100020';
   overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
     '<div class="pc-header">编辑<div class="pc-close-btn" id="olEdClose">×</div></div>'+
     '<div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical;">'+App.esc(msg.content)+'</textarea></div>'+
-    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdCancel" type="button">取消</button></div>'+
-  '</div>';
+    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdCancel" type="button">取消</button></div></div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
   overlay.querySelector('#olEdClose').addEventListener('click',function(){overlay.remove();});
@@ -448,8 +527,7 @@ showSceneDialog:function(){
   overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
     '<div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScClose">×</div></div>'+
     '<div class="pc-body"><div style="font-size:11px;color:#8aa0b8;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:120px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div>'+
-    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div>'+
-  '</div>';
+    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
   overlay.querySelector('#olScClose').addEventListener('click',function(){overlay.remove();});
@@ -463,26 +541,43 @@ showSceneDialog:function(){
 
 showBgMenu:function(){
   var OL=App.offline;if(!OL)return;
-  var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100020';
-  overlay.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
-    '<div class="pc-header">背景<div class="pc-close-btn" id="olBgClose">×</div></div>'+
+  var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
+    '<div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div>'+
     '<div class="pc-body" style="gap:8px;">'+
-      '<button class="pc-btn pc-btn-save" id="olBgUrl" type="button" style="width:100%;">输入图片URL</button>'+
-      '<button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="width:100%;">移除背景</button>'+
-    '</div>'+
-  '</div>';
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-  overlay.querySelector('#olBgClose').addEventListener('click',function(){overlay.remove();});
-  overlay.querySelector('#olBgDel').addEventListener('click',function(){
-    App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='';overlay.remove();App.showToast('已移除');
+      '<button class="pc-btn pc-btn-save" id="olBgAlbum" type="button" style="width:100%;">从相册选择</button>'+
+      '<button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button" style="width:100%;">输入图片URL</button>'+
+      '<button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="width:100%;color:#c9706b;">移除背景</button>'+
+    '</div></div>';
+  document.body.appendChild(menu);
+  menu.addEventListener('click',function(e){if(e.target===menu)menu.remove();});
+  menu.querySelector('#olBgX').addEventListener('click',function(){menu.remove();});
+  menu.querySelector('#olBgDel').addEventListener('click',function(){
+    App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='';menu.remove();App.showToast('已移除');
   });
-  overlay.querySelector('#olBgUrl').addEventListener('click',function(){
-    overlay.remove();
-    var url=prompt('输入背景图URL：');if(!url)return;
-    App.LS.set('olBg_'+OL.charId,url.trim());
-    var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+url.trim()+')';
-    App.showToast('已设置');
+  menu.querySelector('#olBgAlbum').addEventListener('click',function(){
+    menu.remove();
+    var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);
+    inp.onchange=function(ev){
+      var file=ev.target.files[0];document.body.removeChild(inp);if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(r){
+        if(App.cropImage){
+          App.cropImage(r.target.result,function(cropped){
+            try{App.LS.set('olBg_'+OL.charId,cropped);}catch(e){App.showToast('图片太大，请用URL');return;}
+            var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+cropped+')';App.showToast('背景已设置');
+          });
+        } else {
+          try{App.LS.set('olBg_'+OL.charId,r.target.result);}catch(e){App.showToast('图片太大，请用URL');return;}
+          var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+r.target.result+')';App.showToast('背景已设置');
+        }
+      };reader.readAsDataURL(file);
+    };inp.click();
+  });
+  menu.querySelector('#olBgUrl').addEventListener('click',function(){
+    menu.remove();var url=prompt('输入背景图URL：');if(!url||!url.trim())return;url=url.trim();
+    App.LS.set('olBg_'+OL.charId,url);
+    var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+url+')';App.showToast('背景已设置');
   });
 },
 
