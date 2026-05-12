@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -7,7 +6,7 @@ var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="34" height="
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
-var WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="2.4" fill="none"/><path d="M32 18L34.5 25L42 25.5L36 30L38 37.5L32 33.5L26 37.5L28 30L22 25.5L29.5 25Z" stroke="#2a2a2a" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M48 38L49 40L51 40.3L49.5 41.8L50 44L48 42.8L46 44L46.5 41.8L45 40.3L47 40Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M18 20L19 22L21 22.3L19.5 23.8L20 26L18 24.8L16 26L16.5 23.8L15 22.3L17 22Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="46" cy="22" r="1" fill="#2a2a2a"/><circle cx="20" cy="44" r="1" fill="#2a2a2a"/><circle cx="42" cy="48" r="0.8" fill="#2a2a2a"/></svg>';
+var WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="2.4" fill="none"/><path d="M32 18L34.5 25L42 25.5L36 30L38 37.5L32 33.5L26 37.5L28 30L22 25.5L29.5 25Z" stroke="#2a2a2a" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M48 38L49 40L51 40.3L49.5 41.8L50 44L48 42.8L46 44L46.5 41.8L45 40.3L47 40Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M18 20L19 22L21 22.3L19.5 23.8L20 26L18 24.8L16 26L16.5 23.8L15 22.3L17 22Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="46" cy="22" r="1" fill="#2a2a2a"/><circle cx="20" cy="44" r="1" fill="#2a2a2a"/><circle cx="42" cy="48" r="0.8" fill="#2a2a2a"/></svg>';
 
 var CTX_ICONS={
 copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
@@ -97,36 +96,31 @@ container.innerHTML=
       '</div>'+
     '</div>'+
 
+    '<div class="ol-sb-section" style="border-bottom:none;">'+
+      '<div class="ol-sb-label">高级</div>'+
+      '<button class="ol-sb-btn" id="olSbCss" type="button">自定义 CSS</button>'+
+      '<button class="ol-sb-btn" id="olSbClear" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);">清空记录</button>'+
+    '</div>'+
+
   '</div>'+
 '</div>'+
 
 '</div>';
+
+OfflineUI.applyCustomCSS(c.id);
 },
 
 parseThinking:function(text){
-  var thinkContent='';
-  var mainContent=text;
-  var thinkMatch=text.match(/<think>([\s\S]*?)<\/think>/i);
-  if(thinkMatch){
-    thinkContent=thinkMatch[1].trim();
-    mainContent=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
-  }
-  if(!thinkMatch){
-    var openMatch=text.match(/<think>([\s\S]*)$/i);
-    if(openMatch){
-      thinkContent=openMatch[1].trim();
-      mainContent=text.replace(/<think>[\s\S]*$/i,'').trim();
-    }
-  }
+  var thinkContent='',mainContent=text;
+  var m=text.match(/<think>([\s\S]*?)<\/think>/i);
+  if(m){thinkContent=m[1].trim();mainContent=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}
+  if(!m){var o=text.match(/<think>([\s\S]*)$/i);if(o){thinkContent=o[1].trim();mainContent=text.replace(/<think>[\s\S]*$/i,'').trim();}}
   return{think:thinkContent,main:mainContent};
 },
 
-buildThinkHtml:function(thinkText){
-  if(!thinkText)return '';
-  return '<details class="ol-think-block" style="margin-bottom:6px;">'+
-    '<summary style="font-size:11px;color:#a8c0d8;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;">💭 思维过程（点击展开）</summary>'+
-    '<div style="font-size:12px;color:#8aa0b8;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(126,163,201,.06);border-radius:8px;border:1px solid rgba(126,163,201,.12);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">'+App.esc(thinkText)+'</div>'+
-  '</details>';
+buildThinkHtml:function(t){
+  if(!t)return '';
+  return '<details class="ol-think-block"><summary class="ol-think-summary">💭 思维过程</summary><div class="ol-think-body">'+App.esc(t)+'</div></details>';
 },
 
 renderMessages:function(){
@@ -134,20 +128,25 @@ var OL=App.offline;if(!OL)return;
 var container=App.$('#olMsgs');if(!container)return;
 var c=OL.charData;
 var user=App.user?App.user.getActiveUser():null;
+var charAvHtml=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">'
+  :'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+var userAvHtml=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">'
+  :'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 
 if(!OL.messages.length){
   container.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';
   return;
 }
 
-var html='';
-var floor=0;
+var html='';var floor=0;
 
 OL.messages.forEach(function(msg,idx){
   if(msg.role==='system')return;
   floor++;
   var isUser=msg.role==='user';
   var timeStr=msg.ts?OfflineUI.fmtTime(msg.ts):'';
+  var charCount=(msg.content||'').length;
+  var tokens=Math.round(charCount/2);
 
   var showTimeSep=false;
   if(msg.ts){
@@ -158,20 +157,41 @@ OL.messages.forEach(function(msg,idx){
   if(showTimeSep&&timeStr)html+='<div class="ol-time-sep">'+timeStr+'</div>';
 
   var rawText=(msg.content||'').trim();if(!rawText)return;
-
   var parsed=OfflineUI.parseThinking(rawText);
   var text=parsed.main;
   var thinkHtml=(!isUser&&parsed.think)?OfflineUI.buildThinkHtml(parsed.think):'';
+  var avHtml=isUser?userAvHtml:charAvHtml;
+  var avName=isUser?App.esc((user&&(user.nickname||user.realName))||'你'):App.esc(c.name||'');
 
-  html+='<div class="ol-prose'+(isUser?' is-user':'')+'" data-msg-idx="'+idx+'">'+
-    thinkHtml+
-    '<div class="ol-prose-content">'+OfflineUI.formatProse(text)+'</div>'+
-    '<div class="ol-prose-meta"><span>#'+floor+'</span><span>'+timeStr+'</span></div>'+
+  html+=
+  '<div class="ol-block'+(isUser?' is-user':' is-char')+'" data-msg-idx="'+idx+'" data-floor="'+floor+'" data-time="'+timeStr+'" data-chars="'+charCount+'" data-tokens="'+tokens+'">'+
+    '<div class="ol-frame-top"></div>'+
+    '<div class="ol-avatar-area">'+
+      '<div class="ol-avatar-frame"><div class="ol-avatar">'+avHtml+'</div></div>'+
+      '<div class="ol-avatar-name">'+avName+'</div>'+
+    '</div>'+
+    '<div class="ol-frame-mid">'+
+      '<div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+OfflineUI.formatProse(text)+'</div></div>'+
+    '</div>'+
+    '<div class="ol-frame-bot"></div>'+
+    '<div class="ol-scatter-meta">'+
+      '<span class="ol-scatter-floor">#'+floor+'</span>'+
+      '<span class="ol-scatter-time">'+timeStr+'</span>'+
+      '<span class="ol-scatter-chars">'+charCount+'字</span>'+
+      '<span class="ol-scatter-tokens">'+tokens+'tk</span>'+
+    '</div>'+
   '</div>';
 });
 
 if(OL.isStreaming&&!OL._backgroundMode){
-  html+='<div class="ol-prose" id="olStreamProse"><div class="ol-prose-content" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div>';
+  html+=
+  '<div class="ol-block is-char" id="olStreamProse">'+
+    '<div class="ol-frame-top"></div>'+
+    '<div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+charAvHtml+'</div></div></div>'+
+    '<div class="ol-frame-mid"><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div>'+
+    '<div class="ol-frame-bot"></div>'+
+    '<div class="ol-scatter-meta"></div>'+
+  '</div>';
 }
 
 container.innerHTML=html;
@@ -181,12 +201,11 @@ OfflineUI.scrollBottom();
 formatProse:function(text){
   text=App.esc(text);
   text=text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-  text=text.replace(/\*([^*]+)\*/g,'<em style="color:#7a9ab8;">$1</em>');
+  text=text.replace(/\*([^*]+)\*/g,'<em>$1</em>');
   return text;
 },
 
 fmtTime:function(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');},
-
 scrollBottom:function(){var el=App.$('#olMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
 
 updateAiBtn:function(){
@@ -199,58 +218,31 @@ updateAiBtn:function(){
 updateTyping:function(show){
   var OL=App.offline;if(!OL)return;
   var el=App.$('#olName');if(!el)return;
-  var displayName=OL.charData?OL.charData.name:'';
-  if(show)el.innerHTML=App.esc(displayName)+'<span class="ol-hd-typing">正在书写...</span>';
-  else el.textContent=displayName;
+  var dn=OL.charData?OL.charData.name:'';
+  if(show)el.innerHTML=App.esc(dn)+'<span class="ol-hd-typing">正在书写...</span>';
+  else el.textContent=dn;
 },
 
 bindEvents:function(){
 var OL=App.offline;if(!OL)return;
 var root=App.$('#olRoot');
 
-/* 左滑返回 */
 var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
 if(root){
-  root.addEventListener('touchstart',function(e){
-    var t=e.touches[0];var rect=root.getBoundingClientRect();
-    if(t.clientX-rect.left>50)return;
-    _sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
-  },{passive:true});
-  root.addEventListener('touchmove',function(e){
-    if(!_sw.active)return;var t=e.touches[0];
-    var dx=t.clientX-_sw.sx,dy=t.clientY-_sw.sy;
-    if(!_sw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_sw.locked=true;_sw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}
-    if(_sw.dir==='h'&&dx>0){e.preventDefault();root.style.transform='translateX('+Math.min(dx,root.offsetWidth)+'px)';root.style.opacity=String(1-dx/root.offsetWidth*0.5);}
-  },{passive:false});
-  root.addEventListener('touchend',function(e){
-    if(!_sw.active)return;_sw.active=false;
-    if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}
-    var dx=e.changedTouches[0].clientX-_sw.sx;
-    if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}
-    else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}
-  },{passive:true});
+  root.addEventListener('touchstart',function(e){var t=e.touches[0];var r=root.getBoundingClientRect();if(t.clientX-r.left>50)return;_sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
+  root.addEventListener('touchmove',function(e){if(!_sw.active)return;var t=e.touches[0];var dx=t.clientX-_sw.sx,dy=t.clientY-_sw.sy;if(!_sw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_sw.locked=true;_sw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}if(_sw.dir==='h'&&dx>0){e.preventDefault();root.style.transform='translateX('+Math.min(dx,root.offsetWidth)+'px)';root.style.opacity=String(1-dx/root.offsetWidth*0.5);}},{passive:false});
+  root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
-/* 右滑开侧边栏 */
 var _rsw={active:false,sx:0,sy:0,locked:false,dir:''};
 if(root){
-  root.addEventListener('touchstart',function(e){
-    var t=e.touches[0];var rect=root.getBoundingClientRect();
-    if(t.clientX-rect.left<rect.width-50)return;
-    _rsw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};
-  },{passive:true});
-  root.addEventListener('touchmove',function(e){
-    if(!_rsw.active)return;var t=e.touches[0];
-    var dx=t.clientX-_rsw.sx,dy=t.clientY-_rsw.sy;
-    if(!_rsw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_rsw.locked=true;_rsw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}
-    if(_rsw.dir==='h'&&dx<-30){e.preventDefault();OfflineUI.openSidebar();}
-  },{passive:false});
+  root.addEventListener('touchstart',function(e){var t=e.touches[0];var r=root.getBoundingClientRect();if(t.clientX-r.left<r.width-50)return;_rsw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
+  root.addEventListener('touchmove',function(e){if(!_rsw.active)return;var t=e.touches[0];var dx=t.clientX-_rsw.sx,dy=t.clientY-_rsw.sy;if(!_rsw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_rsw.locked=true;_rsw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}if(_rsw.dir==='h'&&dx<-30){e.preventDefault();OfflineUI.openSidebar();}},{passive:false});
   root.addEventListener('touchend',function(){_rsw.active=false;},{passive:true});
 }
 
 App.safeOn('#olWandBtn','click',function(e){e.stopPropagation();OfflineUI.openSidebar();});
 
-/* 输入框 */
 var input=App.$('#olInput');
 if(input){
   input.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
@@ -260,119 +252,50 @@ if(input){
 App.safeOn('#olSendBtn','click',function(e){e.stopPropagation();OL.sendUser();});
 App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}OL.requestAI();});
 
-/* 加号 */
-App.safeOn('#olPlusBtn','click',function(e){
-  e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;
-  OL._plusOpen=!OL._plusOpen;
-  if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');
-});
+App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;OL._plusOpen=!OL._plusOpen;if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');});
 
 App.safeOn('#olPiPhoto','click',function(e){
   e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}
   var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
-  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
-    '<div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div>'+
-    '<div class="pc-body" style="gap:8px;">'+
-      '<button class="pc-btn pc-btn-save" id="olPhAlbum" type="button" style="width:100%;">从相册选择</button>'+
-      '<button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button" style="width:100%;">输入图片URL</button>'+
-    '</div></div>';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olPhAlbum" type="button" style="width:100%;">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button" style="width:100%;">输入图片URL</button></div></div>';
   document.body.appendChild(menu);
   menu.addEventListener('click',function(ev){if(ev.target===menu)menu.remove();});
   menu.querySelector('#olPhX').addEventListener('click',function(){menu.remove();});
-  menu.querySelector('#olPhAlbum').addEventListener('click',function(){
-    menu.remove();
-    var inp2=document.createElement('input');inp2.type='file';inp2.accept='image/*';document.body.appendChild(inp2);
-    inp2.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp2);if(!f)return;
-      OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();
-    };inp2.click();
-  });
-  menu.querySelector('#olPhUrl').addEventListener('click',function(){
-    menu.remove();var url=prompt('输入图片URL：');if(!url)return;
-    OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();
-  });
+  menu.querySelector('#olPhAlbum').addEventListener('click',function(){menu.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();};inp.click();});
+  menu.querySelector('#olPhUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入图片URL：');if(!url)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();});
 });
 
-App.safeOn('#olPiFile','click',function(e){
-  e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}
-  App.showToast('文件 · 开发中');
-});
+App.safeOn('#olPiFile','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('文件 · 开发中');});
 
-/* 侧边栏 */
 App.safeOn('#olSbClose','click',function(){OfflineUI.closeSidebar();});
 App.safeOn('#olSbMask','click',function(){OfflineUI.closeSidebar();});
 
-/* 人称 */
-App.$$('.ol-pov-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    App.$$('.ol-pov-btn').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    var s=OfflineUI.getSettings();s.pov=btn.dataset.pov;OfflineUI.saveSettings(s);
-  });
-});
+App.$$('.ol-pov-btn').forEach(function(btn){btn.addEventListener('click',function(){App.$$('.ol-pov-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var s=OfflineUI.getSettings();s.pov=btn.dataset.pov;OfflineUI.saveSettings(s);});});
+App.$$('.ol-quote-btn').forEach(function(btn){btn.addEventListener('click',function(){App.$$('.ol-quote-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var s=OfflineUI.getSettings();s.quoteStyle=btn.dataset.quote;OfflineUI.saveSettings(s);});});
 
-/* 引号 */
-App.$$('.ol-quote-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    App.$$('.ol-quote-btn').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    var s=OfflineUI.getSettings();s.quoteStyle=btn.dataset.quote;OfflineUI.saveSettings(s);
-  });
-});
+var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
 
-/* 字数 */
-var wcInit=App.$('#olWordCount');
-if(wcInit)wcInit.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
-
-/* 晕染 */
-App.safeOn('#olSbTint','click',function(){
-  var cur=App.LS.get('olTint_'+OL.charId);if(cur===null)cur=true;var next=!cur;
-  App.LS.set('olTint_'+OL.charId,next);
-  var tint=App.$('#olTint'),sw=App.$('#olSbTint');
-  if(tint){if(next)tint.classList.remove('off');else tint.classList.add('off');}
-  if(sw){sw.classList.toggle('on',next);sw.classList.toggle('off',!next);}
-});
-
-/* 场景 */
+App.safeOn('#olSbTint','click',function(){var cur=App.LS.get('olTint_'+OL.charId);if(cur===null)cur=true;var next=!cur;App.LS.set('olTint_'+OL.charId,next);var tint=App.$('#olTint'),sw=App.$('#olSbTint');if(tint){if(next)tint.classList.remove('off');else tint.classList.add('off');}if(sw){sw.classList.toggle('on',next);sw.classList.toggle('off',!next);}});
 App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.showSceneDialog();});
-
-/* 背景 */
 App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
+App.safeOn('#olSbCss','click',function(){OfflineUI.closeSidebar();OfflineUI.openCssEditor();});
+App.safeOn('#olSbClear','click',function(){if(!confirm('清空所有聊天记录？'))return;OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI.closeSidebar();App.showToast('已清空');});
 
-/* 长按菜单 */
 var mc=App.$('#olMsgs');
 if(mc){
   var lt=null,lTarget=null,moved=false;
-  mc.addEventListener('touchstart',function(e){
-    var b=e.target.closest('.ol-prose');
-    var m=e.target.closest('[data-msg-idx]');
-    if(!b||!m)return;moved=false;
-    var t=e.touches[0];lTarget={el:m,x:t.clientX,y:t.clientY};
-    lt=setTimeout(function(){if(lTarget&&!moved){if(navigator.vibrate)navigator.vibrate(15);OfflineUI.showCtxMenu(lTarget.el,lTarget.x,lTarget.y);}},500);
-  },{passive:true});
+  mc.addEventListener('touchstart',function(e){var b=e.target.closest('.ol-block');if(!b)return;moved=false;var t=e.touches[0];lTarget={el:b,x:t.clientX,y:t.clientY};lt=setTimeout(function(){if(lTarget&&!moved){if(navigator.vibrate)navigator.vibrate(15);OfflineUI.showCtxMenu(lTarget.el,lTarget.x,lTarget.y);}},500);},{passive:true});
   mc.addEventListener('touchmove',function(){moved=true;clearTimeout(lt);lTarget=null;},{passive:true});
   mc.addEventListener('touchend',function(){clearTimeout(lt);lTarget=null;},{passive:true});
 }
 
-/* 点击收起 */
-if(root){root.addEventListener('click',function(){
-  OL.dismissCtx();
-  var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}
-});}
-
+if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}
 },
 
 getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
 saveSettings:function(s){var OL=App.offline;if(OL)App.LS.set('olSettings_'+OL.charId,s);},
-
-openSidebar:function(){
-  var mask=App.$('#olSbMask'),sb=App.$('#olSidebar');
-  if(mask)mask.classList.add('show');if(sb)sb.classList.add('show');
-},
-
-closeSidebar:function(){
-  var mask=App.$('#olSbMask'),sb=App.$('#olSidebar');
-  if(mask)mask.classList.remove('show');if(sb)sb.classList.remove('show');
-},
+openSidebar:function(){var m=App.$('#olSbMask'),s=App.$('#olSidebar');if(m)m.classList.add('show');if(s)s.classList.add('show');},
+closeSidebar:function(){var m=App.$('#olSbMask'),s=App.$('#olSidebar');if(m)m.classList.remove('show');if(s)s.classList.remove('show');},
 
 showCtxMenu:function(msgEl,x,y){
   var OL=App.offline;if(!OL)return;OL.dismissCtx();
@@ -387,8 +310,7 @@ showCtxMenu:function(msgEl,x,y){
   items+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';
   items+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>往后全删</span></div>';
   menu.innerHTML=items;
-  var left=Math.max(8,Math.min(x-150,window.innerWidth-308));
-  var top=y-100;if(top<60)top=y+10;
+  var left=Math.max(8,Math.min(x-125,window.innerWidth-258));var top=y-80;if(top<60)top=y+10;
   menu.style.left=left+'px';menu.style.top=top+'px';
   document.body.appendChild(menu);OL._ctxMenu=menu;
   menu.querySelectorAll('.ol-ctx-item').forEach(function(item){
@@ -405,79 +327,81 @@ showCtxMenu:function(msgEl,x,y){
 showEditDialog:function(idx){
   var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;
   var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100020';
-  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
-    '<div class="pc-header">编辑<div class="pc-close-btn" id="olEdClose">×</div></div>'+
-    '<div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical;">'+App.esc(msg.content)+'</textarea></div>'+
-    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdCancel" type="button">取消</button></div></div>';
+  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">编辑<div class="pc-close-btn" id="olEdX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical;">'+App.esc(msg.content)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdCancel" type="button">取消</button></div></div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-  overlay.querySelector('#olEdClose').addEventListener('click',function(){overlay.remove();});
+  overlay.querySelector('#olEdX').addEventListener('click',function(){overlay.remove();});
   overlay.querySelector('#olEdCancel').addEventListener('click',function(){overlay.remove();});
-  overlay.querySelector('#olEdSave').addEventListener('click',function(){
-    var val=overlay.querySelector('#olEdTA').value.trim();if(!val){App.showToast('不能为空');return;}
-    OL.messages[idx].content=val;OL.saveMsgs();OfflineUI.renderMessages();overlay.remove();
-  });
+  overlay.querySelector('#olEdSave').addEventListener('click',function(){var val=overlay.querySelector('#olEdTA').value.trim();if(!val){App.showToast('不能为空');return;}OL.messages[idx].content=val;OL.saveMsgs();OfflineUI.renderMessages();overlay.remove();});
 },
 
 showSceneDialog:function(){
-  var OL=App.offline;if(!OL)return;
-  var current=App.LS.get('olScene_'+OL.charId)||'';
+  var OL=App.offline;if(!OL)return;var current=App.LS.get('olScene_'+OL.charId)||'';
   var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100020';
-  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
-    '<div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScClose">×</div></div>'+
-    '<div class="pc-body"><div style="font-size:11px;color:#8aa0b8;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:120px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div>'+
-    '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';
+  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><div style="font-size:11px;color:#8aa0b8;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:120px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
-  overlay.querySelector('#olScClose').addEventListener('click',function(){overlay.remove();});
-  overlay.querySelector('#olScSave').addEventListener('click',function(){
-    var val=overlay.querySelector('#olScTA').value.trim();
-    if(val)App.LS.set('olScene_'+OL.charId,val);else App.LS.remove('olScene_'+OL.charId);
-    overlay.remove();App.showToast('已保存');
-  });
+  overlay.querySelector('#olScX').addEventListener('click',function(){overlay.remove();});
+  overlay.querySelector('#olScSave').addEventListener('click',function(){var val=overlay.querySelector('#olScTA').value.trim();if(val)App.LS.set('olScene_'+OL.charId,val);else App.LS.remove('olScene_'+OL.charId);overlay.remove();App.showToast('已保存');});
   overlay.querySelector('#olScClear').addEventListener('click',function(){App.LS.remove('olScene_'+OL.charId);overlay.remove();App.showToast('已清空');});
 },
 
 showBgMenu:function(){
   var OL=App.offline;if(!OL)return;
   var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
-  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">'+
-    '<div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div>'+
-    '<div class="pc-body" style="gap:8px;">'+
-      '<button class="pc-btn pc-btn-save" id="olBgAlbum" type="button" style="width:100%;">从相册选择</button>'+
-      '<button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button" style="width:100%;">输入图片URL</button>'+
-      '<button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="width:100%;color:#c9706b;">移除背景</button>'+
-    '</div></div>';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button" style="width:100%;">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button" style="width:100%;">输入图片URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="width:100%;color:#c9706b;">移除背景</button></div></div>';
   document.body.appendChild(menu);
   menu.addEventListener('click',function(e){if(e.target===menu)menu.remove();});
   menu.querySelector('#olBgX').addEventListener('click',function(){menu.remove();});
-  menu.querySelector('#olBgDel').addEventListener('click',function(){
-    App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='';menu.remove();App.showToast('已移除');
-  });
-  menu.querySelector('#olBgAlbum').addEventListener('click',function(){
-    menu.remove();
-    var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);
-    inp.onchange=function(ev){
-      var file=ev.target.files[0];document.body.removeChild(inp);if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(r){
-        if(App.cropImage){
-          App.cropImage(r.target.result,function(cropped){
-            try{App.LS.set('olBg_'+OL.charId,cropped);}catch(e){App.showToast('图片太大，请用URL');return;}
-            var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+cropped+')';App.showToast('背景已设置');
-          });
-        } else {
-          try{App.LS.set('olBg_'+OL.charId,r.target.result);}catch(e){App.showToast('图片太大，请用URL');return;}
-          var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+r.target.result+')';App.showToast('背景已设置');
-        }
-      };reader.readAsDataURL(file);
-    };inp.click();
-  });
-  menu.querySelector('#olBgUrl').addEventListener('click',function(){
-    menu.remove();var url=prompt('输入背景图URL：');if(!url||!url.trim())return;url=url.trim();
-    App.LS.set('olBg_'+OL.charId,url);
-    var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+url+')';App.showToast('背景已设置');
-  });
+  menu.querySelector('#olBgDel').addEventListener('click',function(){App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='';menu.remove();App.showToast('已移除');});
+  menu.querySelector('#olBgAlbum').addEventListener('click',function(){menu.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;var reader=new FileReader();reader.onload=function(r){if(App.cropImage){App.cropImage(r.target.result,function(cropped){try{App.LS.set('olBg_'+OL.charId,cropped);}catch(e){App.showToast('图片太大');return;}var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+cropped+')';App.showToast('已设置');});}else{try{App.LS.set('olBg_'+OL.charId,r.target.result);}catch(e){App.showToast('图片太大');return;}var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+r.target.result+')';App.showToast('已设置');}};reader.readAsDataURL(f);};inp.click();});
+  menu.querySelector('#olBgUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入背景图URL：');if(!url||!url.trim())return;url=url.trim();App.LS.set('olBg_'+OL.charId,url);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+url+')';App.showToast('已设置');});
+},
+
+openCssEditor:function(){
+  var OL=App.offline;if(!OL)return;
+  var saved=App.LS.get('olCustomCSS_'+OL.charId)||'';
+
+  var REF=
+  '★ 在 .ol-root 上改全局变量\n★ 在 .ol-block 上改消息变量\n\n'+
+  '=== 全局（.ol-root）===\n'+
+  '  --ol-bg-color           页面背景\n  --ol-text-color          正文颜色\n  --ol-text-size           正文字号\n  --ol-text-line-height    行高\n  --ol-accent              主题色\n  --ol-hd-bg/border/text/size  顶部栏\n  --ol-bar-bg/border       底部栏\n  --ol-input-bg/border/text/radius  输入框\n  --ol-btn-color/size      底部按钮\n  --ol-prose-bg/border/radius/padding/shadow  气泡\n  --ol-user-bg/border/text 用户气泡\n  --ol-dialogue-color      对话色\n  --ol-action-color        动作色（*斜体*）\n  --ol-narration-color     旁白色（**粗体**）\n  --ol-narration-weight    旁白粗细\n\n'+
+  '=== 消息块（.ol-block）===\n'+
+  '  --ol-av-size            头像大小\n  --ol-av-gap              头像与气泡间距\n  --ol-av-border           头像边框\n  --ol-av-radius           头像圆角（50%=圆）\n  --ol-av-shadow           头像阴影\n  --ol-av-name-show        名字显隐（block/none）\n  --ol-av-name-size/color  名字字号/颜色\n  --ol-arrow-size          尖角大小（0=隐藏）\n  --ol-arrow-color         尖角颜色\n  --ol-scatter-show        元信息显隐（flex/none）\n\n'+
+  '=== 三段切图 ===\n'+
+  '  --ol-frame-width        整体宽度\n  --ol-frame-top-img       顶部图 url()\n  --ol-frame-top-h         顶部高度\n  --ol-frame-mid-img       中间平铺图 url()\n  --ol-frame-bot-img       底部图 url()\n  --ol-frame-bot-h         底部高度\n\n'+
+  '=== 可用的元素名 ===\n'+
+  '  .ol-hd / .ol-hd-name / .ol-hd-btn   顶部栏\n  .ol-block / .is-user / .is-char       消息块\n  .ol-avatar-area / frame / name        头像\n  .ol-frame-top / mid / bot             三段切图\n  .ol-bubble-inner / text               气泡内容\n  .ol-bubble-text em                    动作\n  .ol-bubble-text strong                旁白\n  .ol-scatter-floor/time/chars/tokens   散布信息\n  .ol-input-wrap / .ol-input            底部栏\n  .ol-btn-plus/robot/send               底部按钮\n  .ol-bg / .ol-tint                     背景/晕染\n\n'+
+  '=== 装饰钩子 ===\n'+
+  '  .ol-block::before/after             消息背景层\n  .ol-avatar-frame::before/after        头像框贴图\n  .ol-frame-mid::before/after           气泡内填充\n\n'+
+  '=== 数据属性 ===\n'+
+  '  [data-floor="1"]   第几楼\n  [data-time="14:30"]  时间\n  [data-chars="520"]   字数\n  [data-tokens="260"]  token\n\n'+
+  '=== 示例 ===\n'+
+  '.ol-root { --ol-bg-color:#f5f5f0; --ol-accent:#8a6b4c; }\n'+
+  '.ol-block { --ol-av-size:50px; --ol-av-border:2px solid #ddd; }\n'+
+  '.ol-frame-mid::before { content:""; position:absolute; inset:0;\n  background:radial-gradient(circle,rgba(138,107,76,.08),transparent 60%);\n  pointer-events:none; }';
+
+  var ed=document.createElement('div');ed.className='ol-css-editor';
+  ed.innerHTML=
+    '<div class="ol-css-editor-header">'+
+      '<button type="button" id="olCssBack" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">返回</button>'+
+      '<span style="font-size:14px;font-weight:700;letter-spacing:1px;color:#e0e0e0;">自定义 CSS</span>'+
+      '<button type="button" id="olCssSave" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">保存</button>'+
+    '</div>'+
+    '<div class="ol-css-ref"><div class="ol-css-ref-title" id="olCssRefT">📋 变量参考表（点击展开）</div><pre class="ol-css-ref-body" id="olCssRefB">'+App.esc(REF)+'</pre></div>'+
+    '<textarea class="ol-css-textarea" id="olCssTA" spellcheck="false" placeholder=".ol-root {\n  --ol-bg-color: #1a1a2e;\n  --ol-accent: #c9a96e;\n}">'+App.esc(saved)+'</textarea>';
+  document.body.appendChild(ed);
+  ed.querySelector('#olCssRefT').addEventListener('click',function(){var b=ed.querySelector('#olCssRefB');b.classList.toggle('show');this.textContent=b.classList.contains('show')?'📋 变量参考表（点击收起）':'📋 变量参考表（点击展开）';});
+  ed.querySelector('#olCssBack').addEventListener('click',function(){ed.remove();});
+  ed.querySelector('#olCssSave').addEventListener('click',function(){var css=ed.querySelector('#olCssTA').value||'';App.LS.set('olCustomCSS_'+OL.charId,css);OfflineUI.applyCustomCSS(OL.charId);ed.remove();App.showToast('样式已保存');});
+  ed.querySelector('#olCssTA').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}});
+},
+
+applyCustomCSS:function(charId){
+  var old=document.getElementById('olCustomStyle');if(old)old.remove();
+  var css=App.LS.get('olCustomCSS_'+charId);if(!css)return;
+  var style=document.createElement('style');style.id='olCustomStyle';style.textContent=css;
+  document.head.appendChild(style);
 },
 
 init:function(){App.offlineUI=OfflineUI;}
