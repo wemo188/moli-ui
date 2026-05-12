@@ -83,6 +83,27 @@ container.innerHTML=
     '</div>'+
 
     '<div class="ol-sb-section">'+
+      '<div class="ol-sb-label">外观</div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">页面背景</span><div class="ol-sb-color" id="olClrBg" data-var="--ol-bg-color"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">主题色</span><div class="ol-sb-color" id="olClrAccent" data-var="--ol-accent"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">气泡背景</span><div class="ol-sb-color" id="olClrProse" data-var="--ol-prose-bg"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">气泡边框</span><div class="ol-sb-color" id="olClrBorder" data-var="--ol-prose-border"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">正文颜色</span><div class="ol-sb-color" id="olClrText" data-var="--ol-text-color"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">动作颜色</span><div class="ol-sb-color" id="olClrAction" data-var="--ol-action-color"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">顶部栏</span><div class="ol-sb-color" id="olClrHd" data-var="--ol-hd-bg"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">底部栏</span><div class="ol-sb-color" id="olClrBar" data-var="--ol-bar-bg"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">按钮颜色</span><div class="ol-sb-color" id="olClrBtn" data-var="--ol-btn-color"></div></div>'+
+      '<div style="margin-top:10px;"><div class="ol-sb-sub-label">字号</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olFontSize" min="10" max="20" step="0.5"><span class="ol-sb-range-val" id="olFontSizeVal"></span></div></div>'+
+      '<div><div class="ol-sb-sub-label">行高</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olLineHeight" min="1.2" max="2.5" step="0.05"><span class="ol-sb-range-val" id="olLineHeightVal"></span></div></div>'+
+      '<div><div class="ol-sb-sub-label">气泡圆角</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olRadius" min="0" max="24" step="1"><span class="ol-sb-range-val" id="olRadiusVal"></span></div></div>'+
+      '<div><div class="ol-sb-sub-label">头像大小</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olAvSize" min="0" max="60" step="2"><span class="ol-sb-range-val" id="olAvSizeVal"></span></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">头像形状</span><div class="ol-sb-mode-row" style="flex:0;"><div class="ol-sb-mode-btn ol-shape-btn" data-shape="50%" style="padding:6px 10px;">圆</div><div class="ol-sb-mode-btn ol-shape-btn" data-shape="10px" style="padding:6px 10px;">方</div></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">尖角</span><div class="ol-sb-sw-track" id="olArrowSw"></div></div>'+
+      '<div class="ol-sb-row"><span class="ol-sb-row-name">头像名字</span><div class="ol-sb-sw-track" id="olNameSw"></div></div>'+
+      '<div style="margin-top:10px;text-align:center;"><button class="ol-sb-btn" id="olStyleReset" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);width:auto;display:inline-block;padding:6px 20px;">重置外观</button></div>'+
+    '</div>'+
+
+    '<div class="ol-sb-section">'+
       '<div class="ol-sb-label">场景 / 时间线</div>'+
       '<button class="ol-sb-btn" id="olSbScene" type="button">编辑场景</button>'+
     '</div>'+
@@ -90,15 +111,12 @@ container.innerHTML=
     '<div class="ol-sb-section">'+
       '<div class="ol-sb-label">背景</div>'+
       '<button class="ol-sb-btn" id="olSbBg" type="button">上传背景图</button>'+
-      '<div class="ol-sb-switch">'+
-        '<span class="ol-sb-switch-name">晕染效果</span>'+
-        '<div class="ol-sb-sw-track '+(tintOn?'on':'off')+'" id="olSbTint"></div>'+
-      '</div>'+
+      '<div class="ol-sb-switch"><span class="ol-sb-switch-name">晕染效果</span><div class="ol-sb-sw-track '+(tintOn?'on':'off')+'" id="olSbTint"></div></div>'+
     '</div>'+
 
     '<div class="ol-sb-section" style="border-bottom:none;">'+
       '<div class="ol-sb-label">高级</div>'+
-      '<button class="ol-sb-btn" id="olSbCss" type="button">自定义 CSS</button>'+
+      '<button class="ol-sb-btn" id="olSbCode" type="button">自定义代码</button>'+
       '<button class="ol-sb-btn" id="olSbClear" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);">清空记录</button>'+
     '</div>'+
 
@@ -107,7 +125,7 @@ container.innerHTML=
 
 '</div>';
 
-OfflineUI.applyCustomCSS(c.id);
+OfflineUI.applyCustomCode(c.id);
 },
 
 parseThinking:function(text){
@@ -147,6 +165,8 @@ OL.messages.forEach(function(msg,idx){
   var timeStr=msg.ts?OfflineUI.fmtTime(msg.ts):'';
   var charCount=(msg.content||'').length;
   var tokens=Math.round(charCount/2);
+  var tokenStr=tokens>=1000?(tokens/1000).toFixed(1)+'k':tokens+'';
+  var floorStr=String(floor).padStart(3,'0');
 
   var showTimeSep=false;
   if(msg.ts){
@@ -165,32 +185,30 @@ OL.messages.forEach(function(msg,idx){
 
   html+=
   '<div class="ol-block'+(isUser?' is-user':' is-char')+'" data-msg-idx="'+idx+'" data-floor="'+floor+'" data-time="'+timeStr+'" data-chars="'+charCount+'" data-tokens="'+tokens+'">'+
-    '<div class="ol-frame-top"></div>'+
     '<div class="ol-avatar-area">'+
       '<div class="ol-avatar-frame"><div class="ol-avatar">'+avHtml+'</div></div>'+
       '<div class="ol-avatar-name">'+avName+'</div>'+
     '</div>'+
-    '<div class="ol-frame-mid">'+
-      '<div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+OfflineUI.formatProse(text)+'</div></div>'+
-    '</div>'+
-    '<div class="ol-frame-bot"></div>'+
     '<div class="ol-scatter-meta">'+
-      '<span class="ol-scatter-floor">#'+floor+'</span>'+
-      '<span class="ol-scatter-time">'+timeStr+'</span>'+
-      '<span class="ol-scatter-chars">'+charCount+'字</span>'+
-      '<span class="ol-scatter-tokens">'+tokens+'tk</span>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-floor">#'+floorStr+'</span><div class="ol-scatter-line"></div></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-tokens">'+tokenStr+' tk</span><div class="ol-scatter-line"></div></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-time">'+timeStr+'</span><div class="ol-scatter-line"></div></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-chars">'+charCount+'字</span><div class="ol-scatter-line"></div></div>'+
     '</div>'+
+    '<div class="ol-frame-top"></div>'+
+    '<div class="ol-frame-mid"><div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+OfflineUI.formatProse(text)+'</div></div></div>'+
+    '<div class="ol-frame-bot"></div>'+
   '</div>';
 });
 
 if(OL.isStreaming&&!OL._backgroundMode){
   html+=
   '<div class="ol-block is-char" id="olStreamProse">'+
-    '<div class="ol-frame-top"></div>'+
     '<div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+charAvHtml+'</div></div></div>'+
+    '<div class="ol-scatter-meta"></div>'+
+    '<div class="ol-frame-top"></div>'+
     '<div class="ol-frame-mid"><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div>'+
     '<div class="ol-frame-bot"></div>'+
-    '<div class="ol-scatter-meta"></div>'+
   '</div>';
 }
 
@@ -227,6 +245,7 @@ bindEvents:function(){
 var OL=App.offline;if(!OL)return;
 var root=App.$('#olRoot');
 
+/* 左滑返回 */
 var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
 if(root){
   root.addEventListener('touchstart',function(e){var t=e.touches[0];var r=root.getBoundingClientRect();if(t.clientX-r.left>50)return;_sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
@@ -234,6 +253,7 @@ if(root){
   root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
+/* 右滑开侧边栏 */
 var _rsw={active:false,sx:0,sy:0,locked:false,dir:''};
 if(root){
   root.addEventListener('touchstart',function(e){var t=e.touches[0];var r=root.getBoundingClientRect();if(t.clientX-r.left<r.width-50)return;_rsw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
@@ -251,7 +271,6 @@ if(input){
 
 App.safeOn('#olSendBtn','click',function(e){e.stopPropagation();OL.sendUser();});
 App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}OL.requestAI();});
-
 App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;OL._plusOpen=!OL._plusOpen;if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');});
 
 App.safeOn('#olPiPhoto','click',function(e){
@@ -278,9 +297,105 @@ var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){var s
 App.safeOn('#olSbTint','click',function(){var cur=App.LS.get('olTint_'+OL.charId);if(cur===null)cur=true;var next=!cur;App.LS.set('olTint_'+OL.charId,next);var tint=App.$('#olTint'),sw=App.$('#olSbTint');if(tint){if(next)tint.classList.remove('off');else tint.classList.add('off');}if(sw){sw.classList.toggle('on',next);sw.classList.toggle('off',!next);}});
 App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.showSceneDialog();});
 App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
-App.safeOn('#olSbCss','click',function(){OfflineUI.closeSidebar();OfflineUI.openCssEditor();});
+App.safeOn('#olSbCode','click',function(){OfflineUI.closeSidebar();OfflineUI.openCodeEditor();});
 App.safeOn('#olSbClear','click',function(){if(!confirm('清空所有聊天记录？'))return;OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI.closeSidebar();App.showToast('已清空');});
 
+/* === 外观面板 === */
+var STYLE_DEFAULTS={
+  '--ol-bg-color':'#ffffff','--ol-accent':'#7a9ab8',
+  '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
+  '--ol-text-color':'#2e4258','--ol-action-color':'#7a9ab8',
+  '--ol-hd-bg':'rgba(255,255,255,.85)','--ol-bar-bg':'rgba(255,255,255,.65)',
+  '--ol-btn-color':'#7a9ab8','--ol-text-size':'14px',
+  '--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
+  '--ol-av-size':'44px','--ol-av-radius':'50%',
+  '--ol-arrow-size':'8px','--ol-av-name-show':'block'
+};
+
+function getStyleData(){return App.LS.get('olStyleData_'+OL.charId)||{};}
+function saveStyleData(d){App.LS.set('olStyleData_'+OL.charId,d);}
+function applyStyleData(){var d=getStyleData();var r=App.$('#olRoot');if(!r)return;Object.keys(d).forEach(function(k){if(k.startsWith('--'))r.style.setProperty(k,d[k]);});}
+
+var styleData=getStyleData();
+
+App.$$('.ol-sb-color').forEach(function(dot){
+  var v=dot.dataset.var;
+  var val=styleData[v]||STYLE_DEFAULTS[v]||'#ffffff';
+  dot.style.background=val;
+  dot.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(!App.openColorPicker)return;
+    App.openColorPicker(val,function(hex){
+      dot.style.background=hex;val=hex;
+      var d=getStyleData();d[v]=hex;saveStyleData(d);
+      var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
+    },function(hex){
+      dot.style.background=hex;
+      var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
+    },'ol_'+v);
+  });
+});
+
+var sliderCfg=[
+  {id:'olFontSize',valId:'olFontSizeVal',varName:'--ol-text-size',unit:'px',def:14},
+  {id:'olLineHeight',valId:'olLineHeightVal',varName:'--ol-text-line-height',unit:'',def:1.85},
+  {id:'olRadius',valId:'olRadiusVal',varName:'--ol-prose-radius',unit:'px',def:14},
+  {id:'olAvSize',valId:'olAvSizeVal',varName:'--ol-av-size',unit:'px',def:44}
+];
+sliderCfg.forEach(function(s){
+  var slider=App.$('#'+s.id);var valEl=App.$('#'+s.valId);if(!slider||!valEl)return;
+  var saved=styleData[s.varName];var current=saved?parseFloat(saved):s.def;
+  slider.value=current;valEl.textContent=current+s.unit;
+  slider.addEventListener('input',function(){
+    var v=parseFloat(this.value);valEl.textContent=v+s.unit;
+    var d=getStyleData();d[s.varName]=v+s.unit;saveStyleData(d);
+    var r=App.$('#olRoot');if(r)r.style.setProperty(s.varName,v+s.unit);
+  });
+});
+
+var curShape=styleData['--ol-av-radius']||'50%';
+App.$$('.ol-shape-btn').forEach(function(btn){
+  if(btn.dataset.shape===curShape)btn.classList.add('active');
+  btn.addEventListener('click',function(){
+    App.$$('.ol-shape-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    var d=getStyleData();d['--ol-av-radius']=btn.dataset.shape;saveStyleData(d);
+    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-radius',btn.dataset.shape);
+  });
+});
+
+var arrowSw=App.$('#olArrowSw');
+if(arrowSw){
+  var arrowOn=styleData['--ol-arrow-size']!=='0px';
+  arrowSw.classList.add(arrowOn?'on':'off');
+  arrowSw.addEventListener('click',function(){
+    arrowOn=!arrowOn;arrowSw.classList.toggle('on',arrowOn);arrowSw.classList.toggle('off',!arrowOn);
+    var d=getStyleData();d['--ol-arrow-size']=arrowOn?'8px':'0px';saveStyleData(d);
+    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-arrow-size',arrowOn?'8px':'0px');
+  });
+}
+
+var nameSw=App.$('#olNameSw');
+if(nameSw){
+  var nameOn=styleData['--ol-av-name-show']!=='none';
+  nameSw.classList.add(nameOn?'on':'off');
+  nameSw.addEventListener('click',function(){
+    nameOn=!nameOn;nameSw.classList.toggle('on',nameOn);nameSw.classList.toggle('off',!nameOn);
+    var d=getStyleData();d['--ol-av-name-show']=nameOn?'block':'none';saveStyleData(d);
+    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-name-show',nameOn?'block':'none');
+  });
+}
+
+App.safeOn('#olStyleReset','click',function(){
+  App.LS.remove('olStyleData_'+OL.charId);
+  var r=App.$('#olRoot');if(r){Object.keys(STYLE_DEFAULTS).forEach(function(k){r.style.removeProperty(k);});}
+  OfflineUI.closeSidebar();App.showToast('外观已重置');
+  setTimeout(function(){OfflineUI.openSidebar();},350);
+});
+
+applyStyleData();
+
+/* 长按菜单 */
 var mc=App.$('#olMsgs');
 if(mc){
   var lt=null,lTarget=null,moved=false;
@@ -300,8 +415,7 @@ closeSidebar:function(){var m=App.$('#olSbMask'),s=App.$('#olSidebar');if(m)m.cl
 showCtxMenu:function(msgEl,x,y){
   var OL=App.offline;if(!OL)return;OL.dismissCtx();
   var idx=parseInt(msgEl.dataset.msgIdx);if(isNaN(idx))return;
-  var msg=OL.messages[idx];if(!msg)return;
-  var isUser=msg.role==='user';
+  var msg=OL.messages[idx];if(!msg)return;var isUser=msg.role==='user';
   var menu=document.createElement('div');menu.className='ol-ctx';
   var items='';
   items+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';
@@ -358,50 +472,80 @@ showBgMenu:function(){
   menu.querySelector('#olBgUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入背景图URL：');if(!url||!url.trim())return;url=url.trim();App.LS.set('olBg_'+OL.charId,url);var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+url+')';App.showToast('已设置');});
 },
 
-openCssEditor:function(){
+openCodeEditor:function(){
   var OL=App.offline;if(!OL)return;
-  var saved=App.LS.get('olCustomCSS_'+OL.charId)||'';
+  var saved=App.LS.get('olCustomCode_'+OL.charId)||'';
 
   var REF=
-  '★ 在 .ol-root 上改全局变量\n★ 在 .ol-block 上改消息变量\n\n'+
-  '=== 全局（.ol-root）===\n'+
-  '  --ol-bg-color           页面背景\n  --ol-text-color          正文颜色\n  --ol-text-size           正文字号\n  --ol-text-line-height    行高\n  --ol-accent              主题色\n  --ol-hd-bg/border/text/size  顶部栏\n  --ol-bar-bg/border       底部栏\n  --ol-input-bg/border/text/radius  输入框\n  --ol-btn-color/size      底部按钮\n  --ol-prose-bg/border/radius/padding/shadow  气泡\n  --ol-user-bg/border/text 用户气泡\n  --ol-dialogue-color      对话色\n  --ol-action-color        动作色（*斜体*）\n  --ol-narration-color     旁白色（**粗体**）\n  --ol-narration-weight    旁白粗细\n\n'+
-  '=== 消息块（.ol-block）===\n'+
-  '  --ol-av-size            头像大小\n  --ol-av-gap              头像与气泡间距\n  --ol-av-border           头像边框\n  --ol-av-radius           头像圆角（50%=圆）\n  --ol-av-shadow           头像阴影\n  --ol-av-name-show        名字显隐（block/none）\n  --ol-av-name-size/color  名字字号/颜色\n  --ol-arrow-size          尖角大小（0=隐藏）\n  --ol-arrow-color         尖角颜色\n  --ol-scatter-show        元信息显隐（flex/none）\n\n'+
-  '=== 三段切图 ===\n'+
-  '  --ol-frame-width        整体宽度\n  --ol-frame-top-img       顶部图 url()\n  --ol-frame-top-h         顶部高度\n  --ol-frame-mid-img       中间平铺图 url()\n  --ol-frame-bot-img       底部图 url()\n  --ol-frame-bot-h         底部高度\n\n'+
-  '=== 可用的元素名 ===\n'+
-  '  .ol-hd / .ol-hd-name / .ol-hd-btn   顶部栏\n  .ol-block / .is-user / .is-char       消息块\n  .ol-avatar-area / frame / name        头像\n  .ol-frame-top / mid / bot             三段切图\n  .ol-bubble-inner / text               气泡内容\n  .ol-bubble-text em                    动作\n  .ol-bubble-text strong                旁白\n  .ol-scatter-floor/time/chars/tokens   散布信息\n  .ol-input-wrap / .ol-input            底部栏\n  .ol-btn-plus/robot/send               底部按钮\n  .ol-bg / .ol-tint                     背景/晕染\n\n'+
-  '=== 装饰钩子 ===\n'+
-  '  .ol-block::before/after             消息背景层\n  .ol-avatar-frame::before/after        头像框贴图\n  .ol-frame-mid::before/after           气泡内填充\n\n'+
+  '支持完整的 HTML + CSS + JS\n'+
+  '直接写 <style>、<div>、<script> 都行\n\n'+
+  '基础外观请用侧边栏的「外观」面板调整\n'+
+  '这里用于高级自定义：添加装饰、改结构、加交互\n\n'+
   '=== 数据属性 ===\n'+
-  '  [data-floor="1"]   第几楼\n  [data-time="14:30"]  时间\n  [data-chars="520"]   字数\n  [data-tokens="260"]  token\n\n'+
-  '=== 示例 ===\n'+
-  '.ol-root { --ol-bg-color:#f5f5f0; --ol-accent:#8a6b4c; }\n'+
-  '.ol-block { --ol-av-size:50px; --ol-av-border:2px solid #ddd; }\n'+
-  '.ol-frame-mid::before { content:""; position:absolute; inset:0;\n  background:radial-gradient(circle,rgba(138,107,76,.08),transparent 60%);\n  pointer-events:none; }';
+  '  [data-floor] [data-time]\n'+
+  '  [data-chars] [data-tokens]\n';
 
   var ed=document.createElement('div');ed.className='ol-css-editor';
   ed.innerHTML=
     '<div class="ol-css-editor-header">'+
-      '<button type="button" id="olCssBack" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">返回</button>'+
-      '<span style="font-size:14px;font-weight:700;letter-spacing:1px;color:#e0e0e0;">自定义 CSS</span>'+
-      '<button type="button" id="olCssSave" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">保存</button>'+
+      '<button type="button" id="olCodeBack" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">返回</button>'+
+      '<span style="font-size:14px;font-weight:700;letter-spacing:1px;color:#e0e0e0;">自定义代码</span>'+
+      '<button type="button" id="olCodeSave" style="background:none;border:none;color:#7a9ab8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">保存</button>'+
     '</div>'+
-    '<div class="ol-css-ref"><div class="ol-css-ref-title" id="olCssRefT">📋 变量参考表（点击展开）</div><pre class="ol-css-ref-body" id="olCssRefB">'+App.esc(REF)+'</pre></div>'+
-    '<textarea class="ol-css-textarea" id="olCssTA" spellcheck="false" placeholder=".ol-root {\n  --ol-bg-color: #1a1a2e;\n  --ol-accent: #c9a96e;\n}">'+App.esc(saved)+'</textarea>';
+    '<div class="ol-css-ref"><div class="ol-css-ref-title" id="olCodeRefT">📋 参考表（点击展开）</div><pre class="ol-css-ref-body" id="olCodeRefB">'+App.esc(REF)+'</pre></div>'+
+    '<textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="支持 HTML + CSS + JS">'+App.esc(saved)+'</textarea>';
   document.body.appendChild(ed);
-  ed.querySelector('#olCssRefT').addEventListener('click',function(){var b=ed.querySelector('#olCssRefB');b.classList.toggle('show');this.textContent=b.classList.contains('show')?'📋 变量参考表（点击收起）':'📋 变量参考表（点击展开）';});
-  ed.querySelector('#olCssBack').addEventListener('click',function(){ed.remove();});
-  ed.querySelector('#olCssSave').addEventListener('click',function(){var css=ed.querySelector('#olCssTA').value||'';App.LS.set('olCustomCSS_'+OL.charId,css);OfflineUI.applyCustomCSS(OL.charId);ed.remove();App.showToast('样式已保存');});
-  ed.querySelector('#olCssTA').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}});
+
+  ed.querySelector('#olCodeRefT').addEventListener('click',function(){
+    var b=ed.querySelector('#olCodeRefB');b.classList.toggle('show');
+    this.textContent=b.classList.contains('show')?'📋 参考表（点击收起）':'📋 参考表（点击展开）';
+  });
+  ed.querySelector('#olCodeBack').addEventListener('click',function(){ed.remove();});
+  ed.querySelector('#olCodeSave').addEventListener('click',function(){
+    var code=ed.querySelector('#olCodeTA').value||'';
+    App.LS.set('olCustomCode_'+OL.charId,code);
+    OfflineUI.applyCustomCode(OL.charId);
+    ed.remove();App.showToast('已保存并生效');
+  });
+  ed.querySelector('#olCodeTA').addEventListener('keydown',function(e){
+    if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}
+  });
 },
 
-applyCustomCSS:function(charId){
-  var old=document.getElementById('olCustomStyle');if(old)old.remove();
-  var css=App.LS.get('olCustomCSS_'+charId);if(!css)return;
-  var style=document.createElement('style');style.id='olCustomStyle';style.textContent=css;
-  document.head.appendChild(style);
+applyCustomCode:function(charId){
+  var oldStyle=document.getElementById('olCustomStyle');if(oldStyle)oldStyle.remove();
+  var oldHtml=document.getElementById('olCustomHtml');if(oldHtml)oldHtml.remove();
+
+  var code=App.LS.get('olCustomCode_'+charId);
+  if(!code)return;
+
+  var cssText='';
+  var cssRegex=/<style[^>]*>([\s\S]*?)<\/style>/gi;
+  var cssMatch;
+  while((cssMatch=cssRegex.exec(code))!==null){cssText+=cssMatch[1]+'\n';}
+
+  var jsTexts=[];
+  var jsRegex=/<script[^>]*>([\s\S]*?)<\/script>/gi;
+  var jsMatch;
+  while((jsMatch=jsRegex.exec(code))!==null){jsTexts.push(jsMatch[1]);}
+
+  var htmlText=code.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').trim();
+
+  if(!/<style/i.test(code)&&!/<[a-z]/i.test(code)){cssText=code;htmlText='';}
+
+  if(cssText){
+    var style=document.createElement('style');style.id='olCustomStyle';
+    style.textContent=cssText;document.head.appendChild(style);
+  }
+
+  if(htmlText){
+    var cont=document.getElementById('olMsgs');
+    if(cont){var div=document.createElement('div');div.id='olCustomHtml';div.innerHTML=htmlText;cont.insertBefore(div,cont.firstChild);}
+  }
+
+  if(jsTexts.length){
+    jsTexts.forEach(function(js){try{var fn=new Function(js);fn();}catch(e){console.warn('[自定义代码] JS错误:',e.message);}});
+  }
 },
 
 init:function(){App.offlineUI=OfflineUI;}
