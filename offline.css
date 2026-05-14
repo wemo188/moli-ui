@@ -86,7 +86,7 @@
 .ol-block.ol-av-left .ol-bubble-col{align-items:flex-start;}
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
 .ol-bubble-blur{position:absolute;inset:0;z-index:0;pointer-events:none;}
-.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:none;user-select:none;}
+.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:text;user-select:text;}
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
 .ol-scatter-meta{display:flex;align-items:center;gap:10px;margin-top:6px;padding-left:4px;}
 .ol-scatter-floor,.ol-scatter-time,.ol-scatter-chars,.ol-scatter-tokens{font-size:var(--ol-meta-size);color:var(--ol-meta-color);font-weight:600;}
