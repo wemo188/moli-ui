@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -6,9 +7,9 @@ var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="34" height="
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
-var PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" width="32" height="32"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-var MAGIC_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
+var MAGIC_SVG='<svg viewBox="0 0 64 64" fill="none" width="32" height="32"><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
 
 var CTX_ICONS={
 copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
@@ -18,13 +19,23 @@ del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" 
 delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'
 };
 
+var STYLE_DEFAULTS={
+  '--ol-bg-color':'#ffffff','--ol-accent':'#7a9ab8',
+  '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
+  '--ol-text-color':'#2e4258','--ol-action-color':'#7a9ab8',
+  '--ol-hd-bg':'rgba(255,255,255,.85)','--ol-bar-bg':'rgba(255,255,255,.65)',
+  '--ol-btn-color':'#1a1a1a','--ol-text-size':'14px',
+  '--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
+  '--ol-av-size':'44px','--ol-av-radius':'50%',
+  '--ol-arrow-size':'8px','--ol-av-name-show':'block'
+};
+
 var OfflineUI={
 
 render:function(container,charData){
 var c=charData;
 var displayName=c.name||'';
 var bgUrl=App.LS.get('olBg_'+c.id)||'';
-var settings=App.LS.get('olSettings_'+c.id)||{};
 
 container.innerHTML=
 '<div class="ol-root" id="olRoot">'+
@@ -42,84 +53,15 @@ container.innerHTML=
 '</div>'+
 
 '<div class="ol-input-wrap">'+
-  '<button class="ol-btn ol-btn-plus" id="olPlusBtn" type="button">'+PLUS_SVG+'</button>'+
-  '<button class="ol-btn ol-btn-magic" id="olMagicBtn" type="button">'+MAGIC_SVG+'</button>'+
+  '<button class="ol-btn" id="olPlusBtn" type="button">'+PLUS_SVG+'</button>'+
+  '<button class="ol-btn" id="olMagicBtn" type="button">'+MAGIC_SVG+'</button>'+
   '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
   '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
 '</div>'+
-
-'<div class="ol-sidebar-mask" id="olSbMask"></div>'+
-'<div class="ol-sidebar" id="olSidebar">'+
-  '<div class="ol-sb-handle"></div>'+
-  '<div class="ol-sb-header">'+
-    '<div class="ol-sb-title">设置</div>'+
-    '<button class="ol-sb-close" id="olSbClose" type="button">×</button>'+
-  '</div>'+
-  '<div class="ol-sb-body">'+
-
-    '<div class="ol-sb-section">'+
-      '<button class="ol-sb-btn" id="olSbScene" type="button">编辑场景</button>'+
-      '<button class="ol-sb-btn" id="olSbBg" type="button" style="margin-bottom:0;">上传背景图</button>'+
-    '</div>'+
-
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">聊天设置</div>'+
-      '<div style="margin-bottom:12px;">'+
-        '<div class="ol-sb-sub-label">人称视角</div>'+
-        '<div class="ol-sb-mode-row">'+
-          '<div class="ol-sb-mode-btn ol-pov-btn'+((!settings.pov||settings.pov==='second')?' active':'')+'" data-pov="second">第二人称</div>'+
-          '<div class="ol-sb-mode-btn ol-pov-btn'+(settings.pov==='first'?' active':'')+'" data-pov="first">第一人称</div>'+
-          '<div class="ol-sb-mode-btn ol-pov-btn'+(settings.pov==='third'?' active':'')+'" data-pov="third">第三人称</div>'+
-        '</div>'+
-      '</div>'+
-      '<div style="margin-bottom:12px;">'+
-        '<div class="ol-sb-sub-label">对话引号</div>'+
-        '<div class="ol-sb-mode-row">'+
-          '<div class="ol-sb-mode-btn ol-quote-btn'+((!settings.quoteStyle||settings.quoteStyle==='smart')?' active':'')+'" data-quote="smart">\u201C\u201D</div>'+
-          '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='straight'?' active':'')+'" data-quote="straight">&quot;&quot;</div>'+
-          '<div class="ol-sb-mode-btn ol-quote-btn'+(settings.quoteStyle==='corner'?' active':'')+'" data-quote="corner">「」</div>'+
-        '</div>'+
-      '</div>'+
-      '<div>'+
-        '<div class="ol-sb-sub-label">期望字数</div>'+
-        '<input type="number" class="ol-sb-input" id="olWordCount" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
-        '<div class="ol-sb-hint">AI 将严格遵守该字数范围</div>'+
-      '</div>'+
-    '</div>'+
-
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">外观</div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">页面背景</span><div class="ol-sb-color" id="olClrBg" data-var="--ol-bg-color"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">主题色</span><div class="ol-sb-color" id="olClrAccent" data-var="--ol-accent"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">气泡背景</span><div class="ol-sb-color" id="olClrProse" data-var="--ol-prose-bg"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">气泡边框</span><div class="ol-sb-color" id="olClrBorder" data-var="--ol-prose-border"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">正文颜色</span><div class="ol-sb-color" id="olClrText" data-var="--ol-text-color"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">动作颜色</span><div class="ol-sb-color" id="olClrAction" data-var="--ol-action-color"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">顶部栏</span><div class="ol-sb-color" id="olClrHd" data-var="--ol-hd-bg"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">底部栏</span><div class="ol-sb-color" id="olClrBar" data-var="--ol-bar-bg"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">按钮颜色</span><div class="ol-sb-color" id="olClrBtn" data-var="--ol-btn-color"></div></div>'+
-      '<div style="margin-top:10px;"><div class="ol-sb-sub-label">字号</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olFontSize" min="10" max="20" step="0.5"><span class="ol-sb-range-val" id="olFontSizeVal"></span></div></div>'+
-      '<div><div class="ol-sb-sub-label">行高</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olLineHeight" min="1.2" max="2.5" step="0.05"><span class="ol-sb-range-val" id="olLineHeightVal"></span></div></div>'+
-      '<div><div class="ol-sb-sub-label">气泡圆角</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olRadius" min="0" max="24" step="1"><span class="ol-sb-range-val" id="olRadiusVal"></span></div></div>'+
-      '<div><div class="ol-sb-sub-label">头像大小</div><div class="ol-sb-slider-row"><input type="range" class="ol-sb-range" id="olAvSize" min="0" max="60" step="2"><span class="ol-sb-range-val" id="olAvSizeVal"></span></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">头像形状</span><div class="ol-sb-mode-row" style="flex:0;"><div class="ol-sb-mode-btn ol-shape-btn" data-shape="50%" style="padding:6px 10px;">圆</div><div class="ol-sb-mode-btn ol-shape-btn" data-shape="10px" style="padding:6px 10px;">方</div></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">尖角</span><div class="ol-sb-sw-track" id="olArrowSw"></div></div>'+
-      '<div class="ol-sb-row"><span class="ol-sb-row-name">头像名字</span><div class="ol-sb-sw-track" id="olNameSw"></div></div>'+
-      '<div style="margin-top:10px;text-align:center;"><button class="ol-sb-btn" id="olStyleReset" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);width:auto;display:inline-block;padding:6px 20px;">重置外观</button></div>'+
-    '</div>'+
-
-    '<div class="ol-sb-section" style="border-bottom:none;">'+
-      '<button class="ol-sb-btn" id="olSbTheme" type="button">美化主题</button>'+
-      '<button class="ol-sb-btn" id="olSbCode" type="button">自定义代码</button>'+
-      '<button class="ol-sb-btn" id="olSbClear" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);">清空记录</button>'+
-    '</div>'+
-
-  '</div>'+
-'</div>'+
-
 '</div>';
 
 OfflineUI.applyCustomCode(c.id);
+OfflineUI.applyStyleData(c.id);
 },
 
 parseThinking:function(text){
@@ -247,7 +189,7 @@ if(root){
   root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
-App.safeOn('#olMagicBtn','click',function(e){e.stopPropagation();OfflineUI.openSidebar();});
+App.safeOn('#olMagicBtn','click',function(e){e.stopPropagation();OfflineUI.openSettings();});
 
 var input=App.$('#olInput');
 if(input){
@@ -271,115 +213,6 @@ App.safeOn('#olPiPhoto','click',function(e){
 
 App.safeOn('#olPiFile','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('文件 · 开发中');});
 
-App.safeOn('#olSbClose','click',function(){OfflineUI.closeSidebar();});
-App.safeOn('#olSbMask','click',function(){OfflineUI.closeSidebar();});
-
-App.$$('.ol-pov-btn').forEach(function(btn){btn.addEventListener('click',function(){App.$$('.ol-pov-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var s=OfflineUI.getSettings();s.pov=btn.dataset.pov;OfflineUI.saveSettings(s);});});
-App.$$('.ol-quote-btn').forEach(function(btn){btn.addEventListener('click',function(){App.$$('.ol-quote-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var s=OfflineUI.getSettings();s.quoteStyle=btn.dataset.quote;OfflineUI.saveSettings(s);});});
-
-var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
-
-App.safeOn('#olSbTheme','click',function(){App.showToast('美化主题功能开发中...');});
-App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.showSceneDialog();});
-App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
-App.safeOn('#olSbCode','click',function(){OfflineUI.closeSidebar();OfflineUI.openCodeEditor();});
-App.safeOn('#olSbClear','click',function(){if(!confirm('清空所有聊天记录？'))return;OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI.closeSidebar();App.showToast('已清空');});
-
-/* === 外观面板 === */
-var STYLE_DEFAULTS={
-  '--ol-bg-color':'#ffffff','--ol-accent':'#7a9ab8',
-  '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
-  '--ol-text-color':'#2e4258','--ol-action-color':'#7a9ab8',
-  '--ol-hd-bg':'rgba(255,255,255,.85)','--ol-bar-bg':'rgba(255,255,255,.65)',
-  '--ol-btn-color':'#1a1a1a','--ol-text-size':'14px',
-  '--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
-  '--ol-av-size':'44px','--ol-av-radius':'50%',
-  '--ol-arrow-size':'8px','--ol-av-name-show':'block'
-};
-
-function getStyleData(){return App.LS.get('olStyleData_'+OL.charId)||{};}
-function saveStyleData(d){App.LS.set('olStyleData_'+OL.charId,d);}
-function applyStyleData(){var d=getStyleData();var r=App.$('#olRoot');if(!r)return;Object.keys(d).forEach(function(k){if(k.startsWith('--'))r.style.setProperty(k,d[k]);});}
-
-var styleData=getStyleData();
-
-App.$$('.ol-sb-color').forEach(function(dot){
-  var v=dot.dataset.var;
-  var val=styleData[v]||STYLE_DEFAULTS[v]||'#ffffff';
-  dot.style.background=val;
-  dot.addEventListener('click',function(e){
-    e.stopPropagation();
-    if(!App.openColorPicker)return;
-    App.openColorPicker(val,function(hex){
-      dot.style.background=hex;val=hex;
-      var d=getStyleData();d[v]=hex;saveStyleData(d);
-      var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
-    },function(hex){
-      dot.style.background=hex;
-      var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
-    },'ol_'+v);
-  });
-});
-
-var sliderCfg=[
-  {id:'olFontSize',valId:'olFontSizeVal',varName:'--ol-text-size',unit:'px',def:14},
-  {id:'olLineHeight',valId:'olLineHeightVal',varName:'--ol-text-line-height',unit:'',def:1.85},
-  {id:'olRadius',valId:'olRadiusVal',varName:'--ol-prose-radius',unit:'px',def:14},
-  {id:'olAvSize',valId:'olAvSizeVal',varName:'--ol-av-size',unit:'px',def:44}
-];
-sliderCfg.forEach(function(s){
-  var slider=App.$('#'+s.id);var valEl=App.$('#'+s.valId);if(!slider||!valEl)return;
-  var saved=styleData[s.varName];var current=saved?parseFloat(saved):s.def;
-  slider.value=current;valEl.textContent=current+s.unit;
-  slider.addEventListener('input',function(){
-    var v=parseFloat(this.value);valEl.textContent=v+s.unit;
-    var d=getStyleData();d[s.varName]=v+s.unit;saveStyleData(d);
-    var r=App.$('#olRoot');if(r)r.style.setProperty(s.varName,v+s.unit);
-  });
-});
-
-var curShape=styleData['--ol-av-radius']||'50%';
-App.$$('.ol-shape-btn').forEach(function(btn){
-  if(btn.dataset.shape===curShape)btn.classList.add('active');
-  btn.addEventListener('click',function(){
-    App.$$('.ol-shape-btn').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    var d=getStyleData();d['--ol-av-radius']=btn.dataset.shape;saveStyleData(d);
-    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-radius',btn.dataset.shape);
-  });
-});
-
-var arrowSw=App.$('#olArrowSw');
-if(arrowSw){
-  var arrowOn=styleData['--ol-arrow-size']!=='0px';
-  arrowSw.classList.add(arrowOn?'on':'off');
-  arrowSw.addEventListener('click',function(){
-    arrowOn=!arrowOn;arrowSw.classList.toggle('on',arrowOn);arrowSw.classList.toggle('off',!arrowOn);
-    var d=getStyleData();d['--ol-arrow-size']=arrowOn?'8px':'0px';saveStyleData(d);
-    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-arrow-size',arrowOn?'8px':'0px');
-  });
-}
-
-var nameSw=App.$('#olNameSw');
-if(nameSw){
-  var nameOn=styleData['--ol-av-name-show']!=='none';
-  nameSw.classList.add(nameOn?'on':'off');
-  nameSw.addEventListener('click',function(){
-    nameOn=!nameOn;nameSw.classList.toggle('on',nameOn);nameSw.classList.toggle('off',!nameOn);
-    var d=getStyleData();d['--ol-av-name-show']=nameOn?'block':'none';saveStyleData(d);
-    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-name-show',nameOn?'block':'none');
-  });
-}
-
-App.safeOn('#olStyleReset','click',function(){
-  App.LS.remove('olStyleData_'+OL.charId);
-  var r=App.$('#olRoot');if(r){Object.keys(STYLE_DEFAULTS).forEach(function(k){r.style.removeProperty(k);});}
-  OfflineUI.closeSidebar();App.showToast('外观已重置');
-  setTimeout(function(){OfflineUI.openSidebar();},350);
-});
-
-applyStyleData();
-
 /* 长按菜单 */
 var mc=App.$('#olMsgs');
 if(mc){
@@ -392,18 +225,213 @@ if(mc){
 if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}
 },
 
-getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
-saveSettings:function(s){var OL=App.offline;if(OL)App.LS.set('olSettings_'+OL.charId,s);},
+/* ==================== 线下模式设置 (采用半屏面板) ==================== */
+openSettings:function(){
+  var OL=App.offline;if(!OL)return;
+  var c=OL.charData;
+  var settings=App.LS.get('olSettings_'+c.id)||{};
+  var styleData=App.LS.get('olStyleData_'+c.id)||{};
 
-openSidebar:function(){
-  var m=App.$('#olSbMask'),s=App.$('#olSidebar');
-  if(m)m.classList.add('show');
-  if(s)s.classList.add('show');
+  var panel=App.$('#olSettingsPanel');
+  if(panel)panel.remove();
+
+  panel=document.createElement('div');
+  panel.id='olSettingsPanel';
+  panel.className='half-panel hidden';
+  panel.style.zIndex='100010';
+
+  var povBtns=
+    '<div class="hp-btn-row" style="margin-bottom:0;">'+
+      '<button class="hp-btn ol-set-btn'+((!settings.pov||settings.pov==='second')?' active':'')+'" data-pov="second">第二人称</button>'+
+      '<button class="hp-btn ol-set-btn'+(settings.pov==='first'?' active':'')+'" data-pov="first">第一人称</button>'+
+      '<button class="hp-btn ol-set-btn'+(settings.pov==='third'?' active':'')+'" data-pov="third">第三人称</button>'+
+    '</div>';
+
+  var quoteBtns=
+    '<div class="hp-btn-row" style="margin-bottom:0;">'+
+      '<button class="hp-btn ol-set-btn'+((!settings.quoteStyle||settings.quoteStyle==='smart')?' active':'')+'" data-quote="smart">\u201C\u201D</button>'+
+      '<button class="hp-btn ol-set-btn'+(settings.quoteStyle==='straight'?' active':'')+'" data-quote="straight">&quot;&quot;</button>'+
+      '<button class="hp-btn ol-set-btn'+(settings.quoteStyle==='corner'?' active':'')+'" data-quote="corner">「」</button>'+
+    '</div>';
+
+  var shapeBtns=
+    '<div class="hp-btn-row" style="margin-bottom:0;">'+
+      '<button class="hp-btn ol-set-btn'+((!styleData['--ol-av-radius']||styleData['--ol-av-radius']==='50%')?' active':'')+'" data-shape="50%">圆形</button>'+
+      '<button class="hp-btn ol-set-btn'+(styleData['--ol-av-radius']==='10px'?' active':'')+'" data-shape="10px">方形</button>'+
+    '</div>';
+
+  var arrowOn=styleData['--ol-arrow-size']!=='0px';
+  var nameOn=styleData['--ol-av-name-show']!=='none';
+
+  panel.innerHTML=
+    '<div class="hp-handle"></div>'+
+    '<div class="hp-header">'+
+      '<h2>线下模式设置</h2>'+
+      '<button class="hp-close" id="olSetClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'+
+    '</div>'+
+    '<div class="hp-body">'+
+
+      '<div class="hp-btn-row">'+
+        '<button class="hp-btn hp-btn-primary" id="olSetSceneBtn" type="button">编辑场景</button>'+
+        '<button class="hp-btn hp-btn-primary" id="olSetBgBtn" type="button">上传背景图</button>'+
+      '</div>'+
+      '<div class="hp-divider"></div>'+
+
+      '<div class="hp-section-label">聊天设置</div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px;">人称视角</span>'+povBtns+'</div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px;">对话引号</span>'+quoteBtns+'</div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px;">期望字数</span><input type="number" id="olSetWordCount" value="'+(settings.wordCount||'')+'" placeholder="如 800，留空不限" style="flex:1;padding:8px;border:1.5px solid #ddd;border-radius:8px;outline:none;font-size:13px;"></div>'+
+      '<div class="hp-divider"></div>'+
+
+      '<div class="hp-section-label">外观</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:14px;">'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">页面背景</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-bg-color"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">主题色</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-accent"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">气泡背景</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-prose-bg"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">气泡边框</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-prose-border"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">正文颜色</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-text-color"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">动作颜色</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-action-color"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">顶部栏</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-hd-bg"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">底部栏</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-bar-bg"></div></div>'+
+        '<div class="hp-color-row" style="margin:0;"><span class="hp-slider-label" style="flex:1;">按钮颜色</span><div class="hp-color-dot ol-clr-dot" data-var="--ol-btn-color"></div></div>'+
+      '</div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="olSetFontSize" min="10" max="20" step="0.5"><span class="hp-slider-val" id="olSetFontSizeVal"></span></div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="olSetLineHeight" min="1.2" max="2.5" step="0.05"><span class="hp-slider-val" id="olSetLineHeightVal"></span></div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olSetRadius" min="0" max="24" step="1"><span class="hp-slider-val" id="olSetRadiusVal"></span></div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label">头像</span><input type="range" id="olSetAvSize" min="0" max="60" step="2"><span class="hp-slider-val" id="olSetAvSizeVal"></span></div>'+
+      '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px;">形状</span>'+shapeBtns+'</div>'+
+      '<div style="display:flex;gap:16px;margin-bottom:14px;">'+
+        '<button class="hp-btn ol-toggle-btn '+(arrowOn?'active':'')+'" id="olSetArrowBtn">气泡尖角: '+(arrowOn?'开':'关')+'</button>'+
+        '<button class="hp-btn ol-toggle-btn '+(nameOn?'active':'')+'" id="olSetNameBtn">头像名字: '+(nameOn?'开':'关')+'</button>'+
+      '</div>'+
+      '<div class="hp-btn-row"><button class="hp-btn-reset" id="olSetStyleReset" type="button" style="margin:0 auto;width:100%;">重置所有外观</button></div>'+
+      '<div class="hp-divider"></div>'+
+
+      '<div class="hp-section-label">高级与数据</div>'+
+      '<div class="hp-btn-row" style="flex-wrap:wrap;">'+
+        '<button class="hp-btn" id="olSetThemeBtn" type="button" style="background:#f5f5f5;border:1px solid #ddd;color:#333;">美化主题</button>'+
+        '<button class="hp-btn" id="olSetCodeBtn" type="button" style="background:#f5f5f5;border:1px solid #ddd;color:#333;">自定义代码</button>'+
+      '</div>'+
+      '<div class="hp-btn-row">'+
+        '<button class="hp-btn hp-btn-danger" id="olSetClearBtn" type="button">清空聊天记录</button>'+
+      '</div>'+
+
+      '<div class="hp-bottom-spacer"></div>'+
+    '</div>';
+
+  document.body.appendChild(panel);
+
+  /* 样式小工具类 */
+  var styleEl=document.getElementById('olSetDynamicStyle');
+  if(!styleEl){styleEl=document.createElement('style');styleEl.id='olSetDynamicStyle';document.head.appendChild(styleEl);}
+  styleEl.innerHTML='.ol-set-btn{background:rgba(0,0,0,.03);color:#666;border:1.5px solid transparent;}.ol-set-btn.active{background:rgba(126,163,201,.15);color:#2e4258;border-color:rgba(126,163,201,.4);}.ol-toggle-btn{background:rgba(0,0,0,.03);color:#666;}.ol-toggle-btn.active{background:rgba(26,26,26,.85);color:#fff;}';
+
+  /* 绑定事件 */
+  panel.querySelector('#olSetClose').addEventListener('click',function(){
+    panel.classList.remove('show');
+    setTimeout(function(){panel.remove();},350);
+  });
+  App.bindSwipeBack(panel,function(){panel.remove();});
+
+  panel.querySelector('#olSetSceneBtn').addEventListener('click',function(){OfflineUI.showSceneDialog();});
+  panel.querySelector('#olSetBgBtn').addEventListener('click',function(){OfflineUI.showBgMenu();});
+
+  /* 聊天设置 */
+  panel.querySelectorAll('.ol-set-btn[data-pov]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      panel.querySelectorAll('.ol-set-btn[data-pov]').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');settings.pov=btn.dataset.pov;App.LS.set('olSettings_'+c.id,settings);
+    });
+  });
+  panel.querySelectorAll('.ol-set-btn[data-quote]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      panel.querySelectorAll('.ol-set-btn[data-quote]').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');settings.quoteStyle=btn.dataset.quote;App.LS.set('olSettings_'+c.id,settings);
+    });
+  });
+  panel.querySelector('#olSetWordCount').addEventListener('change',function(){settings.wordCount=parseInt(this.value)||0;App.LS.set('olSettings_'+c.id,settings);});
+
+  /* 颜色 */
+  panel.querySelectorAll('.ol-clr-dot').forEach(function(dot){
+    var v=dot.dataset.var;var val=styleData[v]||STYLE_DEFAULTS[v]||'#ffffff';
+    dot.style.background=val;
+    dot.addEventListener('click',function(e){
+      e.stopPropagation();if(!App.openColorPicker)return;
+      App.openColorPicker(val,function(hex){
+        dot.style.background=hex;val=hex;styleData[v]=hex;App.LS.set('olStyleData_'+c.id,styleData);
+        var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
+      },function(hex){
+        dot.style.background=hex;var r=App.$('#olRoot');if(r)r.style.setProperty(v,hex);
+      },'ol_'+v);
+    });
+  });
+
+  /* 滑块 */
+  var sliders=[
+    {id:'olSetFontSize',valId:'olSetFontSizeVal',varName:'--ol-text-size',unit:'px',def:14},
+    {id:'olSetLineHeight',valId:'olSetLineHeightVal',varName:'--ol-text-line-height',unit:'',def:1.85},
+    {id:'olSetRadius',valId:'olSetRadiusVal',varName:'--ol-prose-radius',unit:'px',def:14},
+    {id:'olSetAvSize',valId:'olSetAvSizeVal',varName:'--ol-av-size',unit:'px',def:44}
+  ];
+  sliders.forEach(function(s){
+    var slider=panel.querySelector('#'+s.id);var valEl=panel.querySelector('#'+s.valId);
+    var saved=styleData[s.varName];var current=saved?parseFloat(saved):s.def;
+    slider.value=current;valEl.textContent=current+s.unit;
+    slider.addEventListener('input',function(){
+      var v=parseFloat(this.value);valEl.textContent=v+s.unit;
+      styleData[s.varName]=v+s.unit;App.LS.set('olStyleData_'+c.id,styleData);
+      var r=App.$('#olRoot');if(r)r.style.setProperty(s.varName,v+s.unit);
+    });
+  });
+
+  /* 形状与开关 */
+  panel.querySelectorAll('.ol-set-btn[data-shape]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      panel.querySelectorAll('.ol-set-btn[data-shape]').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');styleData['--ol-av-radius']=btn.dataset.shape;App.LS.set('olStyleData_'+c.id,styleData);
+      var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-radius',btn.dataset.shape);
+    });
+  });
+
+  var arrowBtn=panel.querySelector('#olSetArrowBtn');
+  arrowBtn.addEventListener('click',function(){
+    arrowOn=!arrowOn;arrowBtn.classList.toggle('active',arrowOn);arrowBtn.textContent='气泡尖角: '+(arrowOn?'开':'关');
+    styleData['--ol-arrow-size']=arrowOn?'8px':'0px';App.LS.set('olStyleData_'+c.id,styleData);
+    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-arrow-size',arrowOn?'8px':'0px');
+  });
+
+  var nameBtn=panel.querySelector('#olSetNameBtn');
+  nameBtn.addEventListener('click',function(){
+    nameOn=!nameOn;nameBtn.classList.toggle('active',nameOn);nameBtn.textContent='头像名字: '+(nameOn?'开':'关');
+    styleData['--ol-av-name-show']=nameOn?'block':'none';App.LS.set('olStyleData_'+c.id,styleData);
+    var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-name-show',nameOn?'block':'none');
+  });
+
+  panel.querySelector('#olSetStyleReset').addEventListener('click',function(){
+    App.LS.remove('olStyleData_'+c.id);
+    var r=App.$('#olRoot');if(r){Object.keys(STYLE_DEFAULTS).forEach(function(k){r.style.removeProperty(k);});}
+    panel.classList.remove('show');setTimeout(function(){panel.remove();OfflineUI.openSettings();},350);
+    App.showToast('外观已重置');
+  });
+
+  /* 高级 */
+  panel.querySelector('#olSetThemeBtn').addEventListener('click',function(){App.showToast('美化主题功能开发中...');});
+  panel.querySelector('#olSetCodeBtn').addEventListener('click',function(){panel.classList.remove('show');setTimeout(function(){panel.remove();OfflineUI.openCodeEditor();},350);});
+  panel.querySelector('#olSetClearBtn').addEventListener('click',function(){
+    if(!confirm('清空所有聊天记录？'))return;
+    OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();
+    panel.classList.remove('show');setTimeout(function(){panel.remove();},350);
+    App.showToast('已清空');
+  });
+
+  panel.classList.remove('hidden');
+  requestAnimationFrame(function(){panel.classList.add('show');});
 },
-closeSidebar:function(){
-  var m=App.$('#olSbMask'),s=App.$('#olSidebar');
-  if(m)m.classList.remove('show');
-  if(s)s.classList.remove('show');
+
+applyStyleData:function(charId){
+  var d=App.LS.get('olStyleData_'+charId)||{};
+  var r=App.$('#olRoot');if(!r)return;
+  Object.keys(d).forEach(function(k){if(k.startsWith('--'))r.style.setProperty(k,d[k]);});
 },
 
 showCtxMenu:function(msgEl,x,y){
@@ -473,7 +501,7 @@ openCodeEditor:function(){
   var REF=
   '支持完整的 HTML + CSS + JS\n'+
   '直接写 <style>、<div>、<script> 都行\n\n'+
-  '基础外观请用侧边栏的「外观」面板调整\n'+
+  '基础外观请用「设置面板」调整\n'+
   '这里用于高级自定义：添加装饰、改结构、加交互\n\n'+
   '=== 系统元素名 ===\n'+
   '  .ol-root              页面\n'+
