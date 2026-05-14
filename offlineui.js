@@ -323,7 +323,7 @@ var STYLE_DEFAULTS={
   '--ol-bg-color':'#ffffff','--ol-accent':'#1a1a1a',
   '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
   '--ol-text-color':'#2e4258','--ol-action-color':'#1a1a1a',
-  '--ol-hd-bg':'#ffffff','--ol-bar-bg':'#ffffff',
+  '--ol-hd-bg':'#transparent','--ol-bar-bg':'#ffffff',
   '--ol-text-size':'14px','--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
   '--ol-av-size':'44px','--ol-av-radius':'50%'
 };
