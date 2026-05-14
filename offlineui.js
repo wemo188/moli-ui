@@ -86,16 +86,16 @@ container.innerHTML=
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">外观</div>'+
-    '<div class="hp-color-row">'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-bg-color"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-accent"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-prose-bg"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-prose-border"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-text-color"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-action-color"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-hd-bg"></div>'+
-      '<div class="hp-color-dot ol-sb-color" data-var="--ol-bar-bg"></div>'+
-    '</div>'+
+    '<div class="ol-color-grid">'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-bg-color"></div><span>页面背景</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-accent"></div><span>主题色</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-prose-bg"></div><span>气泡背景</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-prose-border"></div><span>气泡边框</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-text-color"></div><span>正文颜色</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-action-color"></div><span>动作颜色</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-hd-bg"></div><span>顶部栏</span></div>'+
+  '<div class="ol-color-item"><div class="hp-color-dot ol-sb-color" data-var="--ol-bar-bg"></div><span>底部栏</span></div>'+
+'</div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="olFontSize" min="10" max="20" step="0.5"><span class="hp-slider-val" id="olFontSizeVal"></span></div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="olLineHeight" min="1.2" max="2.5" step="0.05"><span class="hp-slider-val" id="olLineHeightVal"></span></div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olRadius" min="0" max="24" step="1"><span class="hp-slider-val" id="olRadiusVal"></span></div>'+
