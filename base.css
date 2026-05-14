@@ -1,3 +1,4 @@
+
 html {
   overflow: hidden;
   overscroll-behavior: none;
@@ -509,38 +510,25 @@ img.img-fill { transform: none !important; }
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
   border-radius: 20px 20px 0 0;
-  padding: 0;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 10px));
   box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; gap: 10px;
   animation: cpSlideUp 0.3s ease;
-  max-height: 400px;
-  overflow: hidden;
-}
-
-.cp-panel-scroll {
-  flex: 1;
+  touch-action: none;
+  max-height: 85vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 16px calc(16px + env(safe-area-inset-bottom, 10px));
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  touch-action: pan-y;           /* ★ 加这行，允许垂直滚动 */
-  overscroll-behavior: contain;  /* ★ 加这行，防止滚动穿透 */
 }
-
-.cp-panel-scroll::-webkit-scrollbar { display: none; }
 
 @keyframes cpSlideUp {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
 
+/* --- 头部 --- */
 .cp-header {
   display: flex; align-items: center; justify-content: space-between;
   cursor: grab;
-  padding: 14px 16px 6px;
-  flex-shrink: 0;
 }
 .cp-header:active { cursor: grabbing; }
 
@@ -558,6 +546,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-close:active { background: #ddd; }
 
+/* --- 预览 + 输入 --- */
 .cp-preview-row {
   display: flex; align-items: center; gap: 12px;
 }
@@ -586,6 +575,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-hex-input:focus { border-color: #aaa; }
 
+/* --- 模式切换 --- */
 .cp-mode-row {
   display: flex; gap: 4px;
 }
@@ -604,8 +594,9 @@ img.img-fill { transform: none !important; }
   background: #1a1a1a; color: #fff; border-color: #1a1a1a;
 }
 
+/* --- 色相/饱和度面板 --- */
 .cp-spectrum {
-  position: relative; width: 100%; height: 100px;
+  position: relative; width: 100%; height: 120px;
   border-radius: 10px; overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -624,14 +615,16 @@ img.img-fill { transform: none !important; }
   transform: translate(-50%, -50%);
 }
 
+/* --- 滑条标签 --- */
 .cp-bar-label {
   font-size: 9px; color: #111; font-weight: 600;
   margin: 2px 0 0 2px; display: block; letter-spacing: .5px;
 }
 
+/* --- 色相条 --- */
 .cp-hue-wrap {
-  position: relative; width: 100%; height: 20px;
-  border-radius: 10px; overflow: hidden;
+  position: relative; width: 100%; height: 22px;
+  border-radius: 11px; overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -641,21 +634,43 @@ img.img-fill { transform: none !important; }
   width: 100%; height: 100%;
   background: linear-gradient(to right,
     #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-  border-radius: 10px;
+  border-radius: 11px;
 }
 
 .cp-hue-cursor {
-  position: absolute; top: 50%; width: 20px; height: 20px;
+  position: absolute; top: 50%; width: 22px; height: 22px;
   border: 3px solid #fff; border-radius: 50%;
   box-shadow: 0 1px 6px rgba(0,0,0,0.25);
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
 
-/* 透明度条 */
+/* --- 亮度条 --- */
+.cp-light-wrap {
+  position: relative; width: 100%; height: 22px;
+  border-radius: 11px; overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.cp-light-bar {
+  position: absolute; inset: 0; border-radius: 11px;
+}
+
+.cp-light-cursor {
+  position: absolute; top: 50%; width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff; border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.25);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* --- 透明度条 --- */
 .cp-alpha-wrap {
-  position: relative; width: 100%; height: 20px;
-  border-radius: 10px;
+  position: relative; width: 100%; height: 22px;
+  border-radius: 11px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -668,11 +683,11 @@ img.img-fill { transform: none !important; }
 }
 
 .cp-alpha-bar {
-  position: absolute; inset: 0; border-radius: 10px;
+  position: absolute; inset: 0; border-radius: 11px;
 }
 
 .cp-alpha-cursor {
-  position: absolute; top: 50%; width: 20px; height: 20px;
+  position: absolute; top: 50%; width: 22px; height: 22px;
   border-radius: 50%;
   background: #fff; border: 3px solid #fff;
   box-shadow: 0 1px 6px rgba(0,0,0,.25);
@@ -680,20 +695,7 @@ img.img-fill { transform: none !important; }
   pointer-events: none;
 }
 
-/* 模糊度行 */
-.cp-blur-row {
-  display: flex; align-items: center; gap: 8px;
-}
-
-.cp-blur-row span:first-child {
-  font-size: 9px; color: #111; font-weight: 600; white-space: nowrap;
-}
-
-.cp-blur-val {
-  font-size: 10px; color: #111; font-weight: 600; width: 32px; text-align: right;
-}
-
-/* 渐变区域 */
+/* --- 渐变区域 --- */
 .cp-gradient-area {
   padding: 6px 0 2px;
 }
@@ -723,7 +725,7 @@ img.img-fill { transform: none !important; }
 }
 
 .cp-grad-preview {
-  height: 28px; border-radius: 8px;
+  height: 32px; border-radius: 8px;
   border: 1px solid rgba(0,0,0,.06);
   margin-bottom: 8px;
   position: relative; overflow: hidden;
@@ -762,7 +764,7 @@ img.img-fill { transform: none !important; }
   cursor: pointer;
 }
 
-/* 预设色块 */
+/* --- 预设色块 --- */
 .cp-presets {
   display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
 }
@@ -804,6 +806,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-preset-edit-btn:active { background: #f0f6fb; }
 
+/* --- 确定按钮 --- */
 .cp-confirm {
   width: 100%; padding: 12px;
   background: #111; color: #fff; border: none;
@@ -812,16 +815,6 @@ img.img-fill { transform: none !important; }
   -webkit-tap-highlight-color: transparent; font-family: inherit;
 }
 .cp-confirm:active { opacity: 0.8; }
-/* 调色盘字号统一加大 */
-.cp-panel .cp-bar-label { font-size: 12px; }
-.cp-panel .cp-mode-btn { font-size: 13px; }
-.cp-panel .cp-grad-stop { font-size: 13px; }
-.cp-panel .cp-grad-dir span { font-size: 12px !important; }
-.cp-panel .cp-blur-row span:first-child { font-size: 12px !important; }
-.cp-panel .cp-blur-val { font-size: 12px !important; }
-.cp-panel .cp-hex-input { font-size: 14px; }
-.cp-panel .cp-confirm { font-size: 15px; }
-.cp-panel .cp-preset-edit-btn { font-size: 14px; }
 
 /* ====== 全屏面板 ====== */
 .fullpage-panel {
