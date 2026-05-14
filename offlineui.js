@@ -3,9 +3,9 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var NEW_PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-var NEW_WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="32" cy="32" r="28" stroke="#1a1a1a" stroke-width="2.4" fill="none"/><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
+var WAND_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><circle cx="32" cy="32" r="28" stroke="#1a1a1a" stroke-width="2.4" fill="none"/><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
 
 var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="32" height="32" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1a1a1a"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1a1a1a"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
 
@@ -43,81 +43,79 @@ container.innerHTML=
 '</div>'+
 
 '<div class="ol-input-wrap">'+
+  '<button class="ol-outer-btn" id="olPanelBtn" type="button">'+WAND_SVG+'</button>'+
   '<div class="ol-input-box">'+
-    '<button class="ol-btn" id="olPlusBtn" type="button">'+NEW_PLUS_SVG+'</button>'+
+    '<button class="ol-inner-btn" id="olPlusBtn" type="button">'+CLOUD_SVG+'</button>'+
     '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
   '</div>'+
-  '<button class="ol-btn" id="olPanelBtn" type="button">'+NEW_WAND_SVG+'</button>'+
-  '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
+  '<button class="ol-outer-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
 '</div>'+
 
-'<div id="olSettingsPanel" class="half-panel hidden" style="z-index: 100050;">'+
+'<div id="olSettingsPanel" class="half-panel hidden">'+
   '<div class="hp-handle"></div>'+
   '<div class="hp-header">'+
     '<h2>设置</h2>'+
-    '<button class="hp-close" id="olPanelClose" type="button" style="background:transparent;"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg></button>'+
+    '<button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'+
   '</div>'+
-  '<div class="hp-body" style="padding: 14px 20px 40px;">'+
-    
+  '<div class="hp-body">'+
+
     '<div class="hp-btn-row">'+
       '<button class="hp-btn hp-btn-primary" id="olSbScene">编辑场景</button>'+
-      '<button class="hp-btn" id="olSbBg" style="border:1.5px solid var(--text-primary);color:var(--text-primary);">上传背景图</button>'+
+      '<button class="hp-btn hp-btn-danger" id="olSbBg">上传背景图</button>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">聊天设置</div>'+
-    '<div style="font-size:12px;font-weight:700;color:#5a7a9a;margin-bottom:8px;">人称视角</div>'+
-    '<div class="hp-btn-row" id="olPovRow">'+
+    '<div class="hp-section-label" style="color:var(--text-primary);margin-bottom:6px;">人称视角</div>'+
+    '<div class="hp-btn-row">'+
       '<button class="hp-btn ol-pov-btn" data-pov="second">第二</button>'+
       '<button class="hp-btn ol-pov-btn" data-pov="first">第一</button>'+
       '<button class="hp-btn ol-pov-btn" data-pov="third">第三</button>'+
     '</div>'+
-    '<div style="font-size:12px;font-weight:700;color:#5a7a9a;margin-bottom:8px;margin-top:12px;">对话引号</div>'+
-    '<div class="hp-btn-row" id="olQuoteRow">'+
-      '<button class="hp-btn ol-quote-btn" data-quote="smart">“”</button>'+
-      '<button class="hp-btn ol-quote-btn" data-quote="straight">""</button>'+
+    '<div class="hp-section-label" style="color:var(--text-primary);margin-bottom:6px;margin-top:10px;">对话引号</div>'+
+    '<div class="hp-btn-row">'+
+      '<button class="hp-btn ol-quote-btn" data-quote="smart">\u201C\u201D</button>'+
+      '<button class="hp-btn ol-quote-btn" data-quote="straight">&quot;&quot;</button>'+
       '<button class="hp-btn ol-quote-btn" data-quote="corner">「」</button>'+
     '</div>'+
-    '<div class="hp-slider-row" style="margin-top:12px;">'+
-      '<span class="hp-slider-label" style="width:60px;">期望字数</span>'+
-      '<input type="number" id="olWordCount" style="flex:1;padding:8px;border:1.5px solid rgba(0,0,0,.15);border-radius:8px;background:transparent;outline:none;" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
+    '<div class="hp-slider-row" style="margin-top:10px;">'+
+      '<span class="hp-slider-label">字数</span>'+
+      '<input type="number" id="olWordCount" placeholder="如 800" value="'+(settings.wordCount||'')+'">'+
+      '<span class="hp-slider-val">字</span>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">外观</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;margin-bottom:16px;">'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-bg-color"></div><span style="font-size:10px;color:#999;font-weight:600;">页面背景</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-accent"></div><span style="font-size:10px;color:#999;font-weight:600;">主题色</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-prose-bg"></div><span style="font-size:10px;color:#999;font-weight:600;">气泡背景</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-prose-border"></div><span style="font-size:10px;color:#999;font-weight:600;">气泡边框</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-text-color"></div><span style="font-size:10px;color:#999;font-weight:600;">正文颜色</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-action-color"></div><span style="font-size:10px;color:#999;font-weight:600;">动作颜色</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-hd-bg"></div><span style="font-size:10px;color:#999;font-weight:600;">顶部栏</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="hp-color-dot ol-sb-color" data-var="--ol-bar-bg"></div><span style="font-size:10px;color:#999;font-weight:600;">底部栏</span></div>'+
+    '<div class="hp-color-row">'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-bg-color"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-accent"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-prose-bg"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-prose-border"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-text-color"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-action-color"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-hd-bg"></div>'+
+      '<div class="hp-color-dot ol-sb-color" data-var="--ol-bar-bg"></div>'+
     '</div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="olFontSize" min="10" max="20" step="0.5"><span class="hp-slider-val" id="olFontSizeVal"></span></div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="olLineHeight" min="1.2" max="2.5" step="0.05"><span class="hp-slider-val" id="olLineHeightVal"></span></div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olRadius" min="0" max="24" step="1"><span class="hp-slider-val" id="olRadiusVal"></span></div>'+
     '<div class="hp-slider-row"><span class="hp-slider-label">头像</span><input type="range" id="olAvSize" min="0" max="60" step="2"><span class="hp-slider-val" id="olAvSizeVal"></span></div>'+
-    '<div style="display:flex;align-items:center;gap:12px;margin-top:12px;">'+
-      '<span class="hp-slider-label" style="margin:0;">头像形状</span>'+
-      '<div class="hp-btn-row" style="flex:1;margin:0;">'+
-        '<button class="hp-btn ol-shape-btn" data-shape="50%">圆形</button>'+
-        '<button class="hp-btn ol-shape-btn" data-shape="10px">方形</button>'+
-      '</div>'+
+    '<div class="hp-btn-row">'+
+      '<button class="hp-btn ol-shape-btn" data-shape="50%">圆形</button>'+
+      '<button class="hp-btn ol-shape-btn" data-shape="10px">方形</button>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">美化主题</div>'+
     '<div class="hp-btn-row">'+
-      '<button class="hp-btn" id="olStyleReset" style="border:1.5px solid #c9706b;color:#c9706b;">重置外观</button>'+
+      '<button class="hp-btn hp-btn-danger" id="olStyleReset">重置外观</button>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">高级</div>'+
     '<div class="hp-btn-row">'+
-      '<button class="hp-btn" id="olSbCode" style="border:1.5px solid rgba(0,0,0,.15);">自定义代码</button>'+
-      '<button class="hp-btn" id="olSbClear" style="border:1.5px solid #c9706b;color:#c9706b;">清空记录</button>'+
+      '<button class="hp-btn" id="olSbCode">自定义代码</button>'+
+      '<button class="hp-btn hp-btn-danger" id="olSbClear">清空记录</button>'+
     '</div>'+
     '<div class="hp-bottom-spacer"></div>'+
   '</div>'+
@@ -190,10 +188,10 @@ OL.messages.forEach(function(msg,idx){
       '<div class="ol-avatar-name">'+avName+'</div>'+
     '</div>'+
     '<div class="ol-scatter-meta">'+
-      '<div class="ol-scatter-item"><span class="ol-scatter-floor">#'+floorStr+'</span><div class="ol-scatter-line"></div></div>'+
-      '<div class="ol-scatter-item"><span class="ol-scatter-tokens">'+tokenStr+' tk</span><div class="ol-scatter-line"></div></div>'+
-      '<div class="ol-scatter-item"><span class="ol-scatter-time">'+timeStr+'</span><div class="ol-scatter-line"></div></div>'+
-      '<div class="ol-scatter-item"><span class="ol-scatter-chars">'+charCount+'字</span><div class="ol-scatter-line"></div></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-floor">#'+floorStr+'</span></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-tokens">'+tokenStr+' tk</span></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-time">'+timeStr+'</span></div>'+
+      '<div class="ol-scatter-item"><span class="ol-scatter-chars">'+charCount+'字</span></div>'+
     '</div>'+
     '<div class="ol-frame-top"></div>'+
     '<div class="ol-frame-mid"><div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+OfflineUI.formatProse(text)+'</div></div></div>'+
@@ -241,6 +239,11 @@ updateTyping:function(show){
   else el.textContent=dn;
 },
 
+_closePanel:function(){
+  var p=App.$('#olSettingsPanel');
+  if(p){p.classList.remove('show');setTimeout(function(){p.classList.add('hidden');},350);}
+},
+
 bindEvents:function(){
 var OL=App.offline;if(!OL)return;
 var root=App.$('#olRoot');
@@ -254,29 +257,16 @@ if(root){
   root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
-/* 打开半屏面板 */
 App.safeOn('#olPanelBtn','click',function(e){
   e.stopPropagation();
-  if(panel){
-    panel.classList.remove('hidden');
-    requestAnimationFrame(function(){panel.classList.add('show');});
-  }
+  if(panel){panel.classList.remove('hidden');requestAnimationFrame(function(){panel.classList.add('show');});}
 });
-
-App.safeOn('#olPanelClose','click',function(){
-  if(panel){
-    panel.classList.remove('show');
-    setTimeout(function(){panel.classList.add('hidden');},350);
-  }
-});
+App.safeOn('#olPanelClose','click',function(){OfflineUI._closePanel();});
 
 var input=App.$('#olInput');
 if(input){
   input.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
-  input.addEventListener('keydown',function(e){
-    /* 允许所有端直接通过回车发送 */
-    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();OL.sendUser();}
-  });
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();OL.sendUser();}});
 }
 
 App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}OL.requestAI();});
@@ -285,68 +275,54 @@ App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#o
 App.safeOn('#olPiPhoto','click',function(e){
   e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}
   var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
-  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olPhAlbum" type="button" style="width:100%;">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button" style="width:100%;">输入图片URL</button></div></div>';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olPhAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button">输入图片URL</button></div></div>';
   document.body.appendChild(menu);
   menu.addEventListener('click',function(ev){if(ev.target===menu)menu.remove();});
   menu.querySelector('#olPhX').addEventListener('click',function(){menu.remove();});
   menu.querySelector('#olPhAlbum').addEventListener('click',function(){menu.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();};inp.click();});
   menu.querySelector('#olPhUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入图片URL：');if(!url)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();});
 });
-
 App.safeOn('#olPiFile','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('文件 · 开发中');});
 
-/* 设置项按钮高亮逻辑 */
-function updateBtnStyle(btn, isActive) {
-  if(isActive) {
-    btn.classList.add('hp-btn-primary');
-    btn.style.border = 'none';
-  } else {
-    btn.classList.remove('hp-btn-primary');
-    btn.style.border = '1.5px solid rgba(0,0,0,.15)';
-    btn.style.background = 'transparent';
-    btn.style.color = 'inherit';
-  }
+/* 按钮高亮 */
+function setActive(btn,on){
+  if(on){btn.classList.add('hp-btn-primary');btn.classList.remove('hp-btn-danger');}
+  else{btn.classList.remove('hp-btn-primary');}
 }
 
 var settings=OfflineUI.getSettings();
-
 App.$$('.ol-pov-btn').forEach(function(btn){
-  var isActive = btn.dataset.pov === settings.pov || (!settings.pov && btn.dataset.pov === 'second');
-  updateBtnStyle(btn, isActive);
+  setActive(btn,btn.dataset.pov===settings.pov||(!settings.pov&&btn.dataset.pov==='second'));
   btn.addEventListener('click',function(){
-    App.$$('.ol-pov-btn').forEach(function(b){ updateBtnStyle(b, false); });
-    updateBtnStyle(btn, true);
+    App.$$('.ol-pov-btn').forEach(function(b){setActive(b,false);});
+    setActive(btn,true);
     var s=OfflineUI.getSettings();s.pov=btn.dataset.pov;OfflineUI.saveSettings(s);
   });
 });
-
 App.$$('.ol-quote-btn').forEach(function(btn){
-  var isActive = btn.dataset.quote === settings.quoteStyle || (!settings.quoteStyle && btn.dataset.quote === 'smart');
-  updateBtnStyle(btn, isActive);
+  setActive(btn,btn.dataset.quote===settings.quoteStyle||(!settings.quoteStyle&&btn.dataset.quote==='smart'));
   btn.addEventListener('click',function(){
-    App.$$('.ol-quote-btn').forEach(function(b){ updateBtnStyle(b, false); });
-    updateBtnStyle(btn, true);
+    App.$$('.ol-quote-btn').forEach(function(b){setActive(b,false);});
+    setActive(btn,true);
     var s=OfflineUI.getSettings();s.quoteStyle=btn.dataset.quote;OfflineUI.saveSettings(s);
   });
 });
 
 var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
 
-App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.showSceneDialog();});
-App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
-App.safeOn('#olSbCode','click',function(){OfflineUI.closeSidebar();OfflineUI.openCodeEditor();});
-App.safeOn('#olSbClear','click',function(){if(!confirm('清空所有聊天记录？'))return;OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI.closeSidebar();App.showToast('已清空');});
+App.safeOn('#olSbScene','click',function(){OfflineUI._closePanel();OfflineUI.showSceneDialog();});
+App.safeOn('#olSbBg','click',function(){OfflineUI._closePanel();OfflineUI.showBgMenu();});
+App.safeOn('#olSbCode','click',function(){OfflineUI._closePanel();OfflineUI.openCodeEditor();});
+App.safeOn('#olSbClear','click',function(){if(!confirm('清空所有聊天记录？'))return;OL.messages=[];OL.saveMsgs();OfflineUI.renderMessages();OfflineUI._closePanel();App.showToast('已清空');});
 
-/* === 外观面板 === */
+/* 外观 */
 var STYLE_DEFAULTS={
   '--ol-bg-color':'#ffffff','--ol-accent':'#1a1a1a',
   '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
   '--ol-text-color':'#2e4258','--ol-action-color':'#1a1a1a',
   '--ol-hd-bg':'rgba(255,255,255,.85)','--ol-bar-bg':'rgba(255,255,255,.65)',
-  '--ol-btn-color':'#1a1a1a','--ol-text-size':'14px',
-  '--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
-  '--ol-av-size':'44px','--ol-av-radius':'50%',
-  '--ol-arrow-size':'8px','--ol-av-name-show':'block'
+  '--ol-text-size':'14px','--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
+  '--ol-av-size':'44px','--ol-av-radius':'50%'
 };
 
 function getStyleData(){return App.LS.get('olStyleData_'+OL.charId)||{};}
@@ -354,14 +330,12 @@ function saveStyleData(d){App.LS.set('olStyleData_'+OL.charId,d);}
 function applyStyleData(){var d=getStyleData();var r=App.$('#olRoot');if(!r)return;Object.keys(d).forEach(function(k){if(k.startsWith('--'))r.style.setProperty(k,d[k]);});}
 
 var styleData=getStyleData();
-
 App.$$('.ol-sb-color').forEach(function(dot){
   var v=dot.dataset.var;
   var val=styleData[v]||STYLE_DEFAULTS[v]||'#ffffff';
   dot.style.background=val;
   dot.addEventListener('click',function(e){
-    e.stopPropagation();
-    if(!App.openColorPicker)return;
+    e.stopPropagation();if(!App.openColorPicker)return;
     App.openColorPicker(val,function(hex){
       dot.style.background=hex;val=hex;
       var d=getStyleData();d[v]=hex;saveStyleData(d);
@@ -392,10 +366,10 @@ sliderCfg.forEach(function(s){
 
 var curShape=styleData['--ol-av-radius']||'50%';
 App.$$('.ol-shape-btn').forEach(function(btn){
-  updateBtnStyle(btn, btn.dataset.shape === curShape);
+  setActive(btn,btn.dataset.shape===curShape);
   btn.addEventListener('click',function(){
-    App.$$('.ol-shape-btn').forEach(function(b){ updateBtnStyle(b, false); });
-    updateBtnStyle(btn, true);
+    App.$$('.ol-shape-btn').forEach(function(b){setActive(b,false);});
+    setActive(btn,true);
     var d=getStyleData();d['--ol-av-radius']=btn.dataset.shape;saveStyleData(d);
     var r=App.$('#olRoot');if(r)r.style.setProperty('--ol-av-radius',btn.dataset.shape);
   });
@@ -404,11 +378,7 @@ App.$$('.ol-shape-btn').forEach(function(btn){
 App.safeOn('#olStyleReset','click',function(){
   App.LS.remove('olStyleData_'+OL.charId);
   var r=App.$('#olRoot');if(r){Object.keys(STYLE_DEFAULTS).forEach(function(k){r.style.removeProperty(k);});}
-  OfflineUI.closeSidebar();App.showToast('外观已重置');
-  setTimeout(function(){
-    var p=App.$('#olSettingsPanel');
-    if(p){p.classList.remove('hidden');requestAnimationFrame(function(){p.classList.add('show');});}
-  },350);
+  OfflineUI._closePanel();App.showToast('外观已重置');
 });
 
 applyStyleData();
@@ -427,10 +397,6 @@ if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('
 
 getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
 saveSettings:function(s){var OL=App.offline;if(OL)App.LS.set('olSettings_'+OL.charId,s);},
-closeSidebar:function(){
-  var p=App.$('#olSettingsPanel');
-  if(p){p.classList.remove('show');setTimeout(function(){p.classList.add('hidden');},350);}
-},
 
 showCtxMenu:function(msgEl,x,y){
   var OL=App.offline;if(!OL)return;OL.dismissCtx();
@@ -472,7 +438,7 @@ showEditDialog:function(idx){
 showSceneDialog:function(){
   var OL=App.offline;if(!OL)return;var current=App.LS.get('olScene_'+OL.charId)||'';
   var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100020';
-  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><div style="font-size:11px;color:#8aa0b8;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:120px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';
+  overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><div style="font-size:11px;color:#999;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:120px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
   overlay.querySelector('#olScX').addEventListener('click',function(){overlay.remove();});
@@ -483,7 +449,7 @@ showSceneDialog:function(){
 showBgMenu:function(){
   var OL=App.offline;if(!OL)return;
   var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100020';
-  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button" style="width:100%;">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button" style="width:100%;">输入图片URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="width:100%;color:#c9706b;">移除背景</button></div></div>';
+  menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button">输入图片URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="color:#c9706b;">移除背景</button></div></div>';
   document.body.appendChild(menu);
   menu.addEventListener('click',function(e){if(e.target===menu)menu.remove();});
   menu.querySelector('#olBgX').addEventListener('click',function(){menu.remove();});
@@ -495,42 +461,15 @@ showBgMenu:function(){
 openCodeEditor:function(){
   var OL=App.offline;if(!OL)return;
   var saved=App.LS.get('olCustomCode_'+OL.charId)||'';
-
-  var REF=
-  '支持完整的 HTML + CSS + JS\n'+
-  '直接写 <style>、<div>、<script> 都行\n\n'+
-  '基础外观请用侧边栏的「外观」面板调整\n'+
-  '这里用于高级自定义：添加装饰、改结构、加交互\n\n'+
-  '=== 系统元素名 ===\n'+
-  '  .ol-root              页面\n'+
-  '  .ol-hd / .ol-hd-name  顶部栏\n'+
-  '  .ol-block              消息块\n'+
-  '  .is-user / .is-char    用户/角色\n'+
-  '  .ol-avatar-area        头像区\n'+
-  '  .ol-frame-mid          气泡\n'+
-  '  .ol-bubble-text        正文\n'+
-  '  .ol-scatter-meta       元信息\n'+
-  '  .ol-input-wrap         底部栏\n'+
-  '  .ol-bg                 背景\n\n'+
-  '=== 数据属性 ===\n'+
-  '  [data-floor] [data-time]\n'+
-  '  [data-chars] [data-tokens]\n';
-
   var ed=document.createElement('div');ed.className='ol-css-editor';
   ed.innerHTML=
     '<div class="ol-css-editor-header">'+
-      '<button type="button" id="olCodeBack" style="background:none;border:none;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">返回</button>'+
-      '<span style="font-size:14px;font-weight:700;letter-spacing:1px;color:#e0e0e0;">自定义代码</span>'+
-      '<button type="button" id="olCodeSave" style="background:none;border:none;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;">保存</button>'+
+      '<button type="button" id="olCodeBack" class="ol-css-hd-btn">返回</button>'+
+      '<span class="ol-css-hd-title">自定义代码</span>'+
+      '<button type="button" id="olCodeSave" class="ol-css-hd-btn">保存</button>'+
     '</div>'+
-    '<div class="ol-css-ref"><div class="ol-css-ref-title" id="olCodeRefT">📋 参考表（点击展开）</div><pre class="ol-css-ref-body" id="olCodeRefB">'+App.esc(REF)+'</pre></div>'+
-    '<textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="支持 HTML + CSS + JS">'+App.esc(saved)+'</textarea>';
+    '<textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="支持 HTML + CSS + JS\n\n.ol-root  页面根\n.ol-hd  顶部栏\n.ol-block  消息块\n.ol-frame-mid  气泡\n.ol-bubble-text  正文\n.ol-input-wrap  底部栏\n.ol-bg  背景层">'+App.esc(saved)+'</textarea>';
   document.body.appendChild(ed);
-
-  ed.querySelector('#olCodeRefT').addEventListener('click',function(){
-    var b=ed.querySelector('#olCodeRefB');b.classList.toggle('show');
-    this.textContent=b.classList.contains('show')?'📋 参考表（点击收起）':'📋 参考表（点击展开）';
-  });
   ed.querySelector('#olCodeBack').addEventListener('click',function(){ed.remove();});
   ed.querySelector('#olCodeSave').addEventListener('click',function(){
     var code=ed.querySelector('#olCodeTA').value||'';
@@ -546,37 +485,16 @@ openCodeEditor:function(){
 applyCustomCode:function(charId){
   var oldStyle=document.getElementById('olCustomStyle');if(oldStyle)oldStyle.remove();
   var oldHtml=document.getElementById('olCustomHtml');if(oldHtml)oldHtml.remove();
-
-  var code=App.LS.get('olCustomCode_'+charId);
-  if(!code)return;
-
-  var cssText='';
-  var cssRegex=/<style[^>]*>([\s\S]*?)<\/style>/gi;
-  var cssMatch;
+  var code=App.LS.get('olCustomCode_'+charId);if(!code)return;
+  var cssText='';var cssRegex=/<style[^>]*>([\s\S]*?)<\/style>/gi;var cssMatch;
   while((cssMatch=cssRegex.exec(code))!==null){cssText+=cssMatch[1]+'\n';}
-
-  var jsTexts=[];
-  var jsRegex=/<script[^>]*>([\s\S]*?)<\/script>/gi;
-  var jsMatch;
+  var jsTexts=[];var jsRegex=/<script[^>]*>([\s\S]*?)<\/script>/gi;var jsMatch;
   while((jsMatch=jsRegex.exec(code))!==null){jsTexts.push(jsMatch[1]);}
-
   var htmlText=code.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').trim();
-
   if(!/<style/i.test(code)&&!/<[a-z]/i.test(code)){cssText=code;htmlText='';}
-
-  if(cssText){
-    var style=document.createElement('style');style.id='olCustomStyle';
-    style.textContent=cssText;document.head.appendChild(style);
-  }
-
-  if(htmlText){
-    var cont=document.getElementById('olMsgs');
-    if(cont){var div=document.createElement('div');div.id='olCustomHtml';div.innerHTML=htmlText;cont.insertBefore(div,cont.firstChild);}
-  }
-
-  if(jsTexts.length){
-    jsTexts.forEach(function(js){try{var fn=new Function(js);fn();}catch(e){console.warn('[自定义代码] JS错误:',e.message);}});
-  }
+  if(cssText){var style=document.createElement('style');style.id='olCustomStyle';style.textContent=cssText;document.head.appendChild(style);}
+  if(htmlText){var cont=document.getElementById('olMsgs');if(cont){var div=document.createElement('div');div.id='olCustomHtml';div.innerHTML=htmlText;cont.insertBefore(div,cont.firstChild);}}
+  if(jsTexts.length){jsTexts.forEach(function(js){try{var fn=new Function(js);fn();}catch(e){console.warn('[自定义代码] JS错误:',e.message);}});}
 },
 
 init:function(){App.offlineUI=OfflineUI;}
