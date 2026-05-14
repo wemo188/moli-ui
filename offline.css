@@ -1,9 +1,9 @@
+### offline.css（完整替换）
 
+```css
 .ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
-
-/* 面板内统一：白色按钮、全黑文字、无灰色、无小字 */
 #olSettingsPanel .hp-header h2{color:#1a1a1a;}
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:13px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:13px;}
@@ -13,139 +13,97 @@
 #olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid rgba(201,112,107,.3);}
 #olSettingsPanel #olWordCount{width:100%;padding:10px 12px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:14px;color:#1a1a1a;outline:none;font-family:inherit;}
-
 .ol-sub-title{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:6px;margin-top:10px;display:flex;align-items:center;gap:8px;}
 .ol-sub-label{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;margin-top:8px;}
 .ol-hint{font-size:12px;color:#1a1a1a;line-height:1.5;margin-bottom:8px;padding:6px 8px;background:rgba(0,0,0,.02);border-radius:6px;}
-
-/* 开关 */
 .ol-sw{display:inline-flex;align-items:center;margin-left:auto;}
 .ol-sw-track{width:36px;height:20px;border-radius:10px;position:relative;cursor:pointer;transition:background .2s;background:rgba(0,0,0,.1);}
 .ol-sw-track.on{background:#1a1a1a;}
 .ol-sw-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
 .ol-sw-track.on::after{transform:translateX(16px);}
 .ol-sw-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1a1a1a;padding:6px 0;}
-
-/* 标签 */
 .ol-tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .ol-tag{padding:5px 12px;border-radius:8px;font-size:13px;font-weight:600;color:#1a1a1a;background:#fff;border:1.5px solid rgba(0,0,0,.08);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
 .ol-tag:active{opacity:.7;}
 .ol-tag.active{color:#fff;background:#1a1a1a;border-color:#1a1a1a;}
-
-/* 行内颜色 */
 .ol-inline-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;}
 .ol-inline-row span{font-size:13px;font-weight:600;color:#1a1a1a;}
-
-/* 折叠 */
 .ol-fold{margin-bottom:8px;border:1px solid rgba(0,0,0,.06);border-radius:10px;overflow:hidden;}
 .ol-fold-head{padding:12px 14px;font-size:14px;font-weight:700;color:#1a1a1a;cursor:pointer;-webkit-tap-highlight-color:transparent;background:rgba(0,0,0,.02);}
 .ol-fold-head:active{background:rgba(0,0,0,.04);}
 .ol-fold-body{max-height:0;overflow:hidden;padding:0 14px;transition:max-height .4s cubic-bezier(.2,.85,.2,1),padding .3s ease;}
 .ol-fold.open .ol-fold-body{max-height:5000px;padding:10px 14px 14px;overflow-y:auto;}
-
 .ol-fmt-section{padding:8px 0;}
 .ol-color-grid{display:grid;gap:12px 8px;margin-bottom:16px;}
 .ol-color-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
 .ol-color-item span{font-size:12px;font-weight:600;color:#1a1a1a;}
 
-/* ========= Root ========= */
 .ol-root{
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:16px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
-  --ol-hd-bg:transparent;--ol-hd-text:#1a1a1a;--ol-hd-size:18px;
-  --ol-prose-bg:rgba(255,255,255,.75);--ol-prose-border:rgba(200,220,240,.3);--ol-prose-radius:14px;--ol-prose-padding:16px 18px;--ol-prose-shadow:0 2px 12px rgba(20,35,55,.06);
-  --ol-bar-bg:#ffffff;--ol-bar-blur:20px;--ol-bar-border-color:#1a1a1a;
+  --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
+  --ol-prose-padding:16px 18px;--ol-prose-shadow:0 2px 12px rgba(20,35,55,.06);
+  --ol-bar-bg:#ffffff;--ol-bar-blur:20px;--ol-bar-border-color:#1a1a1a;--ol-bar-opacity:1;
   --ol-input-bg:#ffffff;--ol-input-border:#1a1a1a;--ol-input-text:#2e4258;--ol-input-radius:22px;
-  --ol-btn-color:#1a1a1a;
-  --ol-dialogue-color:#2e4258;
-  --ol-time-color:#1a1a1a;--ol-time-size:12px;--ol-meta-color:#1a1a1a;--ol-meta-size:12px;
-  --ol-av-size:50px;--ol-av-gap:0;--ol-av-border:2px solid #adcdea;--ol-av-radius:50%;--ol-av-shadow:0 2px 8px rgba(20,35,55,.08);--ol-av-name-show:block;--ol-av-name-size:11px;--ol-av-name-color:#adcdea;
-  /* char */
+  --ol-meta-color:#1a1a1a;--ol-meta-size:12px;
   --ol-c-av-size:50px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#adcdea;--ol-c-av-frame-w:2px;--ol-c-av-name-size:11px;--ol-c-av-show:flex;--ol-c-av-name-show:block;
   --ol-c-bubble-bg:rgba(255,255,255,.75);--ol-c-bubble-radius:14px;--ol-c-bubble-border-color:rgba(200,220,240,.3);--ol-c-bubble-border-w:1px;--ol-c-bubble-width:100%;
   --ol-c-text-size:16px;--ol-c-text-weight:400;--ol-c-text-lh:1.85;--ol-c-text-color:#2e4258;
-  /* user */
   --ol-u-av-size:50px;--ol-u-av-radius:50%;--ol-u-av-frame-color:#adcdea;--ol-u-av-frame-w:2px;--ol-u-av-name-size:11px;--ol-u-av-show:flex;--ol-u-av-name-show:block;
   --ol-u-bubble-bg:rgba(126,163,201,.10);--ol-u-bubble-radius:14px;--ol-u-bubble-border-color:rgba(126,163,201,.25);--ol-u-bubble-border-w:1px;--ol-u-bubble-width:100%;
-
+  --ol-para-gap:16px;--ol-letter-gap:0px;
   position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;
   background:var(--ol-bg-color);color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);
   -webkit-touch-callout:none;overscroll-behavior:none;
 }
-
-.ol-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;transform:translateZ(0);}
-
-/* ★ 顶部栏：完全透明浮层，无边框 */
+.ol-bg{position:absolute;inset:0;z-index:0;background-size:contain;background-position:center;background-repeat:no-repeat;pointer-events:none;transform:translateZ(0);}
 .ol-hd{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:52px 16px 10px;background:transparent;pointer-events:none;}
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;text-shadow:0 1px 4px rgba(255,255,255,.8);}
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
-
-/* ★ 消息区：用 mask-image 让内容在顶部和底部渐隐消失 */
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:90px 16px 90px;min-height:0;overscroll-behavior:contain;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0px, black 90px, black calc(100% - 80px), transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0px, black 90px, black calc(100% - 80px), transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0px,black 90px,black calc(100% - 80px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0px,black 90px,black calc(100% - 80px),transparent 100%);
 }
-
-/* ========= 消息块 ========= */
-.ol-block{position:relative;margin:0 0 16px;display:flex;align-items:flex-start;gap:10px;max-width:100%;}
+.ol-block{position:relative;margin:0 0 var(--ol-para-gap);display:flex;align-items:flex-start;gap:10px;max-width:100%;letter-spacing:var(--ol-letter-gap);}
 .ol-block.ol-av-left{flex-direction:row;}
 .ol-block.ol-av-right{flex-direction:row-reverse;}
-
 .ol-avatar-area{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;}
-.ol-avatar-frame{overflow:visible;box-shadow:var(--ol-av-shadow);background:#fff;position:relative;}
+.ol-avatar-frame{overflow:visible;box-shadow:0 2px 8px rgba(20,35,55,.08);background:#fff;position:relative;}
 .ol-avatar{width:100%;height:100%;border-radius:inherit;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .ol-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
 .ol-avatar svg{width:22px;height:22px;stroke:#a8c0d8;fill:none;stroke-width:1.5;}
 .ol-avatar-name{font-weight:600;letter-spacing:.5px;text-align:center;}
-
-/* 角色头像 */
 .ol-block.is-char .ol-avatar-area{display:var(--ol-c-av-show);}
 .ol-block.is-char .ol-avatar-frame{width:var(--ol-c-av-size);height:var(--ol-c-av-size);border-radius:var(--ol-c-av-radius);border:var(--ol-c-av-frame-w) solid var(--ol-c-av-frame-color);}
 .ol-block.is-char .ol-avatar-name{display:var(--ol-c-av-name-show);font-size:var(--ol-c-av-name-size);color:var(--ol-c-av-frame-color);}
-
-/* 用户头像 */
 .ol-block.is-user .ol-avatar-area{display:var(--ol-u-av-show);}
 .ol-block.is-user .ol-avatar-frame{width:var(--ol-u-av-size);height:var(--ol-u-av-size);border-radius:var(--ol-u-av-radius);border:var(--ol-u-av-frame-w) solid var(--ol-u-av-frame-color);}
 .ol-block.is-user .ol-avatar-name{display:var(--ol-u-av-name-show);font-size:var(--ol-u-av-name-size);color:var(--ol-u-av-frame-color);}
-
-/* 气泡列 */
 .ol-bubble-col{flex:1;min-width:0;display:flex;flex-direction:column;}
-.ol-frame-mid{background:var(--ol-prose-bg);border-radius:var(--ol-prose-radius);box-shadow:var(--ol-prose-shadow);position:relative;overflow:hidden;}
-
-/* ★ 气泡宽度固定不随内容缩小 */
-.ol-block.is-char .ol-frame-mid{background:var(--ol-c-bubble-bg);border-radius:var(--ol-c-bubble-radius);border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color);width:var(--ol-c-bubble-width);}
-.ol-block.is-user .ol-frame-mid{background:var(--ol-u-bubble-bg);border-radius:var(--ol-u-bubble-radius);border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color);width:var(--ol-u-bubble-width);}
-
+.ol-frame-mid{position:relative;overflow:hidden;}
+.ol-block.is-char .ol-frame-mid{background:var(--ol-c-bubble-bg);border-radius:var(--ol-c-bubble-radius);border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color);width:var(--ol-c-bubble-width);box-shadow:var(--ol-prose-shadow);}
+.ol-block.is-user .ol-frame-mid{background:var(--ol-u-bubble-bg);border-radius:var(--ol-u-bubble-radius);border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color);width:var(--ol-u-bubble-width);box-shadow:var(--ol-prose-shadow);}
 .ol-block.ol-av-right .ol-bubble-col{align-items:flex-end;}
 .ol-block.ol-av-left .ol-bubble-col{align-items:flex-start;}
-
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
-.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-dialogue-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:text;user-select:text;}
-
-/* 角色字体覆盖 */
+.ol-bubble-blur{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:none;user-select:none;}
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
-
-/* Meta：全黑、清晰 */
 .ol-scatter-meta{display:flex;align-items:center;gap:10px;margin-top:6px;padding-left:4px;}
-.ol-scatter-floor,.ol-scatter-time,.ol-scatter-chars,.ol-scatter-tokens{font-size:var(--ol-meta-size);color:var(--ol-meta-color);font-weight:600;opacity:1;}
-.ol-time-sep{text-align:center;font-size:var(--ol-time-size);color:var(--ol-time-color);margin:14px 20px 8px;letter-spacing:.5px;font-weight:600;}
+.ol-scatter-floor,.ol-scatter-time,.ol-scatter-chars,.ol-scatter-tokens{font-size:var(--ol-meta-size);color:var(--ol-meta-color);font-weight:600;}
+.ol-time-sep{text-align:center;font-size:12px;color:var(--ol-meta-color);margin:14px 20px 8px;letter-spacing:.5px;font-weight:600;}
 .ol-empty{font-size:14px;color:var(--ol-accent);text-align:center;padding:80px 20px;opacity:.7;}
-
-/* ========= 全屏模式 ========= */
 .ol-parallel .ol-block{flex-direction:column !important;align-items:center;}
 .ol-parallel .ol-bubble-col{align-items:stretch !important;width:100%;}
-.ol-parallel .ol-block .ol-frame-mid{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;width:100% !important;max-width:100% !important;}
+.ol-parallel .ol-block .ol-frame-mid{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;width:100% !important;}
 .ol-parallel .ol-bubble-inner{padding:8px 0;}
 .ol-parallel .ol-scatter-meta{justify-content:center;}
-
-/* Think */
+.ol-parallel .ol-bubble-blur{display:none;}
 .ol-think-block{margin-bottom:6px;}
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
-
-/* ========= 底部栏 ========= */
-.ol-input-wrap{position:absolute;bottom:0;left:0;right:0;z-index:9;display:flex;align-items:flex-end;gap:6px;padding:10px 12px 20px;background:var(--ol-bar-bg);backdrop-filter:blur(var(--ol-bar-blur));-webkit-backdrop-filter:blur(var(--ol-bar-blur));border-top:1.5px solid var(--ol-bar-border-color);}
+.ol-input-wrap{position:absolute;bottom:0;left:0;right:0;z-index:9;display:flex;align-items:flex-end;gap:6px;padding:10px 12px 20px;border-top:1.5px solid var(--ol-bar-border-color);}
 .ol-input-box{display:flex;align-items:flex-end;background:var(--ol-input-bg);border:1.5px solid var(--ol-input-border);border-radius:var(--ol-input-radius);padding:4px;flex:1;min-width:0;}
 .ol-input{flex:1;min-height:36px;max-height:120px;padding:8px 6px;border:none;background:transparent;font-size:14px;color:var(--ol-input-text);outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;}
 .ol-inner-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
@@ -155,8 +113,6 @@
 .ol-btn-robot .ol-robot-svg{width:32px;height:32px;}
 .ol-btn-stop{background:rgba(201,112,107,.85)!important;border-radius:50%;width:32px!important;height:32px!important;margin-bottom:4px;}
 .ol-btn-stop svg{width:16px!important;height:16px!important;}
-
-/* Plus panel */
 .ol-plus-panel{position:absolute;bottom:70px;left:0;right:0;z-index:9;display:none;flex-wrap:wrap;gap:16px;padding:14px 20px 18px;background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);}
 .ol-plus-panel.show{display:flex;}
 .ol-plus-item{display:flex;flex-direction:column;align-items:center;gap:6px;width:56px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -164,20 +120,14 @@
 .ol-plus-icon svg{width:22px;height:22px;fill:none;stroke:#1a1a1a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
 .ol-plus-item:active .ol-plus-icon{background:rgba(0,0,0,.04);}
 .ol-plus-label{font-size:12px;color:#1a1a1a;text-align:center;font-weight:500;}
-
-/* Context menu */
 .ol-ctx{position:fixed;z-index:100020;background:#000;border-radius:12px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:grid;grid-template-columns:repeat(5,1fr);gap:0;min-width:250px;max-width:300px;}
 .ol-ctx-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;font-size:12px;color:rgba(255,255,255,.85);cursor:pointer;border-radius:8px;-webkit-tap-highlight-color:transparent;text-align:center;}
 .ol-ctx-item:active{background:rgba(255,255,255,.1);}
 .ol-ctx-item svg{width:18px;height:18px;fill:none;stroke:rgba(255,255,255,.7);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-
-/* Animations */
 @keyframes olDots{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
 .ol-typing-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ol-accent);margin:0 2px;animation:olDots 1.2s infinite;}
 .ol-typing-dot:nth-child(2){animation-delay:.2s;}
 .ol-typing-dot:nth-child(3){animation-delay:.4s;}
-
-/* ★ Code editor：白色背景 */
 .ol-css-editor{position:fixed;inset:0;z-index:200000;background:#ffffff;display:flex;flex-direction:column;color:#1a1a1a;}
 .ol-css-editor-header{display:flex;align-items:center;justify-content:space-between;padding:52px 14px 10px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0;}
 .ol-css-hd-btn{background:none;border:none;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px;-webkit-tap-highlight-color:transparent;}
