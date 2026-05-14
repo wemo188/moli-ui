@@ -591,6 +591,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     function hslToHex(h,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}r=Math.round((r+m)*255);g=Math.round((g+m)*255);b=Math.round((b+m)*255);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
     function hslToRgb(h,s,l){var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];}
     function hexToRgb(hex){hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];return[parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)];}
+    function hslToCanvasPos(s,l,w,h){s/=100;l/=100;var v=l+s*Math.min(l,1-l);var sv=v===0?0:2*(1-l/v);return{x:sv*w,y:(1-v)*h};}
+    function canvasPosToHsl(x,y,w,h){var sv=Math.max(0,Math.min(1,x/w));var v=Math.max(0,Math.min(1,1-y/h));var l=v*(1-sv/2);var s=(l===0||l>=1)?0:(v-l)/Math.min(l,1-l);return{s:Math.max(0,Math.min(100,Math.round(s*100))),l:Math.max(0,Math.min(100,Math.round(l*100)))};}
 
     function parseToStop(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1]),g=parseInt(rm[2]),b=parseInt(rm[3]),a=rm[4]!==undefined?parseFloat(rm[4]):1;if(a<1)return{color:'rgba('+r+','+g+','+b+','+a+')'};var hex='#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);return{color:hex};}return{color:str||'#111111'};}
 
@@ -686,14 +688,18 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var gradAngleInput=overlay.querySelector('#cpGradAngle');
     var gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
 
-    function drawSpectrum(){
-      var w=specEl.clientWidth,h=specEl.clientHeight;  if(!w||!h){setTimeout(drawSpectrum,50);return;}specCanvas.width=w;specCanvas.height=h;
-      var imageData=specCtx.createImageData(w,h),data=imageData.data;
-      for(var y=0;y<h;y++){for(var x=0;x<w;x++){
-        var s=x/w,l=1-(y/h);var rgb=hslToRgb(currentHue,s,l);var idx=(y*w+x)*4;
-        data[idx]=rgb[0];data[idx+1]=rgb[1];data[idx+2]=rgb[2];data[idx+3]=255;
-      }}
-      specCtx.putImageData(imageData,0,0);
+        function drawSpectrum(){
+      var w=specEl.clientWidth,h=specEl.clientHeight;
+      if(w<1||h<1){setTimeout(drawSpectrum,80);return;}
+      specCanvas.width=w;specCanvas.height=h;
+      specCtx.fillStyle='hsl('+currentHue+',100%,50%)';
+      specCtx.fillRect(0,0,w,h);
+      var wg=specCtx.createLinearGradient(0,0,w,0);
+      wg.addColorStop(0,'#ffffff');wg.addColorStop(1,'rgba(255,255,255,0)');
+      specCtx.fillStyle=wg;specCtx.fillRect(0,0,w,h);
+      var bg=specCtx.createLinearGradient(0,0,0,h);
+      bg.addColorStop(0,'rgba(0,0,0,0)');bg.addColorStop(1,'#000000');
+      specCtx.fillStyle=bg;specCtx.fillRect(0,0,w,h);
     }
 
     function updateAlphaBar(){
@@ -713,8 +719,9 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       hexInput.value=getDisplayText();
 
       var sw=specEl.clientWidth,sh=specEl.clientHeight;
-      specCursor.style.left=(currentSat/100)*sw+'px';
-      specCursor.style.top=((100-currentLight)/100)*sh+'px';
+      var _cp=hslToCanvasPos(currentSat,currentLight,sw,sh);
+      specCursor.style.left=_cp.x+'px';
+      specCursor.style.top=_cp.y+'px';
       specCursor.style.background=hslToHex(currentHue,currentSat,currentLight);
       hueCursor.style.left=(currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background=hslToHex(currentHue,100,50);
@@ -757,7 +764,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     var specDrag=false,hueDrag=false,alphaDrag=false;
 
-    function specFromPos(e){var rect=specEl.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentSat=Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));var rawL=100-(t.clientY-rect.top)/rect.height*100;currentLight=Math.max(0,Math.min(100,rawL));updateUI();}
+    function specFromPos(e){var rect=specEl.getBoundingClientRect();var t=e.touches?e.touches[0]:e;var x=Math.max(0,Math.min(rect.width,t.clientX-rect.left));var y=Math.max(0,Math.min(rect.height,t.clientY-rect.top));var hsl=canvasPosToHsl(x,y,rect.width,rect.height);currentSat=hsl.s;currentLight=hsl.l;updateUI();}
     specEl.addEventListener('mousedown',function(e){e.preventDefault();specDrag=true;specFromPos(e);});
     specEl.addEventListener('touchstart',function(e){e.preventDefault();e.stopPropagation();specDrag=true;specFromPos(e);},{passive:false});
 
