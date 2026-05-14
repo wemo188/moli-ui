@@ -10,16 +10,17 @@ var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" 
 var CTX_ICONS={copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'};
 
 var DEF_AP={
-  bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'first',wordCount:0,
+  bgBlur:0,bgDark:0,bgFit:'contain',povOn:true,povUser:'second',povChar:'first',wordCount:0,
   pageBg:'#ffffff',barBg:'#ffffff',barBorderColor:'#1a1a1a',barOpacity:100,barBlur:20,mode:'bubble',
+  paraGap:16,letterGap:0,
   cAvShow:true,cAvNameShow:true,cAvSize:50,cAvRadius:50,cAvFrameColor:'#adcdea',cAvFrameW:2,cAvNameSize:11,cAvPos:'left',
-  cBubbleBg:'rgba(255,255,255,.75)',cBubbleRadius:14,cBubbleBorderColor:'rgba(200,220,240,.3)',cBubbleBorderW:1,cBubbleWidth:100,
+  cBubbleBg:'rgba(255,255,255,.75)',cBubbleRadius:14,cBubbleBorderColor:'rgba(200,220,240,.3)',cBubbleBorderW:1,cBubbleWidth:100,cBubbleOpacity:100,cBubbleBlur:0,
   cTextSize:16,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',
   cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#2e4258',cQuoteSize:16,cQuoteWeight:400,cQuoteItalic:false,
   cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#7a9ab8',cParenSize:16,cParenWeight:400,cParenItalic:true,
   cStarOn:false,cStarHide:true,cStarColor:'#7a9ab8',cStarSize:16,cStarWeight:400,cStarItalic:true,
   uAvShow:true,uAvNameShow:true,uAvSize:50,uAvRadius:50,uAvFrameColor:'#adcdea',uAvFrameW:2,uAvNameSize:11,uAvPos:'right',
-  uBubbleBg:'rgba(126,163,201,.10)',uBubbleRadius:14,uBubbleBorderColor:'rgba(126,163,201,.25)',uBubbleBorderW:1,uBubbleWidth:100,
+  uBubbleBg:'rgba(126,163,201,.10)',uBubbleRadius:14,uBubbleBorderColor:'rgba(126,163,201,.25)',uBubbleBorderW:1,uBubbleWidth:100,uBubbleOpacity:100,uBubbleBlur:0,
   textSize:16,textWeight:400,textLH:1.85,textColor:'#2e4258',
   quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#2e4258',quoteSize:16,quoteWeight:400,quoteItalic:false,
   parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7a9ab8',parenSize:16,parenWeight:400,parenItalic:true,
@@ -31,43 +32,27 @@ function sAp(cid,ap){App.LS.set('olAp_'+cid,ap);}
 function swHtml(id,on){return '<div class="ol-sw" id="'+id+'"><div class="ol-sw-track'+(on?' on':'')+'"></div></div>';}
 function tagHtml(cls,val,label,sel){return '<div class="ol-tag '+cls+(sel?' active':'')+'" data-val="'+val+'">'+label+'</div>';}
 function foldHtml(id,title,body){return '<div class="ol-fold" id="'+id+'"><div class="ol-fold-head">'+title+'</div><div class="ol-fold-body">'+body+'</div></div>';}
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 
-function buildFmtSection(prefix,ap,hint){
-  var on=ap[prefix+'On'],hide=ap[prefix+'Hide'],color=ap[prefix+'Color']||'#2e4258',size=ap[prefix+'Size']||16,weight=ap[prefix+'Weight']||400,italic=ap[prefix+'Italic'];
+function buildFmtUI(p,ap){
   var h='';
-  if(prefix.indexOf('Quote')>=0||prefix.indexOf('quote')>=0){
-    var recKey=prefix.replace('On','')+'Rec';var disKey=prefix.replace('On','')+'Dis';
-    var rec=ap[recKey]||['curly','straight'];var dis=ap[disKey]||'curly';
-    h+='<div class="ol-sub-label">识别符号（多选）</div><div class="ol-tag-row">'+
-      tagHtml('ol-'+prefix+'-qrec','curly','\u201C\u201D',rec.indexOf('curly')>=0)+
-      tagHtml('ol-'+prefix+'-qrec','straight','&quot;&quot;',rec.indexOf('straight')>=0)+
-      tagHtml('ol-'+prefix+'-qrec','corner','「」',rec.indexOf('corner')>=0)+
-    '</div><div class="ol-sub-label">显示符号（单选）</div><div class="ol-tag-row">'+
-      tagHtml('ol-'+prefix+'-qdis','curly','\u201C\u201D',dis==='curly')+
-      tagHtml('ol-'+prefix+'-qdis','straight','&quot;&quot;',dis==='straight')+
-      tagHtml('ol-'+prefix+'-qdis','corner','「」',dis==='corner')+
-    '</div>';
-  } else if(prefix.indexOf('Paren')>=0||prefix.indexOf('paren')>=0){
-    var recKey2=prefix.replace('On','')+'Rec';var disKey2=prefix.replace('On','')+'Dis';var hideKey=prefix.replace('On','')+'Hide';
-    var rec2=ap[recKey2]||['full','half'];var dis2=ap[disKey2]||'full';
-    h+='<div class="ol-sub-label">识别符号（多选）</div><div class="ol-tag-row">'+
-      tagHtml('ol-'+prefix+'-prec','full','（…）',rec2.indexOf('full')>=0)+
-      tagHtml('ol-'+prefix+'-prec','half','(…)',rec2.indexOf('half')>=0)+
-    '</div><div class="ol-sub-label">显示符号（单选）</div><div class="ol-tag-row">'+
-      tagHtml('ol-'+prefix+'-pdis','full','（…）',dis2==='full')+
-      tagHtml('ol-'+prefix+'-pdis','half','(…)',dis2==='half')+
-    '</div><div class="ol-sw-row">隐藏括号 '+swHtml('ol'+prefix+'Hide',ap[hideKey])+'</div>';
-  } else if(prefix.indexOf('Star')>=0||prefix.indexOf('star')>=0){
-    var symLabel=prefix.indexOf('star')>=0?'*…* 、 ＊…＊':'*…*';
-    h+='<div class="ol-sub-label">识别符号：'+symLabel+'</div><div class="ol-sw-row">隐藏星号 '+swHtml('ol'+prefix+'Hide',hide)+'</div>';
+  if(p==='cQuote'||p==='quote'){
+    var rec=ap[p+'Rec']||[];var dis=ap[p+'Dis']||'curly';
+    h+='<div class="ol-hint">开启后识别双引号并转换显示</div>'+
+      '<div class="ol-sub-label">识别（多选）</div><div class="ol-tag-row">'+tagHtml('ol-'+p+'-qrec','curly','\u201C\u201D',rec.indexOf('curly')>=0)+tagHtml('ol-'+p+'-qrec','straight','&quot;&quot;',rec.indexOf('straight')>=0)+tagHtml('ol-'+p+'-qrec','corner','「」',rec.indexOf('corner')>=0)+'</div>'+
+      '<div class="ol-sub-label">显示（单选）</div><div class="ol-tag-row">'+tagHtml('ol-'+p+'-qdis','curly','\u201C\u201D',dis==='curly')+tagHtml('ol-'+p+'-qdis','straight','&quot;&quot;',dis==='straight')+tagHtml('ol-'+p+'-qdis','corner','「」',dis==='corner')+'</div>';
+  }else if(p==='cParen'||p==='paren'){
+    var rec2=ap[p+'Rec']||[];var dis2=ap[p+'Dis']||'full';
+    h+='<div class="ol-sub-label">识别（多选）</div><div class="ol-tag-row">'+tagHtml('ol-'+p+'-prec','full','（…）',rec2.indexOf('full')>=0)+tagHtml('ol-'+p+'-prec','half','(…)',rec2.indexOf('half')>=0)+'</div>'+
+      '<div class="ol-sub-label">显示（单选）</div><div class="ol-tag-row">'+tagHtml('ol-'+p+'-pdis','full','（…）',dis2==='full')+tagHtml('ol-'+p+'-pdis','half','(…)',dis2==='half')+'</div>'+
+      '<div class="ol-sw-row">隐藏括号 '+swHtml('ol'+p+'Hide',ap[p+'Hide'])+'</div>';
+  }else{
+    h+='<div class="ol-sub-label">识别：*…*</div><div class="ol-sw-row">隐藏星号 '+swHtml('ol'+p+'Hide',ap[p+'Hide'])+'</div>';
   }
-  h+='<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot ol-fmt-color" data-prefix="'+prefix+'" id="ol'+prefix+'Color"></div></div>'+
-    '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" class="ol-fmt-slider" data-prefix="'+prefix+'" data-key="Size" min="10" max="24" step="0.5" value="'+size+'"><span class="hp-slider-val" id="ol'+prefix+'SizeVal">'+size+'px</span></div>'+
-    '<div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" class="ol-fmt-slider" data-prefix="'+prefix+'" data-key="Weight" min="100" max="900" step="100" value="'+weight+'"><span class="hp-slider-val" id="ol'+prefix+'WeightVal">'+weight+'</span></div>'+
-    '<div class="ol-tag-row"><span class="ol-sub-label" style="margin:0;">样式</span>'+
-      tagHtml('ol-'+prefix+'-style','normal','正常',!italic)+
-      tagHtml('ol-'+prefix+'-style','italic','斜体',italic)+
-    '</div>';
+  h+='<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot" id="ol'+p+'Color" data-fmtkey="'+p+'Color"></div></div>'+
+    '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" data-fmtkey="'+p+'Size" min="10" max="24" step="0.5" value="'+ap[p+'Size']+'"><span class="hp-slider-val" id="ol'+p+'SizeVal">'+ap[p+'Size']+'px</span></div>'+
+    '<div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" data-fmtkey="'+p+'Weight" min="100" max="900" step="100" value="'+ap[p+'Weight']+'"><span class="hp-slider-val" id="ol'+p+'WeightVal">'+ap[p+'Weight']+'</span></div>'+
+    '<div class="ol-tag-row"><span class="ol-sub-label" style="margin:0">样式</span>'+tagHtml('ol-'+p+'-style','normal','正常',!ap[p+'Italic'])+tagHtml('ol-'+p+'-style','italic','斜体',ap[p+'Italic'])+'</div>';
   return h;
 }
 
@@ -78,195 +63,180 @@ getAp:function(){var OL=App.offline;return OL?gAp(OL.charId):JSON.parse(JSON.str
 render:function(container,charData){
 var c=charData;var dn=c.name||'';var bgUrl=App.LS.get('olBg_'+c.id)||'';var ap=gAp(c.id);
 
-var quoteHint='<div class="ol-hint">开启后识别双引号并转换显示，防止模型偷用英文引号</div>';
-
-var charAvatarBody=
-  '<div class="ol-sw-row">头像显示 '+swHtml('olcAvShow',ap.cAvShow)+'</div>'+
-  '<div class="ol-sw-row">名称显示 '+swHtml('olcAvNameShow',ap.cAvNameShow)+'</div>'+
+var charAvBody=
+  '<div class="ol-sw-row">头像 '+swHtml('olcAvShow',ap.cAvShow)+'</div>'+
+  '<div class="ol-sw-row">名称 '+swHtml('olcAvNameShow',ap.cAvNameShow)+'</div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">大小</span><input type="range" id="olcAvSize" min="30" max="100" step="2" value="'+ap.cAvSize+'"><span class="hp-slider-val" id="olcAvSizeVal">'+ap.cAvSize+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">角度</span><input type="range" id="olcAvRadius" min="0" max="50" step="1" value="'+ap.cAvRadius+'"><span class="hp-slider-val" id="olcAvRadiusVal">'+ap.cAvRadius+'%</span></div>'+
-  '<div class="ol-inline-row"><span>框与名称颜色</span><div class="hp-color-dot" id="olcAvFrameColor"></div></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">框粗细</span><input type="range" id="olcAvFrameW" min="0" max="5" step="0.5" value="'+ap.cAvFrameW+'"><span class="hp-slider-val" id="olcAvFrameWVal">'+ap.cAvFrameW+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">角度</span><input type="range" id="olcAvRadius" min="0" max="50" value="'+ap.cAvRadius+'"><span class="hp-slider-val" id="olcAvRadiusVal">'+ap.cAvRadius+'%</span></div>'+
+  '<div class="ol-inline-row"><span>框颜色</span><div class="hp-color-dot" id="olcAvFrameColor"></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">框粗</span><input type="range" id="olcAvFrameW" min="0" max="5" step="0.5" value="'+ap.cAvFrameW+'"><span class="hp-slider-val" id="olcAvFrameWVal">'+ap.cAvFrameW+'px</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">名称字号</span><input type="range" id="olcAvNameSize" min="8" max="16" step="0.5" value="'+ap.cAvNameSize+'"><span class="hp-slider-val" id="olcAvNameSizeVal">'+ap.cAvNameSize+'px</span></div>'+
-  '<div class="ol-sub-label">头像位置</div>'+
-  '<div class="hp-btn-row"><button class="hp-btn ol-cavpos-btn" data-pos="left">气泡左侧</button><button class="hp-btn ol-cavpos-btn" data-pos="right">气泡右侧</button></div>';
+  '<div class="ol-sub-label">位置</div><div class="hp-btn-row"><button class="hp-btn ol-cavpos-btn" data-pos="left">左</button><button class="hp-btn ol-cavpos-btn" data-pos="right">右</button></div>';
 
-var charBubbleBody=
-  '<div class="ol-inline-row"><span>气泡背景</span><div class="hp-color-dot" id="olcBubbleBg"></div></div>'+
-  '<div class="ol-inline-row"><span>边框颜色</span><div class="hp-color-dot" id="olcBubbleBorderColor"></div></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">边框粗细</span><input type="range" id="olcBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.cBubbleBorderW+'"><span class="hp-slider-val" id="olcBubbleBorderWVal">'+ap.cBubbleBorderW+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olcBubbleRadius" min="0" max="24" step="1" value="'+ap.cBubbleRadius+'"><span class="hp-slider-val" id="olcBubbleRadiusVal">'+ap.cBubbleRadius+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="olcBubbleWidth" min="50" max="100" step="1" value="'+ap.cBubbleWidth+'"><span class="hp-slider-val" id="olcBubbleWidthVal">'+ap.cBubbleWidth+'%</span></div>';
+var charBubBody=
+  '<div class="ol-inline-row"><span>背景</span><div class="hp-color-dot" id="olcBubbleBg"></div></div>'+
+  '<div class="ol-inline-row"><span>边框色</span><div class="hp-color-dot" id="olcBubbleBorderColor"></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">边框粗</span><input type="range" id="olcBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.cBubbleBorderW+'"><span class="hp-slider-val" id="olcBubbleBorderWVal">'+ap.cBubbleBorderW+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olcBubbleRadius" min="0" max="24" value="'+ap.cBubbleRadius+'"><span class="hp-slider-val" id="olcBubbleRadiusVal">'+ap.cBubbleRadius+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="olcBubbleWidth" min="50" max="100" value="'+ap.cBubbleWidth+'"><span class="hp-slider-val" id="olcBubbleWidthVal">'+ap.cBubbleWidth+'%</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">透明度</span><input type="range" id="olcBubbleOpacity" min="0" max="100" value="'+ap.cBubbleOpacity+'"><span class="hp-slider-val" id="olcBubbleOpacityVal">'+ap.cBubbleOpacity+'%</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">模糊</span><input type="range" id="olcBubbleBlur" min="0" max="30" value="'+ap.cBubbleBlur+'"><span class="hp-slider-val" id="olcBubbleBlurVal">'+ap.cBubbleBlur+'px</span></div>';
 
 var charFontBody=
   '<div class="ol-sub-title">正文</div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="olcTextSize" min="10" max="24" step="0.5" value="'+ap.cTextSize+'"><span class="hp-slider-val" id="olcTextSizeVal">'+ap.cTextSize+'px</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" id="olcTextWeight" min="100" max="900" step="100" value="'+ap.cTextWeight+'"><span class="hp-slider-val" id="olcTextWeightVal">'+ap.cTextWeight+'</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="olcTextLH" min="1.2" max="2.5" step="0.05" value="'+ap.cTextLH+'"><span class="hp-slider-val" id="olcTextLHVal">'+ap.cTextLH+'</span></div>'+
-  '<div class="ol-inline-row"><span>字体颜色</span><div class="hp-color-dot" id="olcTextColor"></div></div>'+
+  '<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot" id="olcTextColor"></div></div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">双引号识别 '+swHtml('olcQuoteOn',ap.cQuoteOn)+'</div>'+quoteHint+buildFmtSection('cQuote',ap,'')+'</div>'+
+  '<div class="ol-fmt-section"><div class="ol-sub-title">双引号 '+swHtml('olcQuoteOn',ap.cQuoteOn)+'</div>'+buildFmtUI('cQuote',ap)+'</div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">括号识别 '+swHtml('olcParenOn',ap.cParenOn)+'</div>'+buildFmtSection('cParen',ap,'')+'</div>'+
+  '<div class="ol-fmt-section"><div class="ol-sub-title">括号 '+swHtml('olcParenOn',ap.cParenOn)+'</div>'+buildFmtUI('cParen',ap)+'</div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">单星号识别 '+swHtml('olcStarOn',ap.cStarOn)+'</div>'+buildFmtSection('cStar',ap,'')+'</div>';
+  '<div class="ol-fmt-section"><div class="ol-sub-title">星号 '+swHtml('olcStarOn',ap.cStarOn)+'</div>'+buildFmtUI('cStar',ap)+'</div>';
 
-var userAvatarBody=
-  '<div class="ol-sw-row">头像显示 '+swHtml('oluAvShow',ap.uAvShow)+'</div>'+
-  '<div class="ol-sw-row">名称显示 '+swHtml('oluAvNameShow',ap.uAvNameShow)+'</div>'+
+var userAvBody=
+  '<div class="ol-sw-row">头像 '+swHtml('oluAvShow',ap.uAvShow)+'</div>'+
+  '<div class="ol-sw-row">名称 '+swHtml('oluAvNameShow',ap.uAvNameShow)+'</div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">大小</span><input type="range" id="oluAvSize" min="30" max="100" step="2" value="'+ap.uAvSize+'"><span class="hp-slider-val" id="oluAvSizeVal">'+ap.uAvSize+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">角度</span><input type="range" id="oluAvRadius" min="0" max="50" step="1" value="'+ap.uAvRadius+'"><span class="hp-slider-val" id="oluAvRadiusVal">'+ap.uAvRadius+'%</span></div>'+
-  '<div class="ol-inline-row"><span>框与名称颜色</span><div class="hp-color-dot" id="oluAvFrameColor"></div></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">框粗细</span><input type="range" id="oluAvFrameW" min="0" max="5" step="0.5" value="'+ap.uAvFrameW+'"><span class="hp-slider-val" id="oluAvFrameWVal">'+ap.uAvFrameW+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">角度</span><input type="range" id="oluAvRadius" min="0" max="50" value="'+ap.uAvRadius+'"><span class="hp-slider-val" id="oluAvRadiusVal">'+ap.uAvRadius+'%</span></div>'+
+  '<div class="ol-inline-row"><span>框颜色</span><div class="hp-color-dot" id="oluAvFrameColor"></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">框粗</span><input type="range" id="oluAvFrameW" min="0" max="5" step="0.5" value="'+ap.uAvFrameW+'"><span class="hp-slider-val" id="oluAvFrameWVal">'+ap.uAvFrameW+'px</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">名称字号</span><input type="range" id="oluAvNameSize" min="8" max="16" step="0.5" value="'+ap.uAvNameSize+'"><span class="hp-slider-val" id="oluAvNameSizeVal">'+ap.uAvNameSize+'px</span></div>'+
-  '<div class="ol-sub-label">头像位置</div>'+
-  '<div class="hp-btn-row"><button class="hp-btn ol-uavpos-btn" data-pos="left">气泡左侧</button><button class="hp-btn ol-uavpos-btn" data-pos="right">气泡右侧</button></div>';
+  '<div class="ol-sub-label">位置</div><div class="hp-btn-row"><button class="hp-btn ol-uavpos-btn" data-pos="left">左</button><button class="hp-btn ol-uavpos-btn" data-pos="right">右</button></div>';
 
-var userBubbleBody=
-  '<div class="ol-inline-row"><span>气泡背景</span><div class="hp-color-dot" id="oluBubbleBg"></div></div>'+
-  '<div class="ol-inline-row"><span>边框颜色</span><div class="hp-color-dot" id="oluBubbleBorderColor"></div></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">边框粗细</span><input type="range" id="oluBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.uBubbleBorderW+'"><span class="hp-slider-val" id="oluBubbleBorderWVal">'+ap.uBubbleBorderW+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="oluBubbleRadius" min="0" max="24" step="1" value="'+ap.uBubbleRadius+'"><span class="hp-slider-val" id="oluBubbleRadiusVal">'+ap.uBubbleRadius+'px</span></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="oluBubbleWidth" min="50" max="100" step="1" value="'+ap.uBubbleWidth+'"><span class="hp-slider-val" id="oluBubbleWidthVal">'+ap.uBubbleWidth+'%</span></div>';
+var userBubBody=
+  '<div class="ol-inline-row"><span>背景</span><div class="hp-color-dot" id="oluBubbleBg"></div></div>'+
+  '<div class="ol-inline-row"><span>边框色</span><div class="hp-color-dot" id="oluBubbleBorderColor"></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">边框粗</span><input type="range" id="oluBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.uBubbleBorderW+'"><span class="hp-slider-val" id="oluBubbleBorderWVal">'+ap.uBubbleBorderW+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="oluBubbleRadius" min="0" max="24" value="'+ap.uBubbleRadius+'"><span class="hp-slider-val" id="oluBubbleRadiusVal">'+ap.uBubbleRadius+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="oluBubbleWidth" min="50" max="100" value="'+ap.uBubbleWidth+'"><span class="hp-slider-val" id="oluBubbleWidthVal">'+ap.uBubbleWidth+'%</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">透明度</span><input type="range" id="oluBubbleOpacity" min="0" max="100" value="'+ap.uBubbleOpacity+'"><span class="hp-slider-val" id="oluBubbleOpacityVal">'+ap.uBubbleOpacity+'%</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">模糊</span><input type="range" id="oluBubbleBlur" min="0" max="30" value="'+ap.uBubbleBlur+'"><span class="hp-slider-val" id="oluBubbleBlurVal">'+ap.uBubbleBlur+'px</span></div>';
 
 var userFontBody=
   '<div class="ol-sub-title">正文</div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="oltextSize" min="10" max="24" step="0.5" value="'+ap.textSize+'"><span class="hp-slider-val" id="oltextSizeVal">'+ap.textSize+'px</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" id="oltextWeight" min="100" max="900" step="100" value="'+ap.textWeight+'"><span class="hp-slider-val" id="oltextWeightVal">'+ap.textWeight+'</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="oltextLH" min="1.2" max="2.5" step="0.05" value="'+ap.textLH+'"><span class="hp-slider-val" id="oltextLHVal">'+ap.textLH+'</span></div>'+
-  '<div class="ol-inline-row"><span>字体颜色</span><div class="hp-color-dot" id="oltextColor"></div></div>'+
+  '<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot" id="oltextColor"></div></div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">双引号识别 '+swHtml('olquoteOn',ap.quoteOn)+'</div>'+quoteHint+buildFmtSection('quote',ap,'')+'</div>'+
+  '<div class="ol-fmt-section"><div class="ol-sub-title">双引号 '+swHtml('olquoteOn',ap.quoteOn)+'</div>'+buildFmtUI('quote',ap)+'</div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">括号识别 '+swHtml('olparenOn',ap.parenOn)+'</div>'+buildFmtSection('paren',ap,'')+'</div>'+
+  '<div class="ol-fmt-section"><div class="ol-sub-title">括号 '+swHtml('olparenOn',ap.parenOn)+'</div>'+buildFmtUI('paren',ap)+'</div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-fmt-section"><div class="ol-sub-title">单星号识别 '+swHtml('olstarOn',ap.starOn)+'</div>'+buildFmtSection('star',ap,'')+'</div>'+
+  '<div class="ol-fmt-section"><div class="ol-sub-title">星号 '+swHtml('olstarOn',ap.starOn)+'</div>'+buildFmtUI('star',ap)+'</div>'+
   '<div class="hp-divider"></div>'+
   '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olStyleReset">重置外观</button></div>';
 
 container.innerHTML=
 '<div class="ol-root" id="olRoot">'+
-'<div class="ol-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');filter:blur('+ap.bgBlur+'px) brightness('+(100-ap.bgDark)+'%);':'')+'"></div>'+
+'<div class="ol-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');filter:blur('+ap.bgBlur+'px) brightness('+(100-ap.bgDark)+'%);background-size:'+(ap.bgFit||'contain')+';':'')+'"></div>'+
 '<div class="ol-hd"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div></div>'+
 '<div class="ol-msgs" id="olMsgs"></div>'+
-'<div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div><div class="ol-plus-item" id="olPiFile"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="ol-plus-label">文件</div></div></div>'+
+'<div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>'+
 '<div class="ol-input-wrap" id="olInputWrap"><button class="ol-outer-btn" id="olPanelBtn" type="button">'+MENU_SVG+'</button><div class="ol-input-box"><button class="ol-inner-btn" id="olPlusBtn" type="button">'+CLOUD_SVG+'</button><textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea></div><button class="ol-outer-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button></div>'+
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><h2>设置</h2><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">'+
   '<div class="hp-btn-row"><button class="hp-btn" id="olSbScene">编辑场景</button><button class="hp-btn" id="olSbBg">上传背景图</button></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">虚化</span><input type="range" id="olBgBlur" min="0" max="30" value="'+ap.bgBlur+'"><span class="hp-slider-val" id="olBgBlurVal">'+ap.bgBlur+'px</span></div>'+
   '<div class="hp-slider-row"><span class="hp-slider-label">暗度</span><input type="range" id="olBgDark" min="0" max="80" value="'+ap.bgDark+'"><span class="hp-slider-val" id="olBgDarkVal">'+ap.bgDark+'%</span></div>'+
+  '<div class="ol-sub-label">背景填充</div><div class="hp-btn-row"><button class="hp-btn ol-bgfit-btn" data-fit="contain">完整</button><button class="hp-btn ol-bgfit-btn" data-fit="cover">铺满</button><button class="hp-btn ol-bgfit-btn" data-fit="100% 100%">拉伸</button></div>'+
   '<div class="hp-divider"></div>'+
   '<div class="hp-section-label">聊天设置</div>'+
   '<div class="ol-sw-row">人称称呼 '+swHtml('olPovOn',ap.povOn)+'</div>'+
-  '<div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="ol-sub-label">称呼用户为</div><div class="hp-btn-row"><button class="hp-btn ol-povu-btn" data-pov="first">我</button><button class="hp-btn ol-povu-btn" data-pov="second">你</button><button class="hp-btn ol-povu-btn" data-pov="third">他/她</button></div><div class="ol-sub-label">称呼角色为</div><div class="hp-btn-row"><button class="hp-btn ol-povc-btn" data-pov="first">我</button><button class="hp-btn ol-povc-btn" data-pov="second">你</button><button class="hp-btn ol-povc-btn" data-pov="third">他/她</button></div></div>'+
-  '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px;">期望字数</span><input type="number" id="olWordCount" placeholder="如 800，留空不限" value="'+(ap.wordCount||'')+'"></div>'+
+  '<div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="ol-sub-label">称呼用户</div><div class="hp-btn-row"><button class="hp-btn ol-povu-btn" data-pov="first">我</button><button class="hp-btn ol-povu-btn" data-pov="second">你</button><button class="hp-btn ol-povu-btn" data-pov="third">他/她</button></div><div class="ol-sub-label">称呼角色</div><div class="hp-btn-row"><button class="hp-btn ol-povc-btn" data-pov="first">我</button><button class="hp-btn ol-povc-btn" data-pov="second">你</button><button class="hp-btn ol-povc-btn" data-pov="third">他/她</button></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'"></div>'+
   '<div class="hp-divider"></div>'+
   '<div class="hp-section-label">外观</div>'+
-  '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);"><div class="ol-color-item"><div class="hp-color-dot" id="olPageBg"></div><span>页面背景</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBg"></div><span>底栏底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBorderColor"></div><span>底栏边框</span></div></div>'+
+  '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr)"><div class="ol-color-item"><div class="hp-color-dot" id="olPageBg"></div><span>页面背景</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBg"></div><span>底栏底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBorderColor"></div><span>底栏边框</span></div></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">底栏透明</span><input type="range" id="olBarOpacity" min="0" max="100" value="'+ap.barOpacity+'"><span class="hp-slider-val" id="olBarOpacityVal">'+ap.barOpacity+'%</span></div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-sub-title">视觉调整</div>'+
   '<div class="hp-btn-row"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏模式</button></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">段落间距</span><input type="range" id="olParaGap" min="0" max="40" value="'+ap.paraGap+'"><span class="hp-slider-val" id="olParaGapVal">'+ap.paraGap+'px</span></div>'+
+  '<div class="hp-slider-row"><span class="hp-slider-label">字间距</span><input type="range" id="olLetterGap" min="0" max="10" step="0.5" value="'+ap.letterGap+'"><span class="hp-slider-val" id="olLetterGapVal">'+ap.letterGap+'px</span></div>'+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-sub-title">角色板块调整</div>'+
-  foldHtml('olFoldCav','头像',charAvatarBody)+foldHtml('olFoldCbubble','气泡',charBubbleBody)+foldHtml('olFoldCfont','字体',charFontBody)+
+  '<div class="ol-sub-title">角色板块</div>'+foldHtml('olFoldCav','头像',charAvBody)+foldHtml('olFoldCbub','气泡',charBubBody)+foldHtml('olFoldCfont','字体',charFontBody)+
   '<div class="hp-divider"></div>'+
-  '<div class="ol-sub-title">用户板块调整</div>'+
-  foldHtml('olFoldUav','头像',userAvatarBody)+foldHtml('olFoldUbubble','气泡',userBubbleBody)+foldHtml('olFoldFont','字体',userFontBody)+
+  '<div class="ol-sub-title">用户板块</div>'+foldHtml('olFoldUav','头像',userAvBody)+foldHtml('olFoldUbub','气泡',userBubBody)+foldHtml('olFoldUfont','字体',userFontBody)+
   '<div class="hp-divider"></div>'+
-  '<div class="hp-section-label">美化主题</div><div style="font-size:13px;color:#1a1a1a;padding:10px 0;">敬请期待</div><div class="hp-divider"></div>'+
   '<div class="hp-section-label">高级</div><div class="hp-btn-row"><button class="hp-btn" id="olSbCode">自定义UI</button></div><div class="hp-bottom-spacer"></div>'+
 '</div></div></div>';
-
 OfflineUI.applyAppearance(c.id);OfflineUI.applyCustomCode(c.id);
 },
-
-_hexToRgb:function(hex){if(!hex||hex.indexOf('gradient')>=0)return '255,255,255';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return '255,255,255';return parseInt(hex.substr(0,2),16)+','+parseInt(hex.substr(2,2),16)+','+parseInt(hex.substr(4,2),16);},
-_escRe:function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');},
 
 applyAppearance:function(cid){
 var ap=gAp(cid);var r=App.$('#olRoot');if(!r)return;
 r.style.setProperty('--ol-bg-color',ap.pageBg);
-r.style.setProperty('--ol-text-size',ap.textSize+'px');r.style.setProperty('--ol-text-line-height',String(ap.textLH));r.style.setProperty('--ol-text-color',ap.textColor);r.style.setProperty('--ol-dialogue-color',ap.textColor);r.style.setProperty('--ol-text-weight',String(ap.textWeight));
+r.style.setProperty('--ol-text-size',ap.textSize+'px');r.style.setProperty('--ol-text-line-height',String(ap.textLH));r.style.setProperty('--ol-text-color',ap.textColor);r.style.setProperty('--ol-text-weight',String(ap.textWeight));
 r.style.setProperty('--ol-c-av-size',ap.cAvSize+'px');r.style.setProperty('--ol-c-av-radius',ap.cAvRadius+'%');r.style.setProperty('--ol-c-av-frame-color',ap.cAvFrameColor);r.style.setProperty('--ol-c-av-frame-w',ap.cAvFrameW+'px');r.style.setProperty('--ol-c-av-name-size',ap.cAvNameSize+'px');r.style.setProperty('--ol-c-av-show',ap.cAvShow?'flex':'none');r.style.setProperty('--ol-c-av-name-show',ap.cAvNameShow?'block':'none');
 r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg);r.style.setProperty('--ol-c-bubble-radius',ap.cBubbleRadius+'px');r.style.setProperty('--ol-c-bubble-border-color',ap.cBubbleBorderColor);r.style.setProperty('--ol-c-bubble-border-w',ap.cBubbleBorderW+'px');r.style.setProperty('--ol-c-bubble-width',ap.cBubbleWidth+'%');
 r.style.setProperty('--ol-c-text-size',ap.cTextSize+'px');r.style.setProperty('--ol-c-text-weight',String(ap.cTextWeight));r.style.setProperty('--ol-c-text-lh',String(ap.cTextLH));r.style.setProperty('--ol-c-text-color',ap.cTextColor);
 r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-u-av-radius',ap.uAvRadius+'%');r.style.setProperty('--ol-u-av-frame-color',ap.uAvFrameColor);r.style.setProperty('--ol-u-av-frame-w',ap.uAvFrameW+'px');r.style.setProperty('--ol-u-av-name-size',ap.uAvNameSize+'px');r.style.setProperty('--ol-u-av-show',ap.uAvShow?'flex':'none');r.style.setProperty('--ol-u-av-name-show',ap.uAvNameShow?'block':'none');
 r.style.setProperty('--ol-u-bubble-bg',ap.uBubbleBg);r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
-['quote','paren','star','cQuote','cParen','cStar'].forEach(function(p){r.style.setProperty('--ol-'+p+'-color',ap[p+'Color']);r.style.setProperty('--ol-'+p+'-size',ap[p+'Size']+'px');r.style.setProperty('--ol-'+p+'-weight',String(ap[p+'Weight']));r.style.setProperty('--ol-'+p+'-style',ap[p+'Italic']?'italic':'normal');});
+r.style.setProperty('--ol-para-gap',ap.paraGap+'px');r.style.setProperty('--ol-letter-gap',ap.letterGap+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 var wrap=App.$('#olInputWrap');
-if(wrap){var bv=ap.barBg;if(bv.indexOf('gradient')>=0)wrap.style.background=bv;else{var br=OfflineUI._hexToRgb(bv);wrap.style.background='rgba('+br+','+ap.barOpacity/100+')';}wrap.style.backdropFilter='blur('+ap.barBlur+'px)';wrap.style.webkitBackdropFilter='blur('+ap.barBlur+'px)';wrap.style.borderTopColor=ap.barBorderColor;wrap.querySelectorAll('.ol-outer-btn svg *,.ol-inner-btn svg *').forEach(function(el){if(el.getAttribute('stroke')&&el.getAttribute('stroke')!=='white'&&el.getAttribute('stroke')!=='none')el.setAttribute('stroke',ap.barBorderColor);if(el.getAttribute('fill')&&el.getAttribute('fill')!=='white'&&el.getAttribute('fill')!=='none')el.setAttribute('fill',ap.barBorderColor);});var box=wrap.querySelector('.ol-input-box');if(box)box.style.borderColor=ap.barBorderColor;}
-var bg=App.$('#olBg');if(bg&&App.LS.get('olBg_'+cid))bg.style.filter='blur('+ap.bgBlur+'px) brightness('+(100-ap.bgDark)+'%)';
+if(wrap){var bv=ap.barBg;if(bv.indexOf('gradient')>=0)wrap.style.background=bv;else{var br=OfflineUI._hexToRgb(bv);wrap.style.background='rgba('+br+','+(ap.barOpacity||100)/100+')';}wrap.style.backdropFilter='blur('+ap.barBlur+'px)';wrap.style.webkitBackdropFilter='blur('+ap.barBlur+'px)';wrap.style.borderTopColor=ap.barBorderColor;wrap.querySelectorAll('.ol-outer-btn svg *,.ol-inner-btn svg *').forEach(function(el){if(el.getAttribute('stroke')&&el.getAttribute('stroke')!=='white'&&el.getAttribute('stroke')!=='none')el.setAttribute('stroke',ap.barBorderColor);if(el.getAttribute('fill')&&el.getAttribute('fill')!=='white'&&el.getAttribute('fill')!=='none')el.setAttribute('fill',ap.barBorderColor);});var box=wrap.querySelector('.ol-input-box');if(box)box.style.borderColor=ap.barBorderColor;}
+var bg=App.$('#olBg');if(bg){if(App.LS.get('olBg_'+cid)){bg.style.filter='blur('+ap.bgBlur+'px) brightness('+(100-ap.bgDark)+'%)';bg.style.backgroundSize=ap.bgFit||'contain';}}
 },
 
-_doFmt:function(text,prefix,ap){
-  var tokens=[];
-  function protect(h){var i=tokens.length;tokens.push(h);return '\x00T'+i+'T\x00';}
-  if(prefix.indexOf('Star')>=0||prefix.indexOf('star')>=0){
-    var on=ap[prefix+'On'],hide=ap[prefix+'Hide'];
-    if(on){
-      text=text.replace(/\*([^*]+)\*/g,function(m,g){return protect('<span style="color:var(--ol-'+prefix+'-color);font-size:var(--ol-'+prefix+'-size);font-weight:var(--ol-'+prefix+'-weight);font-style:var(--ol-'+prefix+'-style);">'+(hide?'':'*')+App.esc(g)+(hide?'':'*')+'</span>');});
-      text=text.replace(/＊([^＊]+)＊/g,function(m,g){return protect('<span style="color:var(--ol-'+prefix+'-color);font-size:var(--ol-'+prefix+'-size);font-weight:var(--ol-'+prefix+'-weight);font-style:var(--ol-'+prefix+'-style);">'+(hide?'':'＊')+App.esc(g)+(hide?'':'＊')+'</span>');});
-    }
-  }
-  if(prefix.indexOf('Quote')>=0||prefix.indexOf('quote')>=0){
-    var qOn=ap[prefix+'On'];
-    if(qOn){
-      var qMap={curly:['\u201C','\u201D'],straight:['"','"'],corner:['「','」']};
-      var dq=qMap[ap[prefix.replace('On','')+'Dis']]||qMap.curly;
-      var rec=ap[prefix.replace('On','')+'Rec']||[];
-      var pairs=[];
-      if(rec.indexOf('curly')>=0)pairs.push(['\u201C','\u201D']);
-      if(rec.indexOf('straight')>=0)pairs.push(['"','"']);
-      if(rec.indexOf('corner')>=0)pairs.push(['「','」']);
-      pairs.forEach(function(p){
-        var re=new RegExp(OfflineUI._escRe(p[0])+'([^'+OfflineUI._escRe(p[1])+']+)'+OfflineUI._escRe(p[1]),'g');
-        text=text.replace(re,function(m,g){return protect('<span style="color:var(--ol-'+prefix+'-color);font-size:var(--ol-'+prefix+'-size);font-weight:var(--ol-'+prefix+'-weight);font-style:var(--ol-'+prefix+'-style);">'+App.esc(dq[0])+App.esc(g)+App.esc(dq[1])+'</span>');});
-      });
-    }
-  }
-  if(prefix.indexOf('Paren')>=0||prefix.indexOf('paren')>=0){
-    var pOn=ap[prefix+'On'];
-    if(pOn){
-      var pMap={full:['（','）'],half:['(',')']};
-      var dp=pMap[ap[prefix.replace('On','')+'Dis']]||pMap.full;
-      var prec=ap[prefix.replace('On','')+'Rec']||[];
-      var ppairs=[];
-      if(prec.indexOf('full')>=0)ppairs.push(['（','）']);
-      if(prec.indexOf('half')>=0)ppairs.push(['(',')']);
-      ppairs.forEach(function(p){
-        var re=new RegExp(OfflineUI._escRe(p[0])+'([^'+OfflineUI._escRe(p[1])+']+)'+OfflineUI._escRe(p[1]),'g');
-        text=text.replace(re,function(m,g){
-          var hide=ap[prefix.replace('On','')+'Hide'];
-          if(hide)return protect('<span style="color:var(--ol-'+prefix+'-color);font-size:var(--ol-'+prefix+'-size);font-weight:var(--ol-'+prefix+'-weight);font-style:var(--ol-'+prefix+'-style);">'+App.esc(g)+'</span>');
-          return protect('<span style="color:var(--ol-'+prefix+'-color);font-size:var(--ol-'+prefix+'-size);font-weight:var(--ol-'+prefix+'-weight);font-style:var(--ol-'+prefix+'-style);">'+App.esc(dp[0])+App.esc(g)+App.esc(dp[1])+'</span>');
-        });
-      });
-    }
-  }
-  return {text:text,tokens:tokens};
-},
+_hexToRgb:function(hex){if(!hex||hex.indexOf('gradient')>=0)return '255,255,255';hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length!==6)return '255,255,255';return parseInt(hex.substr(0,2),16)+','+parseInt(hex.substr(2,2),16)+','+parseInt(hex.substr(4,2),16);},
 
-formatProse:function(rawText,cid,isUser){
+formatProse:function(raw,cid,isUser){
   var ap=cid?gAp(cid):JSON.parse(JSON.stringify(DEF_AP));
-  var text=rawText||'';var allTokens=[];
-  function mergeTokens(result){
-    var offset=allTokens.length;
-    result.tokens.forEach(function(t){allTokens.push(t);});
-    return result.text.replace(/\x00T(\d+)T\x00/g,function(m,idx){return '\x00T'+(parseInt(idx)+offset)+'T\x00';});
+  var text=raw||'';var tokens=[];
+  function protect(h){var i=tokens.length;tokens.push(h);return '\x00P'+i+'P\x00';}
+  function fmtSpan(content,color,size,weight,italic){return '<span style="color:'+color+';font-size:'+size+'px;font-weight:'+weight+';font-style:'+(italic?'italic':'normal')+';">'+content+'</span>';}
+
+  /* star */
+  function doStar(prefix){
+    if(!ap[prefix+'On'])return;
+    text=text.replace(/(?:\*|＊)([^*＊]+)(?:\*|＊)/g,function(_,g){
+      var inner=ap[prefix+'Hide']?App.esc(g):('*'+App.esc(g)+'*');
+      return protect(fmtSpan(inner,ap[prefix+'Color'],ap[prefix+'Size'],ap[prefix+'Weight'],ap[prefix+'Italic']));
+    });
   }
-  var prefix=isUser?'':'c';
-  text=mergeTokens(OfflineUI._doFmt(text,prefix+'Star',ap));
-  text=mergeTokens(OfflineUI._doFmt(text,prefix+'Quote',ap));
-  text=mergeTokens(OfflineUI._doFmt(text,prefix+'Paren',ap));
-  /* also apply shared user fmt if isUser */
-  if(isUser){
-    text=mergeTokens(OfflineUI._doFmt(text,'star',ap));
-    text=mergeTokens(OfflineUI._doFmt(text,'quote',ap));
-    text=mergeTokens(OfflineUI._doFmt(text,'paren',ap));
+  /* quote */
+  function doQuote(prefix){
+    if(!ap[prefix+'On'])return;
+    var qMap={curly:['\u201C','\u201D'],straight:['"','"'],corner:['「','」']};
+    var dq=qMap[ap[prefix+'Dis']]||qMap.curly;
+    var rec=ap[prefix+'Rec']||[];
+    var pairs=[];
+    if(rec.indexOf('curly')>=0)pairs.push(['\u201C','\u201D']);
+    if(rec.indexOf('straight')>=0)pairs.push(['"','"']);
+    if(rec.indexOf('corner')>=0)pairs.push(['「','」']);
+    pairs.forEach(function(p){
+      var re=new RegExp(escRe(p[0])+'([^'+escRe(p[1])+']+)'+escRe(p[1]),'g');
+      text=text.replace(re,function(_,g){
+        var inner=App.esc(dq[0])+App.esc(g)+App.esc(dq[1]);
+        return protect(fmtSpan(inner,ap[prefix+'Color'],ap[prefix+'Size'],ap[prefix+'Weight'],ap[prefix+'Italic']));
+      });
+    });
   }
-  var parts=text.split(/\x00T(\d+)T\x00/);var result='';
-  for(var i=0;i<parts.length;i++){if(i%2===0)result+=App.esc(parts[i]);else result+=allTokens[parseInt(parts[i])];}
+  /* paren */
+  function doParen(prefix){
+    if(!ap[prefix+'On'])return;
+    var pMap={full:['（','）'],half:['(',')']};
+    var dp=pMap[ap[prefix+'Dis']]||pMap.full;
+    var rec=ap[prefix+'Rec']||[];
+    var ppairs=[];
+    if(rec.indexOf('full')>=0)ppairs.push(['（','）']);
+    if(rec.indexOf('half')>=0)ppairs.push(['(',')']);
+    ppairs.forEach(function(p){
+      var re=new RegExp(escRe(p[0])+'([^'+escRe(p[1])+']+)'+escRe(p[1]),'g');
+      text=text.replace(re,function(_,g){
+        var inner=ap[prefix+'Hide']?App.esc(g):(App.esc(dp[0])+App.esc(g)+App.esc(dp[1]));
+        return protect(fmtSpan(inner,ap[prefix+'Color'],ap[prefix+'Size'],ap[prefix+'Weight'],ap[prefix+'Italic']));
+      });
+    });
+  }
+
+  if(isUser){doStar('star');doQuote('quote');doParen('paren');}
+  else{doStar('cStar');doQuote('cQuote');doParen('cParen');}
+
+  var parts=text.split(/\x00P(\d+)P\x00/);var result='';
+  for(var i=0;i<parts.length;i++){if(i%2===0)result+=App.esc(parts[i]);else result+=tokens[parseInt(parts[i])];}
   return result;
 },
 
@@ -279,24 +249,27 @@ if(!OL.messages.length){container.innerHTML='<div class="ol-empty">开始你们�
 var html='';var floor=0;
 OL.messages.forEach(function(msg,idx){
   if(msg.role==='system')return;floor++;var isUser=msg.role==='user';
-  var charCount=(msg.content||'').length;var tokens=Math.round(charCount/2);var tokenStr=tokens>=1000?(tokens/1000).toFixed(1)+'k':tokens+'';
-  var timeStr=msg.ts?OfflineUI.fmtTime(msg.ts):'';
-  var rawText=(msg.content||'').trim();if(!rawText)return;
-  var parsed=OfflineUI.parseThinking(rawText);var text=parsed.main;
+  var cc=(msg.content||'').length;var tk=Math.round(cc/2);var tkStr=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'';
+  var ts=msg.ts?OfflineUI.fmtTime(msg.ts):'';
+  var raw=(msg.content||'').trim();if(!raw)return;
+  var parsed=OfflineUI.parseThinking(raw);var text=parsed.main;
   var thinkHtml=(!isUser&&parsed.think)?OfflineUI.buildThinkHtml(parsed.think):'';
-  var avHtml=isUser?userAv:charAv;
-  var avName=isUser?App.esc((user&&(user.nickname||user.realName))||'你'):App.esc(c.name||'');
+  var avHtml=isUser?userAv:charAv;var avName=isUser?App.esc((user&&(user.nickname||user.realName))||'你'):App.esc(c.name||'');
   var formatted=OfflineUI.formatProse(text,OL.charId,isUser);
   var avPos=isUser?ap.uAvPos:ap.cAvPos;
-  var metaHtml='<div class="ol-scatter-meta"><span class="ol-scatter-floor">#'+String(floor).padStart(3,'0')+'</span><span class="ol-scatter-tokens">'+tokenStr+' tk</span><span class="ol-scatter-time">'+timeStr+'</span><span class="ol-scatter-chars">'+charCount+'字</span></div>';
-  html+='<div class="ol-block'+(isUser?' is-user':' is-char')+' ol-av-'+avPos+'" data-msg-idx="'+idx+'"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avHtml+'</div></div><div class="ol-avatar-name">'+avName+'</div></div><div class="ol-bubble-col"><div class="ol-frame-mid"><div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+formatted+'</div></div></div>'+metaHtml+'</div></div>';
+  var opacity=isUser?ap.uBubbleOpacity:ap.cBubbleOpacity;
+  var blur=isUser?ap.uBubbleBlur:ap.cBubbleBlur;
+  var blurStyle=(blur>0)?'backdrop-filter:blur('+blur+'px);-webkit-backdrop-filter:blur('+blur+'px);':'';
+  var opStyle=(opacity<100)?'opacity:'+(opacity/100)+';':'';
+  var meta='<div class="ol-scatter-meta"><span class="ol-scatter-floor">#'+String(floor).padStart(3,'0')+'</span><span class="ol-scatter-tokens">'+tkStr+' tk</span><span class="ol-scatter-time">'+ts+'</span><span class="ol-scatter-chars">'+cc+'字</span></div>';
+  html+='<div class="ol-block'+(isUser?' is-user':' is-char')+' ol-av-'+avPos+'" data-msg-idx="'+idx+'"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avHtml+'</div></div><div class="ol-avatar-name">'+avName+'</div></div><div class="ol-bubble-col"><div class="ol-frame-mid" style="'+opStyle+'"><div class="ol-bubble-blur" style="'+blurStyle+'"></div><div class="ol-bubble-inner">'+thinkHtml+'<div class="ol-bubble-text">'+formatted+'</div></div></div>'+meta+'</div></div>';
 });
 if(OL.isStreaming&&!OL._backgroundMode){html+='<div class="ol-block is-char ol-av-'+ap.cAvPos+'" id="olStreamProse"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+charAv+'</div></div></div><div class="ol-bubble-col"><div class="ol-frame-mid"><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div></div>';}
 container.innerHTML=html;if(!OfflineUI._noScroll)OfflineUI.scrollBottom();OfflineUI._noScroll=false;
 },
 
-parseThinking:function(text){var t='',m=text;var r=text.match(/<think>([\s\S]*?)<\/think>/i);if(r){t=r[1].trim();m=text.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=text.match(/<think>([\s\S]*)$/i);if(o){t=o[1].trim();m=text.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:t,main:m};},
-buildThinkHtml:function(t){if(!t)return '';return '<details class="ol-think-block"><summary class="ol-think-summary">💭 思维过程</summary><div class="ol-think-body">'+App.esc(t)+'</div></details>';},
+parseThinking:function(t){var th='',m=t;var r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
+buildThinkHtml:function(t){return '<details class="ol-think-block"><summary class="ol-think-summary">💭 思维过程</summary><div class="ol-think-body">'+App.esc(t)+'</div></details>';},
 fmtTime:function(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');},
 scrollBottom:function(){var el=App.$('#olMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
 updateAiBtn:function(){var OL=App.offline;if(!OL)return;var btn=App.$('#olAiBtn');if(!btn)return;if(OL.isStreaming){btn.innerHTML=STOP_SVG;btn.classList.add('ol-btn-stop');btn.classList.remove('ol-btn-robot');}else{btn.innerHTML=ROBOT_SVG;btn.classList.remove('ol-btn-stop');btn.classList.add('ol-btn-robot');}},
@@ -306,106 +279,116 @@ _closePanel:function(){var p=App.$('#olSettingsPanel');if(p){p.classList.remove(
 bindEvents:function(){
 var OL=App.offline;if(!OL)return;var root=App.$('#olRoot');var panel=App.$('#olSettingsPanel');var cid=OL.charId;var ap=gAp(cid);
 function save(){sAp(cid,ap);OfflineUI.applyAppearance(cid);}
-function saveRender(){save();OfflineUI._noScroll=true;OfflineUI.renderMessages();}
-function setActive(btns,btn){btns.forEach(function(b){b.classList.remove('hp-btn-primary');});btn.classList.add('hp-btn-primary');}
+function sr(){save();OfflineUI._noScroll=true;OfflineUI.renderMessages();}
+function setAct(btns,btn){btns.forEach(function(b){b.classList.remove('hp-btn-primary');});btn.classList.add('hp-btn-primary');}
 
-var _sw={active:false,sx:0,sy:0,locked:false,dir:''};
-if(root){root.addEventListener('touchstart',function(e){var t=e.touches[0];if(t.clientX-root.getBoundingClientRect().left>50)return;_sw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});root.addEventListener('touchmove',function(e){if(!_sw.active)return;var t=e.touches[0],dx=t.clientX-_sw.sx,dy=t.clientY-_sw.sy;if(!_sw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_sw.locked=true;_sw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}if(_sw.dir==='h'&&dx>0){e.preventDefault();root.style.transform='translateX('+Math.min(dx,root.offsetWidth)+'px)';root.style.opacity=String(1-dx/root.offsetWidth*0.5);}},{passive:false});root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});}
+/* swipe back */
+var _sw={a:false,sx:0,sy:0,lk:false,d:''};
+if(root){root.addEventListener('touchstart',function(e){var t=e.touches[0];if(t.clientX-root.getBoundingClientRect().left>50)return;_sw={a:true,sx:t.clientX,sy:t.clientY,lk:false,d:''};},{passive:true});root.addEventListener('touchmove',function(e){if(!_sw.a)return;var t=e.touches[0],dx=t.clientX-_sw.sx,dy=t.clientY-_sw.sy;if(!_sw.lk){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_sw.lk=true;_sw.d=Math.abs(dx)>Math.abs(dy)?'h':'v';}if(_sw.d==='h'&&dx>0){e.preventDefault();root.style.transform='translateX('+Math.min(dx,root.offsetWidth)+'px)';root.style.opacity=String(1-dx/root.offsetWidth*.5);}},{passive:false});root.addEventListener('touchend',function(e){if(!_sw.a)return;_sw.a=false;if(_sw.d!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});}
 
 App.safeOn('#olPanelBtn','click',function(e){e.stopPropagation();if(panel){panel.classList.remove('hidden');requestAnimationFrame(function(){panel.classList.add('show');});}});
 App.safeOn('#olPanelClose','click',function(){OfflineUI._closePanel();});
 var input=App.$('#olInput');if(input){input.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();OL.sendUser();}});}
 App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}var inp=App.$('#olInput');var t=inp?inp.value.trim():'';if(t){OL.sendUser();return;}OL.requestAI();});
 App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;OL._plusOpen=!OL._plusOpen;if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');});
-App.safeOn('#olPiPhoto','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100060';menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">发送图片<div class="pc-close-btn" id="olPhX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olPhAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olPhUrl" type="button">输入图片URL</button></div></div>';document.body.appendChild(menu);menu.addEventListener('click',function(ev){if(ev.target===menu)menu.remove();});menu.querySelector('#olPhX').addEventListener('click',function(){menu.remove();});menu.querySelector('#olPhAlbum').addEventListener('click',function(){menu.remove();var inp2=document.createElement('input');inp2.type='file';inp2.accept='image/*';document.body.appendChild(inp2);inp2.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp2);if(!f)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();};inp2.click();});menu.querySelector('#olPhUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入图片URL：');if(!url)return;OL.messages.push({role:'user',content:'[用户展示了一张图片]',ts:Date.now()});OL.saveMsgs();OfflineUI.renderMessages();});});
-App.safeOn('#olPiFile','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('文件 · 开发中');});
-
+App.safeOn('#olPiPhoto','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('图片 · 开发中');});
 App.$$('.ol-fold-head').forEach(function(h){h.addEventListener('click',function(){h.parentElement.classList.toggle('open');});});
 
-/* 所有开关 */
+/* all switches */
 App.$$('.ol-sw-track').forEach(function(sw){sw.addEventListener('click',function(e){e.stopPropagation();sw.classList.toggle('on');var id=sw.parentElement.id;var on=sw.classList.contains('on');
-  if(id==='olPovOn'){ap.povOn=on;var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';save();}
-  else if(id==='olcAvShow'){ap.cAvShow=on;saveRender();}else if(id==='olcAvNameShow'){ap.cAvNameShow=on;saveRender();}
-  else if(id==='oluAvShow'){ap.uAvShow=on;saveRender();}else if(id==='oluAvNameShow'){ap.uAvNameShow=on;saveRender();}
-  else if(id==='olcQuoteOn'){ap.cQuoteOn=on;saveRender();}else if(id==='olcParenOn'){ap.cParenOn=on;saveRender();}else if(id==='olcStarOn'){ap.cStarOn=on;saveRender();}
-  else if(id==='olcParenHide'){ap.cParenHide=on;saveRender();}else if(id==='olcStarHide'){ap.cStarHide=on;saveRender();}
-  else if(id==='olquoteOn'){ap.quoteOn=on;saveRender();}else if(id==='olparenOn'){ap.parenOn=on;saveRender();}else if(id==='olstarOn'){ap.starOn=on;saveRender();}
-  else if(id==='olparenHide'){ap.parenHide=on;saveRender();}else if(id==='olstarHide'){ap.starHide=on;saveRender();}
+  var map={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow',
+    'olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide',
+    'olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
+  if(map[id]){ap[map[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}
   else save();
 });});
 
-['olBgBlur','olBgDark'].forEach(function(id){var sl=App.$('#'+id);if(!sl)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);if(id==='olBgBlur'){ap.bgBlur=v;App.$('#olBgBlurVal').textContent=v+'px';}else{ap.bgDark=v;App.$('#olBgDarkVal').textContent=v+'%';}save();});});
-App.$$('.ol-povu-btn').forEach(function(btn){if(btn.dataset.pov===ap.povUser)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setActive(Array.from(App.$$('.ol-povu-btn')),btn);ap.povUser=btn.dataset.pov;save();});});
-App.$$('.ol-povc-btn').forEach(function(btn){if(btn.dataset.pov===ap.povChar)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setActive(Array.from(App.$$('.ol-povc-btn')),btn);ap.povChar=btn.dataset.pov;save();});});
+/* sliders */
+var sliders=[
+  {id:'olBgBlur',k:'bgBlur',u:'px'},{id:'olBgDark',k:'bgDark',u:'%'},{id:'olBarOpacity',k:'barOpacity',u:'%'},
+  {id:'olParaGap',k:'paraGap',u:'px'},{id:'olLetterGap',k:'letterGap',u:'px'},
+  {id:'olcAvSize',k:'cAvSize',u:'px'},{id:'olcAvRadius',k:'cAvRadius',u:'%'},{id:'olcAvFrameW',k:'cAvFrameW',u:'px'},{id:'olcAvNameSize',k:'cAvNameSize',u:'px'},
+  {id:'olcBubbleRadius',k:'cBubbleRadius',u:'px'},{id:'olcBubbleBorderW',k:'cBubbleBorderW',u:'px'},{id:'olcBubbleWidth',k:'cBubbleWidth',u:'%'},{id:'olcBubbleOpacity',k:'cBubbleOpacity',u:'%'},{id:'olcBubbleBlur',k:'cBubbleBlur',u:'px'},
+  {id:'olcTextSize',k:'cTextSize',u:'px'},{id:'olcTextWeight',k:'cTextWeight',u:''},{id:'olcTextLH',k:'cTextLH',u:''},
+  {id:'oluAvSize',k:'uAvSize',u:'px'},{id:'oluAvRadius',k:'uAvRadius',u:'%'},{id:'oluAvFrameW',k:'uAvFrameW',u:'px'},{id:'oluAvNameSize',k:'uAvNameSize',u:'px'},
+  {id:'oluBubbleRadius',k:'uBubbleRadius',u:'px'},{id:'oluBubbleBorderW',k:'uBubbleBorderW',u:'px'},{id:'oluBubbleWidth',k:'uBubbleWidth',u:'%'},{id:'oluBubbleOpacity',k:'uBubbleOpacity',u:'%'},{id:'oluBubbleBlur',k:'uBubbleBlur',u:'px'},
+  {id:'oltextSize',k:'textSize',u:'px'},{id:'oltextWeight',k:'textWeight',u:''},{id:'oltextLH',k:'textLH',u:''}
+];
+sliders.forEach(function(s){var sl=App.$('#'+s.id);var val=App.$('#'+s.id+'Val');if(!sl||!val)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);val.textContent=v+s.u;ap[s.k]=v;sr();});});
+
+/* fmt sliders */
+App.$$('[data-fmtkey]').forEach(function(el){
+  if(el.tagName==='INPUT'&&el.type==='range'){
+    var k=el.dataset.fmtkey;var valEl=App.$('#ol'+k+'Val');
+    el.addEventListener('input',function(){var v=parseFloat(this.value);if(valEl)valEl.textContent=v+(k.indexOf('Weight')>=0?'':'px');ap[k]=v;sr();});
+  }
+});
+
+/* fmt colors */
+App.$$('[data-fmtkey]').forEach(function(el){
+  if(el.classList.contains('hp-color-dot')){
+    var k=el.dataset.fmtkey;el.style.background=ap[k];
+    el.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;
+      App.openColorPicker(ap[k],function(hex){el.style.background=hex;ap[k]=hex;sr();},function(hex){el.style.background=hex;},'ol_'+k);
+    });
+  }
+});
+
+/* colors */
+function bc(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap[key]||'#fff';dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key]||'#fff',function(hex){dot.style.background=hex;ap[key]=hex;sr();},function(hex){dot.style.background=hex;ap[key]=hex;OfflineUI.applyAppearance(cid);},'ol_'+key);});}
+bc('olPageBg','pageBg');bc('olBarBg','barBg');bc('olBarBorderColor','barBorderColor');
+bc('olcAvFrameColor','cAvFrameColor');bc('olcBubbleBg','cBubbleBg');bc('olcBubbleBorderColor','cBubbleBorderColor');bc('olcTextColor','cTextColor');
+bc('oluAvFrameColor','uAvFrameColor');bc('oluBubbleBg','uBubbleBg');bc('oluBubbleBorderColor','uBubbleBorderColor');bc('oltextColor','textColor');
+
+/* pov */
+App.$$('.ol-povu-btn').forEach(function(btn){if(btn.dataset.pov===ap.povUser)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-povu-btn')),btn);ap.povUser=btn.dataset.pov;save();});});
+App.$$('.ol-povc-btn').forEach(function(btn){if(btn.dataset.pov===ap.povChar)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-povc-btn')),btn);ap.povChar=btn.dataset.pov;save();});});
 var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){ap.wordCount=parseInt(this.value)||0;save();});
 
-function bindColor(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap[key]||'#fff';dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key]||'#fff',function(hex){dot.style.background=hex;ap[key]=hex;saveRender();},function(hex){dot.style.background=hex;ap[key]=hex;OfflineUI.applyAppearance(cid);},'ol_'+key);});}
-bindColor('olPageBg','pageBg');bindColor('olBarBg','barBg');bindColor('olBarBorderColor','barBorderColor');
-bindColor('olcAvFrameColor','cAvFrameColor');bindColor('olcBubbleBg','cBubbleBg');bindColor('olcBubbleBorderColor','cBubbleBorderColor');bindColor('olcTextColor','cTextColor');
-bindColor('oluAvFrameColor','uAvFrameColor');bindColor('oluBubbleBg','uBubbleBg');bindColor('oluBubbleBorderColor','uBubbleBorderColor');bindColor('oltextColor','textColor');
-App.$$('.ol-fmt-color').forEach(function(dot){var prefix=dot.dataset.prefix;var key=prefix+'Color';dot.style.background=ap[key];dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key],function(hex){dot.style.background=hex;ap[key]=hex;saveRender();},function(hex){dot.style.background=hex;},'ol_'+key);});});
+/* mode */
+App.$$('.ol-mode-btn').forEach(function(btn){if(btn.dataset.mode===ap.mode)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-mode-btn')),btn);ap.mode=btn.dataset.mode;sr();});});
+App.$$('.ol-bgfit-btn').forEach(function(btn){if(btn.dataset.fit===ap.bgFit)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-bgfit-btn')),btn);ap.bgFit=btn.dataset.fit;save();});});
+App.$$('.ol-cavpos-btn').forEach(function(btn){if(btn.dataset.pos===ap.cAvPos)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-cavpos-btn')),btn);ap.cAvPos=btn.dataset.pos;sr();});});
+App.$$('.ol-uavpos-btn').forEach(function(btn){if(btn.dataset.pos===ap.uAvPos)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setAct(Array.from(App.$$('.ol-uavpos-btn')),btn);ap.uAvPos=btn.dataset.pos;sr();});});
 
-App.$$('.ol-mode-btn').forEach(function(btn){if(btn.dataset.mode===ap.mode)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setActive(Array.from(App.$$('.ol-mode-btn')),btn);ap.mode=btn.dataset.mode;saveRender();});});
-App.$$('.ol-cavpos-btn').forEach(function(btn){if(btn.dataset.pos===ap.cAvPos)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setActive(Array.from(App.$$('.ol-cavpos-btn')),btn);ap.cAvPos=btn.dataset.pos;saveRender();});});
-App.$$('.ol-uavpos-btn').forEach(function(btn){if(btn.dataset.pos===ap.uAvPos)btn.classList.add('hp-btn-primary');btn.addEventListener('click',function(){setActive(Array.from(App.$$('.ol-uavpos-btn')),btn);ap.uAvPos=btn.dataset.pos;saveRender();});});
-
-var allSliders=[
-  {id:'olcAvSize',key:'cAvSize',unit:'px'},{id:'olcAvRadius',key:'cAvRadius',unit:'%'},{id:'olcAvFrameW',key:'cAvFrameW',unit:'px'},{id:'olcAvNameSize',key:'cAvNameSize',unit:'px'},
-  {id:'olcBubbleRadius',key:'cBubbleRadius',unit:'px'},{id:'olcBubbleBorderW',key:'cBubbleBorderW',unit:'px'},{id:'olcBubbleWidth',key:'cBubbleWidth',unit:'%'},
-  {id:'olcTextSize',key:'cTextSize',unit:'px'},{id:'olcTextWeight',key:'cTextWeight',unit:''},{id:'olcTextLH',key:'cTextLH',unit:''},
-  {id:'oluAvSize',key:'uAvSize',unit:'px'},{id:'oluAvRadius',key:'uAvRadius',unit:'%'},{id:'oluAvFrameW',key:'uAvFrameW',unit:'px'},{id:'oluAvNameSize',key:'uAvNameSize',unit:'px'},
-  {id:'oluBubbleRadius',key:'uBubbleRadius',unit:'px'},{id:'oluBubbleBorderW',key:'uBubbleBorderW',unit:'px'},{id:'oluBubbleWidth',key:'uBubbleWidth',unit:'%'},
-  {id:'oltextSize',key:'textSize',unit:'px'},{id:'oltextWeight',key:'textWeight',unit:''},{id:'oltextLH',key:'textLH',unit:''}
-];
-allSliders.forEach(function(s){var sl=App.$('#'+s.id);var val=App.$('#'+s.id+'Val');if(!sl||!val)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);val.textContent=v+s.unit;ap[s.key]=v;saveRender();});});
-App.$$('.ol-fmt-slider').forEach(function(sl){var prefix=sl.dataset.prefix;var key=prefix+sl.dataset.key;var valEl=App.$('#ol'+key+'Val');sl.addEventListener('input',function(){var v=parseFloat(this.value);if(valEl)valEl.textContent=v+(sl.dataset.key==='Weight'?'':'px');ap[key]=v;saveRender();});});
-
-/* 多选标签 */
-function bindMultiTag(cls,apKey){App.$$(cls).forEach(function(tag){tag.addEventListener('click',function(){tag.classList.toggle('active');ap[apKey]=[];App.$$(cls+'.active').forEach(function(t){ap[apKey].push(t.dataset.val);});saveRender();});});}
-bindMultiTag('.ol-cQuote-qrec','cQuoteRec');bindMultiTag('.ol-cParen-prec','cParenRec');
-bindMultiTag('.ol-quote-qrec','quoteRec');bindMultiTag('.ol-paren-prec','parenRec');
-
-/* 单选标签 */
-function bindSingleTag(cls,apKey){App.$$(cls).forEach(function(tag){tag.addEventListener('click',function(){App.$$(cls).forEach(function(t){t.classList.remove('active');});tag.classList.add('active');ap[apKey]=tag.dataset.val;saveRender();});});}
-bindSingleTag('.ol-cQuote-qdis','cQuoteDis');bindSingleTag('.ol-cParen-pdis','cParenDis');
-bindSingleTag('.ol-quote-qdis','quoteDis');bindSingleTag('.ol-paren-pdis','parenDis');
-
-/* 样式标签 */
-['cQuote','cParen','cStar','quote','paren','star'].forEach(function(prefix){App.$$('.ol-'+prefix+'-style').forEach(function(tag){tag.addEventListener('click',function(){App.$$('.ol-'+prefix+'-style').forEach(function(t){t.classList.remove('active');});tag.classList.add('active');ap[prefix+'Italic']=tag.dataset.val==='italic';saveRender();});});});
+/* multi-select tags */
+function bmt(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){t.classList.toggle('active');ap[k]=[];App.$$(cls+'.active').forEach(function(x){ap[k].push(x.dataset.val);});sr();});});}
+bmt('.ol-cQuote-qrec','cQuoteRec');bmt('.ol-cParen-prec','cParenRec');bmt('.ol-quote-qrec','quoteRec');bmt('.ol-paren-prec','parenRec');
+/* single-select tags */
+function bst(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){App.$$(cls).forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[k]=t.dataset.val;sr();});});}
+bst('.ol-cQuote-qdis','cQuoteDis');bst('.ol-cParen-pdis','cParenDis');bst('.ol-quote-qdis','quoteDis');bst('.ol-paren-pdis','parenDis');
+/* style tags */
+['cQuote','cParen','cStar','quote','paren','star'].forEach(function(p){App.$$('.ol-'+p+'-style').forEach(function(t){t.addEventListener('click',function(){App.$$('.ol-'+p+'-style').forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[p+'Italic']=t.dataset.val==='italic';sr();});});});
 
 App.safeOn('#olSbScene','click',function(){OfflineUI.showSceneDialog();});
 App.safeOn('#olSbBg','click',function(){OfflineUI.showBgMenu();});
 App.safeOn('#olSbCode','click',function(){OfflineUI._closePanel();OfflineUI.openCodeEditor();});
-App.safeOn('#olStyleReset','click',function(){App.LS.remove('olAp_'+cid);OfflineUI.applyAppearance(cid);OfflineUI._noScroll=true;OfflineUI.renderMessages();App.showToast('外观已重置');});
+App.safeOn('#olStyleReset','click',function(){App.LS.remove('olAp_'+cid);OfflineUI.applyAppearance(cid);OfflineUI._noScroll=true;OfflineUI.renderMessages();App.showToast('已重置');});
 
-/* ★ 长按：只在非文字区域触发菜单 */
+/* ★ long press on block (NOT on text) */
 var mc=App.$('#olMsgs');
 if(mc){var lt=null,lT=null,mv=false;
   mc.addEventListener('touchstart',function(e){
-    if(e.target.closest('.ol-bubble-text')){return;}
-    var b=e.target.closest('.ol-block');if(!b){/* 空白区域也不触发 */return;}
+    var txt=e.target.closest('.ol-bubble-text');
+    if(txt)return;
+    var b=e.target.closest('.ol-block');if(!b)return;
     mv=false;var t=e.touches[0];lT={el:b,x:t.clientX,y:t.clientY};
     lt=setTimeout(function(){if(lT&&!mv){if(navigator.vibrate)navigator.vibrate(15);OfflineUI.showCtxMenu(lT.el,lT.x,lT.y);}},500);
   },{passive:true});
-  mc.addEventListener('touchmove',function(){mv=true;clearTimeout(lt);lT=null;},{passive:true});
+  mc.addEventListener('touchmove',function(e){
+    if(lt){var t=e.touches[0];if(lT&&(Math.abs(t.clientX-lT.x)>8||Math.abs(t.clientY-lT.y)>8)){mv=true;clearTimeout(lt);lT=null;}}
+  },{passive:true});
   mc.addEventListener('touchend',function(){clearTimeout(lt);lT=null;},{passive:true});
 }
 if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}
 },
 
-showCtxMenu:function(msgEl,x,y){var OL=App.offline;if(!OL)return;OL.dismissCtx();var idx=parseInt(msgEl.dataset.msgIdx);if(isNaN(idx))return;var msg=OL.messages[idx];if(!msg)return;var isUser=msg.role==='user';var menu=document.createElement('div');menu.className='ol-ctx';var items='';items+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';items+='<div class="ol-ctx-item" data-act="edit">'+CTX_ICONS.edit+'<span>编辑</span></div>';if(!isUser)items+='<div class="ol-ctx-item" data-act="regen">'+CTX_ICONS.regen+'<span>重写</span></div>';items+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';items+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>往后全删</span></div>';menu.innerHTML=items;var left=Math.max(8,Math.min(x-125,window.innerWidth-258));var top=y-80;if(top<60)top=y+10;menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);OL._ctxMenu=menu;menu.querySelectorAll('.ol-ctx-item').forEach(function(item){item.addEventListener('click',function(e){e.stopPropagation();var act=item.dataset.act;OL.dismissCtx();if(act==='copy')App.copyText(msg.content).then(function(){App.showToast('已复制');});else if(act==='edit')OfflineUI.showEditDialog(idx);else if(act==='del'){OL.messages.splice(idx,1);OL.saveMsgs();OfflineUI.renderMessages();}else if(act==='delafter'){if(!confirm('删除此条及之后？'))return;OL.messages.splice(idx);OL.saveMsgs();OfflineUI.renderMessages();}else if(act==='regen'){OL.messages.splice(idx);OL.saveMsgs();OfflineUI.renderMessages();OL.requestAI();}});});},
-showEditDialog:function(idx){var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100060';overlay.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">编辑<div class="pc-close-btn" id="olEdX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical;">'+App.esc(msg.content)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdCancel" type="button">取消</button></div></div>';document.body.appendChild(overlay);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});overlay.querySelector('#olEdX').addEventListener('click',function(){overlay.remove();});overlay.querySelector('#olEdCancel').addEventListener('click',function(){overlay.remove();});overlay.querySelector('#olEdSave').addEventListener('click',function(){var val=overlay.querySelector('#olEdTA').value.trim();if(!val){App.showToast('不能为空');return;}OL.messages[idx].content=val;OL.saveMsgs();OfflineUI.renderMessages();overlay.remove();});},
-showSceneDialog:function(){var OL=App.offline;if(!OL)return;var current=App.LS.get('olScene_'+OL.charId)||'';var overlay=document.createElement('div');overlay.className='pc-edit-overlay';overlay.style.zIndex='100060';overlay.innerHTML='<div class="pc-edit-panel" style="width:340px;max-height:75vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><div style="font-size:13px;color:#1a1a1a;margin-bottom:8px;">描述当前场景、时间、地点、剧情背景等。</div><textarea class="pc-input" id="olScTA" style="min-height:200px;resize:vertical;" placeholder="例如：暴风雨之夜，山中木屋...">'+App.esc(current)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClear" type="button">清空</button></div></div>';document.body.appendChild(overlay);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});overlay.querySelector('#olScX').addEventListener('click',function(){overlay.remove();});overlay.querySelector('#olScSave').addEventListener('click',function(){var val=overlay.querySelector('#olScTA').value.trim();if(val)App.LS.set('olScene_'+OL.charId,val);else App.LS.remove('olScene_'+OL.charId);overlay.remove();App.showToast('已保存');});overlay.querySelector('#olScClear').addEventListener('click',function(){App.LS.remove('olScene_'+OL.charId);overlay.remove();App.showToast('已清空');});},
-showBgMenu:function(){var OL=App.offline;if(!OL)return;var menu=document.createElement('div');menu.className='pc-edit-overlay';menu.style.zIndex='100060';menu.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px;"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button">输入图片URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="color:#c9706b;">移除背景</button></div></div>';document.body.appendChild(menu);menu.addEventListener('click',function(e){if(e.target===menu)menu.remove();});menu.querySelector('#olBgX').addEventListener('click',function(){menu.remove();});menu.querySelector('#olBgDel').addEventListener('click',function(){App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='';bg.style.filter='';}menu.remove();App.showToast('已移除');});menu.querySelector('#olBgAlbum').addEventListener('click',function(){menu.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;var reader=new FileReader();reader.onload=function(r){if(App.cropImage){App.cropImage(r.target.result,function(cropped){try{App.LS.set('olBg_'+OL.charId,cropped);}catch(e2){App.showToast('图片太大');return;}var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='url('+cropped+')';var a2=gAp(OL.charId);bg.style.filter='blur('+a2.bgBlur+'px) brightness('+(100-a2.bgDark)+'%)';}App.showToast('已设置');});}else{try{App.LS.set('olBg_'+OL.charId,r.target.result);}catch(e2){App.showToast('图片太大');return;}var bg=App.$('#olBg');if(bg)bg.style.backgroundImage='url('+r.target.result+')';App.showToast('已设置');}};reader.readAsDataURL(f);};inp.click();});menu.querySelector('#olBgUrl').addEventListener('click',function(){menu.remove();var url=prompt('输入背景图URL：');if(!url||!url.trim())return;url=url.trim();App.LS.set('olBg_'+OL.charId,url);var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='url('+url+')';var a2=gAp(OL.charId);bg.style.filter='blur('+a2.bgBlur+'px) brightness('+(100-a2.bgDark)+'%)';}App.showToast('已设置');});},
-/* ★ 自定义UI：返回时打开面板 */
-openCodeEditor:function(){var OL=App.offline;if(!OL)return;var saved=App.LS.get('olCustomCode_'+OL.charId)||'';var ed=document.createElement('div');ed.className='ol-css-editor';ed.innerHTML='<div class="ol-css-editor-header"><button type="button" id="olCodeBack" class="ol-css-hd-btn">返回</button><span class="ol-css-hd-title">自定义UI</span><button type="button" id="olCodeSave" class="ol-css-hd-btn">保存</button></div><textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="支持 HTML + CSS + JS">'+App.esc(saved)+'</textarea>';document.body.appendChild(ed);
-  function goBack(){ed.remove();var p=App.$('#olSettingsPanel');if(p){p.classList.remove('hidden');requestAnimationFrame(function(){p.classList.add('show');});}}
-  App.bindSwipeBack(ed,goBack);
-  ed.querySelector('#olCodeBack').addEventListener('click',goBack);
-  ed.querySelector('#olCodeSave').addEventListener('click',function(){var code=ed.querySelector('#olCodeTA').value||'';App.LS.set('olCustomCode_'+OL.charId,code);OfflineUI.applyCustomCode(OL.charId);goBack();App.showToast('已保存');});
-  ed.querySelector('#olCodeTA').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}});
-},
-applyCustomCode:function(charId){var oldS=document.getElementById('olCustomStyle');if(oldS)oldS.remove();var oldH=document.getElementById('olCustomHtml');if(oldH)oldH.remove();var code=App.LS.get('olCustomCode_'+charId);if(!code)return;var css='';var cssR=/<style[^>]*>([\s\S]*?)<\/style>/gi;var cm;while((cm=cssR.exec(code))!==null)css+=cm[1]+'\n';var jss=[];var jsR=/<script[^>]*>([\s\S]*?)<\/script>/gi;var jm;while((jm=jsR.exec(code))!==null)jss.push(jm[1]);var html=code.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').trim();if(!/<style/i.test(code)&&!/<[a-z]/i.test(code)){css=code;html='';}if(css){var s=document.createElement('style');s.id='olCustomStyle';s.textContent=css;document.head.appendChild(s);}if(html){var cont=document.getElementById('olMsgs');if(cont){var d=document.createElement('div');d.id='olCustomHtml';d.innerHTML=html;cont.insertBefore(d,cont.firstChild);}}if(jss.length)jss.forEach(function(js){try{(new Function(js))();}catch(e){console.warn('[自定义代码]',e.message);}});},
+showCtxMenu:function(msgEl,x,y){var OL=App.offline;if(!OL)return;OL.dismissCtx();var idx=parseInt(msgEl.dataset.msgIdx);if(isNaN(idx))return;var msg=OL.messages[idx];if(!msg)return;var isUser=msg.role==='user';var menu=document.createElement('div');menu.className='ol-ctx';var it='';it+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';it+='<div class="ol-ctx-item" data-act="edit">'+CTX_ICONS.edit+'<span>编辑</span></div>';if(!isUser)it+='<div class="ol-ctx-item" data-act="regen">'+CTX_ICONS.regen+'<span>重写</span></div>';it+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';it+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>往后全删</span></div>';menu.innerHTML=it;var left=Math.max(8,Math.min(x-125,window.innerWidth-258));var top=y-80;if(top<60)top=y+10;menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);OL._ctxMenu=menu;menu.querySelectorAll('.ol-ctx-item').forEach(function(item){item.addEventListener('click',function(e){e.stopPropagation();var act=item.dataset.act;OL.dismissCtx();if(act==='copy')App.copyText(msg.content).then(function(){App.showToast('已复制');});else if(act==='edit')OfflineUI.showEditDialog(idx);else if(act==='del'){OL.messages.splice(idx,1);OL.saveMsgs();OfflineUI.renderMessages();}else if(act==='delafter'){if(!confirm('删除此条及之后？'))return;OL.messages.splice(idx);OL.saveMsgs();OfflineUI.renderMessages();}else if(act==='regen'){OL.messages.splice(idx);OL.saveMsgs();OfflineUI.renderMessages();OL.requestAI();}});});},
+showEditDialog:function(idx){var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">编辑<div class="pc-close-btn" id="olEdX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical">'+App.esc(msg.content)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdNo" type="button">取消</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olEdX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdNo').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdSave').addEventListener('click',function(){var v=ov.querySelector('#olEdTA').value.trim();if(!v){App.showToast('不能为空');return;}OL.messages[idx].content=v;OL.saveMsgs();OfflineUI.renderMessages();ov.remove();});},
+showSceneDialog:function(){var OL=App.offline;if(!OL)return;var cur=App.LS.get('olScene_'+OL.charId)||'';var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:340px;max-height:75vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">场景<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olScTA" style="min-height:200px;resize:vertical" placeholder="描述场景...">'+App.esc(cur)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClr" type="button">清空</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olScX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olScSave').addEventListener('click',function(){var v=ov.querySelector('#olScTA').value.trim();if(v)App.LS.set('olScene_'+OL.charId,v);else App.LS.remove('olScene_'+OL.charId);ov.remove();App.showToast('已保存');});ov.querySelector('#olScClr').addEventListener('click',function(){App.LS.remove('olScene_'+OL.charId);ov.remove();App.showToast('已清空');});},
+showBgMenu:function(){var OL=App.offline;if(!OL)return;var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button">输入URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="color:#c9706b">移除</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olBgX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olBgDel').addEventListener('click',function(){App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='';bg.style.filter='';}ov.remove();App.showToast('已移除');});ov.querySelector('#olBgAlbum').addEventListener('click',function(){ov.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;var rd=new FileReader();rd.onload=function(r){var process=function(src){try{App.LS.set('olBg_'+OL.charId,src);}catch(e){App.showToast('太大');return;}var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='url('+src+')';var a=gAp(OL.charId);bg.style.filter='blur('+a.bgBlur+'px) brightness('+(100-a.bgDark)+'%)';bg.style.backgroundSize=a.bgFit||'contain';}App.showToast('已设置');};if(App.cropImage)App.cropImage(r.target.result,process);else process(r.target.result);};rd.readAsDataURL(f);};inp.click();});ov.querySelector('#olBgUrl').addEventListener('click',function(){ov.remove();var url=prompt('输入URL：');if(!url)return;App.LS.set('olBg_'+OL.charId,url.trim());var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='url('+url.trim()+')';var a=gAp(OL.charId);bg.style.filter='blur('+a.bgBlur+'px) brightness('+(100-a.bgDark)+'%)';bg.style.backgroundSize=a.bgFit||'contain';}App.showToast('已设置');});},
+openCodeEditor:function(){var OL=App.offline;if(!OL)return;var saved=App.LS.get('olCustomCode_'+OL.charId)||'';var ed=document.createElement('div');ed.className='ol-css-editor';ed.innerHTML='<div class="ol-css-editor-header"><button type="button" id="olCodeBack" class="ol-css-hd-btn">返回</button><span class="ol-css-hd-title">自定义UI</span><button type="button" id="olCodeSave" class="ol-css-hd-btn">保存</button></div><textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="HTML + CSS + JS">'+App.esc(saved)+'</textarea>';document.body.appendChild(ed);function goBack(){ed.remove();var p=App.$('#olSettingsPanel');if(p){p.classList.remove('hidden');requestAnimationFrame(function(){p.classList.add('show');});}}App.bindSwipeBack(ed,goBack);ed.querySelector('#olCodeBack').addEventListener('click',goBack);ed.querySelector('#olCodeSave').addEventListener('click',function(){var code=ed.querySelector('#olCodeTA').value||'';App.LS.set('olCustomCode_'+OL.charId,code);OfflineUI.applyCustomCode(OL.charId);goBack();App.showToast('已保存');});ed.querySelector('#olCodeTA').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}});},
+applyCustomCode:function(cid){var oldS=document.getElementById('olCustomStyle');if(oldS)oldS.remove();var oldH=document.getElementById('olCustomHtml');if(oldH)oldH.remove();var code=App.LS.get('olCustomCode_'+cid);if(!code)return;var css='';var cssR=/<style[^>]*>([\s\S]*?)<\/style>/gi;var cm;while((cm=cssR.exec(code))!==null)css+=cm[1]+'\n';var jss=[];var jsR=/<script[^>]*>([\s\S]*?)<\/script>/gi;var jm;while((jm=jsR.exec(code))!==null)jss.push(jm[1]);var html=code.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').trim();if(!/<style/i.test(code)&&!/<[a-z]/i.test(code)){css=code;html='';}if(css){var s=document.createElement('style');s.id='olCustomStyle';s.textContent=css;document.head.appendChild(s);}if(html){var cont=document.getElementById('olMsgs');if(cont){var d=document.createElement('div');d.id='olCustomHtml';d.innerHTML=html;cont.insertBefore(d,cont.firstChild);}}if(jss.length)jss.forEach(function(js){try{(new Function(js))();}catch(e){console.warn('[自定义代码]',e.message);}});},
 init:function(){App.offlineUI=OfflineUI;}
 };
 App.register('offlineUI',OfflineUI);
