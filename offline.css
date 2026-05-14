@@ -1,6 +1,4 @@
-### offline.css（完整替换）
 
-```css
 .ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
