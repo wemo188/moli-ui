@@ -81,7 +81,7 @@
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
 
 /* ★ issue3: 隐藏滚动条 */
-.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:40px 16px 90px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 40px,black 40px);mask-image:linear-gradient(to bottom,transparent 0px,transparent 10px,black 40px);}
+.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:80px 16px 90px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{position:relative;margin:0 0 16px;display:flex;align-items:flex-start;gap:10px;max-width:100%;}
