@@ -3,18 +3,6 @@
 
 #olSettingsPanel{z-index:10050;}
 
-/* ★ 面板内：白色按钮、黑色文字、黑色标题 */
-#olSettingsPanel .hp-header h2{color:#1a1a1a;}
-#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;}
-#olSettingsPanel .hp-slider-label{color:#1a1a1a;}
-#olSettingsPanel .hp-slider-val{color:#1a1a1a;}
-#olSettingsPanel .hp-btn{background:#ffffff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.1);}
-#olSettingsPanel .hp-btn:active{opacity:.7;}
-#olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-#olSettingsPanel .hp-btn.hp-btn-danger{background:#ffffff;color:#c9706b;border:1.5px solid rgba(201,112,107,.3);}
-#olSettingsPanel #olWordCount{padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:13px;color:#1a1a1a;outline:none;font-family:inherit;}
-.ol-sub-title{font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:6px;margin-top:10px;}
-
 .ol-root{
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:14px;--ol-text-line-height:1.85;--ol-accent:#1a1a1a;
   --ol-hd-bg:#transparent;--ol-hd-text:#1a1a1a;--ol-hd-size:18px;
@@ -72,7 +60,7 @@
 .ol-think-body{font-size:12px;color:#8aa0b8;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(126,163,201,.06);border-radius:8px;border:1px solid rgba(126,163,201,.12);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
 /* 底部栏：实色、黑色顶部线 */
-.ol-input-wrap{position:relative;z-index:10;display:flex;align-items:flex-end;gap:6px;padding:10px 12px 20px;background:var(--ol-bar-bg);border-top:1.5px solid #1a1a1a;flex-shrink:0;}
+.ol-input-wrap{position:relative;z-index:10;display:flex;align-items:flex-end;gap:6px;padding:14px 12px 23px;background:var(--ol-bar-bg);border-top:1.5px solid #1a1a1a;flex-shrink:0;}
 
 /* 输入框容器：黑色边框、原始圆角 */
 .ol-input-box{display:flex;align-items:flex-end;background:var(--ol-input-bg);border:1.5px solid var(--ol-input-border);border-radius:var(--ol-input-radius);padding:4px;flex:1;min-width:0;}
