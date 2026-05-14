@@ -50,8 +50,8 @@ var uBgA=(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100;
 r.style.setProperty('--ol-u-bubble-bg',h2r(ap.uBubbleBg||'#eef4fa',uBgA));
 r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
-r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.7));
-r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.5));
+r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.12));
+r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
 var wrap=App.$('#olInputWrap');
 if(wrap){var a=(ap.barOpacity!=null?ap.barOpacity:100)/100;
   if(ap.barBg&&ap.barBg.indexOf('gradient')>=0){wrap.style.background=ap.barBg;wrap.style.opacity=a<1?String(a):'';}
