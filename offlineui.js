@@ -3,13 +3,13 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var NEW_PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var NEW_PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-var NEW_WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="32" cy="32" r="28" stroke="#1a1a1a" stroke-width="2.4" fill="none"/><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
+var NEW_WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="32" cy="32" r="28" stroke="#1a1a1a" stroke-width="2.4" fill="none"/><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
 
-var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="30" height="30" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1a1a1a"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1a1a1a"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
+var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="32" height="32" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1a1a1a"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1a1a1a"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
 
-var STOP_SVG='<svg viewBox="0 0 24 24" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
+var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
 var CTX_ICONS={
 copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
@@ -45,31 +45,32 @@ container.innerHTML=
 '<div class="ol-input-wrap">'+
   '<div class="ol-input-box">'+
     '<button class="ol-btn" id="olPlusBtn" type="button">'+NEW_PLUS_SVG+'</button>'+
-    '<button class="ol-btn" id="olPanelBtn" type="button">'+NEW_WAND_SVG+'</button>'+
     '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
-    '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
   '</div>'+
+  '<button class="ol-btn" id="olPanelBtn" type="button">'+NEW_WAND_SVG+'</button>'+
+  '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
 '</div>'+
 
 '<div id="olSettingsPanel" class="half-panel hidden" style="z-index: 100050;">'+
   '<div class="hp-handle"></div>'+
   '<div class="hp-header">'+
     '<h2>设置</h2>'+
-    '<button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>'+
+    '<button class="hp-close" id="olPanelClose" type="button" style="background:transparent;"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg></button>'+
   '</div>'+
   '<div class="hp-body" style="padding: 14px 20px 40px;">'+
+    
     '<div class="hp-btn-row">'+
-      '<button class="hp-btn" id="olSbScene" style="background:#1a1a1a;color:#fff;border:1px solid #1a1a1a;">编辑场景</button>'+
-      '<button class="hp-btn" id="olSbBg" style="background:#f5f5f5;color:#333;border:1px solid #ddd;">上传背景图</button>'+
+      '<button class="hp-btn hp-btn-primary" id="olSbScene">编辑场景</button>'+
+      '<button class="hp-btn" id="olSbBg" style="border:1.5px solid var(--text-primary);color:var(--text-primary);">上传背景图</button>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">聊天设置</div>'+
     '<div style="font-size:12px;font-weight:700;color:#5a7a9a;margin-bottom:8px;">人称视角</div>'+
     '<div class="hp-btn-row" id="olPovRow">'+
-      '<button class="hp-btn ol-pov-btn" data-pov="second">第二人称</button>'+
-      '<button class="hp-btn ol-pov-btn" data-pov="first">第一人称</button>'+
-      '<button class="hp-btn ol-pov-btn" data-pov="third">第三人称</button>'+
+      '<button class="hp-btn ol-pov-btn" data-pov="second">第二</button>'+
+      '<button class="hp-btn ol-pov-btn" data-pov="first">第一</button>'+
+      '<button class="hp-btn ol-pov-btn" data-pov="third">第三</button>'+
     '</div>'+
     '<div style="font-size:12px;font-weight:700;color:#5a7a9a;margin-bottom:8px;margin-top:12px;">对话引号</div>'+
     '<div class="hp-btn-row" id="olQuoteRow">'+
@@ -79,7 +80,7 @@ container.innerHTML=
     '</div>'+
     '<div class="hp-slider-row" style="margin-top:12px;">'+
       '<span class="hp-slider-label" style="width:60px;">期望字数</span>'+
-      '<input type="number" id="olWordCount" class="pc-input" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
+      '<input type="number" id="olWordCount" style="flex:1;padding:8px;border:1.5px solid rgba(0,0,0,.15);border-radius:8px;background:transparent;outline:none;" placeholder="如 800，留空不限" value="'+(settings.wordCount||'')+'">'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
@@ -109,14 +110,14 @@ container.innerHTML=
 
     '<div class="hp-section-label">美化主题</div>'+
     '<div class="hp-btn-row">'+
-      '<button class="hp-btn" id="olStyleReset" style="background:#fff;border:1.5px solid #c9706b;color:#c9706b;">重置外观</button>'+
+      '<button class="hp-btn" id="olStyleReset" style="border:1.5px solid #c9706b;color:#c9706b;">重置外观</button>'+
     '</div>'+
     '<div class="hp-divider"></div>'+
 
     '<div class="hp-section-label">高级</div>'+
     '<div class="hp-btn-row">'+
-      '<button class="hp-btn" id="olSbCode" style="background:#f5f5f5;color:#333;border:1px solid #ddd;">自定义代码</button>'+
-      '<button class="hp-btn" id="olSbClear" style="background:#fff;border:1.5px solid #c9706b;color:#c9706b;">清空记录</button>'+
+      '<button class="hp-btn" id="olSbCode" style="border:1.5px solid rgba(0,0,0,.15);">自定义代码</button>'+
+      '<button class="hp-btn" id="olSbClear" style="border:1.5px solid #c9706b;color:#c9706b;">清空记录</button>'+
     '</div>'+
     '<div class="hp-bottom-spacer"></div>'+
   '</div>'+
@@ -253,7 +254,7 @@ if(root){
   root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
-/* 绑定新魔法棒按钮，打开半屏面板 */
+/* 打开半屏面板 */
 App.safeOn('#olPanelBtn','click',function(e){
   e.stopPropagation();
   if(panel){
@@ -297,9 +298,13 @@ App.safeOn('#olPiFile','click',function(e){e.stopPropagation();var pp=App.$('#ol
 /* 设置项按钮高亮逻辑 */
 function updateBtnStyle(btn, isActive) {
   if(isActive) {
-    btn.style.background = '#1a1a1a'; btn.style.color = '#fff'; btn.style.borderColor = '#1a1a1a';
+    btn.classList.add('hp-btn-primary');
+    btn.style.border = 'none';
   } else {
-    btn.style.background = '#f5f5f5'; btn.style.color = '#666'; btn.style.borderColor = '#ddd';
+    btn.classList.remove('hp-btn-primary');
+    btn.style.border = '1.5px solid rgba(0,0,0,.15)';
+    btn.style.background = 'transparent';
+    btn.style.color = 'inherit';
   }
 }
 
