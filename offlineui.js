@@ -3,21 +3,6 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-/* ★ 终极越狱：强行突破刘海屏限制 (保留这段，万一以后App支持了呢) */
-var vMeta = document.querySelector('meta[name="viewport"]');
-if (vMeta) {
-  if (vMeta.content.indexOf('viewport-fit=cover') === -1) {
-    vMeta.content += ', viewport-fit=cover';
-  }
-} else {
-  var nMeta = document.createElement('meta');
-  nMeta.name = 'viewport';
-  nMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
-  document.head.appendChild(nMeta);
-}
-document.documentElement.style.setProperty('background', 'transparent', 'important');
-document.body.style.setProperty('background', 'transparent', 'important');
-
 var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 var MENU_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><line x1="12" y1="20" x2="52" y2="20" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="32" x2="52" y2="32" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="44" x2="52" y2="44" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="20" r="4" stroke="#1a1a1a" stroke-width="2.5" fill="white"/><circle cx="38" cy="32" r="4" stroke="#1a1a1a" stroke-width="2.5" fill="white"/><circle cx="28" cy="44" r="4" stroke="#1a1a1a" stroke-width="2.5" fill="white"/></svg>';
 var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="32" height="32" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1a1a1a"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1a1a1a"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
