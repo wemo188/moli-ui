@@ -2,11 +2,13 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="34" height="34" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#7a9ab8" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#7a9ab8"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#7a9ab8"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#7a9ab8"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#7a9ab8"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
+var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" width="34" height="34" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#1a1a1a"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#1a1a1a"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#1a1a1a"/><line x1="26" y1="27" x2="26" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>';
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
-var WAND_SVG='<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="32" cy="32" r="28" stroke="#2a2a2a" stroke-width="2.4" fill="none"/><path d="M32 18L34.5 25L42 25.5L36 30L38 37.5L32 33.5L26 37.5L28 30L22 25.5L29.5 25Z" stroke="#2a2a2a" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M48 38L49 40L51 40.3L49.5 41.8L50 44L48 42.8L46 44L46.5 41.8L45 40.3L47 40Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M18 20L19 22L21 22.3L19.5 23.8L20 26L18 24.8L16 26L16.5 23.8L15 22.3L17 22Z" stroke="#2a2a2a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="46" cy="22" r="1" fill="#2a2a2a"/><circle cx="20" cy="44" r="1" fill="#2a2a2a"/><circle cx="42" cy="48" r="0.8" fill="#2a2a2a"/></svg>';
+var PLUS_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+var MAGIC_SVG='<svg viewBox="0 0 64 64" fill="none" width="28" height="28"><line x1="20" y1="48" x2="38" y2="22" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/><path d="M40 16L41.5 20L46 20.5L42.5 23L43.5 27L40 24.5L36.5 27L37.5 23L34 20.5L38.5 20Z" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M48 34L49 36L51 36.5L49.5 38L50 40L48 39L46 40L46.5 38L45 36.5L47 36Z" stroke="#1a1a1a" stroke-width="1.2" stroke-linejoin="round" fill="none"/><circle cx="44" cy="42" r="1" fill="#1a1a1a"/><circle cx="30" cy="30" r="0.8" fill="#1a1a1a"/></svg>';
 
 var CTX_ICONS={
 copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
@@ -22,17 +24,14 @@ render:function(container,charData){
 var c=charData;
 var displayName=c.name||'';
 var bgUrl=App.LS.get('olBg_'+c.id)||'';
-var tintOn=App.LS.get('olTint_'+c.id);if(tintOn===null)tintOn=true;
 var settings=App.LS.get('olSettings_'+c.id)||{};
 
 container.innerHTML=
 '<div class="ol-root" id="olRoot">'+
 '<div class="ol-bg" id="olBg" style="'+(bgUrl?'background-image:url('+App.escAttr(bgUrl)+');':'')+'"></div>'+
-'<div class="ol-tint'+(tintOn?'':' off')+'" id="olTint"></div>'+
 
 '<div class="ol-hd">'+
   '<div class="ol-hd-name" id="olName">'+App.esc(displayName)+'</div>'+
-  '<button class="ol-hd-btn" id="olWandBtn" type="button">'+WAND_SVG+'</button>'+
 '</div>'+
 
 '<div class="ol-msgs" id="olMsgs"></div>'+
@@ -43,19 +42,25 @@ container.innerHTML=
 '</div>'+
 
 '<div class="ol-input-wrap">'+
-  '<button class="ol-btn ol-btn-plus" id="olPlusBtn" type="button"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>'+
+  '<button class="ol-btn ol-btn-plus" id="olPlusBtn" type="button">'+PLUS_SVG+'</button>'+
+  '<button class="ol-btn ol-btn-magic" id="olMagicBtn" type="button">'+MAGIC_SVG+'</button>'+
   '<textarea class="ol-input" id="olInput" placeholder="输入内容..." rows="1"></textarea>'+
   '<button class="ol-btn ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>'+
-  '<button class="ol-btn ol-btn-send" id="olSendBtn" type="button"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'+
 '</div>'+
 
 '<div class="ol-sidebar-mask" id="olSbMask"></div>'+
 '<div class="ol-sidebar" id="olSidebar">'+
+  '<div class="ol-sb-handle"></div>'+
   '<div class="ol-sb-header">'+
     '<div class="ol-sb-title">设置</div>'+
     '<button class="ol-sb-close" id="olSbClose" type="button">×</button>'+
   '</div>'+
   '<div class="ol-sb-body">'+
+
+    '<div class="ol-sb-section">'+
+      '<button class="ol-sb-btn" id="olSbScene" type="button">编辑场景</button>'+
+      '<button class="ol-sb-btn" id="olSbBg" type="button" style="margin-bottom:0;">上传背景图</button>'+
+    '</div>'+
 
     '<div class="ol-sb-section">'+
       '<div class="ol-sb-label">聊天设置</div>'+
@@ -103,19 +108,8 @@ container.innerHTML=
       '<div style="margin-top:10px;text-align:center;"><button class="ol-sb-btn" id="olStyleReset" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);width:auto;display:inline-block;padding:6px 20px;">重置外观</button></div>'+
     '</div>'+
 
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">场景 / 时间线</div>'+
-      '<button class="ol-sb-btn" id="olSbScene" type="button">编辑场景</button>'+
-    '</div>'+
-
-    '<div class="ol-sb-section">'+
-      '<div class="ol-sb-label">背景</div>'+
-      '<button class="ol-sb-btn" id="olSbBg" type="button">上传背景图</button>'+
-      '<div class="ol-sb-switch"><span class="ol-sb-switch-name">晕染效果</span><div class="ol-sb-sw-track '+(tintOn?'on':'off')+'" id="olSbTint"></div></div>'+
-    '</div>'+
-
     '<div class="ol-sb-section" style="border-bottom:none;">'+
-      '<div class="ol-sb-label">高级</div>'+
+      '<button class="ol-sb-btn" id="olSbTheme" type="button">美化主题</button>'+
       '<button class="ol-sb-btn" id="olSbCode" type="button">自定义代码</button>'+
       '<button class="ol-sb-btn" id="olSbClear" type="button" style="color:rgba(201,112,107,.7);border-color:rgba(201,112,107,.2);">清空记录</button>'+
     '</div>'+
@@ -253,15 +247,7 @@ if(root){
   root.addEventListener('touchend',function(e){if(!_sw.active)return;_sw.active=false;if(_sw.dir!=='h'){root.style.transform='';root.style.opacity='';return;}var dx=e.changedTouches[0].clientX-_sw.sx;if(dx>root.offsetWidth*0.3){root.style.transition='transform .25s,opacity .25s';root.style.transform='translateX(100%)';root.style.opacity='0';setTimeout(function(){root.style.transition='';root.style.transform='';root.style.opacity='';OL.close();},260);}else{root.style.transition='transform .2s,opacity .2s';root.style.transform='';root.style.opacity='';setTimeout(function(){root.style.transition='';},220);}},{passive:true});
 }
 
-/* 右滑开侧边栏 */
-var _rsw={active:false,sx:0,sy:0,locked:false,dir:''};
-if(root){
-  root.addEventListener('touchstart',function(e){var t=e.touches[0];var r=root.getBoundingClientRect();if(t.clientX-r.left<r.width-50)return;_rsw={active:true,sx:t.clientX,sy:t.clientY,locked:false,dir:''};},{passive:true});
-  root.addEventListener('touchmove',function(e){if(!_rsw.active)return;var t=e.touches[0];var dx=t.clientX-_rsw.sx,dy=t.clientY-_rsw.sy;if(!_rsw.locked){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;_rsw.locked=true;_rsw.dir=Math.abs(dx)>Math.abs(dy)?'h':'v';}if(_rsw.dir==='h'&&dx<-30){e.preventDefault();OfflineUI.openSidebar();}},{passive:false});
-  root.addEventListener('touchend',function(){_rsw.active=false;},{passive:true});
-}
-
-App.safeOn('#olWandBtn','click',function(e){e.stopPropagation();OfflineUI.openSidebar();});
+App.safeOn('#olMagicBtn','click',function(e){e.stopPropagation();OfflineUI.openSidebar();});
 
 var input=App.$('#olInput');
 if(input){
@@ -269,7 +255,6 @@ if(input){
   input.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();OL.sendUser();}});
 }
 
-App.safeOn('#olSendBtn','click',function(e){e.stopPropagation();OL.sendUser();});
 App.safeOn('#olAiBtn','click',function(e){e.stopPropagation();if(OL.isStreaming){OL.stopStream();return;}OL.requestAI();});
 App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(!pp)return;OL._plusOpen=!OL._plusOpen;if(OL._plusOpen)pp.classList.add('show');else pp.classList.remove('show');});
 
@@ -294,7 +279,7 @@ App.$$('.ol-quote-btn').forEach(function(btn){btn.addEventListener('click',funct
 
 var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){var s=OfflineUI.getSettings();s.wordCount=parseInt(this.value)||0;OfflineUI.saveSettings(s);});
 
-App.safeOn('#olSbTint','click',function(){var cur=App.LS.get('olTint_'+OL.charId);if(cur===null)cur=true;var next=!cur;App.LS.set('olTint_'+OL.charId,next);var tint=App.$('#olTint'),sw=App.$('#olSbTint');if(tint){if(next)tint.classList.remove('off');else tint.classList.add('off');}if(sw){sw.classList.toggle('on',next);sw.classList.toggle('off',!next);}});
+App.safeOn('#olSbTheme','click',function(){App.showToast('美化主题功能开发中...');});
 App.safeOn('#olSbScene','click',function(){OfflineUI.closeSidebar();OfflineUI.showSceneDialog();});
 App.safeOn('#olSbBg','click',function(){OfflineUI.closeSidebar();OfflineUI.showBgMenu();});
 App.safeOn('#olSbCode','click',function(){OfflineUI.closeSidebar();OfflineUI.openCodeEditor();});
@@ -306,7 +291,7 @@ var STYLE_DEFAULTS={
   '--ol-prose-bg':'rgba(255,255,255,.75)','--ol-prose-border':'rgba(200,220,240,.3)',
   '--ol-text-color':'#2e4258','--ol-action-color':'#7a9ab8',
   '--ol-hd-bg':'rgba(255,255,255,.85)','--ol-bar-bg':'rgba(255,255,255,.65)',
-  '--ol-btn-color':'#7a9ab8','--ol-text-size':'14px',
+  '--ol-btn-color':'#1a1a1a','--ol-text-size':'14px',
   '--ol-text-line-height':'1.85','--ol-prose-radius':'14px',
   '--ol-av-size':'44px','--ol-av-radius':'50%',
   '--ol-arrow-size':'8px','--ol-av-name-show':'block'
@@ -409,8 +394,17 @@ if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('
 
 getSettings:function(){var OL=App.offline;return App.LS.get('olSettings_'+(OL?OL.charId:''))||{};},
 saveSettings:function(s){var OL=App.offline;if(OL)App.LS.set('olSettings_'+OL.charId,s);},
-openSidebar:function(){var m=App.$('#olSbMask'),s=App.$('#olSidebar');if(m)m.classList.add('show');if(s)s.classList.add('show');},
-closeSidebar:function(){var m=App.$('#olSbMask'),s=App.$('#olSidebar');if(m)m.classList.remove('show');if(s)s.classList.remove('show');},
+
+openSidebar:function(){
+  var m=App.$('#olSbMask'),s=App.$('#olSidebar');
+  if(m)m.classList.add('show');
+  if(s)s.classList.add('show');
+},
+closeSidebar:function(){
+  var m=App.$('#olSbMask'),s=App.$('#olSidebar');
+  if(m)m.classList.remove('show');
+  if(s)s.classList.remove('show');
+},
 
 showCtxMenu:function(msgEl,x,y){
   var OL=App.offline;if(!OL)return;OL.dismissCtx();
@@ -491,7 +485,7 @@ openCodeEditor:function(){
   '  .ol-bubble-text        正文\n'+
   '  .ol-scatter-meta       元信息\n'+
   '  .ol-input-wrap         底部栏\n'+
-  '  .ol-bg / .ol-tint      背景/晕染\n\n'+
+  '  .ol-bg                背景\n\n'+
   '=== 数据属性 ===\n'+
   '  [data-floor] [data-time]\n'+
   '  [data-chars] [data-tokens]\n';
