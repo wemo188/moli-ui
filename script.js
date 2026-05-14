@@ -687,7 +687,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
 
     function drawSpectrum(){
-      var w=specEl.clientWidth,h=specEl.clientHeight;specCanvas.width=w;specCanvas.height=h;
+      var w=specEl.clientWidth,h=specEl.clientHeight;  if(!w||!h){setTimeout(drawSpectrum,50);return;}specCanvas.width=w;specCanvas.height=h;
       var imageData=specCtx.createImageData(w,h),data=imageData.data;
       for(var y=0;y<h;y++){for(var x=0;x<w;x++){
         var s=x/w,l=1-(y/h);var rgb=hslToRgb(currentHue,s,l);var idx=(y*w+x)*4;
@@ -699,6 +699,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     function updateAlphaBar(){
       var hex=hslToHex(currentHue,currentSat,currentLight);
       var rgb=hexToRgb(hex);
+      var aw=alphaWrap.clientWidth;
+  if(!aw)return;  // ★ 加这行
       alphaBar.style.background='linear-gradient(to right, rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0), rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',1))';
       alphaCursor.style.left=(currentAlpha*alphaWrap.clientWidth)+'px';
     }
@@ -728,8 +730,10 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     function setFromColor(colorStr){var parsed=parseColor(colorStr);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;if(parsed.a!==undefined)currentAlpha=parsed.a;drawSpectrum();updateUI();}
 
-    setFromColor(currentColor||'#111111');
-    if(initGrad)updateGradPreview();
+    requestAnimationFrame(function(){
+  setFromColor(currentColor||'#111111');
+  if(initGrad)updateGradPreview();
+});
 
     overlay._setColor=function(c){
       if(c&&c.indexOf('linear-gradient')>=0){
