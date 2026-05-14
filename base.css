@@ -256,3 +256,9 @@ input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius:
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #ffffff; border: 2px solid #adcdea; box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); cursor: pointer; margin-top: -6px; transition: transform 0.15s ease, background 0.15s ease; }
 input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.15); background: #f0f6fb; }
 input[type="range"] { flex: 1; min-width: 0; }
+
+.fullpage-panel {
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
