@@ -1,4 +1,3 @@
-
 html {
   overflow: hidden;
   overscroll-behavior: none;
@@ -16,7 +15,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  background: var(--bg-primary);
+  background: #ffffff; /* 确保不透明底色防闪烁 */
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   font-size: 15px;
@@ -24,6 +23,7 @@ body {
   -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
+  transform: translateZ(0);
 }
 
 :root {
@@ -58,6 +58,7 @@ body {
   background-position: center;
   transition: all 0.5s ease;
   pointer-events: none;
+  transform: translateZ(0); /* 开启硬件加速防闪屏 */
 }
 
 .main-content {
@@ -65,6 +66,7 @@ body {
   z-index: 1;
   min-height: 100vh;
   padding: 60px 20px calc(40px + var(--safe-bottom));
+  transform: translateZ(0);
 }
 
 /* =========================
@@ -177,16 +179,16 @@ img.img-fill { transform: none !important; }
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid #adcdea; /* 干净清爽的浅蓝边框 */
-  border-radius: 999px; /* 胶囊圆角 */
+  border: 1.5px solid #adcdea; 
+  border-radius: 999px; 
   font-size: 13.5px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #7ea3c9; /* 温柔的雾蓝色文字 */
+  color: #7ea3c9; 
   z-index: 99999;
   white-space: nowrap;
-  box-shadow: 0 6px 16px rgba(126, 163, 201, 0.15); /* 淡淡的弥散阴影 */
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); /* Q弹的物理动画 */
+  box-shadow: 0 6px 16px rgba(126, 163, 201, 0.15); 
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
 }
 
 .toast.hidden {
@@ -230,7 +232,7 @@ img.img-fill { transform: none !important; }
   align-items: flex-start;
   justify-content: center;
   padding: 20px 18px calc(34px + var(--safe-bottom));
-  overflow: visible; /* ★ 监狱大门打开，允许组件穿越到第二页 */
+  overflow: visible; 
 }
 
 .screen-page-inner {
@@ -865,7 +867,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: rgba(126, 163, 201, 0.25); /* 淡淡的雾蓝轨道 */
+  background: rgba(126, 163, 201, 0.25); 
 }
 
 /* 滑动圆点 (白底蓝边) */
@@ -875,18 +877,17 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #ffffff; /* 干净的白底 */
-  border: 2px solid #adcdea; /* 清新的蓝边 */
-  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); /* 柔和的弥散光影 */
+  background: #ffffff; 
+  border: 2px solid #adcdea; 
+  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); 
   cursor: pointer;
-  margin-top: -6px; /* 保持圆点在轨道上绝对居中 */
+  margin-top: -6px; 
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
 /* 手指按住圆点时的反馈 */
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.15); /* 按住时微微放大 */
-  background: #f0f6fb; /* 变一点点浅蓝底色 */
+  transform: scale(1.15); 
+  background: #f0f6fb; 
 }
 input[type="range"] { flex: 1; min-width: 0; }
-
