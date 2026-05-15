@@ -1,50 +1,27 @@
-
-/* ★ 1. 解开 fixed 封印，让网页自然撑满物理屏幕 */
-html, body {
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  margin: 0; 
-  padding: 0;
+html {
   overflow: hidden;
   overscroll-behavior: none;
-  background: transparent; /* 背景透明，让真正的背景图透出来 */
+  -webkit-overflow-scrolling: touch;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-}
-
-/* ★ 2. 背景图用 vh 和 vw 强行撑满物理屏幕，无视浏览器的错误计算 */
-.bg-layer {
-  position: absolute;
-  top: 0; 
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh; /* 现代浏览器动态视口 */
-  z-index: 0;
-  background-size: cover;
-  background-position: center;
-  pointer-events: none;
-}
-
-/* ★ 3. 主内容区同样用物理单位撑满 */
-.main-content {
-  position: absolute; 
-  top: 0; 
-  left: 0;
-  width: 100vw; 
-  height: 100vh;
-  height: 100dvh;
-  z-index: 1;
-  box-sizing: border-box;
-  padding-top: max(44px, env(safe-area-inset-top)) !important;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom, 20px));
-  padding-left: 20px;
-  padding-right: 20px;
+  margin: 0;
+  padding: 0;
 }
 
 :root {
@@ -81,20 +58,25 @@ html, body {
   pointer-events: none;
 }
 
-
+.main-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 60px 20px calc(40px + var(--safe-bottom));
+}
 
 /* =========================
    ★ 全局可拖拽组件防误触/防选词护城河
 ========================= */
-.floating-ball,       
-.bx-w,                
-.search-wrapper,      
-.card-icon-item,      
-.eden-card,           
-#wtCard,              
-.pc-header,           
-.cp-header,           
-#wsConsoleHeader {    
+.floating-ball,       /* 悬浮球 */
+.bx-w,                /* 左右角色卡 */
+.search-wrapper,      /* 对话框 */
+.card-icon-item,      /* 查岗/论坛图标 */
+.eden-card,           /* 文字卡片 */
+#wtCard,              /* 时间天气卡片 */
+.pc-header,           /* 各类弹窗的拖拽头部 */
+.cp-header,           /* 调色盘的拖拽头部 */
+#wsConsoleHeader {    /* 控制台拖拽头部 */
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
@@ -104,7 +86,7 @@ html, body {
 img.img-fill { transform: none !important; }
 
 /* =========================
-   悬浮球 (★ 恢复原版排版)
+   悬浮球
 ========================= */
 .floating-ball {
   position: fixed;
@@ -193,16 +175,16 @@ img.img-fill { transform: none !important; }
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid #adcdea; 
-  border-radius: 999px; 
+  border: 1.5px solid #adcdea; /* 干净清爽的浅蓝边框 */
+  border-radius: 999px; /* 胶囊圆角 */
   font-size: 13.5px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #7ea3c9; 
+  color: #7ea3c9; /* 温柔的雾蓝色文字 */
   z-index: 99999;
   white-space: nowrap;
-  box-shadow: 0 6px 16px rgba(126, 163, 201, 0.15); 
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+  box-shadow: 0 6px 16px rgba(126, 163, 201, 0.15); /* 淡淡的弥散阴影 */
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); /* Q弹的物理动画 */
 }
 
 .toast.hidden {
@@ -246,7 +228,7 @@ img.img-fill { transform: none !important; }
   align-items: flex-start;
   justify-content: center;
   padding: 20px 18px calc(34px + var(--safe-bottom));
-  overflow: visible; 
+  overflow: visible; /* ★ 监狱大门打开，允许组件穿越到第二页 */
 }
 
 .screen-page-inner {
@@ -387,6 +369,23 @@ img.img-fill { transform: none !important; }
   }
 }
 
+/* 悬浮球模式 */
+#floatingBall.ball-mode {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+#floatingBall.ball-mode #mascotImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  animation: none !important;
+}
+
 /* =========================
    图片裁剪
 ========================= */
@@ -524,6 +523,7 @@ img.img-fill { transform: none !important; }
   to { transform: translateY(0); }
 }
 
+/* --- 头部 --- */
 .cp-header {
   display: flex; align-items: center; justify-content: space-between;
   cursor: grab;
@@ -544,6 +544,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-close:active { background: #ddd; }
 
+/* --- 预览 + 输入 --- */
 .cp-preview-row {
   display: flex; align-items: center; gap: 12px;
 }
@@ -572,6 +573,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-hex-input:focus { border-color: #aaa; }
 
+/* --- 模式切换 --- */
 .cp-mode-row {
   display: flex; gap: 4px;
 }
@@ -590,6 +592,7 @@ img.img-fill { transform: none !important; }
   background: #1a1a1a; color: #fff; border-color: #1a1a1a;
 }
 
+/* --- 色相/饱和度面板 --- */
 .cp-spectrum {
   position: relative; width: 100%; height: 120px;
   border-radius: 10px; overflow: hidden;
@@ -610,11 +613,13 @@ img.img-fill { transform: none !important; }
   transform: translate(-50%, -50%);
 }
 
+/* --- 滑条标签 --- */
 .cp-bar-label {
   font-size: 9px; color: #111; font-weight: 600;
   margin: 2px 0 0 2px; display: block; letter-spacing: .5px;
 }
 
+/* --- 色相条 --- */
 .cp-hue-wrap {
   position: relative; width: 100%; height: 22px;
   border-radius: 11px; overflow: hidden;
@@ -638,6 +643,7 @@ img.img-fill { transform: none !important; }
   transform: translate(-50%, -50%);
 }
 
+/* --- 亮度条 --- */
 .cp-light-wrap {
   position: relative; width: 100%; height: 22px;
   border-radius: 11px; overflow: hidden;
@@ -659,6 +665,7 @@ img.img-fill { transform: none !important; }
   pointer-events: none;
 }
 
+/* --- 透明度条 --- */
 .cp-alpha-wrap {
   position: relative; width: 100%; height: 22px;
   border-radius: 11px;
@@ -686,6 +693,7 @@ img.img-fill { transform: none !important; }
   pointer-events: none;
 }
 
+/* --- 渐变区域 --- */
 .cp-gradient-area {
   padding: 6px 0 2px;
 }
@@ -754,6 +762,7 @@ img.img-fill { transform: none !important; }
   cursor: pointer;
 }
 
+/* --- 预设色块 --- */
 .cp-presets {
   display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
 }
@@ -795,6 +804,7 @@ img.img-fill { transform: none !important; }
 }
 .cp-preset-edit-btn:active { background: #f0f6fb; }
 
+/* --- 确定按钮 --- */
 .cp-confirm {
   width: 100%; padding: 12px;
   background: #111; color: #fff; border: none;
@@ -806,15 +816,22 @@ img.img-fill { transform: none !important; }
 
 /* ====== 全屏面板 ====== */
 .fullpage-panel {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  z-index: 10000; display: flex; flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 10000;
+  display: flex; flex-direction: column;
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateX(100%); opacity: 0;
-  will-change: transform, opacity;
-  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  transform: translateX(100%);
+  opacity: 0;
 }
-.fullpage-panel.show { transform: translateX(0); opacity: 1; }
-.fullpage-panel.hidden { display: none; }
+.fullpage-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+.fullpage-panel.hidden {
+  display: none;
+}
 
 .pc-edit-group { margin-bottom: 14px; }
 .pc-edit-label { font-size: 11px; font-weight: 600; color: #999; margin-bottom: 4px; display: block; }
@@ -833,7 +850,7 @@ img.img-fill { transform: none !important; }
 .pc-edit-save:active, .pc-edit-cancel:active { opacity: 0.7; }
 
 /* =========================
-   全局拉伸滑块统一样式
+   全局拉伸滑块统一样式 (彻底告别黑圈)
 ========================= */
 input[type="range"] {
   -webkit-appearance: none;
@@ -842,28 +859,45 @@ input[type="range"] {
   outline: none;
 }
 
+/* 滑块的轨道 (底下的细线) */
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: rgba(126, 163, 201, 0.25); 
+  background: rgba(126, 163, 201, 0.25); /* 淡淡的雾蓝轨道 */
 }
 
+/* 滑动圆点 (白底蓝边) */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #ffffff; 
-  border: 2px solid #adcdea; 
-  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); 
+  background: #ffffff; /* 干净的白底 */
+  border: 2px solid #adcdea; /* 清新的蓝边 */
+  box-shadow: 0 2px 6px rgba(173, 205, 234, 0.35); /* 柔和的弥散光影 */
   cursor: pointer;
-  margin-top: -6px; 
+  margin-top: -6px; /* 保持圆点在轨道上绝对居中 */
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
+/* 手指按住圆点时的反馈 */
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.15); 
-  background: #f0f6fb; 
+  transform: scale(1.15); /* 按住时微微放大 */
+  background: #f0f6fb; /* 变一点点浅蓝底色 */
 }
 input[type="range"] { flex: 1; min-width: 0; }
+
+/* 防止页面切换/动画时闪黑屏 */
+html, body, .fullpage-panel, .ol-root {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+.fullpage-panel {
+  will-change: transform, opacity;
+}
