@@ -265,7 +265,14 @@
   transform: translateY(-100%);
 }
 
-/* ★ 新增：控制按钮样式 */
+/* ★ 半面屏控制按钮 */
+.hp-ctrl-btns {
+  display: flex;
+  gap: 6px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
 .hp-ctrl-btn {
   display: inline-flex;
   align-items: center;
@@ -304,7 +311,11 @@
 /* 以下保留你原本的 hp-handle, hp-header 等样式... */
 .hp-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.12); margin: 10px auto 8px; }
 .hp-header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; border-bottom: 1.5px solid var(--border); flex-shrink: 0; }
-.hp-header h2 { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+.hp-header h2 {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
 .hp-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
 .hp-close svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
 .hp-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 20px 0; }
