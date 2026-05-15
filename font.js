@@ -183,10 +183,29 @@ var Font={
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
 
     panel.querySelector('#ftUploadArea').addEventListener('click',function(){panel.querySelector('#ftFileInput').click();});
-        panel.querySelector('#ftUrlArea').addEventListener('click',function(){
-      var url=prompt('输入字体文件URL（.ttf/.otf/.woff/.woff2）：');
+            panel.querySelector('#ftUrlArea').addEventListener('click',function(){
+      var url=prompt('输入字体URL（支持 .ttf/.woff2 或 CSS链接）：');
       if(!url||!url.trim())return;
       url=url.trim();
+
+      // 如果是CSS文件，用link标签加载
+      if(url.match(/\.css(\?|$)/i)){
+        var link=document.createElement('link');
+        link.rel='stylesheet';link.href=url;
+        document.head.appendChild(link);
+        var familyName=prompt('输入这个字体的 font-family 名称：\n（例如：Noto Serif SC）');
+        if(!familyName||!familyName.trim()){App.showToast('已取消');return;}
+        familyName=familyName.trim();
+        var fontName='CSS_'+familyName.replace(/\s+/g,'_')+'_'+Date.now();
+        var family="'"+familyName+"',serif";
+        Font.customList.push({name:fontName,family:family,fileName:familyName,scale:1,cssUrl:url});
+        Font.config.selected=fontName;
+        Font.save();Font.apply();Font.render(panel);
+        App.showToast('已添加：'+familyName);
+        return;
+      }
+
+      // 普通字体文件
       var nameMatch=url.match(/([^\/]+)\.(ttf|otf|woff2?)$/i);
       var rawName=nameMatch?nameMatch[1]:'URLFont';
       var fontName='Custom_'+rawName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_')+'_'+Date.now();
@@ -218,7 +237,17 @@ var Font={
             var family="'"+fontName+"',sans-serif";
             Font.customList.push({name:fontName,family:family,fileName:file.name,scale:1});
             Font.config.selected=fontName;
-            Font.save();Font.apply();Font.render(panel);
+            Font.save();
+                    // 重新加载CSS字体链接
+        Font.customList.forEach(function(f){
+          if(f.cssUrl){
+            var link=document.createElement('link');
+            link.rel='stylesheet';link.href=f.cssUrl;
+            document.head.appendChild(link);
+          }
+        });
+            Font.apply();
+            Font.render(panel);
             App.showToast('已添加：'+file.name);
           });
         });
