@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -51,8 +52,9 @@ function getAllFonts(cb){
   req.onerror=function(){cb([]);};
 }
 
+/* ★ 修复字重问题：增加 { weight: '100 900' } 声明，让浏览器支持全范围字重 */
 function loadFontFace(name,dataUrl){
-  var ff=new FontFace(name,'url('+dataUrl+')');
+  var ff=new FontFace(name,'url('+dataUrl+')', { weight: '100 900' });
   return ff.load().then(function(loaded){document.fonts.add(loaded);return true;}).catch(function(){return false;});
 }
 
@@ -82,24 +84,23 @@ var Font={
     return 1;
   },
 
- apply: function(){
-  var name = Font.config.selected || '系统默认';
-  var family = Font.getFamily(name);
-  var scale = Font.getScale(name);
-  document.body.style.fontFamily = family;
-  
-  document.documentElement.style.setProperty('--font-scale', scale);
+  apply: function(){
+    var name = Font.config.selected || '系统默认';
+    var family = Font.getFamily(name);
+    var scale = Font.getScale(name);
+    document.body.style.fontFamily = family;
+    
+    document.documentElement.style.setProperty('--font-scale', scale);
 
-  // 强制竖排标签重排，防止切换字体后变横
-  setTimeout(function(){
-    var ribbons = document.querySelectorAll('.bx-ribbon-tab');
-    ribbons.forEach(function(el){
-      el.style.display = 'none';
-      el.offsetHeight; // 触发回流
-      el.style.display = '';
-    });
-  }, 100);
-},
+    setTimeout(function(){
+      var ribbons = document.querySelectorAll('.bx-ribbon-tab');
+      ribbons.forEach(function(el){
+        el.style.display = 'none';
+        el.offsetHeight; 
+        el.style.display = '';
+      });
+    }, 100);
+  },
 
   open:function(){
     Font.load();
@@ -150,7 +151,7 @@ var Font={
       }).join('');
     }
 
-            panel.innerHTML=
+    panel.innerHTML=
       '<div class="hp-handle"></div>' +
       '<div class="hp-header">' +
         '<h2>字体</h2>' +
@@ -159,7 +160,7 @@ var Font={
       '<div class="hp-body">' +
         '<div class="hp-upload" id="ftUploadArea">' +
           '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
-          '<span>上传字体文件</span>' +
+          '上传字体文件' +
         '</div>' +
         '<input type="file" id="ftFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>' +
         (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list">' + customHtml + '</div>' : '') +
@@ -168,13 +169,15 @@ var Font={
         '<div class="hp-bottom-spacer"></div>' +
       '</div>';
 
+    /* ★ 魔法印章：给刚生成的字体面板加上控制按钮 */
+    if(App.initHalfPanelControls) App.initHalfPanelControls();
+
     Font.bindEvents(panel);
-},
+  },
 
   bindEvents:function(panel){
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
 
-    // 上传
     panel.querySelector('#ftUploadArea').addEventListener('click',function(){panel.querySelector('#ftFileInput').click();});
     panel.querySelector('#ftFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
@@ -200,7 +203,6 @@ var Font={
       e.target.value='';
     });
 
-    // 选择内置
     panel.querySelectorAll('.ft-item').forEach(function(item){
       item.addEventListener('click',function(){
         Font.config.selected=item.dataset.fname;
@@ -208,7 +210,6 @@ var Font={
       });
     });
 
-    // 选择自定义
     panel.querySelectorAll('.ft-custom-card').forEach(function(card){
       card.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
@@ -218,7 +219,6 @@ var Font={
       });
     });
 
-    // 删除
     panel.querySelectorAll('.ft-del-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){
         e.stopPropagation();
