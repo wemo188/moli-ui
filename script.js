@@ -1580,14 +1580,12 @@ App.closePanel = function() {
   App.state.currentPanelEl = null;
 };
 
-  /* ★ 全局给所有半面屏注入控制按钮 */
+   /* ★ 全局给所有半面屏注入控制按钮（无标题极简版） */
   App.initHalfPanelControls = function() {
     App.$$('.half-panel').forEach(function(panel) {
       var header = panel.querySelector('.hp-header');
-      // 如果没有 header，或者已经有按钮了，直接跳过
       if (!header || header.querySelector('.hp-ctrl-btns')) return;
       
-      var title = header.querySelector('h2') || header.querySelector('span') || header.firstChild;
       var btns = document.createElement('div');
       btns.className = 'hp-ctrl-btns';
       btns.innerHTML = 
@@ -1595,12 +1593,8 @@ App.closePanel = function() {
         '<button class="hp-ctrl-btn hp-btn-up" type="button">上移</button>' +
         '<button class="hp-ctrl-btn hp-btn-dn" type="button" style="display:none;">下降</button>';
       
-      // 插入到标题后面
-      if (title && title.nextSibling) {
-        title.parentNode.insertBefore(btns, title.nextSibling);
-      } else {
-        header.insertBefore(btns, header.firstChild);
-      }
+      // 直接插入到头部最前面
+      header.insertBefore(btns, header.firstChild);
 
       var btnExp = btns.querySelector('.hp-btn-exp');
       var btnUp = btns.querySelector('.hp-btn-up');
