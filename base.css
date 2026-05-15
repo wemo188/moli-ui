@@ -1,28 +1,8 @@
-html {
-  overflow: hidden;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  overflow: hidden;
-  overscroll-behavior: none;
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  margin: 0;
-  padding: 0;
+html, body {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  overflow: hidden; overscroll-behavior: none;
+  background: #000; /* 改成黑色，彻底杜绝白边闪烁 */
+  margin: 0; padding: 0;
 }
 
 :root {
@@ -59,11 +39,10 @@ body {
   pointer-events: none;
 }
 
+/* 强制修复首页和底部栏的安全区 */
 .main-content {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  padding: 60px 20px calc(40px + var(--safe-bottom));
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  padding-top: env(safe-area-inset-top, 44px) !important;
 }
 
 /* =========================
@@ -817,14 +796,10 @@ img.img-fill { transform: none !important; }
 
 /* ====== 全屏面板 ====== */
 .fullpage-panel {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  z-index: 10000;
-  display: flex; flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateX(100%);
-  opacity: 0;
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 10000; display: flex; flex-direction: column;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
 }
 .fullpage-panel.show {
   transform: translateX(0);
