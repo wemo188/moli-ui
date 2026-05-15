@@ -1,3 +1,4 @@
+
 (function(){
   'use strict';
   var App = window.App; if(!App) return;
@@ -93,6 +94,9 @@
 
           '<div class="hp-bottom-spacer"></div>' +
         '</div>';
+
+      /* ★ 魔法印章：给刚生成的面板加上控制按钮 */
+      if(App.initHalfPanelControls) App.initHalfPanelControls();
 
       Bg._tempSrc = bgData.src || '';
       Bg.renderIconGrid(panel);
