@@ -310,7 +310,7 @@
 .hp-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.12); margin: 10px auto 8px; }
 .hp-header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; border-bottom: 1.5px solid var(--border); flex-shrink: 0; }
 .hp-header h2 {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--text-primary);
 }
