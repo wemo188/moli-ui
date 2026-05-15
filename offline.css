@@ -6,7 +6,6 @@
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:13px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:13px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:13px;}
-#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.1);}
 #olSettingsPanel .hp-btn:active{opacity:.7;}
 #olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid rgba(201,112,107,.3);}
