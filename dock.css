@@ -17,11 +17,6 @@
   box-shadow:
     0 12px 40px rgba(0,0,0,0.10),
     0 4px 12px rgba(0,0,0,0.06);
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important; /* ★ 强制死死贴住物理屏幕最底部 */
-  padding-bottom: env(safe-area-inset-bottom, 20px) !important; /* 用 padding 把图标顶上来 */
 }
 
 .dock-item {
