@@ -158,11 +158,15 @@ var Font={
       '</div>' +
 
       '<div class="hp-body">' +
-        '<div class="hp-upload" id="ftUploadArea">' +
-          '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
-          '上传字体文件' +
-        '</div>' +
-        '<input type="file" id="ftFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>' +
+       '<div class="hp-upload" id="ftUploadArea">' +
+  '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+  '上传字体文件' +
+'</div>' +
+'<input type="file" id="ftFileInput" accept=".ttf,.otf,.woff,.woff2" hidden>' +
+'<div class="hp-upload" id="ftUrlArea">' +
+  '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+  'URL导入字体' +
+'</div>' +
         (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list">' + customHtml + '</div>' : '') +
         '<div class="hp-section-label">内置字体</div>' +
         '<div class="ft-list">' + builtinHtml + '</div>' +
@@ -179,6 +183,26 @@ var Font={
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
 
     panel.querySelector('#ftUploadArea').addEventListener('click',function(){panel.querySelector('#ftFileInput').click();});
+        panel.querySelector('#ftUrlArea').addEventListener('click',function(){
+      var url=prompt('输入字体文件URL（.ttf/.otf/.woff/.woff2）：');
+      if(!url||!url.trim())return;
+      url=url.trim();
+      var nameMatch=url.match(/([^\/]+)\.(ttf|otf|woff2?)$/i);
+      var rawName=nameMatch?nameMatch[1]:'URLFont';
+      var fontName='Custom_'+rawName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_')+'_'+Date.now();
+      App.showToast('加载中...');
+      var ff=new FontFace(fontName,'url('+url+')',{weight:'100 900'});
+      ff.load().then(function(loaded){
+        document.fonts.add(loaded);
+        var family="'"+fontName+"',sans-serif";
+        Font.customList.push({name:fontName,family:family,fileName:rawName,scale:1,url:url});
+        Font.config.selected=fontName;
+        Font.save();Font.apply();Font.render(panel);
+        App.showToast('已添加：'+rawName);
+      }).catch(function(){
+        App.showToast('加载失败，请检查URL');
+      });
+    });
     panel.querySelector('#ftFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
       var rawName=file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_');
