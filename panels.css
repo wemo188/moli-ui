@@ -265,37 +265,46 @@
   transform: translateY(-100%);
 }
 
-/* ★ 半面屏控制按钮 */
+/* 按钮组紧贴标题，并把关闭按钮推到最右 */
 .hp-ctrl-btns {
   display: flex;
+  align-items: center;
   gap: 6px;
-  margin-left: 10px;
+  margin-left: 12px;
+  margin-right: auto; /* ★ 关键：靠这句霸占右边空间 */
   flex-shrink: 0;
 }
 
+/* 玻璃质感按钮（恢复最漂亮的那个版本） */
 .hp-ctrl-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 4px 10px;
   background: linear-gradient(135deg, rgba(140,175,210,.35) 0%, rgba(180,210,240,.25) 50%, rgba(160,195,230,.3) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1.5px solid rgba(255,255,255,.55);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(100,130,170,.12), 0 1px 2px rgba(255,255,255,.5) inset;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
   font-family: inherit;
   font-size: 11px;
   font-weight: 700;
   color: #4a6a88;
   letter-spacing: 1px;
   white-space: nowrap;
-  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
   transition: transform .15s, box-shadow .2s;
 }
-.hp-ctrl-btn:active {
-  transform: scale(.93);
+.hp-ctrl-btn::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.3) 0%, transparent 50%);
+  pointer-events: none;
 }
+.hp-ctrl-btn:active { transform: scale(.93); }
 
 /* 以下保留你原本的 hp-handle, hp-header 等样式... */
 .hp-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.12); margin: 10px auto 8px; }
