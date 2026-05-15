@@ -65,12 +65,20 @@
   background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
 }
 
-/* ★ 恢复顶部透明，去掉了毛玻璃 */
-.ol-hd{
-  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: center;
-  padding: max(44px, env(safe-area-inset-top)) 16px 6px;
-  background: var(--ol-hd-bg); pointer-events: none;
+/* 修改了 padding，让名字贴紧屏幕顶部，并自动适配刘海 */
+.ol-hd {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 20; /* 提高层级，确保绝对在遮罩上方 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 这里的 12px 是基础边距，env 会自动加上手机状态栏的高度 */
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 8px;
+  background: var(--ol-hd-bg);
+  backdrop-filter: saturate(150%) blur(20px);
+  -webkit-backdrop-filter: saturate(150%) blur(20px);
+  pointer-events: none;
 }
 .ol-hd::after{content:"";position:absolute;bottom:-30px;left:0;right:0;height:30px;background:linear-gradient(to bottom,var(--ol-hd-fade),transparent);pointer-events:none;}
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;}
