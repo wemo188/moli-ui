@@ -888,16 +888,8 @@ input[type="range"]::-webkit-slider-thumb:active {
 }
 input[type="range"] { flex: 1; min-width: 0; }
 
-/* 防止页面切换/动画时闪黑屏 */
-html, body, .fullpage-panel, .ol-root {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  -webkit-perspective: 1000;
-  perspective: 1000;
-}
-
 .fullpage-panel {
   will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
