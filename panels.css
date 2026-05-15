@@ -379,12 +379,10 @@
   align-items: center;
   justify-content: center;
   padding: 11px;
-  background: linear-gradient(135deg, rgba(140,175,210,.35) 0%, rgba(180,210,240,.25) 50%, rgba(160,195,230,.3) 100%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255,255,255,.55);
+  background: linear-gradient(135deg, rgba(200,220,240,.55) 0%, rgba(220,235,250,.45) 50%, rgba(210,228,245,.5) 100%);
+  border: 1.5px solid rgba(255,255,255,.7);
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(100,130,170,.12), 0 1px 2px rgba(255,255,255,.5) inset;
+  box-shadow: 0 2px 8px rgba(100,130,170,.08), 0 1px 2px rgba(255,255,255,.6) inset;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -394,13 +392,13 @@
   color: #4a6a88;
   letter-spacing: 1px;
   -webkit-tap-highlight-color: transparent;
-  transition: transform .15s, box-shadow .2s, border-color .2s;
+  transition: transform .15s, box-shadow .2s;
 }
 .hp-btn::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.3) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255,255,255,.4) 0%, transparent 60%);
   pointer-events: none;
 }
 .hp-btn:active {
