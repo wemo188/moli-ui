@@ -374,7 +374,6 @@
   /* ★ 加这三行 */
   background: #ffffff;
   color: #1a1a1a;
-  border: 1.5px solid rgba(0,0,0,.1);
 }
 
 .hp-btn:active { opacity: .7; }
