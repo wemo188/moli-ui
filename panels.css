@@ -405,12 +405,11 @@
   transform: scale(.97);
 }
 
-/* 选中态：深色玻璃，禁掉白色高光 */
 .hp-btn-primary {
-  background: linear-gradient(135deg, rgba(74,106,136,.85) 0%, rgba(100,140,180,.75) 100%) !important;
+  background: #1a1a1a !important;
   color: #fff !important;
-  border-color: rgba(74,106,136,.6) !important;
-  box-shadow: 0 4px 16px rgba(74,106,136,.25) !important;
+  border-color: #1a1a1a !important;
+  box-shadow: none !important;
 }
 .hp-btn-primary::before {
   display: none !important;
