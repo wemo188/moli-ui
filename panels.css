@@ -361,7 +361,7 @@
   margin-bottom: 14px;
 }
 
-/* ★ 替换：面板内部大按钮（碎星双线风） */
+/* ★ 替换：面板内部按钮（变体二：碎星双线风） */
 .hp-btn {
   flex: 1;
   padding: 10px;
@@ -372,13 +372,13 @@
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   letter-spacing: 1px;
-  
-  /* 碎星双线质感 */
-  background: #ffffff;
-  color: #4f79a6;
-  border: 2px solid #f5f8fc;
-  box-shadow: 0 0 0 1px #adcdea, 0 4px 10px rgba(173,205,234,0.25);
   transition: all 0.2s ease;
+  
+  /* 变体二质感 */
+  background: #ffffff;
+  border: 2px solid #f5f8fc;
+  color: #4f79a6;
+  box-shadow: 0 0 0 1px #adcdea, 0 4px 8px rgba(173,205,234,0.25);
 }
 
 .hp-btn:active { 
@@ -386,20 +386,20 @@
   box-shadow: 0 0 0 1px #adcdea, 0 2px 4px rgba(173,205,234,0.15);
 }
 
-/* 选中状态：雾蓝底色 */
+/* 选中/主按钮状态（加深底色） */
 .hp-btn-primary {
-  background: linear-gradient(135deg, #8ab8de, #4f79a6) !important;
-  color: #ffffff !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 0 0 1px #4f79a6, 0 6px 14px rgba(79,121,166,0.3) !important;
+  background: #f0f6fb;
+  color: #3a5c80;
+  border-color: #e4eff8;
+  box-shadow: 0 0 0 1px #8ab8de, 0 4px 8px rgba(138,184,222,0.3);
 }
 
-/* 危险按钮（如重置/删除）：粉色系 */
+/* 危险/重置按钮状态（适配透红质感） */
 .hp-btn-danger {
-  background: #ffffff !important;
-  color: #c9706b !important;
-  border: 2px solid #fff5f5 !important;
-  box-shadow: 0 0 0 1px #e8a5a2, 0 4px 10px rgba(201,112,107,0.2) !important;
+  background: #ffffff;
+  color: #c9706b;
+  border-color: #fcf5f5;
+  box-shadow: 0 0 0 1px rgba(201,112,107,0.5), 0 4px 8px rgba(201,112,107,0.15);
 }
 
 .hp-btn-reset {
