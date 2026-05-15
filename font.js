@@ -151,12 +151,12 @@ var Font={
       }).join('');
     }
 
-    panel.innerHTML=
+     panel.innerHTML=
       '<div class="hp-handle"></div>' +
       '<div class="hp-header">' +
-        '<h2>字体</h2>' +
         '<button class="hp-close" id="ftCloseBtn" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
       '</div>' +
+
       '<div class="hp-body">' +
         '<div class="hp-upload" id="ftUploadArea">' +
           '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
