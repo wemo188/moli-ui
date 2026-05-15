@@ -1580,14 +1580,14 @@ App.closePanel = function() {
   App.state.currentPanelEl = null;
 };
 
-  /* ★ 新增：全局给所有半面屏注入控制按钮 */
+  /* ★ 全局给所有半面屏注入控制按钮 */
   App.initHalfPanelControls = function() {
     App.$$('.half-panel').forEach(function(panel) {
       var header = panel.querySelector('.hp-header');
-      // 如果没有 header，或者已经注入过了，就跳过
+      // 如果没有 header，或者已经有按钮了，直接跳过
       if (!header || header.querySelector('.hp-ctrl-btns')) return;
       
-      var title = header.querySelector('h2');
+      var title = header.querySelector('h2') || header.querySelector('span') || header.firstChild;
       var btns = document.createElement('div');
       btns.className = 'hp-ctrl-btns';
       btns.innerHTML = 
@@ -1596,7 +1596,7 @@ App.closePanel = function() {
         '<button class="hp-ctrl-btn hp-btn-dn" type="button" style="display:none;">下降</button>';
       
       // 插入到标题后面
-      if (title) {
+      if (title && title.nextSibling) {
         title.parentNode.insertBefore(btns, title.nextSibling);
       } else {
         header.insertBefore(btns, header.firstChild);
@@ -1606,7 +1606,6 @@ App.closePanel = function() {
       var btnUp = btns.querySelector('.hp-btn-up');
       var btnDn = btns.querySelector('.hp-btn-dn');
 
-      // 扩大/缩小
       btnExp.addEventListener('click', function(e) {
         e.stopPropagation();
         if (panel.classList.contains('hp-size-full')) {
@@ -1618,7 +1617,6 @@ App.closePanel = function() {
         }
       });
 
-      // 上移
       btnUp.addEventListener('click', function(e) {
         e.stopPropagation();
         panel.classList.add('hp-pos-top');
@@ -1626,7 +1624,6 @@ App.closePanel = function() {
         btnDn.style.display = 'inline-block';
       });
 
-      // 下降
       btnDn.addEventListener('click', function(e) {
         e.stopPropagation();
         panel.classList.remove('hp-pos-top');
@@ -1638,16 +1635,13 @@ App.closePanel = function() {
 
   App.init = function() {
     App.state.ball = App.$('#floatingBall');
-    if (!App.state.ball) {
-      console.warn('页面缺少核心元素');
-      return;
-    }
+    if (!App.state.ball) return;
     App.initFloatingBall();
     App.runInits();
     App.initMainPages();
     
-    /* ★ 在初始化时调用这个函数 */
+    /* 页面初次加载时扫描静态面板 */
     App.initHalfPanelControls();
   };
-
+  
 })();
