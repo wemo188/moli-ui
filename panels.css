@@ -265,38 +265,26 @@
   transform: translateY(-100%);
 }
 
-.hp-ctrl-btn {
+/* ★ 新增：控制按钮样式 */
+.hp-ctrl-btns {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 12px;
-  background: linear-gradient(135deg, rgba(140,175,210,.35) 0%, rgba(180,210,240,.25) 50%, rgba(160,195,230,.3) 100%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255,255,255,.55);
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(100,130,170,.12), 0 1px 2px rgba(255,255,255,.5) inset;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  font-family: inherit;
+  gap: 6px;
+  margin-right: auto;
+  margin-left: 12px;
+}
+.hp-ctrl-btn {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
   font-size: 11px;
-  font-weight: 700;
-  color: #4a6a88;
-  letter-spacing: 1px;
+  font-weight: 800;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #1a1a1a;
   -webkit-tap-highlight-color: transparent;
-  transition: transform .15s, box-shadow .2s, border-color .2s;
+  font-family: inherit;
 }
-.hp-ctrl-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.3) 0%, transparent 50%);
-  pointer-events: none;
-}
-.hp-ctrl-btn:active {
-  transform: translateY(0) scale(.95);
-}
+.hp-ctrl-btn:active { background: rgba(0,0,0,0.05); }
 
 /* 以下保留你原本的 hp-handle, hp-header 等样式... */
 .hp-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.12); margin: 10px auto 8px; }
@@ -383,38 +371,24 @@
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   letter-spacing: 1px;
+  /* ★ 加这三行 */
   background: #ffffff;
   color: #1a1a1a;
   border: 1.5px solid rgba(0,0,0,.1);
 }
+
 .hp-btn:active { opacity: .7; }
 
 .hp-btn-primary {
-  background: linear-gradient(135deg, rgba(140,175,210,.35) 0%, rgba(180,210,240,.25) 50%, rgba(160,195,230,.3) 100%) !important;
-  color: #4a6a88 !important;
-  border: 1.5px solid rgba(255,255,255,.55) !important;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(100,130,170,.12), 0 1px 2px rgba(255,255,255,.5) inset !important;
-  position: relative;
-  overflow: hidden;
-}
-.hp-btn-primary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.3) 0%, transparent 50%);
-  pointer-events: none;
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
 }
 
-/* 危险按钮 */
 .hp-btn-danger {
-  background: linear-gradient(135deg, rgba(201,112,107,.25) 0%, rgba(220,140,135,.15) 100%) !important;
-  color: #c9706b !important;
-  border-color: rgba(201,112,107,.4) !important;
-  box-shadow: 0 4px 12px rgba(201,112,107,.1) !important;
-}
-.hp-btn-danger::before {
-  display: none !important;
+  background: none;
+  color: #c9706b;
+  border: 1.5px solid rgba(201,112,107,.3);
 }
 
 .hp-btn-reset {
