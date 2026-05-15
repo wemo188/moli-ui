@@ -1,4 +1,3 @@
-
 .ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
@@ -20,7 +19,6 @@
 .ol-sw-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
 .ol-sw-track.on::after{transform:translateX(16px);}
 .ol-sw-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1a1a1a;padding:6px 0;}
-/* ★ issue8: 新增行内标签行 */
 .ol-inline-tag-row{display:flex;align-items:center;gap:8px;padding:4px 0;flex-wrap:wrap;}
 .ol-tag-group{display:flex;gap:6px;flex-wrap:wrap;}
 .ol-tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-left:0;}
@@ -53,30 +51,36 @@
   --ol-u-bubble-bg:rgba(238,244,250,1);--ol-u-bubble-radius:14px;--ol-u-bubble-border-color:rgba(126,163,201,.25);--ol-u-bubble-border-w:1px;--ol-u-bubble-width:100%;--ol-u-bubble-blur:0px;
   --ol-u-text-size:16px;--ol-u-text-weight:400;--ol-u-text-lh:1.85;--ol-u-text-color:#2e4258;
   --ol-hd-bg:rgba(255,255,255,0.7);--ol-hd-fade:rgba(255,255,255,0.5);
-  position:relative;display:flex;flex-direction:column;width:100%;
-  /* ★ 修复底部留白：使用动态视口高度 */
-  height:100dvh; min-height:100vh;
-  overflow:hidden;
-  background:var(--ol-bg-color); 
-  color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);
-  -webkit-touch-callout:none;overscroll-behavior:none;
-  -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform;
+  
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--ol-bg-color); color: var(--ol-text-color);
+  font-size: var(--ol-text-size); line-height: var(--ol-text-line-height);
+  -webkit-touch-callout: none; overscroll-behavior: none;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; will-change: transform;
 }
-
-/* ★ 修复底部留白：改为fixed定位，强行拉伸覆盖安全区 */
 .ol-bg{
-  position:fixed; top:-20px; bottom:-40px; left:0; right:0; z-index:0;
-  background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
+  position: absolute; inset: -20px; z-index: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat; pointer-events: none;
 }
 
-/* ★ issue1+2: 顶部栏透明+缩高 */
-.ol-hd{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:10px 16px 5px;background:transparent !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;pointer-events:none;}
-.ol-hd::after{display:none;}
+.ol-hd{
+  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  padding: max(44px, env(safe-area-inset-top)) 16px 6px;
+  background: var(--ol-hd-bg); backdrop-filter: saturate(150%) blur(20px); -webkit-backdrop-filter: saturate(150%) blur(20px); pointer-events: none;
+}
+.ol-hd::after{content:"";position:absolute;bottom:-30px;left:0;right:0;height:30px;background:linear-gradient(to bottom,var(--ol-hd-fade),transparent);pointer-events:none;}
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;}
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
 
-/* ★ issue3: 隐藏滚动条 */
-.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:80px 16px 90px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);}
+.ol-msgs{
+  position: relative; z-index: 5; flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+  padding-top: max(80px, calc(40px + env(safe-area-inset-top)));
+  padding-bottom: max(90px, calc(60px + env(safe-area-inset-bottom)));
+  padding-left: 16px; padding-right: 16px;
+  min-height: 0; overscroll-behavior: contain; scrollbar-width: none;
+}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{position:relative;margin:0 0 16px;display:flex;align-items:flex-start;gap:10px;max-width:100%;}
@@ -98,20 +102,16 @@
 .ol-block.ol-av-right .ol-bubble-col{align-items:flex-end;}
 .ol-block.ol-av-left .ol-bubble-col{align-items:flex-start;}
 
-/* ★ issue6+7: 气泡背景移到frame-mid，用CSS变量，修复镂空 */
 .ol-frame-mid{position:relative;overflow:hidden;}
 .ol-block.is-char .ol-frame-mid{border-radius:var(--ol-c-bubble-radius);border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color);width:var(--ol-c-bubble-width);background:var(--ol-c-bubble-bg);backdrop-filter:blur(var(--ol-c-bubble-blur));-webkit-backdrop-filter:blur(var(--ol-c-bubble-blur));}
 .ol-block.is-user .ol-frame-mid{border-radius:var(--ol-u-bubble-radius);border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color);width:var(--ol-u-bubble-width);background:var(--ol-u-bubble-bg);backdrop-filter:blur(var(--ol-u-bubble-blur));-webkit-backdrop-filter:blur(var(--ol-u-bubble-blur));}
-/* bub-bg层不再负责背景色 */
 .ol-bub-bg{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;}
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
 .ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
-/* ★ issue4: 角色和用户分别用各自的字体CSS变量 */
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
 .ol-block.is-user .ol-bubble-text{font-size:var(--ol-u-text-size);font-weight:var(--ol-u-text-weight);line-height:var(--ol-u-text-lh);color:var(--ol-u-text-color);}
 .ol-bubble-text.ol-selecting{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;}
 
-/* ★ issue11a: 气泡底下元数据跟随各自头像框颜色 */
 .ol-scatter-meta{display:flex;align-items:center;gap:10px;margin-top:6px;padding-left:4px;}
 .ol-block.is-char .ol-scatter-meta{color:var(--ol-c-av-frame-color);}
 .ol-block.is-user .ol-scatter-meta{color:var(--ol-u-av-frame-color);}
@@ -130,8 +130,12 @@
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
-/* ★ issue10: 底栏添加backdrop-filter保证内容消失 */
-.ol-input-wrap{position:absolute;bottom:0;left:0;right:0;z-index:9;display:flex;align-items:flex-end;gap:6px;padding:10px 12px 20px;border-top:1.5px solid var(--ol-bar-border-color);backdrop-filter:saturate(150%) blur(20px);-webkit-backdrop-filter:saturate(150%) blur(20px);}
+.ol-input-wrap{
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 9;
+  display: flex; align-items: flex-end; gap: 6px;
+  padding: 10px 12px max(16px, env(safe-area-inset-bottom));
+  border-top: 1.5px solid var(--ol-bar-border-color); backdrop-filter: saturate(150%) blur(20px); -webkit-backdrop-filter: saturate(150%) blur(20px);
+}
 .ol-input-box{display:flex;align-items:flex-end;border:1.5px solid var(--ol-input-border);border-radius:var(--ol-input-radius);padding:4px;flex:1;min-width:0;background:#ffffff;}
 .ol-input{flex:1;min-height:36px;max-height:120px;padding:8px 6px;border:none;background:transparent;font-size:14px;color:var(--ol-input-text);outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;}
 .ol-inner-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
