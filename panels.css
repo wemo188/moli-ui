@@ -217,6 +217,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  top: auto; /* 默认靠底 */
   max-height: 45vh;
   background: rgba(255,255,255,.22);
   backdrop-filter: blur(20px);
@@ -226,7 +227,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 -8px 40px rgba(0,0,0,.1);
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  /* ★ 增加了 top, max-height, border-radius 的过渡，让形变丝滑 */
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s, top 0.35s cubic-bezier(0.32,0.72,0,1), max-height 0.35s cubic-bezier(0.32,0.72,0,1), height 0.35s cubic-bezier(0.32,0.72,0,1), border-radius 0.3s;
 }
 
 .half-panel.hidden {
@@ -240,57 +242,57 @@
   opacity: 1;
 }
 
-.hp-handle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(0,0,0,.12);
-  margin: 10px auto 8px;
+/* ★ 新增：全局半面屏状态类 */
+/* 上移状态 */
+.half-panel.hp-pos-top {
+  top: 0 !important;
+  bottom: auto !important;
+  border-radius: 0 0 24px 24px !important;
+}
+/* 扩大状态 */
+.half-panel.hp-size-full {
+  max-height: 90vh !important;
+  height: 90vh !important;
+}
+/* 同时上移+扩大：全屏 */
+.half-panel.hp-pos-top.hp-size-full {
+  max-height: 100vh !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+}
+/* 上移状态下关闭，往上滑出屏幕 */
+.half-panel.hp-pos-top.hidden {
+  transform: translateY(-100%);
 }
 
-.hp-header {
+/* ★ 新增：控制按钮样式 */
+.hp-ctrl-btns {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px 14px;
-  border-bottom: 1.5px solid var(--border);
-  flex-shrink: 0;
+  gap: 6px;
+  margin-right: auto;
+  margin-left: 12px;
 }
-
-.hp-header h2 {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.hp-close {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--accent);
+.hp-ctrl-btn {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
   cursor: pointer;
-  border: none;
+  color: #1a1a1a;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
+.hp-ctrl-btn:active { background: rgba(0,0,0,0.05); }
 
-.hp-close svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.hp-body {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 14px 20px 0;
-}
+/* 以下保留你原本的 hp-handle, hp-header 等样式... */
+.hp-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.12); margin: 10px auto 8px; }
+.hp-header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; border-bottom: 1.5px solid var(--border); flex-shrink: 0; }
+.hp-header h2 { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+.hp-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
+.hp-close svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+.hp-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 20px 0; }
 
 .hp-section-label {
   font-size: 11px;
