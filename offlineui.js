@@ -51,12 +51,6 @@ r.style.setProperty('--ol-c-text-size',ap.cTextSize+'px');r.style.setProperty('-
 r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-u-av-radius',ap.uAvRadius+'%');r.style.setProperty('--ol-u-av-frame-color',ap.uAvFrameColor);r.style.setProperty('--ol-u-av-frame-w',ap.uAvFrameW+'px');r.style.setProperty('--ol-u-av-name-size',ap.uAvNameSize+'px');r.style.setProperty('--ol-u-av-show',ap.uAvShow?'flex':'none');r.style.setProperty('--ol-u-av-name-show',ap.uAvNameShow?'block':'none');
 r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
 r.style.setProperty('--ol-u-text-size',(ap.uTextSize||16)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
-r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg||'#ffffff');
-r.style.setProperty('--ol-c-bubble-opacity',(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100);
-r.style.setProperty('--ol-c-bubble-blur',(ap.cBubbleBlur||0)+'px');
-r.style.setProperty('--ol-u-bubble-bg',ap.uBubbleBg||'#eef4fa');
-r.style.setProperty('--ol-u-bubble-opacity',(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100);
-r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 r.style.setProperty('--ol-bar-bg',ap.barBg||'#ffffff');
 r.style.setProperty('--ol-bar-opacity',(ap.barOpacity!=null?ap.barOpacity:100)/100);
@@ -89,10 +83,15 @@ var fmt=O.formatProse(text,OL.charId,isU);
 var pg=isU?(ap.uParaGap||8):(ap.cParaGap||8);
 var lg=isU?(ap.uLetterGap||0):(ap.cLetterGap||0);
 fmt=fmt.replace(/\n/g,'<span style="display:block;height:'+pg+'px;line-height:0;font-size:0;"></span>');
+var bubBg=isU?ap.uBubbleBg:ap.cBubbleBg;
+var bubOp=isU?ap.uBubbleOpacity:ap.cBubbleOpacity;
+var bubBlur=isU?ap.uBubbleBlur:ap.cBubbleBlur;
+var bgA=(bubOp!=null?bubOp:100)/100;
+var bgS='background:'+h2r(bubBg,bgA)+';'+(bubBlur>0?'backdrop-filter:blur('+bubBlur+'px);-webkit-backdrop-filter:blur('+bubBlur+'px);':'');
 var meta='<div class="ol-scatter-meta"><span class="ol-scatter-floor">#'+String(floor).padStart(3,'0')+'</span><span class="ol-scatter-time">'+ts+'</span><span class="ol-scatter-tokens">'+tkS+' tk</span><span class="ol-scatter-chars">'+cc+'字</span></div>';
 var headerHtml='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+avN+'</div>'+meta+'</div></div>';
-html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'">'+headerHtml+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div></div>';});
-if(OL.isStreaming&&!OL._backgroundMode){var sHeader='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+App.esc(c.name||'')+'</div></div></div>';html+='<div class="ol-block is-char" id="olStreamProse">'+sHeader+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';}
+html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'">'+headerHtml+'<div class="ol-frame-mid"><div class="ol-bub-bg" style="'+bgS+'"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div></div>';});
+if(OL.isStreaming&&!OL._backgroundMode){var sBgS='background:'+h2r(ap.cBubbleBg,(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100)+';'+(ap.cBubbleBlur>0?'backdrop-filter:blur('+ap.cBubbleBlur+'px);-webkit-backdrop-filter:blur('+ap.cBubbleBlur+'px);':'');var sHeader='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+App.esc(c.name||'')+'</div></div></div>';html+='<div class="ol-block is-char" id="olStreamProse">'+sHeader+'<div class="ol-frame-mid"><div class="ol-bub-bg" style="'+sBgS+'"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';}
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 buildThinkHtml:function(t){return '<details class="ol-think-block"><summary class="ol-think-summary">💭 思维过程</summary><div class="ol-think-body">'+App.esc(t)+'</div></details>';},
