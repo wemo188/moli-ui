@@ -6,7 +6,9 @@
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:13px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:13px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:13px;}
+#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.1);}
 #olSettingsPanel .hp-btn:active{opacity:.7;}
+#olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid rgba(201,112,107,.3);}
 #olSettingsPanel #olWordCount{width:100%;padding:10px 12px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:14px;color:#1a1a1a;outline:none;font-family:inherit;}
 .ol-sub-title{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:6px;margin-top:10px;display:flex;align-items:center;gap:8px;}
@@ -18,7 +20,6 @@
 .ol-sw-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
 .ol-sw-track.on::after{transform:translateX(16px);}
 .ol-sw-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1a1a1a;padding:6px 0;}
-/* ★ issue8: 新增行内标签行 */
 .ol-inline-tag-row{display:flex;align-items:center;gap:8px;padding:4px 0;flex-wrap:wrap;}
 .ol-tag-group{display:flex;gap:6px;flex-wrap:wrap;}
 .ol-tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding-left:0;}
@@ -41,8 +42,8 @@
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:16px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
   --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
   --ol-prose-padding:12px 14px;
-  --ol-bar-bg:#ffffff;--ol-bar-blur:20px;--ol-bar-border-color:#1a1a1a;
-  --ol-input-bg:#ffffff;--ol-input-border:#1a1a1a;--ol-input-text:#2e4258;--ol-input-radius:22px;
+  --ol-bar-bg:#ffffff;--ol-bar-bg-img:none;--ol-bar-blur:20px;--ol-bar-border-color:#1a1a1a;
+  --ol-input-bg:#ffffff;--ol-input-text:#2e4258;
   --ol-meta-color:#1a1a1a;--ol-meta-size:12px;
   --ol-c-av-size:50px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#adcdea;--ol-c-av-frame-w:2px;--ol-c-av-name-size:11px;--ol-c-av-show:flex;--ol-c-av-name-show:block;
   --ol-c-bubble-bg:rgba(255,255,255,1);--ol-c-bubble-radius:14px;--ol-c-bubble-border-color:rgba(200,220,240,.3);--ol-c-bubble-border-w:1px;--ol-c-bubble-width:100%;--ol-c-bubble-blur:0px;
@@ -54,34 +55,16 @@
   position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;
   background:var(--ol-bg-color);color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);
   -webkit-touch-callout:none;overscroll-behavior:none;
-  /* ★ issue12: 防切换黑屏 */
   -webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform;
 }
-.ol-bg{
-  position:absolute; top:-80px; bottom:-80px; left:0; right:0; z-index:-1;
-  background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
-}
+.ol-bg{position:absolute;inset:0;z-index:0;background-size:contain;background-position:center;background-repeat:no-repeat;pointer-events:none;}
 
-/* ★ issue1+2: 顶部栏透明+缩高 */
-.ol-hd {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 8px;
-  background: transparent; /* 完全透明 */
-  pointer-events: none;
-}
-.ol-hd::after {
-  display: none; /* 去掉多余的渐变尾巴 */
-}
+.ol-hd{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:44px 16px 6px;background:var(--ol-hd-bg);backdrop-filter:saturate(150%) blur(20px);-webkit-backdrop-filter:saturate(150%) blur(20px);pointer-events:none;}
+.ol-hd::after{content:"";position:absolute;bottom:-30px;left:0;right:0;height:30px;background:linear-gradient(to bottom,var(--ol-hd-fade),transparent);pointer-events:none;}
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;}
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
 
-/* ★ issue3: 隐藏滚动条 */
-.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:80px 16px 90px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 60px);mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);}
+.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:80px 16px 90px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);mask-image:linear-gradient(to bottom,transparent 0px,transparent 45px,black 90px);}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{position:relative;margin:0 0 16px;display:flex;align-items:flex-start;gap:10px;max-width:100%;}
@@ -103,20 +86,16 @@
 .ol-block.ol-av-right .ol-bubble-col{align-items:flex-end;}
 .ol-block.ol-av-left .ol-bubble-col{align-items:flex-start;}
 
-/* ★ issue6+7: 气泡背景移到frame-mid，用CSS变量，修复镂空 */
 .ol-frame-mid{position:relative;overflow:hidden;}
 .ol-block.is-char .ol-frame-mid{border-radius:var(--ol-c-bubble-radius);border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color);width:var(--ol-c-bubble-width);background:var(--ol-c-bubble-bg);backdrop-filter:blur(var(--ol-c-bubble-blur));-webkit-backdrop-filter:blur(var(--ol-c-bubble-blur));}
 .ol-block.is-user .ol-frame-mid{border-radius:var(--ol-u-bubble-radius);border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color);width:var(--ol-u-bubble-width);background:var(--ol-u-bubble-bg);backdrop-filter:blur(var(--ol-u-bubble-blur));-webkit-backdrop-filter:blur(var(--ol-u-bubble-blur));}
-/* bub-bg层不再负责背景色 */
 .ol-bub-bg{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;}
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
 .ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
-/* ★ issue4: 角色和用户分别用各自的字体CSS变量 */
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
 .ol-block.is-user .ol-bubble-text{font-size:var(--ol-u-text-size);font-weight:var(--ol-u-text-weight);line-height:var(--ol-u-text-lh);color:var(--ol-u-text-color);}
 .ol-bubble-text.ol-selecting{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;}
 
-/* ★ issue11a: 气泡底下元数据跟随各自头像框颜色 */
 .ol-scatter-meta{display:flex;align-items:center;gap:10px;margin-top:6px;padding-left:4px;}
 .ol-block.is-char .ol-scatter-meta{color:var(--ol-c-av-frame-color);}
 .ol-block.is-user .ol-scatter-meta{color:var(--ol-u-av-frame-color);}
@@ -135,17 +114,65 @@
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
-/* ★ issue10: 底栏添加backdrop-filter保证内容消失 */
-.ol-input-wrap{position:absolute;bottom:0;left:0;right:0;z-index:9;display:flex;align-items:flex-end;gap:6px;padding:10px 12px 20px;border-top:1.5px solid var(--ol-bar-border-color);backdrop-filter:saturate(150%) blur(20px);-webkit-backdrop-filter:saturate(150%) blur(20px);}
-.ol-input-box{display:flex;align-items:flex-end;border:1.5px solid var(--ol-input-border);border-radius:var(--ol-input-radius);padding:4px;flex:1;min-width:0;background:#ffffff;}
-.ol-input{flex:1;min-height:36px;max-height:120px;padding:8px 6px;border:none;background:transparent;font-size:14px;color:var(--ol-input-text);outline:none;resize:none;line-height:1.5;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;}
-.ol-inner-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
-.ol-inner-btn:active{opacity:.7;}
-.ol-outer-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
-.ol-outer-btn:active{opacity:.7;}
-.ol-btn-robot .ol-robot-svg{width:32px;height:32px;}
-.ol-btn-stop{background:rgba(201,112,107,.85)!important;border-radius:50%;width:32px!important;height:32px!important;margin-bottom:4px;}
-.ol-btn-stop svg{width:16px!important;height:16px!important;}
+/* ★ 终极尖角长方碑底栏 */
+.ol-input-wrap{
+  position:absolute;bottom:0;left:0;right:0;z-index:9;
+  display:flex;align-items:flex-end;gap:8px;padding:10px;
+  background-image:var(--ol-bar-bg-img);
+  background-color:var(--ol-bar-bg);
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  border-top:1px solid var(--ol-bar-border-color); /* 顶部封边 */
+  border-radius:0;
+  box-shadow:0 -6px 20px rgba(0,0,0,0.05);
+  backdrop-filter:blur(var(--ol-bar-blur));-webkit-backdrop-filter:blur(var(--ol-bar-blur));
+}
+/* 魔法棒菜单按钮 */
+.ol-btn-menu{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.7);
+  border:1px solid var(--ol-bar-border-color);
+  border-radius:0;flex-shrink:0;cursor:pointer;
+  color:var(--ol-bar-border-color); /* 统领SVG颜色 */
+  -webkit-tap-highlight-color:transparent;
+}
+.ol-btn-menu:active{background:rgba(255,255,255,0.9);transform:scale(0.95);}
+.ol-btn-menu svg{width:24px;height:24px;}
+
+/* 双线条输入框 */
+.ol-input-box{
+  flex:1;height:40px;display:flex;align-items:center;
+  background:rgba(255,255,255,0.85);
+  border:3px double var(--ol-bar-border-color);
+  border-radius:0;padding:0;box-sizing:border-box;
+}
+/* 云朵按钮 (嵌在输入框左侧) */
+.ol-inner-btn{
+  width:36px;height:100%;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:none;flex-shrink:0;cursor:pointer;
+  color:var(--ol-bar-border-color);
+  -webkit-tap-highlight-color:transparent;
+}
+.ol-inner-btn:active{opacity:0.6;}
+.ol-inner-btn svg{width:22px;height:22px;}
+.ol-input{
+  flex:1;height:100%;padding:0 4px;border:none;background:transparent;
+  font-size:14px;color:var(--ol-input-text);outline:none;resize:none;
+  line-height:34px;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;
+}
+
+/* 机器人发送按钮 */
+.ol-btn-robot{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:var(--ol-bar-border-color);
+  border:1px solid var(--ol-bar-border-color);
+  border-radius:0;flex-shrink:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.ol-btn-robot:active{opacity:0.8;transform:scale(0.95);}
+.ol-btn-robot svg{width:24px;height:24px;stroke:#fff;fill:#fff;}
+
+.ol-btn-stop{background:rgba(201,112,107,.85)!important;border-color:rgba(201,112,107,.85)!important;}
+
 .ol-plus-panel{position:absolute;bottom:70px;left:0;right:0;z-index:9;display:none;flex-wrap:wrap;gap:16px;padding:14px 20px 18px;background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);}
 .ol-plus-panel.show{display:flex;}
 .ol-plus-item{display:flex;flex-direction:column;align-items:center;gap:6px;width:56px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -153,6 +180,7 @@
 .ol-plus-icon svg{width:22px;height:22px;fill:none;stroke:#1a1a1a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
 .ol-plus-item:active .ol-plus-icon{background:rgba(0,0,0,.04);}
 .ol-plus-label{font-size:12px;color:#1a1a1a;text-align:center;font-weight:500;}
+
 .ol-ctx{position:fixed;z-index:100020;background:#000;border-radius:12px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:grid;grid-template-columns:repeat(4,1fr);gap:0;min-width:220px;max-width:280px;}
 .ol-ctx-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;font-size:11px;color:rgba(255,255,255,.85);cursor:pointer;border-radius:8px;-webkit-tap-highlight-color:transparent;text-align:center;white-space:nowrap;}
 .ol-ctx-item:active{background:rgba(255,255,255,.1);}
