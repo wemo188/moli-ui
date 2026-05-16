@@ -1,3 +1,4 @@
+
 .ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
@@ -37,19 +38,19 @@
 .ol-color-item span{font-size:12px;font-weight:600;color:#1a1a1a;}
 
 .ol-root{
-  --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:16px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
+  --ol-bg-color:#f0f4f8;--ol-text-color:#2e4258;--ol-text-size:16px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
   --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
-  --ol-prose-padding:12px 14px;
-  --ol-bar-bg:rgba(185,220,250,0.55);--ol-bar-bg-img:none;--ol-bar-border-color:#adcdea;
+  --ol-prose-padding:14px 16px;
+  --ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%);--ol-bar-bg-img:none;--ol-bar-border-color:#adcdea;
   --ol-input-text:#adcdea;
   --ol-meta-color:#1a1a1a;--ol-meta-size:12px;
   --ol-c-av-size:36px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#9ca3af;--ol-c-av-frame-w:2px;--ol-c-av-name-size:13px;--ol-c-av-show:flex;--ol-c-av-name-show:block;
-  --ol-c-bubble-bg:linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(235,238,242,0.85) 40%, rgba(215,220,226,0.5) 70%, rgba(245,247,250,0.9) 100%);
-  --ol-c-bubble-radius:14px;--ol-c-bubble-width:85%;
+  --ol-c-bubble-bg:linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%);
+  --ol-c-bubble-radius:14px;--ol-c-bubble-width:85%;--ol-c-bubble-border-w:0px;
   --ol-c-text-size:15px;--ol-c-text-weight:400;--ol-c-text-lh:1.85;--ol-c-text-color:#2e4258;
   --ol-u-av-size:36px;--ol-u-av-radius:50%;--ol-u-av-frame-color:#7ea3c9;--ol-u-av-frame-w:2px;--ol-u-av-name-size:13px;--ol-u-av-show:flex;--ol-u-av-name-show:block;
-  --ol-u-bubble-bg:linear-gradient(135deg, rgba(255,255,255,0.97) 0%, rgba(235,248,255,0.88) 40%, rgba(200,230,250,0.45) 70%, rgba(240,250,255,0.92) 100%);
-  --ol-u-bubble-radius:14px;--ol-u-bubble-width:85%;
+  --ol-u-bubble-bg:linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%);
+  --ol-u-bubble-radius:14px;--ol-u-bubble-width:85%;--ol-u-bubble-border-w:0px;
   --ol-u-text-size:15px;--ol-u-text-weight:400;--ol-u-text-lh:1.85;--ol-u-text-color:#2e4258;
   --ol-hd-bg:rgba(255,255,255,0.7);--ol-hd-fade:rgba(255,255,255,0.5);
   position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;
@@ -133,7 +134,7 @@
   z-index:9;
   display:flex;align-items:flex-end;gap:8px;
   padding:18px 10px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,245,255,0.88) 25%, var(--ol-bar-bg) 55%, rgba(220,240,255,0.85) 75%, rgba(255,255,255,0.95) 100%);
+  background: var(--ol-bar-bg);
   border-top:1px solid rgba(255,255,255,0.9);
   border-bottom:1px solid rgba(255,255,255,0.9);
   box-shadow: inset 0 0 50px rgba(255,255,255,0.7), inset 0 -6px 18px rgba(170,210,250,0.25), 0 4px 20px rgba(0,0,0,0.08);
@@ -163,7 +164,7 @@
 
 .ol-input-box{
   flex:1;min-width:0;height:40px;display:flex;align-items:center;
-  background:rgba(255,255,255,0.7);
+  background:#ffffff;
   border:1px solid rgba(255,255,255,0.9);
   border-radius:0;padding:0 8px;box-sizing:border-box;gap:8px;
   box-shadow: 0 0 12px rgba(255,255,255,0.5);
@@ -176,10 +177,16 @@
 }
 .ol-inner-btn:active{opacity:0.6;}
 .ol-inner-btn svg{width:28px;height:28px;}
+
+/* ★ 修复：强制提示词颜色也为统一的蓝色 */
 .ol-input{
   flex:1;min-width:0;height:100%;padding:0;border:none;background:transparent;
   font-size:13px;font-weight:700;color:var(--ol-input-text);outline:none;resize:none;
   line-height:40px;font-family:inherit;overflow-y:hidden;white-space:nowrap;text-overflow:ellipsis;-webkit-user-select:text;user-select:text;
+}
+.ol-input::placeholder {
+  color: var(--ol-input-text);
+  opacity: 0.7;
 }
 
 .ol-btn-robot{
