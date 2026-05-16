@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -14,16 +15,12 @@ if (vMeta) {
 document.documentElement.style.setProperty('background', 'transparent', 'important');
 document.body.style.setProperty('background', 'transparent', 'important');
 
-/* ★ 魔法棒 SVG (使用 currentColor 跟随边框色) */
 var MENU_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="14" y1="50" x2="46" y2="18" stroke="currentColor" stroke-width="10" stroke-linecap="square"/><line x1="39" y1="25" x2="45" y2="19" stroke="#ffffff" stroke-width="4" stroke-linecap="square"/><path d="M 16 14 L 18 19 L 23 19 L 19 22 L 21 27 L 16 24 L 11 27 L 13 22 L 9 19 L 14 19 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" fill="white"/><path d="M 48 36 L 50 41 L 55 41 L 51 44 L 53 49 L 48 46 L 43 49 L 45 44 L 41 41 L 46 41 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" fill="white"/><path d="M 36 6 L 37.5 9.5 L 41 9.5 L 38 12 L 39 15.5 L 36 13.5 L 33 15.5 L 34 12 L 31 9.5 L 34.5 9.5 Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="white"/></svg>';
-/* 云朵 SVG */
 var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none"><path d="M20 40C16 40 12 37 12 32C12 27.5 15 24.5 19 24C20 19 24.5 15 30 15C36 15 40.5 19 41.5 24C46 24.5 50 28 50 32.5C50 37.5 46.5 40 43 40" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M32 48V32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M26 38L32 32L38 38" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-/* 机器人 SVG (固定白线) */
 var ROBOT_SVG='<svg class="ol-robot-svg" viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="#fff" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="#fff"/><rect x="7" y="22" width="6" height="12" rx="3" fill="#fff"/><rect x="51" y="22" width="6" height="12" rx="3" fill="#fff"/><rect x="12" y="14" width="40" height="32" rx="8" fill="#fff"/><line x1="26" y1="27" x2="26" y2="33" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 var CTX_ICONS={copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'};
 
-/* ★ 新增 barBgImg */
 var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'first',wordCount:0,pageBg:'#ffffff',barBg:'#ffffff',barBgImg:'',barBorderColor:'#1a1a1a',barOpacity:100,barBlur:0,inputTextColor:'#2e4258',mode:'bubble',blockGap:16,cAvShow:true,cAvNameShow:true,cAvSize:50,cAvRadius:50,cAvFrameColor:'#adcdea',cAvFrameW:2,cAvNameSize:11,cAvPos:'left',cBubbleBg:'#ffffff',cBubbleRadius:14,cBubbleBorderColor:'#ccdae8',cBubbleBorderW:1,cBubbleWidth:100,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:16,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#2e4258',cQuoteSize:16,cQuoteWeight:400,cQuoteItalic:false,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#7a9ab8',cParenSize:16,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#7a9ab8',cStarSize:16,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:50,uAvRadius:50,uAvFrameColor:'#adcdea',uAvFrameW:2,uAvNameSize:11,uAvPos:'right',uBubbleBg:'#eef4fa',uBubbleRadius:14,uBubbleBorderColor:'#b8d4ec',uBubbleBorderW:1,uBubbleWidth:100,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:16,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#2e4258',quoteSize:16,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7a9ab8',parenSize:16,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7a9ab8',starSize:16,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){r[k]=s[k];});return r;}
@@ -53,7 +50,6 @@ var uFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-co
 con.innerHTML=
 '<style>#olSettingsPanel .hp-btn:not(.hp-btn-primary):not(.hp-btn-danger){border:1.5px solid transparent !important;box-shadow:0 1px 4px rgba(0,0,0,0.05);}</style>' +
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:url('+App.escAttr(bg)+');filter:blur('+ap.bgBlur+'px) brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div><div class="ol-hd" id="olHd"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div></div><div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
-/* ★ 替换为终极长方碑底栏 HTML */
 '<div class="ol-input-wrap" id="olInputWrap">' +
   '<button class="ol-btn-menu" id="olPanelBtn" type="button">'+MENU_SVG+'</button>' +
   '<div class="ol-input-box" id="olInputBox">' +
@@ -89,8 +85,6 @@ if(wrap){var a=(ap.barOpacity!=null?ap.barOpacity:100)/100;
   var bgVal = h2r(ap.barBg,a);
   r.style.setProperty('--ol-bar-bg', bgVal);
   r.style.setProperty('--ol-bar-bg-img', ap.barBgImg ? "url('"+ap.barBgImg+"')" : 'none');
-  var blurVal=a<1?Math.max(ap.barBlur||0,12):0;
-  r.style.setProperty('--ol-bar-blur', blurVal+'px');
   r.style.setProperty('--ol-bar-border-color', ap.barBorderColor);
   var inp=App.$('#olInput');if(inp)inp.style.color=ap.inputTextColor||'#2e4258';
 }
@@ -182,7 +176,6 @@ App.safeOn('#olSbBg','click',function(){O.showBgMenu();});
 App.safeOn('#olSbCode','click',function(){O._closePanel();O.openCodeEditor();});
 App.safeOn('#olStyleReset','click',function(){App.LS.remove('olAp_'+cid);ap=JSON.parse(JSON.stringify(DEF_AP));sAp(cid,ap);O.applyAppearance(cid);O._noScroll=true;O.renderMessages();App.showToast('已重置');});
 
-/* ★ 底栏背景图上传逻辑 */
 var barBgInp = App.$('#olBarBgInput');
 App.safeOn('#olSbBarBgBtn','click',function(){ if(barBgInp) barBgInp.click(); });
 if(barBgInp){
