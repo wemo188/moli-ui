@@ -162,7 +162,7 @@
   -webkit-tap-highlight-color:transparent;
 }
 .ol-btn-menu:active{background:rgba(255,255,255,0.9);transform:scale(0.95);}
-.ol-btn-menu svg{width:26px;height:26px;}
+.ol-btn-menu svg{width:32px;height:32px;}
 
 .ol-input-box{
   flex:1;min-height:44px;display:flex;align-items:flex-end;
@@ -185,7 +185,7 @@
 }
 
 .ol-btn-robot{
-  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  width:52px;height:52px;display:flex;align-items:center;justify-content:center;
   background:var(--ol-bar-border-color);
   border:1px solid var(--ol-bar-border-color);
   border-radius:0;flex-shrink:0;cursor:pointer;
