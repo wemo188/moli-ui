@@ -126,16 +126,18 @@
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
+/* ★ 修复：左右贴边不溢出，双线变清爽 */
 .ol-input-wrap{
   position:absolute;
-  bottom:15px;
+  bottom:20px; /* 距离底部悬浮15px */
   left:0;right:0;
+  width:100%; /* 确保不超过屏幕 */
+  box-sizing:border-box; /* 核心修复：把padding算进宽度里，防止挤出屏幕 */
   z-index:9;
   display:flex;align-items:flex-end;gap:8px;
-  padding:10px 12px;
+  padding:14px 12px;
   border-top:1px solid var(--ol-bar-border-color);
   border-bottom:1px solid var(--ol-bar-border-color);
-  box-sizing:border-box;
   isolation:isolate;
 }
 .ol-input-wrap::before{
@@ -150,8 +152,9 @@
   opacity: var(--ol-bar-opacity);
   pointer-events:none;
 }
+
 .ol-btn-menu{
-  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  width:52px;height:52px;display:flex;align-items:center;justify-content:center;
   background:rgba(255,255,255,0.7);
   border:1px solid var(--ol-bar-border-color);
   border-radius:0;flex-shrink:0;cursor:pointer;
@@ -164,7 +167,7 @@
 .ol-input-box{
   flex:1;min-height:44px;display:flex;align-items:flex-end;
   background:rgba(255,255,255,0.85);
-  border:5px double var(--ol-bar-border-color);
+  border:3px double var(--ol-bar-border-color); /* 修复：从 5px 改回 3px，双线更清晰 */
   border-radius:0;padding:0;box-sizing:border-box;
 }
 .ol-inner-btn{
