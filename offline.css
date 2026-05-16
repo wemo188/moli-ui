@@ -1,6 +1,5 @@
-
-.ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
-.ol-panel.show{transform:translateX(0);opacity:1;}
+.ol-panel{position:fixed;top:0;bottom:0;left:100%;right:auto;width:100%;z-index:9990;transition:left .35s cubic-bezier(.32,.72,0,1),opacity .3s;opacity:0;}
+.ol-panel.show{left:0;opacity:1;}
 #olSettingsPanel{z-index:9995;}
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:13px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:13px;}
