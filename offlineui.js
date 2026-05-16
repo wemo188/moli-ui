@@ -53,10 +53,12 @@ r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-
 r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
 r.style.setProperty('--ol-u-text-size',(ap.uTextSize||16)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
 var cBgA=(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100;
-r.style.setProperty('--ol-c-bubble-bg',h2r(ap.cBubbleBg||'#ffffff',cBgA));
+r.style.setProperty('--ol-c-bubble-bg', ap.cBubbleBg||'#ffffff');
+r.style.setProperty('--ol-c-bubble-opacity', cBgA);
 r.style.setProperty('--ol-c-bubble-blur',(ap.cBubbleBlur||0)+'px');
 var uBgA=(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100;
-r.style.setProperty('--ol-u-bubble-bg',h2r(ap.uBubbleBg||'#eef4fa',uBgA));
+r.style.setProperty('--ol-u-bubble-bg', ap.uBubbleBg||'#eef4fa');
+r.style.setProperty('--ol-u-bubble-opacity', uBgA);
 r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 var a=(ap.barOpacity!=null?ap.barOpacity:100)/100;
