@@ -126,15 +126,15 @@
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
-/* ★ 修复：去除 width:100% 解决溢出；精确计算高度，确保输入框与按钮等高 */
+/* ★ 终极修复：解决 textarea 撑破 Flex 容器导致右侧图标飞出的 Bug */
 .ol-input-wrap{
   position:absolute;
-  bottom:20px; 
-  left:0; right:0; /* 左右为0自动填满，不要加 width:100% */
+  bottom:15px; 
+  left:0; right:0; 
   box-sizing:border-box; 
   z-index:9;
   display:flex;align-items:flex-end;gap:8px;
-  padding:14px 12px; /* 14px + 56px + 14px = 84px */
+  padding:14px 12px; /* 上下14+14，内部56，刚好84px */
   border-top:1px solid var(--ol-bar-border-color);
   border-bottom:1px solid var(--ol-bar-border-color);
   isolation:isolate;
@@ -165,7 +165,8 @@
 .ol-btn-menu svg{width:32px;height:32px;} 
 
 .ol-input-box{
-  flex:1;min-height:56px;display:flex;align-items:center; /* 改为居中，让云朵和文字对齐 */
+  flex:1;min-width:0; /* ★ 核心修复1：禁止盒子被撑破 */
+  min-height:56px;display:flex;align-items:center; 
   background:rgba(255,255,255,0.85);
   border:3px double var(--ol-bar-border-color);
   border-radius:0;padding:0;box-sizing:border-box;
@@ -180,11 +181,13 @@
 .ol-inner-btn svg{width:30px;height:30px;}
 
 .ol-input{
-  flex:1;min-height:50px;max-height:120px;
-  padding:13px 4px; /* 调整内边距，让文字完美垂直居中 */
+  flex:1;min-width:0;width:100%; /* ★ 核心修复2：强制文本框不越界 */
+  min-height:50px;max-height:120px;
+  padding:13px 4px; 
   border:none;background:transparent;
   font-size:16px;color:var(--ol-input-text);outline:none;resize:none;
   line-height:24px;font-family:inherit;overflow-y:auto;-webkit-user-select:text;user-select:text;
+  box-sizing:border-box;
 }
 
 .ol-btn-robot{
