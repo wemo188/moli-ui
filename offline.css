@@ -41,7 +41,7 @@
   --ol-bg-color:#f0f4f8;--ol-text-color:#2e4258;--ol-text-size:16px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
   --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
   --ol-prose-padding:14px 16px;
-  --ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%);--ol-bar-bg-img:none;--ol-bar-border-color:#adcdea;
+  --ol-bar-bg:#ffffff;--ol-bar-bg-img:none;--ol-bar-border-color:#adcdea;
   --ol-input-text:#adcdea;
   --ol-meta-color:#1a1a1a;--ol-meta-size:12px;
   --ol-c-av-size:36px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#9ca3af;--ol-c-av-frame-w:2px;--ol-c-av-name-size:13px;--ol-c-av-show:flex;--ol-c-av-name-show:block;
@@ -127,6 +127,7 @@
 .ol-think-summary{font-size:12px;color:#1a1a1a;cursor:pointer;user-select:none;-webkit-user-select:none;padding:4px 0;}
 .ol-think-body{font-size:13px;color:#1a1a1a;line-height:1.6;padding:8px 10px;margin-top:4px;background:rgba(0,0,0,.03);border-radius:8px;border:1px solid rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
 
+/* ★ 彻底去除底栏发光和渐变干扰 */
 .ol-input-wrap{
   position:absolute;
   bottom:15px;
@@ -137,7 +138,6 @@
   background: var(--ol-bar-bg);
   border-top:1px solid rgba(255,255,255,0.9);
   border-bottom:1px solid rgba(255,255,255,0.9);
-  box-shadow: inset 0 0 50px rgba(255,255,255,0.7), inset 0 -6px 18px rgba(170,210,250,0.25), 0 4px 20px rgba(0,0,0,0.08);
   box-sizing:border-box;
   isolation:isolate;
 }
@@ -167,7 +167,6 @@
   background:#ffffff;
   border:1px solid rgba(255,255,255,0.9);
   border-radius:0;padding:0 8px;box-sizing:border-box;gap:8px;
-  box-shadow: 0 0 12px rgba(255,255,255,0.5);
 }
 .ol-inner-btn{
   width:28px;height:28px;display:flex;align-items:center;justify-content:center;
@@ -178,7 +177,7 @@
 .ol-inner-btn:active{opacity:0.6;}
 .ol-inner-btn svg{width:28px;height:28px;}
 
-/* ★ 修复：强制提示词颜色也为统一的蓝色 */
+/* ★ 强制提示词颜色也为统一的蓝色 */
 .ol-input{
   flex:1;min-width:0;height:100%;padding:0;border:none;background:transparent;
   font-size:13px;font-weight:700;color:var(--ol-input-text);outline:none;resize:none;
