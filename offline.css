@@ -106,16 +106,15 @@
 .ol-block.is-char .ol-bub-bg{
   background: var(--ol-c-bubble-bg);
   opacity: var(--ol-c-bubble-opacity);
-  backdrop-filter: blur(var(--ol-c-bubble-blur));
   -webkit-backdrop-filter: blur(var(--ol-c-bubble-blur));
+  backdrop-filter: blur(var(--ol-c-bubble-blur));
 }
 .ol-block.is-user .ol-bub-bg{
   background: var(--ol-u-bubble-bg);
   opacity: var(--ol-u-bubble-opacity);
-  backdrop-filter: blur(var(--ol-u-bubble-blur));
   -webkit-backdrop-filter: blur(var(--ol-u-bubble-blur));
+  backdrop-filter: blur(var(--ol-u-bubble-blur));
 }
-
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
 .ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
