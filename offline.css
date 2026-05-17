@@ -41,7 +41,7 @@
 .ol-inline-row span{font-size:15px;font-weight:600;color:#1a1a1a;}
 
 .ol-fold{margin-bottom:12px;border:1.5px solid #adcdea;border-radius:10px;overflow:hidden;background:#fff;}
-.ol-fold-head{padding:14px 16px;font-size:15px;font-weight:700;color:#1a1a1a;cursor:pointer;-webkit-tap-highlight-color:transparent;background:#fff;}
+.ol-fold-head{padding:10px 16px;font-size:15px;font-weight:700;color:#1a1a1a;cursor:pointer;-webkit-tap-highlight-color:transparent;background:#fff;}
 .ol-fold-head:active{background:rgba(173,205,234,0.1);}
 .ol-fold-body{max-height:0;overflow:hidden;padding:0 14px;transition:max-height .4s cubic-bezier(.2,.85,.2,1),padding .3s ease;background:#fff;}
 .ol-fold.open .ol-fold-body{max-height:5000px;padding:10px 14px 14px;overflow-y:auto;border-top:1px dashed rgba(173,205,234,0.5);}
