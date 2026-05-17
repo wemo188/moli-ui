@@ -134,7 +134,7 @@
   left:0;right:0;
   z-index:9;
   display:flex;align-items:center;gap:10px;
-  padding:14px 12px;
+  padding:20px 12px;
   background:var(--ol-bar-bg);
   border-top:1px solid rgba(255,255,255,0.9);
   border-bottom:1px solid rgba(255,255,255,0.9);
