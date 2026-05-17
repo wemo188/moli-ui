@@ -160,7 +160,7 @@
   -webkit-tap-highlight-color:transparent;
 }
 .ol-btn-menu:active{transform:scale(0.95);}
-.ol-btn-menu svg{width:32px;height:32px;}
+.ol-btn-menu svg{width:26px;height:26px;}
 
 .ol-input-box{
   flex:1;min-width:0;height:48px;display:flex;align-items:center;
