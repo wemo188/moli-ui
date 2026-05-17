@@ -15,7 +15,7 @@
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-upload{height:54px;font-size:15px;}
-#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;font-size:15px;padding:12px 0;}
+#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1px solid transparent;font-size:15px;padding:10px 0;}
 #olSettingsPanel .hp-btn:active{opacity:.7;}
 #olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#dd9e9b;border:1.5px solid #dd9e9b;}
