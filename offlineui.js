@@ -51,7 +51,7 @@ con.innerHTML=
   '<button class="ol-btn-menu" id="olPanelBtn" type="button">'+MENU_SVG+'</button>' +
   '<div class="ol-input-box" id="olInputBox">' +
     '<button class="ol-inner-btn" id="olPlusBtn" type="button">'+CLOUD_SVG+'</button>' +
-    '<textarea class="ol-input" id="olInput" rows="1" placeholder="宇宙带着星轨私奔啦✮ ࣪ ⊹⋆˚"></textarea>' +
+    '<textarea class="ol-input" id="olInput" rows="1" placeholder="宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚"></textarea>' +
   '</div>' +
   '<button class="ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>' +
 '</div>' +
