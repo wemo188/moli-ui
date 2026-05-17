@@ -83,7 +83,7 @@ if(wrap){
   r.style.setProperty('--ol-bar-bg-img', ap.barBgImg ? "url('"+ap.barBgImg+"')" : 'none');
   r.style.setProperty('--ol-bar-border-color', ap.barBorderColor || 'rgba(255,255,255,0.9)');
   r.style.setProperty('--ol-bar-icon-color', ap.barIconColor || '#adcdea');
-  r.style.setProperty('--ol-input-text', ap.inputTextColor || '#adcdea');
+  r.style.setProperty('--ol-input-text', ap.inputTextColor || '#448bcd');
   var inp2=App.$('#olInput');if(inp2)inp2.placeholder=ap.placeholder||'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚';
 }
 var bgEl=App.$('#olBg');if(bgEl&&App.LS.get('olBg_'+cid)){bgEl.style.backgroundImage='linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.LS.get('olBg_'+cid)+')';bgEl.style.filter='brightness('+(100-ap.bgDark)+'%)';bgEl.style.backgroundSize='cover';}
