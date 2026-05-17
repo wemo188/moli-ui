@@ -5,8 +5,9 @@
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:13px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:13px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:13px;}
-#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.1);}
+#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.1); padding:12px; font-size:14px;}
 #olSettingsPanel .hp-btn:active{opacity:.7;}
+#olSettingsPanel .hp-btn.hp-btn-blue{background:none;color:#7ea3c9;border:1.5px solid rgba(126,163,201,.3);}
 #olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid rgba(201,112,107,.3);}
 #olSettingsPanel #olWordCount{width:100%;padding:10px 12px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:14px;color:#1a1a1a;outline:none;font-family:inherit;}
@@ -144,7 +145,7 @@
 .ol-parallel .ol-msg-info{align-items:center !important;}
 .ol-parallel .ol-block.is-user .ol-msg-header{flex-direction:column !important;}
 .ol-parallel .ol-block.is-user .ol-msg-info{align-items:center !important;}
-.ol-parallel .ol-block .ol-frame-mid{border:none !important;border-radius:0 !important;width:100% !important;background:none !important;box-shadow:none !important;align-self:center !important;}
+.ol-parallel .ol-block .ol-frame-mid{border:none !important;border-radius:0 !important;width:calc(100% + 32px) !important; max-width:none !important; margin:0 -16px !important; background:none !important;box-shadow:none !important;align-self:center !important;}
 .ol-parallel .ol-bubble-inner{padding:8px 0;}
 .ol-parallel .ol-scatter-meta{justify-content:center;}
 
