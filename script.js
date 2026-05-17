@@ -1588,7 +1588,8 @@ App.closePanel = function() {
       
       var btns = document.createElement('div');
       btns.className = 'hp-ctrl-btns';
-      btns.innerHTML = 
+      btns.style.cssText = 'display:flex; gap:20px; align-items:center;';
+      btns.innerHTML =  
         '<button class="hp-ctrl-btn hp-btn-exp" type="button">扩大</button>' +
         '<button class="hp-ctrl-btn hp-btn-up" type="button">上移</button>' +
         '<button class="hp-ctrl-btn hp-btn-dn" type="button" style="display:none;">下降</button>';
