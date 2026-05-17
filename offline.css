@@ -2,15 +2,23 @@
 .ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
+/* 强制拖拽横条不被挤压，保持粗细 */
+#olSettingsPanel .hp-handle {
+  height: 5px !important;
+  width: 40px !important;
+  border-radius: 3px !important;
+  flex-shrink: 0 !important;
+  background: rgba(0,0,0,0.15) !important;
+}
 .hp-body::-webkit-scrollbar { display: none; }
 #olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:17px;letter-spacing:1px;margin-bottom:12px;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-upload{height:54px;font-size:15px;}
-#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;border:1px solid rgba(0,0,0,.1);font-size:15px;padding:12px 0;}
+#olSettingsPanel .hp-btn{background:#fff;color:#1a1a1a;font-size:15px;padding:12px 0;}
 #olSettingsPanel .hp-btn:active{opacity:.7;}
 #olSettingsPanel .hp-btn.hp-btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-#olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid #c9706b;}
+#olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#f5b0b0;border:1.5px solid #f5b0b0;}
 #olSettingsPanel .hp-btn.hp-btn-outline{background:#fff;color:#adcdea;border:1.5px solid #adcdea;}
 #olSettingsPanel .hp-btn.hp-btn-outline:active{background:rgba(173,205,234,0.1);}
 #olSettingsPanel #olWordCount{width:100%;padding:12px 14px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:15px;color:#1a1a1a;outline:none;font-family:inherit;}
@@ -168,7 +176,7 @@
 .ol-input-wrap{
   position:absolute;
   bottom:20px;
-  left:13px;right:13px;
+  left:0;right:0;
   z-index:9;
   display:flex;align-items:center;gap:10px;
   padding:24px 10px 14px;
