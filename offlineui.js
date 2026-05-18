@@ -136,16 +136,20 @@ var html='',floor=0;
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;floor++;var isU=msg.role==='user';
 var cc=(msg.content||'').length,tk=Math.round(cc/2),tkS=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'',ts=msg.ts?O.fmtTime(msg.ts):'';
 var raw=(msg.content||'').trim();if(!raw)return;
-var parsed=O.parseThinking(raw),text=parsed.main,thH=(!isU&&parsed.think)?O.buildThinkHtml(parsed.think):'';
+var parsed=O.parseThinking(raw),text=parsed.main,thH=(!isU&&parsed.think)?O.buildThinkHtml(parsed.think, idx):'';
 var avH=isU?uAvI:cAvI,avN=isU?App.esc((user&&(user.nickname||user.realName))||'你'):App.esc(c.name||'');
 var fmt=O.formatProse(text,OL.charId,isU);
 var pg=isU?(ap.uParaGap||8):(ap.cParaGap||8);
 var lg=isU?(ap.uLetterGap||0):(ap.cLetterGap||0);
 fmt=fmt.replace(/\n/g,'<span style="display:block;height:'+pg+'px;line-height:0;font-size:0;"></span>');
 
+/* ★ 植入珍珠开关 */
+var pearlHtml = (!isU && parsed.think) ? '<div class="ol-pearl-btn" data-idx="'+idx+'" title="点击展开/收起思维链" onclick="this.classList.toggle(\'open\'); var tb = document.getElementById(\'ol-think-\'+this.dataset.idx); if(tb) tb.classList.toggle(\'open\');"></div>' : '';
+var nameHtml = avN + pearlHtml;
+
 var sep = isU ? '<span class="ol-meta-sep" style="font-size:8px;">☽</span>' : '<span class="ol-meta-sep" style="font-size:5px;">★</span>';
 var meta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sep+'<span>'+ts+'</span>'+sep+'<span>'+tkS+'tk</span>'+sep+'<span>'+cc+'字</span></div>';
-var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+avN+'</div>'+meta+'</div></div>';
+var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex; align-items:center;">'+nameHtml+'</div>'+meta+'</div></div>';
 
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div></div>';
 });
@@ -156,7 +160,7 @@ if(OL.isStreaming&&!OL._backgroundMode){
 }
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
-buildThinkHtml:function(t){return '<details class="ol-think-block"><summary class="ol-think-summary">💭 思维过程</summary><div class="ol-think-body">'+App.esc(t)+'</div></details>';},
+buildThinkHtml:function(t, idx){return '<div class="ol-think-body" id="ol-think-'+idx+'"><span style="font-weight:700; color:#7ea3c9; font-size:12px; display:block; margin-bottom:4px; margin-top:12px; letter-spacing:1px;">💭 思考过程</span>'+App.esc(t)+'</div>';},
 fmtTime:function(ts){
   var d=new Date(ts);
   var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
