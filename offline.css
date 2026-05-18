@@ -130,8 +130,8 @@
   position:relative;
   overflow:hidden;
   max-width:100%;
-  transform: translateZ(0); /* ★ 开启硬件加速，让圆角极其丝滑 */
-  background-clip: padding-box; /* ★ 防止背景溢出圆角边缘 */
+  transform: translateZ(0); 
+  -webkit-mask-image: -webkit-radial-gradient(white, black); /* ★ 终极边缘抗锯齿魔法，完美消除切割感 */
 }
 .ol-block.is-char .ol-frame-mid{
   align-self:flex-start;
@@ -198,6 +198,7 @@
 .ol-input-wrap::before{
   content:"";position:absolute;inset:0;z-index:-1;
   background-image:var(--ol-bar-bg-img);background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
+  border-radius:inherit; /* ★ 强制图片跟随外框变圆角 */
 }
 .ol-btn-menu{
   width:44px;height:44px;display:flex;align-items:center;justify-content:center;
@@ -211,7 +212,7 @@
 .ol-input-box{
   flex:1;min-width:0;height:48px;display:flex;align-items:center;
   background:rgba(255,255,255,0.7);
-  border:1px solid var(--ol-bar-border-color);
+  border:var(--ol-bar-border-w) solid var(--ol-bar-border-color); /* ★ 跟随外框粗细 */
   border-radius:0;padding:0 10px;box-sizing:border-box;gap:8px;
   box-shadow:0 0 12px rgba(255,255,255,0.5);
 }
