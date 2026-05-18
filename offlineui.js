@@ -49,10 +49,6 @@ con.innerHTML=
 '.mm-env-card{pointer-events:auto;display:block;width:100px;height:110px;background:var(--ol-card-bg);padding:6px 6px 20px 6px;box-shadow:2px 4px 12px rgba(20,35,55,0.08),inset 0 0 0 1px rgba(0,0,0,0.02);cursor:pointer;position:absolute;box-sizing:border-box;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.3s ease,z-index 0s;} ' +
 '.mm-ec-1{left:2px;bottom:20px;transform:rotate(-6deg);z-index:1;} .mm-ec-2{left:105px;bottom:10px;transform:rotate(5deg);z-index:2;} .mm-ec-3{left:205px;bottom:20px;transform:rotate(2deg);z-index:3;} .mm-ec-4{left:305px;bottom:10px;transform:rotate(-10deg);z-index:4;} ' +
 '.mm-env-card:hover{transform:rotate(0deg) scale(1.3) translateY(-4px);box-shadow:4px 12px 24px rgba(20,35,55,0.15);z-index:20;} .mm-env-card:active{transform:rotate(0deg) scale(0.98);} .mm-env-inner{width:100%;height:100%;background:#f0f6fb;border-radius:2px;display:flex;align-items:center;justify-content:center;color:#adcdea;overflow:hidden;} .mm-env-img{width:100%;height:100%;object-fit:cover;} .mm-env-caption{position:absolute;bottom:1px;left:0;width:100%;text-align:center;font-size:10px;font-weight:700;color:var(--ol-card-text);letter-spacing:1px;} ' +
-'.ol-section-fold{margin-bottom:12px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);} ' +
-'.ol-section-fold-head{padding:14px 16px;font-size:16px;font-weight:800;color:#1a1a1a;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;} ' +
-'.ol-section-fold-body{max-height:0;overflow:hidden;padding:0 16px;transition:max-height .5s cubic-bezier(.2,.85,.2,1),padding .3s ease;} ' +
-'.ol-section-fold.open .ol-section-fold-body{max-height:8000px;padding:0 16px 16px;overflow-y:auto;} ' +
 '.ol-area-label{font-size:13px;font-weight:700;color:#999;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,0.04);}</style>' +
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
 '<div class="mm-cards-wrapper" id="olCardsWrap">' +
@@ -75,14 +71,13 @@ con.innerHTML=
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
 
 /* ===== 1. 聊天设置（毛玻璃折叠） ===== */
-'<div class="ol-section-fold open" id="olFoldChat"><div class="ol-section-fold-head">聊天设置</div><div class="ol-section-fold-body">' +
+<div class="hp-section-label">聊天设置</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:42px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
-'</div></div>' +
 
 /* ===== 2. 外观（毛玻璃折叠） ===== */
-'<div class="ol-section-fold" id="olFoldLook"><div class="ol-section-fold-head">外观</div><div class="ol-section-fold-body">' +
+'<div class="hp-section-label">外观</div>' +
 
 /* --- 整体 --- */
 '<div class="ol-area-label">整体</div>' +
@@ -127,13 +122,7 @@ fold('olFUav','用户头像',uAv)+fold('olFUbub','用户气泡',uBub)+fold('olFU
 '<div class="hp-divider"></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbCode">自定义UI</button></div>' +
 
-'</div></div>' +
-/* ===== 外观折叠结束 ===== */
-
 '<div class="hp-bottom-spacer"></div></div></div></div>';
-
-/* ★ 绑定新的毛玻璃折叠交互 */
-App.$$('.ol-section-fold-head').forEach(function(h){h.addEventListener('click',function(){h.parentElement.classList.toggle('open');});});
 
 if(App.initHalfPanelControls) App.initHalfPanelControls();
 O.applyAppearance(c.id);O.applyCustomCode(c.id);},
