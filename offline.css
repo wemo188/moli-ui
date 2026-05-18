@@ -60,7 +60,7 @@
 .ol-root{
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:17px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
   --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
-  --ol-prose-padding:14px 16px;
+  --ol-prose-padding:16px 14px;
   --ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%);--ol-bar-bg-img:none;
   --ol-bar-border-color:rgba(255,255,255,0.9); --ol-bar-icon-color:#adcdea; --ol-input-text:#adcdea; 
   --ol-input-font-size:15px;
@@ -125,7 +125,13 @@
 .ol-block.is-char .ol-scatter-meta{color:rgba(156,163,175,0.8);}
 .ol-block.is-user .ol-scatter-meta{color:rgba(126,163,201,0.8);}
 
-.ol-frame-mid{position:relative;overflow:hidden;max-width:100%;}
+.ol-frame-mid{
+  position:relative;
+  overflow:hidden;
+  max-width:100%;
+  transform: translateZ(0); /* ★ 开启硬件加速，让圆角极其丝滑 */
+  background-clip: padding-box; /* ★ 防止背景溢出圆角边缘 */
+}
 .ol-block.is-char .ol-frame-mid{
   align-self:flex-start;
   border-radius:var(--ol-c-bubble-radius);
