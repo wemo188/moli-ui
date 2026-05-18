@@ -44,7 +44,7 @@ var p1=App.LS.get('ol_photo_'+c.id+'_1')||'', p2=App.LS.get('ol_photo_'+c.id+'_2
 
 con.innerHTML=
 '<style>#olSettingsPanel .hp-btn:not(.hp-btn-primary):not(.hp-btn-danger):not(.hp-btn-outline){border:1.5px solid transparent !important;box-shadow:0 1px 4px rgba(0,0,0,0.05);} ' +
-'#olMsgs { margin-top: 80px !important; } ' +
+'#olMsgs { margin-top: 60px !important; } ' +
 '.mm-cards-wrapper{position:absolute;top:-20px;left:0;right:0;z-index:10;width:100%;max-width:410px;height:160px;margin:0 auto;font-family:inherit;pointer-events:none;} ' +
 '.mm-env-card{pointer-events:auto;display:block;width:100px;height:110px;background:var(--ol-card-bg);padding:6px 6px 20px 6px;box-shadow:2px 4px 12px rgba(20,35,55,0.08),inset 0 0 0 1px rgba(0,0,0,0.02);cursor:pointer;position:absolute;box-sizing:border-box;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.3s ease,z-index 0s;} ' +
 '.mm-ec-1{left:2px;bottom:25px;transform:rotate(-6deg);z-index:1;} .mm-ec-2{left:105px;bottom:10px;transform:rotate(5deg);z-index:2;} .mm-ec-3{left:205px;bottom:20px;transform:rotate(2deg);z-index:3;} .mm-ec-4{left:300px;bottom:10px;transform:rotate(-15deg);z-index:4;} ' +
