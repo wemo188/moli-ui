@@ -107,7 +107,7 @@ r.style.setProperty('--ol-c-bubble-border-w',ap.cBubbleBorderW+'px');r.style.set
 r.style.setProperty('--ol-c-text-size',ap.cTextSize+'px');r.style.setProperty('--ol-c-text-weight',String(ap.cTextWeight));r.style.setProperty('--ol-c-text-lh',String(ap.cTextLH));r.style.setProperty('--ol-c-text-color',ap.cTextColor);
 r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-u-av-radius',ap.uAvRadius+'%');r.style.setProperty('--ol-u-av-frame-color',ap.uAvFrameColor);r.style.setProperty('--ol-u-av-frame-w',ap.uAvFrameW+'px');r.style.setProperty('--ol-u-av-name-size',ap.uAvNameSize+'px');r.style.setProperty('--ol-u-av-show',ap.uAvShow?'flex':'none');r.style.setProperty('--ol-u-av-name-show',ap.uAvNameShow?'block':'none');
 r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
-r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor)setProperty
+r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);
 r.style.setProperty('--ol-u-text-size',(ap.uTextSize||17)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
 
 r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg);
