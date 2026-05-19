@@ -15,7 +15,7 @@ var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 var CTX_ICONS={copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'};
 
-var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',barBg:'linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
+var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',topBgColor:'transparent',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){if(r[k]!==undefined)r[k]=s[k];});return r;}
 function sAp(c,a){App.LS.set('olAp_'+c,a);}
@@ -50,11 +50,12 @@ con.innerHTML=
 '.mm-env-card:hover{transform:rotate(0deg) scale(1.3) translateY(-4px);box-shadow:4px 12px 24px rgba(20,35,55,0.15);z-index:20;} .mm-env-card:active{transform:rotate(0deg) scale(0.98);} .mm-env-inner{width:100%;height:100%;background:#f0f6fb;border-radius:2px;display:flex;align-items:center;justify-content:center;color:#adcdea;overflow:hidden;} .mm-env-img{width:100%;height:100%;object-fit:cover;} .mm-env-caption{position:absolute;bottom:1px;left:0;width:100%;text-align:center;font-size:10px;font-weight:700;color:var(--ol-card-text);letter-spacing:1px;} ' +
 '.ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);} ' +
 '#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;} ' +
-/* ★ 顶部的纯白遮罩（z-index:6 在消息之上，卡片之下） */
-'.ol-root::after{content:"";position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(to bottom, #ffffff 40%, rgba(255,255,255,0) 100%);z-index:6;pointer-events:none;} ' +
-/* ★ 底部的精确切割（margin-bottom:106px 正好贴合底栏顶部边框） */
-'.ol-msgs{margin-top:0 !important; margin-bottom:106px !important; padding-top:140px !important; padding-bottom:20px !important; mask-image:none !important; -webkit-mask-image:none !important;}</style>' +
+/* ★ 新增：顶部可自定义背景区（在卡片后面） */
+'.ol-top-bg { position:absolute; top:0; left:0; right:0; height:140px; z-index:5; pointer-events:none; background-color:var(--ol-top-bg-color); background-image:var(--ol-top-bg-image); background-size:cover; background-position:center; } ' +
+/* ★ 顶部透明渐变遮罩 + 底部一刀切 */
+'.ol-msgs{margin-top:0 !important; margin-bottom:106px !important; padding-top:140px !important; padding-bottom:20px !important; -webkit-mask-image:linear-gradient(to bottom, transparent 0px, black 30px, black 100%) !important; mask-image:linear-gradient(to bottom, transparent 0px, black 30px, black 100%) !important;}</style>' +
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
+'<div class="ol-top-bg" id="olTopBg"></div>' +
 '<div class="mm-cards-wrapper" id="olCardsWrap">' +
   '<div class="mm-env-card mm-ec-1 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p1+'" style="display:'+(p1?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p1?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT1||'银河歌颂')+'</div></div>' +
   '<div class="mm-env-card mm-ec-2 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p2+'" style="display:'+(p2?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p2?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT2||'梦想在冒险')+'</div></div>' +
@@ -95,7 +96,8 @@ con.innerHTML=
 
 /* --- 顶部区域 --- */
 '<div class="ol-area-label">顶部区域</div>' +
-'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>卡片</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
+'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>卡片</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>顶部底色</span></div></div>' +
+'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">顶部背景图</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除背景图</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
 '<div style="display:flex;gap:8px;margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olBtnUp1">传图1</button><button class="hp-btn hp-btn-outline" id="olBtnUp2">传图2</button><button class="hp-btn hp-btn-outline" id="olBtnUp3">传图3</button><button class="hp-btn hp-btn-outline" id="olBtnUp4">传图4</button></div><input type="file" id="olCardUpInput" accept="image/*" hidden>' +
 '<div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="olCardT1" class="pc-edit-input" placeholder="银河歌颂" value="'+App.escAttr(ap.cardT1)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT2" class="pc-edit-input" placeholder="梦想在冒险" value="'+App.escAttr(ap.cardT2)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div><div style="display:flex;gap:8px;margin-bottom:12px;"><input type="text" id="olCardT3" class="pc-edit-input" placeholder="星星怀抱月夜" value="'+App.escAttr(ap.cardT3)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT4" class="pc-edit-input" placeholder="明天想见你" value="'+App.escAttr(ap.cardT4)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">卡片字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
@@ -155,6 +157,10 @@ r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
 
 r.style.setProperty('--ol-card-bg', ap.cardBg || '#ffffff');
 r.style.setProperty('--ol-card-text', ap.cardTextColor || '#7ea3c9');
+
+/* ★ 顶部底色和图 */
+r.style.setProperty('--ol-top-bg-color', ap.topBgColor || 'transparent');
+r.style.setProperty('--ol-top-bg-image', ap.topBgImg ? "url('"+ap.topBgImg+"')" : 'none');
 
 var wrap=App.$('#olInputWrap');
 if(wrap){
@@ -299,6 +305,7 @@ var defCardT = ['银河歌颂', '梦想在冒险', '星星怀抱月夜', '明天
 App.safeOn('#olCardReset','click',function(){
   ap.cardBg = '#ffffff'; ap.cardTextColor = '#7ea3c9'; ap.cardFont='';
   ap.cardT1=''; ap.cardT2=''; ap.cardT3=''; ap.cardT4='';
+  ap.topBgColor='transparent'; ap.topBgImg='';
   for(var i=1;i<=4;i++){
     App.LS.remove('ol_photo_'+cid+'_'+i);
     var ipt=App.$('#olCardT'+i); if(ipt) ipt.value='';
@@ -314,9 +321,10 @@ App.safeOn('#olCardReset','click',function(){
   }
   var cfSel=App.$('#olCardFont'); if(cfSel)cfSel.value='';
   sAp(cid,ap); O.applyAppearance(cid);
-  var dbg=App.$('#olCardBg'), dtc=App.$('#olCardTextColor');
+  var dbg=App.$('#olCardBg'), dtc=App.$('#olCardTextColor'), dtbg=App.$('#olTopBgColor');
   if(dbg) dbg.style.background=ap.cardBg;
   if(dtc) dtc.style.background=ap.cardTextColor;
+  if(dtbg) dtbg.style.background=ap.topBgColor;
   App.showToast('顶部卡片已重置');
 });
 
@@ -334,18 +342,19 @@ function bindGrad(id, key, tpl) {
     }, 'ol_' + key);
   });
 }
-bindGrad('olBarBg', 'barBg', function(c){ return 'linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, '+c+' 55%, #dcf0ff 75%, #ffffff 100%)'; });
+bindGrad('olBarBg', 'barBg', function(c){ return 'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, '+c+' 55%, #e1f2ff 75%, #ffffff 100%)'; });
 
 function bc(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap[key]||'#fff';dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key]||'#fff',function(hex){dot.style.background=hex;ap[key]=hex;sr();},function(hex){dot.style.background=hex;ap[key]=hex;sAp(cid,ap);O.applyAppearance(cid);},'ol_'+key);});}
 bc('olcBubbleBg','cBubbleBg'); bc('oluBubbleBg','uBubbleBg');
 bc('olPageBg','pageBg'); bc('olInputTextColor','inputTextColor');
 bc('olBarBorderColor','barBorderColor'); bc('olBarIconColor','barIconColor');
 bc('olCardBg','cardBg'); bc('olCardTextColor','cardTextColor');
+bc('olTopBgColor','topBgColor');
 bc('olcAvFrameColor','cAvFrameColor'); bc('olcBubbleBorderColor','cBubbleBorderColor'); bc('olcTextColor','cTextColor');
 bc('oluAvFrameColor','uAvFrameColor'); bc('oluBubbleBorderColor','uBubbleBorderColor'); bc('oluTextColor','uTextColor');
 
 App.safeOn('#olBarReset','click',function(){
-  ap.barBg='linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%)';
+  ap.barBg='linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)';
   ap.barBorderColor='rgba(255,255,255,0.9)'; ap.barIconColor='#adcdea'; ap.inputTextColor='#adcdea';
   ap.barBorderW=1; ap.barRadius=0; ap.placeholder='宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚'; ap.barBgImg='';
   sAp(cid,ap); O.applyAppearance(cid);
@@ -360,6 +369,11 @@ App.safeOn('#olBarReset','click',function(){
   if(ph) ph.value=ap.placeholder;
   App.showToast('底栏已重置');
 });
+
+var topBgInp=App.$('#olTopBgInput');
+App.safeOn('#olSbTopBgBtn','click',function(){if(topBgInp)topBgInp.click();});
+if(topBgInp){topBgInp.addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(ev){var process=function(c){ap.topBgImg=c;sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部背景已更新');};if(App.cropImage)App.cropImage(ev.target.result,process);else process(ev.target.result);};reader.readAsDataURL(f);e.target.value='';});}
+App.safeOn('#olSbTopBgDel','click',function(){ap.topBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部背景已清除');});
 
 var swMap={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow','olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide','olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
 App.$$('.ol-sw-track').forEach(function(s){s.addEventListener('click',function(e){e.stopPropagation();s.classList.toggle('on');var id=s.parentElement.id,on=s.classList.contains('on');if(swMap[id]){ap[swMap[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}else save();});});
