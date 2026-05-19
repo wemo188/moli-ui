@@ -277,6 +277,7 @@ if(cardFontSel){
   cardFontSel.addEventListener('change',function(){ap.cardFont=this.value;sAp(cid,ap);O.applyAppearance(cid);});
 }
 
+var defCardT = ['银河歌颂', '梦想在冒险', '星星怀抱月夜', '明天想见你'];
 [1,2,3,4].forEach(function(i){
   var ipt = App.$('#olCardT'+i);
   if(ipt){
@@ -286,15 +287,15 @@ if(cardFontSel){
       var card=App.$('.mm-ec-'+i);
       if(card){
         var cap=card.querySelector('.mm-env-caption');
-        if(cap) cap.textContent=this.value;
+        if(cap) cap.textContent = this.value || defCardT[i-1];
       }
     });
   }
 });
 
-App.safeOn('#olCardReset','click',function(){
-  ap.cardBg = '#ffffff'; ap.cardTextColor = '#7ea3c9'; ap.cardFont='';
-  ap.cardT1=''; ap.cardT2=''; ap.cardT3=''; ap.cardT4='';
+App.safeOn('#olStyleReset','click',function(){
+  App.LS.remove('olAp_'+cid);
+  ap=JSON.parse(JSON.stringify(DEF_AP));
   for(var i=1;i<=4;i++){
     App.LS.remove('ol_photo_'+cid+'_'+i);
     var ipt=App.$('#olCardT'+i); if(ipt) ipt.value='';
@@ -305,81 +306,14 @@ App.safeOn('#olCardReset','click',function(){
       var cap=card.querySelector('.mm-env-caption');
       if(img){img.src='';img.style.display='none';}
       if(pl)pl.style.display='flex';
-      if(cap)cap.textContent='';
+      if(cap)cap.textContent=['银河歌颂','梦想在冒险','星星怀抱月夜','明天想见你'][i-1];
     }
   }
-  var cfSel=App.$('#olCardFont'); if(cfSel)cfSel.value='';
-  sAp(cid,ap); O.applyAppearance(cid);
-  var dbg=App.$('#olCardBg'), dtc=App.$('#olCardTextColor');
-  if(dbg) dbg.style.background=ap.cardBg;
-  if(dtc) dtc.style.background=ap.cardTextColor;
-  App.showToast('顶部卡片已重置');
+  App.LS.remove('olBg_'+cid);
+  sAp(cid,ap); O.applyAppearance(cid); O._noScroll=true; O.renderMessages();
+  App.showToast('已重置所有外观');
 });
 
-function bindGrad(id, key, tpl) {
-  var dot = App.$('#'+id); if(!dot) return;
-  dot.style.background = ap[key] || '#fff';
-  dot.addEventListener('click', function(e) {
-    e.stopPropagation(); if(!App.openColorPicker) return;
-    App.openColorPicker(ap[key] || '#fff', function(hex) {
-      var c = hex; if(hex.indexOf('gradient') === -1 && hex.indexOf('#') === 0) c = tpl(hex);
-      dot.style.background = c; ap[key] = c; sr();
-    }, function(hex) {
-      var c = hex; if(hex.indexOf('gradient') === -1 && hex.indexOf('#') === 0) c = tpl(hex);
-      dot.style.background = c; ap[key] = c; sAp(cid, ap); O.applyAppearance(cid);
-    }, 'ol_' + key);
-  });
-}
-bindGrad('olBarBg', 'barBg', function(c){ return 'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, '+c+' 55%, #e1f2ff 75%, #ffffff 100%)'; });
-bc('olcBubbleBg','cBubbleBg');
-bc('oluBubbleBg','uBubbleBg');
-
-App.safeOn('#olBarReset','click',function(){
-  ap.barBg='linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)';
-  ap.barBorderColor='rgba(255,255,255,0.9)'; ap.barIconColor='#adcdea'; ap.inputTextColor='#adcdea';
-  ap.barBorderW=1; ap.barRadius=0; ap.placeholder='宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚'; ap.barBgImg='';
-  sAp(cid,ap); O.applyAppearance(cid);
-  var dbg=App.$('#olBarBg'), dbc=App.$('#olBarBorderColor'), dic=App.$('#olBarIconColor'), dit=App.$('#olInputTextColor');
-  if(dbg) dbg.style.background=ap.barBg;
-  if(dbc) dbc.style.background=ap.barBorderColor;
-  if(dic) dic.style.background=ap.barIconColor;
-  if(dit) dit.style.background=ap.inputTextColor;
-  var sw=App.$('#olBarBorderW'), sv=App.$('#olBarBorderWVal'), sr=App.$('#olBarRadius'), srv=App.$('#olBarRadiusVal'), ph=App.$('#olPlaceholderInput');
-  if(sw){sw.value=1;sv.textContent='1px';}
-  if(sr){sr.value=0;srv.textContent='0px';}
-  if(ph) ph.value=ap.placeholder;
-  App.showToast('底栏已重置');
-});
-
-var swMap={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow','olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide','olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
-App.$$('.ol-sw-track').forEach(function(s){s.addEventListener('click',function(e){e.stopPropagation();s.classList.toggle('on');var id=s.parentElement.id,on=s.classList.contains('on');if(swMap[id]){ap[swMap[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}else save();});});
-var sls=[{id:'olBgBlur',k:'bgBlur',u:'%'},{id:'olBgDark',k:'bgDark',u:'%'},{id:'olBarBorderW',k:'barBorderW',u:'px'},{id:'olBarRadius',k:'barRadius',u:'px'},{id:'olcAvSize',k:'cAvSize',u:'px'},{id:'olcAvRadius',k:'cAvRadius',u:'%'},{id:'olcAvFrameW',k:'cAvFrameW',u:'px'},{id:'olcAvNameSize',k:'cAvNameSize',u:'px'},{id:'olcBubbleRadius',k:'cBubbleRadius',u:'px'},{id:'olcBubbleBorderW',k:'cBubbleBorderW',u:'px'},{id:'olcBubbleWidth',k:'cBubbleWidth',u:'%'},{id:'olcBubbleOpacity',k:'cBubbleOpacity',u:'%'},{id:'olcBubbleBlur',k:'cBubbleBlur',u:'px'},{id:'olcTextSize',k:'cTextSize',u:'px'},{id:'olcTextWeight',k:'cTextWeight',u:''},{id:'olcTextLH',k:'cTextLH',u:''},{id:'olcParaGap',k:'cParaGap',u:'px'},{id:'olcLetterGap',k:'cLetterGap',u:'px'},{id:'oluAvSize',k:'uAvSize',u:'px'},{id:'oluAvRadius',k:'uAvRadius',u:'%'},{id:'oluAvFrameW',k:'uAvFrameW',u:'px'},{id:'oluAvNameSize',k:'uAvNameSize',u:'px'},{id:'oluBubbleRadius',k:'uBubbleRadius',u:'px'},{id:'oluBubbleBorderW',k:'uBubbleBorderW',u:'px'},{id:'oluBubbleWidth',k:'uBubbleWidth',u:'%'},{id:'oluBubbleOpacity',k:'uBubbleOpacity',u:'%'},{id:'oluBubbleBlur',k:'uBubbleBlur',u:'px'},{id:'oluTextSize',k:'uTextSize',u:'px'},{id:'oluTextWeight',k:'uTextWeight',u:''},{id:'oluTextLH',k:'uTextLH',u:''},{id:'oluParaGap',k:'uParaGap',u:'px'},{id:'oluLetterGap',k:'uLetterGap',u:'px'}];
-sls.forEach(function(s){var sl=App.$('#'+s.id),val=App.$('#'+s.id+'Val');if(!sl||!val)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);val.textContent=v+s.u;ap[s.k]=v;sr();});});
-App.$$('[data-fk]').forEach(function(el){var k=el.dataset.fk;if(el.tagName==='INPUT'&&el.type==='range'){var vl=App.$('#ol'+k+'Val');el.addEventListener('input',function(){var v=parseFloat(this.value);if(vl)vl.textContent=v+(k.indexOf('Weight')>=0?'':'px');ap[k]=v;sr();});}if(el.classList.contains('hp-color-dot')){el.style.background=ap[k];el.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[k],function(hex){el.style.background=hex;ap[k]=hex;sr();},function(hex){el.style.background=hex;ap[k]=hex;sAp(cid,ap);O._noScroll=true;O.renderMessages();},'ol_'+k);});}});
-function bc(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap[key]||'#fff';dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key]||'#fff',function(hex){dot.style.background=hex;ap[key]=hex;sr();},function(hex){dot.style.background=hex;ap[key]=hex;sAp(cid,ap);O.applyAppearance(cid);},'ol_'+key);});}
-bc('olPageBg','pageBg');bc('olInputTextColor','inputTextColor');
-bc('olBarBorderColor','barBorderColor');
-bc('olBarIconColor','barIconColor');
-bc('olCardBg','cardBg');bc('olCardTextColor','cardTextColor');
-bc('olcAvFrameColor','cAvFrameColor');bc('olcBubbleBorderColor','cBubbleBorderColor');bc('olcTextColor','cTextColor');
-bc('oluAvFrameColor','uAvFrameColor');bc('oluBubbleBorderColor','uBubbleBorderColor');bc('oluTextColor','uTextColor');
-
-App.$$('.ol-povu-btn').forEach(function(b){if(b.dataset.pov===ap.povUser)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-povu-btn')),b);ap.povUser=b.dataset.pov;save();});});
-App.$$('.ol-povc-btn').forEach(function(b){if(b.dataset.pov===ap.povChar)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-povc-btn')),b);ap.povChar=b.dataset.pov;save();});});
-var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){ap.wordCount=parseInt(this.value)||0;save();});
-var cfSel=App.$('#olChatFont');
-if(cfSel){var cfOpts='<option value="">跟随全局</option>';var BT=[{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];BT.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.name)+'</option>';});var cl=App.LS.get('fontCustomList')||[];cl.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});cfSel.innerHTML=cfOpts;cfSel.addEventListener('change',function(){ap.chatFont=this.value;sr();});}
-App.$$('.ol-mode-btn').forEach(function(b){if(b.dataset.mode===ap.mode)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-mode-btn')),b);ap.mode=b.dataset.mode;sr();});});
-function bmt(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){t.classList.toggle('active');ap[k]=[];App.$$(cls+'.active').forEach(function(x){ap[k].push(x.dataset.val);});sr();});});}
-bmt('.ol-cQuote-qrec','cQuoteRec');bmt('.ol-cParen-prec','cParenRec');bmt('.ol-quote-qrec','quoteRec');bmt('.ol-paren-prec','parenRec');
-function bst(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){App.$$(cls).forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[k]=t.dataset.val;sr();});});}
-bst('.ol-cQuote-qdis','cQuoteDis');bst('.ol-cParen-pdis','cParenDis');bst('.ol-quote-qdis','quoteDis');bst('.ol-paren-pdis','parenDis');
-['cQuote','cParen','cStar','quote','paren','star'].forEach(function(p){App.$$('.ol-'+p+'-style').forEach(function(t){t.addEventListener('click',function(){App.$$('.ol-'+p+'-style').forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[p+'Italic']=t.dataset.val==='italic';sr();});});});
-
-App.safeOn('#olSbScene','click',function(){O.showSceneDialog();});
-App.safeOn('#olSbBg','click',function(){O.showBgMenu();});
-App.safeOn('#olSbCode','click',function(){O._closePanel();O.openCodeEditor();});
-App.safeOn('#olStyleReset','click',function(){App.LS.remove('olAp_'+cid);ap=JSON.parse(JSON.stringify(DEF_AP));sAp(cid,ap);O.applyAppearance(cid);O._noScroll=true;O.renderMessages();App.showToast('已重置');});
 var barBgInp=App.$('#olBarBgInput');
 App.safeOn('#olSbBarBgBtn','click',function(){if(barBgInp)barBgInp.click();});
 if(barBgInp){barBgInp.addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(ev){var process=function(c){ap.barBgImg=c;sAp(cid,ap);O.applyAppearance(cid);App.showToast('底栏图已更新');};if(App.cropImage)App.cropImage(ev.target.result,process);else process(ev.target.result);};reader.readAsDataURL(f);e.target.value='';});}
