@@ -75,31 +75,31 @@ con.innerHTML=
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
 
 /* ===== 1. 聊天设置 ===== */
-'<div class="hp-section-label">★ 聊天设置 ★</div>' +
+'<div class="hp-section-label">聊天设置</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:48px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
 
 /* ===== 2. 美化渲染 ===== */
-'<div class="hp-section-label" style="margin-top:36px;">★ 美化渲染 ★</div>' +
+'<div class="hp-section-label" style="margin-top:36px;">美化渲染</div>' +
 
 /* --- 整体 --- */
-'<div class="ol-area-label">整体</div>' +
+'<div class="ol-area-label">全局</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olPageBg"></div><span>页面背景</span></div></div>' +
 '<div class="hp-upload" id="olSbBg"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>上传背景</div>' +
 '<div class="hp-slider-row"><span class="hp-slider-label">白色遮罩</span><input type="range" id="olBgBlur" min="0" max="100" value="'+ap.bgBlur+'"><span class="hp-slider-val" id="olBgBlurVal">'+ap.bgBlur+'%</span></div>' +
 '<div class="hp-slider-row"><span class="hp-slider-label">暗度视觉</span><input type="range" id="olBgDark" min="0" max="80" value="'+ap.bgDark+'"><span class="hp-slider-val" id="olBgDarkVal">'+ap.bgDark+'%</span></div>' +
-'<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">字体选择</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
+'<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">正文字体</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏沉浸</button></div>' +
 
 /* --- 顶部区域 --- */
 '<div class="ol-area-label">顶部区域</div>' +
-'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>顶部底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>卡片</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
-'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">顶部图填充</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
-'<div style="display:flex;gap:8px;margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olBtnUp1">传图1</button><button class="hp-btn hp-btn-outline" id="olBtnUp2">传图2</button><button class="hp-btn hp-btn-outline" id="olBtnUp3">传图3</button><button class="hp-btn hp-btn-outline" id="olBtnUp4">传图4</button></div><input type="file" id="olCardUpInput" accept="image/*" hidden>' +
+'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>册卡</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
+'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">填充顶部图片</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图片</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
+'<div style="display:flex;gap:8px;margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olBtnUp1">图1</button><button class="hp-btn hp-btn-outline" id="olBtnUp2">图2</button><button class="hp-btn hp-btn-outline" id="olBtnUp3">图3</button><button class="hp-btn hp-btn-outline" id="olBtnUp4">图4</button></div><input type="file" id="olCardUpInput" accept="image/*" hidden>' +
 '<div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="olCardT1" class="pc-edit-input" placeholder="银河歌颂" value="'+App.escAttr(ap.cardT1)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT2" class="pc-edit-input" placeholder="梦想在冒险" value="'+App.escAttr(ap.cardT2)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div><div style="display:flex;gap:8px;margin-bottom:12px;"><input type="text" id="olCardT3" class="pc-edit-input" placeholder="星星怀抱月夜" value="'+App.escAttr(ap.cardT3)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT4" class="pc-edit-input" placeholder="明天想见你" value="'+App.escAttr(ap.cardT4)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div>' +
-'<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">卡片字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
-'<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olCardReset">恢复默认</button></div>' +
+'<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">册卡字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
+'<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olCardReset">恢复顶部默认</button></div>' +
 
 /* --- 底部区域 --- */
 '<div class="ol-area-label">底部区域</div>' +
@@ -107,8 +107,8 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">边框粗细</span><input type="range" id="olBarBorderW" min="0" max="5" step="0.5" value="'+ap.barBorderW+'"><span class="hp-slider-val" id="olBarBorderWVal">'+ap.barBorderW+'px</span></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">圆角</span><input type="range" id="olBarRadius" min="0" max="30" value="'+ap.barRadius+'"><span class="hp-slider-val" id="olBarRadiusVal">'+ap.barRadius+'px</span></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">装饰文字</span><input type="text" id="olPlaceholderInput" class="pc-edit-input" value="'+App.escAttr(ap.placeholder||'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚')+'" style="flex:1; height:48px; padding:0 12px; box-sizing:border-box; border:1.5px solid #adcdea; border-radius:8px; font-size:14px; color:#1a1a1a; background-color:#fff; outline:none; font-family:inherit;"></div>' +
-'<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbBarBgBtn">底栏图填充</button><button class="hp-btn hp-btn-danger" id="olSbBarBgDel">清除底栏图</button></div><input type="file" id="olBarBgInput" accept="image/*" hidden>' +
-'<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olBarReset">恢复默认</button></div>' +
+'<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbBarBgBtn">填充底栏图片</button><button class="hp-btn hp-btn-danger" id="olSbBarBgDel">清除底栏图片</button></div><input type="file" id="olBarBgInput" accept="image/*" hidden>' +
+'<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olBarReset">恢复底部默认</button></div>' +
 
 /* --- 角色板块 --- */
 '<div class="ol-area-label">角色板块</div>' +
@@ -142,7 +142,7 @@ r.style.setProperty('--ol-c-text-size',ap.cTextSize+'px');r.style.setProperty('-
 r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-u-av-radius',ap.uAvRadius+'%');r.style.setProperty('--ol-u-av-frame-color',ap.uAvFrameColor);r.style.setProperty('--ol-u-av-frame-w',ap.uAvFrameW+'px');r.style.setProperty('--ol-u-av-name-size',ap.uAvNameSize+'px');r.style.setProperty('--ol-u-av-show',ap.uAvShow?'flex':'none');r.style.setProperty('--ol-u-av-name-show',ap.uAvNameShow?'block':'none');
 r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
 r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);
-r.style.setProperty('--ol-u-text-size',(ap.uTextSize||17)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
+r.style.setProperty('--ol-u-text-size',(ap.uTextSize||16)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
 
 r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg);
 r.style.setProperty('--ol-c-bubble-opacity',(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100);
