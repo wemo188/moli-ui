@@ -315,3 +315,22 @@
 /* ★ 编辑面板放大 */
 .pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
 .pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
+
+/* ★ 从 JS 剥离出来的顶部渐变遮罩 */
+.ol-root::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(to bottom, var(--ol-bg-color) 40%, rgba(255,255,255,0) 100%);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ★ 从 JS 剥离出来的按钮基础样式 */
+#olSettingsPanel .hp-btn:not(.hp-btn-primary):not(.hp-btn-danger):not(.hp-btn-outline) {
+  border: 1.5px solid transparent !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
