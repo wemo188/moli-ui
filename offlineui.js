@@ -51,8 +51,13 @@ con.innerHTML=
 '.ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);} ' +
 '#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;} ' +
 '.ol-top-bg{position:absolute;top:0;left:0;right:0;height:70px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:center;pointer-events:none;} ' +
-'.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, transparent 0px, transparent 50px, rgba(0,0,0,0.2) 65px, black 85px, black 100%) !important;mask-image:linear-gradient(to bottom, transparent 0px, transparent 50px, rgba(0,0,0,0.2) 65px, black 85px, black 100%) !important;} ' +
+
+/* ★ 修复1：极度柔和的顶部边缘羽化渐变 */
+'.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;} ' +
 '.ol-msgs::-webkit-scrollbar{display:none;} ' +
+
+/* ★ 修复3：彻底解除对毛玻璃的封印 */
+'.ol-frame-mid{position:relative;max-width:100%;border-radius:inherit;} ' +
 
 /* ★ 气泡外部底部的纯文字操作栏 & 平行宇宙切换 */
 '.ol-msg-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; opacity:0.3; transition:opacity 0.2s; align-items:center; } ' +
@@ -61,13 +66,12 @@ con.innerHTML=
 '.ol-block:hover .ol-msg-actions { opacity:1; } ' +
 '.ol-action-btn { background:none; border:none; padding:4px 6px; font-size:12px; font-weight:700; color:var(--ol-meta-color); cursor:pointer; font-family:inherit; -webkit-tap-highlight-color:transparent; transition:color 0.2s; } ' +
 '.ol-action-btn:active { color:var(--ol-text-color); } ' +
-'.ol-swipe-nav { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--ol-meta-color); margin-right:auto; } ' +
-'.ol-block.is-user .ol-swipe-nav { margin-right:0; margin-left:auto; } ' +
+'.ol-swipe-nav { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--ol-meta-color); } ' +
 '.ol-swipe-btn { background:none; border:none; color:inherit; cursor:pointer; font-weight:900; padding:4px 8px; font-family:inherit; transition:transform 0.2s; } ' +
 '.ol-swipe-btn:active { transform:scale(0.85); } ' +
 '.ol-swipe-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; } ' +
 
-/* ★ 悬浮导航电梯 (滑动呼出) */
+/* ★ 悬浮导航电梯 */
 '.ol-nav-fab { position:fixed; right:-60px; bottom:160px; z-index:90; display:flex; flex-direction:column; gap:10px; transition:right 0.3s cubic-bezier(0.34,1.56,0.64,1); } ' +
 '.ol-nav-fab.show { right:12px; } ' +
 '.ol-nav-btn { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.85); border:1.5px solid rgba(173,205,234,0.5); box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#7ea3c9; backdrop-filter:blur(4px); -webkit-tap-highlight-color:transparent; } ' +
@@ -257,13 +261,6 @@ var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div cl
 
 /* ★ 气泡外部底部的纯文字操作栏 & 平行宇宙切换 */
 var actHtml = '<div class="ol-msg-actions" data-idx="'+idx+'">';
-if(msg.swipes && msg.swipes.length > 1) {
-  actHtml += '<div class="ol-swipe-nav">';
-  actHtml += '<button class="ol-swipe-btn" data-act="swipe-prev" '+(msg.swipeIdx===0?'disabled':'')+'>&lt;</button>';
-  actHtml += '<span>'+(msg.swipeIdx+1)+' / '+msg.swipes.length+'</span>';
-  actHtml += '<button class="ol-swipe-btn" data-act="swipe-next" '+(msg.swipeIdx===msg.swipes.length-1?'disabled':'')+'>&gt;</button>';
-  actHtml += '</div>';
-}
 actHtml += '<button class="ol-action-btn" data-act="copy">复制</button>';
 actHtml += '<button class="ol-action-btn" data-act="edit">编辑</button>';
 if(!isU) {
@@ -271,6 +268,15 @@ if(!isU) {
   actHtml += '<button class="ol-action-btn" data-act="continue">续写</button>';
 }
 actHtml += '<button class="ol-action-btn" data-act="rewind" style="color:#c9706b;">回溯</button>';
+
+/* ★ 修复4：版本号排在最后 */
+if(msg.swipes && msg.swipes.length > 1) {
+  actHtml += '<div class="ol-swipe-nav" style="margin-left:8px;">';
+  actHtml += '<button class="ol-swipe-btn" data-act="swipe-prev" '+(msg.swipeIdx===0?'disabled':'')+'>&lt;</button>';
+  actHtml += '<span>'+(msg.swipeIdx+1)+' / '+msg.swipes.length+'</span>';
+  actHtml += '<button class="ol-swipe-btn" data-act="swipe-next" '+(msg.swipeIdx===msg.swipes.length-1?'disabled':'')+'>&gt;</button>';
+  actHtml += '</div>';
+}
 actHtml += '</div>';
 
 /* ★ actHtml 放在 frame-mid 下方 */
@@ -473,7 +479,7 @@ bst('.ol-cQuote-qdis','cQuoteDis');bst('.ol-cParen-pdis','cParenDis');bst('.ol-q
 App.safeOn('#olSbScene','click',function(){O.showSceneDialog();});
 App.safeOn('#olSbCode','click',function(){O._closePanel();O.openCodeEditor();});
 
-/* ★ 修复：背景图片直观上传，并保证 input 在 DOM 中 */
+/* ★ 修复：背景图片直接绑 input */
 var bgInp = App.$('#olBgFileInput');
 App.safeOn('#olSbBg', 'click', function(){ if(bgInp) bgInp.click(); });
 if(bgInp) {
@@ -527,7 +533,6 @@ App.safeOn('#olStyleReset','click',function(){
   App.showToast('已重置全部渲染');
 });
 
-/* ★ 获取屏幕中间的气泡用于定位 */
 var getActiveBubble = function() {
   var mc = App.$('#olMsgs');
   if(!mc) return null;
@@ -544,7 +549,6 @@ var getActiveBubble = function() {
   return active;
 };
 
-/* ★ 导航电梯点击逻辑 */
 App.safeOn('#olNavTop', 'click', function(){ var mc = App.$('#olMsgs'); if(mc) mc.scrollTo({top:0, behavior:'smooth'}); });
 App.safeOn('#olNavBot', 'click', function(){ var mc = App.$('#olMsgs'); if(mc) mc.scrollTo({top:mc.scrollHeight, behavior:'smooth'}); });
 App.safeOn('#olNavBubTop', 'click', function(){
@@ -556,24 +560,28 @@ App.safeOn('#olNavBubBot', 'click', function(){
   if(b && mc) mc.scrollTo({top: b.offsetTop + b.offsetHeight - mc.clientHeight + 20, behavior:'smooth'});
 });
 
-/* ★ 监听滚动：向上滑动呼出导航，向下滑动或不动时隐藏 */
+/* ★ 修复2：滑动方向物理判断，往上滑(Y减小)出现，往下滑(Y增大)隐藏 */
 var mc=App.$('#olMsgs');
 if(mc){
-  var lastSt = mc.scrollTop;
   var navTimer = null;
-  mc.addEventListener('scroll', function(){
-    var st = mc.scrollTop;
+  var startY = 0;
+  mc.addEventListener('touchstart', function(e){
+    startY = e.touches[0].clientY;
+  }, {passive: true});
+  mc.addEventListener('touchmove', function(e){
+    var currentY = e.touches[0].clientY;
     var nav = App.$('#olNavFab');
     if(nav) {
-      if(st > lastSt + 5) { 
+      if (startY - currentY > 15) { 
         nav.classList.add('show');
         clearTimeout(navTimer);
         navTimer = setTimeout(function(){ nav.classList.remove('show'); }, 3000);
-      } else if (st < lastSt - 5) { 
+        startY = currentY;
+      } else if (currentY - startY > 15) { 
         nav.classList.remove('show');
+        startY = currentY;
       }
     }
-    lastSt = st;
   }, {passive: true});
 }
 
@@ -636,4 +644,3 @@ applyCustomCode:function(cid){var oldS=document.getElementById('olCustomStyle');
 init:function(){App.offlineUI=O;}};
 App.register('offlineUI',O);
 })();
-
