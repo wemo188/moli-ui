@@ -13,7 +13,6 @@ var MENU_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="14" y1="50" x2="46"
 var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="13" stroke="currentColor" stroke-width="3" fill="none"/><path d="M 26 24 A 8 8 0 0 0 26 40" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M 16 42 C 26 54, 52 46, 56 28" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M 56 28 C 58 16, 44 10, 32 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 4" fill="none"/><circle cx="16" cy="42" r="3" fill="currentColor"/><path d="M 32 7 L 33.5 10.5 L 38 12 L 33.5 13.5 L 32 18 L 30.5 13.5 L 26 12 L 30.5 10.5 Z" fill="currentColor"/><path d="M 12 14 L 13 17 L 16 18 L 13 19 L 12 22 L 11 19 L 8 18 L 11 17 Z" fill="currentColor"/><circle cx="48" cy="48" r="1.5" fill="currentColor"/></svg>';
 var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="currentColor"/><rect x="7" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="51" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="12" y="14" width="40" height="32" rx="8" fill="currentColor"/><line x1="26" y1="27" x2="26" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
-var CTX_ICONS={copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'};
 
 var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',topBgColor:'fff',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
@@ -52,7 +51,17 @@ con.innerHTML=
 '#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;} ' +
 '.ol-top-bg{position:absolute;top:0;left:0;right:0;height:70px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:center;pointer-events:none;} ' +
 '.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, transparent 0px, transparent 70px, black 75px, black 100%) !important;mask-image:linear-gradient(to bottom, transparent 0px, transparent 60px, black 75px, black 100%) !important;} ' +
-'.ol-msgs::-webkit-scrollbar{display:none;}</style>' +
+'.ol-msgs::-webkit-scrollbar{display:none;} ' +
+'.ol-msg-actions{display:flex;gap:16px;padding:6px 4px 0;font-size:12px;font-weight:700;opacity:0.85;} ' +
+'.is-user .ol-msg-actions{justify-content:flex-end;color:var(--ol-u-av-frame-color);} ' +
+'.is-char .ol-msg-actions{justify-content:flex-start;color:var(--ol-c-av-frame-color);} ' +
+'.ol-act{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity 0.2s;} ' +
+'.ol-act:active{opacity:0.5;} ' +
+'.ol-scroll-nav{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.9);padding:10px 6px;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1);opacity:1;transition:opacity 0.3s;pointer-events:auto;} ' +
+'.ol-scroll-nav.hidden{opacity:0;pointer-events:none;} ' +
+'.ol-nav-btn{width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#adcdea;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.06);-webkit-tap-highlight-color:transparent;} ' +
+'.ol-nav-btn:active{background:#f0f6fb;} ' +
+'.ol-nav-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}</style>' +
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
 '<div class="ol-top-bg"></div>' +
 '<div class="mm-cards-wrapper" id="olCardsWrap">' +
@@ -61,7 +70,14 @@ con.innerHTML=
   '<div class="mm-env-card mm-ec-3 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p3+'" style="display:'+(p3?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p3?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT3||'星星怀抱月夜')+'</div></div>' +
   '<div class="mm-env-card mm-ec-4 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p4+'" style="display:'+(p4?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p4?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT4||'明天想见你')+'</div></div>' +
 '</div><div id="olName" style="display:none;">'+App.esc(dn)+'</div>' +
-'<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
+'<div class="ol-msgs" id="olMsgs"></div>' +
+'<div id="olScrollNav" class="ol-scroll-nav hidden">' +
+  '<div class="ol-nav-btn" data-nav="top"><svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></div>' +
+  '<div class="ol-nav-btn" data-nav="bub-up"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>' +
+  '<div class="ol-nav-btn" data-nav="bub-dn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>' +
+  '<div class="ol-nav-btn" data-nav="bottom"><svg viewBox="0 0 24 24"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></div>' +
+'</div>' +
+'<div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
 '<div class="ol-input-wrap" id="olInputWrap">' +
   '<button class="ol-btn-menu" id="olPanelBtn" type="button">'+MENU_SVG+'</button>' +
   '<div class="ol-input-box" id="olInputBox">' +
@@ -75,13 +91,13 @@ con.innerHTML=
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
 
 /* ===== 1. 聊天设置 ===== */
-'<div class="hp-section-label">聊天设置</div>' +
+'<div class="hp-section-label">★ 聊天设置 ★</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:48px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
 
 /* ===== 2. 美化渲染 ===== */
-'<div class="hp-section-label" style="margin-top:36px;">美化渲染</div>' +
+'<div class="hp-section-label" style="margin-top:36px;">★ 美化渲染 ★</div>' +
 
 /* --- 整体 --- */
 '<div class="ol-area-label">全局</div>' +
@@ -205,7 +221,9 @@ var sep = isU ? '<span class="ol-meta-sep" style="font-size:8px;">☽</span>' : 
 var meta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sep+'<span>'+ts+'</span>'+sep+'<span>'+tkS+'tk</span>'+sep+'<span>'+cc+'字</span></div>';
 var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex; align-items:center;">'+nameHtml+'</div>'+meta+'</div></div>';
 
-html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div></div>';
+var actionHtml = '<div class="ol-msg-actions" data-idx="'+idx+'"><span class="ol-act" data-act="copy">复制</span><span class="ol-act" data-act="edit">编辑</span><span class="ol-act" data-act="del">删除</span>'+(!isU?'<span class="ol-act" data-act="regen">续写</span>':'')+'<span class="ol-act" data-act="delafter">回溯</span></div>';
+
+html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>' + actionHtml + '</div>';
 });
 
 if(OL.isStreaming&&!OL._backgroundMode){
@@ -409,7 +427,6 @@ App.safeOn('#olStyleReset','click',function(){
     }
   }
   App.LS.remove('olBg_'+cid);
-  /* ★ 核心修复：把屏幕上残留的背景图也扯下来 */
   var bgEl=App.$('#olBg');
   if(bgEl){bgEl.style.backgroundImage='';bgEl.style.filter='';}
   
@@ -426,26 +443,68 @@ App.safeOn('#olSbBarBgDel','click',function(){ap.barBgImg='';sAp(cid,ap);O.apply
 
 var mc=App.$('#olMsgs');
 if(mc){
-  var lt=null,lT=null,mv=false;
-  mc.addEventListener('touchstart',function(e){
-    var b=e.target.closest('.ol-block');if(!b)return;
-    var isT=false;var txt=e.target.closest('.ol-bubble-text');
-    if(txt){isT=true;if(e.target.tagName==='SPAN'&&e.target.style.display==='block'&&e.target.style.height)isT=false;}
-    if(isT)return;
-    mv=false;var t=e.touches[0];lT={el:b,x:t.clientX,y:t.clientY};
-    lt=setTimeout(function(){if(lT&&!mv){if(navigator.vibrate)navigator.vibrate(15);O.showCtxMenu(lT.el,lT.x,lT.y);}},500);
-  },{passive:true});
-  mc.addEventListener('touchmove',function(e){
-    if(lt){var t=e.touches[0];if(lT&&(Math.abs(t.clientX-lT.x)>8||Math.abs(t.clientY-lT.y)>8)){mv=true;clearTimeout(lt);lT=null;}}
-  },{passive:true});
-  mc.addEventListener('touchend',function(){clearTimeout(lt);lT=null;},{passive:true});
+  /* ★ 气泡底部按钮点击事件 */
+  mc.addEventListener('click', function(e){
+    var actEl = e.target.closest('.ol-act');
+    if(!actEl) return;
+    var p = actEl.closest('.ol-msg-actions');
+    if(!p) return;
+    var idx = parseInt(p.dataset.idx);
+    var act = actEl.dataset.act;
+    var msg = OL.messages[idx];
+    if(!msg) return;
+    
+    if(act==='copy') { App.copyText(msg.content).then(function(){App.showToast('已复制');}); }
+    else if(act==='edit') { O.showEditDialog(idx); }
+    else if(act==='del') { OL.messages.splice(idx,1); OL.saveMsgs(); O.renderMessages(); }
+    else if(act==='delafter') { if(!confirm('删除此条及之后？'))return; OL.messages.splice(idx); OL.saveMsgs(); O.renderMessages(); }
+    else if(act==='regen') { OL.messages.splice(idx); OL.saveMsgs(); O.renderMessages(); OL.requestAI(); }
+  });
+
+  /* ★ 滑动显示右侧导航箭头 */
+  var nav = App.$('#olScrollNav');
+  var scrollTimer = null;
+  mc.addEventListener('scroll', function(){
+    if(nav){
+      nav.classList.remove('hidden');
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){ nav.classList.add('hidden'); }, 1500);
+    }
+  }, {passive:true});
 }
 
-if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}},
-showCtxMenu:function(el,x,y){var OL=App.offline;if(!OL)return;OL.dismissCtx();var idx=parseInt(el.dataset.msgIdx);if(isNaN(idx))return;var msg=OL.messages[idx];if(!msg)return;var isU=msg.role==='user';var menu=document.createElement('div');menu.className='ol-ctx';var it='';it+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';it+='<div class="ol-ctx-item" data-act="edit">'+CTX_ICONS.edit+'<span>编辑</span></div>';if(!isU)it+='<div class="ol-ctx-item" data-act="regen">'+CTX_ICONS.regen+'<span>重写</span></div>';it+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';it+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>全删</span></div>';menu.innerHTML=it;var left=Math.max(8,Math.min(x-110,window.innerWidth-230)),top=y-80;if(top<60)top=y+10;menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);OL._ctxMenu=menu;menu.querySelectorAll('.ol-ctx-item').forEach(function(item){item.addEventListener('click',function(e){e.stopPropagation();var act=item.dataset.act;OL.dismissCtx();if(act==='copy')App.copyText(msg.content).then(function(){App.showToast('已复制');});else if(act==='edit')O.showEditDialog(idx);else if(act==='del'){OL.messages.splice(idx,1);OL.saveMsgs();O.renderMessages();}else if(act==='delafter'){if(!confirm('删除此条及之后？'))return;OL.messages.splice(idx);OL.saveMsgs();O.renderMessages();}else if(act==='regen'){OL.messages.splice(idx);OL.saveMsgs();O.renderMessages();OL.requestAI();}});});},
+var nav = App.$('#olScrollNav');
+if(nav){
+  nav.addEventListener('click', function(e){
+    var btn = e.target.closest('.ol-nav-btn');
+    if(!btn) return;
+    var type = btn.dataset.nav;
+    if(type==='top') { mc.scrollTo({top:0, behavior:'smooth'}); }
+    else if(type==='bottom') { mc.scrollTo({top:mc.scrollHeight, behavior:'smooth'}); }
+    else if(type==='bub-up' || type==='bub-dn') {
+      var blocks = Array.from(mc.querySelectorAll('.ol-block'));
+      if(!blocks.length) return;
+      var mid = mc.clientHeight / 2;
+      var target = blocks[0];
+      for(var i=0; i<blocks.length; i++) {
+        var rect = blocks[i].getBoundingClientRect();
+        var mcRect = mc.getBoundingClientRect();
+        var relTop = rect.top - mcRect.top;
+        var relBottom = rect.bottom - mcRect.top;
+        if(relTop <= mid && relBottom >= mid) { target = blocks[i]; break; }
+      }
+      if(type==='bub-up') {
+        mc.scrollTo({top: target.offsetTop - 20, behavior:'smooth'});
+      } else {
+        mc.scrollTo({top: target.offsetTop + target.offsetHeight - mc.clientHeight + 80, behavior:'smooth'});
+      }
+    }
+  });
+}
+
+if(root){root.addEventListener('click',function(){var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}},
 showEditDialog:function(idx){var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">编辑<div class="pc-close-btn" id="olEdX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical">'+App.esc(msg.content)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdNo" type="button">取消</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olEdX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdNo').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdSave').addEventListener('click',function(){var v=ov.querySelector('#olEdTA').value.trim();if(!v){App.showToast('不能为空');return;}OL.messages[idx].content=v;OL.saveMsgs();O.renderMessages();ov.remove();});},
 showSceneDialog:function(){var OL=App.offline;if(!OL)return;var cur=App.LS.get('olScene_'+OL.charId)||'';var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:340px;max-height:75vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">场景 / 时间线<div class="pc-close-btn" id="olScX">×</div></div><div class="pc-body"><div style="font-size:13px;color:#1a1a1a;margin-bottom:8px;line-height:1.5;">描述当前的时间、地点、剧情背景等。每次发送消息时自动附带给AI。留空则不启用。</div><textarea class="pc-input" id="olScTA" style="min-height:200px;resize:vertical" placeholder="例如：暴风雨之夜，你们被困在山中的一间木屋里。外面电闪雷鸣，屋内只有一盏摇曳的油灯。角色刚从昏迷中醒来，发现自己的记忆出现了空白...">'+App.esc(cur)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olScSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olScClr" type="button">清空</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olScX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olScSave').addEventListener('click',function(){var v=ov.querySelector('#olScTA').value.trim();if(v)App.LS.set('olScene_'+OL.charId,v);else App.LS.remove('olScene_'+OL.charId);ov.remove();App.showToast('已保存');});ov.querySelector('#olScClr').addEventListener('click',function(){App.LS.remove('olScene_'+OL.charId);ov.remove();App.showToast('已清空');});},
-showBgMenu:function(){var OL=App.offline;if(!OL)return;var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:260px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">背景<div class="pc-close-btn" id="olBgX">×</div></div><div class="pc-body" style="gap:8px"><button class="pc-btn pc-btn-save" id="olBgAlbum" type="button">从相册选择</button><button class="pc-btn pc-btn-cancel" id="olBgUrl" type="button">输入URL</button><button class="pc-btn pc-btn-cancel" id="olBgDel" type="button" style="color:#c9706b">移除</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olBgX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olBgDel').addEventListener('click',function(){App.LS.remove('olBg_'+OL.charId);var bg=App.$('#olBg');if(bg){bg.style.backgroundImage='';bg.style.filter='';}ov.remove();App.showToast('已移除');});ov.querySelector('#olBgAlbum').addEventListener('click',function(){ov.remove();var inp=document.createElement('input');inp.type='file';inp.accept='image/*';document.body.appendChild(inp);inp.onchange=function(ev){var f=ev.target.files[0];document.body.removeChild(inp);if(!f)return;var rd=new FileReader();rd.onload=function(r){var process=function(src){try{App.LS.set('olBg_'+OL.charId,src);}catch(e){App.showToast('太大');return;}var bg=App.$('#olBg');if(bg){var a=gAp(OL.charId);bg.style.backgroundImage='linear-gradient(rgba(255,255,255,'+(a.bgBlur/100)+'),rgba(255,255,255,'+(a.bgBlur/100)+')),url('+src+')';bg.style.filter='brightness('+(100-a.bgDark)+'%)';bg.style.backgroundSize='cover';}App.showToast('已设置');};if(App.cropImage)App.cropImage(r.target.result,process);else process(r.target.result);};rd.readAsDataURL(f);};inp.click();});ov.querySelector('#olBgUrl').addEventListener('click',function(){ov.remove();var url=prompt('输入URL：');if(!url)return;App.LS.set('olBg_'+OL.charId,url.trim());var bg=App.$('#olBg');if(bg){var a=gAp(OL.charId);bg.style.backgroundImage='linear-gradient(rgba(255,255,255,'+(a.bgBlur/100)+'),rgba(255,255,255,'+(a.bgBlur/100)+')),url('+url.trim()+')';bg.style.filter='brightness('+(100-a.bgDark)+'%)';bg.style.backgroundSize='cover';}App.showToast('已设置');});},
 openCodeEditor:function(){var OL=App.offline;if(!OL)return;var saved=App.LS.get('olCustomCode_'+OL.charId)||'';var ed=document.createElement('div');ed.className='ol-css-editor';ed.innerHTML='<div class="ol-css-editor-header"><button type="button" id="olCodeBack" class="ol-css-hd-btn">返回</button><span class="ol-css-hd-title">自定义UI</span><button type="button" id="olCodeSave" class="ol-css-hd-btn">保存</button></div><textarea class="ol-css-textarea" id="olCodeTA" spellcheck="false" placeholder="HTML + CSS + JS">'+App.esc(saved)+'</textarea>';document.body.appendChild(ed);function goBack(){ed.remove();var p=App.$('#olSettingsPanel');if(p){p.classList.remove('hidden');requestAnimationFrame(function(){p.classList.add('show');});}}App.bindSwipeBack(ed,goBack);ed.querySelector('#olCodeBack').addEventListener('click',goBack);ed.querySelector('#olCodeSave').addEventListener('click',function(){var code=ed.querySelector('#olCodeTA').value||'';App.LS.set('olCustomCode_'+OL.charId,code);O.applyCustomCode(OL.charId);goBack();App.showToast('已保存');});ed.querySelector('#olCodeTA').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var ta=this,s=ta.selectionStart,end=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=s+2;}});},
 applyCustomCode:function(cid){var oldS=document.getElementById('olCustomStyle');if(oldS)oldS.remove();var oldH=document.getElementById('olCustomHtml');if(oldH)oldH.remove();var code=App.LS.get('olCustomCode_'+cid);if(!code)return;var css='',cssR=/<style[^>]*>([\s\S]*?)<\/style>/gi,cm;while((cm=cssR.exec(code))!==null)css+=cm[1]+'\n';var jss=[],jsR=/<script[^>]*>([\s\S]*?)<\/script>/gi,jm;while((jm=jsR.exec(code))!==null)jss.push(jm[1]);var html=code.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').trim();if(!/<style/i.test(code)&&!/<[a-z]/i.test(code)){css=code;html='';}if(css){var s=document.createElement('style');s.id='olCustomStyle';s.textContent=css;document.head.appendChild(s);}if(html){var cont=document.getElementById('olMsgs');if(cont){var d=document.createElement('div');d.id='olCustomHtml';d.innerHTML=html;cont.insertBefore(d,cont.firstChild);}}if(jss.length)jss.forEach(function(js){try{(new Function(js))();}catch(e){console.warn('[自定义代码]',e.message);}});},
 init:function(){App.offlineUI=O;}};
