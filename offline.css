@@ -99,9 +99,6 @@
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   margin-top:60px !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;
-  mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;
-}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{display:flex;flex-direction:column;gap:6px;max-width:100%;}
