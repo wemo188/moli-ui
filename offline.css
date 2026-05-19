@@ -6,7 +6,7 @@
 #olSettingsPanel .hp-handle {height:2px !important; width:40px !important; border-radius:3px !important; flex-shrink:0 !important; background:rgba(0,0,0,0.15) !important;}
 
 .hp-body::-webkit-scrollbar { display: none; }
-#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:800;font-size:19px;letter-spacing:1px;margin-bottom:12px;}
+#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;}
 #olSettingsPanel .hp-slider-label{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-slider-val{color:#1a1a1a;font-size:15px;}
 #olSettingsPanel .hp-upload{height:54px;font-size:15px;}
@@ -16,7 +16,9 @@
 #olSettingsPanel .hp-btn.hp-btn-danger{background:#fff;color:#c9706b;border:1.5px solid #c9706b;}
 #olSettingsPanel .hp-btn.hp-btn-outline{background:#fff;color:#adcdea;border:1.5px solid #adcdea;}
 #olSettingsPanel .hp-btn.hp-btn-outline:active{background:rgba(173,205,234,0.1);}
+#olSettingsPanel .hp-btn:not(.hp-btn-primary):not(.hp-btn-danger):not(.hp-btn-outline){border:1.5px solid transparent !important;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
 #olSettingsPanel #olWordCount{width:100%;padding:12px 14px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;font-size:15px;color:#1a1a1a;outline:none;font-family:inherit;}
+
 .ol-sub-title{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:6px;margin-top:10px;display:flex;align-items:center;gap:8px;}
 .ol-sub-label{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:0;margin-top:0;flex-shrink:0;white-space:nowrap;}
 .ol-hint{font-size:13px;color:#1a1a1a;line-height:1.5;margin-bottom:8px;padding:8px 10px;background:rgba(0,0,0,.02);border-radius:6px;}
@@ -53,6 +55,13 @@
   background-size: 14px;
 }
 
+.ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);}
+
+.mm-cards-wrapper{position:absolute;top:-20px;left:0;right:0;z-index:10;width:100%;max-width:410px;height:160px;margin:0 auto;font-family:inherit;pointer-events:none;}
+.mm-env-card{pointer-events:auto;display:block;width:100px;height:110px;background:var(--ol-card-bg);padding:6px 6px 20px 6px;box-shadow:2px 4px 12px rgba(20,35,55,0.08),inset 0 0 0 1px rgba(0,0,0,0.02);cursor:pointer;position:absolute;box-sizing:border-box;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.3s ease,z-index 0s;}
+.mm-ec-1{left:2px;bottom:20px;transform:rotate(-10deg);z-index:1;} .mm-ec-2{left:105px;bottom:10px;transform:rotate(10deg);z-index:2;} .mm-ec-3{left:205px;bottom:20px;transform:rotate(5deg);z-index:3;} .mm-ec-4{left:308px;bottom:15px;transform:rotate(-12deg);z-index:4;}
+.mm-env-card:hover{transform:rotate(0deg) scale(1.3) translateY(-4px);box-shadow:4px 12px 24px rgba(20,35,55,0.15);z-index:20;} .mm-env-card:active{transform:rotate(0deg) scale(0.98);} .mm-env-inner{width:100%;height:100%;background:#f0f6fb;border-radius:2px;display:flex;align-items:center;justify-content:center;color:#adcdea;overflow:hidden;} .mm-env-img{width:100%;height:100%;object-fit:cover;} .mm-env-caption{position:absolute;bottom:1px;left:0;width:100%;text-align:center;font-size:10px;font-weight:700;color:var(--ol-card-text);letter-spacing:1px;}
+
 .ol-root{
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:17px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
   --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
@@ -80,12 +89,18 @@
 }
 
 .ol-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;}
+.ol-top-bg{position:absolute;top:0;left:0;right:0;height:70px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:center;pointer-events:none;}
 
 .ol-hd{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:center;height:50px;background:transparent;pointer-events:none;}
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;}
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
 
-.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:50px;padding:10px 16px 140px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 10px,black 35px,black calc(100% - 135px),transparent calc(100% - 115px));mask-image:linear-gradient(to bottom,transparent 10px,black 35px,black calc(100% - 135px),transparent calc(100% - 115px));}
+.ol-msgs{
+  position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  margin-top:60px !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;
+  mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;
+}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{display:flex;flex-direction:column;gap:6px;max-width:100%;}
@@ -115,22 +130,19 @@
 
 .ol-scatter-meta{display:flex;align-items:center;gap:4px;font-size:var(--ol-meta-size);font-weight:600;line-height:1;}
 .ol-scatter-meta .ol-meta-sep{display:inline-flex;align-items:center;line-height:1;}
-/* ★ 楼层颜色同步头像框 */
 .ol-block.is-char .ol-scatter-meta{color:var(--ol-c-av-frame-color); opacity:0.85;}
 .ol-block.is-user .ol-scatter-meta{color:var(--ol-u-av-frame-color); opacity:0.85;}
 
-/* ★ 终极抗锯齿，气泡圆滑 */
-.ol-frame-mid{position:relative;overflow:hidden;max-width:100%;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black);}
+/* ★ 彻底移除内发光，完全开放毛玻璃 */
+.ol-frame-mid{position:relative;max-width:100%;border-radius:inherit;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black);}
 .ol-block.is-char .ol-frame-mid{
   align-self:flex-start; border-radius:var(--ol-c-bubble-radius); width:var(--ol-c-bubble-width);
   border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color);
-  box-shadow:inset 0 0 20px rgba(255,255,255,0.6), inset 0 -4px 10px rgba(255,255,255,0.4);
   backdrop-filter:blur(var(--ol-c-bubble-blur)); -webkit-backdrop-filter:blur(var(--ol-c-bubble-blur));
 }
 .ol-block.is-user .ol-frame-mid{
   align-self:flex-end; border-radius:var(--ol-u-bubble-radius); width:var(--ol-u-bubble-width);
   border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color);
-  box-shadow:inset 0 0 20px rgba(255,255,255,0.8), inset 0 -4px 10px rgba(255,255,255,0.5);
   backdrop-filter:blur(var(--ol-u-bubble-blur)); -webkit-backdrop-filter:blur(var(--ol-u-bubble-blur));
 }
 
@@ -164,7 +176,6 @@
   box-shadow: inset 0 0 50px rgba(255,255,255,0.7), inset 0 -6px 18px rgba(170,210,250,0.25), 0 4px 20px rgba(0,0,0,0.08);
   box-sizing:border-box; isolation:isolate;
 }
-/* ★ 强制背景图跟随边框变圆角 */
 .ol-input-wrap::before{
   content:"";position:absolute;inset:0;z-index:-1;
   background-image:var(--ol-bar-bg-img);background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;
@@ -178,7 +189,6 @@
 .ol-btn-menu:active{transform:scale(0.95);}
 .ol-btn-menu svg{width:30px;height:30px;}
 
-/* ★ 强制输入框边框粗细同步 */
 .ol-input-box{
   flex:1;min-width:0;height:48px;display:flex;align-items:center;
   background:rgba(255,255,255,0.7);
@@ -220,10 +230,6 @@
 .ol-plus-item:active .ol-plus-icon{background:rgba(0,0,0,.04);}
 .ol-plus-label{font-size:12px;color:#1a1a1a;text-align:center;font-weight:500;}
 
-.ol-ctx{position:fixed;z-index:100020;background:#000;border-radius:12px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:grid;grid-template-columns:repeat(4,1fr);gap:0;min-width:220px;max-width:280px;}
-.ol-ctx-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;font-size:11px;color:rgba(255,255,255,.85);cursor:pointer;border-radius:8px;-webkit-tap-highlight-color:transparent;text-align:center;white-space:nowrap;}
-.ol-ctx-item:active{background:rgba(255,255,255,.1);}
-.ol-ctx-item svg{width:18px;height:18px;fill:none;stroke:rgba(255,255,255,.7);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 @keyframes olDots{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
 .ol-typing-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ol-accent);margin:0 2px;animation:olDots 1.2s infinite;}
 .ol-typing-dot:nth-child(2){animation-delay:.2s;}
@@ -256,3 +262,27 @@
 .ol-think-body.open {
   max-height: 3000px; opacity: 1; padding: 12px 14px; margin-bottom: 10px; border: none;
 }
+
+/* ★ 气泡底部纯图标操作栏 */
+.ol-msg-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; opacity:0.3; transition:opacity 0.2s; align-items:center; }
+.ol-block.is-char .ol-msg-actions { justify-content:flex-start; padding-left:52px; }
+.ol-block.is-user .ol-msg-actions { justify-content:flex-end; padding-right:52px; }
+.ol-block:hover .ol-msg-actions { opacity:1; }
+.ol-action-btn { background:none; border:none; padding:4px; display:flex; align-items:center; justify-content:center; color:var(--ol-meta-color); cursor:pointer; font-family:inherit; -webkit-tap-highlight-color:transparent; transition:color 0.2s, transform 0.1s; }
+.ol-action-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.ol-action-btn:active { color:var(--ol-text-color); transform:scale(0.85); }
+.ol-swipe-nav { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--ol-meta-color); margin-left:auto; }
+.ol-swipe-btn { background:none; border:none; color:inherit; cursor:pointer; font-weight:900; padding:4px 8px; font-family:inherit; transition:transform 0.2s; }
+.ol-swipe-btn:active { transform:scale(0.85); }
+.ol-swipe-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+
+/* ★ 悬浮导航电梯 */
+.ol-nav-fab { position:fixed; right:-60px; bottom:160px; z-index:90; display:flex; flex-direction:column; gap:10px; transition:right 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.ol-nav-fab.show { right:12px; }
+.ol-nav-btn { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.85); border:1.5px solid rgba(173,205,234,0.5); box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#7ea3c9; backdrop-filter:blur(4px); -webkit-tap-highlight-color:transparent; }
+.ol-nav-btn:active { background:#e9f6ff; transform:scale(0.92); }
+.ol-nav-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ★ 编辑面板放大 */
+.pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
+.pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
