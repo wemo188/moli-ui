@@ -14,7 +14,6 @@ var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="1
 var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="currentColor"/><rect x="7" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="51" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="12" y="14" width="40" height="32" rx="8" fill="currentColor"/><line x1="26" y1="27" x2="26" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
-/* ★ 从这里彻底删除了 blockGap */
 var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',topBgColor:'transparent',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:12,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:12,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){if(r[k]!==undefined)r[k]=s[k];});return r;}
@@ -32,7 +31,7 @@ else{h+='<div class="ol-sub-label">识别：*…*</div><div class="ol-sw-row">�
 h+='<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot" id="ol'+p+'Color" data-fk="'+p+'Color"></div></div><div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" data-fk="'+p+'Size" min="10" max="24" step="0.5" value="'+ap[p+'Size']+'"><span class="hp-slider-val" id="ol'+p+'SizeVal">'+ap[p+'Size']+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" data-fk="'+p+'Weight" min="100" max="900" step="100" value="'+ap[p+'Weight']+'"><span class="hp-slider-val" id="ol'+p+'WeightVal">'+ap[p+'Weight']+'</span></div><div class="ol-inline-tag-row"><span class="ol-sub-label">样式</span><div class="ol-tag-group">'+tg('ol-'+p+'-style','normal','正常',!ap[p+'Italic'])+tg('ol-'+p+'-style','italic','斜体',ap[p+'Italic'])+'</div></div>';return h;}
 
 var O={_noScroll:false,getAp:function(){var OL=App.offline;return OL?gAp(OL.charId):JSON.parse(JSON.stringify(DEF_AP));},
-render:function(con,cd){var c=cd,dn=c.name||'',bg=App.LS.get('olBg_'+c.id)||'',ap=gAp(c.id);
+render:function(con,cd){var c=cd,dn=c.name||'',ap=gAp(c.id);
 var cAv='<div class="ol-sw-row">头像 '+sw('olcAvShow',ap.cAvShow)+'</div><div class="ol-sw-row">名称 '+sw('olcAvNameShow',ap.cAvNameShow)+'</div><div class="hp-slider-row"><span class="hp-slider-label">大小</span><input type="range" id="olcAvSize" min="20" max="100" step="2" value="'+ap.cAvSize+'"><span class="hp-slider-val" id="olcAvSizeVal">'+ap.cAvSize+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">角度</span><input type="range" id="olcAvRadius" min="0" max="50" value="'+ap.cAvRadius+'"><span class="hp-slider-val" id="olcAvRadiusVal">'+ap.cAvRadius+'%</span></div><div class="ol-inline-row"><span>框颜色</span><div class="hp-color-dot" id="olcAvFrameColor"></div></div><div class="hp-slider-row"><span class="hp-slider-label">框粗</span><input type="range" id="olcAvFrameW" min="0" max="5" step="0.5" value="'+ap.cAvFrameW+'"><span class="hp-slider-val" id="olcAvFrameWVal">'+ap.cAvFrameW+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">名称字号</span><input type="range" id="olcAvNameSize" min="8" max="30" step="0.5" value="'+ap.cAvNameSize+'"><span class="hp-slider-val" id="olcAvNameSizeVal">'+ap.cAvNameSize+'px</span></div>';
 var cBub='<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="olcBubbleWidth" min="50" max="100" value="'+ap.cBubbleWidth+'"><span class="hp-slider-val" id="olcBubbleWidthVal">'+ap.cBubbleWidth+'%</span></div><div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="olcBubbleRadius" min="0" max="24" value="'+ap.cBubbleRadius+'"><span class="hp-slider-val" id="olcBubbleRadiusVal">'+ap.cBubbleRadius+'px</span></div><div class="ol-inline-row"><span>背景色</span><div class="hp-color-dot" id="olcBubbleBg"></div></div><div class="hp-slider-row"><span class="hp-slider-label">背景透明</span><input type="range" id="olcBubbleOpacity" min="0" max="100" value="'+ap.cBubbleOpacity+'"><span class="hp-slider-val" id="olcBubbleOpacityVal">'+ap.cBubbleOpacity+'%</span></div><div class="hp-slider-row"><span class="hp-slider-label">毛玻璃</span><input type="range" id="olcBubbleBlur" min="0" max="30" value="'+ap.cBubbleBlur+'"><span class="hp-slider-val" id="olcBubbleBlurVal">'+ap.cBubbleBlur+'px</span></div><div class="ol-inline-row"><span>边框色</span><div class="hp-color-dot" id="olcBubbleBorderColor"></div></div><div class="hp-slider-row"><span class="hp-slider-label">边框粗</span><input type="range" id="olcBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.cBubbleBorderW+'"><span class="hp-slider-val" id="olcBubbleBorderWVal">'+ap.cBubbleBorderW+'px</span></div>';
 var cFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-color-dot" id="olcTextColor"></div></div><div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="olcTextSize" min="10" max="24" step="0.5" value="'+ap.cTextSize+'"><span class="hp-slider-val" id="olcTextSizeVal">'+ap.cTextSize+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" id="olcTextWeight" min="100" max="900" step="100" value="'+ap.cTextWeight+'"><span class="hp-slider-val" id="ol'+'cTextWeightVal">'+ap.cTextWeight+'</span></div><div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="olcTextLH" min="1.2" max="2.5" step="0.05" value="'+ap.cTextLH+'"><span class="hp-slider-val" id="olcTextLHVal">'+ap.cTextLH+'</span></div><div class="hp-slider-row"><span class="hp-slider-label">段落间距</span><input type="range" id="olcParaGap" min="0" max="30" value="'+ap.cParaGap+'"><span class="hp-slider-val" id="olcParaGapVal">'+ap.cParaGap+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字间距</span><input type="range" id="olcLetterGap" min="0" max="10" step="0.5" value="'+ap.cLetterGap+'"><span class="hp-slider-val" id="olcLetterGapVal">'+ap.cLetterGap+'px</span></div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">双引号 '+sw('olcQuoteOn',ap.cQuoteOn)+'</div>'+fmtUI('cQuote',ap)+'</div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">括号 '+sw('olcParenOn',ap.cParenOn)+'</div>'+fmtUI('cParen',ap)+'</div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">星号 '+sw('olcStarOn',ap.cStarOn)+'</div>'+fmtUI('cStar',ap)+'</div>';
@@ -43,8 +42,7 @@ var uFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-co
 var p1=App.LS.get('ol_photo_'+c.id+'_1')||'', p2=App.LS.get('ol_photo_'+c.id+'_2')||'', p3=App.LS.get('ol_photo_'+c.id+'_3')||'', p4=App.LS.get('ol_photo_'+c.id+'_4')||'';
 
 con.innerHTML=
-'<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
-'<div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
+'<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg"></div>' +
 '<div class="ol-top-bg"></div>' +
 '<div class="mm-cards-wrapper" id="olCardsWrap">' +
   '<div class="mm-env-card mm-ec-1 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p1+'" style="display:'+(p1?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p1?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT1||'银河歌颂')+'</div></div>' +
@@ -54,7 +52,6 @@ con.innerHTML=
 '</div><div id="olName" style="display:none;">'+App.esc(dn)+'</div>' +
 '<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
 
-/* ===== 悬浮导航电梯 ===== */
 '<div class="ol-nav-fab" id="olNavFab">' +
   '<button class="ol-nav-btn" id="olNavTop" title="页面顶部"><svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>' +
   '<button class="ol-nav-btn" id="olNavBubTop" title="气泡顶部"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>' +
@@ -71,19 +68,14 @@ con.innerHTML=
   '<button class="ol-btn-robot" id="olAiBtn" type="button">'+ROBOT_SVG+'</button>' +
 '</div>' +
 
-/* ===== 设置面板开始 ===== */
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
 
-/* ===== 1. 聊天设置 ===== */
-'<div class="hp-section-label">聊天设置</div>' +
+'<div class="hp-section-label">★ 聊天设置 ★</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:48px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
 
-/* ===== 2. 美化渲染 ===== */
-'<div class="hp-section-label" style="margin-top:36px;">美化渲染</div>' +
-
-/* --- 整体 --- */
+'<div class="hp-section-label" style="margin-top:36px;">★ 美化渲染 ★</div>' +
 '<div class="ol-area-label">全局</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olPageBg"></div><span>页面背景</span></div></div>' +
 '<div class="hp-upload" id="olSbBg"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>上传背景</div><input type="file" id="olBgFileInput" accept="image/*" hidden>' +
@@ -93,7 +85,6 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">正文字体</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏沉浸</button></div>' +
 
-/* --- 顶部区域 --- */
 '<div class="ol-area-label">顶部区域</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>册卡</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">填充顶部图片</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图片</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
@@ -102,7 +93,6 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">册卡字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olCardReset">恢复顶部默认</button></div>' +
 
-/* --- 底部区域 --- */
 '<div class="ol-area-label">底部区域</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olBarBg"></div><span>底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBorderColor"></div><span>边框</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarIconColor"></div><span>图标</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olInputTextColor"></div><span>文字</span></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">边框粗细</span><input type="range" id="olBarBorderW" min="0" max="5" step="0.5" value="'+ap.barBorderW+'"><span class="hp-slider-val" id="olBarBorderWVal">'+ap.barBorderW+'px</span></div>' +
@@ -111,15 +101,12 @@ con.innerHTML=
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbBarBgBtn">填充底栏图片</button><button class="hp-btn hp-btn-danger" id="olSbBarBgDel">清除底栏图片</button></div><input type="file" id="olBarBgInput" accept="image/*" hidden>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olBarReset">恢复底部默认</button></div>' +
 
-/* --- 角色板块 --- */
 '<div class="ol-area-label">角色板块</div>' +
 fold('olFCav','角色头像',cAv)+fold('olFCbub','角色气泡',cBub)+fold('olFCfont','角色字体',cFont)+
 
-/* --- 用户板块 --- */
 '<div class="ol-area-label">用户板块</div>' +
 fold('olFUav','用户头像',uAv)+fold('olFUbub','用户气泡',uBub)+fold('olFUfont','用户字体',uFont)+
 
-/* --- 底部操作 --- */
 '<div class="hp-divider"></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olStyleReset" style="height:48px;">重置全部渲染</button></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olThemeSave" style="height:48px;">存储为新主题</button></div>' +
@@ -170,7 +157,21 @@ if(wrap){
   r.style.setProperty('--ol-input-text', ap.inputTextColor || '#adcdea');
   var inp2=App.$('#olInput');if(inp2)inp2.placeholder=ap.placeholder||'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚';
 }
-var bgEl=App.$('#olBg');if(bgEl&&App.LS.get('olBg_'+cid)){bgEl.style.backgroundImage='linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.LS.get('olBg_'+cid)+')';bgEl.style.filter='brightness('+(100-ap.bgDark)+'%)';bgEl.style.backgroundSize='cover';}
+
+/* ★ 彻底修复背景更新逻辑：直接强刷背景 */
+var bgEl=App.$('#olBg');
+if(bgEl){
+  var savedBg = App.LS.get('olBg_'+cid);
+  if(savedBg) {
+    bgEl.style.backgroundImage='linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url("'+savedBg+'")';
+    bgEl.style.filter='brightness('+(100-ap.bgDark)+'%)';
+    bgEl.style.backgroundSize='cover';
+  } else {
+    bgEl.style.backgroundImage='none';
+    bgEl.style.filter='none';
+  }
+}
+
 var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';}
 var cards=App.$('#olCardsWrap');if(cards){cards.style.fontFamily=ap.cardFont||ap.chatFont||'inherit';}
 },
@@ -219,7 +220,6 @@ var sep = isU ? '<span class="ol-meta-sep" style="font-size:8px;">☽</span>' : 
 var meta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sep+'<span>'+ts+'</span>'+sep+'<span>'+tkS+'tk</span>'+sep+'<span>'+cc+'字</span></div>';
 var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex; align-items:center;">'+nameHtml+'</div>'+meta+'</div></div>';
 
-/* ★ 气泡底部纯 SVG 操作栏，并且加回了删除按钮！ */
 var actHtml = '<div class="ol-msg-actions" data-idx="'+idx+'">';
 actHtml += '<button class="ol-action-btn" data-act="copy" title="复制"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>';
 actHtml += '<button class="ol-action-btn" data-act="edit" title="编辑"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -227,7 +227,6 @@ if(!isU) {
   actHtml += '<button class="ol-action-btn" data-act="regen" title="重写"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button>';
   actHtml += '<button class="ol-action-btn" data-act="continue" title="续写"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>';
 }
-/* ★ 删除和回溯 */
 actHtml += '<button class="ol-action-btn" data-act="del" title="删除"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
 actHtml += '<button class="ol-action-btn" data-act="rewind" title="回溯" style="color:#c9706b;"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg></button>';
 
@@ -240,7 +239,6 @@ if(msg.swipes && msg.swipes.length > 1) {
 }
 actHtml += '</div>';
 
-/* ★ 彻底去掉了 blockGap，焊死在 20px */
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>' + actHtml + '</div>';
 });
 
@@ -421,7 +419,6 @@ App.safeOn('#olBarReset','click',function(){
 var swMap={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow','olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide','olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
 App.$$('.ol-sw-track').forEach(function(s){s.addEventListener('click',function(e){e.stopPropagation();s.classList.toggle('on');var id=s.parentElement.id,on=s.classList.contains('on');if(swMap[id]){ap[swMap[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}else save();});});
 
-/* ★ 彻底把 olBlockGap 从这里删除了 */
 var sls=[{id:'olBgBlur',k:'bgBlur',u:'%'},{id:'olBgDark',k:'bgDark',u:'%'},{id:'olBarBorderW',k:'barBorderW',u:'px'},{id:'olBarRadius',k:'barRadius',u:'px'},{id:'olcAvSize',k:'cAvSize',u:'px'},{id:'olcAvRadius',k:'cAvRadius',u:'%'},{id:'olcAvFrameW',k:'cAvFrameW',u:'px'},{id:'olcAvNameSize',k:'cAvNameSize',u:'px'},{id:'olcBubbleRadius',k:'cBubbleRadius',u:'px'},{id:'olcBubbleBorderW',k:'cBubbleBorderW',u:'px'},{id:'olcBubbleWidth',k:'cBubbleWidth',u:'%'},{id:'olcBubbleOpacity',k:'cBubbleOpacity',u:'%'},{id:'olcBubbleBlur',k:'cBubbleBlur',u:'px'},{id:'olcTextSize',k:'cTextSize',u:'px'},{id:'olcTextWeight',k:'cTextWeight',u:''},{id:'olcTextLH',k:'cTextLH',u:''},{id:'olcParaGap',k:'cParaGap',u:'px'},{id:'olcLetterGap',k:'cLetterGap',u:'px'},{id:'oluAvSize',k:'uAvSize',u:'px'},{id:'oluAvRadius',k:'uAvRadius',u:'%'},{id:'oluAvFrameW',k:'uAvFrameW',u:'px'},{id:'oluAvNameSize',k:'uAvNameSize',u:'px'},{id:'oluBubbleRadius',k:'uBubbleRadius',u:'px'},{id:'oluBubbleBorderW',k:'uBubbleBorderW',u:'px'},{id:'oluBubbleWidth',k:'uBubbleWidth',u:'%'},{id:'oluBubbleOpacity',k:'uBubbleOpacity',u:'%'},{id:'oluBubbleBlur',k:'uBubbleBlur',u:'px'},{id:'oluTextSize',k:'uTextSize',u:'px'},{id:'oluTextWeight',k:'uTextWeight',u:''},{id:'oluTextLH',k:'uTextLH',u:''},{id:'oluParaGap',k:'uParaGap',u:'px'},{id:'oluLetterGap',k:'uLetterGap',u:'px'}];
 sls.forEach(function(s){var sl=App.$('#'+s.id),val=App.$('#'+s.id+'Val');if(!sl||!val)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);val.textContent=v+s.u;ap[s.k]=v;sr();});});
 App.$$('[data-fk]').forEach(function(el){var k=el.dataset.fk;if(el.tagName==='INPUT'&&el.type==='range'){var vl=App.$('#ol'+k+'Val');el.addEventListener('input',function(){var v=parseFloat(this.value);if(vl)vl.textContent=v+(k.indexOf('Weight')>=0?'':'px');ap[k]=v;sr();});}if(el.classList.contains('hp-color-dot')){el.style.background=ap[k];el.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[k],function(hex){el.style.background=hex;ap[k]=hex;sr();},function(hex){el.style.background=hex;ap[k]=hex;sAp(cid,ap);O._noScroll=true;O.renderMessages();},'ol_'+k);});}});
@@ -441,6 +438,7 @@ bst('.ol-cQuote-qdis','cQuoteDis');bst('.ol-cParen-pdis','cParenDis');bst('.ol-q
 App.safeOn('#olSbScene','click',function(){O.showSceneDialog();});
 App.safeOn('#olSbCode','click',function(){O._closePanel();O.openCodeEditor();});
 
+/* ★ 彻底修复背景上传与清除：使用专门函数强刷 */
 var bgInp = App.$('#olBgFileInput');
 App.safeOn('#olSbBg', 'click', function(){ if(bgInp) bgInp.click(); });
 if(bgInp) {
@@ -450,12 +448,7 @@ if(bgInp) {
     reader.onload = function(ev) {
       var process = function(src) {
         try { App.LS.set('olBg_'+cid, src); } catch(err) { App.showToast('图片过大'); return; }
-        var bgEl = App.$('#olBg');
-        if(bgEl) {
-          bgEl.style.backgroundImage = 'linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+src+')';
-          bgEl.style.filter = 'brightness('+(100-ap.bgDark)+'%)';
-          bgEl.style.backgroundSize = 'cover';
-        }
+        O.applyAppearance(cid);
         App.showToast('背景已更新');
       };
       if(App.cropImage) App.cropImage(ev.target.result, process); else process(ev.target.result);
@@ -466,8 +459,7 @@ if(bgInp) {
 }
 App.safeOn('#olBgDel', 'click', function(){
   App.LS.remove('olBg_'+cid);
-  var bgEl = App.$('#olBg');
-  if(bgEl) { bgEl.style.backgroundImage = ''; bgEl.style.filter = ''; }
+  O.applyAppearance(cid);
   App.showToast('背景已清除');
 });
 
@@ -488,8 +480,6 @@ App.safeOn('#olStyleReset','click',function(){
     }
   }
   App.LS.remove('olBg_'+cid);
-  var bgEl=App.$('#olBg');
-  if(bgEl){bgEl.style.backgroundImage='';bgEl.style.filter='';}
   sAp(cid,ap); O.applyAppearance(cid); O._noScroll=true; O.renderMessages();
   App.showToast('已重置全部渲染');
 });
@@ -583,7 +573,6 @@ if(mc){
       O.renderMessages();
       OL.requestAI();
     } else if(act === 'del') {
-      /* ★ 强力加回：删除按钮逻辑 */
       OL.messages.splice(idx, 1);
       OL.saveMsgs();
       O.renderMessages();
