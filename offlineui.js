@@ -14,8 +14,7 @@ var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="1
 var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="currentColor"/><rect x="7" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="51" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="12" y="14" width="40" height="32" rx="8" fill="currentColor"/><line x1="26" y1="27" x2="26" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
-/* ★ 修复：透明度改回 100 */
-var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',topBgColor:'transparent',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:12,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:12,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
+var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',topBgColor:'transparent',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:85,cBubbleBlur:12,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:85,uBubbleBlur:12,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){if(r[k]!==undefined)r[k]=s[k];});return r;}
 function sAp(c,a){App.LS.set('olAp_'+c,a);}
@@ -51,14 +50,49 @@ con.innerHTML=
 '.mm-env-card:hover{transform:rotate(0deg) scale(1.3) translateY(-4px);box-shadow:4px 12px 24px rgba(20,35,55,0.15);z-index:20;} .mm-env-card:active{transform:rotate(0deg) scale(0.98);} .mm-env-inner{width:100%;height:100%;background:#f0f6fb;border-radius:2px;display:flex;align-items:center;justify-content:center;color:#adcdea;overflow:hidden;} .mm-env-img{width:100%;height:100%;object-fit:cover;} .mm-env-caption{position:absolute;bottom:1px;left:0;width:100%;text-align:center;font-size:10px;font-weight:700;color:var(--ol-card-text);letter-spacing:1px;} ' +
 '.ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);} ' +
 '#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;} ' +
-'.ol-top-bg{position:absolute;top:0;left:0;right:0;height:70px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:center;pointer-events:none;} ' +
 
-/* ★ 修复：极度柔和的顶部边缘羽化渐变 */
-'.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;mask-image:linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.05) 30px, rgba(0,0,0,0.3) 60px, black 100px, black 100%) !important;} ' +
+/* ★ 修复1：顶部背景图的极度柔和羽化渐变 (解决太横的问题) */
+'.ol-top-bg{position:absolute;top:0;left:0;right:0;height:120px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:top center;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom, black 0%, black 50%, transparent 100%);mask-image:linear-gradient(to bottom, black 0%, black 50%, transparent 100%);} ' +
+'.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:85px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;} ' +
 '.ol-msgs::-webkit-scrollbar{display:none;} ' +
 
-/* ★ 修复：彻底解除对毛玻璃的封印 */
+/* ★ 找回的完整 CSS 样式 (包含毛玻璃、头像、气泡排版等) */
+'.ol-root{--ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:17px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;--ol-hd-text:#1a1a1a;--ol-hd-size:18px;--ol-prose-padding:14px 16px;--ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%);--ol-bar-bg-img:none;--ol-bar-border-color:rgba(255,255,255,0.9); --ol-bar-border-w:1px; --ol-bar-radius:0px; --ol-bar-icon-color:#adcdea; --ol-input-text:#adcdea; --ol-input-font-size:15px;--ol-meta-color:#1a1a1a;--ol-meta-size:13px;--ol-card-bg:#ffffff; --ol-card-text:#7ea3c9;--ol-c-av-size:70px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#9ca3af;--ol-c-av-frame-w:2px;--ol-c-av-name-size:18px;--ol-c-av-show:flex;--ol-c-av-name-show:block;--ol-c-bubble-bg:linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%);--ol-c-bubble-opacity:0.85;--ol-c-bubble-blur:12px;--ol-c-bubble-radius:14px;--ol-c-bubble-width:95%;--ol-c-bubble-border-w:0px;--ol-c-bubble-border-color:rgba(255,255,255,0.9);--ol-c-text-size:17px;--ol-c-text-weight:400;--ol-c-text-lh:1.85;--ol-c-text-color:#2e4258;--ol-u-av-size:70px;--ol-u-av-radius:50%;--ol-u-av-frame-color:#7ea3c9;--ol-u-av-frame-w:2px;--ol-u-av-name-size:18px;--ol-u-av-show:flex;--ol-u-av-name-show:block;--ol-u-bubble-bg:linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%);--ol-u-bubble-opacity:0.85;--ol-u-bubble-blur:12px;--ol-u-bubble-radius:14px;--ol-u-bubble-width:95%;--ol-u-bubble-border-w:0px;--ol-u-bubble-border-color:rgba(255,255,255,0.9);--ol-u-text-size:17px;--ol-u-text-weight:400;--ol-u-text-lh:1.85;--ol-u-text-color:#2e4258;--ol-hd-bg:rgba(255,255,255,0.7);--ol-hd-fade:rgba(255,255,255,0.5);position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;background:var(--ol-bg-color);color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);-webkit-touch-callout:none;overscroll-behavior:none;-webkit-backface-visibility:hidden;backface-visibility:hidden;will-change:transform;}' +
+'.ol-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;}' +
+'.ol-block{display:flex;flex-direction:column;gap:6px;max-width:100%;}' +
+'.ol-msg-header{display:flex;align-items:center;gap:8px;width:100%;}' +
+'.ol-block.is-user .ol-msg-header{flex-direction:row-reverse;}' +
+'.ol-avatar-area{flex-shrink:0;}' +
+'.ol-block.is-char .ol-avatar-area{display:var(--ol-c-av-show);}' +
+'.ol-block.is-user .ol-avatar-area{display:var(--ol-u-av-show);}' +
+'.ol-avatar-frame{overflow:visible;box-shadow:0 2px 8px rgba(20,35,55,.08);background:#fff;position:relative;}' +
+'.ol-avatar{width:100%;height:100%;border-radius:inherit;overflow:hidden;display:flex;align-items:center;justify-content:center;}' +
+'.ol-avatar img{width:100%;height:100%;object-fit:cover;display:block;}' +
+'.ol-avatar svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.5;}' +
+'.ol-block.is-char .ol-avatar-frame{width:var(--ol-c-av-size);height:var(--ol-c-av-size);border-radius:var(--ol-c-av-radius);border:var(--ol-c-av-frame-w) solid var(--ol-c-av-frame-color);background:linear-gradient(135deg,#9ca3af,#6b7280);}' +
+'.ol-block.is-user .ol-avatar-frame{width:var(--ol-u-av-size);height:var(--ol-u-av-size);border-radius:var(--ol-u-av-radius);border:var(--ol-u-av-frame-w) solid var(--ol-u-av-frame-color);background:linear-gradient(135deg,#7ea3c9,#adcdea);}' +
+'.ol-msg-info{display:flex;flex-direction:column;justify-content:center;gap:1px;}' +
+'.ol-block.is-user .ol-msg-info{align-items:flex-end;}' +
+'.ol-block.is-char .ol-msg-info{align-items:flex-start;}' +
+'.ol-avatar-name{font-weight:700;letter-spacing:.5px;}' +
+'.ol-block.is-char .ol-avatar-name{display:var(--ol-c-av-name-show);font-size:var(--ol-c-av-name-size);color:var(--ol-c-av-frame-color);}' +
+'.ol-block.is-user .ol-avatar-name{display:var(--ol-u-av-name-show);font-size:var(--ol-u-av-name-size);color:var(--ol-u-av-frame-color);}' +
+'.ol-scatter-meta{display:flex;align-items:center;gap:4px;font-size:var(--ol-meta-size);font-weight:600;line-height:1;}' +
+'.ol-scatter-meta .ol-meta-sep{display:inline-flex;align-items:center;line-height:1;}' +
+'.ol-block.is-char .ol-scatter-meta{color:var(--ol-c-av-frame-color); opacity:0.85;}' +
+'.ol-block.is-user .ol-scatter-meta{color:var(--ol-u-av-frame-color); opacity:0.85;}' +
+
+/* ★ 修复3：彻底解除对毛玻璃的封印，完美透射 */
 '.ol-frame-mid{position:relative;max-width:100%;border-radius:inherit;} ' +
+'.ol-block.is-char .ol-frame-mid{align-self:flex-start; border-radius:var(--ol-c-bubble-radius); width:var(--ol-c-bubble-width); border:var(--ol-c-bubble-border-w) solid var(--ol-c-bubble-border-color); box-shadow:inset 0 0 20px rgba(255,255,255,0.6), inset 0 -4px 10px rgba(255,255,255,0.4); backdrop-filter:blur(var(--ol-c-bubble-blur)); -webkit-backdrop-filter:blur(var(--ol-c-bubble-blur));} ' +
+'.ol-block.is-user .ol-frame-mid{align-self:flex-end; border-radius:var(--ol-u-bubble-radius); width:var(--ol-u-bubble-width); border:var(--ol-u-bubble-border-w) solid var(--ol-u-bubble-border-color); box-shadow:inset 0 0 20px rgba(255,255,255,0.8), inset 0 -4px 10px rgba(255,255,255,0.5); backdrop-filter:blur(var(--ol-u-bubble-blur)); -webkit-backdrop-filter:blur(var(--ol-u-bubble-blur));} ' +
+'.ol-bub-bg{position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;}' +
+'.ol-block.is-char .ol-bub-bg{background:var(--ol-c-bubble-bg);opacity:var(--ol-c-bubble-opacity);}' +
+'.ol-block.is-user .ol-bub-bg{background:var(--ol-u-bubble-bg);opacity:var(--ol-u-bubble-opacity);}' +
+'.ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}' +
+'.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default !important; touch-action: pan-y !important;}' +
+'.ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}' +
+'.ol-block.is-user .ol-bubble-text{font-size:var(--ol-u-text-size);font-weight:var(--ol-u-text-weight);line-height:var(--ol-u-text-lh);color:var(--ol-u-text-color);}' +
 
 /* ★ 气泡外部底部的纯文字操作栏 & 平行宇宙切换 */
 '.ol-msg-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; opacity:0.3; transition:opacity 0.2s; align-items:center; } ' +
@@ -78,6 +112,13 @@ con.innerHTML=
 '.ol-nav-btn { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.85); border:1.5px solid rgba(173,205,234,0.5); box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#7ea3c9; backdrop-filter:blur(4px); -webkit-tap-highlight-color:transparent; } ' +
 '.ol-nav-btn:active { background:#e9f6ff; transform:scale(0.92); } ' +
 '.ol-nav-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; } ' +
+
+/* ★ 珍珠开关与思维链样式 */
+'.ol-pearl-btn { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin-left: 8px; background: radial-gradient(circle at 28% 28%, #ffffff 0%, #f8f9fa 15%, #cbd5e1 45%, #64748b 80%, #334155 100%); box-shadow: inset -3px -3px 5px rgba(255,255,255,0.8), inset 2px 2px 3px rgba(255,255,255,1), inset -6px -6px 9px rgba(0,0,0,0.2), 2px 4px 10px rgba(20,35,55,0.15); transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0; } ' +
+'.ol-pearl-btn:active { transform: scale(0.85); } ' +
+'.ol-pearl-btn.open { box-shadow: inset -3px -3px 5px rgba(255,255,255,0.9), inset 2px 2px 3px rgba(255,255,255,1), inset -6px -6px 9px rgba(0,0,0,0.2), 0 0 14px rgba(255,255,255,0.9), 0 0 8px rgba(173,205,234,0.4); filter: brightness(1.15); } ' +
+'.ol-think-body { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); font-size: 13px; color: var(--ol-text-color); line-height: 1.6; background: rgba(255,255,255,0.45); border-radius: 10px; margin: 0; padding: 0 14px; } ' +
+'.ol-think-body.open { max-height: 3000px; opacity: 1; padding: 12px 14px; margin-bottom: 10px; border: none; } ' +
 
 /* ★ 编辑面板放大 */
 '.pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; } ' +
@@ -186,11 +227,11 @@ r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.set
 r.style.setProperty('--ol-u-text-size',(ap.uTextSize||16)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
 
 r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg);
-r.style.setProperty('--ol-c-bubble-opacity',(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100);
-r.style.setProperty('--ol-c-bubble-blur',(ap.cBubbleBlur||0)+'px');
+r.style.setProperty('--ol-c-bubble-opacity',(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:85)/100);
+r.style.setProperty('--ol-c-bubble-blur',(ap.cBubbleBlur||12)+'px');
 r.style.setProperty('--ol-u-bubble-bg',ap.uBubbleBg);
-r.style.setProperty('--ol-u-bubble-opacity',(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100);
-r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
+r.style.setProperty('--ol-u-bubble-opacity',(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:85)/100);
+r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||12)+'px');
 
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.12));
@@ -271,9 +312,9 @@ if(!isU) {
 }
 actHtml += '<button class="ol-action-btn" data-act="rewind" style="color:#c9706b;">回溯</button>';
 
-/* ★ 修复：版本号排在所有按钮的最后面 */
+/* ★ 版本号排在所有按钮的最后面 */
 if(msg.swipes && msg.swipes.length > 1) {
-  actHtml += '<div class="ol-swipe-nav">';
+  actHtml += '<div class="ol-swipe-nav" style="margin-left:auto;">';
   actHtml += '<button class="ol-swipe-btn" data-act="swipe-prev" '+(msg.swipeIdx===0?'disabled':'')+'>&lt;</button>';
   actHtml += '<span>'+(msg.swipeIdx+1)+' / '+msg.swipes.length+'</span>';
   actHtml += '<button class="ol-swipe-btn" data-act="swipe-next" '+(msg.swipeIdx===msg.swipes.length-1?'disabled':'')+'>&gt;</button>';
@@ -562,7 +603,7 @@ App.safeOn('#olNavBubBot', 'click', function(){
   if(b && mc) mc.scrollTo({top: b.offsetTop + b.offsetHeight - mc.clientHeight + 20, behavior:'smooth'});
 });
 
-/* ★ 修复：手指向下滑动(查看历史，Y增大)时出现导航，向上滑动(Y减小)时隐藏 */
+/* ★ 修复2：滑动方向物理判断，往下滑(Y增大)出现，往上滑(Y减小)隐藏 */
 var mc=App.$('#olMsgs');
 if(mc){
   var navTimer = null;
