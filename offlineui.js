@@ -50,12 +50,11 @@ con.innerHTML=
 '.mm-env-card:hover{transform:rotate(0deg) scale(1.3) translateY(-4px);box-shadow:4px 12px 24px rgba(20,35,55,0.15);z-index:20;} .mm-env-card:active{transform:rotate(0deg) scale(0.98);} .mm-env-inner{width:100%;height:100%;background:#f0f6fb;border-radius:2px;display:flex;align-items:center;justify-content:center;color:#adcdea;overflow:hidden;} .mm-env-img{width:100%;height:100%;object-fit:cover;} .mm-env-caption{position:absolute;bottom:1px;left:0;width:100%;text-align:center;font-size:10px;font-weight:700;color:var(--ol-card-text);letter-spacing:1px;} ' +
 '.ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);} ' +
 '#olSettingsPanel .hp-section-label{color:#1a1a1a;font-weight:900;font-size:19px;letter-spacing:2px;margin-bottom:16px;text-align:center;} ' +
-/* ★ 新增：顶部可自定义背景区（在卡片后面） */
-'.ol-top-bg { position:absolute; top:0; left:0; right:0; height:140px; z-index:5; pointer-events:none; background-color:var(--ol-top-bg-color); background-image:var(--ol-top-bg-image); background-size:cover; background-position:center; } ' +
-/* ★ 顶部透明渐变遮罩 + 底部一刀切 */
-'.ol-msgs{margin-top:0 !important; margin-bottom:106px !important; padding-top:140px !important; padding-bottom:20px !important; -webkit-mask-image:linear-gradient(to bottom, transparent 0px, black 30px, black 100%) !important; mask-image:linear-gradient(to bottom, transparent 0px, black 30px, black 100%) !important;}</style>' +
+'.ol-top-bg{position:absolute;top:0;left:0;right:0;height:140px;z-index:4;background-color:var(--ol-top-bg-color);background-image:var(--ol-top-bg-img);background-size:cover;background-position:center;pointer-events:none;} ' +
+'.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:0 !important;margin-bottom:106px !important;padding:140px 16px 20px !important;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, transparent 0px, transparent 100px, black 140px, black 100%) !important;mask-image:linear-gradient(to bottom, transparent 0px, transparent 100px, black 140px, black 100%) !important;} ' +
+'.ol-msgs::-webkit-scrollbar{display:none;}</style>' +
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
-'<div class="ol-top-bg" id="olTopBg"></div>' +
+'<div class="ol-top-bg"></div>' +
 '<div class="mm-cards-wrapper" id="olCardsWrap">' +
   '<div class="mm-env-card mm-ec-1 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p1+'" style="display:'+(p1?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p1?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT1||'银河歌颂')+'</div></div>' +
   '<div class="mm-env-card mm-ec-2 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p2+'" style="display:'+(p2?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p2?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT2||'梦想在冒险')+'</div></div>' +
@@ -96,8 +95,8 @@ con.innerHTML=
 
 /* --- 顶部区域 --- */
 '<div class="ol-area-label">顶部区域</div>' +
-'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>卡片</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>顶部底色</span></div></div>' +
-'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">顶部背景图</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除背景图</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
+'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>顶部底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>卡片</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
+'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">顶部图填充</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
 '<div style="display:flex;gap:8px;margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olBtnUp1">传图1</button><button class="hp-btn hp-btn-outline" id="olBtnUp2">传图2</button><button class="hp-btn hp-btn-outline" id="olBtnUp3">传图3</button><button class="hp-btn hp-btn-outline" id="olBtnUp4">传图4</button></div><input type="file" id="olCardUpInput" accept="image/*" hidden>' +
 '<div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="olCardT1" class="pc-edit-input" placeholder="银河歌颂" value="'+App.escAttr(ap.cardT1)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT2" class="pc-edit-input" placeholder="梦想在冒险" value="'+App.escAttr(ap.cardT2)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div><div style="display:flex;gap:8px;margin-bottom:12px;"><input type="text" id="olCardT3" class="pc-edit-input" placeholder="星星怀抱月夜" value="'+App.escAttr(ap.cardT3)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT4" class="pc-edit-input" placeholder="明天想见你" value="'+App.escAttr(ap.cardT4)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">卡片字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
@@ -135,6 +134,8 @@ O.applyAppearance(c.id);O.applyCustomCode(c.id);},
 
 applyAppearance:function(cid){var ap=gAp(cid),r=App.$('#olRoot');if(!r)return;
 r.style.setProperty('--ol-bg-color',ap.pageBg);
+r.style.setProperty('--ol-top-bg-color',ap.topBgColor||'transparent');
+r.style.setProperty('--ol-top-bg-img',ap.topBgImg?"url('"+ap.topBgImg+"')":'none');
 r.style.setProperty('--ol-c-av-size',ap.cAvSize+'px');r.style.setProperty('--ol-c-av-radius',ap.cAvRadius+'%');r.style.setProperty('--ol-c-av-frame-color',ap.cAvFrameColor);r.style.setProperty('--ol-c-av-frame-w',ap.cAvFrameW+'px');r.style.setProperty('--ol-c-av-name-size',ap.cAvNameSize+'px');r.style.setProperty('--ol-c-av-show',ap.cAvShow?'flex':'none');r.style.setProperty('--ol-c-av-name-show',ap.cAvNameShow?'block':'none');
 r.style.setProperty('--ol-c-bubble-radius',ap.cBubbleRadius+'px');r.style.setProperty('--ol-c-bubble-width',ap.cBubbleWidth+'%');
 r.style.setProperty('--ol-c-bubble-border-w',ap.cBubbleBorderW+'px');r.style.setProperty('--ol-c-bubble-border-color',ap.cBubbleBorderColor);
@@ -157,10 +158,6 @@ r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
 
 r.style.setProperty('--ol-card-bg', ap.cardBg || '#ffffff');
 r.style.setProperty('--ol-card-text', ap.cardTextColor || '#7ea3c9');
-
-/* ★ 顶部底色和图 */
-r.style.setProperty('--ol-top-bg-color', ap.topBgColor || 'transparent');
-r.style.setProperty('--ol-top-bg-image', ap.topBgImg ? "url('"+ap.topBgImg+"')" : 'none');
 
 var wrap=App.$('#olInputWrap');
 if(wrap){
@@ -202,7 +199,6 @@ var pg=isU?(ap.uParaGap||8):(ap.cParaGap||8);
 var lg=isU?(ap.uLetterGap||0):(ap.cLetterGap||0);
 fmt=fmt.replace(/\n/g,'<span style="display:block;height:'+pg+'px;line-height:0;font-size:0;"></span>');
 
-/* ★ 植入珍珠开关 */
 var pearlHtml = (!isU && parsed.think) ? '<div class="ol-pearl-btn" data-idx="'+idx+'" title="点击展开/收起思维链" onclick="this.classList.toggle(\'open\'); var tb = document.getElementById(\'ol-think-\'+this.dataset.idx); if(tb) tb.classList.toggle(\'open\');"></div>' : '';
 var nameHtml = avN + pearlHtml;
 
@@ -349,9 +345,14 @@ bc('olcBubbleBg','cBubbleBg'); bc('oluBubbleBg','uBubbleBg');
 bc('olPageBg','pageBg'); bc('olInputTextColor','inputTextColor');
 bc('olBarBorderColor','barBorderColor'); bc('olBarIconColor','barIconColor');
 bc('olCardBg','cardBg'); bc('olCardTextColor','cardTextColor');
-bc('olTopBgColor','topBgColor');
 bc('olcAvFrameColor','cAvFrameColor'); bc('olcBubbleBorderColor','cBubbleBorderColor'); bc('olcTextColor','cTextColor');
 bc('oluAvFrameColor','uAvFrameColor'); bc('oluBubbleBorderColor','uBubbleBorderColor'); bc('oluTextColor','uTextColor');
+bc('olTopBgColor', 'topBgColor');
+
+var topBgInp=App.$('#olTopBgInput');
+App.safeOn('#olSbTopBgBtn','click',function(){if(topBgInp)topBgInp.click();});
+if(topBgInp){topBgInp.addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(ev){var process=function(c){ap.topBgImg=c;sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部图已更新');};if(App.cropImage)App.cropImage(ev.target.result,process);else process(ev.target.result);};reader.readAsDataURL(f);e.target.value='';});}
+App.safeOn('#olSbTopBgDel','click',function(){ap.topBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部图已清除');});
 
 App.safeOn('#olBarReset','click',function(){
   ap.barBg='linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)';
@@ -369,11 +370,6 @@ App.safeOn('#olBarReset','click',function(){
   if(ph) ph.value=ap.placeholder;
   App.showToast('底栏已重置');
 });
-
-var topBgInp=App.$('#olTopBgInput');
-App.safeOn('#olSbTopBgBtn','click',function(){if(topBgInp)topBgInp.click();});
-if(topBgInp){topBgInp.addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(ev){var process=function(c){ap.topBgImg=c;sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部背景已更新');};if(App.cropImage)App.cropImage(ev.target.result,process);else process(ev.target.result);};reader.readAsDataURL(f);e.target.value='';});}
-App.safeOn('#olSbTopBgDel','click',function(){ap.topBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部背景已清除');});
 
 var swMap={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow','olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide','olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
 App.$$('.ol-sw-track').forEach(function(s){s.addEventListener('click',function(e){e.stopPropagation();s.classList.toggle('on');var id=s.parentElement.id,on=s.classList.contains('on');if(swMap[id]){ap[swMap[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}else save();});});
@@ -426,7 +422,22 @@ if(phInput){phInput.addEventListener('input',function(){ap.placeholder=this.valu
 App.safeOn('#olSbBarBgDel','click',function(){ap.barBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('底栏图已清除');});
 
 var mc=App.$('#olMsgs');
-if(mc){var lt=null,lT=null,mv=false;mc.addEventListener('touchstart',function(e){var b=e.target.closest('.ol-block');if(!b)return;var isT=false;var txt=e.target.closest('.ol-bubble-text');if(txt){isT=true;if(e.target.tagName==='SPAN'&&e.target.style.display==='block'&&e.target.style.height)isT=false;}if(isT)return;mv=false;var t=e.touches[0];lT={el:b,x:t.clientX,y:t.clientY};lt=setTimeout(function(){if(lT&&!mv){if(navigator.vibrate)navigator.vibrate(15);O.showCtxMenu(lT.el,lT.x,lT.y);}},500);},{passive:true});mc.addEventListener('touchmove',function(e){if(lt){var t=e.touches[0];if(lT&&(Math.abs(t.clientX-lT.x)>8||Math.abs(t.clientY-lT.y)>8)){mv=true;clearTimeout(lt);lT=null;}}},{passive:true});mc.addEventListener('touchend',function(){clearTimeout(lt);lT=null;},{passive:true});}
+if(mc){
+  var lt=null,lT=null,mv=false;
+  mc.addEventListener('touchstart',function(e){
+    var b=e.target.closest('.ol-block');if(!b)return;
+    var isT=false;var txt=e.target.closest('.ol-bubble-text');
+    if(txt){isT=true;if(e.target.tagName==='SPAN'&&e.target.style.display==='block'&&e.target.style.height)isT=false;}
+    if(isT)return;
+    mv=false;var t=e.touches[0];lT={el:b,x:t.clientX,y:t.clientY};
+    lt=setTimeout(function(){if(lT&&!mv){if(navigator.vibrate)navigator.vibrate(15);O.showCtxMenu(lT.el,lT.x,lT.y);}},500);
+  },{passive:true});
+  mc.addEventListener('touchmove',function(e){
+    if(lt){var t=e.touches[0];if(lT&&(Math.abs(t.clientX-lT.x)>8||Math.abs(t.clientY-lT.y)>8)){mv=true;clearTimeout(lt);lT=null;}}
+  },{passive:true});
+  mc.addEventListener('touchend',function(){clearTimeout(lt);lT=null;},{passive:true});
+}
+
 if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}},
 showCtxMenu:function(el,x,y){var OL=App.offline;if(!OL)return;OL.dismissCtx();var idx=parseInt(el.dataset.msgIdx);if(isNaN(idx))return;var msg=OL.messages[idx];if(!msg)return;var isU=msg.role==='user';var menu=document.createElement('div');menu.className='ol-ctx';var it='';it+='<div class="ol-ctx-item" data-act="copy">'+CTX_ICONS.copy+'<span>复制</span></div>';it+='<div class="ol-ctx-item" data-act="edit">'+CTX_ICONS.edit+'<span>编辑</span></div>';if(!isU)it+='<div class="ol-ctx-item" data-act="regen">'+CTX_ICONS.regen+'<span>重写</span></div>';it+='<div class="ol-ctx-item" data-act="del">'+CTX_ICONS.del+'<span>删除</span></div>';it+='<div class="ol-ctx-item" data-act="delafter">'+CTX_ICONS.delafter+'<span>全删</span></div>';menu.innerHTML=it;var left=Math.max(8,Math.min(x-110,window.innerWidth-230)),top=y-80;if(top<60)top=y+10;menu.style.left=left+'px';menu.style.top=top+'px';document.body.appendChild(menu);OL._ctxMenu=menu;menu.querySelectorAll('.ol-ctx-item').forEach(function(item){item.addEventListener('click',function(e){e.stopPropagation();var act=item.dataset.act;OL.dismissCtx();if(act==='copy')App.copyText(msg.content).then(function(){App.showToast('已复制');});else if(act==='edit')O.showEditDialog(idx);else if(act==='del'){OL.messages.splice(idx,1);OL.saveMsgs();O.renderMessages();}else if(act==='delafter'){if(!confirm('删除此条及之后？'))return;OL.messages.splice(idx);OL.saveMsgs();O.renderMessages();}else if(act==='regen'){OL.messages.splice(idx);OL.saveMsgs();O.renderMessages();OL.requestAI();}});});},
 showEditDialog:function(idx){var OL=App.offline;if(!OL)return;var msg=OL.messages[idx];if(!msg)return;var ov=document.createElement('div');ov.className='pc-edit-overlay';ov.style.zIndex='100060';ov.innerHTML='<div class="pc-edit-panel" style="width:320px;max-height:70vh;overflow-y:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div class="pc-header">编辑<div class="pc-close-btn" id="olEdX">×</div></div><div class="pc-body"><textarea class="pc-input" id="olEdTA" style="min-height:120px;resize:vertical">'+App.esc(msg.content)+'</textarea></div><div class="pc-footer"><button class="pc-btn pc-btn-save" id="olEdSave" type="button">保存</button><button class="pc-btn pc-btn-cancel" id="olEdNo" type="button">取消</button></div></div>';document.body.appendChild(ov);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});ov.querySelector('#olEdX').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdNo').addEventListener('click',function(){ov.remove();});ov.querySelector('#olEdSave').addEventListener('click',function(){var v=ov.querySelector('#olEdTA').value.trim();if(!v){App.showToast('不能为空');return;}OL.messages[idx].content=v;OL.saveMsgs();O.renderMessages();ov.remove();});},
