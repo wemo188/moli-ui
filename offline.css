@@ -85,11 +85,7 @@
 .ol-hd-name{flex:1;text-align:center;font-size:var(--ol-hd-size);font-weight:700;color:var(--ol-hd-text);letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:auto;}
 .ol-hd-typing{display:block;font-size:12px;color:var(--ol-accent);font-weight:400;}
 
-.ol-msgs{
-  position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  margin-top:50px;
-  padding:10px 16px 140px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
-}
+.ol-msgs{position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;margin-top:50px;padding:10px 16px 140px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0px,rgba(0,0,0,0.05) 15px,rgba(0,0,0,0.3) 35px,black 60px,black calc(100% - 180px),rgba(0,0,0,0.3) calc(100% - 130px),rgba(0,0,0,0.05) calc(100% - 105px),transparent calc(100% - 90px));mask-image:linear-gradient(to bottom,transparent 0px,rgba(0,0,0,0.05) 15px,rgba(0,0,0,0.3) 35px,black 60px,black calc(100% - 180px),rgba(0,0,0,0.3) calc(100% - 130px),rgba(0,0,0,0.05) calc(100% - 105px),transparent calc(100% - 90px));}
 .ol-msgs::-webkit-scrollbar{display:none;}
 
 .ol-block{display:flex;flex-direction:column;gap:6px;max-width:100%;}
