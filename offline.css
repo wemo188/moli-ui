@@ -139,7 +139,7 @@
 .ol-block.is-user .ol-bub-bg{background:var(--ol-u-bubble-bg);opacity:var(--ol-u-bubble-opacity);}
 
 .ol-bubble-inner{position:relative;z-index:1;padding:var(--ol-prose-padding);}
-.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default !important;}
+.ol-bubble-text{font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);font-weight:var(--ol-text-weight);color:var(--ol-text-color);word-break:break-word;white-space:pre-wrap;-webkit-user-select:text !important;user-select:text !important;-webkit-touch-callout:default !important; touch-action: pan-y !important;}
 .ol-block.is-char .ol-bubble-text{font-size:var(--ol-c-text-size);font-weight:var(--ol-c-text-weight);line-height:var(--ol-c-text-lh);color:var(--ol-c-text-color);}
 .ol-block.is-user .ol-bubble-text{font-size:var(--ol-u-text-size);font-weight:var(--ol-u-text-weight);line-height:var(--ol-u-text-lh);color:var(--ol-u-text-color);}
 .ol-time-sep{text-align:center;font-size:12px;color:var(--ol-meta-color);margin:14px 20px 8px;letter-spacing:.5px;font-weight:600;}
