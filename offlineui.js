@@ -43,7 +43,7 @@ var uFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-co
 var p1=App.LS.get('ol_photo_'+c.id+'_1')||'', p2=App.LS.get('ol_photo_'+c.id+'_2')||'', p3=App.LS.get('ol_photo_'+c.id+'_3')||'', p4=App.LS.get('ol_photo_'+c.id+'_4')||'';
 
 con.innerHTML=
-'<style>.ol-root::after{content:"";position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(to bottom, var(--ol-bg-color) 40%, rgba(255,255,255,0) 100%);z-index:6;pointer-events:none;}</style>' +
+'<style>.ol-root::after{content:"";position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(to bottom, var(--ol-bg-color) 40%, rgba(255,255,255,0) 100%);z-index:6;pointer-events:none;} #olSettingsPanel .hp-btn:not(.hp-btn-primary):not(.hp-btn-danger):not(.hp-btn-outline){border:1.5px solid transparent !important;box-shadow:0 1px 4px rgba(0,0,0,0.05);}</style>' +
 '<div class="ol-root" id="olRoot">' +
 '<div class="ol-bg" id="olBg" style="'+(bg?'background-image:linear-gradient(rgba(255,255,255,'+(ap.bgBlur/100)+'),rgba(255,255,255,'+(ap.bgBlur/100)+')),url('+App.escAttr(bg)+');filter:brightness('+(100-ap.bgDark)+'%);background-size:cover;':'')+'"></div>' +
 '<div class="ol-top-bg"></div>' +
