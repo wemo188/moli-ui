@@ -91,7 +91,6 @@ con.innerHTML=
 '<div class="hp-slider-row"><span class="hp-slider-label">暗度视觉</span><input type="range" id="olBgDark" min="0" max="80" value="'+ap.bgDark+'"><span class="hp-slider-val" id="olBgDarkVal">'+ap.bgDark+'%</span></div>' +
 '<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">字体选择</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏沉浸</button></div>' +
-'<div class="hp-slider-row"><span class="hp-slider-label">消息间距</span><input type="range" id="olBlockGap" min="0" max="40" value="'+ap.blockGap+'"><span class="hp-slider-val" id="olBlockGapVal">'+ap.blockGap+'px</span></div>' +
 
 /* --- 顶部区域 --- */
 '<div class="ol-area-label">顶部区域</div>' +
