@@ -15,7 +15,7 @@ var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32
 var STOP_SVG='<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 var CTX_ICONS={copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',edit:'<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',regen:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>',del:'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',delafter:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'};
 
-var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
+var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,pageBg:'#ffffff',barBg:'linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',blockGap:20,cAvShow:true,cAvNameShow:true,cAvSize:70,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:2,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:70,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:2,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:95,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){if(r[k]!==undefined)r[k]=s[k];});return r;}
 function sAp(c,a){App.LS.set('olAp_'+c,a);}
@@ -26,7 +26,7 @@ function eR(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 function h2r(h,a){if(!h)return 'rgba(255,255,255,'+a+')';if(h.indexOf('rgba')>=0)return h.replace(/,\s*[\d.]+\s*\)/,','+a+')');if(h.indexOf('rgb')>=0)return h.replace('rgb','rgba').replace(')',','+a+')');h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];if(h.length!==6)return 'rgba(255,255,255,'+a+')';return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
 
 function fmtUI(p,ap){var h='';
-if(p==='cQuote'||p==='quote'){var r=ap[p+'Rec']||[],d=ap[p+'Dis']||'curly';h+='<div class="ol-hint">开启后识别双引号并转换显示，因为模型太爱用英文引号了，防不住</div><div class="ol-inline-tag-row"><span class="ol-sub-label">识别</span><div class="ol-tag-group">'+tg('ol-'+p+'-qrec','curly','\u201C\u201D',r.indexOf('curly')>=0)+tg('ol-'+p+'-qrec','straight','&quot;&quot;',r.indexOf('straight')>=0)+tg('ol-'+p+'-qrec','corner','「」',r.indexOf('corner')>=0)+'</div></div><div class="ol-inline-tag-row"><span class="ol-sub-label">显示</span><div class="ol-tag-group">'+tg('ol-'+p+'-qdis','curly','\u201C\u201D',d==='curly')+tg('ol-'+p+'-qdis','straight','&quot;&quot;',d==='straight')+tg('ol-'+p+'-qdis','corner','「」',d==='corner')+'</div></div>';}
+if(p==='cQuote'||p==='quote'){var r=ap[p+'Rec']||[],d=ap[p+'Dis']||'curly';h+='<div class="ol-hint">开启后识别双引号并转换显示，防止模型偷用英文引号</div><div class="ol-inline-tag-row"><span class="ol-sub-label">识别</span><div class="ol-tag-group">'+tg('ol-'+p+'-qrec','curly','\u201C\u201D',r.indexOf('curly')>=0)+tg('ol-'+p+'-qrec','straight','&quot;&quot;',r.indexOf('straight')>=0)+tg('ol-'+p+'-qrec','corner','「」',r.indexOf('corner')>=0)+'</div></div><div class="ol-inline-tag-row"><span class="ol-sub-label">显示</span><div class="ol-tag-group">'+tg('ol-'+p+'-qdis','curly','\u201C\u201D',d==='curly')+tg('ol-'+p+'-qdis','straight','&quot;&quot;',d==='straight')+tg('ol-'+p+'-qdis','corner','「」',d==='corner')+'</div></div>';}
 else if(p==='cParen'||p==='paren'){var r2=ap[p+'Rec']||[],d2=ap[p+'Dis']||'full';h+='<div class="ol-inline-tag-row"><span class="ol-sub-label">识别</span><div class="ol-tag-group">'+tg('ol-'+p+'-prec','full','（…）',r2.indexOf('full')>=0)+tg('ol-'+p+'-prec','half','(…)',r2.indexOf('half')>=0)+'</div></div><div class="ol-inline-tag-row"><span class="ol-sub-label">显示</span><div class="ol-tag-group">'+tg('ol-'+p+'-pdis','full','（…）',d2==='full')+tg('ol-'+p+'-pdis','half','(…)',d2==='half')+'</div></div><div class="ol-sw-row">隐藏括号 '+sw('ol'+p+'Hide',ap[p+'Hide'])+'</div>';}
 else{h+='<div class="ol-sub-label">识别：*…*</div><div class="ol-sw-row">隐藏星号 '+sw('ol'+p+'Hide',ap[p+'Hide'])+'</div>';}
 h+='<div class="ol-inline-row"><span>颜色</span><div class="hp-color-dot" id="ol'+p+'Color" data-fk="'+p+'Color"></div></div><div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" data-fk="'+p+'Size" min="10" max="24" step="0.5" value="'+ap[p+'Size']+'"><span class="hp-slider-val" id="ol'+p+'SizeVal">'+ap[p+'Size']+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" data-fk="'+p+'Weight" min="100" max="900" step="100" value="'+ap[p+'Weight']+'"><span class="hp-slider-val" id="ol'+p+'WeightVal">'+ap[p+'Weight']+'</span></div><div class="ol-inline-tag-row"><span class="ol-sub-label">样式</span><div class="ol-tag-group">'+tg('ol-'+p+'-style','normal','正常',!ap[p+'Italic'])+tg('ol-'+p+'-style','italic','斜体',ap[p+'Italic'])+'</div></div>';return h;}
@@ -72,13 +72,13 @@ con.innerHTML=
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
 
 /* ===== 1. 聊天设置 ===== */
-'<div class="hp-section-label">聊天设置</div>' +
+'<div class="hp-section-label">★ 聊天设置 ★</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空不限" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:48px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
 
 /* ===== 2. 美化渲染 ===== */
-'<div class="hp-section-label" style="margin-top:24px;">美化渲染</div>' +
+'<div class="hp-section-label" style="margin-top:36px;">★ 美化渲染 ★</div>' +
 
 /* --- 整体 --- */
 '<div class="ol-area-label">整体</div>' +
@@ -293,6 +293,93 @@ var defCardT = ['银河歌颂', '梦想在冒险', '星星怀抱月夜', '明天
   }
 });
 
+App.safeOn('#olCardReset','click',function(){
+  ap.cardBg = '#ffffff'; ap.cardTextColor = '#7ea3c9'; ap.cardFont='';
+  ap.cardT1=''; ap.cardT2=''; ap.cardT3=''; ap.cardT4='';
+  for(var i=1;i<=4;i++){
+    App.LS.remove('ol_photo_'+cid+'_'+i);
+    var ipt=App.$('#olCardT'+i); if(ipt) ipt.value='';
+    var card=App.$('.mm-ec-'+i);
+    if(card){
+      var img=card.querySelector('.mm-env-img');
+      var pl=card.querySelector('.mm-env-placeholder');
+      var cap=card.querySelector('.mm-env-caption');
+      if(img){img.src='';img.style.display='none';}
+      if(pl)pl.style.display='flex';
+      if(cap)cap.textContent = defCardT[i-1];
+    }
+  }
+  var cfSel=App.$('#olCardFont'); if(cfSel)cfSel.value='';
+  sAp(cid,ap); O.applyAppearance(cid);
+  var dbg=App.$('#olCardBg'), dtc=App.$('#olCardTextColor');
+  if(dbg) dbg.style.background=ap.cardBg;
+  if(dtc) dtc.style.background=ap.cardTextColor;
+  App.showToast('顶部卡片已重置');
+});
+
+function bindGrad(id, key, tpl) {
+  var dot = App.$('#'+id); if(!dot) return;
+  dot.style.background = ap[key] || '#fff';
+  dot.addEventListener('click', function(e) {
+    e.stopPropagation(); if(!App.openColorPicker) return;
+    App.openColorPicker(ap[key] || '#fff', function(hex) {
+      var c = hex; if(hex.indexOf('gradient') === -1 && hex.indexOf('#') === 0) c = tpl(hex);
+      dot.style.background = c; ap[key] = c; sr();
+    }, function(hex) {
+      var c = hex; if(hex.indexOf('gradient') === -1 && hex.indexOf('#') === 0) c = tpl(hex);
+      dot.style.background = c; ap[key] = c; sAp(cid, ap); O.applyAppearance(cid);
+    }, 'ol_' + key);
+  });
+}
+bindGrad('olBarBg', 'barBg', function(c){ return 'linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, '+c+' 55%, #dcf0ff 75%, #ffffff 100%)'; });
+
+function bc(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap[key]||'#fff';dot.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[key]||'#fff',function(hex){dot.style.background=hex;ap[key]=hex;sr();},function(hex){dot.style.background=hex;ap[key]=hex;sAp(cid,ap);O.applyAppearance(cid);},'ol_'+key);});}
+bc('olcBubbleBg','cBubbleBg'); bc('oluBubbleBg','uBubbleBg');
+bc('olPageBg','pageBg'); bc('olInputTextColor','inputTextColor');
+bc('olBarBorderColor','barBorderColor'); bc('olBarIconColor','barIconColor');
+bc('olCardBg','cardBg'); bc('olCardTextColor','cardTextColor');
+bc('olcAvFrameColor','cAvFrameColor'); bc('olcBubbleBorderColor','cBubbleBorderColor'); bc('olcTextColor','cTextColor');
+bc('oluAvFrameColor','uAvFrameColor'); bc('oluBubbleBorderColor','uBubbleBorderColor'); bc('oluTextColor','uTextColor');
+
+App.safeOn('#olBarReset','click',function(){
+  ap.barBg='linear-gradient(135deg, #ffffff 0%, #e6f5ff 25%, #b9dcfa 55%, #dcf0ff 75%, #ffffff 100%)';
+  ap.barBorderColor='rgba(255,255,255,0.9)'; ap.barIconColor='#adcdea'; ap.inputTextColor='#adcdea';
+  ap.barBorderW=1; ap.barRadius=0; ap.placeholder='宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚'; ap.barBgImg='';
+  sAp(cid,ap); O.applyAppearance(cid);
+  var dbg=App.$('#olBarBg'), dbc=App.$('#olBarBorderColor'), dic=App.$('#olBarIconColor'), dit=App.$('#olInputTextColor');
+  if(dbg) dbg.style.background=ap.barBg;
+  if(dbc) dbc.style.background=ap.barBorderColor;
+  if(dic) dic.style.background=ap.barIconColor;
+  if(dit) dit.style.background=ap.inputTextColor;
+  var sw=App.$('#olBarBorderW'), sv=App.$('#olBarBorderWVal'), sr=App.$('#olBarRadius'), srv=App.$('#olBarRadiusVal'), ph=App.$('#olPlaceholderInput');
+  if(sw){sw.value=1;sv.textContent='1px';}
+  if(sr){sr.value=0;srv.textContent='0px';}
+  if(ph) ph.value=ap.placeholder;
+  App.showToast('底栏已重置');
+});
+
+var swMap={'olPovOn':'povOn','olcAvShow':'cAvShow','olcAvNameShow':'cAvNameShow','oluAvShow':'uAvShow','oluAvNameShow':'uAvNameShow','olcQuoteOn':'cQuoteOn','olcParenOn':'cParenOn','olcStarOn':'cStarOn','olcParenHide':'cParenHide','olcStarHide':'cStarHide','olquoteOn':'quoteOn','olparenOn':'parenOn','olstarOn':'starOn','olparenHide':'parenHide','olstarHide':'starHide'};
+App.$$('.ol-sw-track').forEach(function(s){s.addEventListener('click',function(e){e.stopPropagation();s.classList.toggle('on');var id=s.parentElement.id,on=s.classList.contains('on');if(swMap[id]){ap[swMap[id]]=on;if(id==='olPovOn'){var sub=App.$('#olPovSub');if(sub)sub.style.display=on?'':'none';}sr();}else save();});});
+var sls=[{id:'olBgBlur',k:'bgBlur',u:'%'},{id:'olBgDark',k:'bgDark',u:'%'},{id:'olBarBorderW',k:'barBorderW',u:'px'},{id:'olBarRadius',k:'barRadius',u:'px'},{id:'olcAvSize',k:'cAvSize',u:'px'},{id:'olcAvRadius',k:'cAvRadius',u:'%'},{id:'olcAvFrameW',k:'cAvFrameW',u:'px'},{id:'olcAvNameSize',k:'cAvNameSize',u:'px'},{id:'olcBubbleRadius',k:'cBubbleRadius',u:'px'},{id:'olcBubbleBorderW',k:'cBubbleBorderW',u:'px'},{id:'olcBubbleWidth',k:'cBubbleWidth',u:'%'},{id:'olcBubbleOpacity',k:'cBubbleOpacity',u:'%'},{id:'olcBubbleBlur',k:'cBubbleBlur',u:'px'},{id:'olcTextSize',k:'cTextSize',u:'px'},{id:'olcTextWeight',k:'cTextWeight',u:''},{id:'olcTextLH',k:'cTextLH',u:''},{id:'olcParaGap',k:'cParaGap',u:'px'},{id:'olcLetterGap',k:'cLetterGap',u:'px'},{id:'oluAvSize',k:'uAvSize',u:'px'},{id:'oluAvRadius',k:'uAvRadius',u:'%'},{id:'oluAvFrameW',k:'uAvFrameW',u:'px'},{id:'oluAvNameSize',k:'uAvNameSize',u:'px'},{id:'oluBubbleRadius',k:'uBubbleRadius',u:'px'},{id:'oluBubbleBorderW',k:'uBubbleBorderW',u:'px'},{id:'oluBubbleWidth',k:'uBubbleWidth',u:'%'},{id:'oluBubbleOpacity',k:'uBubbleOpacity',u:'%'},{id:'oluBubbleBlur',k:'uBubbleBlur',u:'px'},{id:'oluTextSize',k:'uTextSize',u:'px'},{id:'oluTextWeight',k:'uTextWeight',u:''},{id:'oluTextLH',k:'uTextLH',u:''},{id:'oluParaGap',k:'uParaGap',u:'px'},{id:'oluLetterGap',k:'uLetterGap',u:'px'}];
+sls.forEach(function(s){var sl=App.$('#'+s.id),val=App.$('#'+s.id+'Val');if(!sl||!val)return;sl.addEventListener('input',function(){var v=parseFloat(this.value);val.textContent=v+s.u;ap[s.k]=v;sr();});});
+App.$$('[data-fk]').forEach(function(el){var k=el.dataset.fk;if(el.tagName==='INPUT'&&el.type==='range'){var vl=App.$('#ol'+k+'Val');el.addEventListener('input',function(){var v=parseFloat(this.value);if(vl)vl.textContent=v+(k.indexOf('Weight')>=0?'':'px');ap[k]=v;sr();});}if(el.classList.contains('hp-color-dot')){el.style.background=ap[k];el.addEventListener('click',function(e){e.stopPropagation();if(!App.openColorPicker)return;App.openColorPicker(ap[k],function(hex){el.style.background=hex;ap[k]=hex;sr();},function(hex){el.style.background=hex;ap[k]=hex;sAp(cid,ap);O._noScroll=true;O.renderMessages();},'ol_'+k);});}});
+
+App.$$('.ol-povu-btn').forEach(function(b){if(b.dataset.pov===ap.povUser)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-povu-btn')),b);ap.povUser=b.dataset.pov;save();});});
+App.$$('.ol-povc-btn').forEach(function(b){if(b.dataset.pov===ap.povChar)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-povc-btn')),b);ap.povChar=b.dataset.pov;save();});});
+var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){ap.wordCount=parseInt(this.value)||0;save();});
+var cfSel=App.$('#olChatFont');
+if(cfSel){var cfOpts='<option value="">跟随全局</option>';var BT=[{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];BT.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.name)+'</option>';});var cl=App.LS.get('fontCustomList')||[];cl.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});cfSel.innerHTML=cfOpts;cfSel.addEventListener('change',function(){ap.chatFont=this.value;sr();});}
+App.$$('.ol-mode-btn').forEach(function(b){if(b.dataset.mode===ap.mode)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-mode-btn')),b);ap.mode=b.dataset.mode;sr();});});
+function bmt(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){t.classList.toggle('active');ap[k]=[];App.$$(cls+'.active').forEach(function(x){ap[k].push(x.dataset.val);});sr();});});}
+bmt('.ol-cQuote-qrec','cQuoteRec');bmt('.ol-cParen-prec','cParenRec');bmt('.ol-quote-qrec','quoteRec');bmt('.ol-paren-prec','parenRec');
+function bst(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){App.$$(cls).forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[k]=t.dataset.val;sr();});});}
+bst('.ol-cQuote-qdis','cQuoteDis');bst('.ol-cParen-pdis','cParenDis');bst('.ol-quote-qdis','quoteDis');bst('.ol-paren-pdis','parenDis');
+['cQuote','cParen','cStar','quote','paren','star'].forEach(function(p){App.$$('.ol-'+p+'-style').forEach(function(t){t.addEventListener('click',function(){App.$$('.ol-'+p+'-style').forEach(function(x){x.classList.remove('active');});t.classList.add('active');ap[p+'Italic']=t.dataset.val==='italic';sr();});});});
+
+App.safeOn('#olSbScene','click',function(){O.showSceneDialog();});
+App.safeOn('#olSbBg','click',function(){O.showBgMenu();});
+App.safeOn('#olSbCode','click',function(){O._closePanel();O.openCodeEditor();});
+
 App.safeOn('#olStyleReset','click',function(){
   App.LS.remove('olAp_'+cid);
   ap=JSON.parse(JSON.stringify(DEF_AP));
@@ -320,6 +407,7 @@ if(barBgInp){barBgInp.addEventListener('change',function(e){var f=e.target.files
 var phInput=App.$('#olPlaceholderInput');
 if(phInput){phInput.addEventListener('input',function(){ap.placeholder=this.value;sAp(cid,ap);var inp=App.$('#olInput');if(inp)inp.placeholder=this.value;});}
 App.safeOn('#olSbBarBgDel','click',function(){ap.barBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('底栏图已清除');});
+
 var mc=App.$('#olMsgs');
 if(mc){var lt=null,lT=null,mv=false;mc.addEventListener('touchstart',function(e){var b=e.target.closest('.ol-block');if(!b)return;var isT=false;var txt=e.target.closest('.ol-bubble-text');if(txt){isT=true;if(e.target.tagName==='SPAN'&&e.target.style.display==='block'&&e.target.style.height)isT=false;}if(isT)return;mv=false;var t=e.touches[0];lT={el:b,x:t.clientX,y:t.clientY};lt=setTimeout(function(){if(lT&&!mv){if(navigator.vibrate)navigator.vibrate(15);O.showCtxMenu(lT.el,lT.x,lT.y);}},500);},{passive:true});mc.addEventListener('touchmove',function(e){if(lt){var t=e.touches[0];if(lT&&(Math.abs(t.clientX-lT.x)>8||Math.abs(t.clientY-lT.y)>8)){mv=true;clearTimeout(lt);lT=null;}}},{passive:true});mc.addEventListener('touchend',function(){clearTimeout(lt);lT=null;},{passive:true});}
 if(root){root.addEventListener('click',function(){OL.dismissCtx();var pp=App.$('#olPlusPanel');if(pp&&OL._plusOpen){pp.classList.remove('show');OL._plusOpen=false;}});}},
