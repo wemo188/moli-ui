@@ -307,10 +307,9 @@
 }
 
 /* ★ 气泡底部纯图标操作栏 */
-.ol-msg-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; opacity:0.3; transition:opacity 0.2s; align-items:center; }
-.ol-msg-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; opacity:0.5; transition:opacity 0.2s; align-items:center; justify-content:flex-start; padding-left:4px; }
-.ol-block.is-char .ol-msg-actions { padding-left:4px; }
-.ol-block.is-user .ol-msg-actions { padding-left:4px; justify-content:flex-start; }
+.ol-msg-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; opacity:0.5; transition:opacity 0.2s; align-items:center; justify-content:flex-start; padding-left:4px; max-width:var(--ol-c-bubble-width); }
+.ol-block.is-char .ol-msg-actions { max-width:var(--ol-c-bubble-width); align-self:flex-start; }
+.ol-block.is-user .ol-msg-actions { max-width:var(--ol-u-bubble-width); align-self:flex-end; }
 .ol-block:hover .ol-msg-actions { opacity:1; }
 .ol-action-btn { background:none; border:none; padding:4px 2px; font-size:12px; font-weight:700; color:var(--ol-meta-color); cursor:pointer; font-family:inherit; -webkit-tap-highlight-color:transparent; transition:color 0.2s, transform 0.1s; }
 .ol-action-btn:active { color:var(--ol-text-color); transform:scale(0.92); }
@@ -348,3 +347,11 @@
   border: 1.5px solid transparent !important;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
+
+#olEdTA {
+  caret-color: #7ea3c9;
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 12px;
+}
+
