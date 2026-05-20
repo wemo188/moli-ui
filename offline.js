@@ -485,6 +485,7 @@ var Offline={
       Offline.saveMsgs();
       if(App.offlineUI)App.offlineUI.renderMessages();
     }
+  },
 
   stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
