@@ -513,15 +513,12 @@ if(mc){
     var msg = OL.messages[idx];
     if(!msg) return;
 
-        if(act === 'swipe-prev') {
+    if(act === 'swipe-prev') {
       if(msg.swipeIdx > 0) {
-        /* 保存当前分支的后续消息 */
         if(!msg.children) msg.children = [];
         msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
-        /* 切换 */
         msg.swipeIdx--;
         msg.content = msg.swipes[msg.swipeIdx];
-        /* 恢复目标分支的后续消息 */
         OL.messages.splice(idx + 1);
         if(msg.children[msg.swipeIdx] && msg.children[msg.swipeIdx].length) {
           msg.children[msg.swipeIdx].forEach(function(m){ OL.messages.push(m); });
@@ -530,13 +527,10 @@ if(mc){
       }
     } else if(act === 'swipe-next') {
       if(msg.swipeIdx < msg.swipes.length - 1) {
-        /* 保存当前分支的后续消息 */
         if(!msg.children) msg.children = [];
         msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
-        /* 切换 */
         msg.swipeIdx++;
         msg.content = msg.swipes[msg.swipeIdx];
-        /* 恢复目标分支的后续消息 */
         OL.messages.splice(idx + 1);
         if(msg.children[msg.swipeIdx] && msg.children[msg.swipeIdx].length) {
           msg.children[msg.swipeIdx].forEach(function(m){ OL.messages.push(m); });
@@ -544,28 +538,18 @@ if(mc){
         OL.saveMsgs(); O._noScroll=true; O.renderMessages();
       }
     } else if(act === 'regen') {
-      /* 保存当前分支的后续消息到 children */
       if(!msg.swipes) msg.swipes = [msg.content];
       if(!msg.children) msg.children = [];
       if(msg.swipeIdx === undefined) msg.swipeIdx = 0;
       msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
-      /* 删除后续消息，准备重写 */
       OL.messages.splice(idx + 1);
-      /* 告诉 offline.js 这是重写模式 */
       OL._regenIdx = idx;
       OL.saveMsgs();
       OL.requestAI();
-    }
-} else if(act === 'copy') {
+    } else if(act === 'copy') {
       App.copyText(msg.content).then(function(){App.showToast('已复制');});
     } else if(act === 'edit') {
       O.showEditDialog(idx);
-    } else if(act === 'regen') {
-      var arr = msg.swipes || [msg.content];
-      OL._pendingSwipe = { idx: idx, arr: arr };
-      OL.messages.splice(idx);
-      OL.saveMsgs();
-      OL.requestAI();
     } else if(act === 'continue') {
       OL.messages.splice(idx + 1);
       OL.saveMsgs();
