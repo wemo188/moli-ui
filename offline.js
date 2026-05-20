@@ -370,6 +370,7 @@ var Offline={
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
 
     Offline.isStreaming=true;Offline._streamPartial='';
+    Offline._thinkText='';
     if(App.offlineUI){
       App.offlineUI.renderMessages();
       App.offlineUI.updateAiBtn();
@@ -422,10 +423,17 @@ var Offline={
             if(!data)continue;
             try{
               var json=JSON.parse(data);
-              var delta=json.choices&&json.choices[0]&&json.choices[0].delta;
-              if(delta&&delta.content){
-                fullText+=delta.content;
-                Offline._streamPartial=fullText;
+                            var delta=json.choices&&json.choices[0]&&json.choices[0].delta;
+              if(delta){
+                if(delta.reasoning_content){
+                  if(!Offline._thinkText) Offline._thinkText='';
+                  Offline._thinkText+=delta.reasoning_content;
+                }
+                if(delta.content){
+                  fullText+=delta.content;
+                }
+                /* 拼接完整文本：思维链包在 <think> 标签里 */
+                Offline._streamPartial=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
               }
             }catch(e){}
           }
@@ -497,6 +505,10 @@ var Offline={
       Offline.isStreaming=false;Offline.abortCtrl=null;
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       text=text.trim();
+      if(Offline._thinkText){
+        text='<think>'+Offline._thinkText+'</think>'+text;
+      }
+      Offline._thinkText='';
       if(!text){
         if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
         if(App.offlineUI)App.offlineUI.renderMessages();
