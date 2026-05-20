@@ -472,11 +472,11 @@ App.safeOn('#olNavTop', 'click', function(){ var mc = App.$('#olMsgs'); if(mc) m
 App.safeOn('#olNavBot', 'click', function(){ var mc = App.$('#olMsgs'); if(mc) mc.scrollTo({top:mc.scrollHeight, behavior:'smooth'}); });
 App.safeOn('#olNavBubTop', 'click', function(){
   var b = getActiveBubble(); var mc = App.$('#olMsgs');
-  if(b && mc) mc.scrollTo({top: b.offsetTop - 60, behavior:'smooth'});
+  if(b && mc) mc.scrollTo({top: b.offsetTop - mc.clientHeight/2, behavior:'smooth'});
 });
 App.safeOn('#olNavBubBot', 'click', function(){
   var b = getActiveBubble(); var mc = App.$('#olMsgs');
-  if(b && mc) mc.scrollTo({top: b.offsetTop + b.offsetHeight - mc.clientHeight + 20, behavior:'smooth'});
+  if(b && mc) mc.scrollTo({top: b.offsetTop + b.offsetHeight - mc.clientHeight/2, behavior:'smooth'});
 });
 
 var mc=App.$('#olMsgs');
