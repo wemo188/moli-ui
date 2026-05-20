@@ -239,15 +239,6 @@ if(msg.swipes && msg.swipes.length > 1) {
 }
 actHtml += '</div>';
 
-if(msg.swipes && msg.swipes.length > 1) {
-  actHtml += '<div class="ol-swipe-nav">';
-  actHtml += '<button class="ol-swipe-btn" data-act="swipe-prev" '+(msg.swipeIdx===0?'disabled':'')+'>&lt;</button>';
-  actHtml += '<span>'+(msg.swipeIdx+1)+' / '+msg.swipes.length+'</span>';
-  actHtml += '<button class="ol-swipe-btn" data-act="swipe-next" '+(msg.swipeIdx===msg.swipes.length-1?'disabled':'')+'>&gt;</button>';
-  actHtml += '</div>';
-}
-actHtml += '</div>';
-
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>' + actHtml + '</div>';
 });
 
