@@ -357,6 +357,7 @@ var Offline={
   },
 
   requestAI:function(){
+    if(Offline._regenIdx === undefined) Offline._regenIdx = null;
     var api=getApi(Offline.charId);
     if(!api){App.showToast('请先配置 API');return;}
     if(Offline.isStreaming)return;
@@ -456,13 +457,34 @@ var Offline={
       else if(App.offlineUI)App.offlineUI.renderMessages();
     }
 
-    function finishText(text){
+       function finishText(text){
       var now=Date.now();
-      Offline.messages.push({role:'assistant',content:text,ts:now});
+      var newMsg={role:'assistant',content:text,ts:now};
+
+      /* 如果是重写模式，挂到分支上 */
+      if(Offline._regenIdx !== undefined && Offline._regenIdx !== null) {
+        var targetIdx = Offline._regenIdx;
+        var target = Offline.messages[targetIdx];
+        if(target) {
+          if(!target.swipes) target.swipes = [target.content];
+          if(!target.children) target.children = [];
+          target.swipes.push(text);
+          target.content = text;
+          target.swipeIdx = target.swipes.length - 1;
+          target.ts = now;
+          /* 给新分支创建空的后续消息链 */
+          target.children[target.swipeIdx] = [];
+          /* 删除该消息之后的所有消息（它们属于旧分支，已经存在旧分支的 children 里了） */
+          Offline.messages.splice(targetIdx + 1);
+        }
+        Offline._regenIdx = null;
+      } else {
+        Offline.messages.push(newMsg);
+      }
+
       Offline.saveMsgs();
       if(App.offlineUI)App.offlineUI.renderMessages();
     }
-  },
 
   stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
