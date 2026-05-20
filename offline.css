@@ -112,7 +112,7 @@
 
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  margin-top:0;margin-bottom:106px;padding:90px 16px 20px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
+  margin-top:0;margin-bottom:106px;padding:140px 16px 20px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
 
