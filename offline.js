@@ -300,6 +300,7 @@ function buildApiMessages(charData,userData,chatHistory,settings){
 var Offline={
   charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
   _ctxMenu:null,_plusOpen:false,_backgroundMode:false,_streamPartial:'',
+  _regenIdx:null,_typewriterTimer:null,
 
   loadMsgs:function(){Offline.messages=App.LS.get('olMsgs_'+Offline.charId)||[];},
   saveMsgs:function(){
@@ -339,6 +340,7 @@ var Offline={
 
   close:function(){
     Offline.dismissCtx();
+    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var panel=App.$('#offlinePanel');
     if(!panel)return;
     panel.classList.remove('show');
@@ -357,13 +359,14 @@ var Offline={
   },
 
   requestAI:function(){
-    if(Offline._regenIdx === undefined) Offline._regenIdx = null;
     var api=getApi(Offline.charId);
     if(!api){App.showToast('请先配置 API');return;}
     if(Offline.isStreaming)return;
 
     var user=App.user?App.user.getActiveUser():null;
     var settings=getSettings(Offline.charId);
+    var ap=App.offlineUI?App.offlineUI.getAp():{};
+    var streamOn=ap.streamOn!==false;
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
 
     Offline.isStreaming=true;Offline._streamPartial='';
@@ -377,12 +380,13 @@ var Offline={
     Offline.abortCtrl=new AbortController();
     var params=getParams(Offline.charId);
     var fullText='';
+    var _twPos=0;
 
     fetch(url,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
       body:JSON.stringify({
-        model:api.model,messages:apiMsgs,stream:true,
+        model:api.model,messages:apiMsgs,stream:streamOn,
         temperature:params.temperature,
         frequency_penalty:params.freqPenalty,
         presence_penalty:params.presPenalty
@@ -390,6 +394,19 @@ var Offline={
       signal:Offline.abortCtrl.signal
     }).then(function(resp){
       if(!resp.ok)throw new Error('HTTP '+resp.status+' '+resp.statusText);
+
+      /* 非流式：一次性拿到完整结果 */
+      if(!streamOn){
+        return resp.json().then(function(json){
+          var text='';
+          if(json.choices&&json.choices[0]&&json.choices[0].message){
+            text=json.choices[0].message.content||'';
+          }
+          onStreamDone(text.trim());
+        });
+      }
+
+      /* 流式：逐块读取 */
       var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 
       function read(){
@@ -409,7 +426,6 @@ var Offline={
               if(delta&&delta.content){
                 fullText+=delta.content;
                 Offline._streamPartial=fullText;
-                updateStreamBubble(fullText);
               }
             }catch(e){}
           }
@@ -419,6 +435,7 @@ var Offline={
       return read();
     }).catch(function(err){
       Offline.isStreaming=false;
+      if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       if(err.name==='AbortError'){Offline._backgroundMode=false;return;}
 
@@ -441,43 +458,80 @@ var Offline={
       Offline._backgroundMode=false;
     });
 
-    function updateStreamBubble(text){
-      var bubble=App.$('#olStreamBubble');if(!bubble)return;
-      var parsed=App.offlineUI?App.offlineUI.parseThinking(text):{think:'',main:text};
-      var mainText=parsed.main;
-      bubble.innerHTML=App.offlineUI?App.offlineUI.formatProse(App.esc(mainText)):App.esc(mainText);
+    /* ★ 打字机效果：每 30ms 渲染一批字符 */
+    function typewriterTick(){
+      var bubble=App.$('#olStreamBubble');
+      if(!bubble){
+        Offline._typewriterTimer=setTimeout(typewriterTick,50);
+        return;
+      }
+      if(_twPos>=fullText.length){
+        if(!Offline.isStreaming){
+          Offline._typewriterTimer=null;
+          return;
+        }
+        Offline._typewriterTimer=setTimeout(typewriterTick,30);
+        return;
+      }
+      var step=Math.min(3,fullText.length-_twPos);
+      _twPos+=step;
+      var visibleText=fullText.slice(0,_twPos);
+      var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
+      bubble.innerHTML=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
       if(App.offlineUI)App.offlineUI.scrollBottom();
+      Offline._typewriterTimer=setTimeout(typewriterTick,30);
+    }
+
+    if(streamOn){
+      Offline._typewriterTimer=setTimeout(typewriterTick,100);
     }
 
     function onStreamDone(text){
       Offline.isStreaming=false;Offline.abortCtrl=null;
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       text=text.trim();
-      if(text)finishText(text);
-      else if(App.offlineUI)App.offlineUI.renderMessages();
+      if(!text){
+        if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
+        if(App.offlineUI)App.offlineUI.renderMessages();
+        return;
+      }
+
+      /* 等打字机跑完再保存 */
+      function waitTypewriter(){
+        if(Offline._typewriterTimer&&_twPos<fullText.length){
+          setTimeout(waitTypewriter,50);
+        } else {
+          if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
+          finishText(text);
+        }
+      }
+
+      if(streamOn){
+        waitTypewriter();
+      } else {
+        finishText(text);
+      }
     }
 
-       function finishText(text){
+    function finishText(text){
       var now=Date.now();
       var newMsg={role:'assistant',content:text,ts:now};
 
       /* 如果是重写模式，挂到分支上 */
-      if(Offline._regenIdx !== undefined && Offline._regenIdx !== null) {
-        var targetIdx = Offline._regenIdx;
-        var target = Offline.messages[targetIdx];
-        if(target) {
-          if(!target.swipes) target.swipes = [target.content];
-          if(!target.children) target.children = [];
+      if(Offline._regenIdx!==undefined&&Offline._regenIdx!==null){
+        var targetIdx=Offline._regenIdx;
+        var target=Offline.messages[targetIdx];
+        if(target){
+          if(!target.swipes)target.swipes=[target.content];
+          if(!target.children)target.children=[];
           target.swipes.push(text);
-          target.content = text;
-          target.swipeIdx = target.swipes.length - 1;
-          target.ts = now;
-          /* 给新分支创建空的后续消息链 */
-          target.children[target.swipeIdx] = [];
-          /* 删除该消息之后的所有消息（它们属于旧分支，已经存在旧分支的 children 里了） */
-          Offline.messages.splice(targetIdx + 1);
+          target.content=text;
+          target.swipeIdx=target.swipes.length-1;
+          target.ts=now;
+          target.children[target.swipeIdx]=[];
+          Offline.messages.splice(targetIdx+1);
         }
-        Offline._regenIdx = null;
+        Offline._regenIdx=null;
       } else {
         Offline.messages.push(newMsg);
       }
@@ -489,6 +543,7 @@ var Offline={
 
   stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
+    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var partial=Offline._streamPartial||'';
     Offline.isStreaming=false;
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
@@ -543,3 +598,5 @@ var Offline={
 
 App.register('offline',Offline);
 })();
+
+
