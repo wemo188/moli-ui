@@ -190,18 +190,6 @@ var cAvI=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 
 var uAvI=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 if(!OL.messages.length){con.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';return;}
 
-OL.messages.forEach(function(msg, idx){
-  if(OL._pendingSwipe && OL._pendingSwipe.idx === idx) {
-    msg.swipes = OL._pendingSwipe.arr;
-    msg.swipeIdx = msg.swipes.length;
-    msg.swipes.push(msg.content || "");
-    OL._pendingSwipe = null;
-  }
-  if(msg.swipes && msg.swipeIdx === msg.swipes.length - 1) {
-    msg.swipes[msg.swipeIdx] = msg.content;
-  }
-});
-
 var html='',floor=0;
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;floor++;var isU=msg.role==='user';
 var cc=(msg.content||'').length,tk=Math.round(cc/2),tkS=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'',ts=msg.ts?O.fmtTime(msg.ts):'';
@@ -525,20 +513,49 @@ if(mc){
     var msg = OL.messages[idx];
     if(!msg) return;
 
-    if(act === 'swipe-prev') {
-  if(msg.swipeIdx > 0) {
-    msg.swipeIdx--;
-    msg.content = msg.swipes[msg.swipeIdx];
-    OL.messages.splice(idx + 1);
-    OL.saveMsgs(); O.renderMessages();
-  }
-} else if(act === 'swipe-next') {
-  if(msg.swipeIdx < msg.swipes.length - 1) {
-    msg.swipeIdx++;
-    msg.content = msg.swipes[msg.swipeIdx];
-    OL.messages.splice(idx + 1);
-    OL.saveMsgs(); O.renderMessages();
-  }
+        if(act === 'swipe-prev') {
+      if(msg.swipeIdx > 0) {
+        /* 保存当前分支的后续消息 */
+        if(!msg.children) msg.children = [];
+        msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
+        /* 切换 */
+        msg.swipeIdx--;
+        msg.content = msg.swipes[msg.swipeIdx];
+        /* 恢复目标分支的后续消息 */
+        OL.messages.splice(idx + 1);
+        if(msg.children[msg.swipeIdx] && msg.children[msg.swipeIdx].length) {
+          msg.children[msg.swipeIdx].forEach(function(m){ OL.messages.push(m); });
+        }
+        OL.saveMsgs(); O._noScroll=true; O.renderMessages();
+      }
+    } else if(act === 'swipe-next') {
+      if(msg.swipeIdx < msg.swipes.length - 1) {
+        /* 保存当前分支的后续消息 */
+        if(!msg.children) msg.children = [];
+        msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
+        /* 切换 */
+        msg.swipeIdx++;
+        msg.content = msg.swipes[msg.swipeIdx];
+        /* 恢复目标分支的后续消息 */
+        OL.messages.splice(idx + 1);
+        if(msg.children[msg.swipeIdx] && msg.children[msg.swipeIdx].length) {
+          msg.children[msg.swipeIdx].forEach(function(m){ OL.messages.push(m); });
+        }
+        OL.saveMsgs(); O._noScroll=true; O.renderMessages();
+      }
+    } else if(act === 'regen') {
+      /* 保存当前分支的后续消息到 children */
+      if(!msg.swipes) msg.swipes = [msg.content];
+      if(!msg.children) msg.children = [];
+      if(msg.swipeIdx === undefined) msg.swipeIdx = 0;
+      msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
+      /* 删除后续消息，准备重写 */
+      OL.messages.splice(idx + 1);
+      /* 告诉 offline.js 这是重写模式 */
+      OL._regenIdx = idx;
+      OL.saveMsgs();
+      OL.requestAI();
+    }
 } else if(act === 'copy') {
       App.copyText(msg.content).then(function(){App.showToast('已复制');});
     } else if(act === 'edit') {
