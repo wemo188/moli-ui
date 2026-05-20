@@ -475,9 +475,16 @@ var Offline={
       }
       var step=Math.min(3,fullText.length-_twPos);
       _twPos+=step;
-      var visibleText=fullText.slice(0,_twPos);
-      var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
-      bubble.innerHTML=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
+            var visibleText = fullText.slice(0, _twPos);
+      var parsed = App.offlineUI ? App.offlineUI.parseThinking(visibleText) : {think:'',main:visibleText};
+      var mainHtml = App.offlineUI ? App.offlineUI.formatProse(parsed.main, Offline.charId, false) : App.esc(parsed.main);
+      /* 如果有思维链，在正文前面显示折叠的思维过程 */
+      if(parsed.think) {
+        var thinkHtml = '<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.5;white-space:pre-wrap;">'+App.esc(parsed.think)+'</div></details>';
+        bubble.innerHTML = thinkHtml + mainHtml;
+      } else {
+        bubble.innerHTML = mainHtml;
+      }
       if(App.offlineUI)App.offlineUI.scrollBottom();
       Offline._typewriterTimer=setTimeout(typewriterTick,30);
     }
