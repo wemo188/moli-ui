@@ -70,7 +70,7 @@
   --ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%);--ol-bar-bg-img:none;
   --ol-bar-border-color:rgba(255,255,255,0.9); --ol-bar-border-w:1px; --ol-bar-radius:0px; --ol-bar-icon-color:#adcdea; --ol-input-text:#adcdea; 
   --ol-input-font-size:15px;
-  --ol-meta-color:#1a1a1a;--ol-meta-size:13px;
+  --ol-meta-color:#1a1a1a;--ol-meta-size:12.5px;
   --ol-card-bg:#ffffff; --ol-card-text:#7ea3c9;
   --ol-c-av-size:70px;--ol-c-av-radius:50%;--ol-c-av-frame-color:#9ca3af;--ol-c-av-frame-w:2px;--ol-c-av-name-size:18px;--ol-c-av-show:flex;--ol-c-av-name-show:block;
   --ol-c-bubble-bg:linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%);
