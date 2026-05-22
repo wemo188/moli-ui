@@ -198,11 +198,10 @@ OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
 
 /* 重写模式：原消息隐藏保留数据，流式气泡替代位置 */
 if(OL.isStreaming&&!OL._backgroundMode&&idx===regenIdx){
-  floor++;
   html+='<div class="ol-block is-char" data-msg-idx="'+idx+'" style="display:none;"></div>';
   var sAvN=App.esc(c.name||'');
   var sSep='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
-  var sMeta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep+'<span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
+  var sMeta='<div class="ol-scatter-meta"><span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
   var sHeaderH='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex;align-items:center;">'+sAvN+'</div>'+sMeta+'</div></div>';
   html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeaderH + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
   return;
