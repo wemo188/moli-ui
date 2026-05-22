@@ -372,7 +372,7 @@ var Offline={
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
     var streamOn=(settings.streamOn!==false);
 
-    Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';
+    Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';Offline._netDone=false;
     if(App.offlineUI){
       App.offlineUI.renderMessages();
       App.offlineUI.updateAiBtn();
@@ -414,6 +414,7 @@ var Offline={
               });
             }
           }
+          Offline._netDone=true;
           onStreamDone(text.trim());
         });
       }
@@ -422,64 +423,37 @@ var Offline={
 
       function read(){
         return reader.read().then(function(result){
-          if(result.done){onStreamDone(fullText);return;}
+          if(result.done){ Offline._netDone=true; onStreamDone(fullText); return; }
           buffer+=decoder.decode(result.value,{stream:true});
           var lines=buffer.split('\n');buffer=lines.pop()||'';
           for(var i=0;i<lines.length;i++){
             var line=lines[i].trim();
             if(!line||!line.startsWith('data:'))continue;
             var data=line.slice(5).trim();
-            if(data==='[DONE]'){onStreamDone(fullText);return;}
+            if(data===''){ Offline._netDone=true; onStreamDone(fullText); return; }
             if(!data)continue;
             try{
               var json=JSON.parse(data);
-
-              /* 获取 delta：兼容多种格式 */
               var delta=null;
-              if(json.choices&&json.choices[0]){
-                delta=json.choices[0].delta||null;
-              }
-              /* Claude 官方流式：顶层就是事件 */
-              if(!delta&&json.type&&(json.type.indexOf('delta')>=0||json.type.indexOf('block')>=0)){
-                delta=json.delta||json;
-              }
+              if(json.choices&&json.choices[0]){ delta=json.choices[0].delta||null; }
+              if(!delta&&json.type&&(json.type.indexOf('delta')>=0||json.type.indexOf('block')>=0)){ delta=json.delta||json; }
 
               if(delta){
-                /* 思维链：兼容所有已知格式 */
                 var thinkChunk=delta.reasoning_content||delta.reasoning||delta.thought||delta.thinking||delta.reasoning_text||delta.think||'';
-
-                /* Claude 官方格式：delta.type 区分 */
-                if(!thinkChunk&&delta.type==='thinking_delta'&&delta.thinking){
-                  thinkChunk=delta.thinking;
-                }
-                if(!thinkChunk&&delta.type==='thinking'&&delta.text){
-                  thinkChunk=delta.text;
-                }
-                /* content_block_delta 嵌套格式 */
+                if(!thinkChunk&&delta.type==='thinking_delta'&&delta.thinking){ thinkChunk=delta.thinking; }
+                if(!thinkChunk&&delta.type==='thinking'&&delta.text){ thinkChunk=delta.text; }
                 if(!thinkChunk&&delta.type==='content_block_delta'&&delta.delta){
-                  if(delta.delta.type==='thinking_delta'){
-                    thinkChunk=delta.delta.thinking||'';
-                  }
+                  if(delta.delta.type==='thinking_delta'){ thinkChunk=delta.delta.thinking||''; }
                 }
 
-                if(thinkChunk){
-                  Offline._thinkText=(Offline._thinkText||'')+thinkChunk;
-                }
+                if(thinkChunk){ Offline._thinkText=(Offline._thinkText||'')+thinkChunk; }
 
-                /* 正文内容：兼容多种格式 */
                 var textChunk='';
-                if(typeof delta.content==='string'){
-                  textChunk=delta.content;
-                } else if(delta.type==='text_delta'&&delta.text){
-                  textChunk=delta.text;
-                } else if(delta.delta&&delta.delta.type==='text_delta'){
-                  textChunk=delta.delta.text||'';
-                }
+                if(typeof delta.content==='string'){ textChunk=delta.content; } 
+                else if(delta.type==='text_delta'&&delta.text){ textChunk=delta.text; } 
+                else if(delta.delta&&delta.delta.type==='text_delta'){ textChunk=delta.delta.text||''; }
 
-                if(textChunk){
-                  fullText+=textChunk;
-                }
-
+                if(textChunk){ fullText+=textChunk; }
                 Offline._streamPartial=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
               }
             }catch(e){}
@@ -488,60 +462,58 @@ var Offline={
         });
       }
       return read();
-        }).catch(function(err){
+    }).catch(function(err){
       Offline.isStreaming=false;
-      /* ★ 强行清空重写标志，避免挂机卡死 */
       if(Offline._regenIdx!==null && Offline._regenIdx!==undefined) Offline._regenIdx=null;
       if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       if(err.name==='AbortError'){Offline._backgroundMode=false;return;}
-
-      var errMsg=err.message||String(err);
-      var cnMsg=translateError(errMsg);
-      console.error('[线下] '+cnMsg);
-
-      if(fullText){
-        finishText(fullText);
-      } else {
-        /* ★ 强制呼叫重新渲染页面，当面秒杀掉所有还在"假转圈"的残留打字气泡 */
+      var errMsg=err.message||String(err); var cnMsg=translateError(errMsg); console.error('[线下] '+cnMsg);
+      if(fullText){ finishText(fullText); } else {
         if(App.offlineUI) App.offlineUI.renderMessages();
-        
         var container=App.$('#olMsgs');
         if(container){
           var errDiv=document.createElement('div');
           errDiv.style.cssText='font-size:12px;color:#c9706b;background:rgba(201,112,107,.08);border:1.5px solid rgba(201,112,107,.25);border-radius:10px;padding:12px 14px;margin:10px 20px 20px;word-break:break-all;white-space:pre-wrap;text-align:center;font-weight:700;box-shadow:0 4px 12px rgba(201,112,107,0.1);';
-          errDiv.textContent=cnMsg+'\n\n[底层报错]: '+errMsg;
-          container.appendChild(errDiv);
-          if(App.offlineUI)App.offlineUI.scrollBottom();
+          errDiv.textContent=cnMsg+'\n\n[底层报错]: '+errMsg; container.appendChild(errDiv);
+          if(App.offlineUI)App.offlineUI.scrollBottom(true);
         }
       }
       Offline._backgroundMode=false;
     });
 
-    /* 打字机效果 */
+    /* ★ 彻头彻尾重新打造防跑位·坚若磐石流水系统：全在内部完工绝不外抛改变系统形态！！ */
     var _twPos=0;
     Offline._typewriterTimer=null;
+    Offline._finalTextToSave='';
 
-             function typewriterTick(){
+    function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
-      if(!Offline.isStreaming&&_twPos>=currentFull.length){
-        Offline._typewriterTimer=null;
-        return;
-      }
+      
+      /* 被中途喊卡时的终止！*/
+      if(!Offline.isStreaming){ Offline._typewriterTimer=null; return; }
+      
       var bubble=App.$('#olStreamBubble');
-      if(!bubble){
-        Offline._typewriterTimer=setTimeout(typewriterTick,50);
-        return;
-      }
+      if(!bubble){ Offline._typewriterTimer=setTimeout(typewriterTick,50); return; }
+      
       var remaining=currentFull.length-_twPos;
-      if(remaining<=0){
-        Offline._typewriterTimer=setTimeout(typewriterTick,30);
-        return;
+
+      /* ★神之落款时刻：字全部跑光、网也切断了？我们终于在这个没有网络残响的安静密闭小黑屋里关掉系统换上正常外壳！！！不再早泄飞移定位点！！！*/
+      if(remaining<=0 && Offline._netDone){
+         Offline.isStreaming = false;
+         Offline._typewriterTimer=null;
+         if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
+         finishText(Offline._finalTextToSave || currentFull);
+         return;
       }
+      if(remaining<=0){ Offline._typewriterTimer=setTimeout(typewriterTick,30); return; }
 
-      /* 🚨终极心法：严禁一口吃成胖子！每个节拍不管你攒了多少内容，我都铁定只出一个字符（死保匀速）🚨 */
+      /* 只步长强控 */
       var step = 1;
-
+      if(remaining > 150) step = 3; else if(remaining > 60) step = 2;
+      /* 网在龟速且还剩2个字没吐干净的时候：直接含在嘴里不要出！保留等待渲染权避免瞬间卡停的露馅儿*/
+      if(!Offline._netDone && remaining <= 2) step = 0; 
+      
       _twPos+=step;
       if(_twPos>currentFull.length) _twPos=currentFull.length;
 
@@ -549,7 +521,6 @@ var Offline={
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
       
-      /* 生成思维链的过程同样加入换行排版和双星号兼容 */
       if(parsed.think){
         var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
         var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
@@ -558,18 +529,12 @@ var Offline={
         bubble.innerHTML=mainHtml;
       }
 
-      /* 实时计算并挂载字词和Tk占用跳字标 */
       var tkSpan = App.$('#olStreamTkSpan');
       if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
       if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
       
-      /* 控制打字节拍以耗光网络延迟停顿的真空期：存量越多就敲打得越密集轻快，一旦发现即将快见底则像老爷爷漫步样磨时间去无缝挂接网口 */
-      var delay = 35; // 常规手感匀速
-      if(remaining > 300) delay = 6;         // 快挤爆了！光速匀流去消解存余，保持绝对连贯动画流式感！
-      else if(remaining > 150) delay = 12;   
-      else if(remaining > 50) delay = 22;    
-      else if(remaining > 10) delay = 40;    // 要见底了！慢动作逐字放送，拖掩时间掩饰真实的网络死机空白！
-      else delay = 60;                       // 就一两个字？慢慢打过去
+      var delay = 35;
+      if(remaining > 80) delay = 12; else if(remaining > 30) delay = 25; else if(remaining > 10) delay = 45; else if(remaining > 4) delay = 80; else delay = 150;
 
       Offline._typewriterTimer=setTimeout(typewriterTick, delay);
     }
@@ -578,33 +543,24 @@ var Offline={
       Offline._typewriterTimer=setTimeout(typewriterTick,100);
     }
 
+    /* 这个外置宣告如今被贬入冷宫成为简单的封口存放架，不再准它拥有更改外貌UI惹乱定位的控制权限。 */
     function onStreamDone(text){
-      Offline.isStreaming=false;Offline.abortCtrl=null;
-      if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       text=text.trim();
-      if(!text&&!Offline._thinkText){if(App.offlineUI)App.offlineUI.renderMessages();return;}
-
-      /* 把思维链拼到最终文本里 */
-      if(Offline._thinkText){
-        text='<think>'+Offline._thinkText+'</think>'+text;
-      }
+      if(Offline._thinkText){ text='<think>'+Offline._thinkText+'</think>'+text; }
       Offline._thinkText='';
-
-      /* 等打字机彻底吐词全闭合跑完再去存档封口结实 */
-      function waitTypewriter(){
-        if(Offline._typewriterTimer&&_twPos<((Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText).length){
-          setTimeout(waitTypewriter,50);
-        } else {
-          if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
-          finishText(text);
-        }
+      Offline._finalTextToSave = text;
+      
+      /* 无流式时无脑直走 */
+      if(!streamOn) {
+         Offline.isStreaming=false;Offline.abortCtrl=null;
+         if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
+         if(!text){if(App.offlineUI)App.offlineUI.renderMessages();return;}
+         finishText(text);
       }
-      waitTypewriter();
     }
 
     function finishText(text){
       var now=Date.now();
-
       if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
         var targetIdx=Offline._regenIdx;
         var target=Offline.messages[targetIdx];
@@ -617,21 +573,22 @@ var Offline={
           target.swipeIdx=target.swipes.length-1;
           target.ts=now;
           target.children[target.swipeIdx]=[];
+          Offline.messages.splice(targetIdx+1);
         }
       } else {
         Offline.messages.push({role:'assistant',content:text,ts:now});
       }
-
       Offline.saveMsgs();
       if(App.offlineUI)App.offlineUI.renderMessages();
     }
   },
 
-  /* 彻底修正：当强按止语符时不再抛锚遗漏而是完全走一遍上述正常重塑记录树干！！ */
+  /* 当你看不惯强行终止时，这段保证它也牢牢坐在它本该霸住的分支格子里！！ */
   stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
     if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var partial=Offline._streamPartial||'';
+    
     Offline.isStreaming=false;
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
     
@@ -641,7 +598,6 @@ var Offline={
       }
       var now=Date.now();
       
-      /* 和正当生成一样，让提前掐断也能完美长在这个特定的旧有树枝干位置之上！杜绝跳串到列表的虚假底部 */
       if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
         var targetIdx=Offline._regenIdx;
         var target=Offline.messages[targetIdx];
@@ -654,6 +610,7 @@ var Offline={
           target.swipeIdx=target.swipes.length-1;
           target.ts=now;
           target.children[target.swipeIdx]=[];
+          Offline.messages.splice(targetIdx+1);
         }
       } else {
         Offline.messages.push({role:'assistant',content:partial,ts:now});
