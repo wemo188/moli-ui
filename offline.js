@@ -575,13 +575,13 @@ var Offline={
       waitTypewriter();
     }
 
-    function finishText(text){
+        function finishText(text){
       var now=Date.now();
-      var newMsg={role:'assistant',content:text,ts:now};
 
-      if(Offline._regenIdx!==undefined&&Offline._regenIdx!==null){
+      if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
         var targetIdx=Offline._regenIdx;
         var target=Offline.messages[targetIdx];
+        Offline._regenIdx=null;
         if(target){
           if(!target.swipes)target.swipes=[target.content];
           if(!target.children)target.children=[];
@@ -590,11 +590,9 @@ var Offline={
           target.swipeIdx=target.swipes.length-1;
           target.ts=now;
           target.children[target.swipeIdx]=[];
-          Offline.messages.splice(targetIdx+1);
         }
-        Offline._regenIdx=null;
       } else {
-        Offline.messages.push(newMsg);
+        Offline.messages.push({role:'assistant',content:text,ts:now});
       }
 
       Offline.saveMsgs();
