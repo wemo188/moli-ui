@@ -573,7 +573,6 @@ var Offline={
           target.swipeIdx=target.swipes.length-1;
           target.ts=now;
           target.children[target.swipeIdx]=[];
-          Offline.messages.splice(targetIdx+1);
         }
       } else {
         Offline.messages.push({role:'assistant',content:text,ts:now});
