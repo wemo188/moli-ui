@@ -272,23 +272,23 @@
 .ol-btn-robot svg{width:36px;height:36px;}
 
 .ol-btn-stop {
-  background: transparent !important;
-  color: var(--ol-bar-icon-color) !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 0 !important;
+  background: var(--ol-bar-icon-color) !important;
+  border-radius: 50% !important;
+  opacity: 0.85 !important;
+  width: 38px !important; 
+  height: 38px !important;
   padding: 0 !important;
-  box-shadow: none !important;
   border: none !important;
-  margin-bottom: 2px !important; /* 强制复刻旁边常驻机器按钮底距高度，彻底封死下坠偏离路线！*/
-}
-.ol-btn-stop:active {
-  opacity: 0.8 !important;
-  transform: scale(0.95) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 2px !important; 
 }
 .ol-btn-stop svg {
-  width: 44px !important;
-  height: 44px !important;
+  width: 20px !important;
+  height: 20px !important;
   display: block !important;
   margin: 0 auto !important;
 }
@@ -321,13 +321,13 @@
   /* ↓ 立体光影特效 ↓ 
      这里的 0.4 和 0.8 是白光的高光强度；0.15 是背侧黑色的阴影强度 */
   box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.8), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 6px rgba(255,255,255,0.4);
-  filter: brightness(1.15);
+  filter: brightness(1.05);
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
 }
 .ol-pearl-btn:active { transform: scale(0.85); }
 .ol-pearl-btn.open {
   box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.9), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 6px rgba(255,255,255,0.4);
-  filter: brightness(1.25);
+  filter: brightness(1.15);
 }
 .ol-think-body {
   max-height: 0; overflow: hidden; opacity: 0;
