@@ -528,12 +528,21 @@ var Offline={
         Offline._typewriterTimer=setTimeout(typewriterTick,50);
         return;
       }
-      var step=Math.min(3,currentFull.length-_twPos);
-      if(step<=0){
+      var remaining=currentFull.length-_twPos;
+      if(remaining<=0){
         Offline._typewriterTimer=setTimeout(typewriterTick,30);
         return;
       }
+      /* 动态步长：积压越多跑越快，保持实时感 */
+      var step;
+      if(remaining>200) step=Math.ceil(remaining*0.3);
+      else if(remaining>50) step=Math.ceil(remaining*0.15);
+      else if(remaining>10) step=3;
+      else step=1;
+
       _twPos+=step;
+      if(_twPos>currentFull.length) _twPos=currentFull.length;
+
       var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
@@ -544,7 +553,9 @@ var Offline={
         bubble.innerHTML=mainHtml;
       }
       if(App.offlineUI)App.offlineUI.scrollBottom();
-      Offline._typewriterTimer=setTimeout(typewriterTick,30);
+      /* 动态间隔：积压少时慢一点有打字感，积压多时快速追赶 */
+      var delay=remaining>100?16:remaining>20?25:35;
+      Offline._typewriterTimer=setTimeout(typewriterTick,delay);
     }
 
     if(streamOn){
