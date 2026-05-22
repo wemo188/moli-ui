@@ -275,19 +275,19 @@
   background: var(--ol-bar-icon-color) !important;
   color: #fff !important;
   border-radius: 50% !important;
-  width: 38px !important;
-  height: 38px !important;
+  width: 36px !important;
+  height: 36px !important;
   padding: 0 !important;
   opacity: 0.85 !important;
   /* 填补缩小 6px 后的对齐差距： (48px输入框 - 38px按键) / 2 = 刚好悬浮中心 5px */
-  margin-bottom: 5px !important; 
+  margin-bottom: 6px !important; 
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
 }
 .ol-btn-stop svg {
-  width: 20px !important;
-  height: 20px !important;
+  width: 25px !important;
+  height: 25px !important;
   /* 强制居中对齐，消除一切位移偏离 */
   display: block !important;
   margin: 0 auto !important;
