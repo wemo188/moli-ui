@@ -488,8 +488,10 @@ var Offline={
         });
       }
       return read();
-    }).catch(function(err){
+        }).catch(function(err){
       Offline.isStreaming=false;
+      /* ★ 强行清空重写标志，避免挂机卡死 */
+      if(Offline._regenIdx!==null && Offline._regenIdx!==undefined) Offline._regenIdx=null;
       if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       if(err.name==='AbortError'){Offline._backgroundMode=false;return;}
@@ -501,11 +503,14 @@ var Offline={
       if(fullText){
         finishText(fullText);
       } else {
+        /* ★ 强制呼叫重新渲染页面，当面秒杀掉所有还在"假转圈"的残留打字气泡 */
+        if(App.offlineUI) App.offlineUI.renderMessages();
+        
         var container=App.$('#olMsgs');
         if(container){
           var errDiv=document.createElement('div');
-          errDiv.style.cssText='font-size:11px;color:#c9706b;background:rgba(201,112,107,.08);border:1px solid rgba(201,112,107,.2);border-radius:8px;padding:8px 12px;margin:6px 20px;word-break:break-all;white-space:pre-wrap;';
-          errDiv.textContent=cnMsg+'\n'+errMsg;
+          errDiv.style.cssText='font-size:12px;color:#c9706b;background:rgba(201,112,107,.08);border:1.5px solid rgba(201,112,107,.25);border-radius:10px;padding:12px 14px;margin:10px 20px 20px;word-break:break-all;white-space:pre-wrap;text-align:center;font-weight:700;box-shadow:0 4px 12px rgba(201,112,107,0.1);';
+          errDiv.textContent=cnMsg+'\n\n[底层报错]: '+errMsg;
           container.appendChild(errDiv);
           if(App.offlineUI)App.offlineUI.scrollBottom();
         }
@@ -517,7 +522,7 @@ var Offline={
     var _twPos=0;
     Offline._typewriterTimer=null;
 
-    function typewriterTick(){
+     function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
       if(!Offline.isStreaming&&_twPos>=currentFull.length){
         Offline._typewriterTimer=null;
@@ -533,12 +538,18 @@ var Offline={
         Offline._typewriterTimer=setTimeout(typewriterTick,30);
         return;
       }
-      /* 动态步长：积压越多跑越快，保持实时感 */
+
+      /* ★ 强行锁住最高步长：就算挤了500字，也只能小跑，禁止大跨步蹦字 */
       var step;
-      if(remaining>200) step=Math.ceil(remaining*0.3);
-      else if(remaining>50) step=Math.ceil(remaining*0.15);
-      else if(remaining>10) step=3;
-      else step=1;
+      if(remaining > 200) step = 4;
+      else if(remaining > 80) step = 3;
+      else if(remaining > 30) step = 2;
+      else step = 1;
+
+      /* 如果 API 还在挤牙膏阶段，故意卡住最后的 1~2 个字不输出，给自己保留后续动画缓存，强行平滑视觉 */
+      if(Offline.isStreaming && remaining <= 2) {
+        step = 0;
+      }
 
       _twPos+=step;
       if(_twPos>currentFull.length) _twPos=currentFull.length;
@@ -555,10 +566,12 @@ var Offline={
       } else {
         bubble.innerHTML=mainHtml;
       }
-      if(App.offlineUI)App.offlineUI.scrollBottom();
-      /* 动态间隔：积压少时慢一点有打字感，积压多时快速追赶 */
-      var delay=remaining>100?16:remaining>20?25:35;
-      Offline._typewriterTimer=setTimeout(typewriterTick,delay);
+      if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
+      
+      /* ★ 用极致拉扯的时间频率来追赶，坚决不一口气爆字 */
+      var delay = remaining > 150 ? 15 : (remaining > 50 ? 25 : 45);
+      if(step === 0) delay = 60; 
+      Offline._typewriterTimer=setTimeout(typewriterTick, delay);
     }
 
     if(streamOn){
