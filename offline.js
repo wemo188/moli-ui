@@ -274,7 +274,8 @@ function buildApiMessages(charData,userData,chatHistory,settings){
 
   var ctx=chatHistory.slice(-MAX_CONTEXT);
   var historyMsgs=[];
-  ctx.forEach(function(m){
+    ctx.forEach(function(m){
+    if(m._regen) return;
     if(m.role==='user'||m.role==='assistant')historyMsgs.push({role:m.role,content:m.content});
   });
 
