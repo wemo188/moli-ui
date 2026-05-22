@@ -272,7 +272,7 @@
 .ol-btn-robot svg{width:36px;height:36px;}
 
 .ol-btn-stop{background:var(--ol-bar-icon-color) !important; color:#fff !important; border-radius:50%; width:38px !important; height:38px !important; padding:0 !important; opacity:0.85;}
-.ol-btn-stop svg { width: 22px !important; height: 22px !important; }
+.ol-btn-stop svg { width: 18px !important; height: 18px !important; }
 
 .ol-plus-panel{position:absolute;bottom:110px;left:0;right:0;z-index:9;display:none;flex-wrap:wrap;gap:16px;padding:14px 20px 18px;background:rgba(255,255,255,.85);border-top:1px solid rgba(0,0,0,.06);}
 .ol-plus-panel.show{display:flex;}
@@ -296,13 +296,19 @@
 /* ★ 珍珠开关与思维链样式 */
 .ol-pearl-btn {
   width: 14px; height: 14px; border-radius: 50%; cursor: pointer; display: inline-block; margin-left: 6px; position:relative; top:-0.5px;
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #f1f5f9 30%, #cbd5e1 70%, #94a3b8 100%);
-  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.9), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
+  
+  /* ↓ 球体渐变颜色 ↓ 
+     0%是最亮中心，100%是最边缘的阴影。想再白一点就把 #f8fafc 换回 #ffffff，想更暗就把 0%和30%的颜色数值调深 */
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #64748b 100%);
+  
+  /* ↓ 立体光影特效 ↓ 
+     这里的 0.4 和 0.8 是白光的高光强度；0.15 是背侧黑色的阴影强度 */
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.4), inset 2px 2px 3px rgba(255,255,255,0.6), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
 }
 .ol-pearl-btn:active { transform: scale(0.85); }
 .ol-pearl-btn.open {
-  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.6), inset 2px 2px 3px rgba(255,255,255,1), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 8px rgba(255,255,255,0.7);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.9), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 6px rgba(255,255,255,0.4);
   filter: brightness(1.1);
 }
 .ol-think-body {
