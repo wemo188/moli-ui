@@ -261,7 +261,7 @@ if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
   html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeader2 + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
 }
 
-con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
+con.innerHTML=html;if(!O._noScroll)O.scrollBottom(true);O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 formatThinkText:function(escaped){
   /* 处理 Gemini 的双星号粗体和单星号斜体，并处理换行 */
@@ -277,7 +277,7 @@ fmtTime:function(ts){
   var h=String(d.getHours()).padStart(2,'0'), min=String(d.getMinutes()).padStart(2,'0');
   return y+'-'+m+'-'+dd+' '+h+':'+min;
 },
-scrollBottom:function(force){var el=App.$('#olMsgs');if(el)requestAnimationFrame(function(){var dist=el.scrollHeight-el.scrollTop-el.clientHeight;if(force===true||dist<150){el.scrollTop=el.scrollHeight;}});},
+scrollBottom:function(force){var el=App.$('#olMsgs');if(!el)return;var doScroll=function(){var dist=el.scrollHeight-el.scrollTop-el.clientHeight;if(force===true||dist<150)el.scrollTop=el.scrollHeight;};requestAnimationFrame(doScroll);if(force===true){setTimeout(doScroll,100);setTimeout(doScroll,360);}},
 updateAiBtn:function(){var OL=App.offline;if(!OL)return;var btn=App.$('#olAiBtn');if(!btn)return;if(OL.isStreaming){btn.innerHTML=STOP_SVG;btn.classList.add('ol-btn-stop');btn.classList.remove('ol-btn-robot');}else{btn.innerHTML=ROBOT_SVG;btn.classList.remove('ol-btn-stop');btn.classList.add('ol-btn-robot');}},
 updateTyping:function(show){var OL=App.offline;if(!OL)return;var el=App.$('#olName');if(!el)return;var dn=OL.charData?OL.charData.name:'';if(show)el.innerHTML=App.esc(dn)+'<span class="ol-hd-typing">正在书写...</span>';else el.textContent=dn;},
 _closePanel:function(){var p=App.$('#olSettingsPanel');if(p){p.classList.remove('show');setTimeout(function(){p.classList.add('hidden');},350);}},
