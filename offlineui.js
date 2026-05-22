@@ -186,7 +186,10 @@ function doP(p){if(!ap[p+'On'])return;var pM={full:['（','）'],half:['(',')']}
 if(isU){doS('star');doQ('quote');doP('paren');}else{doS('cStar');doQ('cQuote');doP('cParen');}
 var parts=text.split(/\x00P(\d+)P\x00/),result='';for(var i=0;i<parts.length;i++){if(i%2===0)result+=App.esc(parts[i]);else result+=tokens[parseInt(parts[i])];}return result;},
 
-renderMessages:function(){var OL=App.offline;if(!OL)return;var con=App.$('#olMsgs');if(!con)return;var c=OL.charData,user=App.user?App.user.getActiveUser():null,ap=gAp(OL.charId);
+renderMessages:function(){var OL=App.offline;if(!OL)return;var con=App.$('#olMsgs');if(!con)return;
+/* 清理空消息和残留标记 */
+OL.messages=OL.messages.filter(function(m){return m&&m.role&&(m.content||'').trim();});
+var c=OL.charData,user=App.user?App.user.getActiveUser():null,ap=gAp(OL.charId);
 var cAvI=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 var uAvI=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 if(!OL.messages.length&&!OL.isStreaming){con.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';return;}
