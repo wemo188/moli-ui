@@ -271,8 +271,27 @@
 .ol-btn-robot:active{opacity:0.8;transform:scale(0.95);}
 .ol-btn-robot svg{width:36px;height:36px;}
 
-.ol-btn-stop{background:var(--ol-bar-icon-color) !important; color:#fff !important; border-radius:50%; width:38px !important; height:38px !important; padding:0 !important; opacity:0.85;}
-.ol-btn-stop svg { width: 18px !important; height: 18px !important; }
+.ol-btn-stop {
+  background: var(--ol-bar-icon-color) !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  opacity: 0.85 !important;
+  /* 填补缩小 6px 后的对齐差距： (48px输入框 - 38px按键) / 2 = 刚好悬浮中心 5px */
+  margin-bottom: 5px !important; 
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.ol-btn-stop svg {
+  width: 20px !important;
+  height: 20px !important;
+  /* 强制居中对齐，消除一切位移偏离 */
+  display: block !important;
+  margin: 0 auto !important;
+}
 
 .ol-plus-panel{position:absolute;bottom:110px;left:0;right:0;z-index:9;display:none;flex-wrap:wrap;gap:16px;padding:14px 20px 18px;background:rgba(255,255,255,.85);border-top:1px solid rgba(0,0,0,.06);}
 .ol-plus-panel.show{display:flex;}
