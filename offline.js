@@ -539,7 +539,7 @@ var Offline={
         return;
       }
 
-      /* ★ 强行锁住最高步长：就算挤了500字，也只能小跑，禁止大跨步蹦字 */
+      /* 强行锁住最高步长：就算挤了500字，也只能小跑，禁止大跨步蹦字 */
       var step;
       if(remaining > 200) step = 4;
       else if(remaining > 80) step = 3;
@@ -566,9 +566,17 @@ var Offline={
       } else {
         bubble.innerHTML=mainHtml;
       }
+
+      /* ★ 实时更新当前写入屏幕的所有 Tokens（粗略按照1字等于0.5 token折算最合理且性能最佳） */
+      var tkSpan = App.$('#olStreamTkSpan');
+      if(tkSpan) {
+        var rtk = Math.round(visibleText.length / 2);
+        tkSpan.textContent = rtk + ' tk';
+      }
+
       if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
       
-      /* ★ 用极致拉扯的时间频率来追赶，坚决不一口气爆字 */
+      /* 用极致拉扯的时间频率来追赶，坚决不一口气爆字 */
       var delay = remaining > 150 ? 15 : (remaining > 50 ? 25 : 45);
       if(step === 0) delay = 60; 
       Offline._typewriterTimer=setTimeout(typewriterTick, delay);
