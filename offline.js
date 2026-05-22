@@ -354,7 +354,7 @@ var Offline={
   sendUser:function(){
     var input=App.$('#olInput');if(!input)return;
     var text=input.value.trim();if(!text)return;
-    input.value='';input.style.height='auto';
+    input.value='';input.style.height='34px';
     var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');Offline._plusOpen=false;}
     Offline.messages.push({role:'user',content:text,ts:Date.now()});
     Offline.saveMsgs();
