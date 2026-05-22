@@ -263,7 +263,7 @@ if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
   html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">'+sHeader2+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
 }
 
-con.innerHTML=html;if(!O._noScroll)O.scrollBottom(true);O._noScroll=false;},
+con.innerHTML=html;if(!O._noScroll)O.scrollBottom(false);O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 formatThinkText:function(escaped){
   /* 处理 Gemini 的双星号粗体和单星号斜体，并处理换行 */
