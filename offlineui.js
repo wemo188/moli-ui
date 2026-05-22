@@ -189,10 +189,25 @@ var parts=text.split(/\x00P(\d+)P\x00/),result='';for(var i=0;i<parts.length;i++
 renderMessages:function(){var OL=App.offline;if(!OL)return;var con=App.$('#olMsgs');if(!con)return;var c=OL.charData,user=App.user?App.user.getActiveUser():null,ap=gAp(OL.charId);
 var cAvI=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 var uAvI=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
-if(!OL.messages.length){con.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';return;}
+if(!OL.messages.length&&!OL.isStreaming){con.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';return;}
 
+var regenIdx=(OL._regenIdx!==null&&OL._regenIdx!==undefined)?OL._regenIdx:-1;
 var html='',floor=0;
-OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;floor++;var isU=msg.role==='user';
+
+OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
+
+/* 重写模式：这条消息用流式气泡替代 */
+if(OL.isStreaming&&!OL._backgroundMode&&idx===regenIdx){
+  floor++;
+  var sAvN=App.esc(c.name||'');
+  var sSep='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
+  var sMeta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep+'<span>生成中...</span></div>';
+  var sHeaderH='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex;align-items:center;">'+sAvN+'</div>'+sMeta+'</div></div>';
+  html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeaderH + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
+  return;
+}
+
+floor++;var isU=msg.role==='user';
 var cc=(msg.content||'').length,tk=Math.round(cc/2),tkS=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'',ts=msg.ts?O.fmtTime(msg.ts):'';
 var raw=(msg.content||'').trim();if(!raw)return;
 var parsed=O.parseThinking(raw),text=parsed.main,thH=(!isU&&parsed.think)?O.buildThinkHtml(parsed.think, idx):'';
@@ -214,9 +229,9 @@ if(!isU) {
   actHtml += '<button class="ol-action-btn" data-act="regen">重写</button>';
   actHtml += '<button class="ol-action-btn" data-act="continue">续写</button>';
 }
-actHtml += '<button class="ol-action-btn" data-act="del">删除</button>';
 actHtml += '<button class="ol-action-btn" data-act="copy">复制</button>';
 actHtml += '<button class="ol-action-btn" data-act="edit">编辑</button>';
+actHtml += '<button class="ol-action-btn" data-act="del">删除</button>';
 actHtml += '<button class="ol-action-btn" data-act="rewind" style="color:#c9706b;">回溯</button>';
 
 if(msg.swipes && msg.swipes.length > 1) {
@@ -231,10 +246,16 @@ actHtml += '</div>';
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>' + actHtml + '</div>';
 });
 
-if(OL.isStreaming&&!OL._backgroundMode){
-  var sHeader = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+App.esc(c.name||'')+'</div></div></div>';
-  html+='<div class="ol-block is-char" id="olStreamProse">' + sHeader + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
+/* 非重写模式的流式气泡（续写或普通对话） */
+if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
+  floor++;
+  var sAvN2=App.esc(c.name||'');
+  var sSep2='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
+  var sMeta2='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep2+'<span>生成中...</span></div>';
+  var sHeader2='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+sAvN2+'</div>'+sMeta2+'</div></div>';
+  html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeader2 + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
 }
+
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 buildThinkHtml:function(t, idx){return '<div class="ol-think-body" id="ol-think-'+idx+'"><span style="font-weight:700; color:#7ea3c9; font-size:12px; display:block; margin-bottom:4px; margin-top:12px; letter-spacing:1px;">💭 思考过程</span>'+App.esc(t)+'</div>';},
