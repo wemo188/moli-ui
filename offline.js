@@ -389,11 +389,12 @@ var Offline={
     fetch(url,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
-      body:JSON.stringify({
+            body:JSON.stringify({
         model:api.model,messages:apiMsgs,stream:streamOn,
         temperature:params.temperature,
         frequency_penalty:params.freqPenalty,
-        presence_penalty:params.presPenalty
+        presence_penalty:params.presPenalty,
+        max_tokens:80000
       }),
       signal:Offline.abortCtrl.signal
     }).then(function(resp){
@@ -552,7 +553,7 @@ var Offline={
 
       var tkSpan = App.$('#olStreamTkSpan');
       if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
-      if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
+            if(App.offlineUI && step > 0) App.offlineUI.scrollBottom(false);
       
       var delay = 35;
       if(remaining > 80) delay = 12; else if(remaining > 30) delay = 25; else if(remaining > 10) delay = 45; else if(remaining > 4) delay = 80; else delay = 150;
