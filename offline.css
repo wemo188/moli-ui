@@ -211,8 +211,8 @@
 .ol-parallel .ol-scatter-meta{justify-content:center;}
 
 .ol-input-wrap{
-  position:absolute; bottom:20px; left:13px; right:13px; z-index:9;
-  display:flex; align-items:center; gap:10px; padding:24px 10px 14px;
+  position:absolute; bottom:20px; left:16px; right:16px; z-index:9;
+  display:flex; align-items:flex-end; gap:10px; padding:24px 10px 14px;
   background:var(--ol-bar-bg);
   border:var(--ol-bar-border-w) solid var(--ol-bar-border-color);
   border-radius:var(--ol-bar-radius);
@@ -228,30 +228,37 @@
   width:44px;height:44px;display:flex;align-items:center;justify-content:center;
   background:transparent;border:none;flex-shrink:0;cursor:pointer;
   color:var(--ol-bar-icon-color); -webkit-tap-highlight-color:transparent;
+  margin-bottom:2px;
 }
 .ol-btn-menu:active{transform:scale(0.95);}
 .ol-btn-menu svg{width:30px;height:30px;}
 
 .ol-input-box{
-  flex:1;min-width:0;height:48px;display:flex;align-items:center;
+  flex:1;min-width:0;min-height:48px;height:auto;display:flex;align-items:flex-end;
   background:rgba(255,255,255,0.7);
   border:var(--ol-bar-border-w) solid var(--ol-bar-border-color);
-  border-radius:0;padding:0 10px;box-sizing:border-box;gap:8px;
+  border-radius:0;padding:6px 10px;box-sizing:border-box;gap:8px;
   box-shadow:0 0 12px rgba(255,255,255,0.5);
 }
 .ol-inner-btn{
   width:34px;height:34px;display:flex;align-items:center;justify-content:center;
   background:transparent;border:none;flex-shrink:0;cursor:pointer;
   color:var(--ol-bar-icon-color); -webkit-tap-highlight-color:transparent;
+  margin-bottom:1px;
 }
 .ol-inner-btn:active{opacity:0.6;}
 .ol-inner-btn svg{width:40px;height:40px;}
 
+/* ★核心改造：让输入框能自动断行并显示上下拉 */
 .ol-input{
-  flex:1;min-width:0;height:100%;padding:0;border:none;background:transparent;
+  flex:1;min-width:0;height:34px;padding:7px 0;border:none;background:transparent;
   font-size:var(--ol-input-font-size);font-weight:700;
   color:var(--ol-input-text);
-  outline:none;resize:none;line-height:48px;font-family:inherit;overflow-y:hidden;white-space:nowrap;text-overflow:ellipsis;-webkit-user-select:text;user-select:text;
+  outline:none;resize:none;line-height:20px;font-family:inherit;
+  white-space:pre-wrap;word-break:break-word;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  max-height:140px; /* 这边设置了最高能扩大到多少px，这里放开了约7行的容量上限 */
+  -webkit-user-select:text;user-select:text;
 }
 .ol-input::placeholder{color:var(--ol-input-text);opacity:0.7;}
 
@@ -259,6 +266,7 @@
   width:44px;height:44px;display:flex;align-items:center;justify-content:center;
   background:transparent;border:none;border-radius:0;flex-shrink:0;cursor:pointer;
   color:var(--ol-bar-icon-color); -webkit-tap-highlight-color:transparent;
+  margin-bottom:2px;
 }
 .ol-btn-robot:active{opacity:0.8;transform:scale(0.95);}
 .ol-btn-robot svg{width:36px;height:36px;}
