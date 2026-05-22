@@ -258,7 +258,14 @@ if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
 
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
-buildThinkHtml:function(t, idx){return '<div class="ol-think-body" id="ol-think-'+idx+'"><span style="font-weight:700; color:#7ea3c9; font-size:12px; display:block; margin-bottom:4px; margin-top:12px; letter-spacing:1px;">💭 思考过程</span>'+App.esc(t)+'</div>';},
+formatThinkText:function(escaped){
+  /* 处理 Gemini 的双星号粗体和单星号斜体，并处理换行 */
+  escaped=escaped.replace(/\*\*([^*]+)\*\*/g,'<strong style="font-weight:700;color:#666;">$1</strong>');
+  escaped=escaped.replace(/\*([^*]+)\*/g,'<em style="font-style:italic;">$1</em>');
+  escaped=escaped.replace(/\n/g,'<br>');
+  return escaped;
+},
+buildThinkHtml:function(t, idx){return '<div class="ol-think-body" id="ol-think-'+idx+'"><span style="font-weight:700; color:#7ea3c9; font-size:12px; display:block; margin-bottom:4px; margin-top:12px; letter-spacing:1px;">💭 思考过程</span><div style="word-break:break-word;line-height:1.7;">'+O.formatThinkText(App.esc(t))+'</div></div>';},
 fmtTime:function(ts){
   var d=new Date(ts);
   var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
