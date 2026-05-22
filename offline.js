@@ -367,6 +367,7 @@ var Offline={
     if(!api){App.showToast('请先配置 API');return;}
     if(Offline.isStreaming)return;
 
+    var _localRegenIdx = Offline._regenIdx;
     var user=App.user?App.user.getActiveUser():null;
     var settings=getSettings(Offline.charId);
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
@@ -559,26 +560,28 @@ var Offline={
       }
     }
 
-    function finishText(text){
+        function finishText(text){
       var now=Date.now();
-      if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
-        var targetIdx=Offline._regenIdx;
-        var target=Offline.messages[targetIdx];
-        Offline._regenIdx=null;
+      var useIdx = _localRegenIdx;
+      _localRegenIdx = null;
+      Offline._regenIdx = null;
+      
+      if(useIdx !== null && useIdx !== undefined){
+        var target = Offline.messages[useIdx];
         if(target){
-          if(!target.swipes)target.swipes=[target.content];
-          if(!target.children)target.children=[];
+          if(!target.swipes) target.swipes = [target.content];
+          if(!target.children) target.children = [];
           target.swipes.push(text);
-          target.content=text;
-          target.swipeIdx=target.swipes.length-1;
-          target.ts=now;
-          target.children[target.swipeIdx]=[];
+          target.content = text;
+          target.swipeIdx = target.swipes.length - 1;
+          target.ts = now;
+          target.children[target.swipeIdx] = [];
         }
       } else {
-        Offline.messages.push({role:'assistant',content:text,ts:now});
+        Offline.messages.push({role:'assistant', content:text, ts:now});
       }
       Offline.saveMsgs();
-      if(App.offlineUI)App.offlineUI.renderMessages();
+      if(App.offlineUI) App.offlineUI.renderMessages();
     }
   },
 
