@@ -522,7 +522,7 @@ var Offline={
     var _twPos=0;
     Offline._typewriterTimer=null;
 
-     function typewriterTick(){
+         function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
       if(!Offline.isStreaming&&_twPos>=currentFull.length){
         Offline._typewriterTimer=null;
@@ -539,26 +539,22 @@ var Offline={
         return;
       }
 
-      /* 强行锁住最高步长：就算挤了500字，也只能小跑，禁止大跨步蹦字 */
+      /* ★ 强力追赶模式 */
       var step;
-      if(remaining > 200) step = 4;
-      else if(remaining > 80) step = 3;
-      else if(remaining > 30) step = 2;
+      if(remaining > 150) step = 3;
+      else if(remaining > 60) step = 2;
       else step = 1;
-
-      /* 如果 API 还在挤牙膏阶段，故意卡住最后的 1~2 个字不输出，给自己保留后续动画缓存，强行平滑视觉 */
-      if(Offline.isStreaming && remaining <= 2) {
-        step = 0;
-      }
 
       _twPos+=step;
       if(_twPos>currentFull.length) _twPos=currentFull.length;
+      
+      var newRem=currentFull.length-_twPos;
 
       var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
       
-      /* 生成思维链的过程同样加入换行排版和双星号兼容 */
+      /* 渲染排版 */
       if(parsed.think){
         var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
         var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
@@ -567,18 +563,18 @@ var Offline={
         bubble.innerHTML=mainHtml;
       }
 
-      /* ★ 实时更新当前写入屏幕的所有 Tokens（粗略按照1字等于0.5 token折算最合理且性能最佳） */
       var tkSpan = App.$('#olStreamTkSpan');
-      if(tkSpan) {
-        var rtk = Math.round(visibleText.length / 2);
-        tkSpan.textContent = rtk + ' tk';
-      }
-
+      if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
       if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
       
-      /* 用极致拉扯的时间频率来追赶，坚决不一口气爆字 */
-      var delay = remaining > 150 ? 15 : (remaining > 50 ? 25 : 45);
-      if(step === 0) delay = 60; 
+      /* ★ 魔法掩护：按照库存余量动态规划它的播放频率（库存少它就自己放缓磨洋工掩盖加载！）*/
+      var delay = 35; // 正常打字基础值
+      if(newRem > 80) delay = 12;       // 存货太多，极速拉近
+      else if(newRem > 30) delay = 25;  // 稳跑
+      else if(newRem > 10) delay = 45;  // 降速缓压
+      else if(newRem > 4) delay = 80;   // 网络没反应？立刻散步拖时间
+      else delay = 150;                 // 就差一两个字了？放一万个慢镜头掩护卡机
+
       Offline._typewriterTimer=setTimeout(typewriterTick, delay);
     }
 
