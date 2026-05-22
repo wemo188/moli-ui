@@ -299,7 +299,7 @@
   
   /* ↓ 球体渐变颜色 ↓ 
      0%是最亮中心，100%是最边缘的阴影。想再白一点就把 #f8fafc 换回 #ffffff，想更暗就把 0%和30%的颜色数值调深 */
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #64748b 100%);
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffffff 30%, #ffffff 70%, #64748b 100%);
   
   /* ↓ 立体光影特效 ↓ 
      这里的 0.4 和 0.8 是白光的高光强度；0.15 是背侧黑色的阴影强度 */
