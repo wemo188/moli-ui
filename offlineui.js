@@ -574,9 +574,10 @@ if(mc){
     } else if(act === 'regen') {
       if(!msg.swipes) msg.swipes = [msg.content];
       if(!msg.children) msg.children = [];
-      if(msg.swipeIdx === undefined) msg.swipeIdx =0;
+      if(msg.swipeIdx === undefined) msg.swipeIdx = 0;
       msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
       OL.messages.splice(idx + 1);
+      msg._regen = true;
       OL._regenIdx = idx;
       OL.saveMsgs();
       OL.requestAI();
