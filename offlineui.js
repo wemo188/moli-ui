@@ -589,7 +589,7 @@ if(mc){
       OL.saveMsgs();
       O.renderMessages();
       OL.requestAI();
-       }    } else if(act === 'del') {
+    } else if(act === 'del') {
       var isBranch = (msg.swipes && msg.swipes.length > 1);
       if(isBranch) {
         O.showConfirm('删除当前分支？', '将移除当前正在查看的这条分支内容，其余分支保留。', function(){
