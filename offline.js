@@ -498,126 +498,67 @@ var Offline={
       
       var remaining=currentFull.length-_twPos;
 
-      /* ★神之落款时刻：字全部跑光、网也切断了？我们终于在这个没有网络残响的安静密闭小黑屋里关掉系统换上正常外壳！！！不再早泄飞移定位点！！！*/
       if(remaining<=0 && Offline._netDone){
-         Offline.isStreaming = false;
          Offline._typewriterTimer=null;
+         Offline.isStreaming = false;
          if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-         finishText(Offline._finalTextToSave || currentFull);
+         var textToSave = Offline._finalTextToSave || currentFull;
+         /* 直接在这里完成保存，不再调用 finishText 避免任何中间环节干扰 */
+         var now=Date.now();
+         var regenTarget=null;
+         for(var ri=0;ri<Offline.messages.length;ri++){
+           if(Offline.messages[ri]._regen){
+             regenTarget=Offline.messages[ri];
+             delete regenTarget._regen;
+             break;
+           }
+         }
+         if(regenTarget){
+           if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
+           if(!regenTarget.children) regenTarget.children=[];
+           regenTarget.swipes.push(textToSave);
+           regenTarget.content=textToSave;
+           regenTarget.swipeIdx=regenTarget.swipes.length-1;
+           regenTarget.ts=now;
+           regenTarget.children[regenTarget.swipeIdx]=[];
+         } else {
+           Offline.messages.push({role:'assistant',content:textToSave,ts:now});
+         }
+         Offline._regenIdx=null;
+         Offline.saveMsgs();
+         if(App.offlineUI) App.offlineUI.renderMessages();
          return;
       }
-      if(remaining<=0){ Offline._typewriterTimer=setTimeout(typewriterTick,30); return; }
-
-      /* 只步长强控 */
-      var step = 1;
-      if(remaining > 150) step = 3; else if(remaining > 60) step = 2;
-      /* 网在龟速且还剩2个字没吐干净的时候：直接含在嘴里不要出！保留等待渲染权避免瞬间卡停的露馅儿*/
-      if(!Offline._netDone && remaining <= 2) step = 0; 
-      
-      _twPos+=step;
-      if(_twPos>currentFull.length) _twPos=currentFull.length;
-
-      var visibleText=currentFull.slice(0,_twPos);
-      var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
-      var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
-      
-      if(parsed.think){
-        var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
-        var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
-        bubble.innerHTML=thinkHtml+mainHtml;
-      } else {
-        bubble.innerHTML=mainHtml;
-      }
-
-      var tkSpan = App.$('#olStreamTkSpan');
-      if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
-      if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
-      
-      var delay = 35;
-      if(remaining > 80) delay = 12; else if(remaining > 30) delay = 25; else if(remaining > 10) delay = 45; else if(remaining > 4) delay = 80; else delay = 150;
-
-      Offline._typewriterTimer=setTimeout(typewriterTick, delay);
-    }
-
-    if(streamOn){
-      Offline._typewriterTimer=setTimeout(typewriterTick,100);
-    }
-
-    /* 这个外置宣告如今被贬入冷宫成为简单的封口存放架，不再准它拥有更改外貌UI惹乱定位的控制权限。 */
-    function onStreamDone(text){
-      text=text.trim();
-      if(Offline._thinkText){ text='<think>'+Offline._thinkText+'</think>'+text; }
-      Offline._thinkText='';
-      Offline._finalTextToSave = text;
-      
-      /* 无流式时无脑直走 */
-      if(!streamOn) {
-         Offline.isStreaming=false;Offline.abortCtrl=null;
-         if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-         if(!text){if(App.offlineUI)App.offlineUI.renderMessages();return;}
-         finishText(text);
-      }
-    }
-
-         function finishText(text){
-      var now=Date.now();
-      var target=null;
-      for(var i=0;i<Offline.messages.length;i++){
-        if(Offline.messages[i]._regen){
-          target=Offline.messages[i];
-          delete target._regen;
-          break;
-        }
-      }
-      
-      if(target){
-        if(!target.swipes)target.swipes=[target.content];
-        if(!target.children)target.children=[];
-        target.swipes.push(text);
-        target.content=text;
-        target.swipeIdx=target.swipes.length-1;
-        target.ts=now;
-        target.children[target.swipeIdx]=[];
-      } else {
-        Offline.messages.push({role:'assistant',content:text,ts:now});
-      }
-      Offline._regenIdx=null;
-      Offline.saveMsgs();
-      if(App.offlineUI)App.offlineUI.renderMessages();
-    }
   },
 
   /* 当你看不惯强行终止时，这段保证它也牢牢坐在它本该霸住的分支格子里！！ */
-    stopStream:function(){
+      stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
     if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var partial=Offline._streamPartial||'';
-    
     Offline.isStreaming=false;
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-    
     if(partial){
       if(Offline._thinkText){
         partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
       }
       var now=Date.now();
-      var target=null;
+      var regenTarget=null;
       for(var i=0;i<Offline.messages.length;i++){
         if(Offline.messages[i]._regen){
-          target=Offline.messages[i];
-          delete target._regen;
+          regenTarget=Offline.messages[i];
+          delete regenTarget._regen;
           break;
         }
       }
-      
-      if(target){
-        if(!target.swipes)target.swipes=[target.content];
-        if(!target.children)target.children=[];
-        target.swipes.push(partial);
-        target.content=partial;
-        target.swipeIdx=target.swipes.length-1;
-        target.ts=now;
-        target.children[target.swipeIdx]=[];
+      if(regenTarget){
+        if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
+        if(!regenTarget.children) regenTarget.children=[];
+        regenTarget.swipes.push(partial);
+        regenTarget.content=partial;
+        regenTarget.swipeIdx=regenTarget.swipes.length-1;
+        regenTarget.ts=now;
+        regenTarget.children[regenTarget.swipeIdx]=[];
       } else {
         Offline.messages.push({role:'assistant',content:partial,ts:now});
       }
