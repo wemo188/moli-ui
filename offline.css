@@ -272,23 +272,23 @@
 .ol-btn-robot svg{width:36px;height:36px;}
 
 .ol-btn-stop {
-  background: var(--ol-bar-icon-color) !important;
-  color: #fff !important;
-  border-radius: 50% !important;
-  width: 36px !important;
-  height: 36px !important;
+  background: transparent !important;
+  color: var(--ol-bar-icon-color) !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 0 !important;
   padding: 0 !important;
-  opacity: 0.85 !important;
-  /* 填补缩小 6px 后的对齐差距： (48px输入框 - 38px按键) / 2 = 刚好悬浮中心 5px */
-  margin-bottom: 6px !important; 
-  border: none !important;
   box-shadow: none !important;
-  outline: none !important;
+  border: none !important;
+  margin-bottom: 2px !important; /* 强制复刻旁边常驻机器按钮底距高度，彻底封死下坠偏离路线！*/
+}
+.ol-btn-stop:active {
+  opacity: 0.8 !important;
+  transform: scale(0.95) !important;
 }
 .ol-btn-stop svg {
-  width: 25px !important;
-  height: 25px !important;
-  /* 强制居中对齐，消除一切位移偏离 */
+  width: 44px !important;
+  height: 44px !important;
   display: block !important;
   margin: 0 auto !important;
 }
@@ -320,7 +320,8 @@
   background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #64748b 100%);
   /* ↓ 立体光影特效 ↓ 
      这里的 0.4 和 0.8 是白光的高光强度；0.15 是背侧黑色的阴影强度 */
-  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.4), inset 2px 2px 3px rgba(255,255,255,0.8), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.8), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 6px rgba(255,255,255,0.4);
+  filter: brightness(0.95);
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
 }
 .ol-pearl-btn:active { transform: scale(0.85); }
