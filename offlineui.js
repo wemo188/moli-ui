@@ -589,30 +589,28 @@ if(mc){
       OL.saveMsgs();
       O.renderMessages();
       OL.requestAI();
-       } else if(act === 'del') {
+       }    } else if(act === 'del') {
       var isBranch = (msg.swipes && msg.swipes.length > 1);
-      O.showConfirm('确定要删除吗？', isBranch ? '检测到存在多个分支。本操作将仅为您彻底移除【当前正在阅览的该分支】，其他的保留。' : '此操作将会删除并截断后续关联内容。无法恢复。', function(){
-        if(isBranch) {
-          /* ★ 精准手术切除法：只从历史池删掉抽出来正在读的那一条残余树根 */
+      if(isBranch) {
+        O.showConfirm('删除当前分支？', '将移除当前正在查看的这条分支内容，其余分支保留。', function(){
           msg.swipes.splice(msg.swipeIdx, 1);
           if(msg.children) msg.children.splice(msg.swipeIdx, 1);
           msg.swipeIdx = Math.max(0, msg.swipeIdx - 1);
           msg.content = msg.swipes[msg.swipeIdx];
-          
-          /* 复盘该活下来的分枝对应的下文走线并重新组装到现实空间 */
           OL.messages.splice(idx + 1);
           if(msg.children && msg.children[msg.swipeIdx] && msg.children[msg.swipeIdx].length) {
             msg.children[msg.swipeIdx].forEach(function(m){ OL.messages.push(m); });
           }
           OL.saveMsgs(); O._noScroll=true; O.renderMessages();
-          App.showToast('已移除并切换上一个支线');
-        } else {
-          /* 单独死树没有任何分叉，就干净利落全带走它 */
-          OL.messages.splice(idx);
+          App.showToast('已移除该分支');
+        });
+      } else {
+        O.showConfirm('删除这条消息？', '仅删除这一条消息，不影响其他内容。', function(){
+          OL.messages.splice(idx, 1);
           OL.saveMsgs(); O._noScroll=true; O.renderMessages();
-          App.showToast('整个剧情链干干净净抹掉了');
-        }
-      });
+          App.showToast('已删除');
+        });
+      }
     } else if(act === 'rewind') {
       O.showConfirm('确定要回溯到此处吗？', '这将会删除本条消息以及之后的所有对话，且无法恢复。', function(){
         OL.messages.splice(idx);
