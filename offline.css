@@ -296,14 +296,14 @@
 /* ★ 珍珠开关与思维链样式 */
 .ol-pearl-btn {
   width: 14px; height: 14px; border-radius: 50%; cursor: pointer; display: inline-block; margin-left: 6px; position:relative; top:-0.5px;
-  background: radial-gradient(circle at 30% 30%, #e2e8f0 0%, #cbd5e1 30%, #94a3b8 70%, #475569 100%);
-  box-shadow: inset -2px -2px 3px rgba(255,255,255,0.3), inset 1px 1px 2px rgba(255,255,255,0.7), inset -4px -4px 6px rgba(0,0,0,0.1), 1px 2px 4px rgba(20,35,55,0.08);
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #f1f5f9 30%, #cbd5e1 70%, #94a3b8 100%);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.9), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
 }
 .ol-pearl-btn:active { transform: scale(0.85); }
 .ol-pearl-btn.open {
-  box-shadow: inset -2px -2px 3px rgba(255,255,255,0.4), inset 1px 1px 2px rgba(255,255,255,0.8), inset -4px -4px 6px rgba(0,0,0,0.1), 0 0 6px rgba(255,255,255,0.35);
-  filter: brightness(1.05);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.6), inset 2px 2px 3px rgba(255,255,255,1), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 8px rgba(255,255,255,0.7);
+  filter: brightness(1.1);
 }
 .ol-think-body {
   max-height: 0; overflow: hidden; opacity: 0;
