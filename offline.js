@@ -430,7 +430,7 @@ var Offline={
             var line=lines[i].trim();
             if(!line||!line.startsWith('data:'))continue;
             var data=line.slice(5).trim();
-            if(data===''){ Offline._netDone=true; onStreamDone(fullText); return; }
+            if(data==='[DONE]'){ Offline._netDone=true; onStreamDone(fullText); return; }
             if(!data)continue;
             try{
               var json=JSON.parse(data);
