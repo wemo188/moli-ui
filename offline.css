@@ -299,11 +299,14 @@
   
   /* ↓ 球体渐变颜色 ↓ 
      0%是最亮中心，100%是最边缘的阴影。想再白一点就把 #f8fafc 换回 #ffffff，想更暗就把 0%和30%的颜色数值调深 */
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffffff 30%, #ffffff 70%, #64748b 100%);
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #64748b 100%);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.5), inset 2px 2px 3px rgba(255,255,255,0.6), inset -4px -4px 8px rgba(0,0,0,0.12), 0 0 6px rgba(255,255,255,0.4);
+  filter: brightness(1.05);
+}
   
   /* ↓ 立体光影特效 ↓ 
      这里的 0.4 和 0.8 是白光的高光强度；0.15 是背侧黑色的阴影强度 */
-  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.4), inset 2px 2px 3px rgba(255,255,255,0.7), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
+  box-shadow: inset -2px -2px 4px rgba(255,255,255,0.4), inset 2px 2px 3px rgba(255,255,255,0.8), inset -4px -4px 8px rgba(0,0,0,0.15), 1px 2px 5px rgba(20,35,55,0.08);
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
 }
 .ol-pearl-btn:active { transform: scale(0.85); }
