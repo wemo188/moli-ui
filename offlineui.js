@@ -588,7 +588,10 @@ if(mc){
       App.copyText(msg.content).then(function(){App.showToast('已复制');});
     } else if(act === 'edit') {
       O.showEditDialog(idx);
-    } else if(act === 'continue') {
+        } else if(act === 'continue') {
+      /* 清除所有残留的 _regen 标记 */
+      OL.messages.forEach(function(m){ delete m._regen; });
+      OL._regenIdx = null;
       OL.messages.splice(idx + 1);
       OL.saveMsgs();
       O.renderMessages();
