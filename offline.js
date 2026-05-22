@@ -373,6 +373,13 @@ var Offline={
     var user=App.user?App.user.getActiveUser():null;
     var settings=getSettings(Offline.charId);
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
+        /* 续写模式：最后一条是 assistant，给 AI 一个继续的信号 */
+    var lastMsg = Offline.messages[Offline.messages.length - 1];
+    var hasRegen = false;
+    for(var ri=0;ri<Offline.messages.length;ri++){ if(Offline.messages[ri]._regen){ hasRegen=true; break; } }
+    if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
+      apiMsgs.push({role:'user', content:'[续写指令：请直接无缝衔接上一段叙事继续往下写，不要重复已有内容，不要重新开头，字数与正常回复相同。]'});
+    }
     var streamOn=(settings.streamOn!==false);
 
     Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';Offline._netDone=false;
@@ -607,11 +614,16 @@ var Offline={
   },
 
   stopStream:function(){
-    if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
-    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
-    var partial=Offline._streamPartial||'';
+    /* 立刻标记停止，阻止所有后续回调 */
     Offline.isStreaming=false;
+    Offline._netDone=true;
+    
+    if(Offline.abortCtrl){try{Offline.abortCtrl.abort();}catch(e){}Offline.abortCtrl=null;}
+    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
+    
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
+    
+    var partial=Offline._streamPartial||'';
     if(partial){
       if(Offline._thinkText){
         partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
@@ -640,6 +652,8 @@ var Offline={
     }
     Offline._regenIdx=null;
     Offline._thinkText='';
+    Offline._streamPartial='';
+    Offline._finalTextToSave='';
     if(App.offlineUI)App.offlineUI.renderMessages();
   },
 
