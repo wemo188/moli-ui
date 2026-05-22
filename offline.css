@@ -263,7 +263,8 @@
 .ol-btn-robot:active{opacity:0.8;transform:scale(0.95);}
 .ol-btn-robot svg{width:36px;height:36px;}
 
-.ol-btn-stop{background:rgba(201,112,107,.85)!important;color:#fff!important;border-radius:50%;width:38px!important;height:38px!important;padding:0!important;}
+.ol-btn-stop{background:var(--ol-bar-icon-color) !important; color:#fff !important; border-radius:50%; width:44px !important; height:44px !important; padding:0 !important; opacity:0.85;}
+.ol-btn-stop svg { width: 22px !important; height: 22px !important; }
 
 .ol-plus-panel{position:absolute;bottom:110px;left:0;right:0;z-index:9;display:none;flex-wrap:wrap;gap:16px;padding:14px 20px 18px;background:rgba(255,255,255,.85);border-top:1px solid rgba(0,0,0,.06);}
 .ol-plus-panel.show{display:flex;}
