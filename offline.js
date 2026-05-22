@@ -546,8 +546,11 @@ var Offline={
       var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
+      
+      /* 生成思维链的过程同样加入换行排版和双星号兼容 */
       if(parsed.think){
-        var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.5;white-space:pre-wrap;">'+App.esc(parsed.think)+'</div></details>';
+        var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
+        var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
         bubble.innerHTML=thinkHtml+mainHtml;
       } else {
         bubble.innerHTML=mainHtml;
