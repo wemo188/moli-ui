@@ -578,10 +578,13 @@ if(mc){
       O.renderMessages();
       OL.requestAI();
     } else if(act === 'del') {
-      OL.messages.splice(idx, 1);
-      OL.saveMsgs();
-      O.renderMessages();
-      App.showToast('已删除该消息');
+      O.showConfirm('确定要删除这条消息吗？', '删除后无法恢复。', function(){
+        OL.messages.splice(idx, 1);
+        OL.saveMsgs();
+        O._noScroll=true;
+        O.renderMessages();
+        App.showToast('已删除');
+      });
     } else if(act === 'rewind') {
       O.showConfirm('确定要回溯到此处吗？', '这将会删除本条消息以及之后的所有对话，且无法恢复。', function(){
         OL.messages.splice(idx);
