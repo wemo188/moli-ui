@@ -522,7 +522,7 @@ var Offline={
     var _twPos=0;
     Offline._typewriterTimer=null;
 
-         function typewriterTick(){
+             function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
       if(!Offline.isStreaming&&_twPos>=currentFull.length){
         Offline._typewriterTimer=null;
@@ -539,41 +539,37 @@ var Offline={
         return;
       }
 
-      /* ★ 强力追赶模式 */
-      var step;
-      if(remaining > 150) step = 3;
-      else if(remaining > 60) step = 2;
-      else step = 1;
+      /* 🚨终极心法：严禁一口吃成胖子！每个节拍不管你攒了多少内容，我都铁定只出一个字符（死保匀速）🚨 */
+      var step = 1;
 
       _twPos+=step;
       if(_twPos>currentFull.length) _twPos=currentFull.length;
-      
-      var newRem=currentFull.length-_twPos;
 
       var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
       
-      /* 渲染排版 */
+      /* 生成思维链的过程同样加入换行排版和双星号兼容 */
       if(parsed.think){
         var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
-        var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
+        var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
         bubble.innerHTML=thinkHtml+mainHtml;
       } else {
         bubble.innerHTML=mainHtml;
       }
 
+      /* 实时计算并挂载字词和Tk占用跳字标 */
       var tkSpan = App.$('#olStreamTkSpan');
       if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
       if(App.offlineUI && step > 0) App.offlineUI.scrollBottom();
       
-      /* ★ 魔法掩护：按照库存余量动态规划它的播放频率（库存少它就自己放缓磨洋工掩盖加载！）*/
-      var delay = 35; // 正常打字基础值
-      if(newRem > 80) delay = 12;       // 存货太多，极速拉近
-      else if(newRem > 30) delay = 25;  // 稳跑
-      else if(newRem > 10) delay = 45;  // 降速缓压
-      else if(newRem > 4) delay = 80;   // 网络没反应？立刻散步拖时间
-      else delay = 150;                 // 就差一两个字了？放一万个慢镜头掩护卡机
+      /* 控制打字节拍以耗光网络延迟停顿的真空期：存量越多就敲打得越密集轻快，一旦发现即将快见底则像老爷爷漫步样磨时间去无缝挂接网口 */
+      var delay = 35; // 常规手感匀速
+      if(remaining > 300) delay = 6;         // 快挤爆了！光速匀流去消解存余，保持绝对连贯动画流式感！
+      else if(remaining > 150) delay = 12;   
+      else if(remaining > 50) delay = 22;    
+      else if(remaining > 10) delay = 40;    // 要见底了！慢动作逐字放送，拖掩时间掩饰真实的网络死机空白！
+      else delay = 60;                       // 就一两个字？慢慢打过去
 
       Offline._typewriterTimer=setTimeout(typewriterTick, delay);
     }
@@ -594,7 +590,7 @@ var Offline={
       }
       Offline._thinkText='';
 
-      /* 等打字机跑完再 finishText */
+      /* 等打字机彻底吐词全闭合跑完再去存档封口结实 */
       function waitTypewriter(){
         if(Offline._typewriterTimer&&_twPos<((Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText).length){
           setTimeout(waitTypewriter,50);
@@ -606,7 +602,7 @@ var Offline={
       waitTypewriter();
     }
 
-        function finishText(text){
+    function finishText(text){
       var now=Date.now();
 
       if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
@@ -631,18 +627,37 @@ var Offline={
     }
   },
 
+  /* 彻底修正：当强按止语符时不再抛锚遗漏而是完全走一遍上述正常重塑记录树干！！ */
   stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
     if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var partial=Offline._streamPartial||'';
     Offline.isStreaming=false;
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
+    
     if(partial){
       if(Offline._thinkText){
         partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
       }
       var now=Date.now();
-      Offline.messages.push({role:'assistant',content:partial,ts:now});
+      
+      /* 和正当生成一样，让提前掐断也能完美长在这个特定的旧有树枝干位置之上！杜绝跳串到列表的虚假底部 */
+      if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
+        var targetIdx=Offline._regenIdx;
+        var target=Offline.messages[targetIdx];
+        Offline._regenIdx=null;
+        if(target){
+          if(!target.swipes)target.swipes=[target.content];
+          if(!target.children)target.children=[];
+          target.swipes.push(partial);
+          target.content=partial;
+          target.swipeIdx=target.swipes.length-1;
+          target.ts=now;
+          target.children[target.swipeIdx]=[];
+        }
+      } else {
+        Offline.messages.push({role:'assistant',content:partial,ts:now});
+      }
       Offline.saveMsgs();
     }
     Offline._thinkText='';
