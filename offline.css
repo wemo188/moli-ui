@@ -286,6 +286,7 @@
   justify-content: center !important;
   margin-bottom: 2px !important;
   overflow: hidden !important;
+  -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
 }
 .ol-btn-stop svg,
 .ol-btn-stop img {
