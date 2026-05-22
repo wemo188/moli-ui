@@ -196,24 +196,19 @@ var html='',floor=0;
 
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
 
-/* 重写模式：这条消息用流式气泡替代，并且带有实时的 tk span */
+/* 重写模式：这条消息用流式气泡替代 */
 if(OL.isStreaming&&!OL._backgroundMode&&idx===regenIdx){
   floor++;
   var sAvN=App.esc(c.name||'');
   var sSep='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
-  var sMeta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep+'<span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
+  var sMeta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep+'<span>生成中...</span></div>';
   var sHeaderH='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex;align-items:center;">'+sAvN+'</div>'+sMeta+'</div></div>';
   html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeaderH + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
   return;
 }
 
 floor++;var isU=msg.role==='user';
-var rawLen=(msg.content||'').length;
-var tk=Math.round(rawLen/2),tkS=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'',ts=msg.ts?O.fmtTime(msg.ts):'';
-
-/* ★ 最严谨的有效字数统计：剔除所有符号，只计算中文、英文字母和数字 */
-var cc=(msg.content||'').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').length;
-
+var cc=(msg.content||'').length,tk=Math.round(cc/2),tkS=tk>=1000?(tk/1000).toFixed(1)+'k':tk+'',ts=msg.ts?O.fmtTime(msg.ts):'';
 var raw=(msg.content||'').trim();if(!raw)return;
 var parsed=O.parseThinking(raw),text=parsed.main,thH=(!isU&&parsed.think)?O.buildThinkHtml(parsed.think, idx):'';
 var avH=isU?uAvI:cAvI,avN=isU?App.esc((user&&(user.nickname||user.realName))||'你'):App.esc(c.name||'');
@@ -223,10 +218,10 @@ var lg=isU?(ap.uLetterGap||0):(ap.cLetterGap||0);
 fmt=fmt.replace(/\n/g,'<span style="display:block;height:'+pg+'px;line-height:0;font-size:0;"></span>');
 
 var pearlHtml = (!isU && parsed.think) ? '<div class="ol-pearl-btn" data-idx="'+idx+'" title="点击展开/收起思维链" onclick="this.classList.toggle(\'open\'); var tb = document.getElementById(\'ol-think-\'+this.dataset.idx); if(tb) tb.classList.toggle(\'open\');"></div>' : '';
-var nameHtml = avN;
+var nameHtml = avN + pearlHtml;
 
 var sep = isU ? '<span class="ol-meta-sep" style="font-size:8px;">☽</span>' : '<span class="ol-meta-sep" style="font-size:5px;">★</span>';
-var meta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sep+'<span>'+ts+'</span>'+sep+'<span>'+tkS+'tk</span>'+sep+'<span>'+cc+'字</span>'+pearlHtml+'</div>';
+var meta='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sep+'<span>'+ts+'</span>'+sep+'<span>'+tkS+'tk</span>'+sep+'<span>'+cc+'字</span></div>';
 var headerHtml = '<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+avH+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex; align-items:center;">'+nameHtml+'</div>'+meta+'</div></div>';
 
 var actHtml = '<div class="ol-msg-actions" data-idx="'+idx+'">';
@@ -234,9 +229,9 @@ if(!isU) {
   actHtml += '<button class="ol-action-btn" data-act="regen">重写</button>';
   actHtml += '<button class="ol-action-btn" data-act="continue">续写</button>';
 }
+actHtml += '<button class="ol-action-btn" data-act="del">删除</button>';
 actHtml += '<button class="ol-action-btn" data-act="copy">复制</button>';
 actHtml += '<button class="ol-action-btn" data-act="edit">编辑</button>';
-actHtml += '<button class="ol-action-btn" data-act="del">删除</button>';
 actHtml += '<button class="ol-action-btn" data-act="rewind" style="color:#c9706b;">回溯</button>';
 
 if(msg.swipes && msg.swipes.length > 1) {
@@ -251,17 +246,18 @@ actHtml += '</div>';
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">' + headerHtml + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>' + actHtml + '</div>';
 });
 
-/* 非重写模式的流式气泡（续写或普通对话），增加 tk 更新 ID */
+/* 非重写模式的流式气泡（续写或普通对话） */
 if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
   floor++;
   var sAvN2=App.esc(c.name||'');
   var sSep2='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
-  var sMeta2='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep2+'<span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
+  var sMeta2='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep2+'<span>生成中...</span></div>';
   var sHeader2='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+sAvN2+'</div>'+sMeta2+'</div></div>';
   html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeader2 + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
 }
 
-con.innerHTML=html;if(!O._noScroll)O.scrollBottom(true);O._noScroll=false;},
+con.innerHTML=html;if(!O._noScroll)O.scrollBottom();O._noScroll=false;},
+
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 formatThinkText:function(escaped){
   /* 处理 Gemini 的双星号粗体和单星号斜体，并处理换行 */
@@ -580,6 +576,7 @@ if(mc){
       msg._regen = true;
       OL._regenIdx = idx;
       OL.saveMsgs();
+      O._noScroll = false;
       OL.requestAI();
     } else if(act === 'copy') {
       App.copyText(msg.content).then(function(){App.showToast('已复制');});
