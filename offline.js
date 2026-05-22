@@ -377,8 +377,8 @@ var Offline={
     var lastMsg = Offline.messages[Offline.messages.length - 1];
     var hasRegen = false;
     for(var ri=0;ri<Offline.messages.length;ri++){ if(Offline.messages[ri]._regen){ hasRegen=true; break; } }
-    if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
-      apiMsgs.push({role:'user', content:'[续写指令：请直接无缝衔接上一段叙事继续往下写，不要重复已有内容，不要重新开头，字数与正常回复相同。]'});
+        if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
+      apiMsgs.push({role:'system', content:'[续写指令：请直接无缝衔接上一段assistant消息的最后一个字继续往下写。禁止重复已有内容，禁止重新开头，禁止总结前文。直接从断点处继续叙事，字数与正常回复相同。]'});
     }
     var streamOn=(settings.streamOn!==false);
 
