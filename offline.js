@@ -465,7 +465,6 @@ var Offline={
       return read();
     }).catch(function(err){
       Offline.isStreaming=false;
-      if(Offline._regenIdx!==null && Offline._regenIdx!==undefined) Offline._regenIdx=null;
       if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       if(err.name==='AbortError'){Offline._backgroundMode=false;return;}
@@ -560,33 +559,36 @@ var Offline={
       }
     }
 
-        function finishText(text){
+         function finishText(text){
       var now=Date.now();
-      var useIdx = _localRegenIdx;
-      _localRegenIdx = null;
-      Offline._regenIdx = null;
-      
-      if(useIdx !== null && useIdx !== undefined){
-        var target = Offline.messages[useIdx];
-        if(target){
-          if(!target.swipes) target.swipes = [target.content];
-          if(!target.children) target.children = [];
-          target.swipes.push(text);
-          target.content = text;
-          target.swipeIdx = target.swipes.length - 1;
-          target.ts = now;
-          target.children[target.swipeIdx] = [];
+      var target=null;
+      for(var i=0;i<Offline.messages.length;i++){
+        if(Offline.messages[i]._regen){
+          target=Offline.messages[i];
+          delete target._regen;
+          break;
         }
-      } else {
-        Offline.messages.push({role:'assistant', content:text, ts:now});
       }
+      
+      if(target){
+        if(!target.swipes)target.swipes=[target.content];
+        if(!target.children)target.children=[];
+        target.swipes.push(text);
+        target.content=text;
+        target.swipeIdx=target.swipes.length-1;
+        target.ts=now;
+        target.children[target.swipeIdx]=[];
+      } else {
+        Offline.messages.push({role:'assistant',content:text,ts:now});
+      }
+      Offline._regenIdx=null;
       Offline.saveMsgs();
-      if(App.offlineUI) App.offlineUI.renderMessages();
+      if(App.offlineUI)App.offlineUI.renderMessages();
     }
   },
 
   /* 当你看不惯强行终止时，这段保证它也牢牢坐在它本该霸住的分支格子里！！ */
-  stopStream:function(){
+    stopStream:function(){
     if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
     if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var partial=Offline._streamPartial||'';
@@ -599,26 +601,29 @@ var Offline={
         partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
       }
       var now=Date.now();
-      
-      if(Offline._regenIdx!==null&&Offline._regenIdx!==undefined){
-        var targetIdx=Offline._regenIdx;
-        var target=Offline.messages[targetIdx];
-        Offline._regenIdx=null;
-        if(target){
-          if(!target.swipes)target.swipes=[target.content];
-          if(!target.children)target.children=[];
-          target.swipes.push(partial);
-          target.content=partial;
-          target.swipeIdx=target.swipes.length-1;
-          target.ts=now;
-          target.children[target.swipeIdx]=[];
-          Offline.messages.splice(targetIdx+1);
+      var target=null;
+      for(var i=0;i<Offline.messages.length;i++){
+        if(Offline.messages[i]._regen){
+          target=Offline.messages[i];
+          delete target._regen;
+          break;
         }
+      }
+      
+      if(target){
+        if(!target.swipes)target.swipes=[target.content];
+        if(!target.children)target.children=[];
+        target.swipes.push(partial);
+        target.content=partial;
+        target.swipeIdx=target.swipes.length-1;
+        target.ts=now;
+        target.children[target.swipeIdx]=[];
       } else {
         Offline.messages.push({role:'assistant',content:partial,ts:now});
       }
       Offline.saveMsgs();
     }
+    Offline._regenIdx=null;
     Offline._thinkText='';
     if(App.offlineUI)App.offlineUI.renderMessages();
   },
