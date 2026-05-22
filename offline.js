@@ -31,7 +31,7 @@ function getParams(charId){
   return App.api?App.api.getParams():{temperature:0.8,freqPenalty:0.3,presPenalty:0.3};
 }
 
-function getSettings(charId){return App.LS.get('olSettings_'+charId)||{};}
+function getSettings(charId){return App.LS.get('olAp_'+charId)||{};}
 
 function translateError(msg){
   if(!msg)return '不知道发生了什么，再试一次看看？';
@@ -113,7 +113,7 @@ function buildFormatRules(charData,settings){
   var charName=charData?charData.name:'角色';
   var userName=getUserName();
   var callName=(charData&&charData.callName)?charData.callName:userName;
-  var pov=settings.pov||'second';
+  var pov=settings.povUser||settings.pov||'second';
   var qp=getQuotePair(settings.quoteStyle);
   var wc=settings.wordCount||0;
   var povText=getPovText(pov,callName,qp);
@@ -300,7 +300,7 @@ function buildApiMessages(charData,userData,chatHistory,settings){
 var Offline={
   charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
   _ctxMenu:null,_plusOpen:false,_backgroundMode:false,_streamPartial:'',
-  _regenIdx:null,_typewriterTimer:null,
+  _thinkText:'',_typewriterTimer:null,_regenIdx:null,
 
   loadMsgs:function(){Offline.messages=App.LS.get('olMsgs_'+Offline.charId)||[];},
   saveMsgs:function(){
@@ -340,7 +340,6 @@ var Offline={
 
   close:function(){
     Offline.dismissCtx();
-    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
     var panel=App.$('#offlinePanel');
     if(!panel)return;
     panel.classList.remove('show');
@@ -357,7 +356,7 @@ var Offline={
     if(App.offlineUI)App.offlineUI.renderMessages();
     Offline.requestAI();
   },
-  
+
   requestAI:function(){
     var api=getApi(Offline.charId);
     if(!api){App.showToast('请先配置 API');return;}
@@ -366,10 +365,9 @@ var Offline={
     var user=App.user?App.user.getActiveUser():null;
     var settings=getSettings(Offline.charId);
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
+    var streamOn=(settings.streamOn!==false);
 
-    Offline.isStreaming=true;Offline._streamPartial='';
-    if(Offline._regenIdx === undefined) Offline._regenIdx = null;
-
+    Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';
     if(App.offlineUI){
       App.offlineUI.renderMessages();
       App.offlineUI.updateAiBtn();
@@ -380,8 +378,6 @@ var Offline={
     Offline.abortCtrl=new AbortController();
     var params=getParams(Offline.charId);
     var fullText='';
-    var isReasoning=false;
-    var streamOn=(settings.streamOn!==false);
 
     fetch(url,{
       method:'POST',
@@ -400,12 +396,20 @@ var Offline={
         return resp.json().then(function(json){
           var text='';
           if(json.choices&&json.choices[0]&&json.choices[0].message){
-            var m=json.choices[0].message;
-            if(m.reasoning_content) text='<think>\n'+m.reasoning_content+'\n</think>\n'+(m.content||'');
-            else text=m.content||'';
+            var msg=json.choices[0].message;
+            if(typeof msg.content==='string'){
+              text=msg.content;
+            } else if(Array.isArray(msg.content)){
+              msg.content.forEach(function(block){
+                if(block.type==='thinking'||block.type==='thought'){
+                  Offline._thinkText=(Offline._thinkText||'')+block.thinking||block.thought||block.text||'';
+                } else if(block.type==='text'){
+                  text+=block.text||'';
+                }
+              });
+            }
           }
-          fullText=text;
-          onStreamDone();
+          onStreamDone(text.trim());
         });
       }
 
@@ -413,29 +417,65 @@ var Offline={
 
       function read(){
         return reader.read().then(function(result){
-          if(result.done){onStreamDone();return;}
+          if(result.done){onStreamDone(fullText);return;}
           buffer+=decoder.decode(result.value,{stream:true});
           var lines=buffer.split('\n');buffer=lines.pop()||'';
           for(var i=0;i<lines.length;i++){
             var line=lines[i].trim();
             if(!line||!line.startsWith('data:'))continue;
             var data=line.slice(5).trim();
-            if(data===''){onStreamDone();return;}
+            if(data==='[DONE]'){onStreamDone(fullText);return;}
             if(!data)continue;
             try{
               var json=JSON.parse(data);
-              var delta=json.choices&&json.choices[0]&&json.choices[0].delta;
+
+              /* 获取 delta：兼容多种格式 */
+              var delta=null;
+              if(json.choices&&json.choices[0]){
+                delta=json.choices[0].delta||null;
+              }
+              /* Claude 官方流式：顶层就是事件 */
+              if(!delta&&json.type&&(json.type.indexOf('delta')>=0||json.type.indexOf('block')>=0)){
+                delta=json.delta||json;
+              }
+
               if(delta){
-                /* ★ 缝合怪核心：强制把隐形思维链转换成实体 <think> 标签 */
-                if(delta.reasoning_content){
-                  if(!isReasoning){fullText+='<think>\n';isReasoning=true;}
-                  fullText+=delta.reasoning_content;
+                /* 思维链：兼容所有已知格式 */
+                var thinkChunk=delta.reasoning_content||delta.reasoning||delta.thought||delta.thinking||delta.reasoning_text||delta.think||'';
+
+                /* Claude 官方格式：delta.type 区分 */
+                if(!thinkChunk&&delta.type==='thinking_delta'&&delta.thinking){
+                  thinkChunk=delta.thinking;
                 }
-                if(delta.content){
-                  if(isReasoning){fullText+='\n</think>\n';isReasoning=false;}
-                  fullText+=delta.content;
+                if(!thinkChunk&&delta.type==='thinking'&&delta.text){
+                  thinkChunk=delta.text;
                 }
-                Offline._streamPartial=fullText;
+                /* content_block_delta 嵌套格式 */
+                if(!thinkChunk&&delta.type==='content_block_delta'&&delta.delta){
+                  if(delta.delta.type==='thinking_delta'){
+                    thinkChunk=delta.delta.thinking||'';
+                  }
+                }
+
+                if(thinkChunk){
+                  Offline._thinkText=(Offline._thinkText||'')+thinkChunk;
+                }
+
+                /* 正文内容：兼容多种格式 */
+                var textChunk='';
+                if(typeof delta.content==='string'){
+                  textChunk=delta.content;
+                } else if(delta.type==='text_delta'&&delta.text){
+                  textChunk=delta.text;
+                } else if(delta.delta&&delta.delta.type==='text_delta'){
+                  textChunk=delta.delta.text||'';
+                }
+
+                if(textChunk){
+                  fullText+=textChunk;
+                }
+
+                Offline._streamPartial=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
               }
             }catch(e){}
           }
@@ -468,11 +508,13 @@ var Offline={
       Offline._backgroundMode=false;
     });
 
+    /* 打字机效果 */
     var _twPos=0;
     Offline._typewriterTimer=null;
 
     function typewriterTick(){
-      if(!Offline.isStreaming && _twPos>=fullText.length){
+      var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
+      if(!Offline.isStreaming&&_twPos>=currentFull.length){
         Offline._typewriterTimer=null;
         return;
       }
@@ -481,25 +523,21 @@ var Offline={
         Offline._typewriterTimer=setTimeout(typewriterTick,50);
         return;
       }
-      var step=Math.min(2,fullText.length-_twPos);
+      var step=Math.min(3,currentFull.length-_twPos);
       if(step<=0){
         Offline._typewriterTimer=setTimeout(typewriterTick,30);
         return;
       }
       _twPos+=step;
-      var visibleText=fullText.slice(0,_twPos);
-      
+      var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
-      
-      /* ★ 打字机实时渲染思维链面板 */
       if(parsed.think){
         var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.5;white-space:pre-wrap;">'+App.esc(parsed.think)+'</div></details>';
         bubble.innerHTML=thinkHtml+mainHtml;
       } else {
         bubble.innerHTML=mainHtml;
       }
-      
       if(App.offlineUI)App.offlineUI.scrollBottom();
       Offline._typewriterTimer=setTimeout(typewriterTick,30);
     }
@@ -508,44 +546,48 @@ var Offline={
       Offline._typewriterTimer=setTimeout(typewriterTick,100);
     }
 
-    function onStreamDone(){
-      if(isReasoning){fullText+='\n</think>\n';isReasoning=false;}
+    function onStreamDone(text){
       Offline.isStreaming=false;Offline.abortCtrl=null;
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-      
-      var text=fullText.trim();
-      if(!text){if(App.offlineUI)App.offlineUI.renderMessages();return;}
+      text=text.trim();
+      if(!text&&!Offline._thinkText){if(App.offlineUI)App.offlineUI.renderMessages();return;}
 
+      /* 把思维链拼到最终文本里 */
+      if(Offline._thinkText){
+        text='<think>'+Offline._thinkText+'</think>'+text;
+      }
+      Offline._thinkText='';
+
+      /* 等打字机跑完再 finishText */
       function waitTypewriter(){
-        if(Offline._typewriterTimer && _twPos<fullText.length){
+        if(Offline._typewriterTimer&&_twPos<((Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText).length){
           setTimeout(waitTypewriter,50);
         } else {
           if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
           finishText(text);
         }
       }
-      if(streamOn) waitTypewriter();
-      else finishText(text);
+      waitTypewriter();
     }
 
     function finishText(text){
       var now=Date.now();
       var newMsg={role:'assistant',content:text,ts:now};
 
-      if(Offline._regenIdx !== undefined && Offline._regenIdx !== null) {
-        var targetIdx = Offline._regenIdx;
-        var target = Offline.messages[targetIdx];
-        if(target) {
-          if(!target.swipes) target.swipes = [target.content];
-          if(!target.children) target.children = [];
+      if(Offline._regenIdx!==undefined&&Offline._regenIdx!==null){
+        var targetIdx=Offline._regenIdx;
+        var target=Offline.messages[targetIdx];
+        if(target){
+          if(!target.swipes)target.swipes=[target.content];
+          if(!target.children)target.children=[];
           target.swipes.push(text);
-          target.content = text;
-          target.swipeIdx = target.swipes.length - 1;
-          target.ts = now;
-          target.children[target.swipeIdx] = [];
-          Offline.messages.splice(targetIdx + 1);
+          target.content=text;
+          target.swipeIdx=target.swipes.length-1;
+          target.ts=now;
+          target.children[target.swipeIdx]=[];
+          Offline.messages.splice(targetIdx+1);
         }
-        Offline._regenIdx = null;
+        Offline._regenIdx=null;
       } else {
         Offline.messages.push(newMsg);
       }
@@ -562,10 +604,14 @@ var Offline={
     Offline.isStreaming=false;
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
     if(partial){
+      if(Offline._thinkText){
+        partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
+      }
       var now=Date.now();
       Offline.messages.push({role:'assistant',content:partial,ts:now});
       Offline.saveMsgs();
     }
+    Offline._thinkText='';
     if(App.offlineUI)App.offlineUI.renderMessages();
   },
 
@@ -612,5 +658,3 @@ var Offline={
 
 App.register('offline',Offline);
 })();
-
-
