@@ -337,6 +337,7 @@ var Offline={
 
     if(App.offlineUI)App.offlineUI.render(panel,c);
     if(App.offlineUI)App.offlineUI.renderMessages();
+    if(App.offlineUI)App.offlineUI.scrollBottom(true);
     if(App.offlineUI)App.offlineUI.bindEvents();
 
     requestAnimationFrame(function(){requestAnimationFrame(function(){
