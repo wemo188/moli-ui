@@ -198,7 +198,6 @@ var regenIdx=-1;
 for(var _ri=0;_ri<OL.messages.length;_ri++){
   if(OL.messages[_ri]._regen){regenIdx=_ri;break;}
 }
-if(OL._continueIdx!==null&&regenIdx==-1) regenIdx=OL._continueIdx;
 
 var html='',floor=0;
 
@@ -582,7 +581,8 @@ if(mc){
         }
         OL.saveMsgs(); O._noScroll=true; O.renderMessages();
       }
-    } else if(act === 'regen') {
+        } else if(act === 'regen') {
+      OL._continueIdx = null;
       if(!msg.swipes) msg.swipes = [msg.content];
       if(!msg.children) msg.children = [];
       while(msg.children.length < msg.swipes.length) msg.children.push([]);
@@ -594,8 +594,8 @@ if(mc){
       O._noScroll = false;
       OL.requestAI();
     } else if(act === 'continue') {
+      OL._continueIdx = null;
       OL.messages.splice(idx + 1);
-      OL._continueIdx = idx;
       OL.saveMsgs();
       O.renderMessages();
       OL.requestAI({ continueFrom: idx });
