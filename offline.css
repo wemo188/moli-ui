@@ -1,6 +1,6 @@
 
-.ol-panel{position:fixed;inset:0;z-index:9990;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
-.ol-panel.show{transform:translateX(0);opacity:1;}
+.ol-panel{position:fixed;inset:0;z-index:9990;pointer-events:none;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
+.ol-panel.show{pointer-events:none;transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
 
 /* 强制拖拽横条不被挤压 */
@@ -83,6 +83,7 @@
   --ol-u-bubble-radius:14px;--ol-u-bubble-width:95%;--ol-u-bubble-border-w:0px;--ol-u-bubble-border-color:rgba(255,255,255,0.9);
   --ol-u-text-size:17px;--ol-u-text-weight:400;--ol-u-text-lh:1.85;--ol-u-text-color:#2e4258;
   --ol-hd-bg:rgba(255,255,255,0.7);--ol-hd-fade:rgba(255,255,255,0.5);
+  pointer-events: auto;
   position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;
   background:var(--ol-bg-color);color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);
   -webkit-touch-callout:none;overscroll-behavior:none;
@@ -285,11 +286,22 @@
   align-items: center !important;
   justify-content: center !important;
   margin-bottom: 2px !important;
-  overflow: hidden !important;
-  -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
+  position: relative !important;
+}
+.ol-btn-stop::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 1px;
 }
 .ol-btn-stop svg,
-.ol-btn-stop img {
+.ol-btn-stop img,
+.ol-btn-stop div {
   display: none !important;
 }
 
@@ -352,7 +364,7 @@
 .ol-swipe-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
 
 /* ★ 悬浮导航电梯 */
-.ol-nav-fab { position:fixed; right:-60px; bottom:160px; z-index:90; display:flex; flex-direction:column; gap:10px; transition:right 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.ol-nav-fab { position:fixed; right:-60px; bottom:160px; z-index: 100 !important; pointer-events: auto !important; display:flex; flex-direction:column; gap:10px; transition:right 0.3s cubic-bezier(0.34,1.56,0.64,1); }
 .ol-nav-fab.show { right:12px; }
 .ol-nav-btn { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.85); border:1.5px solid rgba(173,205,234,0.5); box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#7ea3c9; backdrop-filter:blur(4px); -webkit-tap-highlight-color:transparent; }
 .ol-nav-btn:active { background:#e9f6ff; transform:scale(0.92); }
