@@ -573,6 +573,9 @@ if(mc){
         OL.saveMsgs(); O._noScroll=true; O.renderMessages();
       }
     } else if(act === 'regen') {
+      /* 先清除所有残留的旧标记 */
+      OL.messages.forEach(function(m){ delete m._regen; });
+      OL._regenIdx = null;
       if(!msg.swipes) msg.swipes = [msg.content];
       if(!msg.children) msg.children = [];
       if(msg.swipeIdx === undefined) msg.swipeIdx = 0;
