@@ -5,7 +5,7 @@ var App=window.App;if(!App)return;
 
 var MAX_CONTEXT=40;
 
-function pad2(n){return n<10?'0'+n:'+n;}
+function pad2(n){return n<10?'0'+n:''+n;}
 
 function getUserName(){
   if(App.user){var u=App.user.getActiveUser();if(u)return u.nickname||u.realName||'你';}
@@ -15,7 +15,7 @@ function getUserName(){
 function getApi(charId){
   if(App.charMgr){
     var cfg=App.charMgr.getCharConfig(charId);
-    if(cfg&&cfg.apiMode=='individual'&&cfg.apiSelect){
+    if(cfg&&cfg.apiMode==='individual'&&cfg.apiSelect){
       var list=App.LS.get('apiConfigs')||[];
       for(var i=0;i<list.length;i++){if(list[i].name===cfg.apiSelect)return list[i];}
     }
@@ -52,7 +52,7 @@ function translateError(msg){
 }
 
 function buildCharInfo(c){
-  if(!c)return '';var ci=';
+  if(!c)return '';var ci='';
   if(c.name)ci+='姓名：'+c.name+'\n';
   if(c.gender)ci+='性别：'+c.gender+'\n';
   if(c.age)ci+='年龄：'+c.age+'\n';
@@ -74,11 +74,11 @@ function buildUserInfo(u){
 
 function buildTimeInfo(charId){
   var now=new Date();var hour=now.getHours();
-  var period=';
+  var period='';
   if(hour<5)period='凌晨';else if(hour<8)period='清晨';else if(hour<11)period='上午';
   else if(hour<13)period='中午';else if(hour<17)period='下午';else if(hour<19)period='傍晚';
   else if(hour<23)period='晚上';else period='深夜';
-  var info='当前时间：'+now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours()+':'+pad2(now.getMinutes())+' ('+period+')';
+  var info='当前时间：'+now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+['周日','周一','周二','周三','周四','周五','周六'][now.getDay()]+' '+pad2(now.getHours())+':'+pad2(now.getMinutes())+' ('+period+')';
 
   if(App.calendar){
     var ws=App.calendar.getWeatherSummary();
@@ -99,12 +99,12 @@ function buildTimeInfo(charId){
 
 function getQuotePair(style){
   if(style==='straight')return['"','"'];
-  if(style=='corner')return['「','」'];
+  if(style==='corner')return['「','」'];
   return['\u201C','\u201D'];
 }
 
 function getPovText(pov,callName,qp){
-  if(pov=='first')return '用第一人称（我）描写用户'+qp[0]+callName+qp[1]+'的视角。用户自己的行动、感受、内心都从"我"的角度叙述。';
+  if(pov==='first')return '用第一人称（我）描写用户'+qp[0]+callName+qp[1]+'的视角。用户自己的行动、感受、内心都从"我"的角度叙述。';
   if(pov==='third')return '用第三人称描写，称呼用户为'+qp[0]+callName+qp[1]+'。';
   return '用第二人称（你）指代用户'+qp[0]+callName+qp[1]+'。';
 }
@@ -118,7 +118,7 @@ function buildFormatRules(charData,settings){
   var wc=settings.wordCount||0;
   var povText=getPovText(pov,callName,qp);
 
-  var sceneHint=App.LS.get('olScene_'+(charData?charData.id:'));
+  var sceneHint=App.LS.get('olScene_'+(charData?charData.id:''));
   var baseIdentity='你是'+qp[0]+charName+qp[1]+'，正在进行一场角色扮演叙事。';
   if(sceneHint){
     baseIdentity+='当前的场景和背景由「场景/时间线」描述，请严格遵循该设定进行互动。';
@@ -126,7 +126,7 @@ function buildFormatRules(charData,settings){
     baseIdentity+='场景和背景由对话上下文自然发展。';
   }
 
-  var wcRule=';
+  var wcRule='';
   if(wc>0){
     var min=Math.round(wc*0.85);var max=Math.round(wc*1.15);
     wcRule='\n\n【字数要求 - 绝对遵守】\n'+
@@ -143,7 +143,7 @@ function buildFormatRules(charData,settings){
     '4. 叙事文字不需要任何特殊标记，直接描写即可。\n'+
     '5. 叙事节奏自然流畅，有张有弛。情节推进适度，不要仓促也不要拖沓。\n'+
     '6. 每次回复是完整的一段叙事，直接输出，不要分条。\n'+
-    '7. 描写要有画面感和沉浸感。善用五感细节（视觉、听觉、触嗅觉、味觉）。\n'+
+    '7. 描写要有画面感和沉浸感。善用五感细节（视觉、听觉、触觉、嗅觉、味觉）。\n'+
     '8. 对话和叙事自然交织，不要变成纯对话。\n\n'+
     '【绝对禁止】\n'+
     '1. 不要替用户角色说话、行动或做任何决定。不要写用户的对话和动作。\n'+
@@ -166,7 +166,7 @@ function collectWorldBookEntries(charId,chatHistory){
   var entries=App.worldbook.getEntriesForChar(charId);
   if(!entries||!entries.length)return result;
   var historyText='';
-  if(chatHistory&&chatHistory.length)historyText=chatHistory.map(function(m){return m.content||';}).join(' ').toLowerCase();
+  if(chatHistory&&chatHistory.length)historyText=chatHistory.map(function(m){return m.content||'';}).join(' ').toLowerCase();
   entries.forEach(function(e){
     if(e.enabled===false)return;
     var shouldInclude=false;
@@ -195,7 +195,7 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
   var preset=getActivePreset();
   var order=preset&&preset.order?preset.order:null;
   var presetItems=preset&&preset.items?preset.items:[];
-  var sysToggles=(App.preset&&App.preset.config.sysToggles)?App.preset.config.sysToggles:{};
+  var sysToggles=(App.preset&&App.preset.config&&App.preset.config.sysToggles)?App.preset.config.sysToggles:{};
   var charId=charData?charData.id:null;
 
   var sceneText=App.LS.get('olScene_'+charId)||'';
@@ -205,9 +205,9 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
   var slotContent={
     sys_wb_before:wbEntries.before.length?wbEntries.before.join('\n'):'',
     sys_char_profile:buildCharInfo(charData),
-    sys_wb_after:wbEntries.after.length?wbEntries.after.join('\n'):',
+    sys_wb_after:wbEntries.after.length?wbEntries.after.join('\n'):'',
     sys_user_info:buildUserInfo(userData),
-    sys_examples:charData&&charData.dialogExamples?charData.dialogExamples:',
+    sys_examples:charData&&charData.dialogExamples?charData.dialogExamples:'',
     sys_scene:sceneText,
     sys_memory:memoryText,
     sys_post:charData&&charData.postInstruction?charData.postInstruction:''
@@ -215,11 +215,11 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
 
   if(!order||!order.length){
     order=[];
-    if(presetItems.length){presetItems.forEach(function(it,i){if(it.mode!=='depth')order.push({type:'user',idx:i});}
+    if(presetItems.length){presetItems.forEach(function(it,i){if(it.mode!=='depth')order.push({type:'user',idx:i});});}
     var DEFAULT_IDS=['sys_wb_before','sys_char_profile','sys_wb_after','sys_user_info','sys_examples','sys_scene','sys_memory','sys_history','sys_post'];
     DEFAULT_IDS.forEach(function(id){order.push({type:'sys',id:id});});
-    if(presetItems.length){presetItems.forEach(function(it,i){if(it.mode=='depth'){
-      var hI=-1;for(var j=0;j<order.length;j++){if(order[j].type=='sys'&&order[j].id=='sys_history'){hI=j;break;}}
+    if(presetItems.length){presetItems.forEach(function(it,i){if(it.mode==='depth'){
+      var hI=-1;for(var j=0;j<order.length;j++){if(order[j].type==='sys'&&order[j].id==='sys_history'){hI=j;break;}}
       if(hI>=0)order.splice(hI+1,0,{type:'user',idx:i});else order.push({type:'user',idx:i});
     }});}
   }
@@ -243,14 +243,14 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
       if(o.id==='sys_history'){hitHistory=true;return;}
       if(sysToggles[o.id]===false)return;
       var content=slotContent[o.id];if(!content)return;
-      var label=';
+      var label='';
       if(o.id==='sys_wb_before')label='【世界书】\n';
       else if(o.id==='sys_char_profile')label='【角色设定】\n';
       else if(o.id==='sys_wb_after')label='【世界书】\n';
-      else if(o.id=='sys_user_info')label='【聊天对象信息】\n';
+      else if(o.id==='sys_user_info')label='【聊天对象信息】\n';
       else if(o.id==='sys_examples')label='【示例对话参考】\n';
       else if(o.id==='sys_scene')label='【当前场景/时间线】\n';
-      else if(o.id=='sys_memory')label='【总结记忆】\n';
+      else if(o.id==='sys_memory')label='【总结记忆】\n';
       else if(o.id==='sys_post')label='【后置指令 - 每轮必须遵守】\n';
       if(hitHistory)afterHistory.push(label+content);
       else beforeHistory.push(label+content);
@@ -266,7 +266,7 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
     }
   });
 
-  wbEntries.depth.forEach(function(d){depthInjects.push({content:d.content,depth:d.depth,name:''});
+  wbEntries.depth.forEach(function(d){depthInjects.push({content:d.content,depth:d.depth,name:''});});
 
   var apiMsgs=[];
   var sysText=beforeHistory.filter(Boolean).join('\n\n');
@@ -291,7 +291,6 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
   var postText=afterHistory.filter(Boolean).join('\n\n');
   if(postText)apiMsgs.push({role:'system',content:postText});
 
-  // ★ 续写模式：注入续写指令
   if(options&&options.continueFrom!==undefined){
     apiMsgs.push({role:'system',content:'【续写指令】请直接接续上一条assistant回复的末尾继续往下写。不要重复已有内容，不要重新开头，不要加过渡语句。从上文最后一个字的下一个字自然衔接，保持文风、节奏、视角完全一致。'});
   }
@@ -309,9 +308,8 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
 
 var Offline={
   charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
-  _ctxMenu:null,_plusOpen:false,_backgroundMode:false,_streamPartial:',
+  _ctxMenu:null,_plusOpen:false,_backgroundMode:false,_streamPartial:'',
   _thinkText:'',_typewriterTimer:null,
-  // ★ 续写目标索引
   _continueIdx:null,
 
   loadMsgs:function(){Offline.messages=App.LS.get('olMsgs_'+Offline.charId)||[];},
@@ -331,8 +329,8 @@ var Offline={
     var c=App.character.getById(charId);
     if(!c){App.showToast('角色不存在');return;}
     Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
-    Offline._backgroundMode=false;Offline._plusOpen=false
-    Offline._eventsBound=false; // ★ 重置事件绑定标记
+    Offline._backgroundMode=false;Offline._plusOpen=false;
+    Offline._eventsBound=false;
 
     var panel=App.$('#offlinePanel');
     if(panel)panel.remove();
@@ -353,7 +351,7 @@ var Offline={
 
   close:function(){
     Offline.dismissCtx();
-    Offline._eventsBound=false; // ★ 关闭时重置
+    Offline._eventsBound=false;
     var panel=App.$('#offlinePanel');
     if(!panel)return;
     panel.classList.remove('show');
@@ -384,7 +382,7 @@ var Offline={
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings,options);
     var streamOn=(settings.streamOn!==false);
 
-    Offline.isStreaming=true;Offline._streamPartial=';Offline._thinkText='';Offline._netDone=false;
+    Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';Offline._netDone=false;
     if(App.offlineUI){
       App.offlineUI.renderMessages();
       App.offlineUI.updateAiBtn();
@@ -411,7 +409,7 @@ var Offline={
 
       if(!streamOn){
         return resp.json().then(function(json){
-          var text=';
+          var text='';
           if(json.choices&&json.choices[0]&&json.choices[0].message){
             var msg=json.choices[0].message;
             if(typeof msg.content==='string'){
@@ -419,7 +417,7 @@ var Offline={
             } else if(Array.isArray(msg.content)){
               msg.content.forEach(function(block){
                 if(block.type==='thinking'||block.type==='thought'){
-                  Offline._thinkText=(Offline._thinkText||')+(block.thinking||block.thought||block.text||'');
+                  Offline._thinkText=(Offline._thinkText||'')+(block.thinking||block.thought||block.text||'');
                 } else if(block.type==='text'){
                   text+=block.text||'';
                 }
@@ -437,30 +435,30 @@ var Offline={
         return reader.read().then(function(result){
           if(result.done){ Offline._netDone=true; onStreamDone(fullText); return; }
           buffer+=decoder.decode(result.value,{stream:true});
-          var lines=buffer.split('\n');bufferlines.pop()||'';
+          var lines=buffer.split('\n');buffer=lines.pop()||'';
           for(var i=0;i<lines.length;i++){
             var line=lines[i].trim();
             if(!line||!line.startsWith('data:'))continue;
             var data=line.slice(5).trim();
-            if(data=='[DONE]'){ Offline._netDone=true; onStreamDone(fullText); return; }
+            if(data===''){ Offline._netDone=true; onStreamDone(fullText); return; }
             if(!data)continue;
             try{
               var json=JSON.parse(data);
               var delta=null;
               if(json.choices&&json.choices[0]){ delta=json.choices[0].delta||null; }
-              if(!delta&&json.type&&(json.type.indexOf('delta')>=0||json.type.indexOf('block')>=0){ delta=json.delta||json; }
+              if(!delta&&json.type&&(json.type.indexOf('delta')>=0||json.type.indexOf('block')>=0)){ delta=json.delta||json; }
 
               if(delta){
-                var thinkChunk=delta.reasoning_content||delta.reasoning||delta.thought||delta.thinkingdelta.reasoning_text||delta.think';
+                var thinkChunk=delta.reasoning_content||delta.reasoning||delta.thought||delta.thinking||delta.reasoning_text||delta.think||'';
                 if(!thinkChunk&&delta.type==='thinking_delta'&&delta.thinking){ thinkChunk=delta.thinking; }
                 if(!thinkChunk&&delta.type==='thinking'&&delta.text){ thinkChunk=delta.text; }
-                if(!thinkChunk&&delta.type=='content_block_delta'&&delta.delta){
-                  if(delta.delta.type==='thinking_delta'){ thinkChunk=delta.delta.thinking||'; }
+                if(!thinkChunk&&delta.type==='content_block_delta'&&delta.delta){
+                  if(delta.delta.type==='thinking_delta'){ thinkChunk=delta.delta.thinking||''; }
                 }
 
-                if(thinkChunk){ Offline._thinkText=(Offline._thinkText||'')+thinkChunk; }
+                if(thinkChunk){ Offline._thinkText=(Offline._thinkText||'')+(thinkChunk); }
 
-                var textChunk=';
+                var textChunk='';
                 if(typeof delta.content==='string'){ textChunk=delta.content; }
                 else if(delta.type==='text_delta'&&delta.text){ textChunk=delta.text; }
                 else if(delta.delta&&delta.delta.type==='text_delta'){ textChunk=delta.delta.text||''; }
@@ -476,7 +474,7 @@ var Offline={
       return read();
     }).catch(function(err){
       Offline.isStreaming=false;
-      Offline.abortCtrl=null; // ★ 清理
+      Offline.abortCtrl=null;
       if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
       if(err.name==='AbortError'){Offline._backgroundMode=false;Offline._continueIdx=null;return;}
@@ -492,14 +490,13 @@ var Offline={
         }
       }
       Offline._backgroundMode=false;
-      Offline._continueIdx=null; // ★ 出错时清理续写标记
+      Offline._continueIdx=null;
     });
 
-    // ★ 打字机系统
     var _twPos=0;
-    var _twMissCount=0; // ★ bubble找不到的计数器
+    var _twMissCount=0;
     Offline._typewriterTimer=null;
-    Offline._finalTextToSave=';
+    Offline._finalTextToSave='';
 
     function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
@@ -509,7 +506,7 @@ var Offline={
       var bubble=App.$('#olStreamBubble');
       if(!bubble){
         _twMissCount++;
-        if(_twMissCount>60){ // ★ 连续2秒找不到bubble，安全终止
+        if(_twMissCount>60){
           Offline.isStreaming=false;
           Offline.abortCtrl=null;
           Offline._continueIdx=null;
@@ -519,24 +516,23 @@ var Offline={
         }
         Offline._typewriterTimer=setTimeout(typewriterTick,50);return;
       }
-      _twMissCount=0; // ★ 找到了就重置
+      _twMissCount=0;
 
       var remaining=currentFull.length-_twPos;
 
       if(remaining<=0 && Offline._netDone){
          Offline._typewriterTimer=null;
          Offline.isStreaming=false;
-         Offline.abortCtrl=null; // ★ 清理
+         Offline.abortCtrl=null;
          if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
          var textToSave=Offline._finalTextToSave||currentFull;
          var now=Date.now();
 
-         // ★ 续写模式：拼接到原消息
          if(Offline._continueIdx!==null){
            var cTarget=Offline.messages[Offline._continueIdx];
            if(cTarget){
              cTarget.content=cTarget.content+'\n'+textToSave;
-             if(cTarget.swipes)cTarget.swipes[Target.swipeIdx||0]=cTarget.content;
+             if(cTarget.swipes)cTarget.swipes[cTarget.swipeIdx||0]=cTarget.content;
              cTarget.ts=now;
            }
            Offline._continueIdx=null;
@@ -545,7 +541,6 @@ var Offline={
            return;
          }
 
-         // 重写模式
          var regenTarget=null;
          for(var ri=0;ri<Offline.messages.length;ri++){
            if(Offline.messages[ri]._regen){
@@ -580,7 +575,7 @@ var Offline={
       if(_twPos>currentFull.length) _twPos=currentFull.length;
 
       var visibleText=currentFull.slice(0,_twPos);
-      var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:',main:visibleText};
+      var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
 
       if(parsed.think){
@@ -606,7 +601,7 @@ var Offline={
     function onStreamDone(text){
       text=text.trim();
       if(Offline._thinkText){ text='<think>'+Offline._thinkText+'</think>'+text; }
-      Offline._thinkText=';
+      Offline._thinkText='';
       Offline._finalTextToSave=text;
       if(!streamOn){
          Offline.isStreaming=false;Offline.abortCtrl=null;
@@ -619,7 +614,6 @@ var Offline={
     function finishText(text){
       var now=Date.now();
 
-      // ★ 续写模式
       if(Offline._continueIdx!==null){
         var cTarget=Offline.messages[Offline._continueIdx];
         if(cTarget){
@@ -633,7 +627,6 @@ var Offline={
         return;
       }
 
-      // 重写模式
       var regenTarget=null;
       for(var i=0;i<Offline.messages.length;i++){
         if(Offline.messages[i]._regen){
@@ -671,7 +664,6 @@ var Offline={
       }
       var now=Date.now();
 
-      // ★ 续写模式中途停止
       if(Offline._continueIdx!==null){
         var cTarget=Offline.messages[Offline._continueIdx];
         if(cTarget){
@@ -685,7 +677,6 @@ var Offline={
         return;
       }
 
-      // 重写模式中途停止
       var regenTarget=null;
       for(var i=0;i<Offline.messages.length;i++){
         if(Offline.messages[i]._regen){
@@ -728,7 +719,7 @@ var Offline={
       picker.style.cssText='position:fixed;inset:0;z-index:10020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
       var listHtml=chars.map(function(c){
         var av=c.avatar
-          ?'<img src="'+App.escAtr(c.avatar)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
+          ?'<img src="'+App.escAttr(c.avatar)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
           :'<div style="width:36px;height:36px;border-radius:50%;background:rgba(126,163,201,.15);"></div>';
         return '<div data-cid="'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);">'+av+'<span style="font-size:14px;font-weight:600;color:#2e4258;">'+App.esc(c.name||'?')+'</span></div>';
       }).join('');
@@ -741,7 +732,7 @@ var Offline={
         '</div>';
 
       document.body.appendChild(picker);
-      picker.addEventListener('click',function(e){if(e.target===picker).remove();});
+      picker.addEventListener('click',function(e){if(e.target===picker)picker.remove();});
       picker.querySelector('#olPickCancel').addEventListener('click',function(){picker.remove();});
       picker.querySelectorAll('[data-cid]').forEach(function(el){
         el.addEventListener('click',function(){
@@ -749,6 +740,7 @@ var Offline={
           Offline.openFor(el.dataset.cid);
         });
       });
+    });
   }
 };
 
