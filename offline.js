@@ -378,7 +378,8 @@ var Offline={
     var hasRegen = false;
     for(var ri=0;ri<Offline.messages.length;ri++){ if(Offline.messages[ri]._regen){ hasRegen=true; break; } }
         if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
-      apiMsgs.push({role:'system', content:'[续写指令：请直接无缝衔接上一段assistant消息的最后一个字继续往下写。禁止重复已有内容，禁止重新开头，禁止总结前文。直接从断点处继续叙事，字数与正常回复相同。]'});
+      var tail = (lastMsg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim().slice(-80);
+      apiMsgs.push({role:'user', content:'(OOC：请从上一段结尾处直接无缝续写。上一段结尾是："…' + tail + '"。禁止重复以上内容，禁止重新开头，禁止总结。直接从断点处继续叙事，字数与正常回复相同。)'});
     }
     var streamOn=(settings.streamOn!==false);
 
@@ -402,7 +403,7 @@ var Offline={
         temperature:params.temperature,
         frequency_penalty:params.freqPenalty,
         presence_penalty:params.presPenalty,
-        max_tokens:80000
+        max_tokens:40000
       }),
       signal:Offline.abortCtrl.signal
     }).then(function(resp){
