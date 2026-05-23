@@ -200,7 +200,7 @@ for(var _ri=0;_ri<OL.messages.length;_ri++){
 }
 if(OL._continueIdx!==null&&regenIdx==-1) regenIdx=OL._continueIdx;
 
-var html=',floor=0;
+var html='',floor=0;
 
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
 
