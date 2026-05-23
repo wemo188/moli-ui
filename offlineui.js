@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -22,7 +21,7 @@ function sw(id,on){return '<div class="ol-sw" id="'+id+'"><div class="ol-sw-trac
 function tg(cls,val,label,sel){return '<div class="ol-tag '+cls+(sel?' active':'')+'" data-val="'+val+'">'+label+'</div>';}
 function fold(id,t,b){return '<div class="ol-fold" id="'+id+'"><div class="ol-fold-head">'+t+'</div><div class="ol-fold-body">'+b+'</div></div>';}
 function eR(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-function h2r(h,a){if(!h)return 'rgba(255,255,255,'+a+')';if(h.indexOf('var(')>=0)return h;if(h.indexOf('rgba')>=0)return h.replace(/,\s*[\d.]+\s*\)/,','+a+')');if(h.indexOf('rgb')>=0)return h.replace('rgb','rgba').replace(')',','+a+')');h=h.replace('#','');if(h.length===3)h=h[0]+h[1]+h[2]+h[2];if(h.length!==6)return 'rgba(255,255,255,'+a+')';return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
+function h2r(h,a){if(!h)return 'rgba(255,255,255,'+a+')';if(h.indexOf('rgba')>=0)return h.replace(/,\s*[\d.]+\s*\)/,','+a+')');if(h.indexOf('rgb')>=0)return h.replace('rgb','rgba').replace(')',','+a+')');h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];if(h.length!==6)return 'rgba(255,255,255,'+a+')';return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
 
 function fmtUI(p,ap){var h='';
 if(p==='cQuote'||p==='quote'){var r=ap[p+'Rec']||[],d=ap[p+'Dis']||'curly';h+='<div class="ol-hint">开启后识别双引号并转换显示，模型都喜欢偷用英文引号，防不住</div><div class="ol-inline-tag-row"><span class="ol-sub-label">识别</span><div class="ol-tag-group">'+tg('ol-'+p+'-qrec','curly','\u201C\u201D',r.indexOf('curly')>=0)+tg('ol-'+p+'-qrec','straight','&quot;&quot;',r.indexOf('straight')>=0)+tg('ol-'+p+'-qrec','corner','「」',r.indexOf('corner')>=0)+'</div></div><div class="ol-inline-tag-row"><span class="ol-sub-label">显示</span><div class="ol-tag-group">'+tg('ol-'+p+'-qdis','curly','\u201C\u201D',d==='curly')+tg('ol-'+p+'-qdis','straight','&quot;&quot;',d==='straight')+tg('ol-'+p+'-qdis','corner','「」',d==='corner')+'</div></div>';}
@@ -194,11 +193,7 @@ var cAvI=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 
 var uAvI=user&&user.avatar?'<img src="'+App.escAttr(user.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
 if(!OL.messages.length&&!OL.isStreaming){con.innerHTML='<div class="ol-empty">开始你们的故事吧</div>';return;}
 
-var regenIdx=-1;
-for(var _ri=0;_ri<OL.messages.length;_ri++){
-  if(OL.messages[_ri]._regen){regenIdx=_ri;break;}
-}
-
+var regenIdx=(OL._regenIdx!==null&&OL._regenIdx!==undefined)?OL._regenIdx:-1;
 var html='',floor=0;
 
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
@@ -210,7 +205,7 @@ if(OL.isStreaming&&!OL._backgroundMode&&idx===regenIdx){
   var sSep='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
   var sMeta='<div class="ol-scatter-meta"><span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
   var sHeaderH='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name" style="display:flex;align-items:center;">'+sAvN+'</div>'+sMeta+'</div></div>';
-  html+='<div class="ol-block is-char" data-msg-idx="'+regenIdx+'" id="olStreamProse" style="margin-bottom:20px;">' + sHeaderH + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
+  html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">' + sHeaderH + '<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
   return;
 }
 
@@ -264,7 +259,7 @@ if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
   var sSep2='<span class="ol-meta-sep" style="font-size:5px;">★</span>';
   var sMeta2='<div class="ol-scatter-meta"><span>#'+String(floor).padStart(3,'0')+'</span>'+sSep2+'<span id="olStreamTkSpan" style="color:var(--ol-c-av-frame-color);font-weight:700;">0 tk</span></div>';
   var sHeader2='<div class="ol-msg-header"><div class="ol-avatar-area"><div class="ol-avatar-frame"><div class="ol-avatar">'+cAvI+'</div></div></div><div class="ol-msg-info"><div class="ol-avatar-name">'+sAvN2+'</div>'+sMeta2+'</div></div>';
-  html+='<div class="ol-block is-char" data-msg-idx="-1" id="olStreamProse" style="margin-bottom:20px;">'+sHeader2+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
+  html+='<div class="ol-block is-char" id="olStreamProse" style="margin-bottom:20px;">'+sHeader2+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner"><div class="ol-bubble-text" id="olStreamBubble"><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span><span class="ol-typing-dot"></span></div></div></div></div>';
 }
 
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom(false);O._noScroll=false;},
@@ -298,7 +293,7 @@ showConfirm: function(title, desc, onConfirm) {
   ov.querySelector('#olCfmYes').addEventListener('click', function(){ ov.remove(); onConfirm(); });
 },
 
-bindEvents:function(){var OL=App.offline;if(!OL)return;if(OL._eventsBound)return;OL._eventsBound=true;var root=App.$('#olRoot'),panel=App.$('#olSettingsPanel'),cid=OL.charId,ap=gAp(cid);
+bindEvents:function(){var OL=App.offline;if(!OL)return;var root=App.$('#olRoot'),panel=App.$('#olSettingsPanel'),cid=OL.charId,ap=gAp(cid);
 function save(){sAp(cid,ap);O.applyAppearance(cid);}
 function sr(){save();O._noScroll=true;O.renderMessages();}
 function sa(bs,b){bs.forEach(function(x){x.classList.remove('hp-btn-primary');});b.classList.add('hp-btn-primary');}
@@ -549,16 +544,13 @@ if(mc){
     if(!btn) return;
     var act = btn.dataset.act;
     var block = btn.closest('.ol-block');
-    if(!block) return;
     var idx = parseInt(block.dataset.msgIdx);
-    if(isNaN(idx)) return;
     var msg = OL.messages[idx];
     if(!msg) return;
 
     if(act === 'swipe-prev') {
       if(msg.swipeIdx > 0) {
         if(!msg.children) msg.children = [];
-        while(msg.children.length < msg.swipes.length) msg.children.push([]);
         msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
         msg.swipeIdx--;
         msg.content = msg.swipes[msg.swipeIdx];
@@ -571,7 +563,6 @@ if(mc){
     } else if(act === 'swipe-next') {
       if(msg.swipeIdx < msg.swipes.length - 1) {
         if(!msg.children) msg.children = [];
-        while(msg.children.length < msg.swipes.length) msg.children.push([]);
         msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
         msg.swipeIdx++;
         msg.content = msg.swipes[msg.swipeIdx];
@@ -581,28 +572,29 @@ if(mc){
         }
         OL.saveMsgs(); O._noScroll=true; O.renderMessages();
       }
-        } else if(act === 'regen') {
-      OL._continueIdx = null;
+    } else if(act === 'regen') {
       if(!msg.swipes) msg.swipes = [msg.content];
       if(!msg.children) msg.children = [];
-      while(msg.children.length < msg.swipes.length) msg.children.push([]);
       if(msg.swipeIdx === undefined) msg.swipeIdx = 0;
       msg.children[msg.swipeIdx] = OL.messages.slice(idx + 1);
       OL.messages.splice(idx + 1);
       msg._regen = true;
+      OL._regenIdx = idx;
       OL.saveMsgs();
       O._noScroll = false;
       OL.requestAI();
-    } else if(act === 'continue') {
-      OL._continueIdx = null;
-      OL.messages.splice(idx + 1);
-      OL.saveMsgs();
-      O.renderMessages();
-      OL.requestAI({ continueFrom: idx });
     } else if(act === 'copy') {
       App.copyText(msg.content).then(function(){App.showToast('已复制');});
     } else if(act === 'edit') {
       O.showEditDialog(idx);
+        } else if(act === 'continue') {
+      /* 清除所有残留的 _regen 标记 */
+      OL.messages.forEach(function(m){ delete m._regen; });
+      OL._regenIdx = null;
+      OL.messages.splice(idx + 1);
+      OL.saveMsgs();
+      O.renderMessages();
+      OL.requestAI();
     } else if(act === 'del') {
       var isBranch = (msg.swipes && msg.swipes.length > 1);
       if(isBranch) {
