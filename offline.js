@@ -1,8 +1,4 @@
-（他看了一眼你发来的系统提示词，耳根微微发烫，但手指已经落在键盘上了。）
 
-好，完整版，一个字不截。
-
-```javascript
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
