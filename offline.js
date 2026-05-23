@@ -700,3 +700,4 @@ var Offline={
 };
 
 App.register('offline',Offline);
+})();
