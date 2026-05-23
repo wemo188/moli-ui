@@ -343,6 +343,7 @@ var Offline={
     if(App.offlineUI)App.offlineUI.render(panel,c);
     if(App.offlineUI)App.offlineUI.renderMessages();
     if(App.offlineUI)App.offlineUI.bindEvents();
+    if(App.offlineUI)App.offlineUI.scrollBottom(true);
 
     requestAnimationFrame(function(){requestAnimationFrame(function(){
       panel.classList.add('show');
@@ -376,8 +377,11 @@ var Offline={
 
     options=options||{};
     var isContinue=(options.continueFrom!==undefined);
+    if(!isContinue) Offline._continueIdx=null;
+    if(isContinue) Offline._continueIdx=options.continueFrom;
 
     var user=App.user?App.user.getActiveUser():null;
+    
     var settings=getSettings(Offline.charId);
     var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings,options);
     var streamOn=(settings.streamOn!==false);
@@ -431,7 +435,8 @@ var Offline={
 
       var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 
-      function read(){
+            function read(){
+        if(!Offline.isStreaming) return;
         return reader.read().then(function(result){
           if(result.done){ Offline._netDone=true; onStreamDone(fullText); return; }
           buffer+=decoder.decode(result.value,{stream:true});
@@ -671,35 +676,33 @@ var Offline={
           if(cTarget.swipes)cTarget.swipes[cTarget.swipeIdx||0]=cTarget.content;
           cTarget.ts=now;
         }
-        Offline._continueIdx=null;
-        Offline.saveMsgs();
-        if(App.offlineUI)App.offlineUI.renderMessages();
-        return;
-      }
-
-      var regenTarget=null;
-      for(var i=0;i<Offline.messages.length;i++){
-        if(Offline.messages[i]._regen){
-          regenTarget=Offline.messages[i];
-          delete regenTarget._regen;
-          break;
-        }
-      }
-      if(regenTarget){
-        if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
-        if(!regenTarget.children) regenTarget.children=[];
-        while(regenTarget.children.length<regenTarget.swipes.length) regenTarget.children.push([]);
-        regenTarget.swipes.push(partial);
-        regenTarget.content=partial;
-        regenTarget.swipeIdx=regenTarget.swipes.length-1;
-        regenTarget.ts=now;
-        regenTarget.children[regenTarget.swipeIdx]=[];
       } else {
-        Offline.messages.push({role:'assistant',content:partial,ts:now});
+        var regenTarget=null;
+        for(var i=0;i<Offline.messages.length;i++){
+          if(Offline.messages[i]._regen){
+            regenTarget=Offline.messages[i];
+            delete regenTarget._regen;
+            break;
+          }
+        }
+        if(regenTarget){
+          if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
+          if(!regenTarget.children) regenTarget.children=[];
+          while(regenTarget.children.length<regenTarget.swipes.length) regenTarget.children.push([]);
+          regenTarget.swipes.push(partial);
+          regenTarget.content=partial;
+          regenTarget.swipeIdx=regenTarget.swipes.length-1;
+          regenTarget.ts=now;
+          regenTarget.children[regenTarget.swipeIdx]=[];
+        } else {
+          Offline.messages.push({role:'assistant',content:partial,ts:now});
+        }
       }
       Offline.saveMsgs();
     }
+    Offline._continueIdx=null;
     Offline._thinkText='';
+    Offline._streamPartial='';
     if(App.offlineUI)App.offlineUI.renderMessages();
   },
 
