@@ -378,8 +378,8 @@ var Offline={
     var hasRegen = false;
     for(var ri=0;ri<Offline.messages.length;ri++){ if(Offline.messages[ri]._regen){ hasRegen=true; break; } }
         if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
-      var tail = (lastMsg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim().slice(-80);
-      apiMsgs.push({role:'user', content:'(OOC：请从上一段结尾处直接无缝续写。上一段结尾是："…' + tail + '"。禁止重复以上内容，禁止重新开头，禁止总结。直接从断点处继续叙事，字数与正常回复相同。)'});
+      var tail = (lastMsg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim().slice(-100);
+      apiMsgs.push({role:'user', content:'(继续。请从以下断点处直接无缝往下写，不要重复任何已有内容，不要重新开头：\n"…' + tail + '")'});
     }
     var streamOn=(settings.streamOn!==false);
 
