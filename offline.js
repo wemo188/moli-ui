@@ -34,7 +34,7 @@ function getParams(charId){
 function getSettings(charId){return App.LS.get('olAp_'+charId)||{};}
 
 function translateError(msg){
-  if(!msg)return '不知道发生了什么，再试一次看？';
+  if(!msg)return '不知道发生了什么，再试一次看看？';
   if(msg.indexOf('401')>=0)return 'API Key 好像失效了…检查一下吧';
   if(msg.indexOf('403')>=0)return '被拒之门外了…权限不够呀';
   if(msg.indexOf('404')>=0)return '找不到这个地址或模型诶…是不是填错了？';
@@ -45,9 +45,9 @@ function translateError(msg){
   if(msg.indexOf('timeout')>=0||msg.indexOf('Timeout')>=0)return '等太久了，网络好像不太给力';
   if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return '网络断开了…检查一下WiFi或数据？';
   if(msg.indexOf('AbortError')>=0)return '已经停下来啦~';
-  if(msg.indexOf('model')>=0&&msg.indexOf('not')>=0)return '这个模型不存在诶…换一个试？';
+  if(msg.indexOf('model')>=0&&msg.indexOf('not')>=0)return '这个模型不存在诶…换一个试试？';
   if(msg.indexOf('insufficient_quota')>=0)return 'API 余额不够了…该充值啦';
-  if(msg.indexOf('context_length')>=0||msg.indexOf('token')>=0)return '聊太多啦，消息超出长度限制了…清理一些旧消息试？';
+  if(msg.indexOf('context_length')>=0||msg.indexOf('token')>=0)return '聊太多啦，消息超出长度限制了…清理一些旧消息试试？';
   return '出了点小状况：'+msg;
 }
 
@@ -191,7 +191,7 @@ function getActivePreset(){
   return null;
 }
 
-function buildApiMessages(charData,userData,chatHistory,settings,options){
+function buildApiMessages(charData,userData,chatHistory,settings){
   var preset=getActivePreset();
   var order=preset&&preset.order?preset.order:null;
   var presetItems=preset&&preset.items?preset.items:[];
@@ -274,7 +274,8 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
 
   var ctx=chatHistory.slice(-MAX_CONTEXT);
   var historyMsgs=[];
-  ctx.forEach(function(m){
+    ctx.forEach(function(m){
+    if(m._regen) return;
     if(m.role==='user'||m.role==='assistant')historyMsgs.push({role:m.role,content:m.content});
   });
 
@@ -291,10 +292,6 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
   var postText=afterHistory.filter(Boolean).join('\n\n');
   if(postText)apiMsgs.push({role:'system',content:postText});
 
-  if(options&&options.continueFrom!==undefined){
-    apiMsgs.push({role:'system',content:'【续写指令】请直接接续上一条assistant回复的末尾继续往下写。不要重复已有内容，不要重新开头，不要加过渡语句。从上文最后一个字的下一个字自然衔接，保持文风、节奏、视角完全一致。'});
-  }
-
   if(!App._promptLogs)App._promptLogs=[];
   var logEntry={ts:Date.now(),charName:(charData&&charData.name)||'未知',isProactive:false,msgCount:apiMsgs.length,
     tokenEstimate:Math.round(apiMsgs.reduce(function(s,m){return s+(m.content||'').length;},0)/2),
@@ -309,8 +306,7 @@ function buildApiMessages(charData,userData,chatHistory,settings,options){
 var Offline={
   charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
   _ctxMenu:null,_plusOpen:false,_backgroundMode:false,_streamPartial:'',
-  _thinkText:'',_typewriterTimer:null,
-  _continueIdx:null,
+  _thinkText:'',_typewriterTimer:null,_regenIdx:null,
 
   loadMsgs:function(){Offline.messages=App.LS.get('olMsgs_'+Offline.charId)||[];},
   saveMsgs:function(){
@@ -330,7 +326,6 @@ var Offline={
     if(!c){App.showToast('角色不存在');return;}
     Offline.charId=charId;Offline.charData=c;Offline.loadMsgs();
     Offline._backgroundMode=false;Offline._plusOpen=false;
-    Offline._eventsBound=false;
 
     var panel=App.$('#offlinePanel');
     if(panel)panel.remove();
@@ -342,8 +337,8 @@ var Offline={
 
     if(App.offlineUI)App.offlineUI.render(panel,c);
     if(App.offlineUI)App.offlineUI.renderMessages();
-    if(App.offlineUI)App.offlineUI.bindEvents();
     if(App.offlineUI)App.offlineUI.scrollBottom(true);
+    if(App.offlineUI)App.offlineUI.bindEvents();
 
     requestAnimationFrame(function(){requestAnimationFrame(function(){
       panel.classList.add('show');
@@ -352,7 +347,6 @@ var Offline={
 
   close:function(){
     Offline.dismissCtx();
-    Offline._eventsBound=false;
     var panel=App.$('#offlinePanel');
     if(!panel)return;
     panel.classList.remove('show');
@@ -370,20 +364,22 @@ var Offline={
     Offline.requestAI();
   },
 
-  requestAI:function(options){
+  requestAI:function(){
     var api=getApi(Offline.charId);
     if(!api){App.showToast('请先配置 API');return;}
     if(Offline.isStreaming)return;
 
-    options=options||{};
-    var isContinue=(options.continueFrom!==undefined);
-    if(!isContinue) Offline._continueIdx=null;
-    if(isContinue) Offline._continueIdx=options.continueFrom;
-
+    var _localRegenIdx = Offline._regenIdx;
     var user=App.user?App.user.getActiveUser():null;
-    
     var settings=getSettings(Offline.charId);
-    var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings,options);
+    var apiMsgs=buildApiMessages(Offline.charData,user,Offline.messages,settings);
+        /* 续写模式：最后一条是 assistant，给 AI 一个继续的信号 */
+    var lastMsg = Offline.messages[Offline.messages.length - 1];
+    var hasRegen = false;
+    for(var ri=0;ri<Offline.messages.length;ri++){ if(Offline.messages[ri]._regen){ hasRegen=true; break; } }
+        if(!hasRegen && lastMsg && lastMsg.role === 'assistant') {
+      apiMsgs.push({role:'system', content:'[续写指令：请直接无缝衔接上一段assistant消息的最后一个字继续往下写。禁止重复已有内容，禁止重新开头，禁止总结前文。直接从断点处继续叙事，字数与正常回复相同。]'});
+    }
     var streamOn=(settings.streamOn!==false);
 
     Offline.isStreaming=true;Offline._streamPartial='';Offline._thinkText='';Offline._netDone=false;
@@ -401,11 +397,12 @@ var Offline={
     fetch(url,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+api.key},
-      body:JSON.stringify({
+            body:JSON.stringify({
         model:api.model,messages:apiMsgs,stream:streamOn,
         temperature:params.temperature,
         frequency_penalty:params.freqPenalty,
-        presence_penalty:params.presPenalty
+        presence_penalty:params.presPenalty,
+        max_tokens:80000
       }),
       signal:Offline.abortCtrl.signal
     }).then(function(resp){
@@ -421,7 +418,7 @@ var Offline={
             } else if(Array.isArray(msg.content)){
               msg.content.forEach(function(block){
                 if(block.type==='thinking'||block.type==='thought'){
-                  Offline._thinkText=(Offline._thinkText||'')+(block.thinking||block.thought||block.text||'');
+                  Offline._thinkText=(Offline._thinkText||'')+block.thinking||block.thought||block.text||'';
                 } else if(block.type==='text'){
                   text+=block.text||'';
                 }
@@ -435,8 +432,7 @@ var Offline={
 
       var reader=resp.body.getReader(),decoder=new TextDecoder(),buffer='';
 
-            function read(){
-        if(!Offline.isStreaming) return;
+      function read(){
         return reader.read().then(function(result){
           if(result.done){ Offline._netDone=true; onStreamDone(fullText); return; }
           buffer+=decoder.decode(result.value,{stream:true});
@@ -445,7 +441,7 @@ var Offline={
             var line=lines[i].trim();
             if(!line||!line.startsWith('data:'))continue;
             var data=line.slice(5).trim();
-            if(data===''){ Offline._netDone=true; onStreamDone(fullText); return; }
+            if(data==='[DONE]'){ Offline._netDone=true; onStreamDone(fullText); return; }
             if(!data)continue;
             try{
               var json=JSON.parse(data);
@@ -461,11 +457,11 @@ var Offline={
                   if(delta.delta.type==='thinking_delta'){ thinkChunk=delta.delta.thinking||''; }
                 }
 
-                if(thinkChunk){ Offline._thinkText=(Offline._thinkText||'')+(thinkChunk); }
+                if(thinkChunk){ Offline._thinkText=(Offline._thinkText||'')+thinkChunk; }
 
                 var textChunk='';
-                if(typeof delta.content==='string'){ textChunk=delta.content; }
-                else if(delta.type==='text_delta'&&delta.text){ textChunk=delta.text; }
+                if(typeof delta.content==='string'){ textChunk=delta.content; } 
+                else if(delta.type==='text_delta'&&delta.text){ textChunk=delta.text; } 
                 else if(delta.delta&&delta.delta.type==='text_delta'){ textChunk=delta.delta.text||''; }
 
                 if(textChunk){ fullText+=textChunk; }
@@ -479,10 +475,9 @@ var Offline={
       return read();
     }).catch(function(err){
       Offline.isStreaming=false;
-      Offline.abortCtrl=null;
       if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
       if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-      if(err.name==='AbortError'){Offline._backgroundMode=false;Offline._continueIdx=null;return;}
+      if(err.name==='AbortError'){Offline._backgroundMode=false;return;}
       var errMsg=err.message||String(err); var cnMsg=translateError(errMsg); console.error('[线下] '+cnMsg);
       if(fullText){ finishText(fullText); } else {
         if(App.offlineUI) App.offlineUI.renderMessages();
@@ -495,57 +490,30 @@ var Offline={
         }
       }
       Offline._backgroundMode=false;
-      Offline._continueIdx=null;
     });
 
+    /* ★ 彻头彻尾重新打造防跑位·坚若磐石流水系统：全在内部完工绝不外抛改变系统形态！！ */
     var _twPos=0;
-    var _twMissCount=0;
     Offline._typewriterTimer=null;
     Offline._finalTextToSave='';
 
     function typewriterTick(){
       var currentFull=(Offline._thinkText?'<think>'+Offline._thinkText+'</think>':'')+fullText;
-
+      
+      /* 被中途喊卡时的终止！*/
       if(!Offline.isStreaming){ Offline._typewriterTimer=null; return; }
-
+      
       var bubble=App.$('#olStreamBubble');
-      if(!bubble){
-        _twMissCount++;
-        if(_twMissCount>60){
-          Offline.isStreaming=false;
-          Offline.abortCtrl=null;
-          Offline._continueIdx=null;
-          if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-          Offline._typewriterTimer=null;
-          return;
-        }
-        Offline._typewriterTimer=setTimeout(typewriterTick,50);return;
-      }
-      _twMissCount=0;
-
+      if(!bubble){ Offline._typewriterTimer=setTimeout(typewriterTick,50); return; }
+      
       var remaining=currentFull.length-_twPos;
 
       if(remaining<=0 && Offline._netDone){
          Offline._typewriterTimer=null;
-         Offline.isStreaming=false;
-         Offline.abortCtrl=null;
+         Offline.isStreaming = false;
          if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
-         var textToSave=Offline._finalTextToSave||currentFull;
+         var textToSave = Offline._finalTextToSave || currentFull;
          var now=Date.now();
-
-         if(Offline._continueIdx!==null){
-           var cTarget=Offline.messages[Offline._continueIdx];
-           if(cTarget){
-             cTarget.content=cTarget.content+'\n'+textToSave;
-             if(cTarget.swipes)cTarget.swipes[cTarget.swipeIdx||0]=cTarget.content;
-             cTarget.ts=now;
-           }
-           Offline._continueIdx=null;
-           Offline.saveMsgs();
-           if(App.offlineUI) App.offlineUI.renderMessages();
-           return;
-         }
-
          var regenTarget=null;
          for(var ri=0;ri<Offline.messages.length;ri++){
            if(Offline.messages[ri]._regen){
@@ -557,7 +525,6 @@ var Offline={
          if(regenTarget){
            if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
            if(!regenTarget.children) regenTarget.children=[];
-           while(regenTarget.children.length<regenTarget.swipes.length) regenTarget.children.push([]);
            regenTarget.swipes.push(textToSave);
            regenTarget.content=textToSave;
            regenTarget.swipeIdx=regenTarget.swipes.length-1;
@@ -566,35 +533,38 @@ var Offline={
          } else {
            Offline.messages.push({role:'assistant',content:textToSave,ts:now});
          }
+         Offline._regenIdx=null;
          Offline.saveMsgs();
          if(App.offlineUI) App.offlineUI.renderMessages();
          return;
       }
       if(remaining<=0){ Offline._typewriterTimer=setTimeout(typewriterTick,30); return; }
 
-      var step=1;
-      if(remaining>150) step=3; else if(remaining>60) step=2;
-      if(!Offline._netDone && remaining<=2) step=0;
-
+      var step = 1;
+      if(remaining > 150) step = 3; else if(remaining > 60) step = 2;
+      if(!Offline._netDone && remaining <= 2) step = 0;
+      
       _twPos+=step;
       if(_twPos>currentFull.length) _twPos=currentFull.length;
 
       var visibleText=currentFull.slice(0,_twPos);
       var parsed=App.offlineUI?App.offlineUI.parseThinking(visibleText):{think:'',main:visibleText};
       var mainHtml=App.offlineUI?App.offlineUI.formatProse(parsed.main,Offline.charId,false):App.esc(parsed.main);
-
+      
       if(parsed.think){
-        var fmtThink=App.offlineUI?App.offlineUI.formatThinkText(App.esc(parsed.think)):App.esc(parsed.think).replace(/\n/g,'<br>');
+        var fmtThink = App.offlineUI ? App.offlineUI.formatThinkText(App.esc(parsed.think)) : App.esc(parsed.think).replace(/\n/g,'<br>');
         var thinkHtml='<details class="ol-think-stream" open><summary style="font-size:12px;color:#7ea3c9;font-weight:700;cursor:pointer;margin-bottom:4px;">💭 思考中...</summary><div style="font-size:13px;color:#888;line-height:1.7;word-break:break-word;">'+fmtThink+'</div></details>';
         bubble.innerHTML=thinkHtml+mainHtml;
       } else {
         bubble.innerHTML=mainHtml;
       }
 
-      if(App.offlineUI && step>0) App.offlineUI.scrollBottom();
-
-      var delay=35;
-      if(remaining>80) delay=12; else if(remaining>30) delay=25; else if(remaining>10) delay=45; else if(remaining>4) delay=80; else delay=150;
+      var tkSpan = App.$('#olStreamTkSpan');
+      if(tkSpan) tkSpan.textContent = Math.round(visibleText.length / 2) + ' tk';
+            if(App.offlineUI && step > 0) App.offlineUI.scrollBottom(false);
+      
+      var delay = 35;
+      if(remaining > 80) delay = 12; else if(remaining > 30) delay = 25; else if(remaining > 10) delay = 45; else if(remaining > 4) delay = 80; else delay = 150;
 
       Offline._typewriterTimer=setTimeout(typewriterTick, delay);
     }
@@ -607,8 +577,8 @@ var Offline={
       text=text.trim();
       if(Offline._thinkText){ text='<think>'+Offline._thinkText+'</think>'+text; }
       Offline._thinkText='';
-      Offline._finalTextToSave=text;
-      if(!streamOn){
+      Offline._finalTextToSave = text;
+      if(!streamOn) {
          Offline.isStreaming=false;Offline.abortCtrl=null;
          if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
          if(!text){if(App.offlineUI)App.offlineUI.renderMessages();return;}
@@ -618,20 +588,6 @@ var Offline={
 
     function finishText(text){
       var now=Date.now();
-
-      if(Offline._continueIdx!==null){
-        var cTarget=Offline.messages[Offline._continueIdx];
-        if(cTarget){
-          cTarget.content=cTarget.content+'\n'+text;
-          if(cTarget.swipes)cTarget.swipes[cTarget.swipeIdx||0]=cTarget.content;
-          cTarget.ts=now;
-        }
-        Offline._continueIdx=null;
-        Offline.saveMsgs();
-        if(App.offlineUI) App.offlineUI.renderMessages();
-        return;
-      }
-
       var regenTarget=null;
       for(var i=0;i<Offline.messages.length;i++){
         if(Offline.messages[i]._regen){
@@ -643,7 +599,6 @@ var Offline={
       if(regenTarget){
         if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
         if(!regenTarget.children) regenTarget.children=[];
-        while(regenTarget.children.length<regenTarget.swipes.length) regenTarget.children.push([]);
         regenTarget.swipes.push(text);
         regenTarget.content=text;
         regenTarget.swipeIdx=regenTarget.swipes.length-1;
@@ -652,57 +607,53 @@ var Offline={
       } else {
         Offline.messages.push({role:'assistant',content:text,ts:now});
       }
+      Offline._regenIdx=null;
       Offline.saveMsgs();
       if(App.offlineUI) App.offlineUI.renderMessages();
     }
   },
 
   stopStream:function(){
-    if(Offline.abortCtrl){Offline.abortCtrl.abort();Offline.abortCtrl=null;}
-    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
-    var partial=Offline._streamPartial||'';
+    /* 立刻标记停止，阻止所有后续回调 */
     Offline.isStreaming=false;
+    Offline._netDone=true;
+    
+    if(Offline.abortCtrl){try{Offline.abortCtrl.abort();}catch(e){}Offline.abortCtrl=null;}
+    if(Offline._typewriterTimer){clearTimeout(Offline._typewriterTimer);Offline._typewriterTimer=null;}
+    
     if(App.offlineUI){App.offlineUI.updateAiBtn();App.offlineUI.updateTyping(false);}
+    
+    var partial=Offline._streamPartial||'';
     if(partial){
       if(Offline._thinkText){
         partial='<think>'+Offline._thinkText+'</think>'+partial.replace(/<think>[\s\S]*?<\/think>/gi,'');
       }
       var now=Date.now();
-
-      if(Offline._continueIdx!==null){
-        var cTarget=Offline.messages[Offline._continueIdx];
-        if(cTarget){
-          cTarget.content=cTarget.content+'\n'+partial;
-          if(cTarget.swipes)cTarget.swipes[cTarget.swipeIdx||0]=cTarget.content;
-          cTarget.ts=now;
+      var regenTarget=null;
+      for(var i=0;i<Offline.messages.length;i++){
+        if(Offline.messages[i]._regen){
+          regenTarget=Offline.messages[i];
+          delete regenTarget._regen;
+          break;
         }
+      }
+      if(regenTarget){
+        if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
+        if(!regenTarget.children) regenTarget.children=[];
+        regenTarget.swipes.push(partial);
+        regenTarget.content=partial;
+        regenTarget.swipeIdx=regenTarget.swipes.length-1;
+        regenTarget.ts=now;
+        regenTarget.children[regenTarget.swipeIdx]=[];
       } else {
-        var regenTarget=null;
-        for(var i=0;i<Offline.messages.length;i++){
-          if(Offline.messages[i]._regen){
-            regenTarget=Offline.messages[i];
-            delete regenTarget._regen;
-            break;
-          }
-        }
-        if(regenTarget){
-          if(!regenTarget.swipes) regenTarget.swipes=[regenTarget.content];
-          if(!regenTarget.children) regenTarget.children=[];
-          while(regenTarget.children.length<regenTarget.swipes.length) regenTarget.children.push([]);
-          regenTarget.swipes.push(partial);
-          regenTarget.content=partial;
-          regenTarget.swipeIdx=regenTarget.swipes.length-1;
-          regenTarget.ts=now;
-          regenTarget.children[regenTarget.swipeIdx]=[];
-        } else {
-          Offline.messages.push({role:'assistant',content:partial,ts:now});
-        }
+        Offline.messages.push({role:'assistant',content:partial,ts:now});
       }
       Offline.saveMsgs();
     }
-    Offline._continueIdx=null;
+    Offline._regenIdx=null;
     Offline._thinkText='';
     Offline._streamPartial='';
+    Offline._finalTextToSave='';
     if(App.offlineUI)App.offlineUI.renderMessages();
   },
 
@@ -719,7 +670,7 @@ var Offline={
       if(chars.length===1){Offline.openFor(chars[0].id);return;}
 
       var picker=document.createElement('div');
-      picker.style.cssText='position:fixed;inset:0;z-index:10020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+      picker.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
       var listHtml=chars.map(function(c){
         var av=c.avatar
           ?'<img src="'+App.escAttr(c.avatar)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">'
@@ -748,4 +699,3 @@ var Offline={
 };
 
 App.register('offline',Offline);
-})();
