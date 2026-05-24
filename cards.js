@@ -595,7 +595,7 @@ var Cards={
         '<div class="pc-group"><span class="pc-label">标签 1</span><input type="text" class="pc-input" id="pcTag1" value="'+App.escAttr(d.tag1||'')+'"></div>'+
         '<div class="pc-group"><span class="pc-label">标签 2</span><input type="text" class="pc-input" id="pcTag2" value="'+App.escAttr(d.tag2||'')+'"></div>'+
         '<div class="pc-group"><span class="pc-label" style="margin-bottom:-2px;">调色板</span><div class="pc-palette-grid">'+dotsHtml+'</div></div>'+
-        '<div class="pc-group" style="margin-top:auto;"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="1" max="8" step="0.5" value="'+col.borderW+'"><span class="pc-slider-val" id="pcBorderWVal">'+col.borderW+'px</span></div></div>'+
+        '<div class="pc-group" style="margin-top:auto;"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="0" max="8" step="0.5" value="'+col.borderW+'"><span class="pc-slider-val" id="pcBorderWVal">'+col.borderW+'px</span></div></div>'+
       '</div>'+
       '<div class="pc-footer">'+
         '<button class="pc-btn pc-btn-save" id="pcSaveBtn" type="button">保 存</button>'+
