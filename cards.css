@@ -90,7 +90,7 @@
   --S: 1;
   --W0: 190px;
   --CARD_H0: 200px;
-  --PAD0: 6px;
+  --PAD0: 10px;
   --INK: var(--profileCard-L-name-c, #4a5a75);
   --THEME: var(--profileCard-L-border-c, #bbd3ef);
   --LABEL_C: var(--profileCard-L-sub-c, #6a8caf);
@@ -196,7 +196,7 @@
 #profileCard-L .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(5px * var(--S));
+  margin-top: calc(10px * var(--S));
   letter-spacing: calc(1px * var(--S));
 }
 
@@ -205,7 +205,7 @@
   --S: 1;
   --W0: 190px;
   --CARD_H0: 200px;
-  --PAD0: 6px;
+  --PAD0: 10px;
   --INK: var(--profileCard-R-name-c, #4a5a75);
   --BLUE: var(--profileCard-R-border-c, #8ca3c2);
   --BLUE_L: #b5c6db;
@@ -310,7 +310,7 @@
 #profileCard-R .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(5px * var(--S));
+  margin-top: calc(10px * var(--S));
   letter-spacing: calc(1px * var(--S));
 }
 
