@@ -460,12 +460,12 @@
 }
 
 .hl-bubble-right {
-  top: -4px;
+  top: -6px;
   right: -30px;
 }
 
 .hl-bubble-left {
-  bottom: -4px;
+  bottom: -2px;
   left: -30px;
 }
 
