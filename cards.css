@@ -540,13 +540,13 @@
 .hl-chatbar-bl {
   top: 25px;
   right: 20px;
-  margin-top: 8px;
 }
 
 /* 右头像：下边中间 */
 .hl-chatbar-bot {
   top: 100%;
   left: 50%;
+  margin-top: 8px;
 }
 
 .hl-chatbar-input {
