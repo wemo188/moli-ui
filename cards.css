@@ -204,7 +204,7 @@
 #profileCard-R {
   --S: 1;
   --W0: 190px;
-  --CARD_H0: 210px;
+  --CARD_H0: 200px;
   --PAD0: 6px;
   --INK: var(--profileCard-R-name-c, #4a5a75);
   --BLUE: var(--profileCard-R-border-c, #8ca3c2);
