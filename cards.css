@@ -92,8 +92,8 @@
 /* ====== profileCard-L 左卡片 ====== */
 #profileCard-L {
   --S: 1;
-  --W0: 190px;
-  --CARD_H0: 200px;
+  --W0: 180px;
+  --CARD_H0: 190px;
   --PAD0: 10px;
   --INK: var(--profileCard-L-name-c, #4a5a75);
   --THEME: var(--profileCard-L-border-c, #bbd3ef);
@@ -208,8 +208,8 @@
 /* ====== profileCard-R 右卡片 ====== */
 #profileCard-R {
   --S: 1;
-  --W0: 190px;
-  --CARD_H0: 200px;
+  --W0: 180px;
+  --CARD_H0: 190px;
   --PAD0: 10px;
   --INK: var(--profileCard-R-name-c, #4a5a75);
   --BLUE: var(--profileCard-R-border-c, #8ca3c2);
@@ -388,7 +388,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 40px;
+  gap: 60px;
   margin-top: 16px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
