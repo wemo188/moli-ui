@@ -480,12 +480,12 @@
 
 /* 右边气泡箭头（朝下指向头像） */
 .hl-bubble-right .hl-bubble-arrow-outer {
-  bottom: -8px;
+  bottom: -6px;
   left: 8px;
   border-top: 6px solid var(--hl-border-c);
 }
 .hl-bubble-right .hl-bubble-arrow-inner {
-  bottom: -6px;
+  bottom: -5px;
   left: 9px;
   border-left-width: 3px;
   border-right-width: 3px;
@@ -494,12 +494,12 @@
 
 /* 左边气泡箭头（朝上指向头像） */
 .hl-bubble-left .hl-bubble-arrow-outer {
-  top: -4px;
+  top: -6px;
   right: 8px;
   border-bottom: 6px solid var(--hl-border-c);
 }
 .hl-bubble-left .hl-bubble-arrow-inner {
-  top: -2px;
+  top: -5px;
   right: 9px;
   border-left-width: 3px;
   border-right-width: 3px;
@@ -534,6 +534,8 @@
   padding: 6px 6px;
   white-space: nowrap;
   z-index: 5;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* 右头像：下面中间 */
