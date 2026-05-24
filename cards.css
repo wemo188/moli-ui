@@ -384,7 +384,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 30px;
+  gap: 40px;
   margin-top: 16px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
@@ -539,7 +539,7 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  right: 50px;
+  right: 40px;
   margin-top: 15px;
 }
 
@@ -547,8 +547,8 @@
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
-  left: -110px;
-  margin-top: -35px;
+  left: -120px;
+  margin-top: -30px;
 }
 
 .hl-chatbar-input {
