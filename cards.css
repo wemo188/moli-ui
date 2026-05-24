@@ -550,7 +550,6 @@
   top: 100%;
   left: 50%;
   margin-top: 15px;
-  transform: translateX(-50%);
 }
 
 .hl-chatbar-input {
