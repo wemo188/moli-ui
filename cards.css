@@ -178,7 +178,7 @@
 
 #profileCard-L .bx-name-bar {
   width: 100%; text-align: center;
-  margin-top: calc(-10px * var(--S));
+  margin-top: 0;
   position: relative;
   padding: calc(2px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
   z-index: 3;
@@ -292,7 +292,7 @@
 
 #profileCard-R .bx-name-bar {
   width: 100%; text-align: center;
-  margin-top: calc(-10px * var(--S));
+  margin-top: 0;
   position: relative;
   padding: calc(2px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
   z-index: 3;
