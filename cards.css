@@ -32,7 +32,7 @@
   pointer-events: none;
 }
 
-#profileCard-L, #profileCard-R, .heartline-card, .card-icon-item {
+#profileCard-L, #profileCard-R, .hl-text-card, .hl-avatar-unit, .card-icon-item {
   pointer-events: auto;
 }
 
@@ -464,7 +464,7 @@
 }
 
 .hl-bubble-left {
-  top: -4px;
+  bottom: -4px;
   left: -30px;
 }
 
@@ -491,18 +491,18 @@
   border-top: 5px solid white;
 }
 
-/* 左边气泡箭头（朝下指向头像） */
+/* 左边气泡箭头（朝上指向头像） */
 .hl-bubble-left .hl-bubble-arrow-outer {
-  bottom: -6px;
+  top: -6px;
   right: 8px;
-  border-top: 6px solid var(--hl-border-c);
+  border-bottom: 6px solid var(--hl-border-c);
 }
 .hl-bubble-left .hl-bubble-arrow-inner {
-  bottom: -4px;
+  top: -4px;
   right: 9px;
   border-left-width: 3px;
   border-right-width: 3px;
-  border-top: 5px solid white;
+  border-bottom: 5px solid white;
 }
 
 .hl-bubble-input {
@@ -521,7 +521,7 @@
 }
 
 /* =========================
-   毛玻璃长对话条
+   毛玻璃对话条（B型）
 ========================= */
 .hl-chatbar {
   position: absolute;
@@ -530,26 +530,24 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  border-radius: 20px;
+  border-radius: 18px 4px 18px 18px;
   padding: 6px 14px;
   white-space: nowrap;
   z-index: 5;
 }
 
-/* 左头像：左下角对话条 */
+/* 左头像：左下角 */
 .hl-chatbar-bl {
   top: 100%;
   right: 50%;
   margin-top: 8px;
-  transform: translateX(10px);
 }
 
-/* 右头像：正下方对话条 */
+/* 右头像：下边中间 */
 .hl-chatbar-bot {
   top: 100%;
   left: 50%;
   margin-top: 8px;
-  transform: translateX(-50%);
 }
 
 .hl-chatbar-input {
