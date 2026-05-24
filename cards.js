@@ -105,10 +105,7 @@ var Cards={
     Cards.bindIconsDragAndUpload();
   },
 
-  /* =========================
-     心电图对话框
-  ========================= */
-   bindHeartline:function(){
+  bindHeartline:function(){
     if(this._hlBound) return;
     this._hlBound=true;
 
@@ -140,7 +137,7 @@ var Cards={
     if(textTop) textTop.addEventListener('input',function(){App.LS.set('hlText_top',this.value);});
     if(textBot) textBot.addEventListener('input',function(){App.LS.set('hlText_bottom',this.value);});
 
-    // 头像点击上传
+    // 头像点击上传（短按）
     var avatarL=document.getElementById('hlAvatarLeft');
     var avatarR=document.getElementById('hlAvatarRight');
     if(avatarL) avatarL.addEventListener('click',function(e){
@@ -152,24 +149,93 @@ var Cards={
       Cards._uploadHlAvatar('hlImgRight','avatar_hlRight');
     });
 
-    // 长按删除头像
-    var LONG_PRESS=800;
-    ['hlAvatarLeft','hlAvatarRight'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(!el) return;
-      var timer=null;
-      el.addEventListener('touchstart',function(){
-        timer=setTimeout(function(){
-          var imgId=id==='hlAvatarLeft'?'hlImgLeft':'hlImgRight';
-          var key=id==='hlAvatarLeft'?'avatar_hlLeft':'avatar_hlRight';
-          Cards._clearHlAvatar(imgId,key);
-          App.showToast('头像已清除');
-          if(navigator.vibrate) navigator.vibrate(15);
-        },LONG_PRESS);
-      },{passive:true});
-      el.addEventListener('touchmove',function(){clearTimeout(timer);});
-      el.addEventListener('touchend',function(){clearTimeout(timer);});
+    // 拖拽功能
+    Cards._bindHlDrag('hlTextCard');
+    Cards._bindHlDrag('hlAvatarWrapLeft');
+    Cards._bindHlDrag('hlAvatarWrapRight');
+
+    // 恢复拖拽位置
+    Cards._restoreHlPos('hlTextCard');
+    Cards._restoreHlPos('hlAvatarWrapLeft');
+    Cards._restoreHlPos('hlAvatarWrapRight');
+  },
+
+  _bindHlDrag:function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    var DELAY=500;
+    var startX,startY,startLeft,startTop,longPressed=false,timer,moved=false,tapBlocked=false;
+
+    el.addEventListener('touchstart',function(e){
+      // 如果点的是 input，截
+      if(e.target.tagName==='INPUT') return;
+      var t=e.touches[0];
+      startX=t.clientX;startY=t.clientY;
+      longPressed=false;moved=false;tapBlocked=false;
+
+      timer=setTimeout(function(){
+        longPressed=true;
+        tapBlocked=true;
+        var rect=el.getBoundingClientRect();
+        startLeft=rect.left;startTop=rect.top;
+        // 切换到固定定位方便拖拽
+        el.style.position='fixed';
+        el.style.left=startLeft+'px';
+        el.style.top=startTop+'px';
+        el.style.transform='none';
+        el.style.margin='0';
+        el.classList.add('hl-dragging');
+        if(navigator.vibrate) navigator.vibrate(15);
+      },DELAY);
+    },{passive:true});
+
+    el.addEventListener('touchmove',function(e){
+      var t=e.touches[0];
+      if(timer&&!longPressed){
+        if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){
+          clearTimeout(timer);timer=null;
+        }
+        return;
+      }
+      if(!longPressed) return;
+      moved=true;
+      e.preventDefault();e.stopPropagation();
+      var nx=startLeft+(t.clientX-startX);
+      var ny=startTop+(t.clientY-startY);
+      el.style.left=nx+'px';
+      el.style.top=ny+'px';
+    },{passive:false});
+
+    el.addEventListener('touchend',function(e){
+      clearTimeout(timer);timer=null;
+      el.classList.remove('hl-dragging');
+      if(longPressed&&moved){
+        // 保存位置
+        App.LS.set('hlPos_'+id,{left:parseFloat(el.style.left),top:parseFloat(el.style.top)});
+        e.stopPropagation();
+        // 阻止后续 click 触发上传
+        setTimeout(function(){tapBlocked=false;},100);
+      }
+      longPressed=false;moved=false;
     });
+
+    // 阻止拖拽后误触发 click
+    el.addEventListener('click',function(e){
+      if(tapBlocked){e.stopPropagation();e.preventDefault();}
+    },true);
+  },
+
+  _restoreHlPos:function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    var saved=App.LS.get('hlPos_'+id);
+    if(saved){
+      el.style.position='fixed';
+      el.style.left=saved.left+'px';
+      el.style.top=saved.top+'px';
+      el.style.transform='none';
+      el.style.margin='0';
+    }
   },
 
   _restoreHlAvatar:function(imgId,storageKey){
@@ -303,6 +369,12 @@ var Cards={
   resetAllPositions:function(){
     Cards._dragOffsets={};Cards.saveDrag();
     ['profileCard-R','profileCard-L','cardIcon1','cardIcon2'].forEach(function(id){var el=App.$('#'+id);if(el)el.style.transform='';});
+    // 重置心电图组件位置
+    ['hlTextCard','hlAvatarWrapLeft','hlAvatarWrapRight'].forEach(function(id){
+      App.LS.remove('hlPos_'+id);
+      var el=document.getElementById(id);
+      if(el){el.style.position='';el.style.left='';el.style.top='';el.style.transform='';el.style.margin='';}
+    });
   },
 
   bindIconsDragAndUpload:function(){
