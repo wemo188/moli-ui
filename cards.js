@@ -153,6 +153,18 @@ var Cards={
     if(chatL) chatL.addEventListener('input',function(){App.LS.set('hlChat_left',this.value);});
     if(chatR) chatR.addEventListener('input',function(){App.LS.set('hlChat_right',this.value);});
 
+    function autoResize(input){
+  if(!input) return;
+  function resize(){
+    input.style.width='0';
+    input.style.width=Math.max(50,input.scrollWidth)+'px';
+  }
+  input.addEventListener('input',resize);
+  resize();
+}
+autoResize(chatL);
+autoResize(chatR);
+
     // 头像点击上传
     var avatarL=document.getElementById('hlAvatarLeft');
     var avatarR=document.getElementById('hlAvatarRight');
