@@ -125,20 +125,23 @@ function imgFallback(img){
 <!-- 角色卡+对话框+图标 -->
 <div class="card-row" id="cardRow">
   <div class="left-area-wrapper">
-    <div class="bx-w" id="profileCard-L" data-side="left">
-      <div class="bx-tag-wrap">
-        <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
-        <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
-      </div>
-      <div class="bx-cw"><div class="bx-cd">
-        <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-        <div class="bx-name-bar">
-          <div class="bx-name bx-name-placeholder">角色名</div>
-          <div class="bx-sub">✥同你奔赴一场风花雪月✥</div>
-        </div>
-      </div></div>
+  <div class="bx-w" id="profileCard-L" data-side="left">
+    <div class="bx-tag-wrap">
+      <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
+      <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
     </div>
-    <div class="heartline-card" id="heartlineCard">
+    <div class="bx-cw"><div class="bx-cd">
+      <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+      <div class="bx-name-bar">
+        <div class="bx-name bx-name-placeholder">角色名</div>
+        <div class="bx-sub">✥同你奔赴一场风花雪月✥</div>
+      </div>
+    </div></div>
+  </div>
+  <!-- 心电图对话框 -->
+  <div class="heartline-wrap" id="heartlineCard">
+    <!-- 头像行 -->
+    <div class="hl-avatars-row">
       <div class="hl-avatar-wrap hl-left">
         <div class="hl-bubble hl-bubble-left">
           <div class="hl-bubble-arrow-outer"></div>
@@ -178,7 +181,14 @@ function imgFallback(img){
         </div>
       </div>
     </div>
+    <!-- 虚线文字框 -->
+    <div class="hl-text-card">
+      <input type="text" class="hl-text-input hl-text-top" id="hlTextTop" placeholder="在这里写点什么...">
+      <div class="hl-text-divider"></div>
+      <input type="text" class="hl-text-input hl-text-bottom" id="hlTextBottom" placeholder="在这里写点什么...">
+    </div>
   </div>
+</div>
   <div class="card-right-area">
     <div class="card-icons-wrap">
       <div class="card-icon-item" id="cardIcon1">
