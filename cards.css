@@ -540,15 +540,15 @@
 .hl-chatbar-bl {
   position: absolute;
   bottom: -40px;
-  left: -20px;
+  left: 0;
 }
 
 /* 右头像：下边中间 */
 .hl-chatbar-bot {
   position: absolute;
-  bottom: -40px;
+  top: 100%;
   left: 50%;
-  transform: translateX(-10px);
+  margin-top: 8px;
 }
 
 .hl-chatbar-input {
