@@ -196,7 +196,8 @@
 #profileCard-L .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(10px * var(--S));
+  margin-top: 10px;
+  margin-bottom: -0px;
   letter-spacing: calc(1px * var(--S));
 }
 
@@ -310,7 +311,8 @@
 #profileCard-R .bx-sub {
   font-size: calc(12px * var(--S));
   color: var(--LABEL_C);
-  margin-top: calc(10px * var(--S));
+  margin-top: 10px;
+  margin-bottom: -0px;
   letter-spacing: calc(1px * var(--S));
 }
 
