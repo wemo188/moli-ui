@@ -350,8 +350,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding-right: 30px;
+  gap: 20px;
+  padding-right: 50px;
 }
 
 .hl-avatar-wrap {
