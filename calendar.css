@@ -12,11 +12,11 @@
   --wt-gold2: rgba(26,26,26,0.12);
   width: calc(420px * var(--S));
   max-width: 100%;
-  margin: 5px auto 0;
+  margin: 50px auto 0;
   user-select: none;
   position: relative;
   z-index: 10;
-  min-height: 50px;
+  min-height: 140px;
   flex-shrink: 0;
 }
 .wt-cw { position: relative; overflow: hidden; }
