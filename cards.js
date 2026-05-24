@@ -124,9 +124,21 @@ var Cards={
     if(savedL&&inputL) inputL.value=savedL;
     if(savedR&&inputR) inputR.value=savedR;
 
+    // 恢复虚线框文字
+    var textTop=document.getElementById('hlTextTop');
+    var textBot=document.getElementById('hlTextBottom');
+    var savedTop=App.LS.get('hlText_top');
+    var savedBot=App.LS.get('hlText_bottom');
+    if(savedTop&&textTop) textTop.value=savedTop;
+    if(savedBot&&textBot) textBot.value=savedBot;
+
     // 气泡输入保存
     if(inputL) inputL.addEventListener('input',function(){App.LS.set('hlText_left',this.value);});
     if(inputR) inputR.addEventListener('input',function(){App.LS.set('hlText_right',this.value);});
+
+    // 虚线框输入保存
+    if(textTop) textTop.addEventListener('input',function(){App.LS.set('hlText_top',this.value);});
+    if(textBot) textBot.addEventListener('input',function(){App.LS.set('hlText_bottom',this.value);});
 
     // 头像点击上传
     var avatarL=document.getElementById('hlAvatarLeft');
@@ -155,7 +167,7 @@ var Cards={
           if(navigator.vibrate) navigator.vibrate(15);
         },LONG_PRESS);
       },{passive:true});
-      
+      el.addEventListener('touchmove',function(){clearTimeout(timer);});
       el.addEventListener('touchend',function(){clearTimeout(timer);});
     });
   },
