@@ -89,7 +89,7 @@
 #profileCard-L {
   --S: 1;
   --W0: 190px;
-  --CARD_H0: 210px;
+  --CARD_H0: 200px;
   --PAD0: 6px;
   --INK: var(--profileCard-L-name-c, #4a5a75);
   --THEME: var(--profileCard-L-border-c, #bbd3ef);
@@ -190,6 +190,7 @@
   font-weight: 600;
   color: var(--INK);
   letter-spacing: calc(3px * var(--S));
+  display: none;
 }
 
 #profileCard-L .bx-sub {
@@ -303,6 +304,7 @@
   font-weight: 600;
   color: var(--INK);
   letter-spacing: calc(3px * var(--S));
+  display: none;
 }
 
 #profileCard-R .bx-sub {
