@@ -388,6 +388,7 @@
   margin-top: 16px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
+  margin-left: 10px;
 }
 
 .hl-avatar-unit {
@@ -479,12 +480,12 @@
 
 /* 右边气泡箭头（朝下指向头像） */
 .hl-bubble-right .hl-bubble-arrow-outer {
-  bottom: -6px;
+  bottom: -8px;
   left: 8px;
   border-top: 6px solid var(--hl-border-c);
 }
 .hl-bubble-right .hl-bubble-arrow-inner {
-  bottom: -4px;
+  bottom: -6px;
   left: 9px;
   border-left-width: 3px;
   border-right-width: 3px;
@@ -493,12 +494,12 @@
 
 /* 左边气泡箭头（朝上指向头像） */
 .hl-bubble-left .hl-bubble-arrow-outer {
-  top: -6px;
+  top: -4px;
   right: 8px;
   border-bottom: 6px solid var(--hl-border-c);
 }
 .hl-bubble-left .hl-bubble-arrow-inner {
-  top: -4px;
+  top: -2px;
   right: 9px;
   border-left-width: 3px;
   border-right-width: 3px;
@@ -530,12 +531,12 @@
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   border-radius: 18px 4px 18px 18px;
-  padding: 6px 14px;
+  padding: 6px 6px;
   white-space: nowrap;
   z-index: 5;
 }
 
-/* 左头像：左下角 */
+/* 右头像：下面中间 */
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
@@ -543,7 +544,7 @@
   margin-top: 15px;
 }
 
-/* 右头像：下边中间 */
+/* 左头像：左边 */
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
@@ -555,9 +556,10 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   color: #2a2a2a;
-  width: 80px;
+  min-width: 50px;
+  width: auto;
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.5px;
