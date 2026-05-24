@@ -399,8 +399,8 @@
    可拖拽圆头像
 ========================= */
 .hl-avatar-draggable {
-  width: 62px;
-  height: 62px;
+  width: 75px;
+  height: 75px;
 }
 
 #hlAvatarWrapLeft {
@@ -415,10 +415,10 @@
 
 .hl-avatar {
   position: relative;
-  width: 62px;
-  height: 62px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
-  border: 2px solid var(--hl-border-c);
+  border: 1px solid var(--hl-border-c);
   background: white;
   display: flex;
   align-items: center;
@@ -467,19 +467,19 @@
   position: absolute;
   z-index: 10;
   background: white;
-  border: 1.5px solid var(--hl-border-c);
+  border: 0.5px solid var(--hl-border-c);
   border-radius: 8px;
-  padding: 2px 5px;
+  padding: 2px 2px;
 }
 
 .hl-bubble-left {
-  bottom: -4px;
-  left: -30px;
+  bottom: -10px;
+  left: -25px;
 }
 
 .hl-bubble-right {
-  top: -4px;
-  right: -30px;
+  top: -1px;
+  right: -25px;
 }
 
 .hl-bubble-arrow-outer,
