@@ -539,16 +539,16 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  left: -40px;
+  left: 50%;
   margin-top: 15px;
 }
 
 /* 右头像：下边中间 */
 .hl-chatbar-bot {
   position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-top: 50px;
+  top: 25px;
+  left: 20px;
+  margin-top: 15px;
 }
 
 .hl-chatbar-input {
