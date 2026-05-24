@@ -547,7 +547,7 @@
 .hl-chatbar-bot {
   position: absolute;
   top: 25px;
-  left: 20px;
+  left: -20px;
   margin-top: 15px;
 }
 
