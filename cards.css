@@ -538,8 +538,8 @@
 
 /* 左头像：左下角 */
 .hl-chatbar-bl {
-  top: 100%;
-  left: 0;
+  top: 25px;
+  right: 20px;
   margin-top: 8px;
 }
 
@@ -547,7 +547,6 @@
 .hl-chatbar-bot {
   top: 100%;
   left: 50%;
-  margin-top: 8px;
 }
 
 .hl-chatbar-input {
