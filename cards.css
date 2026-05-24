@@ -531,11 +531,11 @@
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   border-radius: 18px 4px 18px 18px;
-  padding: 6px 6px;
+  padding: 8px 7px;
   white-space: nowrap;
   z-index: 5;
   display: flex;
-  justify-content: flex-end;
+  direction: rtl;
 }
 
 /* 右头像：下面中间 */
@@ -571,6 +571,7 @@
   appearance: none;
   box-shadow: none;
   direction: ltr;
+  unicode-bidi: plaintext;
 }
 
 .hl-chatbar-input::placeholder {
