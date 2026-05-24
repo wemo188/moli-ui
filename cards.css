@@ -542,6 +542,7 @@
   top: 100%;
   right: 40px;
   margin-top: 15px;
+  direction: ltr;
 }
 
 /* 左头像：左边 */
@@ -550,6 +551,7 @@
   top: 100%;
   left: -120px;
   margin-top: -30px;
+  direction: rtl;
 }
 
 .hl-chatbar-input {
@@ -566,6 +568,7 @@
   -webkit-appearance: none;
   appearance: none;
   box-shadow: none;
+  direction: ltr;
 }
 
 .hl-chatbar-input::placeholder {
