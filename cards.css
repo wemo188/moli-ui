@@ -13,6 +13,8 @@
 }
 
 .left-area-wrapper {
+  width: 190px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,7 +28,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  gap: 16px;
   pointer-events: none;
 }
 
