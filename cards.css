@@ -539,8 +539,9 @@
 /* 左头像：左下角 */
 .hl-chatbar-bl {
   position: absolute;
-  bottom: -40px;
-  left: 0;
+  top: 100%;
+  left: -40px;
+  margin-top: 15px;
 }
 
 /* 右头像：下边中间 */
@@ -548,7 +549,9 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  margin-top: 8px;
+  margin-top: 15px;
+  transform: translateX(-70%);
+}
 }
 
 .hl-chatbar-input {
