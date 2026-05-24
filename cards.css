@@ -399,10 +399,10 @@
 
 .hl-avatar {
   position: relative;
-  width: 62px;
-  height: 62px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  border: 2px solid var(--hl-border-c);
+  border: 1px solid var(--hl-border-c);
   background: white;
   display: flex;
   align-items: center;
