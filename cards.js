@@ -108,7 +108,7 @@ var Cards={
   /* =========================
      心电图对话框
   ========================= */
-  bindHeartline:function(){
+   bindHeartline:function(){
     if(this._hlBound) return;
     this._hlBound=true;
 
