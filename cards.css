@@ -540,7 +540,7 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  right: -40px;
+  left: -40px;
   margin-top: 15px;
 }
 
@@ -550,7 +550,7 @@
   top: 100%;
   left: 50%;
   margin-top: 15px;
-  transform: translateX(-20%);
+  transform: translateX(-70%);
 }
 
 .hl-chatbar-input {
