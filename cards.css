@@ -551,9 +551,9 @@
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
-  left: -120px;
+  right: 100%;
   margin-top: -30px;
-  direction: rtl;
+  margin-right: -30px;
 }
 
 .hl-chatbar-input {
