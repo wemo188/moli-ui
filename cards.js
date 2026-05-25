@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -430,6 +429,7 @@ var Cards={
 
     var overlay=document.createElement('div');overlay.id='pixelEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
+    // ★ 删除了 panel.style.maxHeight = '420px';
 
     var paletteItems=[
       {key:'heartColor',label:'爱心颜色',value:pc.heartColor},
@@ -455,10 +455,14 @@ var Cards={
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
 
+    // ★ 新增：编辑模式禁止底层交互
+    var cardRow = App.$('#cardRow');
+    if (cardRow) cardRow.classList.add('edit-mode');
+
     var pixelEl=App.$('#hlTextCard');
     if(pixelEl){var rect=pixelEl.getBoundingClientRect();var left=rect.left;var top=rect.bottom+8;
       if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
-      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);
+      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);  // ★ 420→350, 430→360
       panel.style.left=left+'px';panel.style.top=top+'px';}
 
     Cards._bindPanelDrag(panel);
@@ -473,14 +477,20 @@ var Cards={
 
     panel.querySelector('#pxFontSelect').addEventListener('change',function(){pc.fontFamily=this.value;Cards.pixelConfig=pc;Cards.applyPixelColors();});
 
+    // ★ 关闭时恢复底层交互
+    function closePixelOverlay() {
+      overlay.remove();
+      if (cardRow) cardRow.classList.remove('edit-mode');
+    }
+
     panel.querySelector('#pxSaveBtn').addEventListener('click',function(e){
-      e.stopPropagation();Cards.pixelConfig=pc;Cards.savePixel();Cards.applyPixelColors();overlay.remove();App.showToast('已保存');
+      e.stopPropagation();Cards.pixelConfig=pc;Cards.savePixel();Cards.applyPixelColors();closePixelOverlay();App.showToast('已保存');
     });
     panel.querySelector('#pxResetBtn').addEventListener('click',function(e){
-      e.stopPropagation();Cards.pixelConfig=JSON.parse(JSON.stringify(DEF_PIXEL));Cards.savePixel();Cards.applyPixelColors();overlay.remove();App.showToast('已重置');
+      e.stopPropagation();Cards.pixelConfig=JSON.parse(JSON.stringify(DEF_PIXEL));Cards.savePixel();Cards.applyPixelColors();closePixelOverlay();App.showToast('已重置');
     });
-    panel.querySelector('#pxCloseBtn').addEventListener('click',function(e){e.stopPropagation();overlay.remove();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+    panel.querySelector('#pxCloseBtn').addEventListener('click',function(e){e.stopPropagation();closePixelOverlay();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closePixelOverlay();});
   },
 
   /* ====== 圆头像编辑 - 双击触发 ====== */
@@ -508,6 +518,7 @@ var Cards={
 
     var overlay=document.createElement('div');overlay.id='hlEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
+    // ★ 删除了 panel.style.maxHeight = '480px';
 
     var bubbleKey=side==='left'?'hlBubble_left':'hlBubble_right';
     var chatKey=side==='left'?'hlChat_left':'hlChat_right';
@@ -545,13 +556,23 @@ var Cards={
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
 
+    // ★ 新增：编辑模式禁止底层交互
+    var cardRow = App.$('#cardRow');
+    if (cardRow) cardRow.classList.add('edit-mode');
+
     var avatarEl=document.getElementById(wrId);
     if(avatarEl){var rect=avatarEl.getBoundingClientRect();var left=rect.left-60;var top=rect.bottom+8;
       if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
-      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);
+      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);  // ★ 480→350, 490→360
       panel.style.left=left+'px';panel.style.top=top+'px';}
 
     Cards._bindPanelDrag(panel);
+
+    // ★ 关闭时恢复底层交互
+    function closeHlOverlay() {
+      overlay.remove();
+      if (cardRow) cardRow.classList.remove('edit-mode');
+    }
 
     /* 颜色 */
     panel.querySelectorAll('.pc-dot').forEach(function(dot){
@@ -583,13 +604,13 @@ var Cards={
       if(bubbleInput)bubbleInput.value=bv;
       if(chatInput){chatInput.value=cv;chatInput.dispatchEvent(new Event('input'));}
       Cards.hlConfig[side]=cfg;Cards.saveHl(side);Cards.applyHlColors(side);
-      overlay.remove();App.showToast('已保存');
+      closeHlOverlay();App.showToast('已保存');
     });
     panel.querySelector('#hlResetBtn').addEventListener('click',function(e){
-      e.stopPropagation();Cards.hlConfig[side]=JSON.parse(JSON.stringify(DEF_HL));Cards.saveHl(side);Cards.applyHlColors(side);overlay.remove();App.showToast('已重置');
+      e.stopPropagation();Cards.hlConfig[side]=JSON.parse(JSON.stringify(DEF_HL));Cards.saveHl(side);Cards.applyHlColors(side);closeHlOverlay();App.showToast('已重置');
     });
-    panel.querySelector('#hlCloseBtn').addEventListener('click',function(e){e.stopPropagation();overlay.remove();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+    panel.querySelector('#hlCloseBtn').addEventListener('click',function(e){e.stopPropagation();closeHlOverlay();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closeHlOverlay();});
   },
 
   /* ====== 角色卡编辑面板 ====== */
@@ -641,6 +662,10 @@ var Cards={
       '</div>';
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
+
+    // ★ 新增：编辑模式禁止底层交互
+    var cardRow = App.$('#cardRow');
+    if (cardRow) cardRow.classList.add('edit-mode');
 
     if(cardEl){
       var rect=cardEl.getBoundingClientRect();
@@ -720,10 +745,17 @@ var Cards={
         tag2:((panel.querySelector('#pcTag2')||{}).value||'').trim(),
         colors:col
       };
-      Cards.save();Cards.render();overlay.remove();App.showToast('已保存');
+      Cards.save();Cards.render();overlay.remove();
+      // ★ 新增：恢复底层交互
+      if (cardRow) cardRow.classList.remove('edit-mode');
+      App.showToast('已保存');
     });
 
-    function closeAndRevert(){Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();}
+    // ★ 关闭时恢复底层交互
+    function closeAndRevert() {
+      Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();
+      if (cardRow) cardRow.classList.remove('edit-mode');
+    }
     panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
     overlay.addEventListener('click',function(e){if(e.target===overlay&&!document.querySelector('.crop-overlay'))closeAndRevert();});
   },
@@ -766,4 +798,3 @@ var Cards={
 
 App.register('cards',Cards);
 })();
-
