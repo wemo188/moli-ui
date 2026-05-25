@@ -70,19 +70,12 @@
 }
 
 .mk-card svg {
-  width: 80%;
-  height: 80%;
+  width: 70%;
+  height: 70%;
   display: block;
 }
 
-.mk-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.42), transparent 42%),
-    linear-gradient(315deg, rgba(255,255,255,.20), transparent 44%);
-  pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: .85;
+#dockLong .mk-card svg {
+  width: 85%;
+  height: 85%;
 }
