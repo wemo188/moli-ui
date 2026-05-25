@@ -95,11 +95,14 @@ var Cards={
     wr.style.setProperty('--hl-bar-blur',(cfg.barBlur!=null?cfg.barBlur:12)+'px');
     wr.style.setProperty('--hl-bar-color',cfg.barColor||'rgba(255,255,255,0.45)');
     if(cfg.fontFamily){
-      var chat=wr.querySelector('.hl-chatbar-input');
-      var bubble=wr.querySelector('.hl-bubble-input');
-      if(chat)chat.style.fontFamily=cfg.fontFamily;
-      if(bubble)bubble.style.fontFamily=cfg.fontFamily;
-    }
+  var chat=wr.querySelector('.hl-chatbar-input');
+  var bubble=wr.querySelector('.hl-bubble-input');
+  if(chat)chat.style.fontFamily=cfg.fontFamily;
+  if(bubble){
+    bubble.style.fontFamily=cfg.fontFamily;
+    bubble.style.color='';  // 气泡文字始终用默认黑色
+  }
+}
   },
 
   /* ====== 字体列表构建（复用 font 模块数据） ====== */
