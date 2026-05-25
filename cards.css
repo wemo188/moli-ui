@@ -478,8 +478,7 @@
 .hl-avatars-row {
   display: flex;
   align-items: flex-start;
-  justify-content: center;
-  gap: 80px;
+  gap: 50px;
   margin-top: 16px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
