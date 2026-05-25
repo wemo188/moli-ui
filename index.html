@@ -193,29 +193,21 @@ function imgFallback(img){
         <img class="hl-avatar-img" id="hlImgRight" style="display:none;">
       </div>
     </div>
-    <div class="hl-chatbar hl-chatbar-bot">
-      <input type="text" class="hl-chatbar-input" id="hlChatRight" placeholder="说点什么...">
+    <div class="pixel-dialog hl-chatbar hl-chatbar-bot">
+  <div class="pixel-header">
+    <div class="pixel-hearts">
+      <div class="pixel-heart"><div class="ph-core"></div></div>
+      <div class="pixel-heart"><div class="ph-core"></div></div>
+      <div class="pixel-heart"><div class="ph-core"></div></div>
+    </div>
+    <div class="pixel-btns">
+      <div class="pixel-btn minimize"></div>
+      <div class="pixel-btn maximize"></div>
+      <div class="pixel-btn close"></div>
     </div>
   </div>
-  <!-- 左气泡头像放右边位置 -->
-  <div class="hl-avatar-unit" id="hlAvatarWrapLeft">
-    <div class="hl-bubble hl-bubble-left">
-      <div class="hl-bubble-arrow-outer"></div>
-      <div class="hl-bubble-arrow-inner"></div>
-      <input type="text" class="hl-bubble-input" id="hlInputLeft" placeholder="...">
-    </div>
-    <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
-      <div class="hl-avatar-inner">
-        <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-          <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-        </svg>
-        <img class="hl-avatar-img" id="hlImgLeft" style="display:none;">
-      </div>
-    </div>
-    <div class="hl-chatbar hl-chatbar-bl">
-      <input type="text" class="hl-chatbar-input" id="hlChatLeft" placeholder="说点什么...">
-    </div>
+  <div class="pixel-body">
+    <input type="text" class="hl-chatbar-input" id="hlChatLeft" placeholder="说点什么...">
   </div>
 </div>
           <!-- Eden文字卡片 -->
