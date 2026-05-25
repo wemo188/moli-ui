@@ -430,7 +430,6 @@ var Cards={
 
     var overlay=document.createElement('div');overlay.id='pixelEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
-    panel.style.maxHeight='420px';
 
     var paletteItems=[
       {key:'heartColor',label:'爱心颜色',value:pc.heartColor},
@@ -459,7 +458,7 @@ var Cards={
     var pixelEl=App.$('#hlTextCard');
     if(pixelEl){var rect=pixelEl.getBoundingClientRect();var left=rect.left;var top=rect.bottom+8;
       if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
-      if(top+420>window.innerHeight)top=Math.max(10,window.innerHeight-430);
+      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);
       panel.style.left=left+'px';panel.style.top=top+'px';}
 
     Cards._bindPanelDrag(panel);
@@ -509,7 +508,6 @@ var Cards={
 
     var overlay=document.createElement('div');overlay.id='hlEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
-    panel.style.maxHeight='480px';
 
     var bubbleKey=side==='left'?'hlBubble_left':'hlBubble_right';
     var chatKey=side==='left'?'hlChat_left':'hlChat_right';
@@ -550,7 +548,7 @@ var Cards={
     var avatarEl=document.getElementById(wrId);
     if(avatarEl){var rect=avatarEl.getBoundingClientRect();var left=rect.left-60;var top=rect.bottom+8;
       if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
-      if(top+480>window.innerHeight)top=Math.max(10,window.innerHeight-490);
+      if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);
       panel.style.left=left+'px';panel.style.top=top+'px';}
 
     Cards._bindPanelDrag(panel);
