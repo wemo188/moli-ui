@@ -825,11 +825,80 @@
   stroke: var(--hl-border-c);
 }
 
-/* ★ 物理遮罩样式 */
-.card-row-shield {
-  position: absolute;
-  inset: -200px -100px;
-  z-index: 9999;
-  background: transparent;
-  -webkit-tap-highlight-color: transparent;
+/* =========================
+   纯展示元素（替代 input）
+========================= */
+.pixel-text-display {
+  display: block;
+  font-size: 12px;
+  color: var(--pixel-font-c, #2a2a2a);
+  width: 100%;
+  padding: 6px 0;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  min-height: 1.4em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+.pixel-text-display:empty::before {
+  content: attr(data-placeholder);
+  color: var(--pixel-font-c, #2a2a2a);
+  opacity: 0.3;
+}
+
+.hl-bubble-display {
+  display: inline-block;
+  font-size: 11px;
+  color: #1a1a1a;
+  min-width: 20px;
+  min-height: 1em;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hl-bubble-display:empty::before {
+  content: '...';
+  opacity: 0.4;
+}
+
+.hl-chatbar-display {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--hl-font-c, #2a2a2a);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  min-width: 50px;
+  text-align: center;
+  direction: ltr;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hl-chatbar-display:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.3;
+}
+
+.hl-avatar-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: none;
+  -webkit-touch-callout: none;
+}
+
+.hl-avatar-bg.has-img {
+  display: block;
+}
+
