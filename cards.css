@@ -695,3 +695,134 @@
   z-index: 999 !important;
   box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
 }
+
+/* =========================
+   像素框 CSS 变量驱动
+========================= */
+.pixel-dialog {
+  --pixel-heart-c: #ffffff;
+  --pixel-icon-c: #ffffff;
+  --pixel-bar-c: #000000;
+  --pixel-body-bg: #ffffff;
+  --pixel-font-c: #2a2a2a;
+  border-color: var(--pixel-bar-c);
+}
+
+.pixel-header {
+  background: var(--pixel-bar-c);
+}
+
+.pixel-heart .ph-core {
+  box-shadow:
+    1px 0 0 var(--pixel-heart-c), 2px 0 0 var(--pixel-heart-c), 5px 0 0 var(--pixel-heart-c), 6px 0 0 var(--pixel-heart-c),
+    0px 1px 0 var(--pixel-heart-c), 1px 1px 0 var(--pixel-heart-c), 2px 1px 0 var(--pixel-heart-c), 3px 1px 0 var(--pixel-heart-c),
+    4px 1px 0 var(--pixel-heart-c), 5px 1px 0 var(--pixel-heart-c), 6px 1px 0 var(--pixel-heart-c), 7px 1px 0 var(--pixel-heart-c),
+    0px 2px 0 var(--pixel-heart-c), 1px 2px 0 var(--pixel-heart-c), 2px 2px 0 var(--pixel-heart-c), 3px 2px 0 var(--pixel-heart-c),
+    4px 2px 0 var(--pixel-heart-c), 5px 2px 0 var(--pixel-heart-c), 6px 2px 0 var(--pixel-heart-c), 7px 2px 0 var(--pixel-heart-c),
+    1px 3px 0 var(--pixel-heart-c), 2px 3px 0 var(--pixel-heart-c), 3px 3px 0 var(--pixel-heart-c), 4px 3px 0 var(--pixel-heart-c),
+    5px 3px 0 var(--pixel-heart-c), 6px 3px 0 var(--pixel-heart-c),
+    2px 4px 0 var(--pixel-heart-c), 3px 4px 0 var(--pixel-heart-c), 4px 4px 0 var(--pixel-heart-c), 5px 4px 0 var(--pixel-heart-c),
+    3px 5px 0 var(--pixel-heart-c), 4px 5px 0 var(--pixel-heart-c);
+}
+
+.pixel-btn {
+  border-color: var(--pixel-icon-c);
+}
+.pixel-btn.minimize::after {
+  background: var(--pixel-icon-c);
+}
+.pixel-btn.maximize::after {
+  border-color: var(--pixel-icon-c);
+}
+.pixel-btn.close::before,
+.pixel-btn.close::after {
+  background: var(--pixel-icon-c);
+}
+
+.pixel-body {
+  background: var(--pixel-body-bg);
+}
+
+.pixel-text-input {
+  color: var(--pixel-font-c);
+}
+.pixel-text-input::placeholder {
+  color: var(--pixel-font-c);
+}
+
+.pixel-text-divider {
+  border-top-color: var(--pixel-bar-c);
+}
+
+/* =========================
+   角色卡透明度 + 毛玻璃
+========================= */
+#profileCard-L .bx-cd {
+  background: var(--profileCard-L-bg, #ffffff);
+  opacity: var(--profileCard-L-bg-opacity, 1);
+  backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+}
+
+#profileCard-R .bx-cd {
+  background: var(--profileCard-R-bg, #ffffff);
+  opacity: var(--profileCard-R-bg-opacity, 1);
+  backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+}
+
+/* =========================
+   圆头像 CSS 变量驱动
+========================= */
+.hl-avatar-unit {
+  --hl-border-c: #2a2a2a;
+  --hl-border-w: 1px;
+  --hl-font-c: #2a2a2a;
+  --hl-bar-opacity: 0.45;
+  --hl-bar-blur: 12px;
+  --hl-bar-color: rgba(255,255,255,0.45);
+}
+
+.hl-avatar-unit .hl-avatar {
+  border-width: var(--hl-border-w);
+  border-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-bubble {
+  border-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-bubble-input {
+  color: var(--hl-font-c);
+}
+.hl-avatar-unit .hl-bubble-input::placeholder {
+  color: var(--hl-font-c);
+}
+
+.hl-avatar-unit .hl-bubble-right .hl-bubble-arrow-outer {
+  border-top-color: var(--hl-border-c);
+}
+.hl-avatar-unit .hl-bubble-left .hl-bubble-arrow-outer {
+  border-bottom-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-chatbar {
+  background: var(--hl-bar-color);
+  opacity: var(--hl-bar-opacity);
+  backdrop-filter: blur(var(--hl-bar-blur));
+  -webkit-backdrop-filter: blur(var(--hl-bar-blur));
+}
+
+.hl-avatar-unit .hl-chatbar-input {
+  color: var(--hl-font-c);
+}
+.hl-avatar-unit .hl-chatbar-input::placeholder {
+  color: var(--hl-font-c);
+}
+
+/* 头像占位符颜色跟随 */
+.hl-avatar-unit .hl-avatar-placeholder circle,
+.hl-avatar-unit .hl-avatar-placeholder path {
+  stroke: var(--hl-border-c);
+}
+
