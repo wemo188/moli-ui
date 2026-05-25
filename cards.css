@@ -43,6 +43,12 @@
   height: 55%;
 }
 
+#cardIcon1 .card-icon-img,
+#cardIcon2 .card-icon-img {
+  background: #1a1a1a !important;
+  border-color: transparent !important;
+}
+
 .card-icons-wrap {
   display: flex;
   gap: 15px;
