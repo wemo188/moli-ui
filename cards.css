@@ -649,7 +649,7 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  right: 40px;
+  right: 10px;
   margin-top: 10px;
   direction: ltr;
 }
