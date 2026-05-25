@@ -829,18 +829,7 @@
 /* =========================
    编辑模式 - 禁用底层交互
 ========================= */
-.card-row.edit-mode input,
-.card-row.edit-mode .bx-av-box,
-.card-row.edit-mode .bx-name-bar,
-.card-row.edit-mode .bx-sub,
-.card-row.edit-mode .hl-avatar,
-.card-row.edit-mode .pixel-body,
-.card-row.edit-mode .hl-chatbar-input,
-.card-row.edit-mode .hl-bubble-input,
-.card-row.edit-mode .pixel-text-input {
+.card-row.edit-mode,
+.card-row.edit-mode * {
   pointer-events: none !important;
-  -webkit-user-select: none;
-  user-select: none;
 }
-
-
