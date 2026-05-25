@@ -1,4 +1,3 @@
-
 (function(){
   'use strict';
   var App = window.App; if(!App) return;
@@ -8,6 +7,55 @@
     _defaultIcons: {},
 
     init: function() {
+      // 注入背景样式
+      if(!document.getElementById('bgInlineStyle')) {
+        var bgStyle = document.createElement('style');
+        bgStyle.id = 'bgInlineStyle';
+        bgStyle.textContent = `
+#bgLayer {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+.bg-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 10px;
+  margin-bottom: 16px;
+}
+.bg-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.bg-icon-item:active { opacity: .7; }
+.bg-icon-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(173,205,234,.3);
+  overflow: hidden;
+  background: #f5f5f5;
+}
+.bg-icon-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.bg-icon-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5a7a9a;
+}`;
+        document.head.appendChild(bgStyle);
+      }
+
       document.querySelectorAll('#cardIcon1 img, #cardIcon2 img, #dockMine img, #dockLong img, #dockCheck img, #dockShort img').forEach(function(img) {
         var key = img.closest('[id]');
         if (key) Bg._defaultIcons[key.id] = { src: img.getAttribute('src'), transform: img.style.transform || '' };
