@@ -11,8 +11,7 @@ var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'
 var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',subC:'#5c728a',bgOpacity:1,bgBlur:0,fontFamily:''};
 
 var DEF_PIXEL={heartColor:'#ffffff',iconColor:'#ffffff',barColor:'#000000',bodyBg:'#ffffff',fontColor:'#2a2a2a',fontFamily:''};
-
-var DEF_HL={borderWidth:1,bubbleText:'',chatText:'',fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
+var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
 
 var DRAG_DELAY=650;
 
@@ -85,17 +84,13 @@ var Cards={
     if(pc.fontFamily){el.style.fontFamily=pc.fontFamily;}else{el.style.fontFamily='';}
   },
 
-  /* ★ 修复：颜色解析工具函数 - 任何格式都能转成 {r,g,b} */
   _parseColorToRGB:function(str){
     str=(str||'').trim();
-    /* rgba/rgb */
     var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
     if(rm)return{r:parseInt(rm[1]),g:parseInt(rm[2]),b:parseInt(rm[3])};
-    /* hex */
     var hex=str.replace('#','');
     if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
     if(hex.length>=6)return{r:parseInt(hex.substr(0,2),16),g:parseInt(hex.substr(2,2),16),b:parseInt(hex.substr(4,2),16)};
-    /* 兜底白色 */
     return{r:255,g:255,b:255};
   },
 
@@ -108,7 +103,6 @@ var Cards={
     wr.style.setProperty('--hl-border-w',(cfg.borderWidth!=null?cfg.borderWidth:1)+'px');
     wr.style.setProperty('--hl-font-c',cfg.fontColor||'#2a2a2a');
 
-    /* ★ 修复核心：用 _parseColorToRGB 解析任何格式的颜色，再拼接 alpha */
     var alpha=cfg.barOpacity!=null?cfg.barOpacity:0.45;
     var blur=cfg.barBlur!=null?cfg.barBlur:12;
     var rgb=Cards._parseColorToRGB(cfg.barColor);
@@ -124,15 +118,75 @@ var Cards={
       chatbar.style.webkitBackdropFilter='blur('+blur+'px)';
     }
 
-if(cfg.fontFamily !== undefined){
-      var chat = wr.querySelector('.hl-chatbar-input');
-      var bubble = wr.querySelector('.hl-bubble-input');
-      if(chat) chat.style.fontFamily = cfg.fontFamily;
-      if(bubble){
-        bubble.style.fontFamily = cfg.fontFamily;
-        bubble.style.color = '';
-      }
+    if(cfg.fontFamily){
+      var chatDisp=wr.querySelector('.hl-chatbar-display');
+      var bubbleDisp=wr.querySelector('.hl-bubble-display');
+      if(chatDisp)chatDisp.style.fontFamily=cfg.fontFamily;
+      if(bubbleDisp)bubbleDisp.style.fontFamily=cfg.fontFamily;
     }
+  },
+
+  /* 渲染展示文字到 span 元素 */
+  _renderDisplayTexts:function(){
+    var topEl=document.getElementById('hlTextTop');
+    var midEl=document.getElementById('hlTextMid');
+    var bubbleL=document.getElementById('hlInputLeft');
+    var bubbleR=document.getElementById('hlInputRight');
+    var chatL=document.getElementById('hlChatLeft');
+    var chatR=document.getElementById('hlChatRight');
+
+    if(topEl){topEl.textContent=App.LS.get('hlText_top')||'';topEl.setAttribute('data-placeholder','第一行...');}
+    if(midEl){midEl.textContent=App.LS.get('hlText_mid')||'';midEl.setAttribute('data-placeholder','第二行...');}
+    if(bubbleL)bubbleL.textContent=App.LS.get('hlBubble_left')||'';
+    if(bubbleR)bubbleR.textContent=App.LS.get('hlBubble_right')||'';
+    if(chatL){chatL.textContent=App.LS.get('hlChat_left')||'';chatL.setAttribute('data-placeholder','说点什么...');}
+    if(chatR){chatR.textContent=App.LS.get('hlChat_right')||'';chatR.setAttribute('data-placeholder','说点什么...');}
+  },
+
+  /* 头像用 background-image 方式显示 */
+  _restoreHlAvatar:function(bgId,storageKey){
+    var el=document.getElementById(bgId);if(!el)return;
+    var saved=App.LS.get(storageKey);
+    if(saved){
+      el.style.backgroundImage='url(\''+saved+'\')';
+      el.classList.add('has-img');
+    }
+  },
+
+  _applyHlAvatar:function(src,bgId,storageKey){
+    var el=document.getElementById(bgId);if(!el)return;
+    var compress=new Image();
+    compress.onload=function(){
+      var canvas=document.createElement('canvas');var max=200,w=compress.width,h=compress.height;
+      if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
+      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(compress,0,0,w,h);
+      var result=canvas.toDataURL('image/jpeg',0.85);
+      el.style.backgroundImage='url(\''+result+'\')';
+      el.classList.add('has-img');
+      App.LS.set(storageKey,result);
+    };
+    compress.src=src;
+  },
+
+  _uploadHlAvatar:function(bgId,storageKey,cb){
+    var input=document.createElement('input');input.type='file';input.accept='image/*';
+    input.onchange=function(e){
+      var file=e.target.files[0];if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(r){
+        var src=r.target.result;
+        if(App.cropImage){App.cropImage(src,function(cropped){Cards._applyHlAvatar(cropped,bgId,storageKey);if(cb)cb(cropped);});}
+        else{Cards._applyHlAvatar(src,bgId,storageKey);if(cb)cb(src);}
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  },
+
+  _clearHlAvatar:function(bgId,storageKey){
+    var el=document.getElementById(bgId);if(!el)return;
+    el.style.backgroundImage='';el.classList.remove('has-img');
+    App.LS.remove(storageKey);
   },
 
   _buildFontOptions:function(currentFamily){
@@ -210,41 +264,7 @@ if(cfg.fontFamily !== undefined){
 
     Cards._restoreHlAvatar('hlImgLeft','avatar_hlLeft');
     Cards._restoreHlAvatar('hlImgRight','avatar_hlRight');
-
-    var inputL=document.getElementById('hlInputLeft');
-    var inputR=document.getElementById('hlInputRight');
-    var savedL=App.LS.get('hlBubble_left');
-    var savedR=App.LS.get('hlBubble_right');
-    if(savedL&&inputL)inputL.value=savedL;
-    if(savedR&&inputR)inputR.value=savedR;
-
-    var textTop=document.getElementById('hlTextTop');
-    var textMid=document.getElementById('hlTextMid');
-    var sTop=App.LS.get('hlText_top');
-    var sMid=App.LS.get('hlText_mid');
-    if(sTop&&textTop)textTop.value=sTop;
-    if(sMid&&textMid)textMid.value=sMid;
-
-    var chatL=document.getElementById('hlChatLeft');
-    var chatR=document.getElementById('hlChatRight');
-    var sChatL=App.LS.get('hlChat_left');
-    var sChatR=App.LS.get('hlChat_right');
-    if(sChatL&&chatL)chatL.value=sChatL;
-    if(sChatR&&chatR)chatR.value=sChatR;
-
-    if(inputL)inputL.addEventListener('input',function(){App.LS.set('hlBubble_left',this.value);});
-    if(inputR)inputR.addEventListener('input',function(){App.LS.set('hlBubble_right',this.value);});
-    if(textTop)textTop.addEventListener('input',function(){App.LS.set('hlText_top',this.value);});
-    if(textMid)textMid.addEventListener('input',function(){App.LS.set('hlText_mid',this.value);});
-    if(chatL)chatL.addEventListener('input',function(){App.LS.set('hlChat_left',this.value);});
-    if(chatR)chatR.addEventListener('input',function(){App.LS.set('hlChat_right',this.value);});
-
-    function autoResize(input){
-      if(!input)return;
-      function resize(){input.style.width='0';input.style.width=Math.max(50,input.scrollWidth)+'px';}
-      input.addEventListener('input',resize);resize();
-    }
-    autoResize(chatL);autoResize(chatR);
+    Cards._renderDisplayTexts();
 
     Cards._bindHlDrag('hlTextCard');
     Cards._bindHlDrag('hlAvatarWrapLeft');
@@ -261,7 +281,6 @@ if(cfg.fontFamily !== undefined){
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
 
     el.addEventListener('touchstart',function(e){
-      if(e.target.tagName==='INPUT')return;
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
       var avatarInside=el.querySelector('.hl-avatar');
       if(avatarInside)avatarInside._dragMoved=false;
@@ -294,45 +313,6 @@ if(cfg.fontFamily !== undefined){
     var el=document.getElementById(id);if(!el)return;
     var off=Cards._dragOffsets[id];
     if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
-  },
-
-  _restoreHlAvatar:function(imgId,storageKey){
-    var img=document.getElementById(imgId);if(!img)return;
-    var saved=App.LS.get(storageKey);
-    if(saved){img.src=saved;img.style.display='block';}
-  },
-
-  _uploadHlAvatar:function(imgId,storageKey,cb){
-    var input=document.createElement('input');input.type='file';input.accept='image/*';
-    input.onchange=function(e){
-      var file=e.target.files[0];if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(r){
-        var src=r.target.result;
-        if(App.cropImage){App.cropImage(src,function(cropped){Cards._applyHlAvatar(cropped,imgId,storageKey);if(cb)cb(cropped);});}
-        else{Cards._compressAvatar(src,function(compressed){Cards._applyHlAvatar(compressed,imgId,storageKey);if(cb)cb(compressed);});}
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  },
-
-  _applyHlAvatar:function(src,imgId,storageKey){
-    var img=document.getElementById(imgId);if(!img)return;
-    var compress=new Image();
-    compress.onload=function(){
-      var canvas=document.createElement('canvas');var max=200,w=compress.width,h=compress.height;
-      if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
-      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(compress,0,0,w,h);
-      var result=canvas.toDataURL('image/jpeg',0.85);
-      img.src=result;img.style.display='block';App.LS.set(storageKey,result);
-    };
-    compress.src=src;
-  },
-
-  _clearHlAvatar:function(imgId,storageKey){
-    var img=document.getElementById(imgId);if(!img)return;
-    img.src='';img.style.display='none';App.LS.remove(storageKey);
   },
 
   bindEdit:function(){
@@ -440,32 +420,12 @@ if(cfg.fontFamily !== undefined){
     });
   },
 
-  /* ★ 修复：物理遮罩方案——在 cardRow 上盖一层透明 div，彻底阻断触摸 */
-  _lockCardRow:function(){
-    var cardRow=App.$('#cardRow');if(!cardRow)return;
-    /* 先移除旧的 */
-    var old=cardRow.querySelector('.card-row-shield');
-    if(old)old.remove();
-    var shield=document.createElement('div');
-    shield.className='card-row-shield';
-    shield.style.cssText='position:absolute;inset:0;z-index:9999;background:transparent;';
-    /* 让 shield 盖住整个 cardRow（需要 cardRow 有定位上下文） */
-    cardRow.style.position='relative';
-    cardRow.appendChild(shield);
-  },
-
-  _unlockCardRow:function(){
-    var cardRow=App.$('#cardRow');if(!cardRow)return;
-    var shield=cardRow.querySelector('.card-row-shield');
-    if(shield)shield.remove();
-  },
-
+  /* ====== 像素框编辑 ====== */
   bindPixelEdit:function(){
     if(this._pixelBound)return;this._pixelBound=true;
     var body=App.$('#hlTextCard .pixel-body');if(!body)return;
     var tapCount=0,tapTimer=null;
     body.addEventListener('click',function(e){
-      if(e.target.tagName==='INPUT')return;
       e.stopPropagation();tapCount++;clearTimeout(tapTimer);
       tapTimer=setTimeout(function(){tapCount=0;},350);
       if(tapCount>=2){tapCount=0;clearTimeout(tapTimer);Cards.openPixelEdit();}
@@ -475,6 +435,8 @@ if(cfg.fontFamily !== undefined){
   openPixelEdit:function(){
     var old=App.$('#pixelEditOverlay');if(old)old.remove();
     var pc=JSON.parse(JSON.stringify(Cards.pixelConfig));
+    var textTop=App.LS.get('hlText_top')||'';
+    var textMid=App.LS.get('hlText_mid')||'';
 
     var overlay=document.createElement('div');overlay.id='pixelEditOverlay';overlay.className='pc-edit-overlay';
     var panel=document.createElement('div');panel.className='pc-edit-panel';
@@ -493,6 +455,8 @@ if(cfg.fontFamily !== undefined){
     panel.innerHTML=
       '<div class="pc-header">编辑像素框<div class="pc-close-btn" id="pxCloseBtn">×</div></div>'+
       '<div class="pc-body">'+
+        '<div class="pc-group"><span class="pc-label">第一行文字</span><input type="text" class="pc-input" id="pxTextTop" value="'+App.escAttr(textTop)+'"></div>'+
+        '<div class="pc-group"><span class="pc-label">第二行文字</span><input type="text" class="pc-input" id="pxTextMid" value="'+App.escAttr(textMid)+'"></div>'+
         '<div class="pc-group"><span class="pc-label">调色板</span><div class="pc-palette-grid">'+dotsHtml+'</div></div>'+
         '<div class="pc-group"><span class="pc-label">字体</span><select class="pc-input" id="pxFontSelect">'+Cards._buildFontOptions(pc.fontFamily)+'</select></div>'+
       '</div>'+
@@ -502,9 +466,6 @@ if(cfg.fontFamily !== undefined){
       '</div>';
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
-
-    /* ★ 修复：用物理遮罩锁定 */
-    Cards._lockCardRow();
 
     var pixelEl=App.$('#hlTextCard');
     if(pixelEl){var rect=pixelEl.getBoundingClientRect();var left=rect.left;var top=rect.bottom+8;
@@ -524,13 +485,16 @@ if(cfg.fontFamily !== undefined){
 
     panel.querySelector('#pxFontSelect').addEventListener('change',function(){pc.fontFamily=this.value;Cards.pixelConfig=pc;Cards.applyPixelColors();});
 
-    function closePixelOverlay(){
-      overlay.remove();
-      Cards._unlockCardRow();
-    }
+    function closePixelOverlay(){overlay.remove();}
 
     panel.querySelector('#pxSaveBtn').addEventListener('click',function(e){
-      e.stopPropagation();Cards.pixelConfig=pc;Cards.savePixel();Cards.applyPixelColors();closePixelOverlay();App.showToast('已保存');
+      e.stopPropagation();
+      Cards.pixelConfig=pc;Cards.savePixel();Cards.applyPixelColors();
+      var t=panel.querySelector('#pxTextTop').value;
+      var m=panel.querySelector('#pxTextMid').value;
+      App.LS.set('hlText_top',t);App.LS.set('hlText_mid',m);
+      Cards._renderDisplayTexts();
+      closePixelOverlay();App.showToast('已保存');
     });
     panel.querySelector('#pxResetBtn').addEventListener('click',function(e){
       e.stopPropagation();Cards.pixelConfig=JSON.parse(JSON.stringify(DEF_PIXEL));Cards.savePixel();Cards.applyPixelColors();closePixelOverlay();App.showToast('已重置');
@@ -539,6 +503,7 @@ if(cfg.fontFamily !== undefined){
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePixelOverlay();});
   },
 
+  /* ====== 圆头像编辑 ====== */
   bindHlEdit:function(){
     if(this._hlEditBound)return;this._hlEditBound=true;
     ['hlAvatarLeft','hlAvatarRight'].forEach(function(avatarId){
@@ -557,17 +522,17 @@ if(cfg.fontFamily !== undefined){
   openHlEdit:function(side){
     var old=App.$('#hlEditOverlay');if(old)old.remove();
     var cfg=JSON.parse(JSON.stringify(Cards.hlConfig[side]));
-    var imgId=side==='left'?'hlImgLeft':'hlImgRight';
+    var bgId=side==='left'?'hlImgLeft':'hlImgRight';
     var storageKey=side==='left'?'avatar_hlLeft':'avatar_hlRight';
     var wrId=side==='left'?'hlAvatarWrapLeft':'hlAvatarWrapRight';
-
-    var overlay=document.createElement('div');overlay.id='hlEditOverlay';overlay.className='pc-edit-overlay';
-    var panel=document.createElement('div');panel.className='pc-edit-panel';
 
     var bubbleKey=side==='left'?'hlBubble_left':'hlBubble_right';
     var chatKey=side==='left'?'hlChat_left':'hlChat_right';
     var bubbleVal=App.LS.get(bubbleKey)||'';
     var chatVal=App.LS.get(chatKey)||'';
+
+    var overlay=document.createElement('div');overlay.id='hlEditOverlay';overlay.className='pc-edit-overlay';
+    var panel=document.createElement('div');panel.className='pc-edit-panel';
 
     var paletteItems=[
       {key:'borderColor',label:'头像框色',value:cfg.borderColor||'#2a2a2a'},
@@ -600,9 +565,6 @@ if(cfg.fontFamily !== undefined){
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
 
-    /* ★ 修复：用物理遮罩锁定 */
-    Cards._lockCardRow();
-
     var avatarEl=document.getElementById(wrId);
     if(avatarEl){var rect=avatarEl.getBoundingClientRect();var left=rect.left-60;var top=rect.bottom+8;
       if(left<8)left=8;if(left+270>window.innerWidth)left=window.innerWidth-278;
@@ -611,12 +573,8 @@ if(cfg.fontFamily !== undefined){
 
     Cards._bindPanelDrag(panel);
 
-    function closeHlOverlay(){
-      overlay.remove();
-      Cards._unlockCardRow();
-    }
+    function closeHlOverlay(){overlay.remove();}
 
-    /* 颜色 */
     panel.querySelectorAll('.pc-dot').forEach(function(dot){
       dot.addEventListener('click',function(e){
         e.stopPropagation();var key=dot.dataset.ck;
@@ -625,14 +583,12 @@ if(cfg.fontFamily !== undefined){
       });
     });
 
-    /* 滑块 */
     panel.querySelector('#hlBorderW').addEventListener('input',function(){
       cfg.borderWidth=parseFloat(this.value);
       panel.querySelector('#hlBorderWVal').textContent=cfg.borderWidth+'px';
       Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);
     });
 
-    /* ★ 修复：透明度只更新数值，让 applyHlColors 统一构建颜色 */
     panel.querySelector('#hlBarOpacity').addEventListener('input',function(){
       cfg.barOpacity=parseFloat(this.value);
       panel.querySelector('#hlBarOpacityVal').textContent=Math.round(cfg.barOpacity*100)+'%';
@@ -647,19 +603,16 @@ if(cfg.fontFamily !== undefined){
 
     panel.querySelector('#hlFontSelect').addEventListener('change',function(){cfg.fontFamily=this.value;Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);});
 
-    panel.querySelector('#hlUploadBtn').addEventListener('click',function(e){e.stopPropagation();Cards._uploadHlAvatar(imgId,storageKey);});
-    panel.querySelector('#hlDelAvatar').addEventListener('click',function(e){e.stopPropagation();Cards._clearHlAvatar(imgId,storageKey);App.showToast('头像已清除');});
+    panel.querySelector('#hlUploadBtn').addEventListener('click',function(e){e.stopPropagation();Cards._uploadHlAvatar(bgId,storageKey);});
+    panel.querySelector('#hlDelAvatar').addEventListener('click',function(e){e.stopPropagation();Cards._clearHlAvatar(bgId,storageKey);App.showToast('头像已清除');});
 
     panel.querySelector('#hlSaveBtn').addEventListener('click',function(e){
       e.stopPropagation();
       var bv=panel.querySelector('#hlBubbleInput').value;
       var cv=panel.querySelector('#hlChatInput').value;
       App.LS.set(bubbleKey,bv);App.LS.set(chatKey,cv);
-      var bubbleInput=document.getElementById(side==='left'?'hlInputLeft':'hlInputRight');
-      var chatInput=document.getElementById(side==='left'?'hlChatLeft':'hlChatRight');
-      if(bubbleInput)bubbleInput.value=bv;
-      if(chatInput){chatInput.value=cv;chatInput.dispatchEvent(new Event('input'));}
       Cards.hlConfig[side]=cfg;Cards.saveHl(side);Cards.applyHlColors(side);
+      Cards._renderDisplayTexts();
       closeHlOverlay();App.showToast('已保存');
     });
     panel.querySelector('#hlResetBtn').addEventListener('click',function(e){
@@ -669,6 +622,7 @@ if(cfg.fontFamily !== undefined){
     overlay.addEventListener('click',function(e){if(e.target===overlay)closeHlOverlay();});
   },
 
+  /* ====== 角色卡编辑面板 ====== */
   openEdit:function(side,cardEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
 
@@ -717,9 +671,6 @@ if(cfg.fontFamily !== undefined){
       '</div>';
 
     overlay.appendChild(panel);document.body.appendChild(overlay);
-
-    /* ★ 修复：用物理遮罩锁定 */
-    Cards._lockCardRow();
 
     if(cardEl){
       var rect=cardEl.getBoundingClientRect();
@@ -800,13 +751,11 @@ if(cfg.fontFamily !== undefined){
         colors:col
       };
       Cards.save();Cards.render();overlay.remove();
-      Cards._unlockCardRow();
       App.showToast('已保存');
     });
 
     function closeAndRevert(){
       Cards.data=snapshot;Cards.save();Cards.render();overlay.remove();
-      Cards._unlockCardRow();
     }
     panel.querySelector('#pcCloseBtn').addEventListener('click',function(e){e.stopPropagation();closeAndRevert();});
     overlay.addEventListener('click',function(e){if(e.target===overlay&&!document.querySelector('.crop-overlay'))closeAndRevert();});
@@ -850,5 +799,3 @@ if(cfg.fontFamily !== undefined){
 
 App.register('cards',Cards);
 })();
-
-
