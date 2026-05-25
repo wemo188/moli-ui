@@ -825,10 +825,11 @@
   stroke: var(--hl-border-c);
 }
 
-/* =========================
-   编辑模式 - 禁用底层交互
-========================= */
-.card-row.edit-mode,
-.card-row.edit-mode * {
-  pointer-events: none !important;
+/* ★ 物理遮罩样式 */
+.card-row-shield {
+  position: absolute;
+  inset: -200px -100px;
+  z-index: 9999;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
