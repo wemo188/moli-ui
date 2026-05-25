@@ -808,7 +808,6 @@
 
 .hl-avatar-unit .hl-chatbar {
   background: var(--hl-bar-color);
-  opacity: var(--hl-bar-opacity);
   backdrop-filter: blur(var(--hl-bar-blur));
   -webkit-backdrop-filter: blur(var(--hl-bar-blur));
 }
