@@ -50,13 +50,15 @@ body {
 
 .bg-layer {
   position: fixed;
-  inset: -10px;
+  inset: -20px;
   z-index: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   transition: all 0.5s ease;
   pointer-events: none;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
 }
 
 .main-content {
