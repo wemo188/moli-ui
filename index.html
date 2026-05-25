@@ -155,9 +155,9 @@ function imgFallback(img){
                 </div>
                 <div class="pixel-body">
                   <div class="pixel-text-area">
-                    <input type="text" class="pixel-text-input" id="hlTextTop" placeholder="第一行...">
+                    <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
                     <div class="pixel-text-divider"></div>
-                    <input type="text" class="pixel-text-input" id="hlTextMid" placeholder="第二行...">
+                    <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
                   </div>
                 </div>
               </div>
@@ -201,12 +201,11 @@ function imgFallback(img){
               </div>
               <!-- 两个圆头像 -->
               <div class="hl-avatars-row" id="hlAvatarsRow">
-                <!-- 右气泡头像放左边位置 -->
                 <div class="hl-avatar-unit" id="hlAvatarWrapRight">
                   <div class="hl-bubble hl-bubble-right">
                     <div class="hl-bubble-arrow-outer"></div>
                     <div class="hl-bubble-arrow-inner"></div>
-                    <input type="text" class="hl-bubble-input" id="hlInputRight" placeholder="...">
+                    <span class="hl-bubble-display" id="hlInputRight"></span>
                   </div>
                   <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
                     <div class="hl-avatar-inner">
@@ -214,19 +213,18 @@ function imgFallback(img){
                         <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
                         <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
                       </svg>
-                      <img class="hl-avatar-img" id="hlImgRight" style="display:none;">
+                      <div class="hl-avatar-bg" id="hlImgRight"></div>
                     </div>
                   </div>
-                 <div class="hl-chatbar hl-chatbar-bot">
-  <input type="text" class="hl-chatbar-input" id="hlChatRight" placeholder="说点什么...">
-</div>
+                  <div class="hl-chatbar hl-chatbar-bot">
+                    <span class="hl-chatbar-display" id="hlChatRight" data-placeholder="说点什么..."></span>
+                  </div>
                 </div>
-                <!-- 左气泡头像放右边位置 -->
                 <div class="hl-avatar-unit" id="hlAvatarWrapLeft">
                   <div class="hl-bubble hl-bubble-left">
                     <div class="hl-bubble-arrow-outer"></div>
                     <div class="hl-bubble-arrow-inner"></div>
-                    <input type="text" class="hl-bubble-input" id="hlInputLeft" placeholder="...">
+                    <span class="hl-bubble-display" id="hlInputLeft"></span>
                   </div>
                   <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
                     <div class="hl-avatar-inner">
@@ -234,17 +232,17 @@ function imgFallback(img){
                         <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
                         <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
                       </svg>
-                      <img class="hl-avatar-img" id="hlImgLeft" style="display:none;">
+                      <div class="hl-avatar-bg" id="hlImgLeft"></div>
                     </div>
                   </div>
                   <div class="hl-chatbar hl-chatbar-bl">
-  <input type="text" class="hl-chatbar-input" id="hlChatLeft" placeholder="说点什么...">
-</div>
+                    <span class="hl-chatbar-display" id="hlChatLeft" data-placeholder="说点什么..."></span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
+          
           <!-- Eden文字卡片 -->
           <div class="eden-card" id="edenCard">
             <div class="eden-text" id="edenText" style="font-size:38px;">文字填写区域，可以多行</div>
