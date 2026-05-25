@@ -94,14 +94,19 @@ var Cards={
     wr.style.setProperty('--hl-bar-blur',(cfg.barBlur!=null?cfg.barBlur:12)+'px');
     wr.style.setProperty('--hl-bar-color',cfg.barColor||'rgba(255,255,255,0.45)');
     if(cfg.fontFamily){
-  var chat=wr.querySelector('.hl-chatbar-input');
-  var bubble=wr.querySelector('.hl-bubble-input');
-  if(chat)chat.style.fontFamily=cfg.fontFamily;
-  if(bubble){
-    bubble.style.fontFamily=cfg.fontFamily;
-    bubble.style.color='';  // 气泡文字始终用默认黑色
-  }
-}
+      var chat=wr.querySelector('.hl-chatbar-input');
+      var bubble=wr.querySelector('.hl-bubble-input');
+      if(chat)chat.style.fontFamily=cfg.fontFamily;
+      if(bubble){
+        bubble.style.fontFamily=cfg.fontFamily;
+        bubble.style.color='';
+      }
+    }
+    var chatbar = wr.querySelector('.hl-chatbar');
+    if(chatbar){
+      chatbar.style.backdropFilter = 'blur('+(cfg.barBlur||12)+'px)';
+      chatbar.style.webkitBackdropFilter = 'blur('+(cfg.barBlur||12)+'px)';
+    }
   },
 
   /* ====== 字体列表构建（复用 font 模块数据） ====== */
@@ -587,7 +592,15 @@ var Cards={
 
     /* 滑块 */
     panel.querySelector('#hlBorderW').addEventListener('input',function(){cfg.borderWidth=parseFloat(this.value);panel.querySelector('#hlBorderWVal').textContent=cfg.borderWidth+'px';Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);});
-    panel.querySelector('#hlBarOpacity').addEventListener('input',function(){cfg.barOpacity=parseFloat(this.value);panel.querySelector('#hlBarOpacityVal').textContent=Math.round(cfg.barOpacity*100)+'%';Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);});
+    panel.querySelector('#hlBarOpacity').addEventListener('input',function(){
+  var alpha = parseFloat(this.value);
+  panel.querySelector('#hlBarOpacityVal').textContent = Math.round(alpha*100)+'%';
+  cfg.barOpacity = alpha;
+  var bc = cfg.barColor || 'rgba(255,255,255,0.45)';
+  cfg.barColor = bc.replace(/[\d.]+\)$/, alpha+')');
+  Cards.hlConfig[side]=cfg;
+  Cards.applyHlColors(side);
+});
     panel.querySelector('#hlBarBlur').addEventListener('input',function(){cfg.barBlur=parseInt(this.value);panel.querySelector('#hlBarBlurVal').textContent=cfg.barBlur+'px';Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);});
     panel.querySelector('#hlFontSelect').addEventListener('change',function(){cfg.fontFamily=this.value;Cards.hlConfig[side]=cfg;Cards.applyHlColors(side);});
 
