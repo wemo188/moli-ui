@@ -345,15 +345,24 @@
     },
 
     applyBg: function(data) {
-      var layer = App.$('#bgLayer'); if(!layer) return;
-      if(data && data.src) {
-        layer.style.backgroundImage = 'url(' + data.src + ')';
-        layer.style.filter = 'blur(' + (data.blur || 0) + 'px) brightness(' + (100 - (data.dark || 0)) + '%)';
-      } else {
-        layer.style.backgroundImage = '';
-        layer.style.filter = '';
-      }
-    },
+  var layer = App.$('#bgLayer'); if(!layer) return;
+  layer.style.backgroundSize = 'cover';
+  layer.style.backgroundPosition = 'center center';
+  layer.style.backgroundRepeat = 'no-repeat';
+  layer.style.width = '100vw';
+  layer.style.height = '100vh';
+  layer.style.left = '0';
+  layer.style.top = '0';
+  layer.style.margin = '0';
+  layer.style.padding = '0';
+  if(data && data.src) {
+    layer.style.backgroundImage = 'url(' + data.src + ')';
+    layer.style.filter = 'blur(' + (data.blur || 0) + 'px) brightness(' + (100 - (data.dark || 0)) + '%)';
+  } else {
+    layer.style.backgroundImage = '';
+    layer.style.filter = '';
+  }
+},
 
     applyTopIconStyle: function(cfg) {
       var styleId = 'topIconDynamicStyle';
