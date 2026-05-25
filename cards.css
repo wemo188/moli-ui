@@ -37,6 +37,12 @@
   pointer-events: auto;
 }
 
+#cardIcon1 .card-icon-img svg,
+#cardIcon2 .card-icon-img svg {
+  width: 55%;
+  height: 55%;
+}
+
 .card-icons-wrap {
   display: flex;
   gap: 15px;
