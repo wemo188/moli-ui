@@ -231,6 +231,7 @@
                   var tEl = document.querySelector(target);
                   if(tEl) {
                     tEl.src = c;
+                    tEl.style.display = 'block';
                     tEl.style.transform = 'none';
                     tEl.style.width = '100%';
                     tEl.style.height = '100%';
