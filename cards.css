@@ -91,7 +91,7 @@
 /* ====== profileCard-L 左卡片 ====== */
 #profileCard-L {
   --S: 1;
-  --W0: 180px;
+  --W0: 190px;
   --CARD_H0: 190px;
   --PAD0: 10px;
   --INK: var(--profileCard-L-name-c, #4a5a75);
@@ -207,7 +207,7 @@
 /* ====== profileCard-R 右卡片 ====== */
 #profileCard-R {
   --S: 1;
-  --W0: 180px;
+  --W0: 190px;
   --CARD_H0: 190px;
   --PAD0: 10px;
   --INK: var(--profileCard-R-name-c, #4a5a75);
