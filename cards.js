@@ -91,7 +91,6 @@ var Cards={
     wr.style.setProperty('--hl-border-c',cfg.borderColor||'#2a2a2a');
     wr.style.setProperty('--hl-border-w',(cfg.borderWidth!=null?cfg.borderWidth:1)+'px');
     wr.style.setProperty('--hl-font-c',cfg.fontColor||'#2a2a2a');
-    wr.style.setProperty('--hl-bar-opacity',cfg.barOpacity!=null?cfg.barOpacity:0.45);
     wr.style.setProperty('--hl-bar-blur',(cfg.barBlur!=null?cfg.barBlur:12)+'px');
     wr.style.setProperty('--hl-bar-color',cfg.barColor||'rgba(255,255,255,0.45)');
     if(cfg.fontFamily){
