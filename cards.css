@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 40px;
+  gap: 30px;
   padding: 10px 0 0;
   width: 100%;
   margin-top: 5px;
@@ -102,8 +102,8 @@
 /* ====== profileCard-L 左卡片 ====== */
 #profileCard-L {
   --S: 1;
-  --W0: 190px;
-  --CARD_H0: 190px;
+  --W0: 180px;
+  --CARD_H0: 180px;
   --PAD0: 10px;
   --INK: var(--profileCard-L-name-c, #4a5a75);
   --THEME: var(--profileCard-L-border-c, #bbd3ef);
@@ -145,7 +145,7 @@
 #profileCard-L .bx-tag-wrap {
   position: absolute;
   top: calc(-6px * var(--S));
-  right: calc(-10px * var(--S));
+  right: calc(-12px * var(--S));
   z-index: 10;
   pointer-events: none;
 }
@@ -218,8 +218,8 @@
 /* ====== profileCard-R 右卡片 ====== */
 #profileCard-R {
   --S: 1;
-  --W0: 190px;
-  --CARD_H0: 190px;
+  --W0: 180px;
+  --CARD_H0: 180px;
   --PAD0: 10px;
   --INK: var(--profileCard-R-name-c, #4a5a75);
   --BLUE: var(--profileCard-R-border-c, #8ca3c2);
