@@ -124,11 +124,14 @@ var Cards={
       chatbar.style.webkitBackdropFilter='blur('+blur+'px)';
     }
 
-    if(cfg.fontFamily){
-      var chat=wr.querySelector('.hl-chatbar-input');
-      var bubble=wr.querySelector('.hl-bubble-input');
-      if(chat)chat.style.fontFamily=cfg.fontFamily;
-      if(bubble){bubble.style.fontFamily=cfg.fontFamily;bubble.style.color='';}
+if(cfg.fontFamily !== undefined){
+      var chat = wr.querySelector('.hl-chatbar-input');
+      var bubble = wr.querySelector('.hl-bubble-input');
+      if(chat) chat.style.fontFamily = cfg.fontFamily;
+      if(bubble){
+        bubble.style.fontFamily = cfg.fontFamily;
+        bubble.style.color = '';
+      }
     }
   },
 
