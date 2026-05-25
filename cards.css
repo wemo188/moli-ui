@@ -629,7 +629,7 @@
 }
 
 /* =========================
-   毛玻璃对话条（B型）
+   毛玻璃对话条
 ========================= */
 .hl-chatbar {
   position: absolute;
@@ -638,7 +638,7 @@
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   border-radius: 18px 4px 18px 18px;
-  padding: 8px 7px;
+  padding: 10px 9px;
   white-space: nowrap;
   z-index: 5;
   display: flex;
@@ -667,7 +667,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 12px;
+  font-size: 13px;
   color: #2a2a2a;
   min-width: 50px;
   width: auto;
