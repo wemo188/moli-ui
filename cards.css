@@ -618,8 +618,8 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 9px;
-  width: 36px;
+  font-size: 11px;
+  width: 40px;
   color: var(--hl-border-c);
 }
 
@@ -651,7 +651,7 @@
   position: absolute;
   top: 100%;
   right: 40px;
-  margin-top: 15px;
+  margin-top: 13px;
   direction: ltr;
 }
 
