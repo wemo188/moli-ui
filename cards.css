@@ -11,8 +11,6 @@
   width: 100%;
   margin-top: 5px;
   pointer-events: none;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
 }
 
 .left-area-wrapper {
