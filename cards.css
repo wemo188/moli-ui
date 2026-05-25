@@ -478,7 +478,6 @@
 .hl-avatars-row {
   display: flex;
   align-items: flex-start;
-  justify-content: flex-start;   /* 改成左对齐 */
   gap: 90px;
   margin-top: 16px;
   pointer-events: auto;
