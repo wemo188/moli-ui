@@ -496,7 +496,7 @@
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
   width: max-content;
-  margin-right: 60px;
+  margin-right: 40px;
 }
 
 .hl-avatar-unit {
