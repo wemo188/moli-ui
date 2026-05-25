@@ -478,11 +478,12 @@
 .hl-avatars-row {
   display: flex;
   align-items: flex-start;
-  gap: 50px;
+  justify-content: flex-start;   /* 改成左对齐 */
+  gap: 70px;
   margin-top: 16px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
-  margin-left: 20px;
+  padding-left: 20px;            /* 整体往右挪靠这个 */
 }
 
 .hl-avatar-unit {
