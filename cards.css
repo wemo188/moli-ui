@@ -792,10 +792,11 @@
 }
 
 .hl-avatar-unit .hl-bubble-input {
-  color: var(--hl-font-c);
+  color: #1a1a1a;  /* 固定黑色，不跟变量 */
 }
 .hl-avatar-unit .hl-bubble-input::placeholder {
-  color: var(--hl-font-c);
+  color: #1a1a1a;
+  opacity: 0.4;
 }
 
 .hl-avatar-unit .hl-bubble-right .hl-bubble-arrow-outer {
