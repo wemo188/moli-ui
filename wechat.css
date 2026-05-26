@@ -17,21 +17,22 @@
 /* ====== 手机框 ====== */
 .wx-phone {
   position: relative;
-  width: calc(100% - 5px);
+  width: calc(100% - 40px);
   max-width: 100%;
-  margin: 10px auto;
-  margin-bottom: calc(30px + env(safe-area-inset-bottom, 20px));
+  margin: 30px auto;
+  margin-bottom: calc(50px + env(safe-area-inset-bottom, 20px));
   border-radius: 50px;
-  background: #fff;
-  padding: 10px;
+  background: #0a0a0a;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px - env(safe-area-inset-bottom, 20px));
+  height: calc(100vh - 120px - env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 2px #1a1a1a, 0 0 0 4px #2a2a2a;
 }
 
 .wx-phone > .wx-inner {
-  border-radius: 33px;
+  border-radius: 40px;
   overflow: hidden;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
@@ -60,7 +61,7 @@
   position: relative;
   display: flex; flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: #000;
 }
 
 .wx-inner::before {
@@ -69,9 +70,9 @@
   width: 140%; height: 140%;
   transform: translate(-50%, -50%);
   background:
-    radial-gradient(circle at 50% 48%, rgba(126,163,201,.48) 0%, rgba(126,163,201,.28) 18%, rgba(126,163,201,.14) 38%, transparent 62%),
-    radial-gradient(circle at 46% 44%, rgba(140,180,215,.22) 0%, rgba(140,180,215,.10) 28%, transparent 52%),
-    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.18) 0%, transparent 48%);
+    radial-gradient(circle at 50% 48%, rgba(126,163,201,.08) 0%, rgba(126,163,201,.05) 18%, rgba(126,163,201,.02) 38%, transparent 62%),
+    radial-gradient(circle at 46% 44%, rgba(140,180,215,.04) 0%, rgba(140,180,215,.02) 28%, transparent 52%),
+    radial-gradient(ellipse at 56% 54%, rgba(170,200,228,.03) 0%, transparent 48%);
   pointer-events: none; z-index: 0;
 }
 
@@ -79,8 +80,8 @@
   content: "";
   position: absolute; inset: 0;
   background:
-    linear-gradient(135deg, rgba(255,255,255,.70), transparent42%),
-    linear-gradient(315deg, rgba(255,255,255,.38), transparent 44%);
+    linear-gradient(135deg, rgba(255,255,255,.05), transparent 42%),
+    linear-gradient(315deg, rgba(255,255,255,.03), transparent 44%);
   pointer-events: none; mix-blend-mode: screen; opacity: .72; z-index: 0;
 }
 
