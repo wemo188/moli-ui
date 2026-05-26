@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -10,8 +9,7 @@
     { key: 'age', en: 'AGE', cn: '年龄' },
     { key: 'birthday', en: 'BIRTHDAY', cn: '生日' },
     { key: 'phone', en: 'PHONE', cn: '手机号' },
-    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' },
-    { key: 'wechatPwd', en: 'WECHAT PWD', cn: '微信密码' }
+    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' }
   ];
   var FIELDS_LONG = [
     { key: 'bio', en: 'DESCRIPTION', cn: '个人描述' }
@@ -263,8 +261,7 @@
       var shortHtml = FIELDS_SHORT.map(function(f) {
         var val = user[f.key] || '';
         var ph = (f.key === 'phone') ? '输入十位虚拟数字，或者留空随机生成'
-         : (f.key === 'wechatId') ? '留空随机生成'
-         : (f.key === 'wechatPwd') ? '必须手动填写' : '';
+         : (f.key === 'wechatId') ? '留空随机生成' : '';
         if (User.sealed) {
           return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
@@ -433,7 +430,6 @@
 
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       if (!data.wechatId) data.wechatId = 'wx_' + Math.random().toString(36).substring(2, 4);
-      if (!data.wechatPwd) { App.showToast('请填写微信密码'); return; }
       if (!data.realName) { App.showToast('请输入姓名'); return; }
 
       if (editId) {
@@ -591,4 +587,3 @@
 
   App.register('user', User);
 })();
-
