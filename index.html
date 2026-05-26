@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -90,8 +91,8 @@ function imgFallback(img){
     <section class="screen-page screen-page-1">
       <div class="screen-page-inner" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
         <div>
-          <!-- 时间栏 灰色磨砂 -->
-          <div class="wt-card" id="wtCard" style="background: rgba(128,128,128,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; padding: 8px 0;">
+          <!-- 时间栏 -->
+          <div class="wt-card" id="wtCard">
             <div class="wt-cw">
               <div class="vf-c tl"></div>
               <div class="vf-c tr"></div>
@@ -123,103 +124,84 @@ function imgFallback(img){
             </div>
           </div>
 
-          <!-- 两张角色卡并排 灰色磨砂 -->
-          <div class="card-row" id="cardRow" style="gap: 30px;">
-            <!-- 左卡片 灰色磨砂 -->
-            <div class="left-area-wrapper" style="gap: 10px;">
+          <!-- 角色卡+对话框+图标 -->
+          <div class="card-row" id="cardRow">
+            <div class="left-area-wrapper">
               <div class="bx-w" id="profileCard-L" data-side="left">
                 <div class="bx-tag-wrap">
                   <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
                   <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
                 </div>
-                <div class="bx-cw" style="padding: 1px; background: rgba(128,128,128,0.2); border-radius: 14px;">
-                  <div class="bx-cd" style="background: rgba(128,128,128,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 11px; padding: 6px 6px 0 6px;">
-                    <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-                    <div class="bx-name-bar">
-                      <div class="bx-name bx-name-placeholder">角色名</div>
-                      <div class="bx-sub">✥同你奔赴…✥</div>
-                    </div>
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-name bx-name-placeholder">角色名</div>
+                    <div class="bx-sub">✥同你奔赴…✥</div>
                   </div>
-                </div>
+                </div></div>
               </div>
-              <!-- 四个图标挪到左卡片下面 -->
-              <div class="card-icons-wrap" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
-                <!-- 设置 -->
-                <div class="card-icon-item" id="cardIcon1">
-                  <div class="card-icon-img" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 15px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                      <path d="M35.5 8H28.5L27 14.5C25.2 15.2 23.5 16.1 22 17.3L15.8 15L12.3 21L17.2 25.2C16.9 26.8 16.8 28.4 16.8 30V30C16.8 31.6 16.9 33.2 17.2 34.8L12.3 39L15.8 45L22 42.7C23.5 43.9 25.2 44.8 27 45.5L28.5 52H35.5L37 45.5C38.8 44.8 40.5 43.9 42 42.7L48.2 45L51.7 39L46.8 34.8C47.1 33.2 47.2 31.6 47.2 30V30C47.2 28.4 47.1 26.8 46.8 25.2L51.7 21L48.2 15L42 17.3C40.5 16.1 38.8 15.2 37 14.5L35.5 8Z" stroke="rgba(80,80,80,0.8)" stroke-width="3" stroke-linejoin="round" fill="none"/>
-                      <circle cx="32" cy="30" r="8" stroke="rgba(80,80,80,0.8)" stroke-width="2.8" fill="none"/>
-                    </svg>
+              <!-- 像素对话框 -->
+              <div class="pixel-dialog" id="hlTextCard">
+                <div class="pixel-header">
+                  <div class="pixel-hearts">
+                    <div class="pixel-heart"><div class="ph-core"></div></div>
+                    <div class="pixel-heart"><div class="ph-core"></div></div>
+                    <div class="pixel-heart"><div class="ph-core"></div></div>
                   </div>
-                  <div class="card-icon-label">设置</div>
+                  <div class="pixel-btns">
+                    <div class="pixel-btn minimize"></div>
+                    <div class="pixel-btn maximize"></div>
+                    <div class="pixel-btn close"></div>
+                  </div>
                 </div>
-                <!-- 美化 -->
-                <div class="card-icon-item" id="cardIcon2">
-                  <div class="card-icon-img" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 15px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                      <path d="M32 8C18.7 8 8 18.7 8 32C8 45.3 18.7 56 32 56C34.2 56 36 54.2 36 52C36 51 35.6 50.1 35 49.4C34.4 48.7 34 47.8 34 46.8C34 44.6 35.8 42.8 38 42.8H42C50.3 42.8 57 36.1 57 27.8C57 16.9 45.7 8 32 8Z" stroke="rgba(80,80,80,0.8)" stroke-width="3" fill="none"/>
-                      <circle cx="20" cy="26" r="4" stroke="rgba(80,80,80,0.8)" stroke-width="2.6" fill="none"/>
-                      <circle cx="32" cy="18" r="4" stroke="rgba(80,80,80,0.8)" stroke-width="2.6" fill="none"/>
-                      <circle cx="44" cy="26" r="4" stroke="rgba(80,80,80,0.8)" stroke-width="2.6" fill="none"/>
-                      <circle cx="22" cy="38" r="4" stroke="rgba(80,80,80,0.8)" stroke-width="2.6" fill="none"/>
-                    </svg>
+                <div class="pixel-body">
+                  <div class="pixel-text-area">
+                    <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
+                    <div class="pixel-text-divider"></div>
+                    <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
                   </div>
-                  <div class="card-icon-label">美化</div>
-                </div>
-                <!-- 记忆 -->
-                <div class="card-icon-item" id="cardIcon3">
-                  <div class="card-icon-img" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 15px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                      <rect x="8" y="8" width="22" height="18" rx="3" stroke="rgba(80,80,80,0.8)" stroke-width="2" fill="none"/>
-                      <line x1="12" y1="20" x2="26" y2="20" stroke="rgba(120,120,120,0.7)" stroke-width="1.4" stroke-linecap="round"/>
-                      <rect x="8" y="30" width="22" height="26" rx="3" stroke="rgba(80,80,80,0.8)" stroke-width="2" fill="none"/>
-                      <line x1="12" y1="44" x2="26" y2="44" stroke="rgba(120,120,120,0.7)" stroke-width="1.4" stroke-linecap="round"/>
-                      <line x1="12" y1="49" x2="22" y2="49" stroke="rgba(140,140,140,0.5)" stroke-width="1.2" stroke-linecap="round"/>
-                      <rect x="34" y="8" width="22" height="26" rx="3" stroke="rgba(80,80,80,0.8)" stroke-width="2" fill="none"/>
-                      <line x1="38" y1="24" x2="52" y2="24" stroke="rgba(120,120,120,0.7)" stroke-width="1.4" stroke-linecap="round"/>
-                      <line x1="38" y1="29" x2="48" y2="29" stroke="rgba(140,140,140,0.5)" stroke-width="1.2" stroke-linecap="round"/>
-                      <rect x="34" y="38" width="22" height="18" rx="3" stroke="rgba(80,80,80,0.8)" stroke-width="2" fill="none"/>
-                      <line x1="38" y1="50" x2="52" y2="50" stroke="rgba(120,120,120,0.7)" stroke-width="1.4" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                  <div class="card-icon-label">记忆</div>
-                </div>
-                <!-- 论坛 -->
-                <div class="card-icon-item" id="cardIcon4">
-                  <div class="card-icon-img" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 15px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                      <circle cx="32" cy="32" r="22" stroke="rgba(80,80,80,0.8)" stroke-width="2.2" fill="none"/>
-                      <ellipse cx="32" cy="32" rx="9" ry="22" stroke="rgba(120,120,120,0.6)" stroke-width="1.6" fill="none"/>
-                      <path d="M10 24H54" stroke="rgba(140,140,140,0.4)" stroke-width="1.4" stroke-linecap="round"/>
-                      <path d="M12 40H52" stroke="rgba(140,140,140,0.4)" stroke-width="1.4" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                  <div class="card-icon-label">论坛</div>
                 </div>
               </div>
             </div>
-
-            <!-- 右卡片 灰色磨砂 -->
-            <div class="card-right-area" style="gap: 10px;">
-              <div class="bx-w" id="profileCard-R" data-side="right">
-                <div class="bx-cw" style="padding: 1px; background: rgba(128,128,128,0.2); border-radius: 14px;">
-                  <div class="bx-cd" style="background: rgba(128,128,128,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 11px; padding: 6px 6px 0 6px;">
-                    <div class="bx-side-ribbon">
-                      <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
-                      <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
-                    </div>
-                    <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-                    <div class="bx-name-bar">
-                      <div class="bx-name bx-name-placeholder">角色名</div>
-                      <div class="bx-sub">◈与你共赏…◈</div>
-                    </div>
-                  </div>
-                </div>
+            <div class="card-right-area">
+              <div class="card-icons-wrap">
+                <div class="card-icon-item" id="cardIcon1">
+  <div class="card-icon-img" style="background:#1a1a1a; border-color: transparent;">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+      <path d="M35.5 8H28.5L27 14.5C25.2 15.2 23.5 16.1 22 17.3L15.8 15L12.3 21L17.2 25.2C16.9 26.8 16.8 28.4 16.8 30V30C16.8 31.6 16.9 33.2 17.2 34.8L12.3 39L15.8 45L22 42.7C23.5 43.9 25.2 44.8 27 45.5L28.5 52H35.5L37 45.5C38.8 44.8 40.5 43.9 42 42.7L48.2 45L51.7 39L46.8 34.8C47.1 33.2 47.2 31.6 47.2 30V30C47.2 28.4 47.1 26.8 46.8 25.2L51.7 21L48.2 15L42 17.3C40.5 16.1 38.8 15.2 37 14.5L35.5 8Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="none"/>
+      <circle cx="32" cy="30" r="8" stroke="white" stroke-width="2.8" fill="none"/>
+    </svg>
+  </div>
+  <div class="card-icon-label">设置</div>
+</div>
+                <div class="card-icon-item" id="cardIcon2">
+  <div class="card-icon-img" style="background:#1a1a1a; border-color: transparent;">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+      <path d="M32 8C18.7 8 8 18.7 8 32C8 45.3 18.7 56 32 56C34.2 56 36 54.2 36 52C36 51 35.6 50.1 35 49.4C34.4 48.7 34 47.8 34 46.8C34 44.6 35.8 42.8 38 42.8H42C50.3 42.8 57 36.1 57 27.8C57 16.9 45.7 8 32 8Z" stroke="white" stroke-width="3" fill="none"/>
+      <circle cx="20" cy="26" r="4" stroke="white" stroke-width="2.6" fill="none"/>
+      <circle cx="32" cy="18" r="4" stroke="white" stroke-width="2.6" fill="none"/>
+      <circle cx="44" cy="26" r="4" stroke="white" stroke-width="2.6" fill="none"/>
+      <circle cx="22" cy="38" r="4" stroke="white" stroke-width="2.6" fill="none"/>
+    </svg>
+  </div>
+  <div class="card-icon-label">美化</div>
+</div>
               </div>
-
-              <!-- 两个圆头像 + 对话条，放在右卡片下面 -->
-              <div class="hl-avatars-row" id="hlAvatarsRow" style="margin-top: 16px;">
+              <div class="bx-w" id="profileCard-R" data-side="right">
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-side-ribbon">
+                    <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
+                    <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
+                  </div>
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-name bx-name-placeholder">角色名</div>
+                    <div class="bx-sub">◈与你共赏…◈</div>
+                  </div>
+                </div></div>
+              </div>
+              <!-- 两个圆头像 -->
+              <div class="hl-avatars-row" id="hlAvatarsRow">
                 <div class="hl-avatar-unit" id="hlAvatarWrapRight">
                   <div class="hl-bubble hl-bubble-right">
                     <div class="hl-bubble-arrow-outer"></div>
@@ -270,32 +252,19 @@ function imgFallback(img){
       </div>
     </section>
 
-    <!-- 第二页 像素对话框 -->
-    <section class="screen-page screen-page-2">
-      <div class="screen-page-inner" style="position:relative;height:100%; display: flex; align-items: center; justify-content: center;">
-        <div class="pixel-dialog" id="hlTextCard" style="margin-top: 0;">
-          <div class="pixel-header">
-            <div class="pixel-hearts">
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-            </div>
-            <div class="pixel-btns">
-              <div class="pixel-btn minimize"></div>
-              <div class="pixel-btn maximize"></div>
-              <div class="pixel-btn close"></div>
-            </div>
-          </div>
-          <div class="pixel-body">
-            <div class="pixel-text-area">
-              <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
-              <div class="pixel-text-divider"></div>
-              <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
-            </div>
-          </div>
+    <!-- 第二页 -->
+<section class="screen-page screen-page-2">
+  <div class="screen-page-inner" style="position:relative;height:100%;">
+    <div class="app-grid" id="appGrid">
+      <div class="app-icon" id="openChessBtn" data-icon="chess">
+        <div class="app-icon-img" id="chessIconImg" style="width:80px;height:80px;border-radius:15px;background:#fff;border:1.3px solid rgba(220,235,255,.9);">
+          <img src="https://iili.io/BDOUYOv.md.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="imgFallback(this)">
         </div>
+        <div class="app-icon-label">象棋</div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
   </div>
   <div class="screen-indicators">
@@ -304,70 +273,70 @@ function imgFallback(img){
   </div>
 </main>
 
-<!-- ====== 底部栏 灰色线条磨砂玻璃 ====== -->
-<div class="dock" id="dockBar" style="background: rgba(128,128,128,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+<!-- ====== 底部栏 ====== -->
+<div class="dock" id="dockBar">
   <div class="dock-item" id="dockMine">
-    <div class="mk-card" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-        <rect x="10" y="8" width="44" height="48" rx="4" stroke="rgba(200,200,200,0.8)" stroke-width="3.4" fill="none"/>
-        <path d="M20 14L22 20L27 20.5L23 24L24 30L20 26L16 30L17 24L13 20.5L18 20Z" stroke="rgba(200,200,200,0.8)" stroke-width="2.8" stroke-linejoin="round" fill="none"/>
-        <line x1="30" y1="19" x2="47" y2="19" stroke="rgba(220,220,220,0.7)" stroke-width="3" stroke-linecap="round"/>
-        <line x1="30" y1="28" x2="43" y2="28" stroke="rgba(220,220,220,0.6)" stroke-width="2.8" stroke-linecap="round"/>
-        <line x1="30" y1="37" x2="45" y2="37" stroke="rgba(220,220,220,0.6)" stroke-width="2.8" stroke-linecap="round"/>
-        <line x1="14" y1="49" x2="50" y2="49" stroke="rgba(200,200,200,0.5)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 3"/>
-      </svg>
+    <div class="mk-card">
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <rect x="10" y="8" width="44" height="48" rx="4" stroke="white" stroke-width="3.4" fill="none"/>
+  <path d="M20 14L22 20L27 20.5L23 24L24 30L20 26L16 30L17 24L13 20.5L18 20Z" stroke="white" stroke-width="2.8" stroke-linejoin="round" fill="none"/>
+  <line x1="30" y1="19" x2="47" y2="19" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="28" x2="43" y2="28" stroke="rgba(255,255,255,.8)" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="30" y1="37" x2="45" y2="37" stroke="rgba(255,255,255,.8)" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="14" y1="49" x2="50" y2="49" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+</svg>
     </div>
     <div class="dock-label">User</div>
   </div>
   <div class="dock-item" id="dockLong">
-    <div class="mk-card" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-        <path d="M14 20C14 16.7 16.7 14 20 14H44C47.3 14 50 16.7 50 20V34C50 37.3 47.3 40 44 40H28L20 48V40H20C16.7 40 14 37.3 14 34V20Z" stroke="rgba(200,200,200,0.8)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <line x1="22" y1="23" x2="42" y2="23" stroke="rgba(220,220,220,0.7)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="22" y1="31" x2="35" y2="31" stroke="rgba(220,220,220,0.6)" stroke-width="3" stroke-linecap="round"/>
-      </svg>
+    <div class="mk-card">
+     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <path d="M14 20C14 16.7 16.7 14 20 14H44C47.3 14 50 16.7 50 20V34C50 37.3 47.3 40 44 40H28L20 48V40H20C16.7 40 14 37.3 14 34V20Z" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <line x1="22" y1="23" x2="42" y2="23" stroke="rgba(255,255,255,.9)" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="22" y1="31" x2="35" y2="31" stroke="rgba(255,255,255,.8)" stroke-width="3" stroke-linecap="round"/>
+</svg>
     </div>
     <div class="dock-label">Char</div>
   </div>
   <div class="dock-item" id="dockCheck">
-    <div class="mk-card" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-        <rect x="14" y="6" width="38" height="46" rx="4" stroke="rgba(200,200,200,0.8)" stroke-width="3.4" fill="none"/>
-        <line x1="14" y1="6" x2="14" y2="52" stroke="rgba(200,200,200,0.8)" stroke-width="3.4" stroke-linecap="round"/>
-        <line x1="10" y1="10" x2="14" y2="10" stroke="rgba(200,200,200,0.8)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="10" y1="48" x2="14" y2="48" stroke="rgba(200,200,200,0.8)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="10" y1="10" x2="10" y2="48" stroke="rgba(200,200,200,0.8)" stroke-width="3.4" stroke-linecap="round"/>
-        <line x1="11" y1="16" x2="13" y2="16" stroke="rgba(180,180,180,0.4)" stroke-width="2"/>
-        <line x1="11" y1="22" x2="13" y2="22" stroke="rgba(180,180,180,0.4)" stroke-width="2"/>
-        <line x1="11" y1="28" x2="13" y2="28" stroke="rgba(180,180,180,0.4)" stroke-width="2"/>
-        <line x1="11" y1="34" x2="13" y2="34" stroke="rgba(180,180,180,0.4)" stroke-width="2"/>
-        <line x1="11" y1="40" x2="13" y2="40" stroke="rgba(180,180,180,0.4)" stroke-width="2"/>
-        <path d="M52 24H56V34H52" stroke="rgba(200,200,200,0.8)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <circle cx="54" cy="29" r="2" stroke="rgba(200,200,200,0.8)" stroke-width="2.4" fill="none"/>
-        <path d="M33 20L40 29L33 38L26 29Z" stroke="rgba(220,220,220,0.6)" stroke-width="2.6" stroke-linejoin="round" fill="none"/>
-        <circle cx="33" cy="29" r="3" stroke="rgba(220,220,220,0.5)" stroke-width="2.4" fill="none"/>
-        <path d="M10 52H14L52 52" stroke="rgba(220,220,220,0.5)" stroke-width="2.6" stroke-linecap="round"/>
-        <path d="M10 55H52" stroke="rgba(200,200,200,0.3)" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M10 58H52" stroke="rgba(200,200,200,0.2)" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+    <div class="mk-card">
+     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <rect x="14" y="6" width="38" height="46" rx="4" stroke="white" stroke-width="3.4" fill="none"/>
+  <line x1="14" y1="6" x2="14" y2="52" stroke="white" stroke-width="3.4" stroke-linecap="round"/>
+  <line x1="10" y1="10" x2="14" y2="10" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="10" y1="48" x2="14" y2="48" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="10" y1="10" x2="10" y2="48" stroke="white" stroke-width="3.4" stroke-linecap="round"/>
+  <line x1="11" y1="16" x2="13" y2="16" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+  <line x1="11" y1="22" x2="13" y2="22" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+  <line x1="11" y1="28" x2="13" y2="28" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+  <line x1="11" y1="34" x2="13" y2="34" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+  <line x1="11" y1="40" x2="13" y2="40" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+  <path d="M52 24H56V34H52" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="54" cy="29" r="2" stroke="white" stroke-width="2.4" fill="none"/>
+  <path d="M33 20L40 29L33 38L26 29Z" stroke="rgba(255,255,255,.7)" stroke-width="2.6" stroke-linejoin="round" fill="none"/>
+  <circle cx="33" cy="29" r="3" stroke="rgba(255,255,255,.6)" stroke-width="2.4" fill="none"/>
+  <path d="M10 52H14L52 52" stroke="rgba(255,255,255,.6)" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M10 55H52" stroke="rgba(255,255,255,.4)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M10 58H52" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>
+</svg>
     </div>
     <div class="dock-label">线下</div>
   </div>
-  <div class="dock-item" id="dockShort">
-    <div class="mk-card" style="background: rgba(128,128,128,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3);">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-        <rect x="15" y="8" width="34" height="48" rx="5" stroke="rgba(200,200,200,0.8)" stroke-width="3.4" fill="none"/>
-        <rect x="18" y="15" width="28" height="32" rx="2" stroke="rgba(220,220,220,0.6)" stroke-width="2.4" fill="none"/>
-        <line x1="27" y1="11" x2="37" y2="11" stroke="rgba(220,220,220,0.6)" stroke-width="2.6" stroke-linecap="round"/>
-        <circle cx="32" cy="50" r="2" stroke="rgba(220,220,220,0.6)" stroke-width="2.2" fill="none"/>
-        <line x1="22" y1="21" x2="42" y2="21" stroke="rgba(220,220,220,0.6)" stroke-width="2.4" stroke-linecap="round"/>
-        <line x1="22" y1="27" x2="35" y2="27" stroke="rgba(200,200,200,0.5)" stroke-width="2.2" stroke-linecap="round"/>
-        <line x1="22" y1="33" x2="40" y2="33" stroke="rgba(220,220,220,0.6)" stroke-width="2.4" stroke-linecap="round"/>
-        <line x1="22" y1="39" x2="32" y2="39" stroke="rgba(200,200,200,0.5)" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="dock-label">微信</div>
+<div class="dock-item" id="dockShort">
+  <div class="mk-card">
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <rect x="15" y="8" width="34" height="48" rx="5" stroke="white" stroke-width="3.4" fill="none"/>
+  <rect x="18" y="15" width="28" height="32" rx="2" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none"/>
+  <line x1="27" y1="11" x2="37" y2="11" stroke="rgba(255,255,255,.7)" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="32" cy="50" r="2" stroke="rgba(255,255,255,.7)" stroke-width="2.2" fill="none"/>
+  <line x1="22" y1="21" x2="42" y2="21" stroke="rgba(255,255,255,.7)" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="22" y1="27" x2="35" y2="27" stroke="rgba(255,255,255,.6)" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="22" y1="33" x2="40" y2="33" stroke="rgba(255,255,255,.7)" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="22" y1="39" x2="32" y2="39" stroke="rgba(255,255,255,.6)" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
   </div>
+  <div class="dock-label">微信</div>
+</div>
 </div>
 
 <!-- ====== 悬浮球 ====== -->
@@ -376,8 +345,14 @@ function imgFallback(img){
 </div>
 
 <!-- ====== 面板 ====== -->
+
+<!-- 字体设置 -->
 <div id="fontPanel" class="half-panel hidden"></div>
+
+<!-- 背景图片 -->
 <div id="bgPanel" class="half-panel hidden"></div>
+
+<!-- ====== Toast ====== -->
 <div id="toast" class="toast hidden"></div>
 
 <!-- ====== JS ====== -->
