@@ -41,6 +41,16 @@
     return 'wx_' + r;
   }
 
+  function applySchemeToCard(card, scheme) {
+    var h = scheme.hue, s = scheme.sat, l = scheme.lit, r = scheme.radius || 50;
+    card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
+    card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
+    card.style.borderRadius = r + 'px';
+    setPcVars(card, h, s, l);
+    var bgEl = card.querySelector('.p14-bg');
+    if (bgEl) bgEl.innerHTML = scheme.bg ? '<img src="' + scheme.bg + '">' : '';
+  }
+
   var BACK_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
   var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
 
@@ -55,7 +65,7 @@
 
     getSchemes: function(u) {
       if (!u.colorSchemes || !u.colorSchemes.length) {
-        u.colorSchemes = [{ hue: u.cardHue || 210, sat: u.cardSat || 80, lit: u.cardLit || 87, bg: u.cardBg || '', radius: u.cardRadius || 16 }];
+        u.colorSchemes = [{ hue: u.cardHue || 210, sat: u.cardSat || 80, lit: u.cardLit || 87, bg: u.cardBg || '', radius: u.cardRadius || 50 }];
       }
       return u.colorSchemes;
     },
@@ -106,7 +116,7 @@
         cardsHtml = User.list.map(function(u) {
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
           var scheme = User.getActiveScheme(u);
-          var hue = scheme.hue, sat = scheme.sat, lit = scheme.lit, radius = scheme.radius || 16;
+          var hue = scheme.hue, sat = scheme.sat, lit = scheme.lit, radius = scheme.radius || 50;
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = scheme.bg ? '<div class="p14-bg"><img src="' + App.esc(scheme.bg) + '"></div>' : '<div class="p14-bg"></div>';
@@ -119,9 +129,9 @@
             '<div class="p14-top"><div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
-                '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
+                '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '"><span>重置</span></div>' +
                 '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
-                '<div class="p14-side-btn p14-side-del" data-uid="' + u.id + '">删除</div>' +
+                '<div class="p14-side-btn p14-side-del" data-uid="' + u.id + '"><span>删除</span></div>' +
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen">' +
                 '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
@@ -134,20 +144,19 @@
                 '</div>' +
               '</div></div>' +
               '<div class="p14-right">' +
-                '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
+                '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '"><span>编辑</span></div>' +
                 '<div class="p14-dpad">' +
                   '<div class="p14-dpad-btn p14-dpad-up p14-dk" data-uid="' + u.id + '" data-dir="prev">♠</div>' +
                   '<div class="p14-dpad-btn p14-dpad-left p14-dk" data-uid="' + u.id + '" data-dir="next">♣</div>' +
                   '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
                   '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
                 '</div>' +
-                '<div class="p14-side-btn p14-side-save" data-uid="' + u.id + '">保存</div>' +
+                '<div class="p14-side-btn p14-side-save" data-uid="' + u.id + '"><span>保存</span></div>' +
               '</div>' +
             '</div>' +
             '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
               '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
-              '<div class="p14-panel-row" style="justify-content:center;"><span style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:1px;">配色 ' + (schemeIdx + 1) + ' / ' + schemeCount + '</span></div>' +
-              '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
+              '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><span class="p14-scheme-info" style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:1px;margin-left:auto;margin-right:8px;">配色 ' + (schemeIdx + 1) + '/' + schemeCount + '</span><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
               '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
                 '<div class="p14-slider-wrap">' +
                   '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
@@ -158,7 +167,7 @@
               '</div>' +
               '<div class="p14-panel-row" style="align-items:center;"><div class="p14-panel-label">圆角</div>' +
                 '<div class="p14-slider-wrap" style="flex:1;">' +
-                  '<div class="p14-slider-item"><span class="p14-slider-name">R</span><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="1" max="100" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
+                  '<div class="p14-slider-item"><span class="p14-slider-name">R</span><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="0" max="100" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -217,8 +226,12 @@
               var scheme = User.getActiveScheme(u);
               scheme.bg = src;
               User.save();
+              var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
+              if (card) {
+                var bgEl = card.querySelector('.p14-bg');
+                if (bgEl) bgEl.innerHTML = src ? '<img src="' + src + '">' : '';
+              }
             }
-            User.renderList();
           });
         });
       });
@@ -284,12 +297,17 @@
           schemes.push(newScheme);
           u.activeSchemeIdx = schemes.length - 1;
           User.save();
-          User.renderList();
+          /* 更新指示器文字 */
+          var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
+          if (card) {
+            var info = card.querySelector('.p14-scheme-info');
+            if (info) info.textContent = '配色 ' + schemes.length + '/' + schemes.length;
+          }
           App.showToast('已保存为第 ' + schemes.length + ' 套配色');
         });
       });
 
-      /* ♠♣ 切换配色 */
+      /* ♠♣ 切换配色（不重建DOM） */
       panel.querySelectorAll('[data-dir]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -307,7 +325,26 @@
           }
           u.activeSchemeIdx = idx;
           User.save();
-          User.renderList();
+
+          /* 直接更新卡片样式，不重建 */
+          var card = panel.querySelector('[data-uid="' + uid + '"]');
+          if (card) {
+            var scheme = schemes[idx];
+            applySchemeToCard(card, scheme);
+            /* 更新滑块 */
+            var hueSlider = card.querySelector('.p14-hue');
+            var satSlider = card.querySelector('.p14-sat');
+            var litSlider = card.querySelector('.p14-lit');
+            var radiusSlider = card.querySelector('.p14-radius');
+            if (hueSlider) { hueSlider.value = scheme.hue; card.querySelector('.p14-hue-val').textContent = scheme.hue; }
+            if (satSlider) { satSlider.value = scheme.sat; card.querySelector('.p14-sat-val').textContent = scheme.sat; }
+            if (litSlider) { litSlider.value = scheme.lit; card.querySelector('.p14-lit-val').textContent = scheme.lit; }
+            if (radiusSlider) { radiusSlider.value = scheme.radius || 50; card.querySelector('.p14-radius-val').textContent = (scheme.radius || 50) + 'px'; }
+            var preview = card.querySelector('.p14-color-preview');
+            if (preview) preview.style.background = 'hsl(' + scheme.hue + ',' + scheme.sat + '%,' + scheme.lit + '%)';
+            var info = card.querySelector('.p14-scheme-info');
+            if (info) info.textContent = '配色 ' + (idx + 1) + '/' + schemes.length;
+          }
           App.showToast('配色 ' + (idx + 1) + ' / ' + schemes.length);
         });
       });
@@ -317,13 +354,27 @@
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (!confirm('确定重置当前配色？将恢复默认颜色并清除背景图。')) return;
-          var u = User.getById(btn.dataset.uid);
+          var uid = btn.dataset.uid;
+          var u = User.getById(uid);
           if (!u) return;
           var scheme = User.getActiveScheme(u);
           scheme.hue = 210; scheme.sat = 80; scheme.lit = 87;
-          scheme.bg = ''; scheme.radius = 16;
+          scheme.bg = ''; scheme.radius = 50;
           User.save();
-          User.renderList();
+          var card = panel.querySelector('[data-uid="' + uid + '"]');
+          if (card) {
+            applySchemeToCard(card, scheme);
+            var hueSlider = card.querySelector('.p14-hue');
+            var satSlider = card.querySelector('.p14-sat');
+            var litSlider = card.querySelector('.p14-lit');
+            var radiusSlider = card.querySelector('.p14-radius');
+            if (hueSlider) { hueSlider.value = 210; card.querySelector('.p14-hue-val').textContent = '210'; }
+            if (satSlider) { satSlider.value = 80; card.querySelector('.p14-sat-val').textContent = '80'; }
+            if (litSlider) { litSlider.value = 87; card.querySelector('.p14-lit-val').textContent = '87'; }
+            if (radiusSlider) { radiusSlider.value = 50; card.querySelector('.p14-radius-val').textContent = '50px'; }
+            var preview = card.querySelector('.p14-color-preview');
+            if (preview) preview.style.background = 'hsl(210,80%,87%)';
+          }
           App.showToast('已重置');
         });
       });
@@ -342,6 +393,7 @@
           var menu = document.createElement('div');
           menu.id = 'userDelMenu';
           menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+
           var schemes = User.getSchemes(u);
           var schemeIdx = User.getActiveSchemeIdx(u);
 
@@ -374,7 +426,24 @@
                 schemes.splice(schemeIdx, 1);
                 u.activeSchemeIdx = Math.min(schemeIdx, schemes.length - 1);
                 User.save();
-                User.renderList();
+                /* 直接更新卡片 */
+                var card = panel.querySelector('[data-uid="' + uid + '"]');
+                if (card) {
+                  var newScheme = User.getActiveScheme(u);
+                  applySchemeToCard(card, newScheme);
+                  var hueSlider = card.querySelector('.p14-hue');
+                  var satSlider = card.querySelector('.p14-sat');
+                  var litSlider = card.querySelector('.p14-lit');
+                  var radiusSlider = card.querySelector('.p14-radius');
+                  if (hueSlider) { hueSlider.value = newScheme.hue; card.querySelector('.p14-hue-val').textContent = newScheme.hue; }
+                  if (satSlider) { satSlider.value = newScheme.sat; card.querySelector('.p14-sat-val').textContent = newScheme.sat; }
+                  if (litSlider) { litSlider.value = newScheme.lit; card.querySelector('.p14-lit-val').textContent = newScheme.lit; }
+                  if (radiusSlider) { radiusSlider.value = newScheme.radius || 50; card.querySelector('.p14-radius-val').textContent = (newScheme.radius || 50) + 'px'; }
+                  var preview = card.querySelector('.p14-color-preview');
+                  if (preview) preview.style.background = 'hsl(' + newScheme.hue + ',' + newScheme.sat + '%,' + newScheme.lit + '%)';
+                  var info = card.querySelector('.p14-scheme-info');
+                  if (info) info.textContent = '配色 ' + (User.getActiveSchemeIdx(u) + 1) + '/' + schemes.length;
+                }
                 App.showToast('已删除配色');
               }
             });
@@ -413,8 +482,9 @@
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
-      var old = App.$('#userProfilePanel');
-      if (old) old.remove();
+      /* 关闭已有的编辑页（不经过列表页） */
+      var oldPP = App.$('#userProfilePanel');
+      if (oldPP) oldPP.remove();
 
       var pp = document.createElement('div');
       pp.id = 'userProfilePanel';
@@ -475,18 +545,14 @@
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         closeProfile();
-        if (!User.list.length) {
-          setTimeout(function() { User.close(); }, 100);
-        } else {
-          User.renderList();
-        }
       });
 
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        closeProfile();
-        setTimeout(function() { User.renderProfile(eid); }, 100);
+        /* 直接重新打开编辑页，不经过列表 */
+        pp.remove();
+        User.renderProfile(eid);
         App.showToast('已解除封存');
       });
 
@@ -574,7 +640,7 @@
         if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
       } else {
         data.id = 'user-' + Date.now();
-        data.colorSchemes = [{ hue: 210, sat: 80, lit: 87, bg: '', radius: 16 }];
+        data.colorSchemes = [{ hue: 210, sat: 80, lit: 87, bg: '', radius: 50 }];
         data.activeSchemeIdx = 0;
         User.list.push(data);
         User.save();
@@ -616,13 +682,8 @@
         pp.style.opacity = '0';
         setTimeout(function() {
           if (pp.parentNode) pp.remove();
-          var panel = App.$('#userPanel');
-          if (panel) {
-            User.renderList();
-            panel.style.display = 'flex';
-            panel.style.transform = 'translateX(0)';
-            panel.style.opacity = '1';
-          }
+          /* 刷新列表（此时列表面板已经在底下了，不会闪） */
+          User.renderList();
         }, 350);
       }, 1500);
     },
