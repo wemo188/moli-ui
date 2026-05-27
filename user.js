@@ -299,7 +299,7 @@
       pp.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
 
       pp.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             BACK_ICON +
           '</div>' +
@@ -344,10 +344,17 @@
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
       });
 
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
-        pp.style.transform = 'translateX(0)';
-        pp.style.opacity = '1';
-      }); });
+      if (User._skipAnimation) {
+  pp.style.transition = 'none';
+  pp.style.transform = 'translateX(0)';
+  pp.style.opacity = '1';
+  User._skipAnimation = false;
+} else {
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+    pp.style.transform = 'translateX(0)';
+    pp.style.opacity = '1';
+  }); });
+}
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         pp.style.transform = 'translateX(100%)';
@@ -359,11 +366,14 @@
       pp.querySelector('#upRebuild').addEventListener('click', function() {
   var eid = this.dataset.editId;
   if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-  var archiveEl = App.$('#archivePanel');
-  if (archiveEl) archiveEl.style.visibility = 'hidden';
+  // 关掉过渡动画，直接替换
+  pp.style.transition = 'none';
+  pp.style.transform = 'translateX(0)';
+  pp.style.opacity = '1';
   if (pp.parentNode) pp.remove();
+  // 创建新面板时也不要动画
+  User._skipAnimation = true;
   User.renderProfile(eid);
-  if (archiveEl) archiveEl.style.visibility = '';
   App.showToast('已解除封存');
 });
 
