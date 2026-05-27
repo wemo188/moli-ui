@@ -86,7 +86,7 @@
             bgImgHtml +
             '<div class="p14-top">' +
               '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
-              '<div class="p14-screen-badge" style="margin-left:auto;display:flex;align-items:center;gap:4px;"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
+              '<div class="p14-screen-badge" style="position:static;margin-left:auto;display:flex;align-items:center;gap:4px;"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
             '</div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
@@ -357,12 +357,15 @@
       });
 
       pp.querySelector('#upRebuild').addEventListener('click', function() {
-        var eid = this.dataset.editId;
-        if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        if (pp.parentNode) pp.remove();
-        User.renderProfile(eid);
-        App.showToast('已解除封存');
-      });
+  var eid = this.dataset.editId;
+  if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
+  var archiveEl = App.$('#archivePanel');
+  if (archiveEl) archiveEl.style.visibility = 'hidden';
+  if (pp.parentNode) pp.remove();
+  User.renderProfile(eid);
+  if (archiveEl) archiveEl.style.visibility = '';
+  App.showToast('已解除封存');
+});
 
       pp.querySelectorAll('.up-expand-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -596,19 +599,23 @@
             '<div style="font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">档案存储</div>' +
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
-         '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:12px;margin-top:14px;">' +
+        '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:10px;margin-top:6px;">' +
   '<div id="archiveTabUser" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-    '<svg viewBox="0 0 140 80" style="width:100%;height:auto;display:block;">' +
-      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V70 C131 72.5 129.5 74 127 74 H12.5 C10 74 8 72.5 8 70 Z" fill="#666"/>' +
-      '<rect x="16" y="24" width="108" height="42" rx="3" fill="#fff"/>' +
-      '<text x="70" y="50" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1a1a" font-family="sans-serif" letter-spacing="4">用户</text>' +
+    '<svg viewBox="0 0 140 60" style="width:100%;height:auto;display:block;">' +
+      '<defs><pattern id="diagU" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/></pattern></defs>' +
+      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="#666"/>' +
+      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="url(#diagU)"/>' +
+      '<rect x="14" y="20" width="111" height="30" rx="2" fill="#fff"/>' +
+      '<text x="70" y="39" text-anchor="middle" font-size="12" font-weight="800" fill="#1a1a1a" font-family="inherit" letter-spacing="3">用户</text>' +
     '</svg>' +
   '</div>' +
   '<div id="archiveTabChar" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-    '<svg viewBox="0 0 140 80" style="width:100%;height:auto;display:block;">' +
-      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V70 C131 72.5 129.5 74 127 74 H12.5 C10 74 8 72.5 8 70 Z" fill="#ddd"/>' +
-      '<rect x="16" y="24" width="108" height="42" rx="3" fill="#fff"/>' +
-      '<text x="70" y="50" text-anchor="middle" font-size="14" font-weight="800" fill="#999" font-family="sans-serif" letter-spacing="4">角色</text>' +
+    '<svg viewBox="0 0 140 60" style="width:100%;height:auto;display:block;">' +
+      '<defs><pattern id="diagC" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/></pattern></defs>' +
+      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="#ddd"/>' +
+      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="url(#diagC)"/>' +
+      '<rect x="14" y="20" width="111" height="30" rx="2" fill="#fff"/>' +
+      '<text x="70" y="39" text-anchor="middle" font-size="12" font-weight="800" fill="#999" font-family="inherit" letter-spacing="3">角色</text>' +
     '</svg>' +
   '</div>' +
 '</div>' +
@@ -647,9 +654,9 @@
   var panelUser = App.$('#archivePanelUser');
   var panelChar = App.$('#archivePanelChar');
   if (tab === 'user') {
-    tabUser.querySelector('path').setAttribute('fill', '#666');
+    tabUser.querySelectorAll('path')[0].setAttribute('fill', '#666');
     tabUser.querySelector('text').setAttribute('fill', '#1a1a1a');
-    tabChar.querySelector('path').setAttribute('fill', '#ddd');
+    tabChar.querySelectorAll('path')[0].setAttribute('fill', '#ddd');
     tabChar.querySelector('text').setAttribute('fill', '#999');
     panelUser.style.transform = 'translateX(0)';
     panelUser.style.opacity = '1';
@@ -657,9 +664,9 @@
     panelChar.style.opacity = '0';
     User.renderListInto(panelUser);
   } else {
-    tabChar.querySelector('path').setAttribute('fill', '#666');
+    tabChar.querySelectorAll('path')[0].setAttribute('fill', '#666');
     tabChar.querySelector('text').setAttribute('fill', '#1a1a1a');
-    tabUser.querySelector('path').setAttribute('fill', '#ddd');
+    tabUser.querySelectorAll('path')[0].setAttribute('fill', '#ddd');
     tabUser.querySelector('text').setAttribute('fill', '#999');
     panelChar.style.transform = 'translateX(0)';
     panelChar.style.opacity = '1';
