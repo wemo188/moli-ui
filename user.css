@@ -52,17 +52,17 @@
 .up-bar-bot { height: 3px; background: linear-gradient(90deg, #d4d4d4 25%, #1a1a1a 25%, #1a1a1a 75%, #d4d4d4 75%); }
 .up-card-head { padding: 14px 18px 10px; border-bottom: 1px dashed #e0e0e0; }
 .up-card-head-sub { font-size: 9px; color: #bbb; letter-spacing: 3px; margin-bottom: 2px; }
-.up-card-head-title { font-size: 20px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }
+.up-card-head-title { font-size: 23px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }
 .up-avatar-area { display: flex; justify-content: center; padding: 14px 0 6px; }
 .up-avatar-box { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 2px solid #1a1a1a; background: #f5f5f5; cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
 .up-avatar-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .up-avatar-box svg { width: 22px; height: 22px; stroke: #ccc; fill: none; stroke-width: 1.5; }
 .up-sign-area { padding: 4px 18px 8px; text-align: center; }
-.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 14px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }
+.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 15px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }
 .up-sign-area input::placeholder { color: #ccc; }
-.up-sign-italic { font-style: italic; font-size: 13px; color: #999; text-align: center; }
+.up-sign-italic { font-style: italic; font-size: 14px; color: #999; text-align: center; }
 .up-name-area { padding: 8px 18px 0; }
-.up-name-label { font-size: 12px; color: #999; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+.up-name-label { font-size: 15px; color: #999; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
 .up-name-label::before { content: ''; width: 3px; height: 3px; background: #1a1a1a; }
 .up-name-input { width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 700; color: #1a1a1a; outline: none; font-family: inherit; padding: 3px 0 5px; box-sizing: border-box; }
 .up-name-input::placeholder { color: #ccc; font-weight: 400; }
@@ -72,9 +72,9 @@
 .up-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
 .up-field-dot { width: 3px; height: 3px; background: #1a1a1a; }
 .up-field-key { font-size: 12px; color: #999; letter-spacing: 2px; font-weight: 600; }
-.up-field-cn { font-size: 12px; color: #bbb; margin-left: 4px; }
+.up-field-cn { font-size: 13px; color: #bbb; margin-left: 4px; }
 .up-field-line { padding: 4px 0 5px; }
-.up-field-line input { width: 100%; border: none; background: transparent; font-size: 13px; color: #1a1a1a; font-weight: 500; outline: none; font-family: inherit; box-sizing: border-box; }
+.up-field-line input { width: 100%; border: none; background: transparent; font-size: 15px; color: #1a1a1a; font-weight: 500; outline: none; font-family: inherit; box-sizing: border-box; }
 .up-field-line input::placeholder { color: #ccc; font-weight: 400; }
 .up-field-line .up-text { font-size: 13px; color: #1a1a1a; font-weight: 500; }
 .up-field-underline { height: 1.5px; background: #1a1a1a; }
