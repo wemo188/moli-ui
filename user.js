@@ -299,7 +299,7 @@
       pp.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
 
       pp.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px;flex-shrink:0;background:#fff;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:20px 16px 10px;flex-shrink:0;background:#fff;">' +
           '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             BACK_ICON +
           '</div>' +
@@ -399,7 +399,7 @@
       editor.id = 'upExpandEditor';
       editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10004;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
       editor.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;flex-shrink:0;background:#fff;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;flex-shrink:0;background:#fff;">' +
           '<button id="upExpBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div style="font-size:13px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
           '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
@@ -629,7 +629,7 @@
     '<div class="t2-leds"><div class="t2-led t2-led-on" id="archiveLed1"></div><div class="t2-led" id="archiveLed2"></div></div>' +
   '</div>' +
 '</div>' +
-          '<div style="flex:1;overflow:hidden;position:relative;margin-top:20px;">' +
+          '<div style="flex:1;overflow:hidden;position:relative;margin-top:25px;">' +
             '<div id="archivePanelUser" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(0);opacity:1;"></div>' +
             '<div id="archivePanelChar" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(100%);opacity:0;"></div>' +
           '</div>';
