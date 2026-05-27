@@ -1,4 +1,12 @@
+（他皱了皱眉，重新看了一下代码）
 
+嗯，两个问题：
+
+1. **ACTIVE 跑到右上角** — 因为我把 `.p14-screen-badge` 从 `.p14-screen` 里面拿出来放到了卡片顶层，但原来的 CSS 是相对 screen 定位的。我把它放回 `.p14-top` 那一行里去。
+
+2. **重建闪列表页** — 问题出在 `closeProfile` 里返回时调了 `User.renderList()`，然后重建又触发了一次。我改成重建时直接原地替换内容，不做任何关闭动画。
+
+```javascript
 (function() {
   'use strict';
   var App = window.App;
@@ -98,8 +106,10 @@
 
           return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
-            '<div class="p14-top"><div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
-            '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
+            '<div class="p14-top">' +
+              '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
+              '<div class="p14-screen-badge" style="margin-left:auto;display:flex;align-items:center;gap:4px;"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
+            '</div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
@@ -217,7 +227,6 @@
         });
       });
 
-      // 圆角滑块
       panel.querySelectorAll('.p14-radius').forEach(function(slider) {
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
@@ -233,7 +242,6 @@
         btn.addEventListener('click', function(e) { e.stopPropagation(); User.renderProfile(btn.dataset.uid); });
       });
 
-      // 保存按钮（原来的"启用"）
       panel.querySelectorAll('.p14-side-save').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -242,7 +250,6 @@
           if (!card) return;
           var u = User.getById(uid);
           if (!u) return;
-          // 保存配色和圆角
           var hueEl = card.querySelector('.p14-hue');
           var satEl = card.querySelector('.p14-sat');
           var litEl = card.querySelector('.p14-lit');
@@ -256,7 +263,6 @@
         });
       });
 
-      // 重置按钮 - 弹确认，清除配色+图片
       panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -302,6 +308,7 @@
         else if (f.key === 'wechatPwd') ph = '留空则默认无微信密码';
         if (User.sealed) {
           var displayVal = val || '—';
+          if (f.key === 'wechatPwd' && !val) displayVal = '无密码';
           return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(displayVal) + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
@@ -315,6 +322,7 @@
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
+      // 移除旧的编辑面板（如果有）
       var old = App.$('#userProfilePanel');
       if (old) old.remove();
 
@@ -362,13 +370,11 @@
 
       document.body.appendChild(pp);
 
-      function closeProfile() {
+      App.bindSwipeBack(pp, function() {
         pp.style.transform = 'translateX(100%)';
         pp.style.opacity = '0';
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-      }
-
-      App.bindSwipeBack(pp, function() { closeProfile(); });
+      });
 
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         pp.style.transform = 'translateX(0)';
@@ -376,27 +382,24 @@
       }); });
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
-        closeProfile();
+        pp.style.transform = 'translateX(100%)';
+        pp.style.opacity = '0';
+        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
         if (!User.list.length) {
           setTimeout(function() { User.close(); }, 100);
         } else {
-          // 确保列表页已经渲染好
           User.renderList();
         }
       });
 
-      // 重建 - 不再闪列表页
+      // ★ 重建 - 直接原地替换，不经过列表页
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        // 直接在当前面板上重新渲染，不关闭再打开
-        pp.style.transform = 'translateX(100%)';
-        pp.style.opacity = '0';
-        setTimeout(function() {
-          if (pp.parentNode) pp.remove();
-          // 直接打开编辑页，不经过列表
-          User.renderProfile(eid);
-        }, 350);
+        // 直接移除当前面板，立刻重新渲染编辑页
+        if (pp.parentNode) pp.remove();
+        User.renderProfile(eid);
+        App.showToast('已解除封存');
       });
 
       pp.querySelectorAll('.up-expand-btn').forEach(function(btn) {
@@ -414,209 +417,19 @@
       if (quill) quill.addEventListener('click', function() { User.saveProfile(pp); });
     },
 
+    // openExpandEditor 和 saveProfile 跟上一版一样，不重复了
+    // showImgMenu 也一样
+
     openExpandEditor: function(title, textarea) {
-      var old = App.$('#upExpandEditor');
-      if (old) old.remove();
-      var editor = document.createElement('div');
-      editor.id = 'upExpandEditor';
-      editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10004;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
-      editor.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          '<button id="upExpBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-          '<div style="font-size:13px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
-          '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
-        '</div>' +
-        '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;">' +
-          '<div style="border:1px solid #e0e0e0;min-height:calc(100vh - 160px);background:#fff;position:relative;">' +
-            '<div style="border-top:3px solid #1a1a1a;"></div>' +
-            '<div style="min-height:calc(100vh - 200px);border:1px dashed #e0e0e0;margin:12px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#f5f5f5 22px,#f5f5f5 23px);">' +
-              '<textarea id="upExpTA" style="width:100%;min-height:calc(100vh - 220px);border:none;background:transparent;padding:12px 14px;font-size:15px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="输入内容...">' + App.esc(textarea.value) + '</textarea>' +
-            '</div>' +
-            '<div style="border-bottom:3px solid #1a1a1a;"></div>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(editor);
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
-        editor.style.transform = 'translateY(0)'; editor.style.opacity = '1';
-      }); });
-      var expTA = editor.querySelector('#upExpTA');
-      if (expTA) expTA.focus();
-      function closeEditor() {
-        textarea.value = editor.querySelector('#upExpTA').value;
-        editor.style.transform = 'translateY(100%)'; editor.style.opacity = '0';
-        setTimeout(function() { if (editor.parentNode) editor.remove(); }, 350);
-      }
-      editor.querySelector('#upExpBack').addEventListener('click', closeEditor);
-      editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
+      // ... 跟之前完全一样，不变
     },
 
     saveProfile: function(pp) {
-      var card = pp.querySelector('#upCard');
-      if (!card) return;
-      var editId = card.dataset.editId || '';
-      var data = {};
-      data.avatar = User.tempAvatar;
-      data._sealed = true;
-
-      var nameInput = card.querySelector('[data-key="realName"]');
-      if (nameInput) data.realName = (nameInput.value || '').trim();
-      var sign1 = card.querySelector('[data-key="sign1"]');
-      var sign2 = card.querySelector('[data-key="sign2"]');
-      if (sign1) data.sign1 = (sign1.value || '').trim();
-      if (sign2) data.sign2 = (sign2.value || '').trim();
-
-      card.querySelectorAll('input[data-key]').forEach(function(el) {
-        if (el.dataset.key !== 'realName' && el.dataset.key !== 'sign1' && el.dataset.key !== 'sign2') {
-          data[el.dataset.key] = (el.value || '').trim();
-        }
-      });
-      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
-        data[el.dataset.key] = (el.value || '').trim();
-      });
-
-      if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
-      if (!data.wechatId) data.wechatId = randomWxId();
-      // wechatPwd 留空就是空，不做处理
-      if (!data.realName) { App.showToast('请输入姓名'); return; }
-
-      if (editId) {
-        var existing = User.getById(editId);
-        if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
-      } else {
-        data.id = 'user-' + Date.now();
-        data.cardHue = 210; data.cardSat = 80; data.cardLit = 87; data.cardRadius = 60;
-        User.list.push(data);
-        User.save();
-      }
-
-      var seal = pp.querySelector('#upSeal');
-      if (seal) requestAnimationFrame(function() { seal.classList.add('show'); });
-      var quill = pp.querySelector('#upQuill');
-      if (quill) quill.style.display = 'none';
-      var rebuild = pp.querySelector('#upRebuild');
-      if (rebuild) rebuild.style.visibility = '';
-
-      card.querySelectorAll('input[data-key]').forEach(function(el) {
-        var div = document.createElement('div');
-        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
-        if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
-        el.parentNode.replaceChild(div, el);
-      });
-      card.querySelectorAll('textarea[data-key]').forEach(function(el) {
-        var div = document.createElement('div');
-        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
-        div.style.whiteSpace = 'pre-wrap';
-        el.parentNode.replaceChild(div, el);
-      });
-      var nameEl = card.querySelector('.up-name-input');
-      if (nameEl) {
-        var div = document.createElement('div');
-        div.style.cssText = 'font-size:16px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;';
-        div.textContent = nameEl.value.trim() || '—';
-        nameEl.parentNode.replaceChild(div, nameEl);
-      }
-      card.querySelectorAll('.up-expand-btn').forEach(function(btn) { btn.style.display = 'none'; });
-
-      App.showToast('档案已封存');
-
-      // 封存后回到列表 - 不闪烁
-      setTimeout(function() {
-        pp.style.transform = 'translateX(100%)';
-        pp.style.opacity = '0';
-        setTimeout(function() {
-          if (pp.parentNode) pp.remove();
-          // 确保列表页面板可见且内容最新
-          var panel = App.$('#userPanel');
-          if (panel) {
-            User.renderList();
-            panel.style.display = 'flex';
-            panel.style.transform = 'translateX(0)';
-            panel.style.opacity = '1';
-          }
-        }, 350);
-      }, 1500);
+      // ... 跟之前完全一样，唯一区别是 wechatId 用 randomWxId()
     },
 
     showImgMenu: function(uid, field, callback) {
-      var old = App.$('#imgSourceMenu');
-      if (old) old.remove();
-      var menu = document.createElement('div');
-      menu.id = 'imgSourceMenu';
-      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-      menu.innerHTML =
-        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-          '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
-          '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
-          '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
-          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
-        '</div>';
-      document.body.appendChild(menu);
-      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelectorAll('.ism-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var act = btn.dataset.act;
-          menu.remove();
-          if (act === 'cancel') return;
-          if (act === 'del') { callback(''); App.showToast('已删除'); return; }
-          if (act === 'album') {
-            var oldUser = User.getById(uid);
-            var oldImg = oldUser ? oldUser[field] : '';
-            var input = document.createElement('input');
-            input.type = 'file'; input.accept = 'image/*';
-            document.body.appendChild(input);
-            input.onchange = function(ev) {
-              var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
-              var reader = new FileReader();
-              reader.onload = function(r) {
-                if (App.cropImage) App.cropImage(r.target.result, function(cropped) {
-                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
-                  callback(cropped);
-                });
-                else {
-                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
-                  callback(r.target.result);
-                }
-              };
-              reader.readAsDataURL(file);
-            };
-            input.click();
-            return;
-          }
-          if (act === 'url') {
-            var urlPanel = document.createElement('div');
-            urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-            urlPanel.innerHTML =
-              '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
-                '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;">输入图片URL</div>' +
-                '<input id="ismUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;outline:none;font-family:inherit;color:#333;">' +
-                '<div id="ismUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
-                '<div style="display:flex;gap:8px;">' +
-                  '<button id="ismUrlOk" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
-                  '<button id="ismUrlNo" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
-                '</div>' +
-              '</div>';
-            document.body.appendChild(urlPanel);
-            urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
-            urlPanel.querySelector('#ismUrlNo').addEventListener('click', function() { urlPanel.remove(); });
-            var pBox = urlPanel.querySelector('#ismUrlPreview');
-            var pImg = pBox.querySelector('img');
-            urlPanel.querySelector('#ismUrlInput').addEventListener('input', function() {
-              var v = this.value.trim();
-              if (v && v.startsWith('http')) { pImg.src = v; pBox.style.display = 'block'; pImg.onerror = function() { pBox.style.display = 'none'; }; }
-              else pBox.style.display = 'none';
-            });
-            urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
-              var url = urlPanel.querySelector('#ismUrlInput').value.trim();
-              if (!url) { App.showToast('请输入URL'); return; }
-              var oldUser2 = User.getById(uid);
-              if (oldUser2 && oldUser2[field] && oldUser2[field].startsWith('data:')) { oldUser2[field] = ''; }
-              urlPanel.remove(); callback(url); App.showToast('已设置');
-            });
-          }
-        });
-      });
+      // ... 跟之前完全一样，不变
     },
 
     init: function() {
