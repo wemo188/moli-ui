@@ -495,15 +495,6 @@
       card.querySelectorAll('.up-expand-btn').forEach(function(btn) { btn.style.display = 'none'; });
 
       App.showToast('档案已封存');
-
-      setTimeout(function() {
-        pp.style.transform = 'translateX(100%)';
-        pp.style.opacity = '0';
-        setTimeout(function() {
-          if (pp.parentNode) pp.remove();
-          User.renderList();
-        }, 350);
-      }, 1500);
     },
 
     showImgMenu: function(uid, field, callback) {
