@@ -84,18 +84,18 @@
 
           return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
-            '<div class="p14-top">' +
-              '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
-              '<div class="p14-screen-badge" style="position:static;margin-left:auto;display:flex;align-items:center;gap:4px;"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
-            '</div>' +
+           '<div class="p14-top">' +
+  '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
+'</div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
                 '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
                 '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
               '</div>' +
-              '<div class="p14-screen-wrap"><div class="p14-screen">' +
-                '<div class="p14-screen-content">' +
+             '<div class="p14-screen-wrap"><div class="p14-screen">' +
+  '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
+  '<div class="p14-screen-content">' +
                   '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
                   '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
                     (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
@@ -599,24 +599,37 @@
             '<div style="font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">档案存储</div>' +
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
-        '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:10px;margin-top:6px;">' +
-  '<div id="archiveTabUser" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-    '<svg viewBox="0 0 140 60" style="width:100%;height:auto;display:block;">' +
-      '<defs><pattern id="diagU" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/></pattern></defs>' +
-      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="#666"/>' +
-      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="url(#diagU)"/>' +
-      '<rect x="14" y="20" width="111" height="30" rx="2" fill="#fff"/>' +
-      '<text x="70" y="39" text-anchor="middle" font-size="12" font-weight="800" fill="#1a1a1a" font-family="inherit" letter-spacing="3">用户</text>' +
-    '</svg>' +
-  '</div>' +
-  '<div id="archiveTabChar" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-    '<svg viewBox="0 0 140 60" style="width:100%;height:auto;display:block;">' +
-      '<defs><pattern id="diagC" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/></pattern></defs>' +
-      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="#ddd"/>' +
-      '<path d="M6 10 C6 7 8 5 10.5 5 H42 C44 5 45.5 6.5 46.5 8 L50 14 H129 C131 14 133 16 133 18 V53 C133 55 131 57 129 57 H10.5 C8 57 6 55 6 53 Z" fill="url(#diagC)"/>' +
-      '<rect x="14" y="20" width="111" height="30" rx="2" fill="#fff"/>' +
-      '<text x="70" y="39" text-anchor="middle" font-size="12" font-weight="800" fill="#999" font-family="inherit" letter-spacing="3">角色</text>' +
-    '</svg>' +
+       '<style>' +
+  '@keyframes t2Glow{0%,100%{box-shadow:0 0 3px rgba(200,200,200,0.3);}50%{box-shadow:0 0 8px rgba(200,200,200,0.5);}}' +
+  '.t2-wrap{margin:0 4px;background:linear-gradient(155deg,rgba(240,240,240,0.6),rgba(248,248,248,0.5) 25%,rgba(255,255,255,0.7) 45%,rgba(245,245,245,0.5) 65%,rgba(238,238,238,0.55));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(220,220,220,0.5);border-radius:14px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.04),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6);position:relative;overflow:hidden;}' +
+  '.t2-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:14px 14px 0 0;pointer-events:none;}' +
+  '.t2-inner{position:relative;display:flex;align-items:center;background:rgba(0,0,0,0.02);border-radius:10px;padding:3px;gap:3px;}' +
+  '.t2-deco{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:0 2px 0 4px;}' +
+  '.t2-deco-paw{width:18px;height:16px;position:relative;}' +
+  '.t2-deco-pp{position:absolute;border-radius:50%;}' +
+  '.t2-deco-main{width:9px;height:7px;border-radius:50%;bottom:0;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.12);border:0.8px solid rgba(0,0,0,0.08);}' +
+  '.t2-deco-t1{width:5px;height:5px;top:0;left:2px;background:rgba(0,0,0,0.1);border:0.8px solid rgba(0,0,0,0.06);}' +
+  '.t2-deco-t2{width:5px;height:5px;top:0;right:2px;background:rgba(0,0,0,0.1);border:0.8px solid rgba(0,0,0,0.06);}' +
+  '.t2-deco-t3{width:4px;height:4px;top:5px;left:0;background:rgba(0,0,0,0.08);border:0.8px solid rgba(0,0,0,0.05);}' +
+  '.t2-deco-t4{width:4px;height:4px;top:5px;right:0;background:rgba(0,0,0,0.08);border:0.8px solid rgba(0,0,0,0.05);}' +
+  '.t2-tabs{flex:1;display:flex;gap:3px;}' +
+  '.t2-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 12px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(0,0,0,0.28);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.25s ease;position:relative;z-index:1;border:1.5px solid transparent;}' +
+  '.t2-tab:active{transform:scale(0.95);}' +
+  '.t2-tab.t2-active{background:rgba(255,255,255,0.9);border-color:rgba(0,0,0,0.06);color:rgba(0,0,0,0.7);box-shadow:0 2px 8px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02),inset 0 1px 1px rgba(255,255,255,0.8);}' +
+  '.t2-tab-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:transparent;transition:background 0.25s;}' +
+  '.t2-tab.t2-active .t2-tab-dot{background:rgba(0,0,0,0.2);animation:t2Glow 2s ease-in-out infinite;}' +
+  '.t2-leds{display:flex;flex-direction:column;gap:4px;margin:0 6px 0 4px;}' +
+  '.t2-led{width:4px;height:4px;border-radius:50%;background:rgba(0,0,0,0.08);transition:background 0.3s,box-shadow 0.3s;}' +
+  '.t2-led-on{background:rgba(0,0,0,0.25);box-shadow:0 0 4px rgba(0,0,0,0.1);}' +
+'</style>' +
+'<div class="t2-wrap" style="margin:6px 16px 0;">' +
+  '<div class="t2-inner">' +
+    '<div class="t2-deco"><div class="t2-deco-paw"><div class="t2-deco-pp t2-deco-t1"></div><div class="t2-deco-pp t2-deco-t2"></div><div class="t2-deco-pp t2-deco-t3"></div><div class="t2-deco-pp t2-deco-t4"></div><div class="t2-deco-pp t2-deco-main"></div></div></div>' +
+    '<div class="t2-tabs" id="archiveTabs">' +
+      '<div class="t2-tab t2-active" id="archiveTabUser" data-tab="user"><span>user</span><div class="t2-tab-dot"></div></div>' +
+      '<div class="t2-tab" id="archiveTabChar" data-tab="char"><span>char</span><div class="t2-tab-dot"></div></div>' +
+    '</div>' +
+    '<div class="t2-leds"><div class="t2-led t2-led-on" id="archiveLed1"></div><div class="t2-led" id="archiveLed2"></div></div>' +
   '</div>' +
 '</div>' +
           '<div style="flex:1;overflow:hidden;position:relative;margin-top:12px;">' +
@@ -651,23 +664,25 @@
   App.archive.currentTab = tab;
   var tabUser = App.$('#archiveTabUser');
   var tabChar = App.$('#archiveTabChar');
+  var led1 = App.$('#archiveLed1');
+  var led2 = App.$('#archiveLed2');
   var panelUser = App.$('#archivePanelUser');
   var panelChar = App.$('#archivePanelChar');
   if (tab === 'user') {
-    tabUser.querySelectorAll('path')[0].setAttribute('fill', '#666');
-    tabUser.querySelector('text').setAttribute('fill', '#1a1a1a');
-    tabChar.querySelectorAll('path')[0].setAttribute('fill', '#ddd');
-    tabChar.querySelector('text').setAttribute('fill', '#999');
+    tabUser.classList.add('t2-active');
+    tabChar.classList.remove('t2-active');
+    if (led1) { led1.classList.add('t2-led-on'); }
+    if (led2) { led2.classList.remove('t2-led-on'); }
     panelUser.style.transform = 'translateX(0)';
     panelUser.style.opacity = '1';
     panelChar.style.transform = 'translateX(100%)';
     panelChar.style.opacity = '0';
     User.renderListInto(panelUser);
   } else {
-    tabChar.querySelectorAll('path')[0].setAttribute('fill', '#666');
-    tabChar.querySelector('text').setAttribute('fill', '#1a1a1a');
-    tabUser.querySelectorAll('path')[0].setAttribute('fill', '#ddd');
-    tabUser.querySelector('text').setAttribute('fill', '#999');
+    tabChar.classList.add('t2-active');
+    tabUser.classList.remove('t2-active');
+    if (led2) { led2.classList.add('t2-led-on'); }
+    if (led1) { led1.classList.remove('t2-led-on'); }
     panelChar.style.transform = 'translateX(0)';
     panelChar.style.opacity = '1';
     panelUser.style.transform = 'translateX(-100%)';
