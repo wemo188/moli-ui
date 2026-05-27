@@ -580,6 +580,7 @@
     },
 
     init: function() {
+  try {
       User.load();
       if (!App.$('#userPanel')) {
         var panel = document.createElement('div');
@@ -709,5 +710,7 @@
     }
   };
 
+} catch(e) { alert('JS错误: ' + e.message); }
   App.register('user', User);
+},
 })();
