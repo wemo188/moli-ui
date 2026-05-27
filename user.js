@@ -693,37 +693,32 @@
 },
 // 在这里加上滑动切换
 initSwipe: function() {
-  var container = App.$('#archivePanel');
-  if (!container) return;
-  var startX = 0;
-  var startY = 0;
+  var panelUser = App.$('#archivePanelUser');
+  var panelChar = App.$('#archivePanelChar');
+  var startX = 0, startY = 0;
 
-  container.addEventListener('touchstart', function(e) {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }, { passive: true });
+  function addSwipe(el) {
+    if (!el) return;
+    el.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
 
-  container.addEventListener('touchend', function(e) {
-    var endX = e.changedTouches[0].clientX;
-    var endY = e.changedTouches[0].clientY;
-    var dx = endX - startX;
-    var dy = endY - startY;
-
-    // 横向滑动距离大于50且大于纵向，才算有效
-    if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) {
-        // 左滑 → 切换到 char
-        if (App.archive.currentTab === 'user') {
+    el.addEventListener('touchend', function(e) {
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0 && App.archive.currentTab === 'user') {
           App.archive.switchTab('char');
-        }
-      } else {
-        // 右滑 → 切换到 user
-        if (App.archive.currentTab === 'char') {
+        } else if (dx > 0 && App.archive.currentTab === 'char') {
           App.archive.switchTab('user');
         }
       }
-    }
-  });
+    });
+  }
+
+  addSwipe(panelUser);
+  addSwipe(panelChar);
 }
       };
 
