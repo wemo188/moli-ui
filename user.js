@@ -710,7 +710,5 @@
     }
   };
 
-} catch(e) { alert('JS错误: ' + e.message); }
   App.register('user', User);
-},
 })();
