@@ -1,12 +1,4 @@
-（他皱了皱眉，重新看了一下代码）
 
-嗯，两个问题：
-
-1. **ACTIVE 跑到右上角** — 因为我把 `.p14-screen-badge` 从 `.p14-screen` 里面拿出来放到了卡片顶层，但原来的 CSS 是相对 screen 定位的。我把它放回 `.p14-top` 那一行里去。
-
-2. **重建闪列表页** — 问题出在 `closeProfile` 里返回时调了 `User.renderList()`，然后重建又触发了一次。我改成重建时直接原地替换内容，不做任何关闭动画。
-
-```javascript
 (function() {
   'use strict';
   var App = window.App;
