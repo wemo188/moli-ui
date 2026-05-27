@@ -597,11 +597,24 @@
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
           '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:10px;margin-top:12px;">' +
-  '<div id="archiveTabUser" style="flex:1;padding:12px 0 10px;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04);border:2.5px solid #1a1a1a;border-radius:6px;position:relative;">' +
-    '<span style="position:relative;z-index:1;color:#1a1a1a;">用 户</span>' +
+  '<div id="archiveTabUser" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;">' +
+    '<svg viewBox="0 0 140 70" preserveAspectRatio="none" style="width:100%;height:50px;display:block;">' +
+      '<defs><pattern id="diagU" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/></pattern></defs>' +
+      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="url(#diagU)" stroke="none"/>' +
+      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="rgba(0,0,0,0.03)" stroke="none"/>' +
+      '<rect x="30" y="24" width="80" height="32" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2"/>' +
+    '</svg>' +
+    '<span style="position:absolute;top:2px;left:16px;font-size:10px;color:#1a1a1a;">★</span>' +
+    '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:8px;font-size:13px;font-weight:800;letter-spacing:3px;color:#1a1a1a;">用 户</span>' +
   '</div>' +
-  '<div id="archiveTabChar" style="flex:1;padding:12px 0 10px;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px);border:2.5px solid #1a1a1a;border-radius:6px;position:relative;">' +
-    '<span style="position:relative;z-index:1;color:#999;">角 色</span>' +
+  '<div id="archiveTabChar" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;">' +
+    '<svg viewBox="0 0 140 70" preserveAspectRatio="none" style="width:100%;height:50px;display:block;">' +
+      '<defs><pattern id="diagC" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/></pattern></defs>' +
+      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="url(#diagC)" stroke="none"/>' +
+      '<rect x="30" y="24" width="80" height="32" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2"/>' +
+    '</svg>' +
+    '<span style="position:absolute;top:2px;left:16px;font-size:10px;color:#1a1a1a;">★</span>' +
+    '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:8px;font-size:13px;font-weight:800;letter-spacing:3px;color:#999;">角 色</span>' +
   '</div>' +
 '</div>' +
           '<div style="flex:1;overflow:hidden;position:relative;margin-top:12px;">' +
@@ -638,21 +651,19 @@
   var tabChar = App.$('#archiveTabChar');
   var panelUser = App.$('#archivePanelUser');
   var panelChar = App.$('#archivePanelChar');
+  var userText = tabUser.querySelector('span:last-child');
+  var charText = tabChar.querySelector('span:last-child');
   if (tab === 'user') {
-    tabUser.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04)';
-    tabUser.querySelector('span').style.color = '#1a1a1a';
-    tabChar.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px)';
-    tabChar.querySelector('span').style.color = '#999';
+    userText.style.color = '#1a1a1a';
+    charText.style.color = '#999';
     panelUser.style.transform = 'translateX(0)';
     panelUser.style.opacity = '1';
     panelChar.style.transform = 'translateX(100%)';
     panelChar.style.opacity = '0';
     User.renderListInto(panelUser);
   } else {
-    tabChar.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04)';
-    tabChar.querySelector('span').style.color = '#1a1a1a';
-    tabUser.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px)';
-    tabUser.querySelector('span').style.color = '#999';
+    charText.style.color = '#1a1a1a';
+    userText.style.color = '#999';
     panelChar.style.transform = 'translateX(0)';
     panelChar.style.opacity = '1';
     panelUser.style.transform = 'translateX(-100%)';
