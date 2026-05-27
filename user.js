@@ -41,16 +41,6 @@
     return 'wx_' + r;
   }
 
-  function applySchemeToCard(card, scheme) {
-    var h = scheme.hue, s = scheme.sat, l = scheme.lit, r = scheme.radius || 50;
-    card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
-    card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
-    card.style.borderRadius = r + 'px';
-    setPcVars(card, h, s, l);
-    var bgEl = card.querySelector('.p14-bg');
-    if (bgEl) bgEl.innerHTML = scheme.bg ? '<img src="' + scheme.bg + '">' : '';
-  }
-
   var BACK_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
   var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
 
@@ -62,22 +52,6 @@
     load: function() { User.list = App.LS.get('userList') || []; },
     save: function() { App.LS.set('userList', User.list); },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
-
-    getSchemes: function(u) {
-      if (!u.colorSchemes || !u.colorSchemes.length) {
-        u.colorSchemes = [{ hue: u.cardHue || 210, sat: u.cardSat || 80, lit: u.cardLit || 87, bg: u.cardBg || '', radius: u.cardRadius || 50 }];
-      }
-      return u.colorSchemes;
-    },
-    getActiveSchemeIdx: function(u) {
-      return u.activeSchemeIdx || 0;
-    },
-    getActiveScheme: function(u) {
-      var schemes = User.getSchemes(u);
-      var idx = User.getActiveSchemeIdx(u);
-      if (idx >= schemes.length) idx = 0;
-      return schemes[idx];
-    },
 
     open: function() {
       User.load();
@@ -115,26 +89,24 @@
       } else {
         cardsHtml = User.list.map(function(u) {
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-          var scheme = User.getActiveScheme(u);
-          var hue = scheme.hue, sat = scheme.sat, lit = scheme.lit, radius = scheme.radius || 50;
+          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
+          var radius = u.cardRadius != null ? u.cardRadius : 60;
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
-          var bgImgHtml = scheme.bg ? '<div class="p14-bg"><img src="' + App.esc(scheme.bg) + '"></div>' : '<div class="p14-bg"></div>';
+          var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
           var vars = pcVars(hue, sat, lit);
-          var schemeIdx = User.getActiveSchemeIdx(u);
-          var schemeCount = User.getSchemes(u).length;
 
           return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
             '<div class="p14-top"><div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
+            '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
-                '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '"><span>重置</span></div>' +
+                '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
                 '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
-                '<div class="p14-side-btn p14-side-del" data-uid="' + u.id + '"><span>删除</span></div>' +
+                '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen">' +
-                '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
                 '<div class="p14-screen-content">' +
                   '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
                   '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
@@ -144,19 +116,19 @@
                 '</div>' +
               '</div></div>' +
               '<div class="p14-right">' +
-                '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '"><span>编辑</span></div>' +
+                '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
                 '<div class="p14-dpad">' +
-                  '<div class="p14-dpad-btn p14-dpad-up p14-dk" data-uid="' + u.id + '" data-dir="prev">♠</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-left p14-dk" data-uid="' + u.id + '" data-dir="next">♣</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
                   '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
                   '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
                 '</div>' +
-                '<div class="p14-side-btn p14-side-save" data-uid="' + u.id + '"><span>保存</span></div>' +
+                '<div class="p14-side-btn p14-side-save" data-uid="' + u.id + '">保存</div>' +
               '</div>' +
             '</div>' +
             '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
               '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
-              '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><span class="p14-scheme-info" style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:1px;margin-left:auto;margin-right:8px;">配色 ' + (schemeIdx + 1) + '/' + schemeCount + '</span><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
+              '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
               '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
                 '<div class="p14-slider-wrap">' +
                   '<div class="p14-slider-item"><span class="p14-slider-name">H</span><input type="range" class="p14-slider p14-hue" data-uid="' + u.id + '" min="0" max="360" value="' + hue + '"><span class="p14-slider-val p14-hue-val">' + hue + '</span></div>' +
@@ -167,7 +139,7 @@
               '</div>' +
               '<div class="p14-panel-row" style="align-items:center;"><div class="p14-panel-label">圆角</div>' +
                 '<div class="p14-slider-wrap" style="flex:1;">' +
-                  '<div class="p14-slider-item"><span class="p14-slider-name">R</span><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="50" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
+                  '<div class="p14-slider-item"><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="50" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -189,7 +161,6 @@
     },
 
     _bindListEvents: function(panel) {
-      /* 猫爪展开面板 */
       panel.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -203,7 +174,6 @@
         });
       });
 
-      /* 头像点击 */
       panel.querySelectorAll('.p14-avatar-wrap').forEach(function(wrap) {
         wrap.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -216,27 +186,18 @@
         });
       });
 
-      /* 背景上传 */
       panel.querySelectorAll('.p14-bg-upload-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          User.showImgMenu(btn.dataset.uid, 'schemeBg', function(src) {
+          User.showImgMenu(btn.dataset.uid, 'cardBg', function(src) {
             var u = User.getById(btn.dataset.uid);
-            if (u) {
-              var scheme = User.getActiveScheme(u);
-              scheme.bg = src;
-              User.save();
-              var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
-              if (card) {
-                var bgEl = card.querySelector('.p14-bg');
-                if (bgEl) bgEl.innerHTML = src ? '<img src="' + src + '">' : '';
-              }
-            }
+            if (u) { u.cardBg = src; User.save(); }
+            var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
+            if (card) { var bg = card.querySelector('.p14-bg'); if (bg) bg.innerHTML = src ? '<img src="' + src + '">' : ''; }
           });
         });
       });
 
-      /* HSL 滑块 */
       panel.querySelectorAll('.p14-hue,.p14-sat,.p14-lit').forEach(function(slider) {
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
@@ -253,201 +214,72 @@
           card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
           setPcVars(card, h, s, l);
-          var u = User.getById(uid);
-          if (u) {
-            var scheme = User.getActiveScheme(u);
-            scheme.hue = +h; scheme.sat = +s; scheme.lit = +l;
-            User.save();
-          }
         });
       });
 
-      /* 圆角滑块 */
+      // 圆角滑块
       panel.querySelectorAll('.p14-radius').forEach(function(slider) {
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
           var card = panel.querySelector('[data-uid="' + uid + '"]');
           if (!card) return;
-          var r = slider.value;
-          card.querySelector('.p14-radius-val').textContent = r + 'px';
-          card.style.borderRadius = r + 'px';
-          var u = User.getById(uid);
-          if (u) {
-            var scheme = User.getActiveScheme(u);
-            scheme.radius = +r;
-            User.save();
-          }
+          var val = slider.value;
+          card.querySelector('.p14-radius-val').textContent = val + 'px';
+          card.style.borderRadius = val + 'px';
         });
       });
 
-      /* 编辑按钮 */
       panel.querySelectorAll('.p14-side-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) { e.stopPropagation(); User.renderProfile(btn.dataset.uid); });
       });
 
-      /* 保存按钮（保存当前配色为新方案） */
+      // 保存按钮（原来的"启用"）
       panel.querySelectorAll('.p14-side-save').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var u = User.getById(btn.dataset.uid);
-          if (!u) return;
-          var schemes = User.getSchemes(u);
-          var current = User.getActiveScheme(u);
-          var newScheme = JSON.parse(JSON.stringify(current));
-          schemes.push(newScheme);
-          u.activeSchemeIdx = schemes.length - 1;
-          User.save();
-          /* 更新指示器文字 */
-          var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
-          if (card) {
-            var info = card.querySelector('.p14-scheme-info');
-            if (info) info.textContent = '配色 ' + schemes.length + '/' + schemes.length;
-          }
-          App.showToast('已保存为第 ' + schemes.length + ' 套配色');
-        });
-      });
-
-      /* ♠♣ 切换配色（不重建DOM） */
-      panel.querySelectorAll('[data-dir]').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
           var uid = btn.dataset.uid;
-          if (!uid) return;
+          var card = panel.querySelector('[data-uid="' + uid + '"]');
+          if (!card) return;
           var u = User.getById(uid);
           if (!u) return;
-          var schemes = User.getSchemes(u);
-          if (schemes.length <= 1) { App.showToast('只有一套配色'); return; }
-          var idx = User.getActiveSchemeIdx(u);
-          if (btn.dataset.dir === 'prev') {
-            idx = (idx - 1 + schemes.length) % schemes.length;
-          } else {
-            idx = (idx + 1) % schemes.length;
-          }
-          u.activeSchemeIdx = idx;
+          // 保存配色和圆角
+          var hueEl = card.querySelector('.p14-hue');
+          var satEl = card.querySelector('.p14-sat');
+          var litEl = card.querySelector('.p14-lit');
+          var radiusEl = card.querySelector('.p14-radius');
+          if (hueEl) u.cardHue = +hueEl.value;
+          if (satEl) u.cardSat = +satEl.value;
+          if (litEl) u.cardLit = +litEl.value;
+          if (radiusEl) u.cardRadius = +radiusEl.value;
           User.save();
-
-          /* 直接更新卡片样式，不重建 */
-          var card = panel.querySelector('[data-uid="' + uid + '"]');
-          if (card) {
-            var scheme = schemes[idx];
-            applySchemeToCard(card, scheme);
-            /* 更新滑块 */
-            var hueSlider = card.querySelector('.p14-hue');
-            var satSlider = card.querySelector('.p14-sat');
-            var litSlider = card.querySelector('.p14-lit');
-            var radiusSlider = card.querySelector('.p14-radius');
-            if (hueSlider) { hueSlider.value = scheme.hue; card.querySelector('.p14-hue-val').textContent = scheme.hue; }
-            if (satSlider) { satSlider.value = scheme.sat; card.querySelector('.p14-sat-val').textContent = scheme.sat; }
-            if (litSlider) { litSlider.value = scheme.lit; card.querySelector('.p14-lit-val').textContent = scheme.lit; }
-            if (radiusSlider) { radiusSlider.value = scheme.radius || 50; card.querySelector('.p14-radius-val').textContent = (scheme.radius || 50) + 'px'; }
-            var preview = card.querySelector('.p14-color-preview');
-            if (preview) preview.style.background = 'hsl(' + scheme.hue + ',' + scheme.sat + '%,' + scheme.lit + '%)';
-            var info = card.querySelector('.p14-scheme-info');
-            if (info) info.textContent = '配色 ' + (idx + 1) + '/' + schemes.length;
-          }
-          App.showToast('配色 ' + (idx + 1) + ' / ' + schemes.length);
+          App.showToast('已保存配色');
         });
       });
 
-      /* 重置按钮 */
+      // 重置按钮 - 弹确认，清除配色+图片
       panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定重置当前配色？将恢复默认颜色并清除背景图。')) return;
-          var uid = btn.dataset.uid;
-          var u = User.getById(uid);
+          if (!confirm('确定重置？将清除配色、背景图和头像。')) return;
+          var u = User.getById(btn.dataset.uid);
           if (!u) return;
-          var scheme = User.getActiveScheme(u);
-          scheme.hue = 210; scheme.sat = 80; scheme.lit = 87;
-          scheme.bg = ''; scheme.radius = 50;
+          u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardRadius = 60;
+          u.cardBg = ''; u.avatar = '';
           User.save();
-          var card = panel.querySelector('[data-uid="' + uid + '"]');
-          if (card) {
-            applySchemeToCard(card, scheme);
-            var hueSlider = card.querySelector('.p14-hue');
-            var satSlider = card.querySelector('.p14-sat');
-            var litSlider = card.querySelector('.p14-lit');
-            var radiusSlider = card.querySelector('.p14-radius');
-            if (hueSlider) { hueSlider.value = 210; card.querySelector('.p14-hue-val').textContent = '210'; }
-            if (satSlider) { satSlider.value = 80; card.querySelector('.p14-sat-val').textContent = '80'; }
-            if (litSlider) { litSlider.value = 87; card.querySelector('.p14-lit-val').textContent = '87'; }
-            if (radiusSlider) { radiusSlider.value = 50; card.querySelector('.p14-radius-val').textContent = '50px'; }
-            var preview = card.querySelector('.p14-color-preview');
-            if (preview) preview.style.background = 'hsl(210,80%,87%)';
-          }
+          User.renderList();
           App.showToast('已重置');
         });
       });
 
-      /* 删除按钮 */
-      panel.querySelectorAll('.p14-side-del').forEach(function(btn) {
+      panel.querySelectorAll('.p14-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var uid = btn.dataset.uid;
-          var u = User.getById(uid);
-          if (!u) return;
-
-          var old = App.$('#userDelMenu');
-          if (old) old.remove();
-
-          var menu = document.createElement('div');
-          menu.id = 'userDelMenu';
-          menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-
-          var schemes = User.getSchemes(u);
-          var schemeIdx = User.getActiveSchemeIdx(u);
-
-          menu.innerHTML =
-            '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-              '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">删除选项</div>' +
-              '<button type="button" data-act="user" style="padding:12px;border:1.5px solid #e8a0a0;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#c9706b;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除用户</button>' +
-              '<button type="button" data-act="scheme" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;' + (schemes.length <= 1 ? 'opacity:0.4;pointer-events:none;' : '') + '">删除当前配色（第 ' + (schemeIdx + 1) + ' 套）</button>' +
-              '<button type="button" data-act="cancel" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">取消</button>' +
-            '</div>';
-
-          document.body.appendChild(menu);
-          menu.addEventListener('click', function(ev) { if (ev.target === menu) menu.remove(); });
-
-          menu.querySelectorAll('button[data-act]').forEach(function(b) {
-            b.addEventListener('click', function(ev) {
-              ev.stopPropagation();
-              var act = b.dataset.act;
-              menu.remove();
-              if (act === 'cancel') return;
-              if (act === 'user') {
-                if (!confirm('确定删除用户「' + (u.realName || '未命名') + '」？此操作不可恢复。')) return;
-                User.list = User.list.filter(function(x) { return x.id !== uid; });
-                User.save();
-                if (!User.list.length) User.close();
-                else User.renderList();
-                App.showToast('已删除用户');
-              } else if (act === 'scheme') {
-                if (schemes.length <= 1) { App.showToast('至少保留一套配色'); return; }
-                schemes.splice(schemeIdx, 1);
-                u.activeSchemeIdx = Math.min(schemeIdx, schemes.length - 1);
-                User.save();
-                /* 直接更新卡片 */
-                var card = panel.querySelector('[data-uid="' + uid + '"]');
-                if (card) {
-                  var newScheme = User.getActiveScheme(u);
-                  applySchemeToCard(card, newScheme);
-                  var hueSlider = card.querySelector('.p14-hue');
-                  var satSlider = card.querySelector('.p14-sat');
-                  var litSlider = card.querySelector('.p14-lit');
-                  var radiusSlider = card.querySelector('.p14-radius');
-                  if (hueSlider) { hueSlider.value = newScheme.hue; card.querySelector('.p14-hue-val').textContent = newScheme.hue; }
-                  if (satSlider) { satSlider.value = newScheme.sat; card.querySelector('.p14-sat-val').textContent = newScheme.sat; }
-                  if (litSlider) { litSlider.value = newScheme.lit; card.querySelector('.p14-lit-val').textContent = newScheme.lit; }
-                  if (radiusSlider) { radiusSlider.value = newScheme.radius || 50; card.querySelector('.p14-radius-val').textContent = (newScheme.radius || 50) + 'px'; }
-                  var preview = card.querySelector('.p14-color-preview');
-                  if (preview) preview.style.background = 'hsl(' + newScheme.hue + ',' + newScheme.sat + '%,' + newScheme.lit + '%)';
-                  var info = card.querySelector('.p14-scheme-info');
-                  if (info) info.textContent = '配色 ' + (User.getActiveSchemeIdx(u) + 1) + '/' + schemes.length;
-                }
-                App.showToast('已删除配色');
-              }
-            });
-          });
+          if (!confirm('确定删除？')) return;
+          User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
+          User.save();
+          if (!User.list.length) User.close();
+          else User.renderList();
+          App.showToast('已删除');
         });
       });
     },
@@ -466,10 +298,11 @@
         var val = user[f.key] || '';
         var ph = '';
         if (f.key === 'phone') ph = '输入十位虚拟数字，或者留空随机生成';
-        else if (f.key === 'wechatId') ph = '留空随机生成（wx_四位英文）';
+        else if (f.key === 'wechatId') ph = '留空随机生成 wx_xxxx';
         else if (f.key === 'wechatPwd') ph = '留空则默认无微信密码';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+          var displayVal = val || '—';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(displayVal) + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
       }).join('');
@@ -482,9 +315,8 @@
         return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-box"><button class="up-expand-btn" data-field="' + f.key + '" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea data-key="' + f.key + '" placeholder="输入内容...">' + App.esc(val) + '</textarea></div></div>';
       }).join('');
 
-      /* 关闭已有的编辑页（不经过列表页） */
-      var oldPP = App.$('#userProfilePanel');
-      if (oldPP) oldPP.remove();
+      var old = App.$('#userProfilePanel');
+      if (old) old.remove();
 
       var pp = document.createElement('div');
       pp.id = 'userProfilePanel';
@@ -545,15 +377,26 @@
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         closeProfile();
+        if (!User.list.length) {
+          setTimeout(function() { User.close(); }, 100);
+        } else {
+          // 确保列表页已经渲染好
+          User.renderList();
+        }
       });
 
+      // 重建 - 不再闪列表页
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
-        /* 直接重新打开编辑页，不经过列表 */
-        pp.remove();
-        User.renderProfile(eid);
-        App.showToast('已解除封存');
+        // 直接在当前面板上重新渲染，不关闭再打开
+        pp.style.transform = 'translateX(100%)';
+        pp.style.opacity = '0';
+        setTimeout(function() {
+          if (pp.parentNode) pp.remove();
+          // 直接打开编辑页，不经过列表
+          User.renderProfile(eid);
+        }, 350);
       });
 
       pp.querySelectorAll('.up-expand-btn').forEach(function(btn) {
@@ -633,6 +476,7 @@
 
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       if (!data.wechatId) data.wechatId = randomWxId();
+      // wechatPwd 留空就是空，不做处理
       if (!data.realName) { App.showToast('请输入姓名'); return; }
 
       if (editId) {
@@ -640,8 +484,7 @@
         if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
       } else {
         data.id = 'user-' + Date.now();
-        data.colorSchemes = [{ hue: 210, sat: 80, lit: 87, bg: '', radius: 50 }];
-        data.activeSchemeIdx = 0;
+        data.cardHue = 210; data.cardSat = 80; data.cardLit = 87; data.cardRadius = 60;
         User.list.push(data);
         User.save();
       }
@@ -655,8 +498,7 @@
 
       card.querySelectorAll('input[data-key]').forEach(function(el) {
         var div = document.createElement('div');
-        div.className = 'up-text';
-        div.textContent = el.value.trim() || '—';
+        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
         if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
         el.parentNode.replaceChild(div, el);
       });
@@ -677,13 +519,20 @@
 
       App.showToast('档案已封存');
 
+      // 封存后回到列表 - 不闪烁
       setTimeout(function() {
         pp.style.transform = 'translateX(100%)';
         pp.style.opacity = '0';
         setTimeout(function() {
           if (pp.parentNode) pp.remove();
-          /* 刷新列表（此时列表面板已经在底下了，不会闪） */
-          User.renderList();
+          // 确保列表页面板可见且内容最新
+          var panel = App.$('#userPanel');
+          if (panel) {
+            User.renderList();
+            panel.style.display = 'flex';
+            panel.style.transform = 'translateX(0)';
+            panel.style.opacity = '1';
+          }
         }, 350);
       }, 1500);
     },
@@ -697,14 +546,14 @@
       menu.innerHTML =
         '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
           '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button type="button" data-act="album" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
-          '<button type="button" data-act="url" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
-          '<button type="button" data-act="del" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除图片</button>' +
-          '<button type="button" data-act="cancel" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">取消</button>' +
+          '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
+          '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
+          '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
+          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
         '</div>';
       document.body.appendChild(menu);
       menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelectorAll('button[data-act]').forEach(function(btn) {
+      menu.querySelectorAll('.ism-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var act = btn.dataset.act;
@@ -712,6 +561,8 @@
           if (act === 'cancel') return;
           if (act === 'del') { callback(''); App.showToast('已删除'); return; }
           if (act === 'album') {
+            var oldUser = User.getById(uid);
+            var oldImg = oldUser ? oldUser[field] : '';
             var input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
             document.body.appendChild(input);
@@ -719,8 +570,14 @@
               var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
               var reader = new FileReader();
               reader.onload = function(r) {
-                if (App.cropImage) App.cropImage(r.target.result, function(cropped) { callback(cropped); });
-                else callback(r.target.result);
+                if (App.cropImage) App.cropImage(r.target.result, function(cropped) {
+                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
+                  callback(cropped);
+                });
+                else {
+                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
+                  callback(r.target.result);
+                }
               };
               reader.readAsDataURL(file);
             };
@@ -753,6 +610,8 @@
             urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
               var url = urlPanel.querySelector('#ismUrlInput').value.trim();
               if (!url) { App.showToast('请输入URL'); return; }
+              var oldUser2 = User.getById(uid);
+              if (oldUser2 && oldUser2[field] && oldUser2[field].startsWith('data:')) { oldUser2[field] = ''; }
               urlPanel.remove(); callback(url); App.showToast('已设置');
             });
           }
