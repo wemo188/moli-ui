@@ -580,7 +580,6 @@
     },
 
     init: function() {
-  try {
       User.load();
       if (!App.$('#userPanel')) {
         var panel = document.createElement('div');
