@@ -597,13 +597,13 @@
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
           '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:10px;margin-top:12px;">' +
-            '<div id="archiveTabUser" style="flex:1;padding:10px 0;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;background:#1a1a1a;position:relative;overflow:hidden;">' +
-              '<span style="position:relative;z-index:1;color:#fff;">用 户</span>' +
-            '</div>' +
-            '<div id="archiveTabChar" style="flex:1;padding:10px 0;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 6px);border:1.5px solid rgba(0,0,0,0.06);position:relative;overflow:hidden;">' +
-              '<span style="position:relative;z-index:1;color:#aaa;">角 色</span>' +
-            '</div>' +
-          '</div>' +
+  '<div id="archiveTabUser" style="flex:1;padding:12px 0 10px;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04);border:2.5px solid #1a1a1a;border-radius:6px;position:relative;">' +
+    '<span style="position:relative;z-index:1;color:#1a1a1a;">用 户</span>' +
+  '</div>' +
+  '<div id="archiveTabChar" style="flex:1;padding:12px 0 10px;text-align:center;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px);border:2.5px solid #1a1a1a;border-radius:6px;position:relative;">' +
+    '<span style="position:relative;z-index:1;color:#999;">角 色</span>' +
+  '</div>' +
+'</div>' +
           '<div style="flex:1;overflow:hidden;position:relative;margin-top:12px;">' +
             '<div id="archivePanelUser" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(0);opacity:1;"></div>' +
             '<div id="archivePanelChar" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(100%);opacity:0;"></div>' +
@@ -633,37 +633,33 @@
           setTimeout(function() { panel.style.display = 'none'; }, 350);
         },
         switchTab: function(tab) {
-          App.archive.currentTab = tab;
-          var tabUser = App.$('#archiveTabUser');
-          var tabChar = App.$('#archiveTabChar');
-          var panelUser = App.$('#archivePanelUser');
-          var panelChar = App.$('#archivePanelChar');
-          if (tab === 'user') {
-            tabUser.style.background = '#1a1a1a';
-            tabUser.style.border = 'none';
-            tabUser.querySelector('span').style.color = '#fff';
-            tabChar.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 6px)';
-            tabChar.style.border = '1.5px solid rgba(0,0,0,0.06)';
-            tabChar.querySelector('span').style.color = '#aaa';
-            panelUser.style.transform = 'translateX(0)';
-            panelUser.style.opacity = '1';
-            panelChar.style.transform = 'translateX(100%)';
-            panelChar.style.opacity = '0';
-            User.renderListInto(panelUser);
-          } else {
-            tabChar.style.background = '#1a1a1a';
-            tabChar.style.border = 'none';
-            tabChar.querySelector('span').style.color = '#fff';
-            tabUser.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 6px)';
-            tabUser.style.border = '1.5px solid rgba(0,0,0,0.06)';
-            tabUser.querySelector('span').style.color = '#aaa';
-            panelChar.style.transform = 'translateX(0)';
-            panelChar.style.opacity = '1';
-            panelUser.style.transform = 'translateX(-100%)';
-            panelUser.style.opacity = '0';
-            if (App.character) App.character.renderListInto(panelChar);
-          }
-        }
+  App.archive.currentTab = tab;
+  var tabUser = App.$('#archiveTabUser');
+  var tabChar = App.$('#archiveTabChar');
+  var panelUser = App.$('#archivePanelUser');
+  var panelChar = App.$('#archivePanelChar');
+  if (tab === 'user') {
+    tabUser.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04)';
+    tabUser.querySelector('span').style.color = '#1a1a1a';
+    tabChar.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px)';
+    tabChar.querySelector('span').style.color = '#999';
+    panelUser.style.transform = 'translateX(0)';
+    panelUser.style.opacity = '1';
+    panelChar.style.transform = 'translateX(100%)';
+    panelChar.style.opacity = '0';
+    User.renderListInto(panelUser);
+  } else {
+    tabChar.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px),rgba(0,0,0,0.04)';
+    tabChar.querySelector('span').style.color = '#1a1a1a';
+    tabUser.style.background = 'repeating-linear-gradient(-45deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1.5px,transparent 1.5px,transparent 6px)';
+    tabUser.querySelector('span').style.color = '#999';
+    panelChar.style.transform = 'translateX(0)';
+    panelChar.style.opacity = '1';
+    panelUser.style.transform = 'translateX(-100%)';
+    panelUser.style.opacity = '0';
+    if (App.character) App.character.renderListInto(panelChar);
+  }
+}
       };
 
       App.safeOn('#archiveClose', 'click', function() { App.archive.close(); });
