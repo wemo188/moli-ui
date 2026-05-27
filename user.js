@@ -605,10 +605,10 @@
   '.t2-wrap{margin:0 4px;background:linear-gradient(155deg,rgba(240,240,240,0.6),rgba(248,248,248,0.5) 25%,rgba(255,255,255,0.7) 45%,rgba(245,245,245,0.5) 65%,rgba(238,238,238,0.55));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(220,220,220,0.5);border-radius:14px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.04),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6);position:relative;overflow:hidden;}' +
   '.t2-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:14px 14px 0 0;pointer-events:none;}' +
   '.t2-inner{position:relative;display:flex;align-items:center;background:rgba(0,0,0,0.02);border-radius:10px;padding:3px;gap:3px;}' +
- '.t2-deco{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:0 0 0 2px;position:relative;}' +
+'.t4-deco{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:0 0 0 2px;position:relative;}' +
 '@keyframes t4Twinkle{0%,100%{opacity:0.6;transform:scale(1) rotate(0deg);}50%{opacity:1;transform:scale(1.08) rotate(8deg);}}' +
-'.t2-deco .t4-star-main{width:16px;height:16px;animation:t4Twinkle 3s ease-in-out infinite;}' +
-'.t2-deco .t4-star-main svg{width:100%;height:100%;fill:rgba(0,0,0,0.15);stroke:rgba(0,0,0,0.1);stroke-width:0.5;}' +
+'.t4-deco .t4-star-main{width:16px;height:16px;animation:t4Twinkle 3s ease-in-out infinite;}' +
+'.t4-deco .t4-star-main svg{width:100%;height:100%;fill:rgba(0,0,0,0.15);stroke:rgba(0,0,0,0.1);stroke-width:0.5;}' +
   '.t2-tabs{flex:1;display:flex;gap:3px;}' +
   '.t2-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 12px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(0,0,0,0.28);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.25s ease;position:relative;z-index:1;border:1.5px solid transparent;}' +
   '.t2-tab:active{transform:scale(0.95);}' +
