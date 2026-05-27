@@ -399,7 +399,7 @@
       editor.id = 'upExpandEditor';
       editor.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10004;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateY(100%);opacity:0;overflow:hidden;';
       editor.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;flex-shrink:0;background:#fff;">' +
           '<button id="upExpBack" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
           '<div style="font-size:13px;font-weight:700;color:#2a4262;letter-spacing:1.5px;">' + App.esc(title) + '</div>' +
           '<button id="upExpDone" type="button" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#1e50a2;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
@@ -593,7 +593,7 @@
         archive.id = 'archivePanel';
         archive.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:none;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
         archive.innerHTML =
-          '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.04);">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.04);">' +
             '<div id="archiveClose" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
               '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>' +
             '</div>' +
