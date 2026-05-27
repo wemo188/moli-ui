@@ -686,6 +686,40 @@
     panelUser.style.opacity = '0';
     if (App.character) App.character.renderListInto(panelChar);
   }
+},
+// 在这里加上滑动切换
+initSwipe: function() {
+  var container = App.$('#archivePanel');
+  if (!container) return;
+  var startX = 0;
+  var startY = 0;
+
+  container.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  container.addEventListener('touchend', function(e) {
+    var endX = e.changedTouches[0].clientX;
+    var endY = e.changedTouches[0].clientY;
+    var dx = endX - startX;
+    var dy = endY - startY;
+
+    // 横向滑动距离大于50且大于纵向，才算有效
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) {
+        // 左滑 → 切换到 char
+        if (App.archive.currentTab === 'user') {
+          App.archive.switchTab('char');
+        }
+      } else {
+        // 右滑 → 切换到 user
+        if (App.archive.currentTab === 'char') {
+          App.archive.switchTab('user');
+        }
+      }
+    }
+  });
 }
       };
 
@@ -705,5 +739,6 @@
     }
   };
 
+  App.archive.initSwipe();
   App.register('user', User);
 })();
