@@ -690,35 +690,6 @@
     panelUser.style.opacity = '0';
     if (App.character) App.character.renderListInto(panelChar);
   }
-},
-// 在这里加上滑动切换
-initSwipe: function() {
-  var panelUser = App.$('#archivePanelUser');
-  var panelChar = App.$('#archivePanelChar');
-  var startX = 0, startY = 0;
-
-  function addSwipe(el) {
-    if (!el) return;
-    el.addEventListener('touchstart', function(e) {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-
-    el.addEventListener('touchend', function(e) {
-      var dx = e.changedTouches[0].clientX - startX;
-      var dy = e.changedTouches[0].clientY - startY;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0 && App.archive.currentTab === 'user') {
-          App.archive.switchTab('char');
-        } else if (dx > 0 && App.archive.currentTab === 'char') {
-          App.archive.switchTab('user');
-        }
-      }
-    });
-  }
-
-  addSwipe(panelUser);
-  addSwipe(panelChar);
 }
       };
 
@@ -738,6 +709,5 @@ initSwipe: function() {
     }
   };
 
-  App.archive.initSwipe();
   App.register('user', User);
 })();
