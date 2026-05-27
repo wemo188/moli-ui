@@ -596,25 +596,14 @@
             '<div style="font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">档案存储</div>' +
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
-          '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:10px;margin-top:12px;">' +
-  '<div id="archiveTabUser" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;">' +
-    '<svg viewBox="0 0 140 70" preserveAspectRatio="none" style="width:100%;height:50px;display:block;">' +
-      '<defs><pattern id="diagU" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/></pattern></defs>' +
-      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="url(#diagU)" stroke="none"/>' +
-      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="rgba(0,0,0,0.03)" stroke="none"/>' +
-      '<rect x="30" y="24" width="80" height="32" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2"/>' +
-    '</svg>' +
-    '<span style="position:absolute;top:2px;left:16px;font-size:10px;color:#1a1a1a;">★</span>' +
-    '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:8px;font-size:13px;font-weight:800;letter-spacing:3px;color:#1a1a1a;">用 户</span>' +
+          '<div style="display:flex;flex-shrink:0;padding:0 16px;gap:12px;margin-top:14px;">' +
+  '<div id="archiveTabUser" style="flex:1;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
+    '<div style="position:absolute;top:0;left:12px;width:32px;height:14px;background:repeating-linear-gradient(-45deg,rgba(0,0,0.06) 0px,rgba(0,0,0,0.06) 1.5px,rgba(200,200,200,0.2) 1.5px,rgba(200,200,200,0.2) 6px);border:2px solid #1a1a1a;border-bottom:none;border-radius:6px 6px 0 0;"></div>' +
+    '<div style="margin-top:12px;padding:14px 0;text-align:center;font-size:13px;font-weight:800;letter-spacing:3px;color:#1a1a;background:repeating-linear-gradient(-45deg,rgba(0,0,0.06) 0px,rgba(0,0,0,0.06) 1.5px,rgba(200,200,200,0.2) 1.5px,rgba(200,200,200,0.2) 6px);border:2px solid #1a1a1a;border-radius:4px;">用 户</div>' +
   '</div>' +
-  '<div id="archiveTabChar" style="flex:1;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;">' +
-    '<svg viewBox="0 0 140 70" preserveAspectRatio="none" style="width:100%;height:50px;display:block;">' +
-      '<defs><pattern id="diagC" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/></pattern></defs>' +
-      '<path d="M8 8 C8 5.5 10 4 12.5 4 H55 C57.5 4 59 5.5 60 7.5 L64 16 H127 C129.5 16 131 17.5 131 20 V62 C131 64.5 129.5 66 127 66 H12.5 C10 66 8 64.5 8 62 Z" fill="url(#diagC)" stroke="none"/>' +
-      '<rect x="30" y="24" width="80" height="32" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2"/>' +
-    '</svg>' +
-    '<span style="position:absolute;top:2px;left:16px;font-size:10px;color:#1a1a1a;">★</span>' +
-    '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:8px;font-size:13px;font-weight:800;letter-spacing:3px;color:#999;">角 色</span>' +
+  '<div id="archiveTabChar" style="flex:1;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
+    '<div style="position:absolute;top:0;left:12px;width:32px;height:14px;background:repeating-linear-gradient(-45deg,rgba(0,0,0.03) 0px,rgba(0,0,0,0.03) 1.5px,transparent 6px);border:2px solid #1a1a1a;border-bottom:none;border-radius:6px 6px 0 0;"></div>' +
+    '<div style="margin-top:12px;padding:14px 0;text-align:center;font-size:13px;font-weight:800;letter-spacing:3px;color:#999;background:repeating-linear-gradient(-45deg,rgba(0,0,0,0.03) 0px,rgba(0,0,0,0.03) 1.5px,transparent 6px);border:2px solid #1a1a1a;border-radius:4px;">角 色</div>' +
   '</div>' +
 '</div>' +
           '<div style="flex:1;overflow:hidden;position:relative;margin-top:12px;">' +
@@ -651,19 +640,23 @@
   var tabChar = App.$('#archiveTabChar');
   var panelUser = App.$('#archivePanelUser');
   var panelChar = App.$('#archivePanelChar');
-  var userText = tabUser.querySelector('span:last-child');
-  var charText = tabChar.querySelector('span:last-child');
+  var activeGrad = 'repeating-linear-gradient(-45deg,rgba(0,0,0.06) 0px,rgba(0,0,0.06) 1.5px,rgba(200,200,200,0.2) 1.5px,rgba(200,200,200,0.2) 6px)';
+  var inactiveGrad = 'repeating-linear-gradient(-45deg,rgba(0,0,0.03) 0px,rgba(0,0,0.03) 1.5px,transparent 1.5px,transparent 6px)';
   if (tab === 'user') {
-    userText.style.color = '#1a1a1a';
-    charText.style.color = '#999';
+    tabUser.querySelectorAll('div').forEach(function(d) { d.style.background = activeGrad; });
+    tabUser.querySelector('div:last-child').style.color = '#1a1a1a';
+    tabChar.querySelectorAll('div').forEach(function(d) { d.style.background = inactiveGrad; });
+    tabChar.querySelector('div:last-child').style.color = '#999';
     panelUser.style.transform = 'translateX(0)';
     panelUser.style.opacity = '1';
     panelChar.style.transform = 'translateX(100%)';
     panelChar.style.opacity = '0';
     User.renderListInto(panelUser);
   } else {
-    charText.style.color = '#1a1a1a';
-    userText.style.color = '#999';
+    tabChar.querySelectorAll('div').forEach(function(d) { d.style.background = activeGrad; });
+    tabChar.querySelector('div:last-child').style.color = '#1a1a';
+    tabUser.querySelectorAll('div').forEach(function(d) { d.style.background = inactiveGrad; });
+    tabUser.querySelector('div:last-child').style.color = '#999';
     panelChar.style.transform = 'translateX(0)';
     panelChar.style.opacity = '1';
     panelUser.style.transform = 'translateX(-100%)';
