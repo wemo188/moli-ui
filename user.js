@@ -609,6 +609,10 @@
 '@keyframes t4Twinkle{0%,100%{opacity:0.6;transform:scale(1) rotate(0deg);}50%{opacity:1;transform:scale(1.08) rotate(8deg);}}' +
 '.t4-deco .t4-star-main{width:16px;height:16px;animation:t4Twinkle 3s ease-in-out infinite;}' +
 '.t4-deco .t4-star-main svg{width:100%;height:100%;fill:rgba(0,0,0,0.15);stroke:rgba(0,0,0,0.1);stroke-width:0.5;}' +
+'.t4-star-sm{position:absolute;width:7px;height:7px;}' +
+'.t4-star-sm svg{width:100%;height:100%;fill:rgba(0,0,0,0.1);stroke:none;}' +
+'.t4-star-s1{top:-1px;right:0;animation:t4TwinkleAlt 2.6s ease-in-out 0.4s infinite;}' +
+'@keyframes t4TwinkleAlt{0%,100%{opacity:0.5;transform:scale(1) rotate(0deg);}50%{opacity:0.9;transform:scale(1.1) rotate(-6deg);}}' +
   '.t2-tabs{flex:1;display:flex;gap:3px;}' +
   '.t2-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 12px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(0,0,0,0.28);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.25s ease;position:relative;z-index:1;border:1.5px solid transparent;}' +
   '.t2-tab:active{transform:scale(0.95);}' +
@@ -621,7 +625,7 @@
 '</style>' +
 '<div class="t2-wrap" style="margin:6px 16px 0;">' +
   '<div class="t2-inner">' +
-'<div class="t4-deco"><div class="t4-star-main"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div></div>' +
+'<div class="t4-deco"><div class="t4-star-main"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div><div class="t4-star-sm t4-star-s1"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div></div>' +
     '<div class="t2-tabs" id="archiveTabs">' +
       '<div class="t2-tab t2-active" id="archiveTabUser" data-tab="user"><span>user</span><div class="t2-tab-dot"></div></div>' +
       '<div class="t2-tab" id="archiveTabChar" data-tab="char"><span>char</span><div class="t2-tab-dot"></div></div>' +
@@ -706,7 +710,7 @@ initSwipe: function() {
     var dy = endY - startY;
 
     // 横向滑动距离大于50且大于纵向，才算有效
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
       if (dx < 0) {
         // 左滑 → 切换到 char
         if (App.archive.currentTab === 'user') {
