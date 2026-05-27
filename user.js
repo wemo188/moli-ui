@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -9,7 +10,8 @@
     { key: 'age', en: 'AGE', cn: '年龄' },
     { key: 'birthday', en: 'BIRTHDAY', cn: '生日' },
     { key: 'phone', en: 'PHONE', cn: '手机号' },
-    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' }
+    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' },
+    { key: 'wechatPwd', en: 'WECHAT PWD', cn: '微信密码' }
   ];
   var FIELDS_LONG = [
     { key: 'bio', en: 'DESCRIPTION', cn: '个人描述' }
@@ -32,6 +34,13 @@
     card.style.setProperty('--pc1', 'hsla('+h+','+bs+'%,'+bl+'%,0.1)');
   }
 
+  function randomWxId() {
+    var chars = 'abcdefghijklmnopqrstuvwxyz';
+    var r = '';
+    for (var i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * 26)];
+    return 'wx_' + r;
+  }
+
   var BACK_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
   var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
 
@@ -45,6 +54,23 @@
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
     getActiveUser: function() { var id = App.LS.get('activeUserId'); if (id) { var u = User.getById(id); if (u) return u; } return User.list[0] || null; },
     setActive: function(id) { App.LS.set('activeUserId', id); },
+
+    /* 配色方案管理 */
+    getSchemes: function(u) {
+      if (!u.colorSchemes || !u.colorSchemes.length) {
+        u.colorSchemes = [{ hue: u.cardHue || 210, sat: u.cardSat || 80, lit: u.cardLit || 87, bg: u.cardBg || '', radius: u.cardRadius || 16 }];
+      }
+      return u.colorSchemes;
+    },
+    getActiveSchemeIdx: function(u) {
+      return u.activeSchemeIdx || 0;
+    },
+    getActiveScheme: function(u) {
+      var schemes = User.getSchemes(u);
+      var idx = User.getActiveSchemeIdx(u);
+      if (idx >= schemes.length) idx = 0;
+      return schemes[idx];
+    },
 
     open: function() {
       User.load();
@@ -86,20 +112,23 @@
         cardsHtml = User.list.map(function(u) {
           var isActive = u.id === activeId;
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
+          var scheme = User.getActiveScheme(u);
+          var hue = scheme.hue, sat = scheme.sat, lit = scheme.lit, radius = scheme.radius || 16;
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
-          var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
+          var bgImgHtml = scheme.bg ? '<div class="p14-bg"><img src="' + App.esc(scheme.bg) + '"></div>' : '<div class="p14-bg"></div>';
           var vars = pcVars(hue, sat, lit);
+          var schemeIdx = User.getActiveSchemeIdx(u);
+          var schemeCount = User.getSchemes(u).length;
 
-          return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';">' +
+          return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
             '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
                 '<div class="p14-paw-btn" data-uid="' + u.id + '"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
-                '<div class="p14-side-btn p14-side-del"><span class="p14-del-text" data-uid="' + u.id + '">删除</span></div>' +
+                '<div class="p14-side-btn p14-side-del" data-uid="' + u.id + '">删除</div>' +
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen">' +
                 '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
@@ -110,16 +139,17 @@
                     (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
                   '</div>' +
                 '</div>' +
+                '<div class="p14-scheme-indicator" style="text-align:center;font-size:10px;color:rgba(0,0,0,0.35);margin-top:4px;">' + (schemeIdx + 1) + ' / ' + schemeCount + '</div>' +
               '</div></div>' +
               '<div class="p14-right">' +
                 '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
                 '<div class="p14-dpad">' +
-                  '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
-                  '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-up p14-dk" data-uid="' + u.id + '" data-dir="prev">♠</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-left p14-dk" data-uid="' + u.id + '" data-dir="next">♣</div>' +
                   '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
                   '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
                 '</div>' +
-                '<div class="p14-side-btn p14-side-activate" data-uid="' + u.id + '">' + (isActive ? '当前' : '启用') + '</div>' +
+                '<div class="p14-side-btn p14-side-save" data-uid="' + u.id + '">保存</div>' +
               '</div>' +
             '</div>' +
             '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
@@ -132,6 +162,11 @@
                   '<div class="p14-slider-item"><span class="p14-slider-name">L</span><input type="range" class="p14-slider p14-lit" data-uid="' + u.id + '" min="20" max="90" value="' + lit + '"><span class="p14-slider-val p14-lit-val">' + lit + '</span></div>' +
                 '</div>' +
                 '<div class="p14-color-preview" data-uid="' + u.id + '" style="background:hsl(' + hue + ',' + sat + '%,' + lit + '%);"></div>' +
+              '</div>' +
+              '<div class="p14-panel-row" style="align-items:center;"><div class="p14-panel-label">圆角</div>' +
+                '<div class="p14-slider-wrap" style="flex:1;">' +
+                  '<div class="p14-slider-item"><span class="p14-slider-name">R</span><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="1" max="100" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>';
@@ -152,6 +187,7 @@
     },
 
     _bindListEvents: function(panel) {
+      /* 猫爪展开面板 */
       panel.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -165,6 +201,7 @@
         });
       });
 
+      /* 头像点击 */
       panel.querySelectorAll('.p14-avatar-wrap').forEach(function(wrap) {
         wrap.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -177,18 +214,23 @@
         });
       });
 
+      /* 背景上传 */
       panel.querySelectorAll('.p14-bg-upload-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          User.showImgMenu(btn.dataset.uid, 'cardBg', function(src) {
+          User.showImgMenu(btn.dataset.uid, 'schemeBg', function(src) {
             var u = User.getById(btn.dataset.uid);
-            if (u) { u.cardBg = src; User.save(); }
-            var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
-            if (card) { var bg = card.querySelector('.p14-bg'); if (bg) bg.innerHTML = src ? '<img src="' + src + '">' : ''; }
+            if (u) {
+              var scheme = User.getActiveScheme(u);
+              scheme.bg = src;
+              User.save();
+            }
+            User.renderList();
           });
         });
       });
 
+      /* HSL 滑块 */
       panel.querySelectorAll('.p14-hue,.p14-sat,.p14-lit').forEach(function(slider) {
         slider.addEventListener('input', function() {
           var uid = slider.dataset.uid;
@@ -205,45 +247,148 @@
           card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
           setPcVars(card, h, s, l);
+          /* 实时更新到当前方案 */
           var u = User.getById(uid);
-          if (u) { u.cardHue = +h; u.cardSat = +s; u.cardLit = +l; User.save(); }
+          if (u) {
+            var scheme = User.getActiveScheme(u);
+            scheme.hue = +h; scheme.sat = +s; scheme.lit = +l;
+            User.save();
+          }
         });
       });
 
+      /* 圆角滑块 */
+      panel.querySelectorAll('.p14-radius').forEach(function(slider) {
+        slider.addEventListener('input', function() {
+          var uid = slider.dataset.uid;
+          var card = panel.querySelector('[data-uid="' + uid + '"]');
+          if (!card) return;
+          var r = slider.value;
+          card.querySelector('.p14-radius-val').textContent = r + 'px';
+          card.style.borderRadius = r + 'px';
+          var u = User.getById(uid);
+          if (u) {
+            var scheme = User.getActiveScheme(u);
+            scheme.radius = +r;
+            User.save();
+          }
+        });
+      });
+
+      /* 编辑按钮 */
       panel.querySelectorAll('.p14-side-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) { e.stopPropagation(); User.renderProfile(btn.dataset.uid); });
       });
 
-      panel.querySelectorAll('.p14-side-activate').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          User.setActive(btn.closest('.p14-card').dataset.uid);
-          User.renderList();
-          App.showToast('已切换用户');
-        });
-      });
-
-      panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
+      /* 保存按钮（保存当前配色为新方案） */
+      panel.querySelectorAll('.p14-side-save').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var u = User.getById(btn.dataset.uid);
           if (!u) return;
-          u.cardHue = 210; u.cardSat = 80; u.cardLit = 87;
+          var schemes = User.getSchemes(u);
+          var current = User.getActiveScheme(u);
+          /* 复制当前配色为新方案 */
+          var newScheme = JSON.parse(JSON.stringify(current));
+          schemes.push(newScheme);
+          u.activeSchemeIdx = schemes.length - 1;
           User.save();
           User.renderList();
-          App.showToast('已重置配色');
+          App.showToast('已保存为第 ' + schemes.length + ' 套配色');
         });
       });
 
-      panel.querySelectorAll('.p14-del-text').forEach(function(btn) {
+      /* ♠♣ 切换配色 */
+      panel.querySelectorAll('.p14-dpad-up, .p14-dpad-left').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定删除？')) return;
-          User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
+          var uid = btn.dataset.uid;
+          if (!uid) return;
+          var u = User.getById(uid);
+          if (!u) return;
+          var schemes = User.getSchemes(u);
+          if (schemes.length <= 1) { App.showToast('只有一套配色'); return; }
+          var idx = User.getActiveSchemeIdx(u);
+          var dir = btn.dataset.dir;
+          if (dir === 'prev') {
+            idx = (idx - 1 + schemes.length) % schemes.length;
+          } else {
+            idx = (idx + 1) % schemes.length;
+          }
+          u.activeSchemeIdx = idx;
           User.save();
-          if (!User.list.length) User.close();
-          else User.renderList();
-          App.showToast('已删除');
+          User.renderList();
+          App.showToast('配色 ' + (idx + 1) + ' / ' + schemes.length);
+        });
+      });
+
+      /* 重置按钮 */
+      panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('确定重置当前配色？将恢复默认颜色并清除背景图。')) return;
+          var u = User.getById(btn.dataset.uid);
+          if (!u) return;
+          var scheme = User.getActiveScheme(u);
+          scheme.hue = 210; scheme.sat = 80; scheme.lit = 87;
+          scheme.bg = ''; scheme.radius = 16;
+          User.save();
+          User.renderList();
+          App.showToast('已重置');
+        });
+      });
+
+      /* 删除按钮 → 弹出两个选项 */
+      panel.querySelectorAll('.p14-side-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var uid = btn.dataset.uid;
+          var u = User.getById(uid);
+          if (!u) return;
+
+          var old = App.$('#userDelMenu');
+          if (old) old.remove();
+
+          var menu = document.createElement('div');
+          menu.id = 'userDelMenu';
+          menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+          var schemes = User.getSchemes(u);
+          var schemeIdx = User.getActiveSchemeIdx(u);
+
+          menu.innerHTML =
+            '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
+              '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">删除选项</div>' +
+              '<button class="udm-btn" data-act="user" type="button" style="padding:12px;border:1.5px solid #e8a0a0;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#c9706b;cursor:pointer;font-family:inherit;">删除用户</button>' +
+              '<button class="udm-btn" data-act="scheme" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;' + (schemes.length <= 1 ? 'opacity:0.4;pointer-events:none;' : '') + '">删除当前配色（第 ' + (schemeIdx + 1) + ' 套）</button>' +
+              '<button class="udm-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+            '</div>';
+
+          document.body.appendChild(menu);
+          menu.addEventListener('click', function(ev) { if (ev.target === menu) menu.remove(); });
+
+          menu.querySelectorAll('.udm-btn').forEach(function(b) {
+            b.addEventListener('click', function(ev) {
+              ev.stopPropagation();
+              var act = b.dataset.act;
+              menu.remove();
+              if (act === 'cancel') return;
+              if (act === 'user') {
+                if (!confirm('确定删除用户「' + (u.realName || '未命名') + '」？此操作不可恢复。')) return;
+                User.list = User.list.filter(function(x) { return x.id !== uid; });
+                User.save();
+                if (!User.list.length) User.close();
+                else User.renderList();
+                App.showToast('已删除用户');
+              } else if (act === 'scheme') {
+                if (schemes.length <= 1) { App.showToast('至少保留一套配色'); return; }
+                schemes.splice(schemeIdx, 1);
+                u.activeSchemeIdx = Math.min(schemeIdx, schemes.length - 1);
+                User.save();
+                User.renderList();
+                App.showToast('已删除配色');
+              }
+            });
+          });
         });
       });
     },
@@ -260,12 +405,17 @@
 
       var shortHtml = FIELDS_SHORT.map(function(f) {
         var val = user[f.key] || '';
-        var ph = (f.key === 'phone') ? '输入十位虚拟数字，或者留空随机生成'
-         : (f.key === 'wechatId') ? '留空随机生成' : '';
+        var ph = '';
+        if (f.key === 'phone') ph = '输入十位虚拟数字，或者留空随机生成';
+        else if (f.key === 'wechatId') ph = '留空随机生成（wx_四位英文）';
+        else if (f.key === 'wechatPwd') ph = '留空则默认无微信密码';
         if (User.sealed) {
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+          var displayVal = val || '—';
+          if (f.key === 'wechatPwd' && val) displayVal = '••••••';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(displayVal) + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+        var inputType = f.key === 'wechatPwd' ? 'password' : 'text';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="' + inputType + '" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
       }).join('');
 
       var longHtml = FIELDS_LONG.map(function(f) {
@@ -429,7 +579,7 @@
       });
 
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
-      if (!data.wechatId) data.wechatId = 'wx_' + Math.random().toString(36).substring(2, 4);
+      if (!data.wechatId) data.wechatId = randomWxId();
       if (!data.realName) { App.showToast('请输入姓名'); return; }
 
       if (editId) {
@@ -437,7 +587,8 @@
         if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
       } else {
         data.id = 'user-' + Date.now();
-        data.cardHue = 210; data.cardSat = 80; data.cardLit = 87;
+        data.colorSchemes = [{ hue: 210, sat: 80, lit: 87, bg: '', radius: 16 }];
+        data.activeSchemeIdx = 0;
         User.list.push(data);
         User.save();
         if (User.list.length === 1) User.setActive(data.id);
@@ -452,7 +603,12 @@
 
       card.querySelectorAll('input[data-key]').forEach(function(el) {
         var div = document.createElement('div');
-        div.className = 'up-text'; div.textContent = el.value.trim() || '—';
+        div.className = 'up-text';
+        if (el.dataset.key === 'wechatPwd' && el.value.trim()) {
+          div.textContent = '••••••';
+        } else {
+          div.textContent = el.value.trim() || '—';
+        }
         if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
         el.parentNode.replaceChild(div, el);
       });
@@ -478,7 +634,6 @@
         pp.style.opacity = '0';
         setTimeout(function() {
           if (pp.parentNode) pp.remove();
-          /* 确保列表页面板是可见的并且内容是最新的 */
           var panel = App.$('#userPanel');
           if (panel) {
             User.renderList();
@@ -514,8 +669,6 @@
           if (act === 'cancel') return;
           if (act === 'del') { callback(''); App.showToast('已删除'); return; }
           if (act === 'album') {
-            var oldUser = User.getById(uid);
-            var oldImg = oldUser ? oldUser[field] : '';
             var input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
             document.body.appendChild(input);
@@ -523,14 +676,8 @@
               var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
               var reader = new FileReader();
               reader.onload = function(r) {
-                if (App.cropImage) App.cropImage(r.target.result, function(cropped) {
-                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
-                  callback(cropped);
-                });
-                else {
-                  if (oldImg && oldImg.startsWith('data:') && oldUser) { oldUser[field] = ''; }
-                  callback(r.target.result);
-                }
+                if (App.cropImage) App.cropImage(r.target.result, function(cropped) { callback(cropped); });
+                else callback(r.target.result);
               };
               reader.readAsDataURL(file);
             };
@@ -563,8 +710,6 @@
             urlPanel.querySelector('#ismUrlOk').addEventListener('click', function() {
               var url = urlPanel.querySelector('#ismUrlInput').value.trim();
               if (!url) { App.showToast('请输入URL'); return; }
-              var oldUser2 = User.getById(uid);
-              if (oldUser2 && oldUser2[field] && oldUser2[field].startsWith('data:')) { oldUser2[field] = ''; }
               urlPanel.remove(); callback(url); App.showToast('已设置');
             });
           }
