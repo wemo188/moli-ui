@@ -299,7 +299,7 @@
       pp.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
 
       pp.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;flex-shrink:0;background:#fff;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;flex-shrink:0;background:#fff;">' +
           '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
             BACK_ICON +
           '</div>' +
@@ -642,7 +642,7 @@
     '<div class="t2-leds"><div class="t2-led t2-led-on" id="archiveLed1"></div><div class="t2-led" id="archiveLed2"></div></div>' +
   '</div>' +
 '</div>' +
-          '<div style="flex:1;overflow:hidden;position:relative;margin-top:12px;">' +
+          '<div style="flex:1;overflow:hidden;position:relative;margin-top:20px;">' +
             '<div id="archivePanelUser" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(0);opacity:1;"></div>' +
             '<div id="archivePanelChar" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .25s;transform:translateX(100%);opacity:0;"></div>' +
           '</div>';
