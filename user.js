@@ -52,10 +52,7 @@
     load: function() { User.list = App.LS.get('userList') || []; },
     save: function() { App.LS.set('userList', User.list); },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
-    getActiveUser: function() { var id = App.LS.get('activeUserId'); if (id) { var u = User.getById(id); if (u) return u; } return User.list[0] || null; },
-    setActive: function(id) { App.LS.set('activeUserId', id); },
 
-    /* 配色方案管理 */
     getSchemes: function(u) {
       if (!u.colorSchemes || !u.colorSchemes.length) {
         u.colorSchemes = [{ hue: u.cardHue || 210, sat: u.cardSat || 80, lit: u.cardLit || 87, bg: u.cardBg || '', radius: u.cardRadius || 16 }];
@@ -102,15 +99,11 @@
       var panel = App.$('#userPanel');
       if (!panel) return;
 
-      var activeUser = User.getActiveUser();
-      var activeId = activeUser ? activeUser.id : '';
-
       var cardsHtml = '';
       if (!User.list.length) {
         cardsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:14px;">暂无用户，点击右上角创建</div>';
       } else {
         cardsHtml = User.list.map(function(u) {
-          var isActive = u.id === activeId;
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
           var scheme = User.getActiveScheme(u);
           var hue = scheme.hue, sat = scheme.sat, lit = scheme.lit, radius = scheme.radius || 16;
@@ -123,7 +116,7 @@
 
           return '<div class="p14-card" data-uid="' + u.id + '" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
-            '<div class="p14-top"><div class="p14-led' + (isActive ? ' p14-led-on' : '') + '"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
+            '<div class="p14-top"><div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div></div>' +
             '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn p14-side-reset" data-uid="' + u.id + '">重置</div>' +
@@ -131,7 +124,7 @@
                 '<div class="p14-side-btn p14-side-del" data-uid="' + u.id + '">删除</div>' +
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen">' +
-                '<div class="p14-screen-badge">' + (isActive ? '<div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div>' : '') + '</div>' +
+                '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
                 '<div class="p14-screen-content">' +
                   '<div class="p14-avatar-wrap" data-uid="' + u.id + '"><div class="p14-avatar">' + avatarHtml + '</div><div class="p14-avatar-ov"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>' +
                   '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
@@ -139,7 +132,6 @@
                     (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
                   '</div>' +
                 '</div>' +
-                '<div class="p14-scheme-indicator" style="text-align:center;font-size:10px;color:rgba(0,0,0,0.35);margin-top:4px;">' + (schemeIdx + 1) + ' / ' + schemeCount + '</div>' +
               '</div></div>' +
               '<div class="p14-right">' +
                 '<div class="p14-side-btn p14-side-edit" data-uid="' + u.id + '">编辑</div>' +
@@ -154,6 +146,7 @@
             '</div>' +
             '<div class="p14-panel" data-panel-uid="' + u.id + '">' +
               '<div class="p14-panel-title">✦ CUSTOMIZE ✦</div>' +
+              '<div class="p14-panel-row" style="justify-content:center;"><span style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:1px;">配色 ' + (schemeIdx + 1) + ' / ' + schemeCount + '</span></div>' +
               '<div class="p14-panel-row"><div class="p14-panel-label">机身背景</div><div class="p14-panel-upload p14-bg-upload-btn" data-uid="' + u.id + '"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>上传图片</div></div>' +
               '<div class="p14-panel-row" style="align-items:flex-start;"><div class="p14-panel-label" style="margin-top:2px;">机身颜色</div>' +
                 '<div class="p14-slider-wrap">' +
@@ -247,7 +240,6 @@
           card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
           setPcVars(card, h, s, l);
-          /* 实时更新到当前方案 */
           var u = User.getById(uid);
           if (u) {
             var scheme = User.getActiveScheme(u);
@@ -288,7 +280,6 @@
           if (!u) return;
           var schemes = User.getSchemes(u);
           var current = User.getActiveScheme(u);
-          /* 复制当前配色为新方案 */
           var newScheme = JSON.parse(JSON.stringify(current));
           schemes.push(newScheme);
           u.activeSchemeIdx = schemes.length - 1;
@@ -299,7 +290,7 @@
       });
 
       /* ♠♣ 切换配色 */
-      panel.querySelectorAll('.p14-dpad-up, .p14-dpad-left').forEach(function(btn) {
+      panel.querySelectorAll('[data-dir]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var uid = btn.dataset.uid;
@@ -309,8 +300,7 @@
           var schemes = User.getSchemes(u);
           if (schemes.length <= 1) { App.showToast('只有一套配色'); return; }
           var idx = User.getActiveSchemeIdx(u);
-          var dir = btn.dataset.dir;
-          if (dir === 'prev') {
+          if (btn.dataset.dir === 'prev') {
             idx = (idx - 1 + schemes.length) % schemes.length;
           } else {
             idx = (idx + 1) % schemes.length;
@@ -338,7 +328,7 @@
         });
       });
 
-      /* 删除按钮 → 弹出两个选项 */
+      /* 删除按钮 */
       panel.querySelectorAll('.p14-side-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -358,15 +348,15 @@
           menu.innerHTML =
             '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
               '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">删除选项</div>' +
-              '<button class="udm-btn" data-act="user" type="button" style="padding:12px;border:1.5px solid #e8a0a0;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#c9706b;cursor:pointer;font-family:inherit;">删除用户</button>' +
-              '<button class="udm-btn" data-act="scheme" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;' + (schemes.length <= 1 ? 'opacity:0.4;pointer-events:none;' : '') + '">删除当前配色（第 ' + (schemeIdx + 1) + ' 套）</button>' +
-              '<button class="udm-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+              '<button type="button" data-act="user" style="padding:12px;border:1.5px solid #e8a0a0;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#c9706b;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除用户</button>' +
+              '<button type="button" data-act="scheme" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;' + (schemes.length <= 1 ? 'opacity:0.4;pointer-events:none;' : '') + '">删除当前配色（第 ' + (schemeIdx + 1) + ' 套）</button>' +
+              '<button type="button" data-act="cancel" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">取消</button>' +
             '</div>';
 
           document.body.appendChild(menu);
           menu.addEventListener('click', function(ev) { if (ev.target === menu) menu.remove(); });
 
-          menu.querySelectorAll('.udm-btn').forEach(function(b) {
+          menu.querySelectorAll('button[data-act]').forEach(function(b) {
             b.addEventListener('click', function(ev) {
               ev.stopPropagation();
               var act = b.dataset.act;
@@ -410,12 +400,9 @@
         else if (f.key === 'wechatId') ph = '留空随机生成（wx_四位英文）';
         else if (f.key === 'wechatPwd') ph = '留空则默认无微信密码';
         if (User.sealed) {
-          var displayVal = val || '—';
-          if (f.key === 'wechatPwd' && val) displayVal = '••••••';
-          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(displayVal) + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+          return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><div class="up-text">' + App.esc(val || '—') + '</div></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
         }
-        var inputType = f.key === 'wechatPwd' ? 'password' : 'text';
-        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="' + inputType + '" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
+        return '<div class="up-field"><div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div><div class="up-field-line"><input type="text" data-key="' + f.key + '" placeholder="' + ph + '" value="' + App.esc(val) + '"></div><div class="up-field-underline"></div><div class="up-field-underline2"></div></div>';
       }).join('');
 
       var longHtml = FIELDS_LONG.map(function(f) {
@@ -591,7 +578,6 @@
         data.activeSchemeIdx = 0;
         User.list.push(data);
         User.save();
-        if (User.list.length === 1) User.setActive(data.id);
       }
 
       var seal = pp.querySelector('#upSeal');
@@ -604,11 +590,7 @@
       card.querySelectorAll('input[data-key]').forEach(function(el) {
         var div = document.createElement('div');
         div.className = 'up-text';
-        if (el.dataset.key === 'wechatPwd' && el.value.trim()) {
-          div.textContent = '••••••';
-        } else {
-          div.textContent = el.value.trim() || '—';
-        }
+        div.textContent = el.value.trim() || '—';
         if (el.dataset.key === 'sign2') div.style.fontStyle = 'italic';
         el.parentNode.replaceChild(div, el);
       });
@@ -654,14 +636,14 @@
       menu.innerHTML =
         '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
           '<div style="font-size:14px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button class="ism-btn" data-act="album" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">从相册选择</button>' +
-          '<button class="ism-btn" data-act="url" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">输入图片URL</button>' +
-          '<button class="ism-btn" data-act="del" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;">删除图片</button>' +
-          '<button class="ism-btn" data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+          '<button type="button" data-act="album" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
+          '<button type="button" data-act="url" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
+          '<button type="button" data-act="del" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除图片</button>' +
+          '<button type="button" data-act="cancel" style="padding:10px;border:none;background:none;font-size:13px;color:#999;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">取消</button>' +
         '</div>';
       document.body.appendChild(menu);
       menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelectorAll('.ism-btn').forEach(function(btn) {
+      menu.querySelectorAll('button[data-act]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var act = btn.dataset.act;
