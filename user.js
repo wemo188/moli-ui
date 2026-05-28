@@ -75,7 +75,7 @@
       } else {
         cardsHtml = User.list.map(function(u) {
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 80, lit = u.cardLit != null ? u.cardLit : 90;
+          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 72, lit = u.cardLit != null ? u.cardLit : 92;
           var radius = u.cardRadius != null ? u.cardRadius : 60;
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
