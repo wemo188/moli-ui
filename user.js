@@ -310,6 +310,11 @@
           '<div class="up-card" id="upCard" data-edit-id="' + (editId || '') + '">' +
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
+            '<div class="up-avatar-area">' +
+  '<div class="up-avatar-box" id="upAvatarBox">' +
+    (User.tempAvatar ? '<img src="' + App.esc(User.tempAvatar) + '">' : '<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM3 20.4c0-2.4 6-3.6 9-3.6s9 1.2 9 3.6" stroke-width="1.5" fill="none"/></svg>') +
+  '</div>' +
+'</div>' +
             '<div class="up-sign-area">' +
               (User.sealed
                 ? '<div style="font-size:12px;color:#666;">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
@@ -389,9 +394,19 @@
       });
 
       var quill = pp.querySelector('#upQuill');
-      if (quill) quill.addEventListener('click', function() { User.saveProfile(pp); });
-    },
+if (quill) quill.addEventListener('click', function() { User.saveProfile(pp); });
 
+// 头像点击
+var avatarBox = pp.querySelector('#upAvatarBox');
+if (avatarBox) {
+  avatarBox.addEventListener('click', function() {
+    User.showImgMenu(editId || 'temp', 'avatar', function(src) {
+      User.tempAvatar = src;
+      avatarBox.innerHTML = src ? '<img src="' + App.esc(src) + '">' : '<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM3 20.4c0-2.4 6-3.6 9-3.6s9 1.2 9 3.6" stroke-width="1.5" fill="none"/></svg>';
+    });
+  });
+}
+    
     openExpandEditor: function(title, textarea) {
       var old = App.$('#upExpandEditor');
       if (old) old.remove();
@@ -600,29 +615,6 @@
             '<div style="font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">档案存储</div>' +
             '<div id="archiveAdd" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#999;font-weight:300;-webkit-tap-highlight-color:transparent;">+</div>' +
           '</div>' +
-       '<style>' +
-  '@keyframes t2Glow{0%,100%{box-shadow:0 0 3px rgba(200,200,200,0.3);}50%{box-shadow:0 0 8px rgba(200,200,200,0.5);}}' +
-  '.t2-wrap{margin:0 4px;background:linear-gradient(155deg,rgba(240,240,240,0.6),rgba(248,248,248,0.5) 25%,rgba(255,255,255,0.7) 45%,rgba(245,245,245,0.5) 65%,rgba(238,238,238,0.55));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(220,220,220,0.5);border-radius:14px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.04),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6);position:relative;overflow:hidden;}' +
-  '.t2-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:14px 14px 0 0;pointer-events:none;}' +
-  '.t2-inner{position:relative;display:flex;align-items:center;background:rgba(0,0,0,0.02);border-radius:10px;padding:3px;gap:3px;}' +
-'.t4-deco{width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:0 0 0 2px;position:relative;}' +
-'@keyframes t4Twinkle{0%,100%{opacity:0.6;transform:scale(1) rotate(0deg);}50%{opacity:1;transform:scale(1.08) rotate(8deg);}}' +
-'.t4-deco .t4-star-main{width:16px;height:16px;animation:t4Twinkle 3s ease-in-out infinite;}' +
-'.t4-deco .t4-star-main svg{width:100%;height:100%;fill:rgba(0,0,0,0.15);stroke:rgba(0,0,0,0.1);stroke-width:0.5;}' +
-'.t4-star-sm{position:absolute;width:7px;height:7px;}' +
-'.t4-star-sm svg{width:100%;height:100%;fill:rgba(0,0,0,0.1);stroke:none;}' +
-'.t4-star-s1{top:-1px;right:0;animation:t4TwinkleAlt 2.6s ease-in-out 0.4s infinite;}' +
-'@keyframes t4TwinkleAlt{0%,100%{opacity:0.5;transform:scale(1) rotate(0deg);}50%{opacity:0.9;transform:scale(1.1) rotate(-6deg);}}' +
-  '.t2-tabs{flex:1;display:flex;gap:3px;}' +
-  '.t2-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:1px;color:rgba(0,0,0,0.28);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.25s ease;position:relative;z-index:1;border:1.5px solid transparent;}' +
-  '.t2-tab:active{transform:scale(0.95);}' +
-  '.t2-tab.t2-active{background:rgba(255,255,255,0.9);border-color:rgba(0,0,0,0.06);color:rgba(0,0,0,0.7);box-shadow:0 2px 8px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02),inset 0 1px 1px rgba(255,255,255,0.8);}' +
-  '.t2-tab-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:transparent;transition:background 0.25s;}' +
-  '.t2-tab.t2-active .t2-tab-dot{background:rgba(0,0,0,0.2);animation:t2Glow 2s ease-in-out infinite;}' +
-  '.t2-leds{display:flex;flex-direction:column;gap:4px;margin:0 6px 0 4px;}' +
-  '.t2-led{width:4px;height:4px;border-radius:50%;background:rgba(0,0,0,0.08);transition:background 0.3s,box-shadow 0.3s;}' +
-  '.t2-led-on{background:rgba(0,0,0,0.25);box-shadow:0 0 4px rgba(0,0,0,0.1);}' +
-'</style>' +
 '<div class="t2-wrap" style="margin:6px 16px 0;">' +
   '<div class="t2-inner">' +
 '<div class="t4-deco"><div class="t4-star-main"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div><div class="t4-star-sm t4-star-s1"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div></div>' +
