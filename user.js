@@ -4,6 +4,8 @@
   var App = window.App;
   if (!App) return;
 
+var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
+
   var FIELDS_SHORT = [
     { key: 'nickname', en: 'NICKNAME', cn: '昵称' },
     { key: 'gender', en: 'GENDER', cn: '性别' },
@@ -75,8 +77,10 @@
       } else {
         cardsHtml = User.list.map(function(u) {
           var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-          var hue = u.cardHue != null ? u.cardHue : 210, sat = u.cardSat != null ? u.cardSat : 72, lit = u.cardLit != null ? u.cardLit : 92;
-          var radius = u.cardRadius != null ? u.cardRadius : 60;
+          var hue = u.cardHue != null ? u.cardHue : DEFAULT_CARD.hue,
+    sat = u.cardSat != null ? u.cardSat : DEFAULT_CARD.sat,
+    lit = u.cardLit != null ? u.cardLit : DEFAULT_CARD.lit,
+    radius = u.cardRadius != null ? u.cardRadius : DEFAULT_CARD.radius;
           var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
@@ -238,7 +242,7 @@
     if (!confirm('确定重置？将清除配色和背景图。')) return;
     var u = User.getById(btn.dataset.uid);
     if (!u) return;
-    u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardRadius = 60;
+    u.cardHue = DEFAULT_CARD.hue; u.cardSat = DEFAULT_CARD.sat; u.cardLit = DEFAULT_CARD.lit; u.cardRadius = DEFAULT_CARD.radius;
     u.cardBg = '';
     var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
     if (card) {
@@ -494,7 +498,7 @@ if (avatarBox) {
         if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
       } else {
         data.id = 'user-' + Date.now();
-        data.cardHue = 210; data.cardSat = 80; data.cardLit = 87; data.cardRadius = 60;
+        data.cardHue = DEFAULT_CARD.hue; data.cardSat = DEFAULT_CARD.sat; data.cardLit = DEFAULT_CARD.lit; data.cardRadius = DEFAULT_CARD.radius;
         User.list.push(data);
         User.save();
       }
