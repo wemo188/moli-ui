@@ -4,7 +4,7 @@
 
 /* ====== 角色卡 ====== */
 .char-list-wrap {
-  margin: 0 auto 24px; max-width: 380px;
+  margin: 0 auto 24px; max-width: 360px;
   padding: 0; position: relative;
   --card-border-c: #111; --card-accent: #88abda; --card-bg: #fff; --card-left: #111;
   --card-line: 3px; --card-outer: 3.5px;
@@ -28,7 +28,7 @@
 
 .cl-header {
   display: flex; align-items: flex-start; justify-content: space-between;
-  padding: 4px 16px 6px;
+  padding: 6px 16px 8px;
   border-bottom: var(--card-line) solid var(--card-border-c);
   position: relative; overflow: hidden; transition: all 0.3s;
 }
@@ -54,7 +54,7 @@
   display: inline-flex; align-items: center; gap: 6px;
   background: #111; color: #fff;
   border: 3px solid #111;
-  padding: 2px 8px; font-size: 11px; font-weight: 900;
+  padding: 3px 6px; font-size: 11px; font-weight: 900;
   letter-spacing: 1.5px; cursor: pointer;
   box-shadow: 3px 3px 0 #111;
   transition: all 0.3s; z-index: 1;
