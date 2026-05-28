@@ -127,7 +127,8 @@
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
             '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
               '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
-              '<div style="flex:1;"><div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div></div>' +
+             '<div style="flex:1;"><div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div>' +
+'<div class="cm-field" style="margin-top:6px"><div class="cm-field-label">签名 SIGN</div><input type="text" class="cm-field-input" data-key="sign" placeholder="一句话签名..." value="' + v('sign') + '"></div></div>' +
             '</div>' +
             '<div class="cm-field-grid">' +
               '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
@@ -405,7 +406,8 @@
         greeting: '',
         gender: d.gender || '', age: d.age || '', birthday: d.birthday || '',
         callName: d.callName || '', relation: d.relation || '',
-        charPhone: d.charPhone, charWechat: d.charWechat,
+sign: d.sign || '',
+charPhone: d.charPhone, charWechat: d.charWechat,
         contactMode: cr ? cr.value : 'direct'
       };
 
@@ -449,7 +451,7 @@
         var ex = App.character.getById(CharMgr.editingCharId);
         if (ex) {
           Object.keys(charObj).forEach(function(k) {
-            if (k === 'avatar') { if (charObj.avatar) ex.avatar = charObj.avatar; }
+            if (k === 'avatar') { ex.avatar = charObj.avatar; }
             else ex[k] = charObj[k];
           });
           App.character.save();
