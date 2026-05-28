@@ -9,9 +9,6 @@
     config: {},
     load: function() {
       Dock.config = App.LS.get('dockConfig') || JSON.parse(JSON.stringify(DEF_CFG));
-      // 兼容旧数据
-      if (Dock.config.dockBorderColor === undefined) Dock.config.dockBorderColor = Dock.config.borderColor || '#dcebff';
-      if (Dock.config.dockBorderW === undefined) Dock.config.dockBorderW = Dock.config.borderW != null ? Dock.config.borderW : 1;
     },
     saveConfig: function() { App.LS.set('dockConfig', Dock.config); },
     applyConfig: function(c) {
