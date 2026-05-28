@@ -96,8 +96,8 @@
 .p14-avatar-ov svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .p14-info { flex: 1; min-width: 0; }
 .p14-name { font-size: 14px; font-weight: 700; color: #000; letter-spacing: 1px; margin-bottom: 2px; }
-.p14-sign { font-size: 10px; color: #2a4262; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
-.p14-sign-italic { font-size: 10px; color: #7a9cbd; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p14-sign { font-size: 10px; color: #2a4262; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.p14-sign-italic { font-size: 10px; color: #7a9cbd; font-style: italic; overflow: hidden; text-overflow: ellipsis; }
 .p14-screen-badge { position: absolute; top: 5px; right: 6px; z-index: 3; display: flex; align-items: center; gap: 3px; }
 .p14-badge-dot { width: 4px; height: 4px; border-radius: 50%; background: #a0c8f0; animation: p14Blink 2s ease-in-out infinite; }
 .p14-badge-text { font-size: 6px; font-weight: 700; letter-spacing: 1px; color: rgba(140,190,240,0.7); }
