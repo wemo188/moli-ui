@@ -88,7 +88,7 @@
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
           var avatarHtml = c.avatar ? '<img src="' + App.escAttr(c.avatar) + '">' : '<div class="cl-avatar-empty"></div>';
-          var coverHtml = c.cover ? '<img src="' + App.escAttr(c.cover) + '">' : '<div class="cl-cover-empty"></div>';
+          var coverHtml = c.cover ? '<img src="' + App.escAttr(c.cover) + '">' : (c.avatar ? '<img src="' + App.escAttr(c.avatar) + '">' : '<div class="cl-cover-empty"></div>');
           var wbCount = (c.worldbookIds && c.worldbookIds.length) || 0;
           var wbMounted = wbCount > 0;
           var wbClass = wbMounted ? ' mounted' : '';
