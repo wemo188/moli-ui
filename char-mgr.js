@@ -41,6 +41,7 @@
     get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     open: function(charId) {
+      if (App.character) App.character.load();
       CharMgr.load();
       CharMgr.editingCharId = charId || null;
       CharMgr.tempAvatar = '';
