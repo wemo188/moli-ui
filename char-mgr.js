@@ -44,10 +44,10 @@
       if (App.character) App.character.load();
       CharMgr.load();
       CharMgr.editingCharId = charId || null;
-      CharMgr.tempAvatar = '';
 
-      var existing = null;
-      if (charId && App.character) existing = App.character.getById(charId);
+      if (App.character) App.character.load();
+var existing = null;
+if (charId && App.character) existing = App.character.getById(charId);
 
       var old = App.$('#charMgrPage');
       if (old) old.remove();
@@ -492,7 +492,7 @@ charPhone: d.charPhone, charWechat: d.charWechat,
       document.body.appendChild(menu);
       menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
       menu.querySelector('#avFromCancel').addEventListener('click', function() { menu.remove(); });
-      menu.querySelector('#avFromDel').addEventListener('click', function() { menu.remove(); CharMgr.tempAvatar = ''; box.innerHTML = '<span class="cc-avatar-empty">PHOTO</span>'; });
+      menu.querySelector('#avFromDel').addEventListener('click', function() { menu.remove(); CharMgr.tempAvatar = e.avatar || ''; box.innerHTML = '<span class="cc-avatar-empty">PHOTO</span>'; });
       menu.querySelector('#avFromAlbum').addEventListener('click', function() {
         menu.remove();
         var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; document.body.appendChild(input);
