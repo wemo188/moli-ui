@@ -3,7 +3,7 @@
   'use strict';
   var App = window.App; if (!App) return;
 
-  var DEF_CFG = { bgColor: '#ffffff', bgAlpha: 1, blur: 5, borderColor: '#fff', borderW: 1, dockBorderColor: '#fff', dockBorderW: 0, hideLabels: false };
+  var DEF_CFG = { bgColor: '#ffffff', bgAlpha: 70, blur: 20, borderColor: '#fff', borderW: 0, dockBorderColor: '#fff', dockBorderW: 1 };
 
   var Dock = {
     config: {},
