@@ -36,11 +36,7 @@
 }
 
 .mk-card {
-  --mk-bg: #1a1a1a;
-  --mk-glass: 0px;
-  background: var(--mk-bg);
-  backdrop-filter: blur(var(--mk-glass));
-  -webkit-backdrop-filter: blur(var(--mk-glass));
+  background: transparent;
   position: relative;
   border-radius: 16px;
   width: 64px;
