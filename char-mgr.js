@@ -41,14 +41,13 @@
     get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     open: function(charId) {
-      if (App.character) App.character.load();
-      CharMgr.load();
-      CharMgr.editingCharId = charId || null;
+  if (App.character) App.character.load();  // ← 加这行
+  CharMgr.load();
+  CharMgr.editingCharId = charId || null;
 
-      if (App.character) App.character.load();
-var existing = null;
-if (charId && App.character) existing = App.character.getById(charId);
-
+  var existing = null;
+  if (charId && App.character) existing = App.character.getById(charId);
+  
       var old = App.$('#charMgrPage');
       if (old) old.remove();
 
