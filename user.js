@@ -647,6 +647,7 @@ if (avatarBox) {
           User.load();
           var panel = App.$('#archivePanel');
           if (!panel) return;
+          App.archive._isOpen = true;
           panel.style.display = 'flex';
           App.archive.switchTab(tab || 'user');
           requestAnimationFrame(function() { requestAnimationFrame(function() {
@@ -658,6 +659,7 @@ if (avatarBox) {
         close: function() {
           var panel = App.$('#archivePanel');
           if (!panel) return;
+          App.archive._isOpen = true;
           panel.style.transform = 'translateX(100%)';
           panel.style.opacity = '0';
           setTimeout(function() { panel.style.display = 'none'; }, 350);
