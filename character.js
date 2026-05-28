@@ -96,7 +96,9 @@
           return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
             '<div class="cl-top-bar"></div>' +
             '<div class="cl-header">' +
-              '<div class="cl-header-left"><h2>' + name + '</h2></div>' +
+              '<div class="cl-header-left"><h2>' + name + '</h2>' +
+  (c.sign ? '<span class="cl-header-sign">' + App.esc(c.sign) + '</span>' : '') +
+'</div>' +
               '<div class="cl-create-btn cl-wb-btn' + wbClass + '" data-id="' + c.id + '"><span class="plus-icon">' + BOOK_SVG + '</span>' + wbText + '</div>' +
             '</div>' +
             '<div class="cl-body"><div class="cl-item">' +
