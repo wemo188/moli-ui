@@ -235,11 +235,10 @@
       panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定重置？将清除配色、背景图和头像。')) return;
+          if (!confirm('确定重置？将清除配色和背景图。')) return;
           var u = User.getById(btn.dataset.uid);
           if (!u) return;
           u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardRadius = 60;
-          u.cardBg = ''; u.avatar = '';
           User.save();
           User.renderList();
           App.showToast('已重置');
