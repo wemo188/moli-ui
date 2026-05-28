@@ -181,13 +181,10 @@
       Dock.load(); Dock.applyConfig();
       
       var items = [
-  { id: 'dockMine', action: function() { 
-  if (App.archive._isOpen) return;
-  if (App.archive) App.archive.open('user'); 
-} }
-  { id: 'dockLong', action: function() { if (App.wechat) App.wechat.open(); } },
-  { id: 'dockCheck', action: function() { if (App.offline) App.offline.pick(); else App.showToast('模块未加载'); } },
-  { id: 'dockShort', action: function() { /* 查岗功能保持不变 */ } }
+  { id: 'dockArchive', action: function() { if (App.archive) App.archive.open('user'); } },
+  { id: 'dockChat', action: function() { if (App.wechat) App.wechat.open(); } },
+  { id: 'dockStory', action: function() { if (App.offline) App.offline.pick(); } },
+  { id: 'dockCheckin', action: function() { /* 查岗 */ } }
 ];
 
       items.forEach(function(item) {
