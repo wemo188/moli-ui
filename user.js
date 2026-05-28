@@ -233,17 +233,23 @@
       });
 
       panel.querySelectorAll('.p14-side-reset').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          if (!confirm('确定重置？将清除配色和背景图。')) return;
-          var u = User.getById(btn.dataset.uid);
-          if (!u) return;
-          u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardRadius = 60;
-          User.save();
-          User.renderList();
-          App.showToast('已重置');
-        });
-      });
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!confirm('确定重置？将清除配色和背景图。')) return;
+    var u = User.getById(btn.dataset.uid);
+    if (!u) return;
+    u.cardHue = 210; u.cardSat = 80; u.cardLit = 87; u.cardRadius = 60;
+    u.cardBg = '';
+    var card = panel.querySelector('[data-uid="' + btn.dataset.uid + '"]');
+    if (card) {
+      var bg = card.querySelector('.p14-bg');
+      if (bg) bg.innerHTML = '';
+    }
+    User.save();
+    User.renderList();
+    App.showToast('已重置');
+  });
+});
 
       panel.querySelectorAll('.p14-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
