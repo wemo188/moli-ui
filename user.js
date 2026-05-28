@@ -299,33 +299,46 @@
       pp.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
 
       pp.innerHTML =
-      '<div class="profile-header">' +
-          '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
-            BACK_ICON +
-          '</div>' +
-          '<div style="font-size:13px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
-          '<div id="upRebuild" data-edit-id="' + (editId || '') + '" style="font-size:13px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+  '<div class="profile-header">' +
+    '<div id="upProfileBack" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;">' +
+      BACK_ICON +
+    '</div>' +
+    '<div style="font-size:13px;color:#ccc;letter-spacing:3px;">PROFILE</div>' +
+    '<div id="upRebuild" data-edit-id="' + (editId || '') + '" style="font-size:13px;color:#c9706b;letter-spacing:1.5px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0;' + (User.sealed ? '' : 'visibility:hidden;') + '">重建</div>' +
+  '</div>' +
+  '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
+    '<div class="up-card" id="upCard" data-edit-id="' + (editId || '') + '">' +
+      '<div class="up-bar-top"></div>' +
+      '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
+      '<div class="up-sign-area">' +
+        '<div class="up-avatar-box" id="upAvatarBox">' +
+          (User.tempAvatar ? '<img src="' + App.esc(User.tempAvatar) + '">' : '<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM3 20.4c0-2.4 6-3.6 9-3.6s9 1.2 9 3.6" stroke-width="1.5" fill="none"/></svg>') +
         '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 60px;">' +
-          '<div class="up-card" id="upCard" data-edit-id="' + (editId || '') + '">' +
-            '<div class="up-bar-top"></div>' +
-            '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
-           '<div class="up-sign-area" style="display:flex;align-items:center;gap:12px;justify-content:center;padding:4px 18px 8px;">' +
-  '<div class="up-avatar-box" id="upAvatarBox">' +
-    (User.tempAvatar ? '<img src="' + App.esc(User.tempAvatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;">' : '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#ccc;fill:none;stroke-width:1.5;"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM3 20.4c0-2.4 6-3.6 9-3.6s9 1.2 9 3.6"/></svg>') +
-  '</div>' +
-  '<div style="flex:1;min-width:0;">' +
-    (User.sealed
-      ? '<div class="up-sign-text">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
-      : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" style="font-style:italic;margin-top:2px;">') +
-  '</div>' +
-'</div>' +
-            '<div class="up-name-area"><div class="up-name-label">姓名 NAME </div>' +
-              (User.sealed
-                ? '<div style="font-size:16px;font-weight:700;color:#1a1a1a;padding:3px 0 5px;">' + App.esc(user.realName || '—') + '</div>'
-                : '<input type="text" class="up-name-input" data-key="realName" value="' + App.esc(user.realName || '') + '">') +
-              '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
-            '</div>' +
+        '<div class="up-sign-text-wrap">' +
+          (User.sealed
+            ? '<div class="up-sign-text">' + App.esc(user.sign1 || '—') + '</div><div class="up-sign-italic">' + App.esc(user.sign2 || '') + '</div>'
+            : '<input type="text" data-key="sign1" placeholder="签名第一行..." value="' + App.esc(user.sign1 || '') + '"><input type="text" data-key="sign2" placeholder="签名第二行（斜体）..." value="' + App.esc(user.sign2 || '') + '" class="up-sign-input2">') +
+        '</div>' +
+      '</div>' +
+      '<div class="up-name-area"><div class="up-name-label">姓名 NAME </div>' +
+        (User.sealed
+          ? '<div class="up-name-text">' + App.esc(user.realName || '—') + '</div>'
+          : '<input type="text" class="up-name-input" data-key="realName" value="' + App.esc(user.realName || '') + '">') +
+        '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
+      '</div>' +
+      shortHtml +
+      longHtml +
+      '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
+      '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
+    '</div>' +
+    '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
+      '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
+        '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
+        '<div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
+        '<div class="up-seal-date">' + dateStr + '</div>' +
+      '</div></div><div class="up-seal-noise"></div>' +
+    '</div>' +
+  '</div>';
             shortHtml +
             longHtml +
             '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
