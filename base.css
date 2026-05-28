@@ -585,6 +585,26 @@ img.img-fill { transform: none !important; }
   background: #1a1a1a; color: #fff; border-color: #1a1a1a;
 }
 
+.cp-grad-mode-btn {
+  flex: 1;
+  padding: 5px 0;
+  border: 1.5px solid rgba(0,0,0,.08);
+  border-radius: 8px;
+  background: rgba(0,0,0,.02);
+  font-size: 11px;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cp-grad-mode-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
 .cp-spectrum {
   position: relative; width: 100%; height: 120px;
   border-radius: 10px; overflow: hidden;
