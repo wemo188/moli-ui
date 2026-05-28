@@ -636,8 +636,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
         '<span class="cp-bar-label">色相</span>'+
         '<div class="cp-hue-wrap" id="cpHueWrap"><div class="cp-hue-bar"></div><div class="cp-hue-cursor" id="cpHueCursor"></div></div>'+
         '<div class="cp-gradient-area" id="cpGradientArea" style="'+(initGrad?'':'display:none;')+'">'+
-          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;"><button class="cp-grad-mode-btn' + (initGradCount === 2 ? ' active' : '') + '" data-gmode="2" type="button">双色</button>
-<button class="cp-grad-mode-btn' + (initGradCount === 3 ? ' active' : '') + '" data-gmode="3" type="button">三色</button></div>'+
+          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;"><button class="cp-grad-mode-btn' + (initGradCount === 2 ? ' active' : '') + '" data-gmode="2" type="button">双色</button>' +
+'<button class="cp-grad-mode-btn' + (initGradCount === 3 ? ' active' : '') + '" data-gmode="3" type="button">三色</button></div>'+
           '<div class="cp-grad-stops"><div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div><div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>'+(initGradCount===3?'中间':'终点')+'</span></div><div class="cp-grad-stop" id="cpStop2" data-stop="2" style="'+(initGradCount===3?'':'display:none;')+'"><div class="cp-grad-dot" id="cpGradDot2"></div><span>终点</span></div></div>'+
           '<div class="cp-grad-preview" id="cpGradPreview"><div class="cp-grad-preview-inner" id="cpGradInner"></div></div>'+
           '<div class="cp-grad-dir"><span style="font-size:10px;color:#111;font-weight:600;">方向</span><input type="range" id="cpGradAngle" min="0" max="360" step="1" value="'+initAngle+'"><span id="cpGradAngleVal" style="font-size:10px;color:#111;font-weight:600;width:30px;text-align:right;">'+initAngle+'°</span></div>'+
