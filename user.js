@@ -348,19 +348,6 @@ var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
       '</div></div><div class="up-seal-noise"></div>' +
     '</div>' +
   '</div>';
-            shortHtml +
-            longHtml +
-            '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
-            '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
-          '</div>' +
-          '<div class="up-seal' + (User.sealed ? ' show' : '') + '" id="upSeal">' +
-            '<div class="up-seal-outer"><div class="up-seal-dashes"></div><div class="up-seal-inner">' +
-              '<div class="up-seal-top">PERSONAL FILE</div><div class="up-seal-main">封存</div>' +
-              '<div class="up-seal-line"></div><div class="up-seal-stars"><span class="up-seal-star">★</span><span class="up-seal-label">SEALED</span><span class="up-seal-star">★</span></div>' +
-              '<div class="up-seal-date">' + dateStr + '</div>' +
-            '</div></div><div class="up-seal-noise"></div>' +
-          '</div>' +
-        '</div>';
 
       document.body.appendChild(pp);
 
