@@ -6,7 +6,7 @@
 /* ===========================
    列表页 - 顶部标题栏
    =========================== */
-.up-list-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 16px; background: #fff; flex-shrink: 0; }
+.up-list-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 8px; background: #fff; flex-shrink: 0; }
 .up-list-back { display: inline-flex; align-items: center; gap: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 4px; }
 .up-list-back svg { width: 18px; height: 18px; }
 .up-list-title { font-size: 15px; font-weight: 700; color: #2a4262; letter-spacing: 1px; }
