@@ -8,7 +8,7 @@
   transform: translateX(-50%);
   z-index: 900;
   border-radius: 28px;
-  padding: 12px 40px;
+  padding: 14px 40px;
   display: flex;
   gap: 20px;
   background: rgba(255,255,255,.5);
@@ -36,7 +36,7 @@
 }
 
 .mk-card {
-  background: rgba(255,255,255,0.55);  /* 半透明白 */
+  background: rgba(255,255,255,0.35);  /* 半透明白 */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   position: relative;
@@ -53,7 +53,5 @@
 }
 
 .mk-card svg {
-  width: 80%;
-  height: 80%;
   display: block;
 }
