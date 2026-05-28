@@ -311,7 +311,7 @@
             '<div class="up-bar-top"></div>' +
             '<div class="up-card-head"><div class="up-card-head-sub">PERSONAL FILE</div><div class="up-card-head-title">个 人 档 案</div></div>' +
            '<div class="up-sign-area" style="display:flex;align-items:center;gap:12px;justify-content:center;padding:4px 18px 8px;">' +
-  '<div class="up-avatar-box" id="upAvatarBox" style="width:48px;height:48px;flex-shrink:0;">' +
+  '<div class="up-avatar-box" id="upAvatarBox">' +
     (User.tempAvatar ? '<img src="' + App.esc(User.tempAvatar) + '" style="width:100%;height:100%;object-fit:cover;display:block;">' : '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#ccc;fill:none;stroke-width:1.5;"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM3 20.4c0-2.4 6-3.6 9-3.6s9 1.2 9 3.6"/></svg>') +
   '</div>' +
   '<div style="flex:1;min-width:0;">' +
