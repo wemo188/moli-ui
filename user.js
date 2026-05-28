@@ -327,7 +327,6 @@
               '<div class="up-name-underline"></div><div class="up-name-underline2"></div>' +
             '</div>' +
             shortHtml +
-            '<div class="up-divider"><div class="up-divider-line"></div><div class="up-divider-text">DETAIL 详情</div><div class="up-divider-line"></div></div>' +
             longHtml +
             '<div class="up-card-foot">CLASSIFIED</div><div class="up-bar-bot"></div>' +
             '<div class="up-quill" id="upQuill" style="' + (User.sealed ? 'display:none;' : '') + '"><img src="https://iili.io/BgIZWvI.md.png" draggable="false"></div>' +
