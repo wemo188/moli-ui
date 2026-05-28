@@ -406,6 +406,7 @@ if (avatarBox) {
     });
   });
 }
+    },
     
     openExpandEditor: function(title, textarea) {
       var old = App.$('#upExpandEditor');
