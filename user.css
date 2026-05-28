@@ -135,20 +135,25 @@
 .p14-slider-val { font-size: 7px; font-weight: 700; color: #8ab0d5; min-width: 20px; text-align: center; font-family: monospace; }
 .p14-color-preview { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; border: 1.5px solid rgba(180,210,240,0.4); box-shadow: inset 0 1px 2px rgba(0,0,0,0.06); }
 
-
 /* ===========================
    编辑页 - 个人档案卡
    =========================== */
+
+/* 卡片容器 */
 .up-card { margin: 0 26px; background: #fff; border: 1px solid #e8e8e8; position: relative; overflow: visible; }
+
+/* 顶部黑色粗线 */
 .up-bar-top { height: 3px; background: #1a1a1a; }
+
+/* 底部斑马线 */
 .up-bar-bot { height: 3px; background: linear-gradient(90deg, #d4d4d4 25%, #1a1a1a 25%, #1a1a1a 75%, #d4d4d4 75%); }
 
-/* 顶部标题 */
+/* 标题区：PERSONAL FILE + 个人档案 */
 .up-card-head { padding: 14px 18px 10px; border-bottom: 1px dashed #e0e0e0; }
-.up-card-head-sub { font-size: 9px; color: #bbb; letter-spacing: 3px; margin-bottom: 2px; }
-.up-card-head-title { font-size: 20px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }
+.up-card-head-sub { font-size: 9px; color: #bbb; letter-spacing: 3px; margin-bottom: 2px; }                           /* 【字体】PERSONAL FILE */
+.up-card-head-title { font-size: 22px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }                       /* 【字体】个 人 档 案 */
 
-/* 头像 */
+/* 头像区 */
 .up-avatar-area { display: flex; justify-content: center; padding: 14px 0 6px; }
 .up-avatar-box { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 2px solid #1a1a1a; background: #f5f5f5; cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
 .up-avatar-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -156,18 +161,18 @@
 
 /* 签名区 */
 .up-sign-area { padding: 4px 18px 8px; text-align: center; }
-.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 14px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }
+.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 14px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】签名第一行(编辑) */
 .up-sign-area input::placeholder { color: #ccc; }
-.up-sign-text { font-size: 14px; color: #666; }
-.up-sign-italic { font-style: italic; font-size: 13px; color: #999; text-align: center; }
+.up-sign-text { font-size: 14px; color: #666; }                                                                        /* 【字体】签名第一行(封存) */
+.up-sign-italic { font-style: italic; font-size: 14px; color: #999; text-align: center; }                               /* 【字体】签名第二行 */
 
 /* 姓名区 */
 .up-name-area { padding: 8px 18px 0; }
-.up-name-label { font-size: 11px; color: #999; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+.up-name-label { font-size: 11px; color: #999; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }  /* 【字体】姓名 NAME 标签 */
 .up-name-label::before { content: ''; width: 3px; height: 3px; background: #1a1a1a; }
-.up-name-input { width: 100%; border: none; background: transparent; font-size: 17px; font-weight: 700; color: #1a1a1a; outline: none; font-family: inherit; padding: 3px 0 5px; box-sizing: border-box; }
+.up-name-input { width: 100%; border: none; background: transparent; font-size: 17px; font-weight: 700; color: #1a1a1a; outline: none; font-family: inherit; padding: 3px 0 5px; box-sizing: border-box; }  /* 【字体】姓名(编辑) */
 .up-name-input::placeholder { color: #ccc; font-weight: 400; }
-.up-name-text { font-size: 17px; font-weight: 700; color: #1a1a1a; padding: 3px 0 5px; }
+.up-name-text { font-size: 17px; font-weight: 700; color: #1a1a1a; padding: 3px 0 5px; }                               /* 【字体】姓名(封存) */
 .up-name-underline { height: 1.5px; background: #1a1a1a; margin-bottom: 1px; }
 .up-name-underline2 { height: 1px; background: #d4d4d4; }
 
@@ -175,31 +180,31 @@
 .up-field { padding: 8px 18px 6px; }
 .up-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
 .up-field-dot { width: 3px; height: 3px; background: #1a1a1a; }
-.up-field-key { font-size: 11px; color: #999; letter-spacing: 2px; font-weight: 600; }
-.up-field-cn { font-size: 11px; color: #bbb; margin-left: 4px; }
+.up-field-key { font-size: 11px; color: #999; letter-spacing: 2px; font-weight: 600; }                                 /* 【字体】标签英文 NICKNAME等 */
+.up-field-cn { font-size: 11px; color: #bbb; margin-left: 4px; }                                                      /* 【字体】标签中文 昵称等 */
 .up-field-line { padding: 4px 0 5px; }
-.up-field-line input { width: 100%; border: none; background: transparent; font-size: 15px; color: #1a1a1a; font-weight: 500; outline: none; font-family: inherit; box-sizing: border-box; }
+.up-field-line input { width: 100%; border: none; background: transparent; font-size: 15px; color: #1a1a1a; font-weight: 500; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】字段输入框(编辑) */
 .up-field-line input::placeholder { color: #ccc; font-weight: 400; }
-.up-field-line .up-text { font-size: 15px; color: #1a1a1a; font-weight: 500; }
+.up-field-line .up-text { font-size: 15px; color: #1a1a1a; font-weight: 500; }                                        /* 【字体】字段值(封存) */
 .up-field-underline { height: 1.5px; background: #1a1a1a; }
 .up-field-underline2 { height: 1px; background: #d4d4d4; margin-top: 1px; }
 
-/* 分隔线 */
+/* 分隔线：DETAIL 详情 */
 .up-divider { margin: 3px 18px; display: flex; align-items: center; gap: 8px; }
 .up-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
-.up-divider-text { font-size: 10px; color: #ccc; letter-spacing: 2px; }
+.up-divider-text { font-size: 10px; color: #ccc; letter-spacing: 2px; }                                               /* 【字体】DETAIL 详情 */
 
 /* 长字段：个人描述 */
 .up-field-box { min-height: 45px; border: 1px dashed #e0e0e0; padding: 6px 8px; background: #fff; position: relative; }
-.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 15px; color: #555; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }
+.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 15px; color: #555; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
 .up-field-box textarea::placeholder { color: #ccc; }
-.up-field-box .up-text { font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap; }
+.up-field-box .up-text { font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap; }                      /* 【字体】个人描述(封存) */
 .up-expand-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8); border: 1px solid #d0d8e4; border-radius: 4px; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent; }
 .up-expand-btn:active { background: #eef2f7; }
 .up-expand-btn svg { width: 12px; height: 12px; stroke: #8aa0b8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* 底部 */
-.up-card-foot { padding: 0 18px 8px; font-size: 9px; color: #d4d4d4; letter-spacing: 1px; font-family: monospace; }
+.up-card-foot { padding: 0 18px 8px; font-size: 9px; color: #d4d4d4; letter-spacing: 1px; font-family: monospace; }    /* 【字体】CLASSIFIED */
 
 /* 羽毛笔 */
 .up-quill { position: absolute; bottom: -24px; right: -8px; width: 80px; height: 80px; cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 5; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1)) brightness(1.6) contrast(0.65); transition: transform 0.3s ease; }
@@ -215,15 +220,14 @@
 .up-seal-outer { width: 140px; height: 140px; border: 3.5px solid rgba(160,30,30,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 1.5px rgba(160,30,30,0.15); position: relative; }
 .up-seal-dashes { position: absolute; inset: 5px; border: 2px dashed rgba(160,30,30,0.25); border-radius: 50%; }
 .up-seal-inner { width: 96px; height: 96px; border: 3px solid rgba(160,30,30,0.55); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-.up-seal-top { position: absolute; top: 7px; font-size: 6px; color: rgba(160,30,30,0.5); letter-spacing: 2.5px; font-weight: 700; }
-.up-seal-main { font-size: 32px; font-weight: 900; color: rgba(160,30,30,0.7); letter-spacing: 6px; text-indent: 6px; line-height: 1; margin-top: 2px; }
+.up-seal-top { position: absolute; top: 7px; font-size: 6px; color: rgba(160,30,30,0.5); letter-spacing: 2.5px; font-weight: 700; }  /* 【字体】PERSONAL FILE */
+.up-seal-main { font-size: 32px; font-weight: 900; color: rgba(160,30,30,0.7); letter-spacing: 6px; text-indent: 6px; line-height: 1; margin-top: 2px; }  /* 【字体】封存 */
 .up-seal-line { width: 46px; height: 2px; background: rgba(160,30,30,0.35); margin: 4px 0 3px; }
 .up-seal-stars { display: flex; gap: 5px; align-items: center; }
-.up-seal-star { font-size: 6px; color: rgba(160,30,30,0.45); }
-.up-seal-label { font-size: 6px; color: rgba(160,30,30,0.4); letter-spacing: 1.5px; font-weight: 600; }
-.up-seal-date { position: absolute; bottom: 6px; font-size: 6px; color: rgba(160,30,30,0.4); letter-spacing: 2px; font-family: monospace; font-weight: 600; }
+.up-seal-star { font-size: 6px; color: rgba(160,30,30,0.45); }                                                          /* 【字体】★ */
+.up-seal-label { font-size: 6px; color: rgba(160,30,30,0.4); letter-spacing: 1.5px; font-weight: 600; }                /* 【字体】SEALED */
+.up-seal-date { position: absolute; bottom: 6px; font-size: 6px; color: rgba(160,30,30,0.4); letter-spacing: 2px; font-family: monospace; font-weight: 600; }  /* 【字体】日期 */
 .up-seal-noise { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 30% 40%, transparent 40%, rgba(255,255,255,0.15) 41%, transparent 42%), radial-gradient(circle at 65% 55%, transparent 30%, rgba(255,255,255,0.2) 31%, transparent 33%), radial-gradient(circle at 45% 70%, transparent 35%, rgba(255,255,255,0.18) 36%, transparent 38%), radial-gradient(circle at 70% 25%, transparent 25%, rgba(255,255,255,0.22) 26%, transparent 28%); }
-
 
 /* ===========================
    全局 - 滚动容器
