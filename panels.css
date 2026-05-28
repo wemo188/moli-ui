@@ -1,5 +1,16 @@
+/* =========================
+   空状态提示
+========================= */
+.empty-hint {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 60px 20px;
+}
 
-/* ====== 全屏面板壳（日历/微信等用） ====== */
+/* =========================
+   全屏面板壳（日历/微信等）
+========================= */
 .fullpage-panel {
   position: fixed;
   inset: 0;
@@ -8,15 +19,20 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
-.fullpage-panel.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
-.fullpage-panel.show { transform: translateX(0); opacity: 1; }
 
-.empty-hint {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-  padding: 60px 20px;
+.fullpage-panel.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fullpage-panel.show {
+  transform: translateX(0);
+  opacity: 1;
 }
 
 /* =========================
@@ -207,7 +223,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  top: auto; /* 默认靠底 */
+  top: auto;
   max-height: 45vh;
   background: rgba(255,255,255,.22);
   backdrop-filter: blur(20px);
@@ -217,7 +233,6 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 -8px 40px rgba(0,0,0,.1);
-  /* ★ 增加了 top, max-height, border-radius 的过渡，让形变丝滑 */
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s, top 0.35s cubic-bezier(0.32,0.72,0,1), max-height 0.35s cubic-bezier(0.32,0.72,0,1), height 0.35s cubic-bezier(0.32,0.72,0,1), border-radius 0.3s;
 }
 
@@ -232,40 +247,42 @@
   opacity: 1;
 }
 
-/* ★ 新增：全局半面屏状态类 */
 /* 上移状态 */
 .half-panel.hp-pos-top {
   top: 0 !important;
   bottom: auto !important;
   border-radius: 0 0 24px 24px !important;
 }
+
 /* 扩大状态 */
 .half-panel.hp-size-full {
   max-height: 90vh !important;
   height: 90vh !important;
 }
+
 /* 同时上移+扩大：全屏 */
 .half-panel.hp-pos-top.hp-size-full {
   max-height: 100vh !important;
   height: 100vh !important;
   border-radius: 0 !important;
 }
+
 /* 上移状态下关闭，往上滑出屏幕 */
 .half-panel.hp-pos-top.hidden {
   transform: translateY(-100%);
 }
 
-/* 按钮组紧贴标题，并把关闭按钮推到最右 */
+/* 按钮组 */
 .hp-ctrl-btns {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-left: 0;
-  margin-right: auto; /* ★ 关键：靠这句霸占右边空间 */
+  margin-right: auto;
   flex-shrink: 0;
 }
 
-/* 玻璃质感按钮（恢复最漂亮的那个版本） */
+/* 玻璃质感按钮 */
 .hp-ctrl-btn {
   display: inline-flex;
   align-items: center;
@@ -296,7 +313,6 @@
 }
 .hp-ctrl-btn:active { transform: scale(.93); }
 
-/* 以下保留你原本的 hp-handle, hp-header 等样式... */
 .hp-handle {
   width: 36px;
   height: 4px;
@@ -304,20 +320,55 @@
   background: rgba(0,0,0,.12);
   margin: 10px auto 8px;
 }
-.hp-header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; border-bottom: 1.5px solid var(--border); flex-shrink: 0; }
+
+.hp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 14px;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+
 .hp-header h2 {
   font-size: 23px;
   font-weight: 800;
   color: var(--text-primary);
 }
-.hp-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; -webkit-tap-highlight-color: transparent; }
-.hp-close svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
-.hp-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 20px 0; }
+
+.hp-close {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hp-close svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.hp-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 20px 0;
+}
 
 .hp-section-label {
   font-size: 11px;
   font-weight: 700;
-  color: #1a1a1a;       /* ★ 原来是 #999 */
+  color: #1a1a1a;
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
@@ -361,7 +412,7 @@
 .hp-slider-label {
   font-size: 12px;
   font-weight: 700;
-  color: #1a1a1a;       /* ★ 原来是 #5a7a9a */
+  color: #1a1a1a;
   width: 32px;
   flex-shrink: 0;
 }
@@ -369,7 +420,7 @@
 .hp-slider-val {
   font-size: 12px;
   font-weight: 700;
-  color: #1a1a1a;       /* ★ 原来是 var(--text-primary) */
+  color: #1a1a1a;
   width: 36px;
   text-align: right;
   flex-shrink: 0;
@@ -391,7 +442,6 @@
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   letter-spacing: 1px;
-  /* ★ 加这三行 */
   background: #ffffff;
   color: #1a1a1a;
   border: 1.5px solid rgba(0,0,0,.1);
