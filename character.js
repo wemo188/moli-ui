@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -82,7 +81,7 @@
 
       var cardsHtml = '';
       if (!chars.length) {
-        cardsHtml = '<div style="padding:60px 20px;text-align:center;color:#bbb;font-size:13px;letter-spacing:1px;">暂无角色，点击上方创建</div>';
+        cardsHtml = '<div class="cl-empty">暂无角色，点击上方创建</div>';
       } else {
         cardsHtml = chars.map(function(c, i) {
           var idx = String(i + 1).padStart(2, '0');
@@ -123,18 +122,7 @@
         }).join('');
       }
 
-      var cfg = MODE_CFG[0];
-      var popupColorsHtml = cfg.controls.map(function(ctrl) {
-        var def = cfg.defaults;
-        return '<div class="cl-color-custom-item">' +
-          '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + def[ctrl.key] + '" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:' + def[ctrl.key] + ';cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>' +
-          '<label>' + ctrl.label + '</label></div>';
-      }).join('');
-
-      container.innerHTML =
-        '<div class="cl-page" style="padding:20px 16px 40px;">' +
-          cardsHtml +
-        '</div>';
+      container.innerHTML = '<div class="cl-page-inner">' + cardsHtml + '</div>';
 
       // 配色弹窗
       var oldPopup = document.querySelector('#clColorPopup');
@@ -143,6 +131,13 @@
       var popup = document.createElement('div');
       popup.id = 'clColorPopup';
       popup.className = 'cl-color-popup';
+      var cfg = MODE_CFG[0];
+      var popupColorsHtml = cfg.controls.map(function(ctrl) {
+        var def = cfg.defaults;
+        return '<div class="cl-color-custom-item">' +
+          '<div class="cl-cc" data-key="' + ctrl.key + '" data-value="' + def[ctrl.key] + '" style="background:' + def[ctrl.key] + ';"></div>' +
+          '<label>' + ctrl.label + '</label></div>';
+      }).join('');
       popup.innerHTML =
         '<div class="cl-color-popup-title">自定义配色</div>' +
         '<div class="cl-color-custom" id="clPopupColors">' + popupColorsHtml + '</div>' +
@@ -154,14 +149,12 @@
       var activeCharId = null;
       var activeCard = null;
 
-      // 应用卡片颜色
       container.querySelectorAll('.char-list-wrap').forEach(function(card) {
         var cid = card.dataset.charId;
         var c = Character.getById(cid);
         if (c) Character.applyCardVars(card, Character.getColors(c, 0));
       });
 
-      // 头像点击
       container.querySelectorAll('.cl-avatar-box').forEach(function(box) {
         box.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -169,14 +162,12 @@
         });
       });
 
-      // 封面点击
       container.querySelectorAll('.cl-cover-box').forEach(function(box) {
         box.addEventListener('click', function() {
           Character.uploadImage(box.dataset.id, 'cover', box);
         });
       });
 
-      // 世界书
       container.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -192,27 +183,27 @@
 
           var overlay = document.createElement('div');
           overlay.id = 'wbMountMenu';
-          overlay.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+          overlay.className = 'cl-overlay';
 
           var listHtml = wbBooks.map(function(b) {
             var checked = c.worldbookIds.indexOf(b.id) >= 0 ? ' checked' : '';
             var count = (b.entries || []).length;
-            return '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;-webkit-tap-highlight-color:transparent;">' +
-              '<input type="checkbox" data-wbid="' + b.id + '"' + checked + ' style="width:18px;height:18px;accent-color:#111;">' +
-              '<div style="flex:1;min-width:0;">' +
-                '<div style="font-size:14px;font-weight:700;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + App.esc(b.name || '未命名') + '</div>' +
-                '<div style="font-size:12px;color:#aaa;margin-top:2px;">' + count + ' 个条目</div>' +
+            return '<label class="cl-wb-item">' +
+              '<input type="checkbox" data-wbid="' + b.id + '"' + checked + '>' +
+              '<div class="cl-wb-info">' +
+                '<div class="cl-wb-name">' + App.esc(b.name || '未命名') + '</div>' +
+                '<div class="cl-wb-count">' + count + ' 个条目</div>' +
               '</div>' +
             '</label>';
           }).join('');
 
           overlay.innerHTML =
-            '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;width:300px;max-height:70vh;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;overflow:hidden;">' +
-              '<div style="padding:16px 18px 12px;border-bottom:1.5px solid #eee;font-size:15px;font-weight:800;color:#111;letter-spacing:1px;text-align:center;">挂载世界书</div>' +
-              '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">' + listHtml + '</div>' +
-              '<div style="display:flex;gap:8px;padding:12px 16px;border-top:1.5px solid #eee;">' +
-                '<button id="wbMountConfirm" type="button" style="flex:1;padding:11px;background:#111;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">确定</button>' +
-                '<button id="wbMountCancel" type="button" style="flex:1;padding:11px;background:#fff;color:#666;border:1.5px solid #ddd;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+            '<div class="cl-overlay-box">' +
+              '<div class="cl-overlay-title">挂载世界书</div>' +
+              '<div class="cl-overlay-body">' + listHtml + '</div>' +
+              '<div class="cl-overlay-btns">' +
+                '<button id="wbMountConfirm" type="button" class="cl-overlay-btn-primary">确定</button>' +
+                '<button id="wbMountCancel" type="button" class="cl-overlay-btn-cancel">取消</button>' +
               '</div>' +
             '</div>';
 
@@ -240,7 +231,6 @@
         });
       });
 
-      // 编辑
       container.querySelectorAll('.cl-act-edit').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -248,7 +238,6 @@
         });
       });
 
-      // 删除
       container.querySelectorAll('.cl-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -260,7 +249,6 @@
         });
       });
 
-      // 配色弹窗逻辑
       function openPopupFor(charId, card) {
         activeCharId = charId;
         activeCard = card;
@@ -375,7 +363,6 @@
       popup.addEventListener('click', function(e) { e.stopPropagation(); });
       popup.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
 
-      // 点击空白关闭弹窗
       container.addEventListener('click', function() {
         if (App._cpJustClosed || App.$('#cpOverlay')) return;
         popup.classList.remove('show');
@@ -388,14 +375,14 @@
 
       var menu = document.createElement('div');
       menu.id = 'imgSourceMenu';
-      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+      menu.className = 'cl-overlay';
       menu.innerHTML =
-        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button id="imgFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
-          '<button id="imgFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
-          '<button id="imgFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除图片</button>' +
-          '<button id="imgFromCancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+        '<div class="cl-overlay-box cl-img-menu">' +
+          '<div class="cl-overlay-title">选择图片来源</div>' +
+          '<button id="imgFromAlbum" type="button" class="cl-img-btn">从相册选择</button>' +
+          '<button id="imgFromUrl" type="button" class="cl-img-btn">输入图片URL</button>' +
+          '<button id="imgFromDel" type="button" class="cl-img-btn cl-img-btn-del">删除图片</button>' +
+          '<button id="imgFromCancel" type="button" class="cl-img-btn-cancel">取消</button>' +
         '</div>';
       document.body.appendChild(menu);
 
@@ -441,15 +428,15 @@
       menu.querySelector('#imgFromUrl').addEventListener('click', function() {
         menu.remove();
         var urlPanel = document.createElement('div');
-        urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+        urlPanel.className = 'cl-overlay';
         urlPanel.innerHTML =
-          '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
-            '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;">输入图片URL</div>' +
-            '<input id="imgUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
-            '<div id="imgUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
-            '<div style="display:flex;gap:8px;">' +
-              '<button id="imgUrlConfirm" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
-              '<button id="imgUrlCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
+          '<div class="cl-overlay-box cl-url-box">' +
+            '<div class="cl-overlay-title">输入图片URL</div>' +
+            '<input id="imgUrlInput" type="text" placeholder="https://..." class="cl-url-input">' +
+            '<div id="imgUrlPreview" class="cl-url-preview"><img></div>' +
+            '<div class="cl-overlay-btns">' +
+              '<button id="imgUrlConfirm" type="button" class="cl-overlay-btn-primary">确定</button>' +
+              '<button id="imgUrlCancel" type="button" class="cl-overlay-btn-cancel">取消</button>' +
             '</div>' +
           '</div>';
         document.body.appendChild(urlPanel);
