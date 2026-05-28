@@ -627,9 +627,6 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     function buildPresetsHtml(){return savedPresets.map(function(c,i){var safeC=App.escAttr(c);var bgStyle=c.indexOf('gradient')>=0?c:safeC;return '<div class="cp-preset" data-color="'+safeC+'" data-idx="'+i+'" style="background:'+bgStyle+';"><div class="cp-preset-del">✕</div></div>';}).join('')+'<div class="cp-preset-add">+</div>';}
 
-    var gmBtnActive2=initGradCount===2?' style="flex:1;padding:5px 0;border:1.5px solid #1a1a1a;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;"':' style="flex:1;padding:5px 0;border:1.5px solid rgba(0,0,0,.08);border-radius:8px;background:rgba(0,0,0,.02);font-size:11px;font-weight:600;color:#111;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;"';
-    var gmBtnActive3=initGradCount===3?' style="flex:1;padding:5px 0;border:1.5px solid #1a1a1a;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;"':' style="flex:1;padding:5px 0;border:1.5px solid rgba(0,0,0,.08);border-radius:8px;background:rgba(0,0,0,.02);font-size:11px;font-weight:600;color:#111;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;"';
-
     overlay.innerHTML=
       '<div class="cp-panel">'+
         '<div class="cp-header"><span class="cp-title">选择颜色</span><button class="cp-close" id="cpClose" type="button">✕</button></div>'+
@@ -639,7 +636,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
         '<span class="cp-bar-label">色相</span>'+
         '<div class="cp-hue-wrap" id="cpHueWrap"><div class="cp-hue-bar"></div><div class="cp-hue-cursor" id="cpHueCursor"></div></div>'+
         '<div class="cp-gradient-area" id="cpGradientArea" style="'+(initGrad?'':'display:none;')+'">'+
-          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;"><button class="cp-grad-mode-btn'+(initGradCount===2?' active':'')+'" data-gmode="2" type="button"'+gmBtnActive2+'>双色</button><button class="cp-grad-mode-btn'+(initGradCount===3?' active':'')+'" data-gmode="3" type="button"'+gmBtnActive3+'>三色</button></div>'+
+          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;"><button class="cp-grad-mode-btn' + (initGradCount === 2 ? ' active' : '') + '" data-gmode="2" type="button">双色</button>
+<button class="cp-grad-mode-btn' + (initGradCount === 3 ? ' active' : '') + '" data-gmode="3" type="button">三色</button></div>'+
           '<div class="cp-grad-stops"><div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div><div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>'+(initGradCount===3?'中间':'终点')+'</span></div><div class="cp-grad-stop" id="cpStop2" data-stop="2" style="'+(initGradCount===3?'':'display:none;')+'"><div class="cp-grad-dot" id="cpGradDot2"></div><span>终点</span></div></div>'+
           '<div class="cp-grad-preview" id="cpGradPreview"><div class="cp-grad-preview-inner" id="cpGradInner"></div></div>'+
           '<div class="cp-grad-dir"><span style="font-size:10px;color:#111;font-weight:600;">方向</span><input type="range" id="cpGradAngle" min="0" max="360" step="1" value="'+initAngle+'"><span id="cpGradAngleVal" style="font-size:10px;color:#111;font-weight:600;width:30px;text-align:right;">'+initAngle+'°</span></div>'+
@@ -712,7 +710,12 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
         gradMode=true;overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='gradient');});
         if(gradArea)gradArea.style.display='';
         if(gradAngleInput){gradAngleInput.value=gradAngle;gradAngleValEl.textContent=gradAngle+'°';}
-        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){b.classList.remove('active');b.style.background='rgba(0,0,0,.02)';b.style.color='#111';b.style.borderColor='rgba(0,0,0,.08)';if(parseInt(b.dataset.gmode)===gradColorCount){b.classList.add('active');b.style.background='#1a1a1a';b.style.color='#fff';b.style.borderColor='#1a1a1a';}});
+        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){
+  b.classList.remove('active');
+  if (parseInt(b.dataset.gmode) === gradColorCount) {
+    b.classList.add('active');
+  }
+});
         var stop1Label=overlay.querySelector('#cpStop1 span');var stop2El=overlay.querySelector('#cpStop2');
         if(gradColorCount===3){if(stop1Label)stop1Label.textContent='中间';if(stop2El)stop2El.style.display='';}else{if(stop1Label)stop1Label.textContent='终点';if(stop2El)stop2El.style.display='none';}
         activeStop=0;setFromColor(gradStops[0].color);updateGradPreview();
@@ -774,8 +777,10 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();
-        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){b.classList.remove('active');b.style.background='rgba(0,0,0,.02)';b.style.color='#111';b.style.borderColor='rgba(0,0,0,.08)';});
-        btn.classList.add('active');btn.style.background='#1a1a1a';btn.style.color='#fff';btn.style.borderColor='#1a1a1a';
+        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){
+  b.classList.remove('active');
+});
+btn.classList.add('active');
         gradColorCount=parseInt(btn.dataset.gmode);
         var stop1Label=overlay.querySelector('#cpStop1 span');
         var stop2=overlay.querySelector('#cpStop2');
