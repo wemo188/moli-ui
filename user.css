@@ -2,7 +2,7 @@
 /* ===========================
    列表页 - 标题栏
    =========================== */
-.archive-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 8px; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.archive-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 6px; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
 
 /* ===========================
    列表页 - 卡片区
@@ -12,7 +12,7 @@
 /* ===========================
    编辑页 - 标题栏
    =========================== */
-.profile-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 16px 10px; flex-shrink: 0; background: #fff; }
+.profile-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px 10px; flex-shrink: 0; background: #fff; }
 
 /* ===========================
    展开编辑器 - 标题栏
@@ -198,12 +198,12 @@
 
 /* 长字段：个人描述 */
 .up-field-box { min-height: 45px; border: 1px dashed #e0e0e0; padding: 6px 8px; background: #fff; position: relative; }
-.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 15px; color: #555; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
+.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 17px; color: #000; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
 .up-field-box textarea::placeholder { color: #ccc; }
 .up-field-box .up-text { font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap; }                      /* 【字体】个人描述(封存) */
 .up-expand-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8); border: 1px solid #d0d8e4; border-radius: 4px; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent; }
 .up-expand-btn:active { background: #eef2f7; }
-.up-expand-btn svg { width: 12px; height: 12px; stroke: #8aa0b8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.up-expand-btn svg { width: 12px; height: 12px; stroke: #000; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* 底部 */
 .up-card-foot { padding: 0 18px 8px; font-size: 9px; color: #d4d4d4; letter-spacing: 1px; font-family: monospace; }    /* 【字体】CLASSIFIED */
