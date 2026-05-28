@@ -62,7 +62,8 @@
 
 .pc-close-btn {
   position: absolute;
-  top: 0;
+  top: 50%;
+  transform: translateY(-50%);
   right: 5px;
   width: 38px;
   height: 38px;
@@ -71,10 +72,8 @@
   justify-content: center;
   font-size: 18px;
   color: #000;
-  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.pc-close-btn:active { background: rgba(0,0,0,0.05); }
 
 .pc-body {
   flex: 1;
@@ -96,12 +95,6 @@
   display: flex;
   align-items: center;
   gap: 5px;
-}
-.pc-label::before {
-  content: '★';
-  font-size: 8px;
-  color: #000;
-  flex-shrink: 0;
 }
 
 .pc-input {
@@ -130,12 +123,10 @@
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  cursor: pointer;
   color: #000;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 }
-.pc-icon-btn:active { background: rgba(0,0,0,0.05); }
 .pc-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pc-icon-btn.danger { color: #c9706b; border-color: rgba(201,112,107,0.3); background: rgba(201,112,107,0.1); }
 .pc-icon-btn.danger:active { background: rgba(201,112,107,0.2); }
@@ -207,7 +198,6 @@
 .pc-btn-save { background: #000; color: #fff; }
 .pc-btn-save:active { background: #333; }
 .pc-btn-cancel { background: rgba(255, 255, 255, 0.5); color: #000; border: 1px solid rgba(0, 0, 0, 0.2); }
-.pc-btn-cancel:active { background: rgba(0,0,0,0.05); }
 
 /* =========================
    半屏面板（公共）
