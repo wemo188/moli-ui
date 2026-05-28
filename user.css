@@ -160,12 +160,12 @@
 
 /* 头像区 */
 .up-avatar-area { display: flex; justify-content: center; padding: 14px 0 6px; }
-.up-avatar-box { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #1a1a1a; background: #f5f5f5; cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
+.up-avatar-box { width: 75px; height: 75px; border-radius: 50%; overflow: hidden; border: 2px solid #1a1a1a; background: #f5f5f5; cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
 .up-avatar-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .up-avatar-box svg { width: 22px; height: 22px; stroke: #ccc; fill: none; stroke-width: 1.5; }
 
 /* 签名区 */
-.up-sign-area { padding: 4px 18px 8px; text-align: center; }
+.up-sign-area { padding: 7px 18px 8px; text-align: center; }
 .up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 14px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】签名第一行(编辑) */
 .up-sign-area input::placeholder { color: #ccc; }
 .up-sign-text { font-size: 14px; color: #666; }                                                                        /* 【字体】签名第一行(封存) */
@@ -183,7 +183,7 @@
 
 /* 短字段：昵称、性别、年龄、生日、手机号、微信号、微信密码 */
 .up-field { padding: 8px 18px 6px; }
-.up-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+.up-field-label { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
 .up-field-dot { width: 3px; height: 3px; background: #1a1a1a; }
 .up-field-key { font-size: 12px; color: #999; letter-spacing: 2px; font-weight: 600; }                                 /* 【字体】标签英文 NICKNAME等 */
 .up-field-cn { font-size: 12px; color: #bbb; margin-left: 4px; }                                                      /* 【字体】标签中文 昵称等 */
@@ -193,11 +193,6 @@
 .up-field-line .up-text { font-size: 15px; color: #1a1a1a; font-weight: 500; }                                        /* 【字体】字段值(封存) */
 .up-field-underline { height: 1.5px; background: #1a1a1a; }
 .up-field-underline2 { height: 1px; background: #d4d4d4; margin-top: 1px; }
-
-/* 分隔线：DETAIL 详情 */
-.up-divider { margin: 3px 18px; display: flex; align-items: center; gap: 8px; }
-.up-divider-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d4d4d4 0, #d4d4d4 4px, transparent 4px, transparent 8px); }
-.up-divider-text { font-size: 10px; color: #ccc; letter-spacing: 2px; }                                               /* 【字体】DETAIL 详情 */
 
 /* 长字段：个人描述 */
 .up-field-box { min-height: 45px; border: 1px dashed #e0e0e0; padding: 6px 8px; background: #fff; position: relative; }
