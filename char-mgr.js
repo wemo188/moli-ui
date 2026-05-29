@@ -450,23 +450,23 @@ charPhone: d.charPhone, charWechat: d.charWechat,
 
       // 保存角色
       if (CharMgr.editingCharId) {
-        var ex = App.character.getById(CharMgr.editingCharId);
-        if (ex) {
-          Object.keys(charObj).forEach(function(k) {
-            if (k === 'avatar') { ex.avatar = charObj.avatar; }
-            else ex[k] = charObj[k];
-          });
-          App.character.save();
-        }
-      } else {
-        charObj.id = 'char-' + Date.now();
-        charObj.cover = '';
-        charObj.worldbookMounted = false;
-        charObj.modeColors = [{}, {}, {}];
-        App.character.list.push(charObj);
-        App.character.save();
-        CharMgr.editingCharId = charObj.id;
-      }
+  var ex = App.character.getById(CharMgr.editingCharId);
+  if (ex) {
+    Object.keys(charObj).forEach(function(k) {
+      if (k === 'avatar') { ex.avatar = charObj.avatar; }
+      else ex[k] = charObj[k];
+    });
+    App.character.save();
+  }
+} else {
+  charObj.id = 'char-' + Date.now();
+  charObj.cover = '';
+  charObj.worldbookMounted = false;
+  charObj.modeColors = [{}, {}, {}];
+  App.character.list.push(charObj);
+  App.character.save();
+  CharMgr.editingCharId = charObj.id;
+}
 
       // 保存设置
       CharMgr.charConfigs[CharMgr.editingCharId] = cfgObj;
