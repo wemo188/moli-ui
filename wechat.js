@@ -539,7 +539,7 @@
         document.body.appendChild(panel);
       }
       App.wechat = Wechat;
-      App.safeOn('#dockLong', 'click', function() { Wechat.open(); });
+      App.safeOn('#dockChat', 'click', function() { Wechat.open(); });
     }
   };
 
