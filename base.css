@@ -253,14 +253,12 @@ img.img-fill { transform: none !important; }
 .screen-page {
   width: 100vw;
   height: 100vh;
-  height: -webkit-fill-available;
   min-height: 100vh;
-  min-height: -webkit-fill-available;
   flex-shrink: 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: calc(20px + var(--safe-top)) 18px calc(34px + var(--safe-bottom));
+  padding: 20px 18px 34px;
   overflow: visible;
 }
 
@@ -391,7 +389,7 @@ img.img-fill { transform: none !important; }
 
 @media (max-width: 640px) {
   .screen-page {
-    padding: calc(28px + var(--safe-top)) 16px calc(30px + var(--safe-bottom));
+    padding: 28px 16px 30px;
   }
 }
 
