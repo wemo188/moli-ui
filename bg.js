@@ -350,12 +350,14 @@
   layer.style.backgroundSize = 'cover';
   layer.style.backgroundPosition = 'center center';
   layer.style.backgroundRepeat = 'no-repeat';
-  layer.style.left = '-1px';
-  layer.style.right = '-1px';
-  layer.style.top = '-1px';
-  layer.style.bottom = '-1px';
-  layer.style.width = 'auto';
-  layer.style.height = 'auto';
+  layer.style.position = 'fixed';
+  layer.style.left = '0';
+  layer.style.right = '0';
+  layer.style.top = '0';
+  layer.style.bottom = '0';
+  layer.style.width = '100%';
+  layer.style.height = '100vh';
+  layer.style.minHeight = '-webkit-fill-available';
   layer.style.margin = '0';
   layer.style.padding = '0';
   if(data && data.src) {
