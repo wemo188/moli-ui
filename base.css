@@ -39,6 +39,7 @@ body {
   --radius: 16px;
   --radius-sm: 10px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 * {
@@ -245,7 +246,7 @@ img.img-fill { transform: none !important; }
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 20px 18px calc(34px + var(--safe-bottom));
+  padding: calc(20px + var(--safe-top)) 18px calc(34px + var(--safe-bottom));
   overflow: visible;
 }
 
@@ -376,7 +377,7 @@ img.img-fill { transform: none !important; }
 
 @media (max-width: 640px) {
   .screen-page {
-    padding: 28px 16px calc(30px + var(--safe-bottom));
+    padding: calc(28px + var(--safe-top)) 16px calc(30px + var(--safe-bottom));
   }
 }
 
