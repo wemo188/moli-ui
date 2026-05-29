@@ -665,7 +665,7 @@ var Offline={
   init:function(){
     App.offline=Offline;
 
-    App.safeOn('#dockCheck','click',function(){
+    App.safeOn('#dockStory','click',function(){
       var chars=App.character?App.character.list:[];
       if(!chars||!chars.length){App.showToast('请先添加角色');return;}
       if(chars.length===1){Offline.openFor(chars[0].id);return;}
