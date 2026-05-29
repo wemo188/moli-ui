@@ -3,7 +3,7 @@
 ========================= */
 .dock {
   position: fixed;
-  bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 18px));
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 900;
