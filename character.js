@@ -372,119 +372,135 @@
     },
 
     uploadImage: function(charId, field, box) {
-      var old = App.$('#imgSourceMenu');
-      if (old) old.remove();
+  var old = App.$('#imgSourceMenu');
+  if (old) old.remove();
 
-      var menu = document.createElement('div');
-      menu.id = 'imgSourceMenu';
-      menu.className = 'cl-overlay';
-      menu.innerHTML =
-        '<div class="cl-overlay-box cl-img-menu">' +
-          '<div class="cl-overlay-title">选择图片来源</div>' +
-          '<button id="imgFromAlbum" type="button" class="cl-img-btn">从相册选择</button>' +
-          '<button id="imgFromUrl" type="button" class="cl-img-btn">输入图片URL</button>' +
-          '<button id="imgFromDel" type="button" class="cl-img-btn cl-img-btn-del">删除图片</button>' +
-          '<button id="imgFromCancel" type="button" class="cl-img-btn-cancel">取消</button>' +
-        '</div>';
-      document.body.appendChild(menu);
+  var menu = document.createElement('div');
+  menu.id = 'imgSourceMenu';
+  menu.className = 'cl-overlay';
+  menu.innerHTML =
+    '<div class="cl-overlay-box cl-img-menu">' +
+      '<div class="cl-overlay-title">选择图片来源</div>' +
+      '<button id="imgFromAlbum" type="button" class="cl-img-btn">从相册选择</button>' +
+      '<button id="imgFromUrl" type="button" class="cl-img-btn">输入图片URL</button>' +
+      '<button id="imgFromDel" type="button" class="cl-img-btn cl-img-btn-del">删除图片</button>' +
+      '<button id="imgFromCancel" type="button" class="cl-img-btn-cancel">取消</button>' +
+    '</div>';
+  document.body.appendChild(menu);
 
-      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelector('#imgFromCancel').addEventListener('click', function() { menu.remove(); });
+  menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+  menu.querySelector('#imgFromCancel').addEventListener('click', function() { menu.remove(); });
 
-      menu.querySelector('#imgFromDel').addEventListener('click', function() {
-        menu.remove();
-        var c = Character.getById(charId);
-        if (c) { c[field] = ''; Character.save(); }
-        if (field === 'avatar') box.innerHTML = '<div class="cl-avatar-empty"></div>';
-        else box.innerHTML = '<div class="cl-cover-empty"></div>';
-        App.showToast('已删除');
-      });
+  menu.querySelector('#imgFromDel').addEventListener('click', function() {
+    menu.remove();
+    var c = Character.getById(charId);
+    if (c) {
+      c[field] = '';
+      if (field === 'cover') c.avatar = '';
+      Character.save();
+    }
+    if (field === 'avatar') box.innerHTML = '<div class="cl-avatar-empty"></div>';
+    else box.innerHTML = '<div class="cl-cover-empty"></div>';
+    App.showToast('已删除');
+  });
 
-      menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
-        menu.remove();
-        var input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        document.body.appendChild(input);
-        input.onchange = function(e) {
-          var file = e.target.files[0];
-          document.body.removeChild(input);
-          if (!file) return;
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            var src = ev.target.result;
-            if (App.cropImage) {
-              App.cropImage(src, function(cropped) {
-                var c = Character.getById(charId);
-                if (c) { c[field] = cropped; Character.save(); }
-                box.innerHTML = '<img src="' + cropped + '">';
-              });
-            } else {
-              Character._compressAndSet(src, charId, field, box);
+  menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
+    menu.remove();
+    var input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    document.body.appendChild(input);
+    input.onchange = function(e) {
+      var file = e.target.files[0];
+      document.body.removeChild(input);
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var src = ev.target.result;
+        if (App.cropImage) {
+          App.cropImage(src, function(cropped) {
+            var c = Character.getById(charId);
+            if (c) {
+              c[field] = cropped;
+              if (field === 'cover') c.avatar = cropped;
+              Character.save();
             }
-          };
-          reader.readAsDataURL(file);
-        };
-        input.click();
-      });
-
-      menu.querySelector('#imgFromUrl').addEventListener('click', function() {
-        menu.remove();
-        var urlPanel = document.createElement('div');
-        urlPanel.className = 'cl-overlay';
-        urlPanel.innerHTML =
-          '<div class="cl-overlay-box cl-url-box">' +
-            '<div class="cl-overlay-title">输入图片URL</div>' +
-            '<input id="imgUrlInput" type="text" placeholder="https://..." class="cl-url-input">' +
-            '<div id="imgUrlPreview" class="cl-url-preview"><img></div>' +
-            '<div class="cl-overlay-btns">' +
-              '<button id="imgUrlConfirm" type="button" class="cl-overlay-btn-primary">确定</button>' +
-              '<button id="imgUrlCancel" type="button" class="cl-overlay-btn-cancel">取消</button>' +
-            '</div>' +
-          '</div>';
-        document.body.appendChild(urlPanel);
-
-        urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
-        urlPanel.querySelector('#imgUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
-
-        var previewBox = urlPanel.querySelector('#imgUrlPreview');
-        var previewImg = previewBox.querySelector('img');
-        urlPanel.querySelector('#imgUrlInput').addEventListener('input', function() {
-          var v = this.value.trim();
-          if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
-            previewImg.src = v; previewBox.style.display = 'block';
-            previewImg.onerror = function() { previewBox.style.display = 'none'; };
-          } else { previewBox.style.display = 'none'; }
-        });
-
-        urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
-          var url = urlPanel.querySelector('#imgUrlInput').value.trim();
-          if (!url) { App.showToast('请输入URL'); return; }
-          urlPanel.remove();
-          var c = Character.getById(charId);
-          if (c) { c[field] = url; Character.save(); }
-          box.innerHTML = '<img src="' + App.escAttr(url) + '">';
-          App.showToast('已设置');
-        });
-      });
-    },
-
-    _compressAndSet: function(src, charId, field, box) {
-      var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement('canvas');
-        var max = field === 'avatar' ? 512 : 1200;
-        var w = img.width, h = img.height;
-        if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-        else { if (h > max) { w = w * max / h; h = max; } }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.92);
-        var c = Character.getById(charId);
-        if (c) { c[field] = compressed; Character.save(); }
-        box.innerHTML = '<img src="' + compressed + '">';
+            box.innerHTML = '<img src="' + cropped + '">';
+          });
+        } else {
+          Character._compressAndSet(src, charId, field, box);
+        }
       };
-      img.src = src;
-    },
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
+
+  menu.querySelector('#imgFromUrl').addEventListener('click', function() {
+    menu.remove();
+    var urlPanel = document.createElement('div');
+    urlPanel.className = 'cl-overlay';
+    urlPanel.innerHTML =
+      '<div class="cl-overlay-box cl-url-box">' +
+        '<div class="cl-overlay-title">输入图片URL</div>' +
+        '<input id="imgUrlInput" type="text" placeholder="https://..." class="cl-url-input">' +
+        '<div id="imgUrlPreview" class="cl-url-preview"><img></div>' +
+        '<div class="cl-overlay-btns">' +
+          '<button id="imgUrlConfirm" type="button" class="cl-overlay-btn-primary">确定</button>' +
+          '<button id="imgUrlCancel" type="button" class="cl-overlay-btn-cancel">取消</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(urlPanel);
+
+    urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
+    urlPanel.querySelector('#imgUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
+
+    var previewBox = urlPanel.querySelector('#imgUrlPreview');
+    var previewImg = previewBox.querySelector('img');
+    urlPanel.querySelector('#imgUrlInput').addEventListener('input', function() {
+      var v = this.value.trim();
+      if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
+        previewImg.src = v; previewBox.style.display = 'block';
+        previewImg.onerror = function() { previewBox.style.display = 'none'; };
+      } else { previewBox.style.display = 'none'; }
+    });
+
+    urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
+      var url = urlPanel.querySelector('#imgUrlInput').value.trim();
+      if (!url) { App.showToast('请输入URL'); return; }
+      urlPanel.remove();
+      var c = Character.getById(charId);
+      if (c) {
+        c[field] = url;
+        if (field === 'cover') c.avatar = url;
+        Character.save();
+      }
+      box.innerHTML = '<img src="' + App.escAttr(url) + '">';
+      App.showToast('已设置');
+    });
+  });
+},
+
+_compressAndSet: function(src, charId, field, box) {
+  var img = new Image();
+  img.onload = function() {
+    var canvas = document.createElement('canvas');
+    var max = field === 'avatar' ? 512 : 1200;
+    var w = img.width, h = img.height;
+    if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+    else { if (h > max) { w = w * max / h; h = max; } }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    var compressed = canvas.toDataURL('image/jpeg', 0.92);
+    var c = Character.getById(charId);
+    if (c) {
+      c[field] = compressed;
+      if (field === 'cover') c.avatar = compressed;
+      Character.save();
+    }
+    box.innerHTML = '<img src="' + compressed + '">';
+  };
+  img.src = src;
+},
 
     init: function() {
       Character.load();
