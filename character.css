@@ -4,7 +4,7 @@
 
 /* ====== 角色卡 ====== */
 .char-list-wrap {
-  margin: 0 auto 24px; max-width: 380px;
+  margin: 0 auto 24px; max-width: 360px;
   padding: 0; position: relative;
   --card-border-c: #111; --card-accent: #88abda; --card-bg: #fff; --card-left: #111;
   --card-line: 3px; --card-outer: 3.5px;
