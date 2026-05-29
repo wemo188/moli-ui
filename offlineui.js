@@ -146,6 +146,8 @@ r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
 r.style.setProperty('--ol-card-bg', ap.cardBg || '#ffffff');
 r.style.setProperty('--ol-card-text', ap.cardTextColor || '#7ea3c9');
 
+r.style.setProperty('--ol-top-fade', ap.topBgColor === 'transparent' ? 'transparent' : ap.topBgColor);
+
 var wrap=App.$('#olInputWrap');
 if(wrap){
   r.style.setProperty('--ol-bar-bg', ap.barBg);
