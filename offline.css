@@ -382,7 +382,7 @@
   left: 0;
   right: 0;
   height: 140px;
-  background: linear-gradient(to bottom, var(--ol-bg-color) 60%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(to bottom, var(--ol-top-fade, var(--ol-bg-color)) 60%, rgba(255,255,255,0) 100%);
   z-index: 6;
   pointer-events: none;
 }
