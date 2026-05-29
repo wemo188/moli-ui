@@ -181,10 +181,10 @@
       Dock.load(); Dock.applyConfig();
       
       var items = [
-  { id: 'dockMine' },
-  { id: 'dockLong' },
-  { id: 'dockCheck' },
-  { id: 'dockShort' }
+  { id: 'dockArchive' },
+  { id: 'dockChat' },
+  { id: 'dockStory' },
+  { id: 'dockCheckin' }
 ];
 
       items.forEach(function(item) {
