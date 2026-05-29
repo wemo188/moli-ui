@@ -53,7 +53,8 @@ var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
     load: function() { User.list = App.LS.get('userList') || []; },
     save: function() { App.LS.set('userList', User.list); },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
-
+    getActiveUser: function() { User.load(); return User.list[0] || null; },
+  
     open: function() {
       if (App.archive) App.archive.open('user');
     },
