@@ -36,7 +36,7 @@
 }
 
 .mk-card {
-  background: rgba(255,255,255,0.35);  /* 半透明白 */
+  background: rgba(255,255,255,0.15);  /* 半透明白 */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   position: relative;
