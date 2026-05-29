@@ -708,7 +708,7 @@ if (avatarBox) {
       App.safeOn('#archiveTabChar', 'click', function() { App.archive.switchTab('char'); });
 
       App.user = User;
-      App.safeOn('#dockMine', 'click', function() { App.archive.open('user'); });
+      App.safeOn('#dockArchive', 'click', function() { App.archive.open('user'); });
     }
   };
 
