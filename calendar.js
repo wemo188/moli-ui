@@ -160,9 +160,10 @@ getLocationForAI:function(){
   _dragOffsetX:0,_dragOffsetY:0,
 
   initDrag:function(){
-    var card=App.$('#wtCard');if(!card)return;
-    var saved=App.LS.get('wtCardPos');
-    if(saved){Cal._dragOffsetX=saved.x||0;Cal._dragOffsetY=saved.y||0;card.style.transform='translate('+Cal._dragOffsetX+'px,'+Cal._dragOffsetY+'px)';}
+  var card=App.$('#wtCard');if(!card)return;
+  // 临时注释掉，测试用
+  // var saved=App.LS.get('wtCardPos');
+  // if(saved){Cal._dragOffsetX=saved.x||0;Cal._dragOffsetY=saved.y||0;card.style.transform='translate('+Cal._dragOffsetX+'px,'+Cal._dragOffsetY+'px)';}
     var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
     card.addEventListener('touchstart',function(e){
 if(e.target.closest('.vf-lbl'))return;
