@@ -1,3 +1,4 @@
+
 html {
   overflow: hidden;
   overscroll-behavior: none;
@@ -38,7 +39,6 @@ body {
   --shadow: rgba(0, 0, 0, 0.06);
   --radius: 16px;
   --radius-sm: 10px;
-  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 * {
@@ -50,7 +50,7 @@ body {
 
 .bg-layer {
   position: fixed;
-  inset: -1px;
+  inset: 0;
   z-index: 0;
   background-size: cover;
   background-position: center;
@@ -62,8 +62,8 @@ body {
 .main-content {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
-  padding: 60px 20px calc(40px + var(--safe-bottom));
+  width: 100%;
+  height: 100%;
 }
 
 /* =========================
@@ -92,7 +92,7 @@ img.img-fill { transform: none !important; }
 .floating-ball {
   position: fixed;
   right: 10px;
-  bottom: calc(20px + var(--safe-bottom));
+  bottom: 20px;
   z-index: 100015;
   cursor: pointer;
   touch-action: none;
@@ -222,8 +222,7 @@ img.img-fill { transform: none !important; }
 .page-slider-main {
   position: relative;
   width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
+  height: 100%;
   padding: 0 !important;
   overflow: hidden;
 }
@@ -231,21 +230,19 @@ img.img-fill { transform: none !important; }
 .page-slider {
   display: flex;
   width: 200vw;
-  height: 100vh;
-  min-height: 100vh;
+  height: 100%;
   will-change: transform;
   touch-action: none;
 }
 
 .screen-page {
   width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 20px 18px calc(34px + var(--safe-bottom));
+  padding: 20px 18px 80px;
   overflow: visible;
 }
 
@@ -258,7 +255,7 @@ img.img-fill { transform: none !important; }
 .screen-indicators {
   position: fixed;
   left: 50%;
-  bottom: calc(2px + var(--safe-bottom));
+  bottom: 6px;
   transform: translateX(-50%);
   z-index: 20;
   display: flex;
@@ -267,8 +264,6 @@ img.img-fill { transform: none !important; }
   padding: 4px 8px;
   border-radius: 999px;
   background: rgba(0,0,0,0);
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
 }
 
 .screen-dot {
@@ -376,7 +371,7 @@ img.img-fill { transform: none !important; }
 
 @media (max-width: 640px) {
   .screen-page {
-    padding: 28px 16px calc(30px + var(--safe-bottom));
+    padding: 28px 16px 80px;
   }
 }
 
@@ -504,7 +499,7 @@ img.img-fill { transform: none !important; }
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
   border-radius: 20px 20px 0 0;
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 10px));
+  padding: 16px 16px 24px;
   box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
   display: flex; flex-direction: column; gap: 10px;
   animation: cpSlideUp 0.3s ease;
@@ -858,4 +853,3 @@ input[type="range"] {
   flex: 1;
   min-width: 0;
 }
-
