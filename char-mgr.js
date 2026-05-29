@@ -41,12 +41,14 @@
     get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     open: function(charId) {
-  if (App.character) App.character.load();  // ← 加这行
+  if (App.character) App.character.load();
   CharMgr.load();
   CharMgr.editingCharId = charId || null;
+  CharMgr.tempAvatar = '';
 
   var existing = null;
   if (charId && App.character) existing = App.character.getById(charId);
+  if (existing) CharMgr.tempAvatar = existing.avatar || '';
   
       var old = App.$('#charMgrPage');
       if (old) old.remove();
@@ -86,8 +88,8 @@
       var ck = function(key) { return cfg[key] ? ' checked' : ''; };
       var sv = function(key, val) { return cfg[key] === val ? ' selected' : ''; };
 
-      var av = e.avatar ? '<img src="' + App.escAttr(e.avatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
-      if (e.avatar) CharMgr.tempAvatar = e.avatar;
+      CharMgr.tempAvatar = e.avatar || '';
+var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
 
       var proManual = cfg.proMode !== 'auto';
       var isAllDay = cfg.proActiveStart === '00:00' && cfg.proActiveEnd === '23:59';
