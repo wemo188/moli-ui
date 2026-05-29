@@ -181,10 +181,10 @@
       Dock.load(); Dock.applyConfig();
       
       var items = [
-  { id: 'dockArchive', action: function() { if (App.archive) App.archive.open('user'); } },
-  { id: 'dockChat', action: function() { if (App.wechat) App.wechat.open(); } },
-  { id: 'dockStory', action: function() { if (App.offline) App.offline.pick(); } },
-  { id: 'dockCheckin', action: function() { /* 查岗 */ } }
+  { id: 'dockMine' },
+  { id: 'dockLong' },
+  { id: 'dockCheck' },
+  { id: 'dockShort' }
 ];
 
       items.forEach(function(item) {
@@ -200,11 +200,6 @@ if (savedImg) {
     imgEl.style.objectFit = 'cover';
   }
 }
-        
-        el.addEventListener('click', function(e) {
-          e.stopPropagation();
-          item.action();
-        });
       });
 
       var dockBar = App.$('#dockBar');
