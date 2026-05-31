@@ -168,16 +168,16 @@
 .up-sign-area { display: flex; align-items: center; gap: 12px; justify-content: center; padding: 7px 18px 8px; }
 .up-sign-text-wrap { flex: 1; min-width: 0; text-align: center; }
 .up-sign-input2 { font-style: italic; margin-top: 2px; width: 100%; }
-.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 14px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】签名第一行(编辑) */
+.up-sign-area input { width: 100%; border: none; background: transparent; text-align: center; font-size: 15px; color: #666; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】签名第一行(编辑) */
 .up-sign-area input::placeholder { color: #ccc; }
-.up-sign-text { font-size: 14px; color: #666; }                                                                        /* 【字体】签名第一行(封存) */
-.up-sign-italic { font-style: italic; font-size: 14px; color: #999; text-align: center; }                               /* 【字体】签名第二行 */
+.up-sign-text { font-size: 15px; color: #666; }                                                                        /* 【字体】签名第一行(封存) */
+.up-sign-italic { font-style: italic; font-size: 15px; color: #999; text-align: center; }                               /* 【字体】签名第二行 */
 
 /* 姓名区 */
 .up-name-area { padding: 8px 18px 0; }
 .up-name-label { font-size: 12px; color: #999; letter-spacing: 2px; font-weight: 600; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }  /* 【字体】姓名 NAME 标签 */
 .up-name-label::before { content: ''; width: 3px; height: 3px; background: #1a1a1a; }
-.up-name-input { width: 100%; border: none; background: transparent; font-size: 17px; font-weight: 700; color: #1a1a1a; outline: none; font-family: inherit; padding: 3px 0 5px; box-sizing: border-box; }  /* 【字体】姓名(编辑) */
+.up-name-input { width: 100%; border: none; background: transparent; font-size: 15px; font-weight: 700; color: #1a1a1a; outline: none; font-family: inherit; padding: 3px 0 5px; box-sizing: border-box; }  /* 【字体】姓名(编辑) */
 .up-name-input::placeholder { color: #ccc; font-weight: 400; }
 .up-name-text { font-size: 15px; font-weight: 700; color: #1a1a1a; padding: 3px 0 3px; }                               /* 【字体】姓名(封存) */
 .up-name-underline { height: 1.5px; background: #1a1a1a; margin-bottom: 1px; }
@@ -198,7 +198,7 @@
 
 /* 长字段：个人描述 */
 .up-field-box { min-height: 45px; border: 1px dashed #e0e0e0; padding: 6px 8px; background: #fff; position: relative; }
-.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 17px; color: #000; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
+.up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 15px; color: #000; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
 .up-field-box textarea::placeholder { color: #ccc; }
 .up-field-box .up-text { font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap; }                      /* 【字体】个人描述(封存) */
 .up-expand-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8); border: 1px solid #d0d8e4; border-radius: 4px; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent; }
