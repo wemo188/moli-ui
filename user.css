@@ -12,7 +12,7 @@
 /* ===========================
    编辑页 - 标题栏
    =========================== */
-.profile-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px 10px; flex-shrink: 0; background: #fff; }
+.profile-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 10px; flex-shrink: 0; background: #fff; }
 
 /* ===========================
    展开编辑器 - 标题栏
@@ -154,7 +154,7 @@
 .up-bar-bot { height: 3px; background: linear-gradient(90deg, #d4d4d4 25%, #1a1a1a 25%, #1a1a1a 75%, #d4d4d4 75%); }
 
 /* 标题区：PERSONAL FILE + 个人档案 */
-.up-card-head { padding: 14px 18px 10px; border-bottom: 1px dashed #e0e0e0; }
+.up-card-head { padding: 10px 18px 8px; border-bottom: 1px dashed #e0e0e0; }
 .up-card-head-sub { font-size: 9px; color: #bbb; letter-spacing: 3px; margin-bottom: 2px; }                           /* 【字体】PERSONAL FILE */
 .up-card-head-title { font-size: 22px; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }                       /* 【字体】个 人 档 案 */
 
@@ -189,7 +189,7 @@
 .up-field-dot { width: 3px; height: 3px; background: #1a1a1a; }
 .up-field-key { font-size: 12px; color: #999; letter-spacing: 2px; font-weight: 600; }                                 /* 【字体】标签英文 NICKNAME等 */
 .up-field-cn { font-size: 12px; color: #bbb; margin-left: 4px; }                                                      /* 【字体】标签中文 昵称等 */
-.up-field-line { padding: 4px 0 3px; }
+.up-field-line { padding: 3px 0 5px; }
 .up-field-line input { width: 100%; border: none; background: transparent; font-size: 15px; color: #1a1a1a; font-weight: 500; outline: none; font-family: inherit; box-sizing: border-box; }  /* 【字体】字段输入框(编辑) */
 .up-field-line input::placeholder { color: #ccc; font-weight: 400; }
 .up-field-line .up-text { font-size: 15px; color: #1a1a1a; font-weight: 500; }                                        /* 【字体】字段值(封存) */
@@ -200,7 +200,7 @@
 .up-field-box { min-height: 45px; border: 1px dashed #e0e0e0; padding: 6px 8px; background: #fff; position: relative; }
 .up-field-box textarea { width: 100%; min-height: 40px; border: none; background: transparent; font-size: 15px; color: #000; outline: none; font-family: inherit; resize: vertical; line-height: 1.8; box-sizing: border-box; }  /* 【字体】个人描述(编辑) */
 .up-field-box textarea::placeholder { color: #ccc; }
-.up-field-box .up-text { font-size: 15px; color: #555; line-height: 1.8; white-space: pre-wrap; }                      /* 【字体】个人描述(封存) */
+.up-field-box .up-text { font-size: 13px; color: #555; line-height: 1.8; white-space: pre-wrap; }                      /* 【字体】个人描述(封存) */
 .up-expand-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8); border: 1px solid #d0d8e4; border-radius: 4px; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent; }
 .up-expand-btn:active { background: #eef2f7; }
 .up-expand-btn svg { width: 12px; height: 12px; stroke: #000; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
