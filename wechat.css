@@ -201,50 +201,38 @@
 
 .c6-tabs { flex: 1; display: flex; gap: 3px; }
 
+/* ===== Tab栏 ====== */
 .c6-tab {
   flex: 1;
   display: flex; align-items: center; justify-content: center;
-  padding: 10px 14px; border-radius: 10px;
-  font-size: 13px; font-weight: 800; letter-spacing: 1px;  /* 从10px改成13px */
-  color: rgba(0,0,0,0.28);
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 12px; font-weight: 800; letter-spacing: 1px;
+  color: #999;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.25s ease;
 }
 
-.c6-footer-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;  /* 从9px改成11px */
-  color: rgba(0,0,0,0.35); transition: color 0.2s;
-}
-.c6-footer-item.c6-f-active .c6-footer-label { 
-  color: rgba(0,0,0,0.8);  /* 从0.7改成0.8 */
-  font-weight: 800;  /* 加粗 */
+.c6-tab.c6-active {
+  background: #f0f0f0;
+  color: #1a1a1a;
 }
 
+.c6-tab-icons { display: flex; gap: 2px; margin: 0 4px 0 0; }
+
+.c6-tab-icon {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+.c6-tab-icon:active { transform: scale(0.88); }
 .c6-tab-icon svg {
-  width: 18px; height: 18px;  /* 从16改成18 */
+  width: 16px; height: 16px;
   fill: none; stroke: rgba(0,0,0,0.4);
-  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;  /* 从2改成2.5 */
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-.c6-footer-icon svg {
-  width: 26px; height: 26px;  /* 从22改成26 */
-  fill: rgba(0,0,0,0.3); transition: fill 0.2s;
-  stroke-width: 2.2;  /* 加粗 */
-}
-
-.c6-chat-name {
-  font-size: 14px; font-weight: 800; color: rgba(0,0,0,0.8);  /* 从13改成14 */
-  margin-bottom: 3px; letter-spacing: 0.3px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-
-.c6-chat-msg {
-  font-size: 12px; color: rgba(0,0,0,0.4);  /* 从11改成12 */
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-weight: 600;
-}
-
-/* ====== 内容区域 ====== */
+/* ===== 内容区域 ====== */
 .c6-body {
   flex: 1;
   background: #fff;
@@ -252,7 +240,31 @@
   -webkit-overflow-scrolling: touch;
   padding: 0 0 12px 0;
 }
-.c6-body::-webkit-scrollbar { display: none; }
+
+.c6-chat-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c6-chat-msg {
+  font-size: 12px;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c6-chat-time {
+  font-size: 11px;
+  color: #ccc;
+  font-family: monospace;
+}
 
 /* ====== 聊天列表项 ====== */
 .c6-chat-item {
@@ -302,40 +314,43 @@
   font-size: 9px; font-weight: 700; color: #fff;
 }
 
-/* ====== 底部导航 ====== */
+/* ===== 底部导航 ====== */
 .c6-footer {
   flex-shrink: 0;
-  background: rgba(248,248,248,0.95);
-  border-top: 1px solid rgba(0,0,0,0.04);
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
   display: flex;
-  padding: 6px 0;
+  padding: 10px 0;
   position: relative;
   z-index: 10;
 }
+
 .c6-footer-item {
   flex: 1;
   display: flex; flex-direction: column; align-items: center;
-  gap: 3px; padding: 6px 0;
+  gap: 6px; padding: 8px 0;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.2s;
 }
-.c6-footer-item:active { transform: scale(0.92); }
 
 .c6-footer-icon {
-  width: 24px; height: 24px;
+  width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
 }
+
 .c6-footer-icon svg {
-  width: 22px; height: 22px;
-  fill: rgba(0,0,0,0.3); transition: fill 0.2s;
+  width: 26px; height: 26px;
+  fill: #999; transition: fill 0.2s;
 }
-.c6-footer-item.c6-f-active .c6-footer-icon svg { fill: rgba(0,0,0,0.7); }
+
+.c6-footer-item.c6-f-active .c6-footer-icon svg { fill: #1a1a1a; }
 
 .c6-footer-label {
-  font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
-  color: rgba(0,0,0,0.35); transition: color 0.2s;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  color: #999; transition: color 0.2s;
 }
-.c6-footer-item.c6-f-active .c6-footer-label { color: rgba(0,0,0,0.7); }
+
+.c6-footer-item.c6-f-active .c6-footer-label { color: #1a1a1a; }
 
 /* ====== Me 页面 ====== */
 .c6-me-header {
@@ -349,7 +364,11 @@
   margin: 0 auto 12px; overflow: hidden;
 }
 .c6-me-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.c6-me-name { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.8); }
+.c6-me-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
 
 .c6-me-item {
   display: flex; align-items: center; justify-content: space-between;
@@ -358,7 +377,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 .c6-me-item:active { background: rgba(0,0,0,0.03); }
-.c6-me-item-text { font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.7); }
+.c6-me-item-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
 .c6-me-item-arrow { font-size: 14px; color: rgba(0,0,0,0.2); font-weight: 300; }
 
 /* ====== 空状态 ====== */
@@ -401,4 +425,3 @@
 }
 .c6-av-mi:last-child { border-bottom: none; }
 .c6-av-mi:active { background: rgba(255,255,255,0.1); }
-
