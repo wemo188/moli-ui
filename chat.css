@@ -166,7 +166,7 @@
 }
 
 .ct-msg.user .ct-bubble {
-  background: #a6b4c8;
+  background: rgba(165, 177, 198,0.2);
   color: #fff;
   border-top-right-radius: 4px;
 }
