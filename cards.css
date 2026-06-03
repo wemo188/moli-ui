@@ -645,22 +645,23 @@
   direction: rtl;
 }
 
-/* 右头像：下面中间 */
+/* 右头像：左上边 */
 .hl-chatbar-bl {
   position: absolute;
-  top: 100%;
-  right: 50px;
-  margin-top: 13px;
+  bottom: 100%;
+  right: 100%;
+  margin-bottom: 13px;
+  margin-right: 5px;
   direction: ltr;
 }
 
-/* 左头像：左边 */
+/* 左头像：右边 */
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
-  right: 100%;
+  left: 100%;
   margin-top: -33px;
-  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .hl-chatbar-input {
