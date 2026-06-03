@@ -438,7 +438,7 @@
 /* 【字体】长字段输入框(编辑态) */
 .up-field-textarea {
   width: 100%;
-  min-height: 40px;
+  min-height: 70px;
   border: none;
   background: transparent;
   font-size: 15px;
