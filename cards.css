@@ -561,7 +561,7 @@
 .hl-bubble {
   position: absolute;
   z-index: 10;
-  background: white;
+  background: transparent;
   border: 1px solid var(--hl-border-c);
   border-radius: 8px;
   padding: 1px 2px;
@@ -573,7 +573,7 @@
 }
 
 .hl-bubble-left {
-  bottom: 1px;
+  bottom: -1px;
   left: -30px;
 }
 
@@ -619,7 +619,7 @@
   outline: none;
   background: transparent;
   font-size: 11px;
-  width: 40px;
+  Min-width: 20px;
   color: var(--hl-border-c);
 }
 
