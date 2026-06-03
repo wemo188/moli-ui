@@ -660,7 +660,7 @@
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
-  right: 100%;
+  left: 100%;
   margin-top: -33px;
   margin-right: 5px;
   border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
