@@ -650,7 +650,7 @@
   position: absolute;
   top: 100%;
   right: 100%;           /* 改 right 为 left，跑到头像左边 */
-  margin-top: -33px;
+  margin-top: -63px;
   margin-left: 7px;     /* 改 margin-right 为 margin-left */
   direction: ltr;
   border-radius: 18px 18px 4px 18px;   /* 尖角在右上角 → 朝右指向头像 */
