@@ -124,7 +124,6 @@
   flex-shrink: 0;
   overflow: hidden;
   background: #f0f0f0;
-  border: 1px solid #e0e0e0;
 }
 
 .ct-msg-av.round { border-radius: 50%; }
@@ -163,7 +162,6 @@
 .ct-msg.ai .ct-bubble {
   background: #aab2c4;
   color: #1a1a1a;
-  border: 1px solid #e0e0e0;
   border-top-left-radius: 4px;
 }
 
