@@ -106,7 +106,7 @@
 
 .ct-msg {
   display: flex;
-  align-items: center;
+  align-items: flex-start;  /* 改为顶部对齐，替代原来的 center 或 stretch */
   gap: 8px;
   margin-bottom: 2px;
   max-width: 100%;
@@ -162,10 +162,11 @@
 .ct-msg.ai .ct-bubble {
   background: rgba(165, 177, 198,0.3);
   color: #1a1a1a;
+  border-top-left-radius: 4px;
 }
 
 .ct-msg.user .ct-bubble {
-  background: rgba(165, 177, 198,0.6);
+  background: rgba(165, 177, 198,0.8);
   color: #1a1a1a;
   border-top-right-radius: 4px;
 }
