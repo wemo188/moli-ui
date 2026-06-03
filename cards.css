@@ -645,23 +645,26 @@
   direction: rtl;
 }
 
-/* 右头像：左上边 */
+/* 右头像的对话条：改到左边，尖角朝右 */
 .hl-chatbar-bl {
   position: absolute;
-  bottom: 100%;
-  right: 100%;
-  margin-bottom: 13px;
-  margin-right: 5px;
+  top: 100%;
+  left: 100%;           /* 改 right 为 left，跑到头像左边 */
+  margin-top: 13px;
+  margin-left: 5px;     /* 改 margin-right 为 margin-left */
   direction: ltr;
+  border-radius: 4px 18px 18px 18px;   /* 尖角在右上角 → 朝右指向头像 */
 }
 
-/* 左头像：右边 */
+/* 左头像的对话条：尖角在左上，文字从左到右 */
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
-  left: 100%;
+  right: 100%;
   margin-top: -33px;
-  margin-left: 5px;
+  margin-right: 5px;
+  border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
+  direction: ltr;                     /* 文字从左到右 */
 }
 
 .hl-chatbar-input {
