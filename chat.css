@@ -159,48 +159,15 @@
   user-select: none;
 }
 
-/* AI 气泡（左侧，尾巴朝左） */
 .ct-msg.ai .ct-bubble {
-  position: relative;
-  background: rgba(165, 177, 198,0.4);
+  background: rgba(165, 177, 198,0.3);
   color: #1a1a1a;
-  border-radius: 10px;
-  border-top-left-radius: 4px;
 }
 
-.ct-msg.ai .ct-bubble::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 12px;
-  width: 12px;
-  height: 12px;
-  background: inherit;
-  border-left: inherit;
-  border-bottom: inherit;
-  transform: rotate(45deg);
-  border-radius: 0 0 0 3px;
-}
-
-/* 用户气泡（右侧，尾巴朝右） */
 .ct-msg.user .ct-bubble {
-  position: relative;
   background: rgba(165, 177, 198,0.6);
-  color: #fff;
-  border-radius: 10px;
+  color: #1a1a1a;
   border-top-right-radius: 4px;
-}
-
-.ct-msg.user .ct-bubble::after {
-  content: '';
-  position: absolute;
-  right: -8px;
-  top: 12px;
-  width: 12px;
-  height: 12px;
-  background: inherit;
-  transform: rotate(45deg);
-  border-radius: 0 3px 0 0;
 }
 
 /* ===== 消息元信息 ===== */
