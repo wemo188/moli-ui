@@ -2,7 +2,7 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var ROBOT_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" style="stroke:rgba(0,0,0,0.55);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="rgba(0,0,0,0.55)" stroke="none"/></svg>';
+var ROBOT_SVG='<svg viewBox="0 0 24 24" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
 
 var STOP_SVG='<svg viewBox="0 0 24 24" width="18" height="18"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" stroke="none"/></svg>';
 
@@ -25,10 +25,9 @@ render:function(inner,charData,bgUrl,hasBg,tintOn){
 var c=charData;
 var displayName=(App.wechat?App.wechat.getCharAlias(c.id):'')||c.name||'';
 var tintCSS='background:'+
-'radial-gradient(circle at 50% 48%,rgba(126,163,201,.48) 0%,rgba(126,163,201,.28) 18%,rgba(126,163,201,.14) 38%,transparent 62%),'+
-'radial-gradient(circle at 46% 44%,rgba(140,180,215,.22) 0%,rgba(140,180,215,.10) 28%,transparent 52%),'+
-'radial-gradient(ellipse at 56% 54%,rgba(170,200,228,.18) 0%,transparent 48%);';
-
+'radial-gradient(circle at 50% 48%,rgba(0,0,0,.06) 0%,rgba(0,0,0,.03) 18%,rgba(0,0,0,.01) 38%,transparent 62%),'+
+'radial-gradient(circle at 46% 44%,rgba(0,0,0,.04) 0%,rgba(0,0,0,.02) 28%,transparent 52%),'+
+'radial-gradient(ellipse at 56% 54%,rgba(0,0,0,.03) 0%,transparent 48%);';
 inner.innerHTML=
 '<div class="ct-root" id="ctRoot">'+
 '<div class="ct-no-bg'+(hasBg?' has-bg':'')+'" id="ctNoBg"></div>'+
