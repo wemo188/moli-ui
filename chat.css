@@ -161,7 +161,7 @@
 }
 
 .ct-msg.ai .ct-bubble {
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f8f7fb, #aab2c4, #636c7b);
   color: #1a1a1a;
   border: 1px solid #e0e0e0;
   border-top-left-radius: 4px;
