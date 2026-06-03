@@ -564,7 +564,7 @@
   background: white;
   border: 1px solid var(--hl-border-c);
   border-radius: 8px;
-  padding: 1px 2px;
+  padding: 2px 3px;
   min-width: 40px;           /* 加上这个，保证最小宽度 */
   display: flex;
   justify-content: center;   /* 让内容居中 */
@@ -605,7 +605,7 @@
 
 /* 左边气泡箭头（朝上指向头像） */
 .hl-bubble-left .hl-bubble-arrow-outer {
-  top: -6px;
+  top: -7px;
   right: 8px;
   border-bottom: 6px solid var(--hl-border-c);
 }
