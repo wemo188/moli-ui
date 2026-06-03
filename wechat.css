@@ -204,35 +204,44 @@
 .c6-tab {
   flex: 1;
   display: flex; align-items: center; justify-content: center;
-  padding: 8px 12px; border-radius: 10px;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 800; letter-spacing: 1px;  /* 从10px改成13px */
   color: rgba(0,0,0,0.28);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.25s ease;
 }
-.c6-tab:active { transform: scale(0.95); }
-.c6-tab.c6-active {
-  background: rgba(255,255,255,0.8);
-  color: rgba(0,0,0,0.7);
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.03),
-    0 1px 2px rgba(0,0,0,0.01),
-    inset 0 1px 1px rgba(255,255,255,0.8);
+
+.c6-footer-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;  /* 从9px改成11px */
+  color: rgba(0,0,0,0.35); transition: color 0.2s;
+}
+.c6-footer-item.c6-f-active .c6-footer-label { 
+  color: rgba(0,0,0,0.8);  /* 从0.7改成0.8 */
+  font-weight: 800;  /* 加粗 */
 }
 
-.c6-tab-icons { display: flex; gap: 2px; margin: 0 4px 0 0; }
-
-.c6-tab-icon {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s;
-}
-.c6-tab-icon:active { transform: scale(0.88); }
 .c6-tab-icon svg {
-  width: 16px; height: 16px;
+  width: 18px; height: 18px;  /* 从16改成18 */
   fill: none; stroke: rgba(0,0,0,0.4);
-  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;  /* 从2改成2.5 */
+}
+
+.c6-footer-icon svg {
+  width: 26px; height: 26px;  /* 从22改成26 */
+  fill: rgba(0,0,0,0.3); transition: fill 0.2s;
+  stroke-width: 2.2;  /* 加粗 */
+}
+
+.c6-chat-name {
+  font-size: 14px; font-weight: 800; color: rgba(0,0,0,0.8);  /* 从13改成14 */
+  margin-bottom: 3px; letter-spacing: 0.3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.c6-chat-msg {
+  font-size: 12px; color: rgba(0,0,0,0.4);  /* 从11改成12 */
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-weight: 600;
 }
 
 /* ====== 内容区域 ====== */
