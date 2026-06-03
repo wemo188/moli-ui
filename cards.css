@@ -564,7 +564,7 @@
   background: white;
   border: 1px solid var(--hl-border-c);
   border-radius: 8px;
-  padding: 2px 3px;
+  padding: 3px 3px;
   min-width: 40px;           /* 加上这个，保证最小宽度 */
   display: flex;
   justify-content: center;   /* 让内容居中 */
