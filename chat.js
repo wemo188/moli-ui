@@ -446,74 +446,46 @@ charId:null,charData:null,messages:[],isStreaming:false,abortCtrl:null,
 _ctxMenu:null,_menuEl:null,_avCard:null,_proTimer:null,_visHandler:null,_streamPartial:'',
 _backgroundMode:false,_sendQueue:[],_isSendingQueue:false,
 _plusOpen:false,_sendDelayTimer:null,_multiMode:false,_multiSelected:[],
-/*★ 输入框监控状态 */
 _inputIdle:true,_inputIdleTimer:null,_waitingForIdle:false,
 
 loadMsgs:function(){Chat.messages=App.LS.get('chatMsgs_'+Chat.charId)||[];},
 saveMsgs:function(){
   try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}
-  catch(e){if(Chat.messages.length>20){Chat.messages=Chat.messages.slice(-20);try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e2){App.showToast('存储空间不足，部分消息可能丢失');}}}
+  catch(e){if(Chat.messages.length>20){Chat.messages=Chat.messages.slice(-20);try{App.LS.set('chatMsgs_'+Chat.charId,Chat.messages);}catch(e2){App.showToast('存储空间不足');}}}
 },
 
 getUnread:function(charId){return App.LS.get('chatUnread_'+(charId||Chat.charId))||0;},
 setUnread:function(charId,n){App.LS.set('chatUnread_'+(charId||Chat.charId),n);},
 clearUnread:function(charId){App.LS.remove('chatUnread_'+(charId||Chat.charId));},
 
+/* ★ 打开聊天 - 直接交给 chatUI */
 openInWechat:function(charId){
-if(!App.character){App.showToast('character模块未加载');return;}
-var c=App.character.getById(charId);if(!c){App.showToast('角色不存在');return;}
-if(!App.chatUI){App.showToast('chatUI模块未加载');return;}
-Chat.charId=charId;Chat.charData=c;Chat.loadMsgs();Chat.clearUnread(charId);
-Chat._backgroundMode=false;Chat._sendQueue=[];Chat._isSendingQueue=false;
-Chat._plusOpen=false;Chat._multiMode=false;Chat._multiSelected=[];
-Chat._inputIdle=true;Chat._waitingForIdle=false;
-if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
-if(Chat._inputIdleTimer){clearTimeout(Chat._inputIdleTimer);Chat._inputIdleTimer=null;}
-var inner=App.$('#wxInner');if(!inner)return;
-if(App.wechat)App.wechat._savedInner=inner.innerHTML;
-var bgUrl=App.LS.get('chatBg_'+charId)||'';
-var tintOn=App.LS.get('chatTint_'+charId);if(tintOn===null)tintOn=true;
-if(App.chatUI)App.chatUI.render(inner,c,bgUrl,!!bgUrl,tintOn);
-// 预取角色天气
-var charCfg = getCfg(charId);
-if (charCfg.timeWeather && charCfg.charRealCity) {
-  fetchCharWeather(charId, charCfg.charRealCity, function() {});
-}
-Chat.renderMessages();Chat.bindEvents();Chat.startProactive();
-var palette=App.LS.get('chatPalette_'+charId);
-if(palette&&palette.accent&&App.chatUI)App.chatUI.applyPalette(palette.accent);
-Chat._visHandler=function(){if(document.visibilityState==='visible')Chat._onResume();};
-document.addEventListener('visibilitychange',Chat._visHandler);
-},
-
-close:function(){
-if(Chat.isStreaming){Chat._backgroundMode=true;}else{Chat.stopProactive();}
-Chat.dismissCtx();Chat.dismissMenu();Chat.dismissAvCard();
-if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
-if(Chat._inputIdleTimer){clearTimeout(Chat._inputIdleTimer);Chat._inputIdleTimer=null;}
-if(Chat._visHandler){document.removeEventListener('visibilitychange',Chat._visHandler);Chat._visHandler=null;}
-if(App.wechat)App.wechat.restoreInner();
-},
-
-_onResume:function(){
-if(!Chat.charId)return;Chat.loadMsgs();
-if(!Chat._backgroundMode){Chat.renderMessages();return;}
-Chat._backgroundMode=false;Chat.isStreaming=false;
-Chat.renderMessages();Chat.updateSendBtn();Chat.updateTyping(false);
-},
-
-renderMessages:function(){if(App.chatUI)App.chatUI.renderMessages();},
-scrollBottom:function(){var el=App.$('#ctMsgs');if(el)requestAnimationFrame(function(){el.scrollTop=el.scrollHeight;});},
-bindEvents:function(){
-  if(App.chatUI)App.chatUI.bindEvents();
-  /* ★ 监听输入框活动 */
-  var input=App.$('#ctInput');
-  if(input){
-    input.addEventListener('focus',function(){Chat._inputIdle=false;Chat._resetIdleTimer();});
-    input.addEventListener('input',function(){Chat._inputIdle=false;Chat._resetIdleTimer();});
-    input.addEventListener('blur',function(){Chat._inputIdle=true;Chat._checkIdleQueue();});
+  if(!App.character){App.showToast('character模块未加载');return;}
+  var c=App.character.getById(charId);if(!c){App.showToast('角色不存在');return;}
+  if(App.chatUI){
+    App.chatUI.open(charId,c);
   }
 },
+
+/* ★ 关闭 - 交给 chatUI */
+close:function(){
+  if(App.chatUI&&App.chatUI.panelEl){
+    App.chatUI.close();
+  }
+},
+
+/* ★ UI 代理方法 - 全部指向 chatUI */
+renderMessages:function(){if(App.chatUI)App.chatUI.renderMessages();},
+scrollBottom:function(){if(App.chatUI)App.chatUI.scrollBottom();},
+updateSendBtn:function(){if(App.chatUI)App.chatUI.updateSendBtn();},
+updateTyping:function(show){if(App.chatUI)App.chatUI.updateTyping(show);},
+updateStreamBubble:function(text){if(App.chatUI)App.chatUI.updateStreamBubble(text);},
+
+showMenu:function(){if(App.chatUI)App.chatUI._showTopMenu();},
+dismissMenu:function(){if(Chat._menuEl){Chat._menuEl.remove();Chat._menuEl=null;}},
+dismissAvCard:function(){if(Chat._avCard){Chat._avCard.remove();Chat._avCard=null;}},
+showCtxMenu:function(msgEl,x,y){if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);},
+dismissCtx:function(){if(Chat._ctxMenu){Chat._ctxMenu.remove();Chat._ctxMenu=null;}},
 
 /* ★ 输入框空闲检测 */
 _resetIdleTimer:function(){
@@ -530,51 +502,43 @@ _checkIdleQueue:function(){
   Chat._doReply();
 },
 
-/* ★ 重写 send：发送后等待用户输入框空闲 */
-send:function(){
-var input=App.$('#ctInput');if(!input)return;
-var text=input.value.trim();if(!text)return;
-input.value='';input.style.height='auto';
-var pp=App.$('#ctPlusPanel');if(pp)pp.classList.remove('show');Chat._plusOpen=false;
-
-Chat.messages.push({role:'user',content:text,ts:Date.now()});
-Chat.saveMsgs();Chat.renderMessages();
-
-if(Chat.isStreaming)return;
-
-/* 取消之前的等待 */
-if(Chat._sendDelayTimer){clearTimeout(Chat._sendDelayTimer);Chat._sendDelayTimer=null;}
-Chat._waitingForIdle=false;
-
-var cfg=getCfg(Chat.charId);
-var replyDelay=getReplyDelay(cfg,text.length);
-
-/* 先显示正在输入 */
-if(cfg.showTyping)Chat.updateTyping(true);
-
-/* 固定等2 秒（给用户发第二条的缓冲时间），然后检查输入框状态 */
-Chat._sendDelayTimer=setTimeout(function(){
-  Chat._sendDelayTimer=null;
-  if(Chat._inputIdle){
-    /* 输入框已空闲，直接发 */
-    Chat._doReplyWithDelay(replyDelay);
-  } else {
-    /* 输入框还在活动，等空闲后再发 */
-    Chat._waitingForIdle=true;}
-},2000);
-},
-
-_doReplyWithDelay:function(replyDelay){
-  if(replyDelay>0)setTimeout(function(){Chat._doReply();},replyDelay);
-  else Chat._doReply();
-},
-
 _doReply:function(){
   var cfg=getCfg(Chat.charId);
-  if(cfg.showTyping)Chat.updateTyping(true);
+  if(cfg.showTyping!==false)Chat.updateTyping(true);
   Chat.requestAI();Chat.resetProactive();
 },
 
+/* ★ 消息操作 */
+deleteMsg:function(idx){Chat.messages.splice(idx,1);Chat.saveMsgs();Chat.renderMessages();},
+deleteFromHere:function(idx){if(!confirm('删除此条及之后所有消息？'))return;Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();App.showToast('已删除');},
+editMsg:function(idx){if(App.chatUI)App.chatUI.showEditDialog(idx);},
+resendMsg:function(idx){var msg=Chat.messages[idx];if(!msg)return;var content=msg.content;Chat.messages.splice(idx);Chat.messages.push({role:'user',content:content,ts:Date.now()});Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();},
+regenerate:function(idx){Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();},
+copyMsg:function(idx){var msg=Chat.messages[idx];if(!msg)return;App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(function(){App.showToast('复制失败');});},
+
+shareMsg:function(idx){
+var msg=Chat.messages[idx];if(!msg)return;
+var chars=App.character?App.character.list:[];
+var visibleChars=chars.filter(function(c){return c.id!==Chat.charId&&(!App.wechat||App.wechat.isCharVisible(c));});
+if(!visibleChars.length){App.showToast('没有可转发的角色');return;}
+var picker=document.createElement('div');picker.className='ct-edit-overlay';
+var listHtml=visibleChars.map(function(c){var alias=App.wechat?App.wechat.getCharAlias(c.id):'';var dn=alias||c.name||'?';return '<div class="ct-ctx-item" data-fwd-id="'+c.id+'" style="text-align:center;">'+App.esc(dn)+'</div>';}).join('');
+picker.innerHTML='<div class="ct-scene-box"><div class="ct-edit-title">转发给</div>'+listHtml+'<button type="button" class="ct-edit-btn ct-edit-btn-cancel" style="margin-top:12px;width:100%;" id="fwdCancel">取消</button></div>';
+document.body.appendChild(picker);
+picker.addEventListener('click',function(ev){if(ev.target===picker)picker.remove();});
+picker.querySelector('#fwdCancel').addEventListener('click',function(){picker.remove();});
+picker.querySelectorAll('[data-fwd-id]').forEach(function(ch){ch.addEventListener('click',function(){var targetId=ch.dataset.fwdId;picker.remove();var msgs=App.LS.get('chatMsgs_'+targetId)||[];msgs.push({role:'user',content:'[转发消息] '+msg.content,ts:Date.now()});App.LS.set('chatMsgs_'+targetId,msgs);App.showToast('已转发');});});
+},
+
+downloadSticker:function(idx){
+var msg=Chat.messages[idx];if(!msg)return;var match=(msg.content||'').match(/\[sticker:([^\]]+)\]/);
+if(!match){App.showToast('该消息不含表情包');return;}
+var desc=match[1];var cacheKey='stickerCache_'+desc.replace(/\s+/g,'_').slice(0,30);var url=App.LS.get(cacheKey);
+if(!url){App.showToast('表情包尚未生成');return;}
+var a=document.createElement('a');a.href=url;a.download='sticker_'+Date.now()+'.png';a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);App.showToast('正在下载');
+},
+
+/* ★ AI请求 */
 requestAI:function(){
 var cfg=getCfg(Chat.charId);
 var api=getApi(Chat.charId);
@@ -619,26 +583,10 @@ if(fullText){
   if(Chat._backgroundMode){Chat.setUnread(Chat.charId,Chat.getUnread(Chat.charId)+parts.length);}
   else{Chat.renderMessages();}
 } else {
-  if(!Chat._backgroundMode){
-    var container=App.$('#ctMsgs');
-    if(container){
-      var errDiv=document.createElement('div');
-      errDiv.className='ct-error-detail';
-      errDiv.textContent=cnMsg+'\n'+errMsg;
-      container.appendChild(errDiv);
-      Chat.scrollBottom();
-    }
-  }
+  if(!Chat._backgroundMode){App.showToast(cnMsg);}
 }
 Chat._backgroundMode=false;
 });
-},
-
-updateStreamBubble:function(text){
-var bubble=App.$('#ctStreamBubble');if(!bubble)return;
-var parts=text.split(SPLIT);var lastPart=parts[parts.length-1]||'';
-bubble.innerHTML=App.esc(lastPart.trim())||'<span class="ct-typing-dot"></span><span class="ct-typing-dot"></span><span class="ct-typing-dot"></span>';
-Chat.scrollBottom();
 },
 
 onStreamDone:function(text,cfg){
@@ -660,43 +608,7 @@ if(partial){var parts=smartSplitMessages(partial);var now=Date.now();parts.forEa
 Chat.renderMessages();
 },
 
-updateSendBtn:function(){if(App.chatUI)App.chatUI.updateSendBtn();},
-updateTyping:function(show){if(App.chatUI)App.chatUI.updateTyping(show);},
-showMenu:function(){if(App.chatUI)App.chatUI.showMenu();},
-dismissMenu:function(){if(Chat._menuEl){Chat._menuEl.remove();Chat._menuEl=null;}},
-dismissAvCard:function(){if(Chat._avCard){Chat._avCard.remove();Chat._avCard=null;}},
-showCtxMenu:function(msgEl,x,y){if(App.chatUI)App.chatUI.showCtxMenu(msgEl,x,y);},
-dismissCtx:function(){if(Chat._ctxMenu){Chat._ctxMenu.remove();Chat._ctxMenu=null;}},
-
-deleteMsg:function(idx){Chat.messages.splice(idx,1);Chat.saveMsgs();Chat.renderMessages();},
-deleteFromHere:function(idx){if(!confirm('删除此条及之后所有消息？'))return;Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();App.showToast('已删除');},
-editMsg:function(idx){if(App.chatUI)App.chatUI.showEditDialog(idx);},
-resendMsg:function(idx){var msg=Chat.messages[idx];if(!msg)return;var content=msg.content;Chat.messages.splice(idx);Chat.messages.push({role:'user',content:content,ts:Date.now()});Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();},
-regenerate:function(idx){Chat.messages.splice(idx);Chat.saveMsgs();Chat.renderMessages();Chat.requestAI();},
-copyMsg:function(idx){var msg=Chat.messages[idx];if(!msg)return;App.copyText(msg.content).then(function(){App.showToast('已复制');}).catch(function(){App.showToast('复制失败');});},
-
-shareMsg:function(idx){
-var msg=Chat.messages[idx];if(!msg)return;
-var chars=App.character?App.character.list:[];
-var visibleChars=chars.filter(function(c){return c.id!==Chat.charId&&(!App.wechat||App.wechat.isCharVisible(c));});
-if(!visibleChars.length){App.showToast('没有可转发的角色');return;}
-var picker=document.createElement('div');picker.style.cssText='position:fixed;inset:0;z-index:100020;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
-var listHtml=visibleChars.map(function(c){var alias=App.wechat?App.wechat.getCharAlias(c.id):'';var dn=alias||c.name||'?';return '<div class="fwd-char" data-fwd-id="'+c.id+'" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px;color:#333;">'+App.esc(dn)+'</div>';}).join('');
-picker.innerHTML='<div style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-radius:14px;padding:16px;width:260px;max-height:60vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);"><div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:10px;">转发给</div>'+listHtml+'<div style="text-align:center;padding:10px;"><button type="button" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;" id="fwdCancel">取消</button></div></div>';
-document.body.appendChild(picker);
-picker.addEventListener('click',function(ev){if(ev.target===picker)picker.remove();});
-picker.querySelector('#fwdCancel').addEventListener('click',function(){picker.remove();});
-picker.querySelectorAll('.fwd-char').forEach(function(ch){ch.addEventListener('click',function(){var targetId=ch.dataset.fwdId;picker.remove();var msgs=App.LS.get('chatMsgs_'+targetId)||[];msgs.push({role:'user',content:'[转发消息] '+msg.content,ts:Date.now()});App.LS.set('chatMsgs_'+targetId,msgs);App.showToast('已转发');});});
-},
-
-downloadSticker:function(idx){
-var msg=Chat.messages[idx];if(!msg)return;var match=(msg.content||'').match(/\[sticker:([^\]]+)\]/);
-if(!match){App.showToast('该消息不含表情包');return;}
-var desc=match[1];var cacheKey='stickerCache_'+desc.replace(/\s+/g,'_').slice(0,30);var url=App.LS.get(cacheKey);
-if(!url){App.showToast('表情包尚未生成');return;}
-var a=document.createElement('a');a.href=url;a.download='sticker_'+Date.now()+'.png';a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);App.showToast('正在下载');
-},
-
+/* ★ 主动消息 */
 startProactive:function(){
 Chat.stopProactive();var cfg=getCfg(Chat.charId);if(!cfg||!cfg.proactive)return;
 var minMs=(cfg.proMinInterval||15)*60*1000;var maxMs=(cfg.proMaxInterval||120)*60*1000;
@@ -750,13 +662,12 @@ return read();});}
 return read();
 }).catch(function(err){
 Chat.isStreaming=false;
-if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();var cnMsg=translateError(err.message||String(err));App.showToast(cnMsg);}
+if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);Chat.renderMessages();}
 console.error('[主动消息] '+(err.message||err));
 });
 
 function proFinish(){Chat.isStreaming=false;if(!Chat._backgroundMode){Chat.updateSendBtn();Chat.updateTyping(false);}
   fullText=fullText.trim();
-  console.log('[主动消息] AI返回:',fullText?fullText.slice(0,100):'(空)');
   if(!fullText||fullText==='[SKIP]'||fullText.indexOf('[SKIP]')>=0){Chat._backgroundMode=false;Chat.renderMessages();return;}
   var parts=smartSplitMessages(fullText);
   parts=parts.filter(function(p){return p!=='[SKIP]'&&p.indexOf('[SKIP]')<0;});
@@ -769,12 +680,17 @@ function proFinish(){Chat.isStreaming=false;if(!Chat._backgroundMode){Chat.updat
 }
 },
 
-showSceneDialog:function(){if(App.chatUI)App.chatUI.showSceneDialog();},
-showBgMenu:function(){if(App.chatUI)App.chatUI.showBgMenu();},
-setChatBg:function(src){try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大，请用URL');return;}var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';var nb=App.$('#ctNoBg');if(nb)nb.classList.add('has-bg');App.showToast('背景已设置');},
+showSceneDialog:function(){if(App.chatUI)App.chatUI._showSceneDialog();},
+showBgMenu:function(){if(App.chatUI)App.chatUI._showBgMenu();},
+
+setChatBg:function(src){
+  try{App.LS.set('chatBg_'+Chat.charId,src);}catch(e){App.showToast('图片太大');return;}
+  var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='url('+src+')';
+  App.showToast('背景已设置');
+},
+
 init:function(){
   App.chat=Chat;
-  /* ★ 等所有模块加载完再启动全局主动消息 */
   var tryStart=function(){
     if(App.character&&App.character.list&&App.character.list.length){
       App.GlobalProactive.start();
