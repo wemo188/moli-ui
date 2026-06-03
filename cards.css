@@ -508,8 +508,8 @@
 
 .hl-avatar {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid var(--hl-border-c);
   background: white;
@@ -649,11 +649,11 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  left: 100%;           /* 改 right 为 left，跑到头像左边 */
+  right: 100%;           /* 改 right 为 left，跑到头像左边 */
   margin-top: 13px;
   margin-left: 5px;     /* 改 margin-right 为 margin-left */
   direction: ltr;
-  border-radius: 4px 18px 18px 18px;   /* 尖角在右上角 → 朝右指向头像 */
+  border-radius: 18px 18px 4px 18px;   /* 尖角在右上角 → 朝右指向头像 */
 }
 
 /* 左头像的对话条：尖角在左上，文字从左到右 */
@@ -661,7 +661,7 @@
   position: absolute;
   top: 100%;
   left: 100%;
-  margin-top: -33px;
+  margin-top: -20px;
   margin-right: 5px;
   border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
   direction: ltr;                     /* 文字从左到右 */
