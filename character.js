@@ -146,6 +146,7 @@ var wbText = wbMounted ? '已加载' : '世界书';
                 '<div class="cl-avatar cl-avatar-box" data-id="' + c.id + '">' + avatarHtml + '</div>' +
               '</div>' +
               '<div class="cl-actions">' +
+                '<div class="cl-act-btn cl-act-bind" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>绑定</div>' +
                 '<div class="cl-act-btn cl-act-edit" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5l3 3L12 15H9v-3z"/></svg>编辑</div>' +
                 '<div class="cl-act-btn cl-act-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14h12l1-14"/></svg><span class="cl-del-text" data-id="' + c.id + '">删除</span></div>' +
               '</div>' +
@@ -293,6 +294,50 @@ var wbText = wbMounted ? '已加载' : '世界书';
 }
             overlay.remove();
             App.showToast(selected.length ? '已加载 ' + selected.length + ' 本世界书' : '已取消挂载');
+          });
+        });
+      });
+
+           panel.querySelectorAll('.cl-act-bind').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var charId = btn.dataset.id;
+          if (!App.user) { App.showToast('用户模块未加载'); return; }
+          App.user.load();
+          var users = App.user.list;
+          if (!users.length) { App.showToast('请先在微信「Me」创建用户身份'); return; }
+
+          var bindings = App.LS.get('charUserBindings') || {};
+
+          var picker = document.createElement('div');
+          picker.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
+          var listHtml = users.map(function(u) {
+            var isBound = bindings[charId] === u.id;
+            return '<div class="bind-user" data-uid="' + u.id + '" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);-webkit-tap-highlight-color:transparent;">' +
+              '<span style="font-size:14px;color:#333;">' + App.esc(u.nickname || u.realName || '未命名') + '</span>' +
+              (isBound ? '<span style="font-size:11px;color:#7a9ab8;font-weight:700;">当前绑定</span>' : '') +
+            '</div>';
+          }).join('');
+          picker.innerHTML =
+            '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;width:280px;max-height:60vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,0.15);">' +
+              '<div style="padding:16px 18px 12px;border-bottom:1.5px solid #eee;font-size:15px;font-weight:800;color:#111;letter-spacing:1px;text-align:center;">绑定用户</div>' +
+              listHtml +
+              '<div style="padding:12px 16px;border-top:1.5px solid #eee;text-align:center;">' +
+                '<button id="bindCancel" type="button" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">取消</button>' +
+              '</div>' +
+            '</div>';
+          document.body.appendChild(picker);
+          picker.addEventListener('click', function(ev) { if (ev.target === picker) picker.remove(); });
+          picker.querySelector('#bindCancel').addEventListener('click', function() { picker.remove(); });
+          picker.querySelectorAll('.bind-user').forEach(function(item) {
+            item.addEventListener('click', function() {
+              var uid = item.dataset.uid;
+              picker.remove();
+              bindings[charId] = uid;
+              App.LS.set('charUserBindings', bindings);
+              var u = App.user.getById(uid);
+              App.showToast('已绑定：' + (u ? (u.nickname || u.realName || '未命名') : uid));
+            });
           });
         });
       });
