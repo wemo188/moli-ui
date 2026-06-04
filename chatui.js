@@ -395,11 +395,18 @@ else el.textContent=displayName;
 showMenu:function(){
 var Chat=App.chat;if(!Chat)return;
 Chat.dismissMenu();
+var tintOn=App.LS.get('chatTint_'+Chat.charId);if(tintOn===null)tintOn=true;
+var isFS=App.LS.get('wxFullScreen')||false;
 
 var menu=document.createElement('div');menu.className='ct-hd-menu show';
 menu.innerHTML=
-'<div class="ct-hd-mi" data-act="beauty"><span>美化设置</span></div>'+
-'<div class="ct-hd-mi" data-act="chatsetting"><span>聊天设置</span></div>';
+'<div class="ct-hd-mi" data-act="mode"><span>模式</span><span style="font-size:11px;color:rgba(255,255,255,.5);">'+(isFS?'全屏':'手机框')+'</span></div>'+
+'<div class="ct-hd-mi" data-act="avatar"><span>头像设置</span></div>'+
+'<div class="ct-hd-mi" data-act="bg"><span>上传背景图</span></div>'+
+'<div class="ct-hd-mi" data-act="tint"><span>晕染</span><div class="ct-sw-track '+(tintOn?'on':'off')+'" id="ctTintSw"></div></div>'+
+'<div class="ct-hd-mi" data-act="palette"><span>调色板</span></div>'+
+'<div class="ct-hd-mi" data-act="scene"><span>场景 / 时间线</span></div>'+
+'<div class="ct-hd-mi" data-act="clear"><span>清空记录</span></div>';
 
 var btn=App.$('#ctMenuBtn');
 if(btn){var rect=btn.getBoundingClientRect();menu.style.top=(rect.bottom+4)+'px';menu.style.right=(window.innerWidth-rect.right)+'px';}
@@ -409,228 +416,22 @@ menu.addEventListener('click',function(e){e.stopPropagation();});
 menu.querySelectorAll('.ct-hd-mi').forEach(function(item){
   item.addEventListener('click',function(e){
     e.stopPropagation();var act=item.dataset.act;
+    if(act==='tint'){
+      var cur=App.LS.get('chatTint_'+Chat.charId);if(cur===null)cur=true;
+      var next=!cur;App.LS.set('chatTint_'+Chat.charId,next);
+      var tint=App.$('#ctTint'),sw=App.$('#ctTintSw');
+      if(tint){if(next)tint.classList.remove('off');else tint.classList.add('off');}
+      if(sw){sw.classList.toggle('on',next);sw.classList.toggle('off',!next);}
+      return;
+    }
     Chat.dismissMenu();
-    if(act==='beauty'){ChatUI.showBeautyPage();return;}
-    if(act==='chatsetting'){ChatUI.showChatSettingPage();return;}
+    if(act==='mode'){var cur2=App.LS.get('wxFullScreen')||false;App.LS.set('wxFullScreen',!cur2);Chat.close();setTimeout(function(){if(App.wechat){App.wechat.render();App.chat.openInWechat(Chat.charId);}},380);return;}
+    if(act==='avatar'){ChatUI.showAvCard();return;}
+    if(act==='palette'){ChatUI.showPalette();return;}
+    if(act==='bg')ChatUI.showBgMenu();
+    else if(act==='scene')ChatUI.showSceneDialog();
+    else if(act==='clear'){if(!confirm('确定清空所有聊天记录？'))return;Chat.messages=[];Chat.saveMsgs();Chat.renderMessages();App.showToast('已清空');}
   });
-});
-},
-
-showBeautyPage:function(){
-var Chat=App.chat;if(!Chat)return;
-var old=App.$('#ctBeautyPage');if(old)old.remove();
-
-var curShape=App.LS.get('chatAvShape_'+Chat.charId)||'square';
-var curHide=App.LS.get('chatAvHide_'+Chat.charId)||false;
-var hasBg=!!App.LS.get('chatBg_'+Chat.charId);
-var palette=App.LS.get('chatPalette_'+Chat.charId)||{};
-var curAccent=palette.accent||'#7a9ab8';
-
-var page=document.createElement('div');
-page.id='ctBeautyPage';
-page.className='ct-setting-page';
-page.innerHTML=
-'<div class="ct-sp-header">'+
-  '<button class="ct-sp-back" id="ctBeautyBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
-  '<div class="ct-sp-title">美化设置</div>'+
-  '<div style="width:36px;"></div>'+
-'</div>'+
-'<div class="ct-sp-body">'+
-
-  '<div class="ct-sp-card">'+
-    '<div class="ct-sp-card-title">头像</div>'+
-    '<div class="ct-sp-row">'+
-      '<span class="ct-sp-label">形状</span>'+
-      '<div class="ct-sp-btns">'+
-        '<button class="ct-sp-btn'+(curShape==='square'?' active':'')+'" data-shape="square" type="button">方形</button>'+
-        '<button class="ct-sp-btn'+(curShape==='round'?' active':'')+'" data-shape="round" type="button">圆形</button>'+
-      '</div>'+
-    '</div>'+
-    '<div class="ct-sp-row">'+
-      '<span class="ct-sp-label">显示</span>'+
-      '<div class="ct-sp-btns">'+
-        '<button class="ct-sp-btn'+(!curHide?' active':'')+'" data-vis="show" type="button">显示</button>'+
-        '<button class="ct-sp-btn'+(curHide?' active':'')+'" data-vis="hide" type="button">隐藏</button>'+
-      '</div>'+
-    '</div>'+
-  '</div>'+
-
-  '<div class="ct-sp-card">'+
-    '<div class="ct-sp-card-title">背景图</div>'+
-    '<div class="ct-sp-row-col">'+
-      '<div class="ct-sp-status">'+(hasBg?'已设置背景图':'未设置')+'</div>'+
-      '<div class="ct-sp-btns-row">'+
-        '<button class="ct-sp-action" id="ctBtyBgAlbum" type="button">从相册选择</button>'+
-        '<button class="ct-sp-action" id="ctBtyBgUrl" type="button">输入URL</button>'+
-        '<button class="ct-sp-action ct-sp-action-danger" id="ctBtyBgDel" type="button">移除</button>'+
-      '</div>'+
-    '</div>'+
-  '</div>'+
-
-  '<div class="ct-sp-card">'+
-    '<div class="ct-sp-card-title">调色板</div>'+
-    '<div class="ct-sp-hint">调整气泡、按钮等主题色</div>'+
-    '<div class="ct-sp-row">'+
-      '<span class="ct-sp-label">当前颜色</span>'+
-      '<div class="ct-sp-color-row">'+
-        '<div class="ct-sp-swatch" id="ctBtySwatch" style="background:'+curAccent+';"></div>'+
-        '<input type="text" class="ct-sp-color-input" id="ctBtyHex" value="'+curAccent+'" maxlength="7">'+
-      '</div>'+
-    '</div>'+
-    '<div class="ct-sp-presets" id="ctBtyPresets">'+
-      '<div class="ct-sp-preset" data-c="#7a9ab8" style="background:#7a9ab8;"></div>'+
-      '<div class="ct-sp-preset" data-c="#88abda" style="background:#88abda;"></div>'+
-      '<div class="ct-sp-preset" data-c="#a8c0d8" style="background:#a8c0d8;"></div>'+
-      '<div class="ct-sp-preset" data-c="#9b8ec4" style="background:#9b8ec4;"></div>'+
-      '<div class="ct-sp-preset" data-c="#c9706b" style="background:#c9706b;"></div>'+
-      '<div class="ct-sp-preset" data-c="#6bab8e" style="background:#6bab8e;"></div>'+
-      '<div class="ct-sp-preset" data-c="#d4a76a" style="background:#d4a76a;"></div>'+
-      '<div class="ct-sp-preset" data-c="#1a1a1a" style="background:#1a1a1a;"></div>'+
-    '</div>'+
-    '<div class="ct-sp-btns-row" style="margin-top:12px;">'+
-      '<button class="ct-sp-action" id="ctBtyApply" type="button">应用颜色</button>'+
-      '<button class="ct-sp-action" id="ctBtyReset" type="button">重置</button>'+
-    '</div>'+
-  '</div>'+
-
-'</div>';
-
-document.body.appendChild(page);
-requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('ct-sp-in');});});
-
-page.querySelector('#ctBeautyBack').addEventListener('click',function(){
-  page.classList.remove('ct-sp-in');page.classList.add('ct-sp-out');
-  setTimeout(function(){if(page.parentNode)page.remove();},350);
-});
-
-// 头像形状
-page.querySelectorAll('[data-shape]').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    page.querySelectorAll('[data-shape]').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    App.LS.set('chatAvShape_'+Chat.charId,btn.dataset.shape);
-    Chat.renderMessages();
-  });
-});
-
-// 头像显隐
-page.querySelectorAll('[data-vis]').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    page.querySelectorAll('[data-vis]').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    App.LS.set('chatAvHide_'+Chat.charId,btn.dataset.vis==='hide');
-    Chat.renderMessages();
-  });
-});
-
-// 背景图
-page.querySelector('#ctBtyBgAlbum').addEventListener('click',function(){
-  var input=document.createElement('input');input.type='file';input.accept='image/*';document.body.appendChild(input);
-  input.onchange=function(ev){var file=ev.target.files[0];document.body.removeChild(input);if(!file)return;
-    var reader=new FileReader();reader.onload=function(r){
-      if(App.cropImage){App.cropImage(r.target.result,function(cropped){Chat._utils.compressImage(cropped,Chat._utils.MAX_BG_SIZE,Chat._utils.BG_QUALITY,function(c){Chat.setChatBg(c);page.querySelector('.ct-sp-status').textContent='已设置背景图';});});}
-      else{Chat._utils.compressImage(r.target.result,Chat._utils.MAX_BG_SIZE,Chat._utils.BG_QUALITY,function(c){Chat.setChatBg(c);page.querySelector('.ct-sp-status').textContent='已设置背景图';});}
-    };reader.readAsDataURL(file);};
-  input.click();
-});
-
-page.querySelector('#ctBtyBgUrl').addEventListener('click',function(){
-  ChatUI._showUrlInput('输入背景图URL',function(url){if(!url)return;Chat.setChatBg(url);page.querySelector('.ct-sp-status').textContent='已设置背景图';});
-});
-
-page.querySelector('#ctBtyBgDel').addEventListener('click',function(){
-  App.LS.remove('chatBg_'+Chat.charId);var bg=App.$('#ctBg');if(bg)bg.style.backgroundImage='';var nb=App.$('#ctNoBg');if(nb)nb.classList.remove('has-bg');
-  page.querySelector('.ct-sp-status').textContent='未设置';App.showToast('已移除');
-});
-
-// 调色板
-var swatch=page.querySelector('#ctBtySwatch');
-var hexInput=page.querySelector('#ctBtyHex');
-
-hexInput.addEventListener('input',function(){var v=this.value.trim();if(/^#[0-9a-fA-F]{6}$/.test(v)){swatch.style.background=v;ChatUI.applyPalette(v);}});
-
-swatch.addEventListener('click',function(e){e.stopPropagation();
-  if(App.openColorPicker){App.openColorPicker(hexInput.value,function(hex){hexInput.value=hex;swatch.style.background=hex;ChatUI.applyPalette(hex);},function(hex){swatch.style.background=hex;ChatUI.applyPalette(hex);});}
-});
-
-page.querySelectorAll('.ct-sp-preset').forEach(function(p){
-  p.addEventListener('click',function(){var c=p.dataset.c;hexInput.value=c;swatch.style.background=c;ChatUI.applyPalette(c);});
-});
-
-page.querySelector('#ctBtyApply').addEventListener('click',function(){
-  var color=hexInput.value.trim();
-  if(!/^#[0-9a-fA-F]{6}$/.test(color)){App.showToast('请输入正确的颜色值');return;}
-  App.LS.set('chatPalette_'+Chat.charId,{accent:color});ChatUI.applyPalette(color);App.showToast('已应用');
-});
-
-page.querySelector('#ctBtyReset').addEventListener('click',function(){
-  App.LS.remove('chatPalette_'+Chat.charId);ChatUI.applyPalette('#7a9ab8');hexInput.value='#7a9ab8';swatch.style.background='#7a9ab8';App.showToast('已重置');
-});
-},
-
-showChatSettingPage:function(){
-var Chat=App.chat;if(!Chat)return;
-var old=App.$('#ctChatSettingPage');if(old)old.remove();
-
-var scene=App.LS.get('chatScene_'+Chat.charId)||'';
-var msgCount=Chat.messages.length;
-
-var page=document.createElement('div');
-page.id='ctChatSettingPage';
-page.className='ct-setting-page';
-page.innerHTML=
-'<div class="ct-sp-header">'+
-  '<button class="ct-sp-back" id="ctChatSetBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
-  '<div class="ct-sp-title">聊天设置</div>'+
-  '<div style="width:36px;"></div>'+
-'</div>'+
-'<div class="ct-sp-body">'+
-
-  '<div class="ct-sp-card">'+
-    '<div class="ct-sp-card-title">场景 / 时间线</div>'+
-    '<div class="ct-sp-hint">描述当前时间、地点、剧情背景。每次发送消息时自动附带给AI。</div>'+
-    '<textarea class="ct-sp-textarea" id="ctSetScene" placeholder="例如：现在是深夜两点，你刚下班回家...">'+App.esc(scene)+'</textarea>'+
-    '<div class="ct-sp-btns-row" style="margin-top:10px;">'+
-      '<button class="ct-sp-action" id="ctSetSceneSave" type="button">保存场景</button>'+
-      '<button class="ct-sp-action ct-sp-action-danger" id="ctSetSceneClear" type="button">清空</button>'+
-    '</div>'+
-  '</div>'+
-
-  '<div class="ct-sp-card">'+
-    '<div class="ct-sp-card-title">聊天记录</div>'+
-    '<div class="ct-sp-status">当前共 '+msgCount+' 条消息</div>'+
-    '<div class="ct-sp-btns-row" style="margin-top:10px;">'+
-      '<button class="ct-sp-action ct-sp-action-danger" id="ctSetClear" type="button">清空全部记录</button>'+
-    '</div>'+
-  '</div>'+
-
-'</div>';
-
-document.body.appendChild(page);
-requestAnimationFrame(function(){requestAnimationFrame(function(){page.classList.add('ct-sp-in');});});
-
-page.querySelector('#ctChatSetBack').addEventListener('click',function(){
-  page.classList.remove('ct-sp-in');page.classList.add('ct-sp-out');
-  setTimeout(function(){if(page.parentNode)page.remove();},350);
-});
-
-page.querySelector('#ctSetSceneSave').addEventListener('click',function(){
-  var val=page.querySelector('#ctSetScene').value.trim();
-  if(val)App.LS.set('chatScene_'+Chat.charId,val);else App.LS.remove('chatScene_'+Chat.charId);
-  App.showToast('场景已保存');
-});
-
-page.querySelector('#ctSetSceneClear').addEventListener('click',function(){
-  App.LS.remove('chatScene_'+Chat.charId);
-  page.querySelector('#ctSetScene').value='';
-  App.showToast('已清空场景');
-});
-
-page.querySelector('#ctSetClear').addEventListener('click',function(){
-  if(!confirm('确定清空所有聊天记录？此操作不可恢复。'))return;
-  Chat.messages=[];Chat.saveMsgs();Chat.renderMessages();
-  page.querySelector('.ct-sp-status').textContent='当前共 0 条消息';
-  App.showToast('已清空');
 });
 },
 
@@ -838,3 +639,4 @@ init:function(){App.chatUI=ChatUI;}
 
 App.register('chatUI',ChatUI);
 })();
+
