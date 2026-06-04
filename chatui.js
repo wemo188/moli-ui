@@ -492,7 +492,7 @@ root.querySelectorAll('.ct-voice-btn svg').forEach(function(s){s.style.stroke=co
 root.querySelectorAll('.ct-plus-btn svg').forEach(function(s){s.style.stroke=color;});
 var robot=root.querySelector('.ct-robot-svg');
 if(robot){robot.querySelectorAll('line,ellipse,rect').forEach(function(el){if(el.getAttribute('stroke')&&el.getAttribute('stroke')!=='white')el.setAttribute('stroke',color);if(el.getAttribute('fill')&&el.getAttribute('fill')!=='none'&&el.getAttribute('fill')!=='white')el.setAttribute('fill',color);});}
-root.querySelectorAll('.ct-msg.user .ct-bubble').forEach(function(b){b.style.background=color+'cc';});
+root.querySelectorAll('.ct-msg.user .ct-bubble').forEach(function(b){b.style.background=color;});
 },
 
 showAvCard:function(){
