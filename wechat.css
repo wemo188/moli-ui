@@ -1,3 +1,4 @@
+
 /* ====== 微信面板 ====== */
 #wechatPanel {
   background: none !important;
@@ -155,7 +156,6 @@
   flex-shrink: 0;
   margin: 5px 8px 12px 8px;
   background: #fff;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(0,0,0,0.02);
   border-radius: 14px;
   padding: 6px;
@@ -201,20 +201,23 @@
 
 .c6-tabs { flex: 1; display: flex; gap: 3px; }
 
-/* ===== Tab栏 ====== */
 .c6-tab {
   flex: 1;
   display: flex; align-items: center; justify-content: center;
-  padding: 10px 12px; border-radius: 10px;
-  font-size: 12px; font-weight: 800; letter-spacing: 1px;
-  color: #999;
+  padding: 8px 12px; border-radius: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  color: rgba(0,0,0,0.28);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.25s ease;
 }
-
+.c6-tab:active { transform: scale(0.95); }
 .c6-tab.c6-active {
-  background: #f0f0f0;
-  color: #1a1a1a;
+  background: rgba(255,255,255,0.8);
+  color: rgba(0,0,0,0.7);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.03),
+    0 1px 2px rgba(0,0,0,0.01),
+    inset 0 1px 1px rgba(255,255,255,0.8);
 }
 
 .c6-tab-icons { display: flex; gap: 2px; margin: 0 4px 0 0; }
@@ -232,7 +235,7 @@
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* ===== 内容区域 ====== */
+/* ====== 内容区域 ====== */
 .c6-body {
   flex: 1;
   background: #fff;
@@ -240,31 +243,7 @@
   -webkit-overflow-scrolling: touch;
   padding: 0 0 12px 0;
 }
-
-.c6-chat-name {
-  font-size: 14px;
-  font-weight: 800;
-  color: #1a1a1a;
-  margin-bottom: 4px;
-  letter-spacing: 0.3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.c6-chat-msg {
-  font-size: 12px;
-  color: #999;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.c6-chat-time {
-  font-size: 11px;
-  color: #ccc;
-  font-family: monospace;
-}
+.c6-body::-webkit-scrollbar { display: none; }
 
 /* ====== 聊天列表项 ====== */
 .c6-chat-item {
@@ -280,7 +259,7 @@
 .c6-chat-item.pinned { background: rgba(0,0,0,0.06); }
 
 .c6-chat-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%;
   background: linear-gradient(145deg, #e0e0e0, #f0f0f0);
   flex-shrink: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
@@ -292,13 +271,15 @@
 }
 
 .c6-chat-info { flex: 1; min-width: 0; }
+
 .c6-chat-name {
-  font-size: 13px; font-weight: 700; color: rgba(0,0,0,0.8);
+  font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.8);
   margin-bottom: 3px; letter-spacing: 0.3px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+
 .c6-chat-msg {
-  font-size: 11px; color: rgba(0,0,0,0.4);
+  font-size: 13px; color: rgba(0,0,0,0.4);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
@@ -306,7 +287,9 @@
   display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
   flex-shrink: 0;
 }
-.c6-chat-time { font-size: 9px; color: rgba(0,0,0,0.3); font-family: monospace; }
+
+.c6-chat-time { font-size: 12px; color: rgba(0,0,0,0.3); font-family: monospace; }
+
 .c6-chat-badge {
   min-width: 16px; height: 16px; padding: 0 5px; border-radius: 8px;
   background: rgba(0,0,0,0.15);
@@ -314,43 +297,40 @@
   font-size: 9px; font-weight: 700; color: #fff;
 }
 
-/* ===== 底部导航 ====== */
+/* ====== 底部导航 ====== */
 .c6-footer {
   flex-shrink: 0;
-  background: #fff;
-  border-top: 1px solid #e5e5e5;
+  background: rgba(248,248,248,0.95);
+  border-top: 1px solid rgba(0,0,0,0.04);
   display: flex;
-  padding: 10px 0;
+  padding: 4px 0;
   position: relative;
   z-index: 10;
 }
-
 .c6-footer-item {
   flex: 1;
   display: flex; flex-direction: column; align-items: center;
-  gap: 6px; padding: 8px 0;
+  gap: 2px; padding: 6px 0;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.2s;
 }
+.c6-footer-item:active { transform: scale(0.92); }
 
 .c6-footer-icon {
   width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
 }
-
 .c6-footer-icon svg {
   width: 26px; height: 26px;
-  fill: #999; transition: fill 0.2s;
+  fill: rgba(0,0,0,0.3); transition: fill 0.2s;
 }
-
-.c6-footer-item.c6-f-active .c6-footer-icon svg { fill: #1a1a1a; }
+.c6-footer-item.c6-f-active .c6-footer-icon svg { fill: rgba(0,0,0,0.7); }
 
 .c6-footer-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-  color: #999; transition: color 0.2s;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
+  color: rgba(0,0,0,0.35); transition: color 0.2s;
 }
-
-.c6-footer-item.c6-f-active .c6-footer-label { color: #1a1a1a; }
+.c6-footer-item.c6-f-active .c6-footer-label { color: rgba(0,0,0,0.7); }
 
 /* ====== Me 页面 ====== */
 .c6-me-header {
@@ -364,11 +344,7 @@
   margin: 0 auto 12px; overflow: hidden;
 }
 .c6-me-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.c6-me-name {
-  font-size: 17px;
-  font-weight: 800;
-  color: #1a1a1a;
-}
+.c6-me-name { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.8); }
 
 .c6-me-item {
   display: flex; align-items: center; justify-content: space-between;
@@ -377,12 +353,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .c6-me-item:active { background: rgba(0,0,0,0.03); }
-.c6-me-item-text {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
+.c6-me-item-text { font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.7); }
 .c6-me-item-arrow { font-size: 14px; color: rgba(0,0,0,0.2); font-weight: 300; }
 
 /* ====== 空状态 ====== */
@@ -425,3 +396,4 @@
 }
 .c6-av-mi:last-child { border-bottom: none; }
 .c6-av-mi:active { background: rgba(255,255,255,0.1); }
+
