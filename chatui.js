@@ -396,6 +396,32 @@ showMenu:function(){
 var Chat=App.chat;if(!Chat)return;
 Chat.dismissMenu();
 
+var menu=document.createElement('div');menu.className='ct-hd-menu show';
+menu.innerHTML=
+'<div class="ct-hd-mi" data-act="avatar"><span>头像设置</span></div>'+
+'<div class="ct-hd-mi" data-act="bg"><span>背景图</span></div>'+
+'<div class="ct-hd-mi" data-act="palette"><span>调色板</span></div>'+
+'<div class="ct-hd-mi" data-act="scene"><span>场景 / 时间线</span></div>'+
+'<div class="ct-hd-mi" data-act="multiDel"><span>多选删除</span></div>';
+
+var btn=App.$('#ctMenuBtn');
+if(btn){var rect=btn.getBoundingClientRect();menu.style.top=(rect.bottom+4)+'px';menu.style.right=(window.innerWidth-rect.right)+'px';}
+document.body.appendChild(menu);Chat._menuEl=menu;
+
+menu.addEventListener('click',function(e){e.stopPropagation();});
+menu.querySelectorAll('.ct-hd-mi').forEach(function(item){
+  item.addEventListener('click',function(e){
+    e.stopPropagation();var act=item.dataset.act;
+    Chat.dismissMenu();
+    if(act==='avatar'){ChatUI.showAvCard();return;}
+    if(act==='palette'){ChatUI.showPalette();return;}
+    if(act==='bg'){ChatUI.showBgMenu();return;}
+    if(act==='scene'){ChatUI.showSceneDialog();return;}
+    if(act==='multiDel'){ChatUI.enterMultiSelect();return;}
+  });
+});
+},
+
 enterMultiSelect:function(){
 var Chat=App.chat;if(!Chat)return;
 Chat._multiMode=true;
@@ -405,14 +431,12 @@ var mc=App.$('#ctMsgs');
 if(!mc)return;
 mc.classList.add('ct-multi-mode');
 
-// 给每条消息加勾选圆圈
 mc.querySelectorAll('.ct-msg[data-msg-idx]').forEach(function(el){
   var check=document.createElement('div');
   check.className='ct-swipe-check';
   el.appendChild(check);
 });
 
-// 输入区隐藏，显示多选底部栏
 var inputWrap=App.$('.ct-input-wrap');
 if(inputWrap)inputWrap.style.display='none';
 var plusPanel=App.$('#ctPlusPanel');
@@ -428,7 +452,6 @@ bar.innerHTML=
   '</div>';
 var root=App.$('#ctRoot');if(root)root.appendChild(bar);
 
-// 滑动选择手势
 var _ms={active:false,lastIdx:-1};
 
 function toggleSelect(msgEl){
@@ -466,7 +489,6 @@ mc._multiTouchMove=function(e){
   var idx=parseInt(msgEl.dataset.msgIdx);
   if(idx===_ms.lastIdx)return;
   _ms.lastIdx=idx;
-  // 滑动经过的自动选中（不取消）
   if(Chat._multiSelected.indexOf(idx)<0){
     Chat._multiSelected.push(idx);
     msgEl.classList.add('ct-selected');
@@ -484,7 +506,6 @@ mc.addEventListener('touchstart',mc._multiTouchStart,{passive:true});
 mc.addEventListener('touchmove',mc._multiTouchMove,{passive:false});
 mc.addEventListener('touchend',mc._multiTouchEnd,{passive:true});
 
-// 底部按钮
 bar.querySelector('#ctMultiDel').addEventListener('click',function(){
   if(!Chat._multiSelected.length){App.showToast('请先选择消息');return;}
   if(!confirm('删除选中的 '+Chat._multiSelected.length+' 条消息？'))return;
@@ -511,7 +532,6 @@ if(mc){
   mc.classList.remove('ct-multi-mode');
   mc.querySelectorAll('.ct-msg.ct-selected').forEach(function(el){el.classList.remove('ct-selected');});
   mc.querySelectorAll('.ct-swipe-check').forEach(function(el){el.remove();});
-  // 移除多选手势
   if(mc._multiTouchStart){mc.removeEventListener('touchstart',mc._multiTouchStart);mc._multiTouchStart=null;}
   if(mc._multiTouchMove){mc.removeEventListener('touchmove',mc._multiTouchMove);mc._multiTouchMove=null;}
   if(mc._multiTouchEnd){mc.removeEventListener('touchend',mc._multiTouchEnd);mc._multiTouchEnd=null;}
@@ -520,32 +540,6 @@ if(mc){
 var bar=App.$('#ctMultiBar');if(bar)bar.remove();
 var inputWrap=App.$('.ct-input-wrap');
 if(inputWrap)inputWrap.style.display='';
-},
-
-var menu=document.createElement('div');menu.className='ct-hd-menu show';
-menu.innerHTML=
-'<div class="ct-hd-mi" data-act="avatar"><span>头像设置</span></div>'+
-'<div class="ct-hd-mi" data-act="bg"><span>背景图</span></div>'+
-'<div class="ct-hd-mi" data-act="palette"><span>调色板</span></div>'+
-'<div class="ct-hd-mi" data-act="scene"><span>场景 / 时间线</span></div>'+
-'<div class="ct-hd-mi" data-act="multiDel"><span>多选删除</span></div>';
-
-var btn=App.$('#ctMenuBtn');
-if(btn){var rect=btn.getBoundingClientRect();menu.style.top=(rect.bottom+4)+'px';menu.style.right=(window.innerWidth-rect.right)+'px';}
-document.body.appendChild(menu);Chat._menuEl=menu;
-
-menu.addEventListener('click',function(e){e.stopPropagation();});
-menu.querySelectorAll('.ct-hd-mi').forEach(function(item){
-  item.addEventListener('click',function(e){
-    e.stopPropagation();var act=item.dataset.act;
-    Chat.dismissMenu();
-    if(act==='avatar'){ChatUI.showAvCard();return;}
-    if(act==='palette'){ChatUI.showPalette();return;}
-    if(act==='bg'){ChatUI.showBgMenu();return;}
-    if(act==='scene'){ChatUI.showSceneDialog();return;}
-    if(act==='multiDel'){ChatUI.enterMultiSelect();return;}
-  });
-});
 },
 
 showPalette:function(){
