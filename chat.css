@@ -101,7 +101,7 @@
 
 .ct-msg {
   display: flex;
-  align-items: center;
+  align-items: flex-start;  /* 改为顶部对齐，替代原来的 center 或 stretch */
   gap: 8px;
   margin-bottom: 2px;
   max-width: 100%;
