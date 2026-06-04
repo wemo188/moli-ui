@@ -37,7 +37,7 @@ inner.innerHTML=
 '<div class="ct-hd">'+
   '<button class="ct-hd-btn" id="ctBack" type="button"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke-width:3;"><path d="M15 18l-6-6 6-6"/></svg></button>'+
   '<div class="ct-hd-name" id="ctName">'+App.esc(displayName)+'</div>'+
-  '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><svg viewBox="0 0 28 24"><circle cx="4" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="14" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/><circle cx="24" cy="12" r="2.2" fill="#1a1a1a" stroke="none"/></svg></button>'+
+  '<button class="ct-hd-btn" id="ctMenuBtn" type="button"><div style="width:40px;height:40px;"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M42 14L45 22L53 23L47 28L49 36L42 32L35 36L37 28L31 23L39 22Z" stroke="#2a2a2a" stroke-width="2.2" stroke-linejoin="round"/><path d="M 34 28 Q 24 34 16 46" stroke="#2a2a2a" stroke-width="2.2" stroke-linecap="round"/><circle cx="28" cy="42" r="2" fill="#2a2a2a"/><circle cx="12" cy="38" r="1.5" fill="#2a2a2a"/><circle cx="20" cy="54" r="1.5" fill="#2a2a2a"/><path d="M 22 22 L 16 26" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round"/><path d="M 44 38 L 38 44" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round"/></svg></div></button>'+
 '</div>'+
 '<div class="ct-msgs" id="ctMsgs"></div>'+
 '<div class="ct-plus-panel" id="ctPlusPanel">'+
