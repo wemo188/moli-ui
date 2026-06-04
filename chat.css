@@ -140,11 +140,6 @@
   stroke: #ccc; fill: none; stroke-width: 1.5;
 }
 
-好的，给你改成带小尾巴的气泡！
-
-**chat.css 里找到气泡部分，完整替换：**
-
-```css
 /* ===== 气泡 ===== */
 .ct-bubble-wrap {
   max-width: 72%;
