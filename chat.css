@@ -156,14 +156,14 @@
 }
 
 .ct-msg.ai .ct-bubble {
-  background: #f8f7fb;
+  background: #abc7D9;
   color: #1a1a1a;
   border-top-left-radius: 4px;
 }
 
 .ct-msg.user .ct-bubble {
-  background: #85ABD1;
-  color: #fff;
+  background: #f0f3f6;
+  color: #1a1a1a;
   border-top-right-radius: 4px;
 }
 
