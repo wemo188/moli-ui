@@ -660,3 +660,165 @@
   text-align: left;
 }
 
+/* --- 多选模式 --- */
+.ct-multi-mode .ct-msg {
+  position: relative;
+}
+
+.ct-multi-mode .ct-swipe-check {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,.15);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all .15s;
+  pointer-events: none;
+}
+
+.ct-multi-mode .ct-msg.user .ct-swipe-check {
+  left: auto;
+  right: 4px;
+}
+
+.ct-multi-mode .ct-msg.ct-selected .ct-swipe-check {
+  background: #333;
+  border-color: #333;
+}
+
+.ct-multi-mode .ct-msg.ct-selected .ct-swipe-check::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.ct-multi-mode .ct-msg {
+  padding-left: 32px;
+  padding-right: 32px;
+  transition: background .1s;
+}
+
+.ct-multi-mode .ct-msg.ct-selected {
+  background: rgba(0,0,0,.03);
+  border-radius: 12px;
+}
+
+/* 多选底部栏 */
+.ct-multi-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+
+.ct-multi-bar-count {
+  font-size: 13px;
+  color: rgba(0,0,0,.5);
+  font-weight: 600;
+}
+
+.ct-multi-bar-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.ct-multi-bar-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ct-multi-bar-btn.del {
+  background: #ff3b30;
+  color: #fff;
+}
+
+.ct-multi-bar-btn.cancel {
+  background: rgba(0,0,0,.04);
+  color: rgba(0,0,0,.6);
+}
+
+.ct-multi-bar-btn:active {
+  opacity: .7;
+}
+
+/* --- 弹出卡片统一白色风格 --- */
+.ct-hd-menu {
+  background: #fff !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08) !important;
+}
+
+.ct-hd-mi {
+  border-bottom-color: rgba(0,0,0,.04) !important;
+}
+
+.ct-hd-mi span {
+  color: rgba(0,0,0,.75) !important;
+}
+
+.ct-hd-mi:active {
+  background: rgba(0,0,0,.03) !important;
+}
+
+.ct-av-card {
+  background: #fff !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08) !important;
+  border: none !important;
+}
+
+.ct-av-label {
+  color: rgba(0,0,0,.4) !important;
+}
+
+.ct-av-opt {
+  color: rgba(0,0,0,.6) !important;
+  background: rgba(0,0,0,.03) !important;
+  border-color: transparent !important;
+}
+
+.ct-av-opt.active {
+  color: rgba(0,0,0,.85) !important;
+  background: rgba(0,0,0,.06) !important;
+  border-color: rgba(0,0,0,.12) !important;
+}
+
+.ct-ctx {
+  background: #fff !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.1) !important;
+}
+
+.ct-ctx-item {
+  color: rgba(0,0,0,.7) !important;
+}
+
+.ct-ctx-item:active {
+  background: rgba(0,0,0,.04) !important;
+}
+
+.ct-ctx-item svg {
+  stroke: rgba(0,0,0,.5) !important;
+}
