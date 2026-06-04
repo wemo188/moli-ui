@@ -766,24 +766,6 @@
 }
 
 /* --- 弹出卡片统一白色风格 --- */
-.ct-hd-menu {
-  background: #fff !important;
-  border: none !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,.08) !important;
-}
-
-.ct-hd-mi {
-  border-bottom-color: rgba(0,0,0,.04) !important;
-}
-
-.ct-hd-mi span {
-  color: rgba(0,0,0,.75) !important;
-}
-
-.ct-hd-mi:active {
-  background: rgba(0,0,0,.03) !important;
-}
-
 .ct-av-card {
   background: #fff !important;
   box-shadow: 0 4px 20px rgba(0,0,0,.08) !important;
@@ -804,21 +786,4 @@
   color: rgba(0,0,0,.85) !important;
   background: rgba(0,0,0,.06) !important;
   border-color: rgba(0,0,0,.12) !important;
-}
-
-.ct-ctx {
-  background: #fff !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,.1) !important;
-}
-
-.ct-ctx-item {
-  color: rgba(0,0,0,.7) !important;
-}
-
-.ct-ctx-item:active {
-  background: rgba(0,0,0,.04) !important;
-}
-
-.ct-ctx-item svg {
-  stroke: rgba(0,0,0,.5) !important;
 }
