@@ -160,14 +160,14 @@
 }
 
 .ct-msg.ai .ct-bubble {
-  background: rgba(165, 177, 198,0.3);
+  background: rgba(165, 177, 198,0.2);
   color: #1a1a1a;
   border-top-left-radius: 4px;
 }
 
 .ct-msg.user .ct-bubble {
-  background: rgba(165, 177, 198,0.8);
-  color: #1a1a1a;
+  background: rgba(165, 177, 198,0.95);
+  color: #fff;
   border-top-right-radius: 4px;
 }
 
