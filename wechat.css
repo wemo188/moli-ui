@@ -79,7 +79,7 @@
 .c6-header {
   flex-shrink: 0;
   background: #fff;
-  padding: 12px 16px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -154,7 +154,7 @@
 /* ====== Tab栏 ====== */
 .c6-tab-wrap {
   flex-shrink: 0;
-  margin: 5px 8px 12px 8px;
+  margin: 5px 8px 15px 8px;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.02);
   border-radius: 14px;
@@ -205,7 +205,7 @@
   flex: 1;
   display: flex; align-items: center; justify-content: center;
   padding: 8px 12px; border-radius: 10px;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px;
   color: rgba(0,0,0,0.28);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: all 0.25s ease;
