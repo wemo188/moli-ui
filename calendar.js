@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 
@@ -36,48 +37,34 @@ var Calendar = {
     if (monthEl) monthEl.textContent = month + 1;
     if (monthEnEl) monthEnEl.textContent = MONTHS_EN[month];
 
-    // 用表格渲染星期和日期，天然对齐
-    var tableHtml = '<table class="cal-table">';
-    
-    // 星期行
-    tableHtml += '<tr class="cal-week">';
+    var calSide = document.getElementById('calSide');
+    if (!calSide) return;
+
+    var html = '<table class="cal-table"><tr class="cal-week">';
     for (var i = 0; i < 7; i++) {
-      tableHtml += '<td>' + WEEKDAYS[i] + '</td>';
+      html += '<td>' + WEEKDAYS[i] + '</td>';
     }
-    tableHtml += '</tr>';
-    
-    // 日期行
+    html += '</tr>';
+
     var dayCount = 1;
     for (var row = 0; row < 6; row++) {
-      tableHtml += '<tr>';
+      html += '<tr>';
       for (var col = 0; col < 7; col++) {
         if (row === 0 && col < firstDay) {
-          tableHtml += '<td class="cal-day"></td>';
+          html += '<td class="cal-day"></td>';
         } else if (dayCount <= daysInMonth) {
           var cls = 'cal-day' + (dayCount === today ? ' today' : '');
-          tableHtml += '<td class="' + cls + '">' + dayCount + '</td>';
+          html += '<td class="' + cls + '">' + dayCount + '</td>';
           dayCount++;
         } else {
-          tableHtml += '<td class="cal-day"></td>';
+          html += '<td class="cal-day"></td>';
         }
       }
-      tableHtml += '</tr>';
+      html += '</tr>';
       if (dayCount > daysInMonth) break;
     }
-    tableHtml += '</table>';
-    
-    // 替换内容
-    var weekdaysEl = document.getElementById('calWeekdays');
-    var daysEl = document.getElementById('calDays');
-    if (weekdaysEl && daysEl) {
-      // 移除原来的两个容器，用表格替代
-      var container = document.createElement('div');
-      container.innerHTML = tableHtml;
-      var table = container.firstChild;
-      weekdaysEl.parentNode.insertBefore(table, weekdaysEl);
-      weekdaysEl.style.display = 'none';
-      daysEl.style.display = 'none';
-    }
+    html += '</table>';
+    calSide.innerHTML = html;
   },
 
   startClock: function() {
