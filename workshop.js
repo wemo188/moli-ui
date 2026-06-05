@@ -412,17 +412,22 @@
     },
 
     resetAllLayout: function() {
-      App.LS.remove('wtCardPos');
-      if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
-      var wtCard = App.$('#wtCard');
-      if (wtCard) wtCard.style.transform = '';
-      if (App.modules.cards) App.modules.cards.resetAllPositions();
-      var edenData = App.LS.get('edenCard');
-      if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
-      var edenCard = App.$('#edenCard');
-      if (edenCard) edenCard.style.transform = '';
-      App.showToast('布局已恢复');
-    },
+  App.LS.remove('wtCardPos');
+  App.LS.remove('appIconOffsets');
+  App.LS.remove('calTimeOffset');
+  if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
+  var wtCard = App.$('#wtCard');
+  if (wtCard) wtCard.style.transform = '';
+  var calRow = App.$('#calTimeRow');
+  if (calRow) calRow.style.transform = '';
+  document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ el.style.transform = ''; });
+  if (App.modules.cards) App.modules.cards.resetAllPositions();
+  var edenData = App.LS.get('edenCard');
+  if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
+  var edenCard = App.$('#edenCard');
+  if (edenCard) edenCard.style.transform = '';
+  App.showToast('布局已恢复');
+},
 
     openSnapshot: function() {
       var old = App.$('#wsSnapshot');
