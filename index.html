@@ -72,21 +72,26 @@
         </div>
 
         <!-- 2. 月历+时间 -->
-        <div id="calTimeRow" style="display:flex;gap:10px;width:100%;min-height:170px;margin-top:14px;padding:0 12px;">
-          <div id="timeSide" style="width:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;">
-            <div id="calYear">2025</div>
-            <div id="calMonth">六月</div>
-            <div id="calMonthEn">JUNE</div>
-            <div id="calClock">--:--<span id="calSec">:--</span></div>
-          </div>
-          <div id="calSide" style="width:60%;display:flex;flex-direction:column;padding:6px 4px;overflow:hidden;">
-            <div id="calNav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;padding:0 2px;"><span id="calNavText">2025年6月</span><span>☾</span></div>
-            <div id="calWeekdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:2px;">
-              <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
-            </div>
-            <div id="calDays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;flex:1;"></div>
-          </div>
-        </div>
+      <div id="calTimeRow" style="display:flex;gap:10px;width:100%;height:200px;margin-top:14px;padding:0 12px;">
+  <div id="timeSide" style="width:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;">
+    <div id="calYear" style="font-size:11px;color:#333;letter-spacing:2px;font-weight:600;">2025</div>
+    <div id="calMonth" style="font-size:58px;font-weight:900;color:#111;line-height:1;">6</div>
+    <div id="calMonthEn" style="font-size:11px;color:#555;letter-spacing:1px;font-weight:500;">JUNE</div>
+    <div id="calClock" style="font-size:20px;font-weight:700;color:#111;margin-top:8px;font-variant-numeric:tabular-nums;">--:--<span id="calSec" style="font-size:13px;color:#666;margin-left:2px;">:--</span></div>
+  </div>
+  <div id="calSide" style="width:60%;display:flex;flex-direction:column;padding:6px 4px;overflow:hidden;">
+    <div id="calWeekdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:4px;">
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">日</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">一</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">二</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">三</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">四</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">五</span>
+      <span style="text-align:center;font-size:9px;color:#888;font-weight:600;">六</span>
+    </div>
+    <div id="calDays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;flex:1;"></div>
+  </div>
+</div>
 
         <!-- 3. 四个图标 -->
         <div id="appIconsRow" style="display:flex;justify-content:space-around;align-items:flex-start;gap:12px;margin-top:14px;padding:0 12px;width:100%;">
