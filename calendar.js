@@ -36,25 +36,48 @@ var Calendar = {
     if (monthEl) monthEl.textContent = month + 1;
     if (monthEnEl) monthEnEl.textContent = MONTHS_EN[month];
 
+    // 用表格渲染星期和日期，天然对齐
+    var tableHtml = '<table class="cal-table">';
+    
+    // 星期行
+    tableHtml += '<tr class="cal-week">';
+    for (var i = 0; i < 7; i++) {
+      tableHtml += '<td>' + WEEKDAYS[i] + '</td>';
+    }
+    tableHtml += '</tr>';
+    
+    // 日期行
+    var dayCount = 1;
+    for (var row = 0; row < 6; row++) {
+      tableHtml += '<tr>';
+      for (var col = 0; col < 7; col++) {
+        if (row === 0 && col < firstDay) {
+          tableHtml += '<td class="cal-day"></td>';
+        } else if (dayCount <= daysInMonth) {
+          var cls = 'cal-day' + (dayCount === today ? ' today' : '');
+          tableHtml += '<td class="' + cls + '">' + dayCount + '</td>';
+          dayCount++;
+        } else {
+          tableHtml += '<td class="cal-day"></td>';
+        }
+      }
+      tableHtml += '</tr>';
+      if (dayCount > daysInMonth) break;
+    }
+    tableHtml += '</table>';
+    
+    // 替换内容
     var weekdaysEl = document.getElementById('calWeekdays');
-    if (weekdaysEl) {
-      weekdaysEl.innerHTML = WEEKDAYS.map(function(d) {
-        return '<span>' + d + '</span>';
-      }).join('');
-    }
-
     var daysEl = document.getElementById('calDays');
-    if (!daysEl) return;
-
-    var html = '';
-    for (var i = 0; i < firstDay; i++) {
-      html += '<div class="cal-day"></div>';
+    if (weekdaysEl && daysEl) {
+      // 移除原来的两个容器，用表格替代
+      var container = document.createElement('div');
+      container.innerHTML = tableHtml;
+      var table = container.firstChild;
+      weekdaysEl.parentNode.insertBefore(table, weekdaysEl);
+      weekdaysEl.style.display = 'none';
+      daysEl.style.display = 'none';
     }
-    for (var d = 1; d <= daysInMonth; d++) {
-      var cls = 'cal-day' + (d === today ? ' today' : '');
-      html += '<div class="' + cls + '">' + d + '</div>';
-    }
-    daysEl.innerHTML = html;
   },
 
   startClock: function() {
