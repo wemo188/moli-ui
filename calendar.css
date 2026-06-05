@@ -1,8 +1,10 @@
 
 /* 拖拽容器 */
 #calTimeRow {
-  justify-content: flex-start;  /* 改成这个，不要 space-between */
-  gap: 20px;  /* 把 gap 改成你想要的数值，比如 20px */
+  display: flex;
+  justify-content: center;  /* 整体居中 */
+  align-items: center;
+  gap: 20px;  /* 改这个数字控制左右距离，想要多大就多大 */
 }
 
 /* 年份 */
