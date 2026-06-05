@@ -1,104 +1,49 @@
-/* =========================
-   月历+时间区域
-========================= */
-.cal-time-row {
-  display: flex;
-  gap: 10px;
-  min-height: 170px;
-  pointer-events: none;
-}
-
-.cal-time-row > * {
-  pointer-events: auto;
-}
-
-/* 左侧时间 */
-.time-side {
-  width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 8px;
-}
-
-.time-side .cal-year {
+#calYear {
   font-size: 11px;
   color: #333;
   letter-spacing: 2px;
   font-weight: 600;
 }
 
-.time-side .cal-month {
-  font-size: 38px;
+#calMonth {
+  font-size: 58px;
   font-weight: 900;
   color: #111;
-  line-height: 1.1;
-  margin: 4px 0;
+  line-height: 1;
 }
 
-.time-side .cal-month-en {
-  font-size: 12px;
+#calMonthEn {
+  font-size: 11px;
   color: #555;
   letter-spacing: 1px;
   font-weight: 500;
 }
 
-.time-side .cal-clock {
-  font-size: 22px;
+#calClock {
+  font-size: 20px;
   font-weight: 700;
   color: #111;
-  margin-top: 10px;
+  margin-top: 8px;
   font-variant-numeric: tabular-nums;
 }
 
-.time-side .cal-clock .cal-sec {
-  font-size: 14px;
+#calSec {
+  font-size: 13px;
   color: #666;
   margin-left: 2px;
 }
 
-/* 右侧月历 */
-.cal-side {
-  width: 60%;
-  display: flex;
-  flex-direction: column;
-  padding: 8px 6px;
-}
-
-.cal-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  padding: 0 2px;
-}
-
-.cal-nav span {
-  font-size: 11px;
-  color: #555;
-  font-weight: 600;
-}
-
-.cal-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  margin-bottom: 4px;
-}
-
-.cal-weekdays span {
+#calWeekdays span {
   text-align: center;
   font-size: 9px;
   color: #888;
   font-weight: 600;
 }
 
-.cal-days {
+#calDays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-  flex: 1;
+  gap: 2px;
 }
 
 .cal-day {
@@ -106,28 +51,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 10px;
   color: #333;
-  border-radius: 6px;
+  border-radius: 5px;
   font-weight: 500;
-  transition: background .2s ease;
 }
 
 .cal-day.today {
-  background: rgba(0, 0, 0, .08);
+  background: rgba(0, 0, 0, .1);
   color: #000;
   font-weight: 800;
-  border: 1px solid rgba(0, 0, 0, .2);
-}
-
-.cal-day.empty {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* 拖拽状态 */
-.cal-time-row.dragging {
-  opacity: 0.85;
-  z-index: 999 !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, .15) !important;
+  border: 1px solid rgba(0, 0, 0, .25);
 }
