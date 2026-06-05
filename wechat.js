@@ -77,13 +77,11 @@
       var isFS = App.LS.get('wxFullScreen') || false;
       var wrapClass = isFS ? 'wx-fullscreen' : '';
 
-      // Tab栏只在 chats 页面显示
       var showTab = Wechat.currentPage === 'chats';
 
       panel.innerHTML =
         '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
 
-          // 顶部
           '<div class="c6-header">' +
             '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
             '<div class="c6-header-title">Chat</div>' +
@@ -97,10 +95,8 @@
             '</div>' +
           '</div>' +
 
-          // 主体
           '<div class="c6-main">' +
 
-            // Tab栏（仅 chats 页面显示）
             (showTab ? (
             '<div class="c6-tab-wrap">' +
               '<div class="c6-tab-inner">' +
@@ -120,11 +116,9 @@
             '</div>'
             ) : '') +
 
-            // 内容
             '<div class="c6-body" id="wxBody"></div>' +
           '</div>' +
 
-          // 底部导航
           '<div class="c6-footer">' +
             '<div class="c6-footer-item' + (Wechat.currentPage === 'chats' ? ' c6-f-active' : '') + '" data-page="chats">' +
               '<div class="c6-footer-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.92 2 10.75c0 2.65 1.48 4.96 3.76 6.37-.24 1.25-.8 2.84-.8 2.84a1 1 0 0 0 1.25 1.05s2.5-.66 4.18-1.54C10.9 19.64 11.45 19.67 12 19.67c5.52 0 10-3.92 10-8.92S17.52 2 12 2z"/></svg></div>' +
@@ -325,7 +319,6 @@
       var users = App.user.list;
 
       if (!users.length) {
-        // 没有用户：显示空状态 + 创建按钮
         body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="c6-empty-text">还未创建用户身份</div><button class="c6-empty-btn" id="wxCreateUser">创建身份</button></div>';
         App.safeOn('#wxCreateUser', 'click', function() {
           if (App.user) App.user.renderProfile();
@@ -333,50 +326,29 @@
         return;
       }
 
-      // 有用户：显示第一个用户的 PSP 卡片 + 功能列表
-      var u = users[0];
-      var avatarHtml = u.avatar ? '<img src="' + App.esc(u.avatar) + '">' : '';
-      var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
-      var hue = u.cardHue != null ? u.cardHue : DEFAULT_CARD.hue;
-      var sat = u.cardSat != null ? u.cardSat : DEFAULT_CARD.sat;
-      var lit = u.cardLit != null ? u.cardLit : DEFAULT_CARD.lit;
-      var radius = u.cardRadius != null ? u.cardRadius : DEFAULT_CARD.radius;
-      var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
-      var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
-      var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
-
-      var cardHtml =
-        '<div class="p14-card c6-me-psp-card" style="background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
-          bgImgHtml +
-          '<div class="p14-top">' +
-            '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
-          '</div>' +
-          '<div class="p14-body">' +
-            '<div class="p14-screen-wrap"><div class="p14-screen">' +
-              '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
-              '<div class="p14-screen-content">' +
-                '<div class="p14-avatar-wrap"><div class="p14-avatar">' + avatarHtml + '</div></div>' +
-                '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || u.nickname || '未命名') + '</div>' +
-                  (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
-                  (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
-                '</div>' +
-              '</div>' +
-            '</div></div>' +
-          '</div>' +
+      // 有用户：顶部创建按钮 + 完整 PSP 卡片列表（带所有按键）
+      var headerHtml =
+        '<div class="c6-me-list-header">' +
+          '<div class="c6-me-list-title">我的身份</div>' +
+          '<div class="c6-me-list-add" id="wxMeCreateNew">+ 创建新身份</div>' +
         '</div>';
 
-      body.innerHTML =
-        '<div class="c6-me-psp-wrap">' + cardHtml + '</div>' +
+      body.innerHTML = headerHtml +
+        '<div id="wxMeUserCards" style="padding:0 0 20px;"></div>' +
         '<div class="c6-me-list">' +
-          '<div class="c6-me-item" id="wxMeProfile"><span class="c6-me-item-text">身份管理</span><span class="c6-me-item-arrow">›</span></div>' +
-          '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
           '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
+          '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
           '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
         '</div>';
 
-      // 身份管理：进入用户列表页（和 archive 的 user 模块一样）
-      App.safeOn('#wxMeProfile', 'click', function() {
-        Wechat._renderUserListPage(body);
+      // 用 user 模块的 renderListInto 渲染完整卡片（带按键、配色、编辑、删除等）
+      var cardsContainer = body.querySelector('#wxMeUserCards');
+      if (App.user.renderListInto) {
+        App.user.renderListInto(cardsContainer);
+      }
+
+      App.safeOn('#wxMeCreateNew', 'click', function() {
+        if (App.user) App.user.renderProfile();
       });
 
       App.safeOn('#wxMeFavs', 'click', function() {
@@ -385,40 +357,6 @@
 
       App.safeOn('#wxMeAssets', 'click', function() { App.showToast('资产功能开发中'); });
       App.safeOn('#wxMeStickers', 'click', function() { App.showToast('表情包功能开发中'); });
-    },
-
-    _renderUserListPage: function(body) {
-      if (!App.user) return;
-      App.user.load();
-
-      // 渲染一个带返回+创建按钮的列表页
-      var headerHtml =
-        '<div class="c6-me-list-header">' +
-          '<div class="c6-me-list-back" id="wxUserListBack">← 返回</div>' +
-          '<div class="c6-me-list-title">身份管理</div>' +
-          '<div class="c6-me-list-add" id="wxUserListAdd">+ 创建</div>' +
-        '</div>';
-
-      var container = document.createElement('div');
-      container.className = 'c6-me-user-list-page';
-      container.innerHTML = headerHtml + '<div id="wxUserListBody"></div>';
-
-      body.innerHTML = '';
-      body.appendChild(container);
-
-      // 用 user 模块的 renderListInto 来渲染卡片列表
-      var listBody = container.querySelector('#wxUserListBody');
-      if (App.user.renderListInto) {
-        App.user.renderListInto(listBody);
-      }
-
-      container.querySelector('#wxUserListBack').addEventListener('click', function() {
-        Wechat.renderMeTab(body);
-      });
-
-      container.querySelector('#wxUserListAdd').addEventListener('click', function() {
-        if (App.user) App.user.renderProfile();
-      });
     },
 
     renderFavsPage: function(body) {
@@ -480,7 +418,6 @@
     bindEvents: function() {
       App.safeOn('#wxBackBtn', 'click', function() { Wechat.close(); });
 
-      // 加号菜单
       App.safeOn('#wxAddBtn', 'click', function(e) {
         e.stopPropagation();
         var menu = App.$('#wxAddMenu');
@@ -507,13 +444,11 @@
           });
         });
 
-        // 点击空白关闭菜单
         Wechat.panelEl.addEventListener('click', function() {
           var menu = App.$('#wxAddMenu');
           if (menu) menu.classList.remove('show');
         });
 
-        // Tab 切换（仅 chats 页面有 tab）
         Wechat.panelEl.querySelectorAll('.c6-tab').forEach(function(tab) {
           tab.addEventListener('click', function() {
             Wechat.panelEl.querySelectorAll('.c6-tab').forEach(function(t) { t.classList.remove('c6-active'); });
@@ -522,19 +457,16 @@
           });
         });
 
-        // 底部导航
         Wechat.panelEl.querySelectorAll('.c6-footer-item').forEach(function(item) {
           item.addEventListener('click', function() {
             var newPage = item.dataset.page;
             if (newPage === Wechat.currentPage) return;
             Wechat.currentPage = newPage;
-            // 切页时需要重新 render 整个面板（因为 tab 栏显隐逻辑依赖 currentPage）
             Wechat.render();
           });
         });
       }
 
-      // 左滑返回
       var wxInner = App.$('#wxInner');
       if (wxInner) {
         var _wxSwipe = { active: false, sx: 0, sy: 0, locked: false, dir: '' };
@@ -622,3 +554,4 @@
 
   App.register('wechat', Wechat);
 })();
+
