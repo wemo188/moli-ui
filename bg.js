@@ -76,6 +76,8 @@
       }
     }
   });
+    Bg.restoreIconPositions();
+  Bg.bindIconDrag();
 },
 
     open: function() {
