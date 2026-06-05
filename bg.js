@@ -52,9 +52,9 @@ var Bg = {
   },
 
   /* ====== 主面板：美化中心 ====== */
-  openMain: function() {
+    openMain: function() {
     var old = document.getElementById('beautifyPanel');
-    if(old) { old.classList.add('show'); return; }
+    if(old) { old.classList.remove('hidden'); old.classList.add('show'); return; }
 
     var panel = document.createElement('div');
     panel.id = 'beautifyPanel';
@@ -80,10 +80,11 @@ var Bg = {
 
     requestAnimationFrame(function() { panel.classList.add('show'); });
 
-    App.bindSwipeBack(panel, function() { panel.classList.remove('show'); panel.classList.add('hidden'); });
+        App.bindSwipeBack(panel, function() { panel.classList.remove('show'); panel.classList.add('hidden'); setTimeout(function(){ panel.remove(); }, 350); });
 
     panel.querySelector('#bfMainBack').addEventListener('click', function() {
       panel.classList.remove('show'); panel.classList.add('hidden');
+      setTimeout(function(){ panel.remove(); }, 350);
     });
 
     panel.querySelectorAll('.bf-grid-item').forEach(function(item) {
@@ -553,20 +554,34 @@ var Bg = {
   },
 
   /* ====== 背景应用 ====== */
-  applyBg: function(data, pageIdx) {
-    if(pageIdx === 1) {
-      // 第二页背景存在 bgData_1，但实际渲染需要页面切换时处理
-      // 这里先存 CSS 变量或预存数据
-      App.LS._bgPage1 = data;
-      return;
-    }
+    applyBg: function(data, pageIdx) {
     var layer = App.$('#bgLayer'); if(!layer) return;
-    if(data && data.src) {
-      layer.style.backgroundImage = 'url(' + data.src + ')';
-      layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
+
+    // 确保第二页背景层存在
+    var layer1 = document.getElementById('bgLayer1');
+    if(!layer1) {
+      layer1 = document.createElement('div');
+      layer1.id = 'bgLayer1';
+      layer1.className = 'bg-layer bg-layer-page1';
+      layer.parentNode.insertBefore(layer1, layer.nextSibling);
+    }
+
+    if(pageIdx === 1) {
+      if(data && data.src) {
+        layer1.style.backgroundImage = 'url(' + data.src + ')';
+        layer1.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
+      } else {
+        layer1.style.backgroundImage = '';
+        layer1.style.filter = '';
+      }
     } else {
-      layer.style.backgroundImage = '';
-      layer.style.filter = '';
+      if(data && data.src) {
+        layer.style.backgroundImage = 'url(' + data.src + ')';
+        layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
+      } else {
+        layer.style.backgroundImage = '';
+        layer.style.filter = '';
+      }
     }
   },
 
