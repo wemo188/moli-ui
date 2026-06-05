@@ -6,6 +6,7 @@ var App = window.App;
 if (!App) return;
 
 var MONTHS_EN = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+var WEEKDAYS = ['日','一','二','三','四','五','六'];
 
 var Calendar = {
   el: null,
@@ -36,19 +37,25 @@ var Calendar = {
     if (monthEl) monthEl.textContent = month + 1;
     if (monthEnEl) monthEnEl.textContent = MONTHS_EN[month];
 
+    // 星期头
+    var weekdaysEl = document.getElementById('calWeekdays');
+    if (weekdaysEl) {
+      weekdaysEl.innerHTML = WEEKDAYS.map(function(d) {
+        return '<span>' + d + '</span>';
+      }).join('');
+    }
+
+    // 日期格子
     var daysEl = document.getElementById('calDays');
     if (!daysEl) return;
 
     var html = '';
     for (var i = 0; i < firstDay; i++) {
-      html += '<div style="aspect-ratio:1;"></div>';
+      html += '<div class="cal-day"></div>';
     }
     for (var d = 1; d <= daysInMonth; d++) {
-      var style = 'aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border-radius:5px;font-weight:500;';
-      if (d === today) {
-        style += 'background:rgba(0,0,0,.1);color:#000;font-weight:800;border:1px solid rgba(0,0,0,.25);';
-      }
-      html += '<div style="' + style + '">' + d + '</div>';
+      var cls = 'cal-day' + (d === today ? ' today' : '');
+      html += '<div class="' + cls + '">' + d + '</div>';
     }
     daysEl.innerHTML = html;
   },
@@ -59,10 +66,10 @@ var Calendar = {
       var h = String(n.getHours()).padStart(2, '0');
       var m = String(n.getMinutes()).padStart(2, '0');
       var s = String(n.getSeconds()).padStart(2, '0');
-      var el = document.getElementById('calClock');
+      var clockEl = document.getElementById('calClock');
       var secEl = document.getElementById('calSec');
-      if (el && secEl) {
-        el.childNodes[0].textContent = h + ':' + m;
+      if (clockEl && secEl) {
+        clockEl.firstChild.textContent = h + ':' + m;
         secEl.textContent = ':' + s;
       }
     }
