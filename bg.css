@@ -585,19 +585,3 @@
   object-fit: contain;
 }
 
-/* 第二页背景层 */
-.bg-layer-page1 {
-  position: fixed;
-  inset: -1px;
-  z-index: 0;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.bg-layer-page1.active {
-  opacity: 1;
-}
