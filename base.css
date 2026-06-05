@@ -859,18 +859,3 @@ input[type="range"] {
   min-width: 0;
 }
 
-/* =========================
-   首页四个应用图标
-========================= */
-#iconUserImg,
-#iconCharImg,
-#iconThemeImg,
-#iconSettingsImg {
-  background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 8px 32px rgba(0,0,0,.12), inset 0 1px 1px rgba(255,255,255,.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-
