@@ -554,34 +554,17 @@ var Bg = {
   },
 
   /* ====== 背景应用 ====== */
-    applyBg: function(data, pageIdx) {
-    var layer = App.$('#bgLayer'); if(!layer) return;
+      applyBg: function(data, pageIdx) {
+    var id = pageIdx === 1 ? 'bgLayer1' : 'bgLayer';
+    var layer = document.getElementById(id);
+    if(!layer) return;
 
-    // 确保第二页背景层存在
-    var layer1 = document.getElementById('bgLayer1');
-    if(!layer1) {
-      layer1 = document.createElement('div');
-      layer1.id = 'bgLayer1';
-      layer1.className = 'bg-layer bg-layer-page1';
-      layer.parentNode.insertBefore(layer1, layer.nextSibling);
-    }
-
-    if(pageIdx === 1) {
-      if(data && data.src) {
-        layer1.style.backgroundImage = 'url(' + data.src + ')';
-        layer1.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
-      } else {
-        layer1.style.backgroundImage = '';
-        layer1.style.filter = '';
-      }
+    if(data && data.src) {
+      layer.style.backgroundImage = 'url(' + data.src + ')';
+      layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
     } else {
-      if(data && data.src) {
-        layer.style.backgroundImage = 'url(' + data.src + ')';
-        layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
-      } else {
-        layer.style.backgroundImage = '';
-        layer.style.filter = '';
-      }
+      layer.style.backgroundImage = '';
+      layer.style.filter = '';
     }
   },
 
