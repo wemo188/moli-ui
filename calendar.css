@@ -56,6 +56,7 @@
   width: auto;
   border-collapse: separate;
   border-spacing: 4px 0px;
+  margin-top: 6px;
   table-layout: fixed;
   margin: 0 auto;
 }
