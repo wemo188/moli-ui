@@ -6,10 +6,9 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 30px;
-  padding: 10px 0 0;
+  gap: 10px;
+  padding: 0;
   width: 100%;
-  margin-top: 5px;
   pointer-events: none;
 }
 
@@ -51,10 +50,9 @@
 
 .card-icons-wrap {
   display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .card-icon-item {
@@ -491,12 +489,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 280px;
-  margin-top: 25px;
+  gap: 50px;
+  margin-top: 10px;
   pointer-events: auto;
-  --hl-border-c: #2a2a2a;
-  width: max-content;
-  margin-right: 210px;
+  width: 100%;
+  margin-right: 0;
 }
 
 .hl-avatar-unit {
