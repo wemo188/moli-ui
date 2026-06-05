@@ -1,49 +1,7 @@
-/* 拖拽容器 - 固定宽度让星期和日期对齐 */
+/* 拖拽容器 */
 #calTimeRow {
-  width: 210px;
+  width: 202px;  /* 改成刚好等于内容宽度：7*28 + 6*1 */
   margin: 0 auto;
-}
-
-/* 年份 */
-#calYear {
-  font-size: 11px;
-  color: #333;
-  letter-spacing: 2px;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* 月份 */
-#calMonth {
-  font-size: 58px;
-  font-weight: 900;
-  color: #111;
-  line-height: 1;
-  text-align: center;
-}
-
-#calMonthEn {
-  font-size: 11px;
-  color: #555;
-  letter-spacing: 1px;
-  font-weight: 500;
-  text-align: center;
-}
-
-/* 时钟 */
-#calClock {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  margin-top: 8px;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-
-#calSec {
-  font-size: 13px;
-  color: #666;
-  margin-left: 2px;
 }
 
 /* 星期行 */
@@ -54,7 +12,6 @@
   justify-content: start;
   margin-bottom: 2px;
   margin-top: 8px;
-  width: 100%;
 }
 
 #calWeekdays span {
@@ -63,7 +20,7 @@
   font-size: 9px;
   color: #888;
   font-weight: 600;
-  padding: 2px 0;
+  line-height: 28px;  /* 改成和格子高度一致，不用padding */
   display: block;
 }
 
@@ -73,13 +30,13 @@
   grid-template-columns: repeat(7, 28px);
   gap: 1px;
   justify-content: start;
-  width: 100%;
 }
 
 /* 日期格子 */
 .cal-day {
   width: 28px;
   height: 28px;
+  line-height: 28px;  /* 和星期统一 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,16 +44,4 @@
   color: #333;
   border-radius: 5px;
   font-weight: 500;
-}
-
-/* 当天格子：黑底白字 */
-.cal-day.today {
-  background: #000;
-  color: #fff;
-  font-weight: 800;
-}
-
-/* 空白格子 */
-.cal-day:empty {
-  background: transparent;
 }
