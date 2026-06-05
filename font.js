@@ -102,24 +102,33 @@ var Font={
     }, 100);
   },
 
-  open:function(){
+    open:function(){
     Font.load();
-    var panel=App.$('#fontPanel');if(!panel)return;
+    var old = document.getElementById('fontFullPanel');
+    if(old) { old.classList.remove('hidden'); old.classList.add('show'); return; }
+
+    var panel = document.createElement('div');
+    panel.id = 'fontFullPanel';
+    panel.className = 'font-fullpanel';
+
     getAllFonts(function(fonts){
       var promises=[];
       fonts.forEach(function(f){promises.push(loadFontFace(f.name,f.dataUrl));});
       Promise.all(promises).then(function(){
         Font.render(panel);
-        panel.classList.remove('hidden');
-        requestAnimationFrame(function(){panel.classList.add('show');});
+        document.body.appendChild(panel);
+        requestAnimationFrame(function(){ panel.classList.add('show'); });
+        App.bindSwipeBack(panel, function(){ Font.close(); });
       });
     });
   },
 
   close:function(){
-    var panel=App.$('#fontPanel');if(!panel)return;
+    var panel = document.getElementById('fontFullPanel');
+    if(!panel) return;
     panel.classList.remove('show');
-    setTimeout(function(){panel.classList.add('hidden');},350);
+    panel.classList.add('hidden');
+    setTimeout(function(){ panel.remove(); }, 350);
   },
 
   render:function(panel){
@@ -151,13 +160,13 @@ var Font={
       }).join('');
     }
 
-     panel.innerHTML=
-      '<div class="hp-handle"></div>' +
-      '<div class="hp-header">' +
-        '<button class="hp-close" id="ftCloseBtn" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
+          panel.innerHTML=
+      '<div class="bf-nav">' +
+        '<button class="bf-back" id="ftCloseBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+        '<span class="bf-nav-title">字体选择</span>' +
+        '<div class="bf-nav-right"></div>' +
       '</div>' +
-
-      '<div class="hp-body">' +
+      '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 20px 0;">' +
        '<div class="hp-upload" id="ftUploadArea">' +
   '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
   '上传字体文件' +
@@ -170,11 +179,8 @@ var Font={
         (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list">' + customHtml + '</div>' : '') +
         '<div class="hp-section-label">内置字体</div>' +
         '<div class="ft-list">' + builtinHtml + '</div>' +
-        '<div class="hp-bottom-spacer"></div>' +
+               '<div style="height:40px;"></div>' +
       '</div>';
-
-    /* ★ 魔法印章：给刚生成的字体面板加上控制按钮 */
-    if(App.initHalfPanelControls) App.initHalfPanelControls();
 
     Font.bindEvents(panel);
   },
