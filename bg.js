@@ -52,8 +52,8 @@
     },
 
 renderAllIcons: function() {
-  var glassStyle = 'width:80px;height:80px;border-radius:15px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
-  var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;';
+  var glassStyle = 'width:80px;height:80px;border-radius:15px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);';
+  var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;';
   var labelStyle = 'font-size:12.5px;text-align:center;letter-spacing:1px;font-weight:800;';
 
   ICON_MAP.forEach(function(ic) {
