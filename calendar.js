@@ -61,21 +61,19 @@ var Calendar = {
   },
 
   startClock: function() {
-    function tick() {
-      var n = new Date();
-      var h = String(n.getHours()).padStart(2, '0');
-      var m = String(n.getMinutes()).padStart(2, '0');
-      var s = String(n.getSeconds()).padStart(2, '0');
-      var clockEl = document.getElementById('calClock');
-      var secEl = document.getElementById('calSec');
-      if (clockEl && secEl) {
-        clockEl.firstChild.textContent = h + ':' + m;
-        secEl.textContent = ':' + s;
-      }
-    }
-    tick();
-    Calendar.clockTimer = setInterval(tick, 1000);
-  },
+  function tick() {
+    var n = new Date();
+    var h = String(n.getHours()).padStart(2, '0');
+    var m = String(n.getMinutes()).padStart(2, '0');
+    var s = String(n.getSeconds()).padStart(2, '0');
+    var timeEl = document.getElementById('calTime');
+    var secEl = document.getElementById('calSec');
+    if (timeEl) timeEl.textContent = h + ':' + m;
+    if (secEl) secEl.textContent = ':' + s;
+  }
+  tick();
+  Calendar.clockTimer = setInterval(tick, 1000);
+},
 
   bindDrag: function() {
     var el = Calendar.el;
