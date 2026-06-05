@@ -1,3 +1,8 @@
+/* 左边区域用一个 div 包起来，然后 */
+.left-section {
+  margin-right: 20px;
+}
+
 /* 拖拽容器 */
 #calTimeRow {
   width: 210px;
