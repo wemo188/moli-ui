@@ -1,6 +1,6 @@
 /* 拖拽容器 */
 #calTimeRow {
-  width: 202px;
+  width: 210px;
   margin: 0 auto;
 }
 
@@ -46,56 +46,42 @@
   margin-left: 2px;
 }
 
-/* 星期行 */
-#calWeekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 28px);
-  gap: 1px;
-  justify-content: start;
-  margin-bottom: 2px;
-  margin-top: 8px;
+/* 星期和日期共用一个表格布局 */
+.cal-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-#calWeekdays span {
+.cal-table td {
   width: 28px;
+  height: 28px;
   text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* 星期行 */
+.cal-week td {
   font-size: 9px;
   color: #888;
   font-weight: 600;
-  line-height: 28px;
-  display: block;
-}
-
-/* 日期网格 */
-#calDays {
-  display: grid;
-  grid-template-columns: repeat(7, 28px);
-  gap: 1px;
-  justify-content: start;
+  height: 20px;
 }
 
 /* 日期格子 */
 .cal-day {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 10px;
   color: #333;
   border-radius: 5px;
-  font-weight: 500;
 }
 
-/* 当天格子：黑底白字 */
+/* 当天格子 */
 .cal-day.today {
   background: #000;
   color: #fff;
   font-weight: 800;
-}
-
-/* 空白格子 */
-.cal-day:empty {
-  background: transparent;
 }
