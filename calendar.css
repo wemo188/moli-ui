@@ -1,12 +1,8 @@
-/* 左边区域用一个 div 包起来，然后 */
-.left-section {
-  margin-right: 20px;
-}
 
 /* 拖拽容器 */
 #calTimeRow {
-  width: 210px;
-  margin: 0 auto;
+  justify-content: flex-start;  /* 改成这个，不要 space-between */
+  gap: 20px;  /* 把 gap 改成你想要的数值，比如 20px */
 }
 
 /* 年份 */
