@@ -53,8 +53,13 @@
 
 renderAllIcons: function() {
   var glassStyle = 'width:80px;height:80px;border-radius:15px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);';
-  var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;';
+  var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;';
   var labelStyle = 'font-size:12.5px;text-align:center;letter-spacing:1px;font-weight:800;';
+
+  // 控制图标左右距离
+  var iconGapStyle = document.createElement('style');
+  iconGapStyle.textContent = '#appIconsRow { display: flex; gap: 20px; justify-content: center; }';
+  document.head.appendChild(iconGapStyle);
 
   ICON_MAP.forEach(function(ic) {
     var customSrc = App.LS.get(ic.id);
