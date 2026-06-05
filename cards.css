@@ -491,12 +491,12 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 250px;
+  gap: 270px;
   margin-top: 25px;
   pointer-events: auto;
   --hl-border-c: #2a2a2a;
   width: max-content;
-  margin-right: 150px;
+  margin-right: 200px;
 }
 
 .hl-avatar-unit {
