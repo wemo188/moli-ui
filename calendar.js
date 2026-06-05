@@ -1,10 +1,10 @@
+
 (function(){
 'use strict';
 
 var App = window.App;
 if (!App) return;
 
-var MONTHS_CN = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 var MONTHS_EN = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 
 var Calendar = {
@@ -28,29 +28,27 @@ var Calendar = {
     var firstDay = new Date(year, month, 1).getDay();
     var daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // 左侧时间
     var yearEl = document.getElementById('calYear');
     var monthEl = document.getElementById('calMonth');
     var monthEnEl = document.getElementById('calMonthEn');
 
     if (yearEl) yearEl.textContent = year;
-    if (monthEl) monthEl.textContent = MONTHS_CN[month];
+    if (monthEl) monthEl.textContent = month + 1;
     if (monthEnEl) monthEnEl.textContent = MONTHS_EN[month];
-
-    // 右侧月历
-    var navEl = document.getElementById('calNav');
-    if (navEl) navEl.querySelector('span').textContent = year + '年' + (month + 1) + '月';
 
     var daysEl = document.getElementById('calDays');
     if (!daysEl) return;
 
     var html = '';
     for (var i = 0; i < firstDay; i++) {
-      html += '<div class="cal-day empty"></div>';
+      html += '<div style="aspect-ratio:1;"></div>';
     }
     for (var d = 1; d <= daysInMonth; d++) {
-      var cls = 'cal-day' + (d === today ? ' today' : '');
-      html += '<div class="' + cls + '">' + d + '</div>';
+      var style = 'aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border-radius:5px;font-weight:500;';
+      if (d === today) {
+        style += 'background:rgba(0,0,0,.1);color:#000;font-weight:800;border:1px solid rgba(0,0,0,.25);';
+      }
+      html += '<div style="' + style + '">' + d + '</div>';
     }
     daysEl.innerHTML = html;
   },
@@ -62,13 +60,16 @@ var Calendar = {
       var m = String(n.getMinutes()).padStart(2, '0');
       var s = String(n.getSeconds()).padStart(2, '0');
       var el = document.getElementById('calClock');
-      if (el) el.innerHTML = h + ':' + m + '<span class="cal-sec">:' + s + '</span>';
+      var secEl = document.getElementById('calSec');
+      if (el && secEl) {
+        el.childNodes[0].textContent = h + ':' + m;
+        secEl.textContent = ':' + s;
+      }
     }
     tick();
     Calendar.clockTimer = setInterval(tick, 1000);
   },
 
-  /* 拖拽 */
   bindDrag: function() {
     var el = Calendar.el;
     if (!el || el._calDragBound) return;
@@ -89,7 +90,6 @@ var Calendar = {
         var off = Calendar._getOffset();
         origX = off.x;
         origY = off.y;
-        el.classList.add('dragging');
         el.style.transition = 'none';
         if (navigator.vibrate) navigator.vibrate(15);
       }, DELAY);
@@ -116,7 +116,6 @@ var Calendar = {
     el.addEventListener('touchend', function() {
       clearTimeout(timer);
       timer = null;
-      el.classList.remove('dragging');
       el.style.transition = '';
       if (longPressed && moved) {
         Calendar._saveOffset();
