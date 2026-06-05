@@ -48,28 +48,26 @@
 
 /* 星期和日期共用一个表格布局 */
 .cal-table {
-  width: 100%;
+  --cell-size: 28px;  /* 只改这一个数字 */
+  width: auto;
   border-collapse: collapse;
   table-layout: fixed;
+  margin: 0 auto;
 }
 
 .cal-table td {
-  width: 28px;
-  height: 28px;
+  width: var(--cell-size);
+  height: var(--cell-size);
   text-align: center;
   vertical-align: middle;
   padding: 0;
-  margin: 0;
   font-size: 10px;
   font-weight: 500;
 }
 
-/* 星期行 */
 .cal-week td {
+  height: calc(var(--cell-size) - 8px);  /* 星期行自动比格子小8px */
   font-size: 9px;
-  color: #888;
-  font-weight: 600;
-  height: 20px;
 }
 
 /* 日期格子 */
