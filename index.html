@@ -71,17 +71,16 @@
           </div>
         </div>
 
-        <!-- 2. 月历+时间 -->
-<div id="calTimeRow" style="display:flex;gap:10px;width:100%;margin-top:14px;padding:0 12px;">
+        <div id="calTimeRow" style="display:flex;gap:10px;width:100%;margin-top:14px;padding:0 12px;">
   <div id="timeSide" style="width:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;">
     <div id="calYear"></div>
     <div id="calMonth"></div>
     <div id="calMonthEn"></div>
-    <div id="calClock"><span id="calSec"></span></div>
+    <div id="calClock"><span id="calTime"></span><span id="calSec"></span></div>
   </div>
   <div id="calSide" style="width:60%;display:flex;flex-direction:column;padding:6px 4px;overflow:hidden;">
     <div id="calWeekdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:4px;"></div>
-    <div id="calDays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;flex:1;"></div>
+    <div id="calDays"></div>
   </div>
 </div>
 
