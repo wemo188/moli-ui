@@ -52,33 +52,119 @@
     },
 
     renderAllIcons: function() {
-  var glassStyle = 'background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
+      var glassStyle = 'background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
 
-  ICON_MAP.forEach(function(ic) {
-    var customSrc = App.LS.get(ic.id);
-    if(ic.containerId) {
-      var container = document.getElementById(ic.containerId);
-      if(!container) return;
-      // 设置毛玻璃背景
-      container.style.cssText += glassStyle;
-      if(customSrc) {
-        container.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:15px;">';
-      } else {
-        container.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
+      ICON_MAP.forEach(function(ic) {
+        var customSrc = App.LS.get(ic.id);
+        if(ic.containerId) {
+          var container = document.getElementById(ic.containerId);
+          if(!container) return;
+          container.style.cssText += glassStyle;
+          if(customSrc) {
+            container.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:15px;">';
+          } else {
+            container.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
+          }
+        } else if(ic.selector) {
+          var el = document.querySelector(ic.selector);
+          if(!el) return;
+          if(customSrc) {
+            el.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:inherit;">';
+          } else {
+            el.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
+          }
+        }
+      });
+
+      Bg.restoreIconPositions();
+      Bg.bindIconDrag();
+    },
+
+    bindIconDrag: function() {
+      var DELAY = 500;
+      var ids = ['iconUser', 'iconChar', 'iconTheme', 'iconSettings'];
+
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if(!el || el._bgDragBound) return;
+        el._bgDragBound = true;
+
+        var startX, startY, origX, origY, longPressed = false, timer, moved = false;
+
+        el.addEventListener('touchstart', function(e) {
+          var t = e.touches[0];
+          startX = t.clientX;
+          startY = t.clientY;
+          longPressed = false;
+          moved = false;
+
+          timer = setTimeout(function() {
+            longPressed = true;
+            var off = Bg._getIconOffset(id);
+            origX = off.x;
+            origY = off.y;
+            el.style.transition = 'none';
+            el.style.zIndex = '999';
+            if(navigator.vibrate) navigator.vibrate(15);
+          }, DELAY);
+        }, { passive: true });
+
+        el.addEventListener('touchmove', function(e) {
+          var t = e.touches[0];
+          if(timer && !longPressed) {
+            if(Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) {
+              clearTimeout(timer);
+              timer = null;
+            }
+            return;
+          }
+          if(!longPressed) return;
+          moved = true;
+          e.preventDefault();
+          e.stopPropagation();
+          var nx = origX + (t.clientX - startX);
+          var ny = origY + (t.clientY - startY);
+          el.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
+        }, { passive: false });
+
+        el.addEventListener('touchend', function(e) {
+          clearTimeout(timer);
+          timer = null;
+          el.style.transition = '';
+          el.style.zIndex = '';
+          if(longPressed && moved) {
+            Bg._saveIconOffset(id, el);
+            e.stopPropagation();
+          }
+          longPressed = false;
+          moved = false;
+        });
+      });
+    },
+
+    _getIconOffset: function(id) {
+      var offsets = App.LS.get('appIconOffsets') || {};
+      return offsets[id] || { x: 0, y: 0 };
+    },
+
+    _saveIconOffset: function(id, el) {
+      var offsets = App.LS.get('appIconOffsets') || {};
+      var match = el.style.transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+      if(match) {
+        offsets[id] = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
+        App.LS.set('appIconOffsets', offsets);
       }
-    } else if(ic.selector) {
-      var el = document.querySelector(ic.selector);
-      if(!el) return;
-      if(customSrc) {
-        el.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:inherit;">';
-      } else {
-        el.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
-      }
-    }
-  });
-    Bg.restoreIconPositions();
-  Bg.bindIconDrag();
-},
+    },
+
+    restoreIconPositions: function() {
+      var offsets = App.LS.get('appIconOffsets') || {};
+      ['iconUser', 'iconChar', 'iconTheme', 'iconSettings'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if(!el) return;
+        var off = offsets[id];
+        if(off) el.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
+      });
+    },
 
     open: function() {
       var panel = App.$('#bgPanel'); if(!panel) return;
@@ -98,10 +184,7 @@
         '</div>' +
         '<div class="hp-body">' +
           '<div class="hp-section-label">背景墙纸</div>' +
-          '<div class="hp-upload" id="bgUploadArea">' +
-            '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
-            '<span>' + (hasBg ? '更换图片' : '上传图片') + '</span>' +
-          '</div>' +
+          '<div class="hp-upload" id="bgUploadArea"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>' + (hasBg ? '更换图片' : '上传图片') + '</span></div>' +
           '<input type="file" id="bgFileInput" accept="image/*" hidden>' +
           '<div class="hp-slider-row"><span class="hp-slider-label">虚化</span><input type="range" id="bgBlurSlider" min="0" max="30" value="' + (bgData.blur || 0) + '"><span class="hp-slider-val" id="bgBlurVal">' + (bgData.blur || 0) + 'px</span></div>' +
           '<div class="hp-slider-row"><span class="hp-slider-label">变暗</span><input type="range" id="bgDarkSlider" min="0" max="80" value="' + (bgData.dark || 0) + '"><span class="hp-slider-val" id="bgDarkVal">' + (bgData.dark || 0) + '%</span></div>' +
