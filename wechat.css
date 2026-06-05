@@ -412,6 +412,40 @@
   padding: 0;
 }
 
+/* ====== Me 页面身份列表头部 ====== */
+.c6-me-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  flex-shrink: 0;
+}
+
+.c6-me-list-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.8);
+  letter-spacing: 1px;
+}
+
+.c6-me-list-add {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.7);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.c6-me-list-add:active { background: rgba(0,0,0,0.08); }
+
+.c6-me-list {
+  padding: 0;
+  border-top: 1px solid rgba(0,0,0,0.04);
+}
+
 /* ====== 身份管理列表页 ====== */
 .c6-me-user-list-page {
   display: flex;
