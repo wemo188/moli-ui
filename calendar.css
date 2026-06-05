@@ -1,65 +1,40 @@
-#calYear {
-  font-size: 11px;
-  color: #333;
-  letter-spacing: 2px;
-  font-weight: 600;
+/* 月历容器 */
+.calendar {
+  width: 100%;
+  max-width: 280px;  /* 限制宽度，格子自然变小 */
 }
 
-#calMonth {
-  font-size: 58px;
-  font-weight: 900;
-  color: #111;
-  line-height: 1;
+/* 星期行 */
+#calWeekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 2px;
 }
-
-#calMonthEn {
-  font-size: 11px;
-  color: #555;
-  letter-spacing: 1px;
-  font-weight: 500;
-}
-
-#calClock {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  margin-top: 8px;
-  font-variant-numeric: tabular-nums;
-}
-
-#calSec {
-  font-size: 13px;
-  color: #666;
-  margin-left: 2px;
-}
-
 #calWeekdays span {
-  text-align: center;
   font-size: 9px;
-  color: #888;
-  font-weight: 600;
+  text-align: center;
+  padding: 2px 0;
 }
 
+/* 日期网格 */
 #calDays {
-  grid-template-columns: repeat(7, 32px);  /* 固定32px */
-  gap: 2px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;  /* 最小间隙 */
 }
 
+/* 每个日期格子 */
 .cal-day {
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  color: #333;
-  border-radius: 5px;
-  font-weight: 500;
+  border-radius: 3px;
 }
 
+/* 当天样式 */
 .cal-day.today {
-  background: #000;  /* 黑色背景 */
-  color: #fff;       /* 白色文字 */
-  font-weight: 800;
-  /* 去掉原来的半透明背景和边框 */
-  border: none;
+  background: #000;
+  color: #fff;
 }
