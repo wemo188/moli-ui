@@ -51,34 +51,40 @@
       App.bg = Bg;
     },
 
-    renderAllIcons: function() {
-      var glassStyle = 'background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
+renderAllIcons: function() {
+  var glassStyle = 'width:80px;height:80px;border-radius:15px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
+  var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;';
+  var labelStyle = 'font-size:12.5px;text-align:center;letter-spacing:1px;font-weight:800;';
 
-      ICON_MAP.forEach(function(ic) {
-        var customSrc = App.LS.get(ic.id);
-        if(ic.containerId) {
-          var container = document.getElementById(ic.containerId);
-          if(!container) return;
-          container.style.cssText += glassStyle;
-          if(customSrc) {
-            container.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:15px;">';
-          } else {
-            container.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
-          }
-        } else if(ic.selector) {
-          var el = document.querySelector(ic.selector);
-          if(!el) return;
-          if(customSrc) {
-            el.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:inherit;">';
-          } else {
-            el.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
-          }
-        }
-      });
+  ICON_MAP.forEach(function(ic) {
+    var customSrc = App.LS.get(ic.id);
+    if(ic.containerId) {
+      var container = document.getElementById(ic.containerId);
+      if(!container) return;
+      var parent = document.getElementById(ic.parentId);
+      if(parent) parent.style.cssText = itemStyle;
+      container.style.cssText = glassStyle;
+      var label = document.getElementById(ic.containerId.replace('Img','Label'));
+      if(label) label.style.cssText = labelStyle;
+      if(customSrc) {
+        container.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:15px;">';
+      } else {
+        container.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
+      }
+    } else if(ic.selector) {
+      var el = document.querySelector(ic.selector);
+      if(!el) return;
+      if(customSrc) {
+        el.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:inherit;">';
+      } else {
+        el.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
+      }
+    }
+  });
 
-      Bg.restoreIconPositions();
-      Bg.bindIconDrag();
-    },
+  Bg.restoreIconPositions();
+  Bg.bindIconDrag();
+},
 
     bindIconDrag: function() {
       var DELAY = 500;
