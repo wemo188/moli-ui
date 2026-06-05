@@ -1,0 +1,438 @@
+/* =========================
+   美化中心 - 全屏面板
+========================= */
+.beautify-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+}
+
+.beautify-panel.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.beautify-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 顶部导航 */
+.bf-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 12px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.bf-back {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #333;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bf-nav-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+
+.bf-nav-right {
+  width: 36px;
+}
+
+/* 子应用网格 */
+.bf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 16px;
+  padding: 24px 20px;
+}
+
+.bf-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-grid-item:active { opacity: 0.7; }
+
+.bf-grid-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.bf-grid-item:active .bf-grid-icon {
+  transform: scale(0.92);
+}
+
+.bf-grid-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   背景图标 - 子面板
+========================= */
+.bf-sub-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+}
+
+.bf-sub-panel.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bf-sub-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 预览区域 */
+.bf-preview-area {
+  width: 75%;
+  height: 66vh;
+  margin: 12px auto 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  position: relative;
+  background: #fafafa;
+}
+
+.bf-preview-slider {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+}
+
+.bf-preview-page {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.bf-preview-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.bf-preview-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+}
+
+.bf-preview-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-preview-dot.active {
+  width: 16px;
+  border-radius: 999px;
+  background: #333;
+}
+
+/* 控制区域 */
+.bf-controls {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 20px 20px;
+}
+
+.bf-ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bf-ctrl-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.bf-ctrl-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bf-btn-row {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.bf-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: 0.5px;
+  border: none;
+  background: #f0f0f0;
+  color: #333;
+  transition: all 0.15s;
+}
+
+.bf-btn:active { opacity: 0.7; }
+
+.bf-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.bf-upload-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  border: 1.5px dashed #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #999;
+}
+
+.bf-upload-area:active { border-color: #999; }
+
+/* 图标替换网格 */
+.bf-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 10px;
+  margin-bottom: 16px;
+}
+
+.bf-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-icon-item:active { opacity: 0.7; }
+
+.bf-icon-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  border: 1px solid #eee;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bf-icon-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.bf-icon-thumb svg {
+  width: 24px;
+  height: 24px;
+}
+
+.bf-icon-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #666;
+}
+
+/* 分割线 */
+.bf-divider {
+  height: 1px;
+  background: #eee;
+  margin: 16px 0;
+}
+
+/* 颜色点 */
+.bf-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bf-color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid #eee;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-color-dot:active { transform: scale(0.9); }
+
+.bf-reset-btn {
+  margin-left: auto;
+  padding: 5px 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #999;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bf-reset-btn:active { opacity: 0.7; }
+
+/* =========================
+   悬浮样式 - 子面板
+========================= */
+.bf-ball-preview {
+  width: 120px;
+  height: 120px;
+  margin: 16px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 16px;
+  overflow: visible;
+}
+
+.bf-ball-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* =========================
+   字体面板全屏版
+========================= */
+.font-fullpanel {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+}
+
+.font-fullpanel.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.font-fullpanel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* =========================
+   组件定义面板
+========================= */
+.bf-component-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+}
+
+.bf-component-panel.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bf-component-panel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
