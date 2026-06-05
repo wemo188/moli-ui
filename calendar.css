@@ -1,6 +1,6 @@
-/* 整体容器（如果你有外层包裹容器就加这个，没有的话忽略） */
-.calendar-wrapper {
-  width: fit-content;
+/* 拖拽容器 - 固定宽度让星期和日期对齐 */
+#calTimeRow {
+  width: 210px;
   margin: 0 auto;
 }
 
@@ -51,9 +51,10 @@
   display: grid;
   grid-template-columns: repeat(7, 28px);
   gap: 1px;
-  justify-content: center;
+  justify-content: start;
   margin-bottom: 2px;
   margin-top: 8px;
+  width: 100%;
 }
 
 #calWeekdays span {
@@ -63,6 +64,7 @@
   color: #888;
   font-weight: 600;
   padding: 2px 0;
+  display: block;
 }
 
 /* 日期网格 */
@@ -70,7 +72,8 @@
   display: grid;
   grid-template-columns: repeat(7, 28px);
   gap: 1px;
-  justify-content: center;
+  justify-content: start;
+  width: 100%;
 }
 
 /* 日期格子 */
@@ -91,4 +94,9 @@
   background: #000;
   color: #fff;
   font-weight: 800;
+}
+
+/* 空白格子 */
+.cal-day:empty {
+  background: transparent;
 }
