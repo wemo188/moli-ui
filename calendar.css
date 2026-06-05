@@ -41,8 +41,7 @@
 }
 
 #calDays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 32px);  /* 固定32px */
   gap: 2px;
 }
 
@@ -58,8 +57,9 @@
 }
 
 .cal-day.today {
-  background: rgba(0, 0, 0, .1);
-  color: #000;
+  background: #000;  /* 黑色背景 */
+  color: #fff;       /* 白色文字 */
   font-weight: 800;
-  border: 1px solid rgba(0, 0, 0, .25);
+  /* 去掉原来的半透明背景和边框 */
+  border: none;
 }
