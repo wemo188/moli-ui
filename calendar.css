@@ -5,7 +5,7 @@
   justify-content: center;  /* 整体居中 */
   align-items: center;
   margin-top: 15px;  /* 距离顶部 */
-  gap: 40px;  /* 改这个数字控制左右距离，想要多大就多大 */
+  gap: 60px;  /* 改这个数字控制左右距离，想要多大就多大 */
 }
 
 /* 年份 */
@@ -55,7 +55,7 @@
   --cell-size: 28px;  /* 只改这一个数字 */
   width: auto;
   border-collapse: separate;
-  border-spacing: 2px 0px;
+  border-spacing: 4px 0px;
   table-layout: fixed;
   margin: 0 auto;
 }
