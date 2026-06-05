@@ -189,9 +189,11 @@ var Bg = {
         // Apply bg
         var bd = tempBg[idx];
         if(bd && bd.src) {
-          var bgDiv = document.createElement('div');
-          bgDiv.style.cssText = 'position:absolute;inset:0;z-index:0;background-image:url(' + bd.src + ');background-size:cover;background-position:center;filter:blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%);';
-          frame.insertBefore(bgDiv, frame.firstChild);
+                  var bgDiv = document.createElement('div');
+        bgDiv.className = 'bf-preview-bg';
+        bgDiv.style.backgroundImage = 'url(' + bd.src + ')';
+        bgDiv.style.filter = 'blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%)';
+        frame.insertBefore(bgDiv, frame.firstChild);
         }
 
         page.appendChild(frame);
@@ -359,14 +361,14 @@ var Bg = {
     });
   },
 
-  showIconMenu: function(iconId, parentId, itemEl, panel) {
+    showIconMenu: function(iconId, parentId, itemEl, panel) {
     var menu = document.createElement('div');
-    menu.style.cssText = 'position:fixed;inset:0;z-index:100030;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+    menu.className = 'bf-modal-overlay';
     menu.innerHTML =
-      '<div style="background:#fff;border-radius:14px;padding:20px;width:240px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;">' +
-        '<button data-act="upload" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;">上传新图片</button>' +
-        '<button data-act="reset" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:13px;font-weight:600;color:#c9706b;cursor:pointer;font-family:inherit;">恢复默认</button>' +
-        '<button data-act="cancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
+      '<div class="bf-modal-box">' +
+        '<button class="bf-modal-btn" data-act="upload" type="button">上传新图片</button>' +
+        '<button class="bf-modal-btn bf-modal-btn-danger" data-act="reset" type="button">恢复默认</button>' +
+        '<button class="bf-modal-btn bf-modal-btn-cancel" data-act="cancel" type="button">取消</button>' +
       '</div>';
     document.body.appendChild(menu);
     menu.addEventListener('click', function(e) { if(e.target === menu) menu.remove(); });
@@ -409,7 +411,7 @@ var Bg = {
   },
 
   /* ====== 组件定义 ====== */
-  openComponent: function() {
+    openComponent: function() {
     var old = document.getElementById('bfComponentPanel');
     if(old) old.remove();
 
@@ -423,11 +425,11 @@ var Bg = {
         '<span class="bf-nav-title">组件定义</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
-      '<div style="padding:20px;">' +
-        '<button id="bfResetLayout" type="button" style="width:100%;padding:14px;background:#f5f5f5;border:none;border-radius:12px;font-size:14px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;letter-spacing:1px;">恢复布局</button>' +
-        '<div style="font-size:11px;color:#999;margin-top:8px;text-align:center;">将所有组件位置恢复到默认状态</div>' +
+      '<div class="bf-comp-body">' +
+        '<button class="bf-comp-reset-btn" id="bfResetLayout" type="button">恢复布局</button>' +
+        '<div class="bf-comp-hint">将所有组件位置恢复到默认状态</div>' +
       '</div>';
-
+      
     document.body.appendChild(panel);
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.remove(); });
@@ -464,23 +466,19 @@ var Bg = {
   },
 
   /* ====== 渲染图标 ====== */
-  renderAllIcons: function() {
-    var glassStyle = 'width:80px;height:80px;border-radius:15px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);';
-    var itemStyle = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;';
-    var labelStyle = 'font-size:12.5px;text-align:center;letter-spacing:1px;font-weight:800;';
-
+    renderAllIcons: function() {
     ICON_MAP.forEach(function(ic) {
       var customSrc = App.LS.get(ic.id);
       if(ic.containerId) {
         var container = document.getElementById(ic.containerId);
         if(!container) return;
         var parent = document.getElementById(ic.parentId);
-        if(parent) parent.style.cssText = itemStyle;
-        container.style.cssText = glassStyle;
+        if(parent) parent.className = 'app-icon-item';
+        container.className = 'app-icon-glass';
         var label = document.getElementById(ic.containerId.replace('Img','Label'));
-        if(label) label.style.cssText = labelStyle;
+        if(label) label.className = 'app-icon-label';
         if(customSrc) {
-          container.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:15px;">';
+          container.innerHTML = '<img class="app-icon-custom-img" src="' + App.escAttr(customSrc) + '">';
         } else {
           container.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
         }
@@ -488,7 +486,7 @@ var Bg = {
         var el = document.querySelector(ic.selector);
         if(!el) return;
         if(customSrc) {
-          el.innerHTML = '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;border-radius:inherit;">';
+          el.innerHTML = '<img class="app-dock-custom-img" src="' + App.escAttr(customSrc) + '">';
         } else {
           el.innerHTML = DEFAULT_SVGS[ic.parentId] || '';
         }
