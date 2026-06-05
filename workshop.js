@@ -48,7 +48,6 @@
                 tkBlack('preset', '预设', 'preset') +
                 tkBlack('worldbook', '世界书', 'lore') +
                 tkBlack('memory', '记忆', 'memory') +
-                tkBlack('workshop', '美化', 'studio') +
                 tkBlack('data', '数据', 'data') +
                 tkBlack('console', '控制台', 'console') +
                 tkBlack('promptlog', '日志', 'prompt') +
@@ -90,7 +89,6 @@
         item.addEventListener('click', function(e) {
           e.stopPropagation();
           var action = item.dataset.action;
-          if (action === 'workshop') { Workshop.goToPage(1); return; }
           if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
           if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
           if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
@@ -98,20 +96,6 @@
           if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
           if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
           if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
-        });
-      });
-
-      menu.querySelectorAll('.bm-wk').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var action = item.dataset.action;
-          if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
-          if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
-          if (action === 'snapshot') { Workshop.close(); setTimeout(function() { Workshop.openSnapshot(); }, 220); return; }
-          if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
-          if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
-          var panelMap = { theme: 'themePanel' };
-          if (panelMap[action]) { Workshop.close(); setTimeout(function() { App.openPanel(panelMap[action]); }, 220); }
         });
       });
     },
