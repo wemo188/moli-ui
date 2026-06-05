@@ -1487,7 +1487,7 @@ btn.classList.add('active');
       });
     }
 
-    function snapToPage(animate) {
+        function snapToPage(animate) {
       pageWidth = window.innerWidth;
       var targetX = -currentPage * pageWidth;
       if (animate) {
@@ -1497,6 +1497,13 @@ btn.classList.add('active');
       }
       slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
       updateDots();
+
+      // 切换背景层
+      var layer1 = document.getElementById('bgLayer1');
+      if(layer1) {
+        if(currentPage === 1) layer1.classList.add('active');
+        else layer1.classList.remove('active');
+      }
     }
 
     dots.forEach(function(dot) {
