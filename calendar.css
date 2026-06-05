@@ -54,7 +54,8 @@
 .cal-table {
   --cell-size: 28px;  /* 只改这一个数字 */
   width: auto;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 2px 0px;
   table-layout: fixed;
   margin: 0 auto;
 }
