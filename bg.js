@@ -209,6 +209,7 @@ var Bg = {
         }
         page.appendChild(frame);
       });
+      renderIconPreview(); 
     }
     setTimeout(renderPreview, 100);
 
@@ -599,13 +600,19 @@ var Bg = {
       applyTopIconStyle: function(cfg) {
     var styleId = 'topIconDynamicStyle';
     var styleEl = document.getElementById(styleId);
-    if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
-    var radius = cfg.radius != null ? cfg.radius : 15;
-    var blur = cfg.blur != null ? cfg.blur : 12;
-    var opacity = cfg.opacity != null ? cfg.opacity : 1;
-    var iconBg = cfg.iconBg || 'rgba(255,255,255,0.25)';
-    var iconColor = cfg.iconColor || '#999999';
-    var iconSize = cfg.iconSize != null ? cfg.iconSize : 42;
+    if(!styleEl) { 
+        styleEl = document.createElement('style'); 
+        styleEl.id = styleId; 
+        document.head.appendChild(styleEl); 
+    }
+    
+    // 直接使用 cfg 的值，因为调用前已经保证了所有属性都存在
+    var radius = cfg.radius;
+    var blur = cfg.blur;
+    var opacity = cfg.opacity;
+    var iconBg = cfg.iconBg;
+    var iconColor = cfg.iconColor;
+    var iconSize = cfg.iconSize;
 
     // 背景色处理：渐变走 opacity 属性，纯色走 rgba alpha
     var bgWithOpacity = iconBg;
