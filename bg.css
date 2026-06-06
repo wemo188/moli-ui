@@ -264,26 +264,21 @@
 
 .bf-btn {
   flex: 1;
-  padding: 13px;
-  border-radius: 10px;
-  font-size: 14px;
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
   letter-spacing: 0.5px;
   border: none;
-  background: #f0f0f0;
-  color: #333;
+  background: #1a1a1a;
+  color: #fff;
   transition: all 0.15s;
 }
 
 .bf-btn:active { opacity: 0.7; }
-
-.bf-btn.active {
-  background: #1a1a1a;
-  color: #fff;
-}
 
 .bf-upload-area {
   display: flex;
@@ -338,18 +333,18 @@
 .bf-color-dot:active { transform: scale(0.9); }
 
 .bf-color-dot-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
-  color: #999;
+  color: #666;
 }
 
 .bf-reset-btn {
   margin-left: auto;
-  padding: 6px 14px;
-  border: 1px solid #eee;
+  padding: 8px 14px;
+  border: none;
   border-radius: 8px;
-  background: #fafafa;
-  color: #999;
+  background: #1a1a1a;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -452,6 +447,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.app-icon-glass svg {
+  width: 42px;
+  height: 42px;
 }
 
 .app-icon-label {
