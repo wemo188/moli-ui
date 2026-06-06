@@ -57,6 +57,30 @@
   flex-shrink: 0;
 }
 
+/* 列表项文字信息容器 */
+.bf-list-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 主标题 */
+.bf-list-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+/* 副标题（英文/说明） */
+.bf-list-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: #999;
+  letter-spacing: 0.3px;
+}
+
 /* =========================
    美化中心 - 全屏面板
 ========================= */
