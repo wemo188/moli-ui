@@ -367,13 +367,18 @@
 }
 
 .bf-icon-preview-item {
-  width: 52px;
-  height: 52px;
+  width: 80px;
+  height: 80px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.bf-icon-preview-item svg {
+  width: 44%;
+  height: 44%;
 }
 
 /* =========================
@@ -615,7 +620,7 @@
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  padding: 24px 16px;
+  padding: 36px 16px;
 }
 
 .bf-icon-preview-bg {
