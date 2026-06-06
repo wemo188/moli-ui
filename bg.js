@@ -64,67 +64,57 @@ var Bg = {
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="bf-list">' +
-              <!-- 主题应用 -->
-<div class="bf-list-item" data-action="theme">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">主题应用</span>
-    <span class="bf-list-sub">清灰 · 玉蓝 · 欢粉 · 夜色</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-
-<!-- 背景图标 -->
-<div class="bf-list-item" data-action="bgicon">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">背景图标</span>
-    <span class="bf-list-sub">背景与图标的改朝换代</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-
-<!-- 字体选择 -->
-<div class="bf-list-item" data-action="font">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">字体选择</span>
-    <span class="bf-list-sub">全局字体掌控</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-
-<!-- 组件定义 -->
-<div class="bf-list-item" data-action="component">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">组件定义</span>
-    <span class="bf-list-sub">标签卡册 · 气泡对话等零零碎碎</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-
-<!-- 悬浮样式 -->
-<div class="bf-list-item" data-action="ballstyle">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">悬浮样式</span>
-    <span class="bf-list-sub">更换小助手的形象吧</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-
-<!-- 排版存档 -->
-<div class="bf-list-item" data-action="snapshot">
-  <svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-  <div class="bf-list-info">
-    <span class="bf-list-name">排版存档</span>
-    <span class="bf-list-sub">各种搭配一键保存，藏宝藏</span>
-  </div>
-  <svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-</div> +
-      '</div>';
-    document.body.appendChild(panel);
+             '<div class="bf-list">' +
+  '<div class="bf-list-item" data-action="theme">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">主题应用</span>' +
+      '<span class="bf-list-sub">清灰 · 玉蓝 · 欢粉 · 夜色</span>' +
+    '</div>' +
+    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+  '</div>' +
+  '<div class="bf-list-item" data-action="bgicon">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">背景图标</span>' +
+      '<span class="bf-list-sub">背景与图标的改朝换代</span>' +
+    '</div>' +
+    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+  '</div>' +
+  '<div class="bf-list-item" data-action="font">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">字体选择</span>' +
+      '<span class="bf-list-sub">全局字体掌控</span>' +
+    '</div>' +
+    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+  '</div>' +
+  '<div class="bf-list-item" data-action="component">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">组件定义</span>' +
+      '<span class="bf-list-sub">标签卡册 · 气泡对话等零零碎碎</span>' +
+    '</div>' +
+    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+  '</div>' +
+  '<div class="bf-list-item" data-action="ballstyle">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">悬浮样式</span>' +
+      '<span class="bf-list-sub">更换小助手的形象吧</span>' +
+    '</div>' +
+    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+  '</div>' +
+  '<div class="bf-list-item" data-action="snapshot">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+    '<div class="bf-list-info">' +
+      '<span class="bf-list-name">排版存档</span>' +
+      '<span class="bf-list-sub">各种搭配一键保存，藏宝藏</span>' +
+    '</div>' +
+ '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(panel);
     Bg._panelEl = panel;
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.classList.remove('show'); panel.classList.add('hidden'); setTimeout(function(){ panel.remove(); }, 350); });
