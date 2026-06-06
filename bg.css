@@ -311,12 +311,19 @@
   margin: 18px 0;
 }
 
-/* 颜色行 */
+/* 颜色行 — 多个颜色点一排 */
 .bf-color-row {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.bf-color-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .bf-color-dot {
@@ -329,6 +336,12 @@
 }
 
 .bf-color-dot:active { transform: scale(0.9); }
+
+.bf-color-dot-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #999;
+}
 
 .bf-reset-btn {
   margin-left: auto;
@@ -345,6 +358,29 @@
 }
 
 .bf-reset-btn:active { opacity: 0.7; }
+
+/* =========================
+   图标预览窗
+========================= */
+.bf-icon-preview {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.bf-icon-preview-item {
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
 /* =========================
    图标替换网格
@@ -368,9 +404,9 @@
 .bf-icon-item:active { opacity: 0.7; }
 
 .bf-icon-thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
   border: 1px solid #eee;
   overflow: hidden;
   background: #f5f5f5;
@@ -389,8 +425,8 @@
 }
 
 .bf-icon-thumb svg {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
 }
 
 .bf-icon-label {
@@ -400,7 +436,7 @@
 }
 
 /* =========================
-   主页四个图标 - 容器/玻璃/标签
+   主页四个图标
 ========================= */
 .app-icon-item {
   display: flex;
@@ -447,7 +483,7 @@
 }
 
 /* =========================
-   弹窗菜单（图标操作）
+   弹窗菜单
 ========================= */
 .bf-modal-overlay {
   position: fixed;
@@ -484,20 +520,8 @@
 }
 
 .bf-modal-btn:active { opacity: 0.7; }
-
-.bf-modal-btn-danger {
-  border-color: #eee;
-  background: #fafafa;
-  color: #c9706b;
-}
-
-.bf-modal-btn-cancel {
-  border: none;
-  background: none;
-  font-size: 13px;
-  color: #999;
-  padding: 10px;
-}
+.bf-modal-btn-danger { border-color: #eee; background: #fafafa; color: #c9706b; }
+.bf-modal-btn-cancel { border: none; background: none; font-size: 13px; color: #999; padding: 10px; }
 
 /* =========================
    组件定义面板
@@ -513,20 +537,10 @@
   will-change: transform, opacity;
 }
 
-.bf-component-panel.hidden {
-  transform: translateX(100%);
-  opacity: 0;
-  pointer-events: none;
-}
+.bf-component-panel.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.bf-component-panel.show { transform: translateX(0); opacity: 1; }
 
-.bf-component-panel.show {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.bf-comp-body {
-  padding: 20px;
-}
+.bf-comp-body { padding: 20px; }
 
 .bf-comp-reset-btn {
   width: 100%;
@@ -544,13 +558,7 @@
 }
 
 .bf-comp-reset-btn:active { opacity: 0.7; }
-
-.bf-comp-hint {
-  font-size: 12px;
-  color: #999;
-  margin-top: 10px;
-  text-align: center;
-}
+.bf-comp-hint { font-size: 12px; color: #999; margin-top: 10px; text-align: center; }
 
 /* =========================
    字体全屏面板
@@ -566,43 +574,13 @@
   will-change: transform, opacity;
 }
 
-.font-fullpanel.hidden {
-  transform: translateX(100%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.font-fullpanel.show {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* =========================
-   悬浮样式预览
-========================= */
-.bf-ball-preview {
-  width: 120px;
-  height: 120px;
-  margin: 16px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  border-radius: 16px;
-  overflow: visible;
-}
-
-.bf-ball-preview img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
+.font-fullpanel.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.font-fullpanel.show { transform: translateX(0); opacity: 1; }
 
 /* =========================
    Bg 模块专用滑块样式
 ========================= */
 .bf-sub-panel input[type="range"],
-#bfBgIconPanel input[type="range"],
 .bf-controls input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -613,7 +591,6 @@
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-runnable-track,
-#bfBgIconPanel input[type="range"]::-webkit-slider-runnable-track,
 .bf-controls input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
@@ -621,7 +598,6 @@
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-thumb,
-#bfBgIconPanel input[type="range"]::-webkit-slider-thumb,
 .bf-controls input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -633,14 +609,10 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   margin-top: -6px;
-  transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-thumb:active,
-#bfBgIconPanel input[type="range"]::-webkit-slider-thumb:active,
 .bf-controls input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(1.15);
-  background: #fafafa;
-  border-color: #bbbbbb;
+  border-color: #bbb;
 }
-
