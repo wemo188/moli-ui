@@ -75,7 +75,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px 12px;
-  border-bottom: 1px solid #f0f0f0;
+  /* 删除下方横线 */
+  border-bottom: none;
   flex-shrink: 0;
 }
 
@@ -102,10 +103,11 @@
 }
 
 .bf-nav-title {
-  font-size: 16px;
-  font-weight: 700;
+  /* 修改标题字体：字号更大，字重更粗，字间距更大 */
+  font-size: 20px;
+  font-weight: 800;
   color: #1a1a1a;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .bf-nav-right {
