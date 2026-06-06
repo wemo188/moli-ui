@@ -144,13 +144,25 @@
 ========================= */
 .bf-preview-area {
   width: 75%;
-  height: 66vh;
   margin: 12px auto 0;
   border-radius: 16px;
   overflow: hidden;
   border: none;
   position: relative;
   background: #fff;
+}
+
+/* 控制区域不再独立滚动 */
+.bf-controls {
+  padding: 0 20px 20px;
+  /* 移除 overflow-y: auto */
+}
+
+/* 整个内容区域可滚动 */
+.bf-sub-panel .bf-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bf-preview-slider {
