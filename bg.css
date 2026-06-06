@@ -610,3 +610,43 @@
   transform: scale(1.15);
   border-color: #bbb;
 }
+
+.bf-icon-preview-wrap {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 24px 16px;
+}
+
+.bf-icon-preview-bg {
+  position: absolute;
+  inset: -6px;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f0f0f0;
+}
+
+.bf-icon-preview-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.bf-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.bf-section-header .bf-section-title {
+  margin-bottom: 0;
+}
+
+.bf-bottom-spacer {
+  height: 40px;
+}
