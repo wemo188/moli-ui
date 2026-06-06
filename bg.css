@@ -72,6 +72,27 @@
   letter-spacing: 0.5px;
 }
 
+.bf-nav-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.bf-nav-title {
+  font-size: 23px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.bf-nav-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 0.3px;
+}
 /* =========================
    美化中心 - 全屏面板
 ========================= */
