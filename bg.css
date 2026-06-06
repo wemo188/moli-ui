@@ -611,7 +611,7 @@
   object-fit: contain;
 }
 
-/* Bg 模块专用滑块样式 - 灰色主题 */
+/* Bg 模块专用滑块样式 - 浅灰色主题 */
 .bf-sub-panel input[type="range"],
 #bfBgIconPanel input[type="range"],
 .bf-controls input[type="range"] {
@@ -628,7 +628,7 @@
 .bf-controls input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: #1a1a1a;  /* 浅灰色轨道 */
+  background: #1a1a1a;  /* 更浅的灰色轨道 */
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-thumb,
@@ -640,8 +640,8 @@
   height: 16px;
   border-radius: 50%;
   background: #ffffff;
-  border: 2px solid #999999;  /* 灰色边框 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid #cccccc;  /* 浅灰色边框 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   margin-top: -6px;
   transition: transform 0.15s ease, background 0.15s ease;
@@ -651,7 +651,6 @@
 #bfBgIconPanel input[type="range"]::-webkit-slider-thumb:active,
 .bf-controls input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(1.15);
-  background: #f5f5f5;
-  border-color: #777777;
+  background: #fafafa;
+  border-color: #bbbbbb;
 }
-
