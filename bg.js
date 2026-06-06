@@ -640,10 +640,10 @@ var Bg = {
       var sel2 = '.bf-icon-preview-item';
       gradBgCSS =
         sel1+','+sel2+' { position: relative; }' +
-        sel1+'::before,'+sel2+'::before {' +
+                sel1+'::before,'+sel2+'::before {' +
           'content: "";' +
           'position: absolute;' +
-          'inset: 0;' +
+          'inset: -1px;' +
           'background: '+iconBg+';' +
           'border-radius: inherit;' +
           'opacity: '+opacity+';' +
