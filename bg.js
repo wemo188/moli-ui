@@ -27,7 +27,7 @@ var ICON_MAP = [
   { id: 'customIcon_dockForum', label: '论坛', containerId: null, parentId: 'dockForum', selector: '#dockForum .mk-card' }
 ];
 
-var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15, iconSize: 75 };
+var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#9ca3b0', iconBg: 'rgba(255,255,255,0.2)', blur: 8, opacity: 0.2, radius: 15, iconSize: 78 };
 
 var Bg = {
   _panelEl: null,
