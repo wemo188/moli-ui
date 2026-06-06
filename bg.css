@@ -72,7 +72,7 @@
 /* 顶部导航 */
 .bf-nav {
   display: flex;
-  align-items: center;
+  align-items: center;  /* 确保 flex 子项垂直居中 */
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: none;
@@ -89,11 +89,9 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #999999;  /* 控制箭头颜色 */
-}
-
-.bf-back:active {
-  color: #666666;  /* 点击时变深一点 */
+  color: #999999;
+  padding: 0;  /* 确保没有内边距影响 */
+  margin: 0;   /* 确保没有外边距 */
 }
 
 .bf-back svg {
@@ -103,11 +101,11 @@
 }
 
 .bf-nav-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: 0.5px;
-  line-height: 1;
+  line-height: 1.2;  /* 改为 1.2，让文字垂直居中更好 */
 }
 
 .bf-nav-right {
@@ -142,16 +140,15 @@
 /* =========================
    背景预览区域
 ========================= */
-/* 预览区域 - 让缩放有空间 */
 .bf-preview-area {
   width: 75%;
+  height: 300px;  /* 固定高度，保证预览区足够高 */
   margin: 12px auto 0;
   border-radius: 16px;
   overflow: hidden;
   border: none;
   position: relative;
   background: #fff;
-  min-height: 200px;  /* 添加最小高度，保证预览区可见 */
 }
 
 /* 控制区域不再独立滚动 */
