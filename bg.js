@@ -122,11 +122,12 @@ var Bg = {
     panel.className = 'bf-sub-panel';
 
     panel.innerHTML =
-  '<div class="bf-nav">' +
-    '<button class="bf-back" id="bfBgBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
-    '<span class="bf-nav-title">背景图标</span>' +
-    '<div class="bf-nav-right"></div>' +
-  '</div>' +
+    '<div class="bf-nav">' +
+      '<button class="bf-back" id="bfBgBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+      '<span class="bf-nav-title">背景图标</span>' +
+      '<div class="bf-nav-right"></div>' +
+    '</div>' +
+    '<div class="bf-scroll-content" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;">' +
       '<div class="bf-preview-area" id="bfPreviewArea">' +
         '<div class="bf-preview-slider" id="bfPreviewSlider">' +
           '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
@@ -154,7 +155,8 @@ var Bg = {
         '<div class="bf-divider"></div>' +
         '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">替换图标</div>' +
         '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
-      '</div>';
+      '</div>' +
+    '</div>';
 
     document.body.appendChild(panel);
     requestAnimationFrame(function() { panel.classList.add('show'); });
