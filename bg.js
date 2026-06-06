@@ -639,7 +639,7 @@ var Bg = {
         'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
       '}' +
       '#appIconsRow > div > div:first-child svg {' +
-        'width: 60% !important; height: 60% !important;' +
+        'width: 55% !important; height: 55% !important;' +
       '}';
 
     // 图标颜色（渐变不支持 stroke，跳过）
