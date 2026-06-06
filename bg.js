@@ -666,32 +666,9 @@ var Bg = {
         'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
       '}';
 
-       // 图标颜色
+           // 图标颜色（渐变不支持 stroke，跳过）
     var iconColorCSS = '';
-    if(iconColor.indexOf('gradient') >= 0) {
-      // 渐变色：把 SVG 变成纯白 → 用容器的 mask 反转实现渐变上色
-      // 方案：SVG 全白，外层用 background + mask-image 来做渐变叠加
-      // 简化方案：SVG stroke/fill 设白色，容器加渐变叠加层
-      var sel1 = '#appIconsRow > div > div:first-child';
-      var sel2 = '.bf-icon-preview-item';
-      iconColorCSS =
-        sel1+' svg > path,'+sel1+' svg > circle,'+sel1+' svg > rect,'+sel1+' svg > line,'+sel1+' svg > ellipse,' +
-        sel2+' svg > path,'+sel2+' svg > circle,'+sel2+' svg > rect,'+sel2+' svg > line,'+sel2+' svg > ellipse {' +
-          'stroke: #fff !important;' +
-        '}' +
-        sel1+' svg > [mask],'+sel2+' svg > [mask] { fill: #fff !important; }' +
-        sel1+' svg > path:not([mask]),'+sel2+' svg > path:not([mask]) { fill: none !important; }' +
-        sel1+'::after,'+sel2+'::after {' +
-          'content: "";' +
-          'position: absolute;' +
-          'inset: 0;' +
-          'background: '+iconColor+';' +
-          'border-radius: inherit;' +
-          'mix-blend-mode: multiply;' +
-          'pointer-events: none;' +
-        '}' +
-        sel1+','+sel2+' { position: relative; }';
-    } else {
+    if(iconColor.indexOf('gradient') === -1) {
       var s1 = '#appIconsRow > div > div:first-child svg > ';
       var s2 = '.bf-icon-preview-item svg > ';
       iconColorCSS =
@@ -701,10 +678,6 @@ var Bg = {
         '}' +
         s1+'[mask],'+s2+'[mask] { fill: '+iconColor+' !important; }' +
         s1+'path:not([mask]),'+s2+'path:not([mask]) { fill: none !important; }';
-      // 清除可能残留的 ::after
-      iconColorCSS +=
-        '#appIconsRow > div > div:first-child::after,' +
-        '.bf-icon-preview-item::after { display: none !important; }';
     }
 
     // mask 保护
