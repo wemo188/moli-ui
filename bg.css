@@ -367,8 +367,8 @@
 }
 
 .bf-icon-preview-item {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -377,8 +377,8 @@
 }
 
 .bf-icon-preview-item svg {
-  width: 44%;
-  height: 44%;
+  width: 38px;
+  height: 38px;
 }
 
 /* =========================
