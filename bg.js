@@ -212,24 +212,25 @@ var Bg = {
     setTimeout(renderPreview, 100);
 
     // === Icon preview ===
-            function renderIconPreview() {
+                function renderIconPreview() {
       var prev = panel.querySelector('#bfIconPreview');
       if(!prev) return;
-      // 获取当前页背景
       var bd = tempBg[currentPreviewPage];
       if(!bd || !bd.src) bd = tempBg[0];
-      var bgStyle = '';
-      if(bd && bd.src) {
-        bgStyle = 'background-image:url(' + bd.src + ');background-size:cover;background-position:center;filter:blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%);';
-      }
-      var html = '<div style="position:relative;border-radius:12px;overflow:hidden;padding:16px;">' +
-        '<div style="position:absolute;inset:-4px;' + bgStyle + 'z-index:0;"></div>' +
-        '<div style="position:relative;z-index:1;display:flex;justify-content:center;gap:14px;">';
+      var html = '<div class="bf-icon-preview-wrap">' +
+        '<div class="bf-icon-preview-bg" id="bfIconPreviewBg"></div>' +
+        '<div class="bf-icon-preview-row">';
       ['iconUser','iconChar','iconTheme','iconSettings'].forEach(function(pid) {
         html += '<div class="bf-icon-preview-item">' + (DEFAULT_SVGS[pid] || '') + '</div>';
       });
       html += '</div></div>';
       prev.innerHTML = html;
+      // 背景只需要动态设置图片和滤镜
+      var bgEl = panel.querySelector('#bfIconPreviewBg');
+      if(bgEl && bd && bd.src) {
+        bgEl.style.backgroundImage = 'url(' + bd.src + ')';
+        bgEl.style.filter = 'blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%)';
+      }
     }
     renderIconPreview();
 
