@@ -182,7 +182,7 @@ openBgIcon: function() {
     frame.style.width = window.innerWidth + 'px';
     frame.style.height = window.innerHeight + 'px';
 
-      // Clone the page content
+           // Clone the page content
       var srcPage = document.querySelector('.screen-page-' + (idx + 1));
       if(srcPage) {
         var clone = srcPage.cloneNode(true);
@@ -193,6 +193,26 @@ openBgIcon: function() {
         clone.style.left = '0';
         frame.appendChild(clone);
       }
+
+      // Clone fixed elements (dock, indicators, floating ball)
+      var fixedEls = ['#dockBar', '.screen-indicators', '#floatingBall'];
+      fixedEls.forEach(function(sel) {
+        var src = document.querySelector(sel);
+        if(src) {
+          var fc = src.cloneNode(true);
+          fc.style.position = 'absolute';
+          fc.style.zIndex = '100';
+          // 保持原始位置
+          var rect = src.getBoundingClientRect();
+          fc.style.left = rect.left + 'px';
+          fc.style.top = rect.top + 'px';
+          fc.style.width = rect.width + 'px';
+          fc.style.bottom = 'auto';
+          fc.style.right = 'auto';
+          fc.style.transform = 'none';
+          frame.appendChild(fc);
+        }
+      });
 
       // Apply bg
       var bd = tempBg[idx];
