@@ -151,13 +151,7 @@ var Bg = {
     document.body.appendChild(panel);
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.remove(); });
-```
 
-这是上半部分，我继续发下半部分（从 `renderPreview` 开始到文件结尾）。
-
-**bg.js 下半部分：**
-
-```javascript
     // === renderPreview ===
     function renderPreview() {
       var area = panel.querySelector('#bfPreviewArea');
