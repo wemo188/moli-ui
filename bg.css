@@ -353,7 +353,7 @@
   padding: 8px 14px;
   border: none;
   border-radius: 8px;
-  background: #d1d5db;
+  background: #dbdee2;
   color: #666;
   font-size: 12px;
   font-weight: 700;
@@ -489,7 +489,7 @@
 }
 
 .app-icon-label {
-  font-size: 12.5px;
+  font-size: 13px;
   text-align: center;
   letter-spacing: 1px;
   font-weight: 800;
