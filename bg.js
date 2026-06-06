@@ -68,6 +68,10 @@ var Bg = {
   '<div class="bf-list-item" data-action="theme">' +
     '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
     '<div class="bf-list-info">' +
+     '<div class="bf-list">' +
+  '<div class="bf-list-item" data-action="theme">' +
+    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
+    '<div class="bf-list-info">' +
       '<span class="bf-list-name">主题应用</span>' +
       '<span class="bf-list-sub">清灰 · 玉蓝 · 欢粉 · 夜色</span>' +
     '</div>' +
