@@ -17,7 +17,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border-radius: 14px;
-  background: #eaecf0;
+  background: #ebecee;
   border: none;
   transition: background 0.15s, transform 0.15s;
 }
@@ -674,7 +674,7 @@
 /* 恢复默认 - 灰色无边框 */
 .bf-modal-btn-secondary {
   border: none;
-  background: #d1d5db;
+  background: #eaecf0;
   color: #666;
 }
 
