@@ -9,7 +9,7 @@ var DEFAULT_SVGS = {
   iconUser: '<svg viewBox="0 0 64 64" fill="none" width="56" height="56"><mask id="hm1"><rect width="64" height="64" fill="white"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="black"/></mask><circle cx="32" cy="32" r="22" stroke="#999" stroke-width="2.2" fill="#999" mask="url(#hm1)"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
   iconChar: '<svg viewBox="0 0 64 64" fill="none" width="52" height="52"><rect x="8" y="10" width="46" height="44" rx="4" stroke="#999" stroke-width="2" fill="none"/><path d="M21 18L23 23L28 23.5L24 27L25 32L21 29L17 32L18 27L14 23.5L19 23Z" stroke="#999" stroke-width="1.6" stroke-linejoin="round" fill="#999"/><line x1="34" y1="20" x2="50" y2="20" stroke="#999" stroke-width="1.8" stroke-linecap="round"/><line x1="34" y1="28" x2="46" y2="28" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><line x1="34" y1="36" x2="48" y2="36" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><line x1="14" y1="44" x2="50" y2="44" stroke="#999" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="3 2"/></svg>',
   iconTheme: '<svg viewBox="0 0 64 64" fill="none" width="56" height="56"><mask id="pm1"><rect width="64" height="64" fill="white"/><circle cx="20" cy="26" r="4.5" fill="black"/><circle cx="32" cy="18" r="4.5" fill="black"/><circle cx="44" cy="26" r="4.5" fill="black"/><circle cx="22" cy="38" r="4.5" fill="black"/></mask><path d="M32 8C18.7 8 8 18.7 8 32C8 45.3 18.7 56 32 56C34.2 56 36 54.2 36 52C36 51 35.6 50.1 35 49.4C34.4 48.7 34 47.8 34 46.8C34 44.6 35.8 42.8 38 42.8H42C50.3 42.8 57 36.1 57 27.8C57 16.9 45.7 8 32 8Z" stroke="#999" stroke-width="2.2" fill="#999" mask="url(#pm1)"/><circle cx="20" cy="26" r="4.5" stroke="#999" stroke-width="1.8" fill="none"/><circle cx="32" cy="18" r="4.5" stroke="#999" stroke-width="1.8" fill="none"/><circle cx="44" cy="26" r="4.5" stroke="#999" stroke-width="1.8" fill="none"/><circle cx="22" cy="38" r="4.5" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
-  iconSettings: '<svg viewBox="0 0 64 64" fill="none" width="56" height="56"><mask id="gm1"><rect width="64" height="64" fill="white"/><circle cx="32" cy="26.5" r="7" fill="black"/></mask><path d="M30 8H34L35 13C36.5 13.4 37.9 14 39.2 14.8L43.5 12L46.5 15L44.2 19.2C45 20.5 45.6 21.9 46 23.4L51 24.5V28.5L46 29.6C45.6 31.1 45 32.5 44.2 33.8L46.5 38L43.5 41L39.2 38.2C37.9 39 36.5 39.6 35 40L34 45H30L29 40C27.5 39.6 26.1 39 24.8 38.2L20.5 41L17.5 38L19.8 33.8C19 32.5 18.4 31.1 18 29.6L13 28.5V24.5L18 23.4C18.4 21.9 19 20.5 19.8 19.2L17.5 15L20.5 12L24.8 14.8C26.1 14 27.5 13.4 29 13L30 8Z" stroke="#999" stroke-width="2" stroke-linejoin="round" fill="#999" mask="url(#gm1)"/><circle cx="32" cy="26.5" r="7" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
+  iconSettings: '<svg viewBox="6 6 52 52" fill="none" width="56" height="56"><mask id="gm1"><rect x="6" y="6" width="52" height="52" fill="white"/><circle cx="32" cy="32" r="7" fill="black"/></mask><path d="M30 10H34L35 14.5C36.5 14.9 37.9 15.5 39.2 16.3L43 13.5L46 16.5L43.2 20.2C44 21.5 44.6 22.9 45 24.4L49.5 25.5V29.5L45 30.6C44.6 32.1 44 33.5 43.2 34.8L46 38.5L43 41.5L39.2 38.7C37.9 39.5 36.5 40.1 35 40.5L34 45H30L29 40.5C27.5 40.1 26.1 39.5 24.8 38.7L21 41.5L18 38.5L20.8 34.8C20 33.5 19.4 32.1 19 30.6L14.5 29.5V25.5L19 24.4C19.4 22.9 20 21.5 20.8 20.2L18 16.5L21 13.5L24.8 16.3C26.1 15.5 27.5 14.9 29 14.5L30 10Z" stroke="#999" stroke-width="2.2" stroke-linejoin="round" fill="#999" mask="url(#gm1)"/><circle cx="32" cy="32" r="7" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
   dockChat: '<svg viewBox="0 0 64 64" fill="none" width="34" height="34"><mask id="cm1"><rect width="64" height="64" fill="white"/><line x1="23" y1="27.5" x2="41" y2="27.5" stroke="black" stroke-width="4" stroke-linecap="round"/><line x1="23" y1="34.5" x2="35" y2="34.5" stroke="black" stroke-width="4" stroke-linecap="round"/></mask><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="#999" stroke-width="2.2" fill="#999" mask="url(#cm1)"/></svg>',
   dockStory: '<svg viewBox="0 0 64 64" fill="none" width="32" height="32"><mask id="sm1"><rect width="64" height="64" fill="white"/><path d="M33 20L40 29L33 38L26 29Z" fill="black"/><circle cx="33" cy="29" r="3" fill="black"/></mask><rect x="14" y="6" width="38" height="46" rx="4" fill="#999" mask="url(#sm1)"/><line x1="10" y1="10" x2="10" y2="48" stroke="#999" stroke-width="2.2" stroke-linecap="round"/><line x1="10" y1="10" x2="14" y2="10" stroke="#999" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="48" x2="14" y2="48" stroke="#999" stroke-width="2" stroke-linecap="round"/><path d="M33 20L40 29L33 38L26 29Z" stroke="#999" stroke-width="1.6" stroke-linejoin="round" fill="none"/><circle cx="33" cy="29" r="3" stroke="#999" stroke-width="1.4" fill="none"/><path d="M10 52H52" stroke="#aaa" stroke-width="1.4" stroke-linecap="round"/><path d="M10 55H52" stroke="#bbb" stroke-width="1.2" stroke-linecap="round"/><path d="M10 58H52" stroke="#ccc" stroke-width="1" stroke-linecap="round"/></svg>',
   dockCheckin: '<svg viewBox="0 0 64 64" fill="none" width="32" height="32"><mask id="ck1"><rect width="64" height="64" fill="white"/><rect x="21" y="18" width="22" height="28" rx="1.5" fill="black"/><circle cx="32" cy="50" r="2.5" fill="black"/></mask><rect x="18" y="10" width="28" height="44" rx="4" fill="#999" mask="url(#ck1)"/><line x1="28" y1="13" x2="36" y2="13" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><rect x="21" y="18" width="22" height="28" rx="1.5" fill="none" stroke="#999" stroke-width="1.4"/><circle cx="32" cy="50" r="2.5" stroke="#999" stroke-width="1.5" fill="none"/><line x1="24" y1="23" x2="40" y2="23" stroke="#999" stroke-width="1.4" stroke-linecap="round"/><line x1="24" y1="28" x2="35" y2="28" stroke="#999" stroke-width="1.2" stroke-linecap="round"/><line x1="24" y1="33" x2="39" y2="33" stroke="#999" stroke-width="1.4" stroke-linecap="round"/><line x1="24" y1="38" x2="33" y2="38" stroke="#999" stroke-width="1.2" stroke-linecap="round"/></svg>',
@@ -27,7 +27,7 @@ var ICON_MAP = [
   { id: 'customIcon_dockForum', label: '论坛', containerId: null, parentId: 'dockForum', selector: '#dockForum .mk-card' }
 ];
 
-var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15 };
+var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15, iconSize: 42 };
 
 var Bg = {
   _panelEl: null,
@@ -64,13 +64,12 @@ var Bg = {
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="bf-list">' +
-        '<div class="bf-list-item" data-action="theme"><span class="bf-list-name">主题应用</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="bgicon"><span class="bf-list-name">背景图标</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="font"><span class="bf-list-name">字体选择</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="component"><span class="bf-list-name">组件定义</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="ballstyle"><span class="bf-list-name">悬浮样式</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="snapshot"><span class="bf-list-name">排版存档</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-      '</div>';
+               '<div class="bf-list-item" data-action="theme"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="bf-list-name">主题应用</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="bgicon"><svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span class="bf-list-name">背景图标</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="font"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg><span class="bf-list-name">字体选择</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="component"><svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="bf-list-name">组件定义</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="ballstyle"><svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span class="bf-list-name">悬浮样式</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="snapshot"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="bf-list-name">排版存档</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
     document.body.appendChild(panel);
     Bg._panelEl = panel;
     requestAnimationFrame(function() { panel.classList.add('show'); });
@@ -144,6 +143,7 @@ var Bg = {
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
+          '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="24" max="60" step="1" value="' + (iconConfig.iconSize||42) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||42) + 'px</span></div>' +
           '<div class="bf-divider"></div>' +
                    '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
@@ -359,6 +359,11 @@ var Bg = {
       panel.querySelector('#bfIconRadiusVal').textContent = iconConfig.radius + 'px';
       App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
     });
+        panel.querySelector('#bfIconSize').addEventListener('input', function() {
+      iconConfig.iconSize = parseInt(this.value);
+      panel.querySelector('#bfIconSizeVal').textContent = iconConfig.iconSize + 'px';
+      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
+    });
     panel.querySelector('#bfColorDot').addEventListener('click', function(e) {
       e.stopPropagation(); if(!App.openColorPicker) return;
       App.openColorPicker(iconConfig.borderColor, function(hex) {
@@ -386,6 +391,8 @@ var Bg = {
       panel.querySelector('#bfIconRadiusVal').textContent = DEF_ICON_CFG.radius + 'px';
       panel.querySelector('#bfIconBlurVal').textContent = DEF_ICON_CFG.blur + 'px';
       panel.querySelector('#bfIconOpacityVal').textContent = '100%';
+            panel.querySelector('#bfIconSize').value = DEF_ICON_CFG.iconSize;
+      panel.querySelector('#bfIconSizeVal').textContent = DEF_ICON_CFG.iconSize + 'px';
       App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig); renderIconPreview();
       App.showToast('已恢复默认');
     });
@@ -553,7 +560,7 @@ var Bg = {
     }
   },
 
-    applyTopIconStyle: function(cfg) {
+      applyTopIconStyle: function(cfg) {
     var styleId = 'topIconDynamicStyle';
     var styleEl = document.getElementById(styleId);
     if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
@@ -562,55 +569,65 @@ var Bg = {
     var opacity = cfg.opacity != null ? cfg.opacity : 1;
     var iconBg = cfg.iconBg || 'rgba(255,255,255,0.25)';
     var iconColor = cfg.iconColor || '#999999';
-        // 透明度只影响背景色的 alpha
+    var iconSize = cfg.iconSize != null ? cfg.iconSize : 42;
+
+    // 背景色处理：渐变走 opacity 属性，纯色走 rgba alpha
     var bgWithOpacity = iconBg;
-    var r=255, g=255, b=255, a=1;
-    var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
-    if(m) {
-      r = parseInt(m[1]); g = parseInt(m[2]); b = parseInt(m[3]);
-      a = m[4] != null ? parseFloat(m[4]) : 1;
+    var useOpacityProp = false;
+    if(iconBg.indexOf('gradient') >= 0) {
+      bgWithOpacity = iconBg;
+      useOpacityProp = true;
     } else {
-      // hex
-      var hex = iconBg.replace('#','');
-      if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-      if(hex.length >= 6) {
-        r = parseInt(hex.substr(0,2),16); g = parseInt(hex.substr(2,2),16); b = parseInt(hex.substr(4,2),16);
-      }
-      a = 1;
+      var r=255, g=255, b=255, a=1;
+      var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
+      if(m) { r=parseInt(m[1]); g=parseInt(m[2]); b=parseInt(m[3]); a=m[4]!=null?parseFloat(m[4]):1; }
+      else { var hex=iconBg.replace('#',''); if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; if(hex.length>=6){r=parseInt(hex.substr(0,2),16);g=parseInt(hex.substr(2,2),16);b=parseInt(hex.substr(4,2),16);} a=1; }
+      bgWithOpacity = 'rgba('+r+','+g+','+b+','+(a*opacity).toFixed(3)+')';
     }
-    bgWithOpacity = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * opacity).toFixed(3) + ')';
-    styleEl.innerHTML =
+
+    // 容器样式
+    var containerCSS =
       '#appIconsRow > div > div:first-child, .bf-icon-preview-item {' +
-        'border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor||'#dcebff') + ' !important;' +
-        'box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor||'#dcebff') + ' !important;' +
-        'border-radius: ' + radius + 'px !important;' +
-        'background: ' + bgWithOpacity + ' !important;' +
-        'backdrop-filter: blur(' + blur + 'px) !important;' +
-        '-webkit-backdrop-filter: blur(' + blur + 'px) !important;' +
-      '}' +
-      // 只改 stroke 不改 fill —— 保留 mask 镂空效果
-      '#appIconsRow > div > div:first-child svg > path,' +
-      '#appIconsRow > div > div:first-child svg > circle,' +
-      '#appIconsRow > div > div:first-child svg > rect,' +
-      '#appIconsRow > div > div:first-child svg > line,' +
-      '#appIconsRow > div > div:first-child svg > ellipse,' +
-      '.bf-icon-preview-item svg > path,' +
-      '.bf-icon-preview-item svg > circle,' +
-      '.bf-icon-preview-item svg > rect,' +
-      '.bf-icon-preview-item svg > line,' +
-      '.bf-icon-preview-item svg > ellipse {' +
-        'stroke: ' + iconColor + ' !important;' +
-      '}' +
-      // fill 只给被 mask 的那个主体元素（有 mask 属性的）
-      '#appIconsRow > div > div:first-child svg > [mask],' +
-      '.bf-icon-preview-item svg > [mask] {' +
-        'fill: ' + iconColor + ' !important;' +
-      '}' +
-      // 没有 mask 的普通 fill 元素也要上色（比如没镂空的图标）
-      '#appIconsRow > div > div:first-child svg > path:not([mask]),' +
-      '.bf-icon-preview-item svg > path:not([mask]) {' +
-        'fill: none !important;' +
+        'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#ffffff')+' !important;' +
+        'box-shadow: '+cfg.shadow+'px '+cfg.shadow+'px 0 '+(cfg.shadowColor||'#ffffff')+' !important;' +
+        'border-radius: '+radius+'px !important;' +
+        'background: '+bgWithOpacity+' !important;' +
+        'backdrop-filter: blur('+blur+'px) !important;' +
+        '-webkit-backdrop-filter: blur('+blur+'px) !important;' +
+        (useOpacityProp ? 'opacity: '+opacity+' !important;' : '') +
       '}';
+
+    // SVG 尺寸
+    var svgCSS =
+      '#appIconsRow > div > div:first-child svg,' +
+      '#appIconsRow > div > div:first-child svg[width],' +
+      '#appIconsRow > div > div:first-child svg[height],' +
+      '.bf-icon-preview-item svg {' +
+        'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
+      '}';
+
+    // 图标颜色（渐变不支持 stroke，跳过）
+    var iconColorCSS = '';
+    if(iconColor.indexOf('gradient') === -1) {
+      var s1 = '#appIconsRow > div > div:first-child svg > ';
+      var s2 = '.bf-icon-preview-item svg > ';
+      iconColorCSS =
+        s1+'path,'+s1+'circle,'+s1+'rect,'+s1+'line,'+s1+'ellipse,' +
+        s2+'path,'+s2+'circle,'+s2+'rect,'+s2+'line,'+s2+'ellipse {' +
+          'stroke: '+iconColor+' !important;' +
+        '}' +
+        s1+'[mask],'+s2+'[mask] { fill: '+iconColor+' !important; }' +
+        s1+'path:not([mask]),'+s2+'path:not([mask]) { fill: none !important; }';
+    }
+
+    // mask 保护
+    var maskCSS =
+      '#appIconsRow > div > div:first-child svg mask > rect:first-child,' +
+      '.bf-icon-preview-item svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
+      '#appIconsRow > div > div:first-child svg mask > *:not(rect:first-child),' +
+      '.bf-icon-preview-item svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
+
+    styleEl.innerHTML = containerCSS + svgCSS + iconColorCSS + maskCSS;
   }
 };
 
