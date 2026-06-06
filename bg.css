@@ -148,25 +148,11 @@
 ========================= */
 .bf-preview-area {
   width: 75%;
-  height: 66vh;
   margin: 12px auto 0;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
   background: #fff;
-}
-
-/* 控制区域不再独立滚动 */
-.bf-controls {
-  padding: 0 20px 20px;
-  /* 移除 overflow-y: auto */
-}
-
-/* 整个内容区域可滚动 */
-.bf-sub-panel .bf-scroll-content {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .bf-preview-slider {
@@ -176,7 +162,6 @@
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
 }
 
-/* 预览 frame 容器需要有高度 */
 .bf-preview-page {
   width: 50%;
   height: 100%;
@@ -229,9 +214,6 @@
    控制区域
 ========================= */
 .bf-controls {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   padding: 0 20px 20px;
 }
 
