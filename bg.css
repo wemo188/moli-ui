@@ -52,10 +52,17 @@
 .bf-list-info {
   flex: 1;
   display: flex;
-  flex-direction: row;  /* 改成 row，不是 column */
-  align-items: baseline;  /* 基线对齐 */
+  flex-direction: row;
+  align-items: baseline;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.bf-list-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.3px;
 }
 
 .bf-list-name {
@@ -63,13 +70,6 @@
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: 0.5px;
-}
-
-.bf-list-sub {
-  font-size: 11px;
-  font-weight: 400;
-  color: #999;
-  letter-spacing: 0.3px;
 }
 
 /* =========================
