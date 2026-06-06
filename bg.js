@@ -433,7 +433,11 @@ var Bg = {
   showIconMenu: function(iconId, parentId, itemEl, panel) {
     var menu = document.createElement('div');
     menu.className = 'bf-modal-overlay';
-    menu.innerHTML = '<div class="bf-modal-box"><button class="bf-modal-btn" data-act="upload" type="button">上传新图片</button><button class="bf-modal-btn bf-modal-btn-danger" data-act="reset" type="button">恢复默认</button><button class="bf-modal-btn bf-modal-btn-cancel" data-act="cancel" type="button">取消</button></div>';
+    menu.innerHTML = '<div class="bf-modal-box">' +
+  '<button class="bf-modal-btn bf-modal-btn-primary" data-act="upload" type="button">上传新图片</button>' +
+  '<button class="bf-modal-btn bf-modal-btn-secondary" data-act="reset" type="button">恢复默认</button>' +
+  '<button class="bf-modal-btn bf-modal-btn-cancel" data-act="cancel" type="button">取消</button>' +
+'</div>';
     document.body.appendChild(menu);
     menu.addEventListener('click', function(e) { if(e.target === menu) menu.remove(); });
     menu.querySelectorAll('button').forEach(function(btn) {
