@@ -162,9 +162,7 @@ var Bg = {
       var area = panel.querySelector('#bfPreviewArea');
       var areaW = area.offsetWidth;
       var areaH = area.offsetHeight;
-      var scaleX = areaW / window.innerWidth;
-      var scaleY = areaH / window.innerHeight;
-      var scale = Math.min(scaleX, scaleY);
+      var scale = areaW / window.innerWidth;
 
       [0, 1].forEach(function(idx) {
         var page = panel.querySelector('#bfPreviewPage' + idx);
