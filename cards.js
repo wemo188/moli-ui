@@ -4,8 +4,8 @@
 var App=window.App;if(!App)return;
 
 var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
-var DEF_SUB_L='✥同你奔赴…✥';
-var DEF_SUB_R='◈与你共赏…◈';
+var DEF_SUB_L='✥同你奔赴一场风花雪月';
+var DEF_SUB_R='◈与你共赏一阙火树银花';
 
 var DEF_COLORS_L={bg:'rgba(255,255,255,0.45)',border:'rgba(255,255,255,0.3)',borderW:0,tagBg:'rgba(255,255,255,0.4)',tagC:'#4a5a75',tag2Bg:'rgba(255,255,255,0.35)',tag2C:'#4a5a75',subC:'#6a8caf',bgOpacity:1,bgBlur:8,fontFamily:''};
 var DEF_COLORS_R={bg:'rgba(255,255,255,0.45)',border:'rgba(255,255,255,0.3)',borderW:0,tagBg:'rgba(255,255,255,0.4)',tagC:'#4a5a75',tag2Bg:'rgba(255,255,255,0.35)',tag2C:'#4a5a75',subC:'#5c728a',bgOpacity:1,bgBlur:8,fontFamily:''};
@@ -14,6 +14,25 @@ var DEF_PIXEL={heartColor:'#ffffff',iconColor:'#ffffff',barColor:'#000000',bodyB
 var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
 
 var DRAG_DELAY=650;
+
+function Bg_applyAlpha(colorStr, opacity) {
+  if(opacity == null || opacity >= 1) return colorStr;
+  colorStr = (colorStr || '').trim();
+  var rm = colorStr.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)$/i);
+  if(rm) {
+    var a = rm[4] != null ? parseFloat(rm[4]) : 1;
+    return 'rgba('+rm[1]+','+rm[2]+','+rm[3]+','+(a * opacity).toFixed(3)+')';
+  }
+  var hex = colorStr.replace('#','');
+  if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  if(hex.length >= 6) {
+    var r = parseInt(hex.substr(0,2),16);
+    var g = parseInt(hex.substr(2,2),16);
+    var b = parseInt(hex.substr(4,2),16);
+    return 'rgba('+r+','+g+','+b+','+opacity.toFixed(3)+')';
+  }
+  return colorStr;
+}
 
 var Cards={
   data:{},_dragOffsets:{},pixelConfig:{},hlConfig:{},
@@ -46,7 +65,8 @@ var Cards={
     var lc=Cards.getColors('left');var rc=Cards.getColors('right');
     var pcL=App.$('#profileCard-L');var pcR=App.$('#profileCard-R');
     if(pcL){
-      pcL.style.setProperty('--profileCard-L-bg',lc.bg);
+      var lBgFinal=Bg_applyAlpha(lc.bg, lc.bgOpacity!=null?lc.bgOpacity:1);
+      pcL.style.setProperty('--profileCard-L-bg',lBgFinal);
       pcL.style.setProperty('--profileCard-L-border-c',lc.border);
       pcL.style.setProperty('--profileCard-L-border-w',lc.borderW+'px');
       pcL.style.setProperty('--profileCard-L-tag-bg',lc.tagBg);
@@ -54,14 +74,13 @@ var Cards={
       pcL.style.setProperty('--profileCard-L-tag2-bg',lc.tag2Bg);
       pcL.style.setProperty('--profileCard-L-tag2-c',lc.tag2C);
       pcL.style.setProperty('--profileCard-L-sub-c',lc.subC);
-            var lBgFinal = Bg_applyAlpha(lc.bg, lc.bgOpacity);
-      pcL.style.setProperty('--profileCard-L-bg', lBgFinal);
-      pcL.style.setProperty('--profileCard-L-bg-opacity', '1');
+      pcL.style.setProperty('--profileCard-L-bg-opacity','1');
       pcL.style.setProperty('--profileCard-L-bg-blur',(lc.bgBlur||0)+'px');
       if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;}else{pcL.style.fontFamily='';}
     }
     if(pcR){
-      pcR.style.setProperty('--profileCard-R-bg',rc.bg);
+      var rBgFinal=Bg_applyAlpha(rc.bg, rc.bgOpacity!=null?rc.bgOpacity:1);
+      pcR.style.setProperty('--profileCard-R-bg',rBgFinal);
       pcR.style.setProperty('--profileCard-R-border-c',rc.border);
       pcR.style.setProperty('--profileCard-R-border-w',rc.borderW+'px');
       pcR.style.setProperty('--profileCard-R-tag-bg',rc.tagBg);
@@ -69,9 +88,7 @@ var Cards={
       pcR.style.setProperty('--profileCard-R-tag2-bg',rc.tag2Bg);
       pcR.style.setProperty('--profileCard-R-tag2-c',rc.tag2C);
       pcR.style.setProperty('--profileCard-R-sub-c',rc.subC);
-            var rBgFinal = Bg_applyAlpha(rc.bg, rc.bgOpacity);
-      pcR.style.setProperty('--profileCard-R-bg', rBgFinal);
-      pcR.style.setProperty('--profileCard-R-bg-opacity', '1');
+      pcR.style.setProperty('--profileCard-R-bg-opacity','1');
       pcR.style.setProperty('--profileCard-R-bg-blur',(rc.bgBlur||0)+'px');
       if(rc.fontFamily){pcR.style.fontFamily=rc.fontFamily;}else{pcR.style.fontFamily='';}
     }
@@ -130,7 +147,6 @@ var Cards={
     }
   },
 
-  /* 渲染展示文字到 span 元素 */
   _renderDisplayTexts:function(){
     var topEl=document.getElementById('hlTextTop');
     var midEl=document.getElementById('hlTextMid');
@@ -147,7 +163,6 @@ var Cards={
     if(chatR){chatR.textContent=App.LS.get('hlChat_right')||'';chatR.setAttribute('data-placeholder','说点什么...');}
   },
 
-  /* 头像用 background-image 方式显示 */
   _restoreHlAvatar:function(bgId,storageKey){
     var el=document.getElementById(bgId);if(!el)return;
     var saved=App.LS.get(storageKey);
@@ -244,11 +259,6 @@ var Cards={
         '</div></div>';
     }
 
-    var icon1=App.LS.get('customIcon_cg');
-    var icon2=App.LS.get('customIcon_lt');
-    if(icon1){var img1=App.$('#cardIcon1 img');if(img1){img1.src=icon1;img1.style.transform='none';img1.style.width='100%';img1.style.height='100%';img1.style.objectFit='cover';}}
-    if(icon2){var img2=App.$('#cardIcon2 img');if(img2){img2.src=icon2;img2.style.transform='none';img2.style.width='100%';img2.style.height='100%';img2.style.objectFit='cover';}}
-
     Cards.bindEdit();
     Cards.applyDragOffsets();
     Cards.bindDrag();
@@ -265,15 +275,12 @@ var Cards={
   bindHeartline:function(){
     if(this._hlBound)return;
     this._hlBound=true;
-
     Cards._restoreHlAvatar('hlImgLeft','avatar_hlLeft');
     Cards._restoreHlAvatar('hlImgRight','avatar_hlRight');
     Cards._renderDisplayTexts();
-
     Cards._bindHlDrag('hlTextCard');
     Cards._bindHlDrag('hlAvatarWrapLeft');
     Cards._bindHlDrag('hlAvatarWrapRight');
-
     Cards._restoreHlPos('hlTextCard');
     Cards._restoreHlPos('hlAvatarWrapLeft');
     Cards._restoreHlPos('hlAvatarWrapRight');
@@ -283,7 +290,6 @@ var Cards={
     var el=document.getElementById(id);if(!el)return;
     var DELAY=500;
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
-
     el.addEventListener('touchstart',function(e){
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
       var avatarInside=el.querySelector('.hl-avatar');
@@ -295,7 +301,6 @@ var Cards={
         if(navigator.vibrate)navigator.vibrate(15);
       },DELAY);
     },{passive:true});
-
     el.addEventListener('touchmove',function(e){
       var t=e.touches[0];
       if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
@@ -305,7 +310,6 @@ var Cards={
       var avatarInside=el.querySelector('.hl-avatar');
       if(avatarInside)avatarInside._dragMoved=true;
     },{passive:false});
-
     el.addEventListener('touchend',function(e){
       clearTimeout(timer);timer=null;el.classList.remove('hl-dragging');el.style.transition='';
       if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
@@ -424,7 +428,6 @@ var Cards={
     });
   },
 
-  /* ====== 像素框编辑 ====== */
   bindPixelEdit:function(){
     if(this._pixelBound)return;this._pixelBound=true;
     var body=App.$('#hlTextCard .pixel-body');if(!body)return;
@@ -507,7 +510,6 @@ var Cards={
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePixelOverlay();});
   },
 
-  /* ====== 圆头像编辑 ====== */
   bindHlEdit:function(){
     if(this._hlEditBound)return;this._hlEditBound=true;
     ['hlAvatarLeft','hlAvatarRight'].forEach(function(avatarId){
@@ -626,7 +628,6 @@ var Cards={
     overlay.addEventListener('click',function(e){if(e.target===overlay)closeHlOverlay();});
   },
 
-  /* ====== 角色卡编辑面板 ====== */
   openEdit:function(side,cardEl){
     var old=App.$('#pcEditOverlay');if(old)old.remove();
 
@@ -803,3 +804,4 @@ var Cards={
 
 App.register('cards',Cards);
 })();
+
