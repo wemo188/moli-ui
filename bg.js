@@ -610,9 +610,9 @@ var Bg = {
     // 背景色处理：渐变走 opacity 属性，纯色走 rgba alpha
     var bgWithOpacity = iconBg;
     var useOpacityProp = false;
-    if(iconBg.indexOf('gradient') >= 0) {
-      bgWithOpacity = iconBg;
-      useOpacityProp = true;
+        if(iconBg.indexOf('gradient') >= 0) {
+      bgWithOpacity = 'transparent';
+      useOpacityProp = false;
     } else {
       var r=255, g=255, b=255, a=1;
       var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
@@ -633,18 +633,65 @@ var Bg = {
         (useOpacityProp ? 'opacity: '+opacity+' !important;' : '') +
       '}';
 
-            // 图标容器尺寸 + SVG 自适应
+    // 渐变背景层（用 ::before，这样透明度只影响背景不影响图案）
+    var gradBgCSS = '';
+    if(iconBg.indexOf('gradient') >= 0) {
+      var sel1 = '#appIconsRow > div > div:first-child';
+      var sel2 = '.bf-icon-preview-item';
+      gradBgCSS =
+        sel1+','+sel2+' { position: relative; }' +
+        sel1+'::before,'+sel2+'::before {' +
+          'content: "";' +
+          'position: absolute;' +
+          'inset: 0;' +
+          'background: '+iconBg+';' +
+          'border-radius: inherit;' +
+          'opacity: '+opacity+';' +
+          'pointer-events: none;' +
+          'z-index: 0;' +
+        '}' +
+        sel1+' svg,'+sel2+' svg { position: relative; z-index: 1; }';
+    }
+    
+                // 图标容器尺寸 + SVG 自适应
     var svgCSS =
       '#appIconsRow > div > div:first-child {' +
         'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
       '}' +
-      '#appIconsRow > div > div:first-child svg {' +
+      '#appIconsRow > div > div:first-child svg,' +
+      '.bf-icon-preview-item svg {' +
         'width: 55% !important; height: 55% !important;' +
+      '}' +
+      '.bf-icon-preview-item {' +
+        'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
       '}';
 
-    // 图标颜色（渐变不支持 stroke，跳过）
+       // 图标颜色
     var iconColorCSS = '';
-    if(iconColor.indexOf('gradient') === -1) {
+    if(iconColor.indexOf('gradient') >= 0) {
+      // 渐变色：把 SVG 变成纯白 → 用容器的 mask 反转实现渐变上色
+      // 方案：SVG 全白，外层用 background + mask-image 来做渐变叠加
+      // 简化方案：SVG stroke/fill 设白色，容器加渐变叠加层
+      var sel1 = '#appIconsRow > div > div:first-child';
+      var sel2 = '.bf-icon-preview-item';
+      iconColorCSS =
+        sel1+' svg > path,'+sel1+' svg > circle,'+sel1+' svg > rect,'+sel1+' svg > line,'+sel1+' svg > ellipse,' +
+        sel2+' svg > path,'+sel2+' svg > circle,'+sel2+' svg > rect,'+sel2+' svg > line,'+sel2+' svg > ellipse {' +
+          'stroke: #fff !important;' +
+        '}' +
+        sel1+' svg > [mask],'+sel2+' svg > [mask] { fill: #fff !important; }' +
+        sel1+' svg > path:not([mask]),'+sel2+' svg > path:not([mask]) { fill: none !important; }' +
+        sel1+'::after,'+sel2+'::after {' +
+          'content: "";' +
+          'position: absolute;' +
+          'inset: 0;' +
+          'background: '+iconColor+';' +
+          'border-radius: inherit;' +
+          'mix-blend-mode: multiply;' +
+          'pointer-events: none;' +
+        '}' +
+        sel1+','+sel2+' { position: relative; }';
+    } else {
       var s1 = '#appIconsRow > div > div:first-child svg > ';
       var s2 = '.bf-icon-preview-item svg > ';
       iconColorCSS =
@@ -654,6 +701,10 @@ var Bg = {
         '}' +
         s1+'[mask],'+s2+'[mask] { fill: '+iconColor+' !important; }' +
         s1+'path:not([mask]),'+s2+'path:not([mask]) { fill: none !important; }';
+      // 清除可能残留的 ::after
+      iconColorCSS +=
+        '#appIconsRow > div > div:first-child::after,' +
+        '.bf-icon-preview-item::after { display: none !important; }';
     }
 
     // mask 保护
@@ -663,7 +714,7 @@ var Bg = {
       '#appIconsRow > div > div:first-child svg mask > *:not(rect:first-child),' +
       '.bf-icon-preview-item svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
 
-    styleEl.innerHTML = containerCSS + svgCSS + iconColorCSS + maskCSS;
+        styleEl.innerHTML = containerCSS + gradBgCSS + svgCSS + iconColorCSS + maskCSS;
   }
 };
 
