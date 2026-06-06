@@ -287,6 +287,11 @@
   color: #fff;
 }
 
+#bfBgApply {
+  background: #1a1a1a;
+  color: #fff;
+}
+
 .bf-upload-area {
   display: flex;
   align-items: center;
