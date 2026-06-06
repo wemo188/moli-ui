@@ -59,10 +59,13 @@ var Bg = {
     panel.className = 'beautify-panel';
     panel.innerHTML =
       '<div class="bf-nav">' +
-        '<button class="bf-back" id="bfMainBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
-        '<span class="bf-nav-title">美化工坊</span>' +
-        '<div class="bf-nav-right"></div>' +
-      '</div>' +
+  '<button class="bf-back" id="bfMainBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+  '<div class="bf-nav-title-wrap">' +
+    '<span class="bf-nav-title">美化工坊</span>' +
+    '<span class="bf-nav-sub">Beautify Workshop</span>' +
+  '</div>' +
+  '<div class="bf-nav-right"></div>' +
+'</div>'
       '<div class="bf-list">' +
              '<div class="bf-list">' +
   '<div class="bf-list-item" data-action="theme">' +
