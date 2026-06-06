@@ -2,6 +2,9 @@
 'use strict';
 var App = window.App; if(!App) return;
 
+// ========== 统一返回按钮 SVG ==========
+var BACK_BUTTON_SVG = '<svg viewBox="0 0 64 64" fill="none" width="40" height="40"><circle cx="32" cy="32" r="24" stroke="#2a2a2a" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="#2a2a2a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 var DEFAULT_SVGS = {
   iconUser: '<svg viewBox="0 0 64 64" fill="none" width="56" height="56"><mask id="hm1"><rect width="64" height="64" fill="white"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="black"/></mask><circle cx="32" cy="32" r="22" stroke="#999" stroke-width="2.2" fill="#999" mask="url(#hm1)"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
   iconChar: '<svg viewBox="0 0 64 64" fill="none" width="52" height="52"><rect x="8" y="10" width="46" height="44" rx="4" stroke="#999" stroke-width="2" fill="none"/><path d="M21 18L23 23L28 23.5L24 27L25 32L21 29L17 32L18 27L14 23.5L19 23Z" stroke="#999" stroke-width="1.6" stroke-linejoin="round" fill="#999"/><line x1="34" y1="20" x2="50" y2="20" stroke="#999" stroke-width="1.8" stroke-linecap="round"/><line x1="34" y1="28" x2="46" y2="28" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><line x1="34" y1="36" x2="48" y2="36" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><line x1="14" y1="44" x2="50" y2="44" stroke="#999" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="3 2"/></svg>',
@@ -61,11 +64,11 @@ var Bg = {
     panel.className = 'beautify-panel';
 
        panel.innerHTML =
-      '<div class="bf-nav">' +
-        '<button class="bf-back" id="bfMainBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-        '<span class="bf-nav-title">美化</span>' +
-        '<div class="bf-nav-right"></div>' +
-      '</div>' +
+  '<div class="bf-nav">' +
+    '<button class="bf-back" id="bfMainBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+    '<span class="bf-nav-title">美化</span>' +
+    '<div class="bf-nav-right"></div>' +
+  '</div>' +
       '<div class="bf-list">' +
         '<div class="bf-list-item" data-action="theme"><span class="bf-list-name">主题应用</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
         '<div class="bf-list-item" data-action="bgicon"><span class="bf-list-name">背景图标</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
@@ -119,11 +122,11 @@ var Bg = {
     panel.className = 'bf-sub-panel';
 
     panel.innerHTML =
-      '<div class="bf-nav">' +
-        '<button class="bf-back" id="bfBgBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-        '<span class="bf-nav-title">背景图标</span>' +
-        '<div class="bf-nav-right"></div>' +
-      '</div>' +
+  '<div class="bf-nav">' +
+    '<button class="bf-back" id="bfBgBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+    '<span class="bf-nav-title">背景图标</span>' +
+    '<div class="bf-nav-right"></div>' +
+  '</div>' +
       '<div class="bf-preview-area" id="bfPreviewArea">' +
         '<div class="bf-preview-slider" id="bfPreviewSlider">' +
           '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
@@ -424,7 +427,7 @@ var Bg = {
 
     panel.innerHTML =
       '<div class="bf-nav">' +
-        '<button class="bf-back" id="bfCompBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+     '<button class="bf-back" id="bfCompBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
         '<span class="bf-nav-title">组件定义</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
