@@ -453,6 +453,11 @@
   width: 42px;
   height: 42px;
 }
+.app-icon-glass svg[width],
+.app-icon-glass svg[height] {
+  width: 42px !important;
+  height: 42px !important;
+}
 
 .app-icon-label {
   font-size: 12.5px;
