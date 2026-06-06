@@ -194,8 +194,8 @@ openBgIcon: function() {
         frame.appendChild(clone);
       }
 
-      // Clone fixed elements (dock, indicators, floating ball)
-      var fixedEls = ['#dockBar', '.screen-indicators', '#floatingBall'];
+            // Clone fixed elements (dock, indicators)
+      var fixedEls = ['#dockBar', '.screen-indicators'];
       fixedEls.forEach(function(sel) {
         var src = document.querySelector(sel);
         if(src) {
