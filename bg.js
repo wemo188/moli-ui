@@ -3,7 +3,7 @@
 var App = window.App; if(!App) return;
 
 // ========== 统一返回按钮 SVG ==========
-var BACK_BUTTON_SVG = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="#2a2a2a" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="#2a2a2a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var BACK_BUTTON_SVG = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 var DEFAULT_SVGS = {
   iconUser: '<svg viewBox="0 0 64 64" fill="none" width="56" height="56"><mask id="hm1"><rect width="64" height="64" fill="white"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" fill="black"/></mask><circle cx="32" cy="32" r="22" stroke="#999" stroke-width="2.2" fill="#999" mask="url(#hm1)"/><path d="M32 44L22.4 34.8C19.6 32 19.6 27.6 22.4 24.8C25 22.2 29.2 22.2 31.2 25.2L32 26.4L32.8 25.2C34.8 22.2 39 22.2 41.6 24.8C44.4 27.6 44.4 32 41.6 34.8L32 44Z" stroke="#999" stroke-width="1.8" fill="none"/></svg>',
