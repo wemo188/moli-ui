@@ -738,21 +738,6 @@
 }
 
 /* =========================
-   角色卡透明度 + 毛玻璃
-========================= */
-#profileCard-L .bx-cd {
-  background: var(--profileCard-L-bg, rgba(255,255,255,0.45));
-  backdrop-filter: blur(var(--profileCard-L-bg-blur, 8px));
-  -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 8px));
-}
-
-#profileCard-R .bx-cd {
-  background: var(--profileCard-R-bg, rgba(255,255,255,0.45));
-  backdrop-filter: blur(var(--profileCard-R-bg-blur, 8px));
-  -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 8px));
-}
-
-/* =========================
    圆头像 CSS 变量驱动
 ========================= */
 .hl-avatar-unit {
