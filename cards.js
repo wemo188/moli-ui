@@ -7,8 +7,8 @@ var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
 var DEF_SUB_L='✥同你奔赴…✥';
 var DEF_SUB_R='◈与你共赏…◈';
 
-var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',subC:'#6a8caf',bgOpacity:1,bgBlur:0,fontFamily:''};
-var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',subC:'#5c728a',bgOpacity:1,bgBlur:0,fontFamily:''};
+var DEF_COLORS_L={bg:'rgba(255,255,255,0.45)',border:'rgba(255,255,255,0.3)',borderW:0,tagBg:'rgba(255,255,255,0.4)',tagC:'#4a5a75',tag2Bg:'rgba(255,255,255,0.35)',tag2C:'#4a5a75',subC:'#6a8caf',bgOpacity:1,bgBlur:8,fontFamily:''};
+var DEF_COLORS_R={bg:'rgba(255,255,255,0.45)',border:'rgba(255,255,255,0.3)',borderW:0,tagBg:'rgba(255,255,255,0.4)',tagC:'#4a5a75',tag2Bg:'rgba(255,255,255,0.35)',tag2C:'#4a5a75',subC:'#5c728a',bgOpacity:1,bgBlur:8,fontFamily:''};
 
 var DEF_PIXEL={heartColor:'#ffffff',iconColor:'#ffffff',barColor:'#000000',bodyBg:'#ffffff',fontColor:'#2a2a2a',fontFamily:''};
 var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
@@ -54,7 +54,9 @@ var Cards={
       pcL.style.setProperty('--profileCard-L-tag2-bg',lc.tag2Bg);
       pcL.style.setProperty('--profileCard-L-tag2-c',lc.tag2C);
       pcL.style.setProperty('--profileCard-L-sub-c',lc.subC);
-      pcL.style.setProperty('--profileCard-L-bg-opacity',lc.bgOpacity!=null?lc.bgOpacity:1);
+            var lBgFinal = Bg_applyAlpha(lc.bg, lc.bgOpacity);
+      pcL.style.setProperty('--profileCard-L-bg', lBgFinal);
+      pcL.style.setProperty('--profileCard-L-bg-opacity', '1');
       pcL.style.setProperty('--profileCard-L-bg-blur',(lc.bgBlur||0)+'px');
       if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;}else{pcL.style.fontFamily='';}
     }
@@ -67,7 +69,9 @@ var Cards={
       pcR.style.setProperty('--profileCard-R-tag2-bg',rc.tag2Bg);
       pcR.style.setProperty('--profileCard-R-tag2-c',rc.tag2C);
       pcR.style.setProperty('--profileCard-R-sub-c',rc.subC);
-      pcR.style.setProperty('--profileCard-R-bg-opacity',rc.bgOpacity!=null?rc.bgOpacity:1);
+            var rBgFinal = Bg_applyAlpha(rc.bg, rc.bgOpacity);
+      pcR.style.setProperty('--profileCard-R-bg', rBgFinal);
+      pcR.style.setProperty('--profileCard-R-bg-opacity', '1');
       pcR.style.setProperty('--profileCard-R-bg-blur',(rc.bgBlur||0)+'px');
       if(rc.fontFamily){pcR.style.fontFamily=rc.fontFamily;}else{pcR.style.fontFamily='';}
     }
