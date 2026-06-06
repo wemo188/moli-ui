@@ -116,6 +116,13 @@
   width: 40px;
 }
 
+.bf-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
 /* =========================
    子面板通用
 ========================= */
