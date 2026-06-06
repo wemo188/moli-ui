@@ -103,7 +103,7 @@
 }
 
 .bf-nav-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -142,6 +142,7 @@
 /* =========================
    背景预览区域
 ========================= */
+/* 预览区域 - 让缩放有空间 */
 .bf-preview-area {
   width: 75%;
   margin: 12px auto 0;
@@ -150,6 +151,7 @@
   border: none;
   position: relative;
   background: #fff;
+  min-height: 200px;  /* 添加最小高度，保证预览区可见 */
 }
 
 /* 控制区域不再独立滚动 */
@@ -172,11 +174,13 @@
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
 }
 
+/* 预览 frame 容器需要有高度 */
 .bf-preview-page {
   width: 50%;
   height: 100%;
   overflow: hidden;
   position: relative;
+  min-height: 200px;  /* 确保有高度 */
 }
 
 .bf-preview-frame {
