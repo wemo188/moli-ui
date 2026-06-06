@@ -664,3 +664,17 @@
   height: 40px;
 }
 
+/* 上传新图片 - 黑色按钮 */
+.bf-modal-btn-primary {
+  border: none;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* 恢复默认 - 灰色无边框 */
+.bf-modal-btn-secondary {
+  border: none;
+  background: #d1d5db;
+  color: #666;
+}
+
