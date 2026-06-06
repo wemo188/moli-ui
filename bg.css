@@ -142,7 +142,7 @@
 ========================= */
 .bf-preview-area {
   width: 75%;
-  height: 650px;  /* 固定高度，保证预览区足够高 */
+  height: 700px;  /* 固定高度，保证预览区足够高 */
   margin: 12px auto 0;
   border-radius: 16px;
   overflow: hidden;
@@ -628,7 +628,7 @@
 .bf-controls input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: #e0e0e0;  /* 浅灰色轨道 */
+  background: #1a1a1a;  /* 浅灰色轨道 */
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-thumb,
