@@ -162,18 +162,22 @@ openBgIcon: function() {
 
   // 渲染预览
   function renderPreview() {
-    var area = panel.querySelector('#bfPreviewArea');
-    var areaW = area.offsetWidth;
-    var scale = areaW / window.innerWidth;
-
-    [0, 1].forEach(function(idx) {
-      var page = panel.querySelector('#bfPreviewPage' + idx);
-      page.innerHTML = '';
-      var frame = document.createElement('div');
-      frame.className = 'bf-preview-frame';
-      frame.style.transform = 'scale(' + scale + ')';
-      frame.style.width = window.innerWidth + 'px';
-      frame.style.height = window.innerHeight + 'px';
+  var area = panel.querySelector('#bfPreviewArea');
+  var areaW = area.offsetWidth;
+  var scale = areaW / window.innerWidth;
+  var scaledHeight = window.innerHeight * scale;
+  
+  // 关键：动态设置预览区高度为缩放后的完整页面高度
+  area.style.height = scaledHeight + 'px';
+  
+  [0, 1].forEach(function(idx) {
+    var page = panel.querySelector('#bfPreviewPage' + idx);
+    page.innerHTML = '';
+    var frame = document.createElement('div');
+    frame.className = 'bf-preview-frame';
+    frame.style.transform = 'scale(' + scale + ')';
+    frame.style.width = window.innerWidth + 'px';
+    frame.style.height = window.innerHeight + 'px';
 
       // Clone the page content
       var srcPage = document.querySelector('.screen-page-' + (idx + 1));
