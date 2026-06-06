@@ -175,6 +175,7 @@ var Bg = {
         var frame = document.createElement('div');
         frame.className = 'bf-preview-frame';
         frame.style.transform = 'scale(' + scale + ')';
+        frame.style.transformOrigin = 'top center';  // 从顶部开始，确保底部内容不丢失
         frame.style.width = window.innerWidth + 'px';
         frame.style.height = window.innerHeight + 'px';
 
