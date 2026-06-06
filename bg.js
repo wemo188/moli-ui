@@ -69,7 +69,8 @@ var Bg = {
         '<div class="bf-list-item" data-action="font"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg><span class="bf-list-name">字体选择</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
         '<div class="bf-list-item" data-action="component"><svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="bf-list-name">组件定义</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
         '<div class="bf-list-item" data-action="ballstyle"><svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span class="bf-list-name">悬浮样式</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-        '<div class="bf-list-item" data-action="snapshot"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="bf-list-name">排版存档</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+       '<div class="bf-list-item" data-action="snapshot"><svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="bf-list-name">排版存档</span><svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+      '</div>';
     document.body.appendChild(panel);
     Bg._panelEl = panel;
     requestAnimationFrame(function() { panel.classList.add('show'); });
@@ -632,10 +633,13 @@ var Bg = {
         (useOpacityProp ? 'opacity: '+opacity+' !important;' : '') +
       '}';
 
-        // 图标容器尺寸
+            // 图标容器尺寸 + SVG 自适应
     var svgCSS =
       '#appIconsRow > div > div:first-child {' +
         'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
+      '}' +
+      '#appIconsRow > div > div:first-child svg {' +
+        'width: 70% !important; height: 70% !important;' +
       '}';
 
     // 图标颜色（渐变不支持 stroke，跳过）
