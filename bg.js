@@ -280,15 +280,19 @@ var Bg = {
       } catch(e) { App.showToast('图片太大，请压缩后重试'); }
     });
 
-    panel.querySelector('#bfBgRemove').addEventListener('click', function() {
+        panel.querySelector('#bfBgRemove').addEventListener('click', function() {
       var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
       App.LS.remove(key);
       tempBg[currentPreviewPage] = {};
-      Bg.applyBg({}, currentPreviewPage);
+      Bg.applyBg(null, currentPreviewPage);
       panel.querySelector('#bfBlur').value = 0;
       panel.querySelector('#bfDark').value = 0;
       panel.querySelector('#bfBlurVal').textContent = '0px';
       panel.querySelector('#bfDarkVal').textContent = '0%';
+      // 如果移除的是第二页，预览里用第一页的图
+      if(currentPreviewPage === 1 && tempBg[0].src) {
+        tempBg[1] = JSON.parse(JSON.stringify(tempBg[0]));
+      }
       renderPreview();
       App.showToast('背景已移除');
     });
@@ -554,7 +558,7 @@ var Bg = {
   },
 
   /* ====== 背景应用 ====== */
-      applyBg: function(data, pageIdx) {
+        applyBg: function(data, pageIdx) {
     var id = pageIdx === 1 ? 'bgLayer1' : 'bgLayer';
     var layer = document.getElementById(id);
     if(!layer) return;
@@ -563,8 +567,25 @@ var Bg = {
       layer.style.backgroundImage = 'url(' + data.src + ')';
       layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
     } else {
-      layer.style.backgroundImage = '';
-      layer.style.filter = '';
+      // 没有自己的背景时，跟随第一页
+      if(pageIdx === 1) {
+        var page0 = App.LS.get('bgData') || {};
+        if(page0.src) {
+          layer.style.backgroundImage = 'url(' + page0.src + ')';
+          layer.style.filter = 'blur(' + (page0.blur||0) + 'px) brightness(' + (100-(page0.dark||0)) + '%)';
+        } else {
+          layer.style.backgroundImage = '';
+          layer.style.filter = '';
+        }
+      } else {
+        layer.style.backgroundImage = '';
+        layer.style.filter = '';
+        // 第一页变了，检查第二页是否需要跟随
+        var page1Data = App.LS.get('bgData_1') || {};
+        if(!page1Data.src) {
+          Bg.applyBg(null, 1);
+        }
+      }
     }
   },
 
