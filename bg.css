@@ -611,3 +611,47 @@
   object-fit: contain;
 }
 
+/* Bg 模块专用滑块样式 - 灰色主题 */
+.bf-sub-panel input[type="range"],
+#bfBgIconPanel input[type="range"],
+.bf-controls input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.bf-sub-panel input[type="range"]::-webkit-slider-runnable-track,
+#bfBgIconPanel input[type="range"]::-webkit-slider-runnable-track,
+.bf-controls input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #e0e0e0;  /* 浅灰色轨道 */
+}
+
+.bf-sub-panel input[type="range"]::-webkit-slider-thumb,
+#bfBgIconPanel input[type="range"]::-webkit-slider-thumb,
+.bf-controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #999999;  /* 灰色边框 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  margin-top: -6px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.bf-sub-panel input[type="range"]::-webkit-slider-thumb:active,
+#bfBgIconPanel input[type="range"]::-webkit-slider-thumb:active,
+.bf-controls input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+  background: #f5f5f5;
+  border-color: #777777;
+}
+
