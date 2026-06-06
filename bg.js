@@ -27,7 +27,7 @@ var ICON_MAP = [
   { id: 'customIcon_dockForum', label: '论坛', containerId: null, parentId: 'dockForum', selector: '#dockForum .mk-card' }
 ];
 
-var DEF_ICON_CFG = { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15 };
+var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15 };
 
 var Bg = {
   _panelEl: null,
@@ -562,13 +562,23 @@ var Bg = {
     var opacity = cfg.opacity != null ? cfg.opacity : 1;
     var iconBg = cfg.iconBg || 'rgba(255,255,255,0.25)';
     var iconColor = cfg.iconColor || '#999999';
-    // 透明度只影响背景色的 alpha
+        // 透明度只影响背景色的 alpha
     var bgWithOpacity = iconBg;
+    var r=255, g=255, b=255, a=1;
     var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
     if(m) {
-      var baseAlpha = m[4] != null ? parseFloat(m[4]) : 1;
-      bgWithOpacity = 'rgba(' + m[1] + ',' + m[2] + ',' + m[3] + ',' + (baseAlpha * opacity).toFixed(3) + ')';
+      r = parseInt(m[1]); g = parseInt(m[2]); b = parseInt(m[3]);
+      a = m[4] != null ? parseFloat(m[4]) : 1;
+    } else {
+      // hex
+      var hex = iconBg.replace('#','');
+      if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      if(hex.length >= 6) {
+        r = parseInt(hex.substr(0,2),16); g = parseInt(hex.substr(2,2),16); b = parseInt(hex.substr(4,2),16);
+      }
+      a = 1;
     }
+    bgWithOpacity = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * opacity).toFixed(3) + ')';
     styleEl.innerHTML =
       '#appIconsRow > div > div:first-child, .bf-icon-preview-item {' +
         'border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor||'#dcebff') + ' !important;' +
