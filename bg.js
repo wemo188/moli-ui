@@ -127,33 +127,36 @@ openBgIcon: function() {
       '<span class="bf-nav-title">背景图标</span>' +
       '<div class="bf-nav-right"></div>' +
     '</div>' +
-    '<div class="bf-preview-area" id="bfPreviewArea">' +
-      '<div class="bf-preview-slider" id="bfPreviewSlider">' +
-        '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
-        '<div class="bf-preview-page" id="bfPreviewPage1"></div>' +
+        '<div class="bf-scroll-body">' +
+      '<div class="bf-preview-area" id="bfPreviewArea">' +
+        '<div class="bf-preview-slider" id="bfPreviewSlider">' +
+          '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
+          '<div class="bf-preview-page" id="bfPreviewPage1"></div>' +
+        '</div>' +
       '</div>' +
-    '</div>' +
-    '<div class="bf-preview-dots">' +
-      '<button class="bf-preview-dot active" data-p="0" type="button"></button>' +
-      '<button class="bf-preview-dot" data-p="1" type="button"></button>' +
-    '</div>' +
-    '<div class="bf-controls" id="bfBgControls">' +
-      '<div class="bf-upload-area" id="bfBgUpload">上传背景图</div>' +
-      '<input type="file" id="bfBgFile" accept="image/*" hidden>' +
-      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">虚化</span><input type="range" id="bfBlur" min="0" max="30" value="0"><span class="bf-ctrl-val" id="bfBlurVal">0px</span></div>' +
-      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">变暗</span><input type="range" id="bfDark" min="0" max="80" value="0"><span class="bf-ctrl-val" id="bfDarkVal">0%</span></div>' +
-      '<div class="bf-btn-row">' +
-        '<button class="bf-btn active" id="bfBgApply" type="button">应用背景</button>' +
-        '<button class="bf-btn" id="bfBgRemove" type="button">移除背景</button>' +
+      '<div class="bf-preview-dots">' +
+        '<button class="bf-preview-dot active" data-p="0" type="button"></button>' +
+        '<button class="bf-preview-dot" data-p="1" type="button"></button>' +
       '</div>' +
-      '<div class="bf-divider"></div>' +
-      '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">图标边框样式</div>' +
-      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
-      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
-      '<div class="bf-color-row"><span class="bf-ctrl-label">颜色</span><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button></div>' +
-      '<div class="bf-divider"></div>' +
-      '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">替换图标</div>' +
-      '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
+      '<div class="bf-controls" id="bfBgControls">' +
+        '<div class="bf-upload-area" id="bfBgUpload">上传背景图</div>' +
+        '<input type="file" id="bfBgFile" accept="image/*" hidden>' +
+        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">虚化</span><input type="range" id="bfBlur" min="0" max="30" value="0"><span class="bf-ctrl-val" id="bfBlurVal">0px</span></div>' +
+        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">变暗</span><input type="range" id="bfDark" min="0" max="80" value="0"><span class="bf-ctrl-val" id="bfDarkVal">0%</span></div>' +
+        '<div class="bf-btn-row">' +
+          '<button class="bf-btn active" id="bfBgApply" type="button">应用背景</button>' +
+          '<button class="bf-btn" id="bfBgRemove" type="button">移除背景</button>' +
+        '</div>' +
+        '<div class="bf-divider"></div>' +
+        '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">图标边框样式</div>' +
+        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
+        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
+        '<div class="bf-color-row"><span class="bf-ctrl-label">颜色</span><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button></div>' +
+        '<div class="bf-divider"></div>' +
+        '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">替换图标</div>' +
+        '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
+        '<div style="height:40px;"></div>' +
+      '</div>' +
     '</div>';
 
   document.body.appendChild(panel);
