@@ -128,8 +128,6 @@
   flex-direction: column;
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
   will-change: transform, opacity;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .bf-sub-panel.hidden {
