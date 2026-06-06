@@ -1,4 +1,48 @@
 /* =========================
+   美化中心 - 列表布局
+========================= */
+.bf-list {
+  padding: 8px 0;
+}
+
+.bf-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.15s;
+}
+
+.bf-list-item:active {
+  background: #f9f9f9;
+}
+
+.bf-list-item:last-child {
+  border-bottom: none;
+}
+
+.bf-list-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+.bf-list-item svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* =========================
    美化中心 - 全屏面板
 ========================= */
 .beautify-panel {
@@ -64,48 +108,6 @@
 
 .bf-nav-right {
   width: 36px;
-}
-
-/* 子应用网格 */
-.bf-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px 16px;
-  padding: 24px 20px;
-}
-
-.bf-grid-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bf-grid-item:active { opacity: 0.7; }
-
-.bf-grid-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s;
-}
-
-.bf-grid-item:active .bf-grid-icon {
-  transform: scale(0.92);
-}
-
-.bf-grid-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-  letter-spacing: 0.5px;
 }
 
 /* =========================
