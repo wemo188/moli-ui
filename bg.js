@@ -60,19 +60,19 @@ var Bg = {
     panel.id = 'beautifyPanel';
     panel.className = 'beautify-panel';
 
-    panel.innerHTML =
+       panel.innerHTML =
       '<div class="bf-nav">' +
         '<button class="bf-back" id="bfMainBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
         '<span class="bf-nav-title">美化</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
-      '<div class="bf-grid">' +
-        '<div class="bf-grid-item" data-action="theme"><div class="bf-grid-icon"></div><div class="bf-grid-label">主题应用</div></div>' +
-        '<div class="bf-grid-item" data-action="bgicon"><div class="bf-grid-icon"></div><div class="bf-grid-label">背景图标</div></div>' +
-        '<div class="bf-grid-item" data-action="font"><div class="bf-grid-icon"></div><div class="bf-grid-label">字体选择</div></div>' +
-        '<div class="bf-grid-item" data-action="component"><div class="bf-grid-icon"></div><div class="bf-grid-label">组件定义</div></div>' +
-        '<div class="bf-grid-item" data-action="ballstyle"><div class="bf-grid-icon"></div><div class="bf-grid-label">悬浮样式</div></div>' +
-        '<div class="bf-grid-item" data-action="snapshot"><div class="bf-grid-icon"></div><div class="bf-grid-label">排版存档</div></div>' +
+      '<div class="bf-list">' +
+        '<div class="bf-list-item" data-action="theme"><span class="bf-list-name">主题应用</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="bgicon"><span class="bf-list-name">背景图标</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="font"><span class="bf-list-name">字体选择</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="component"><span class="bf-list-name">组件定义</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="ballstyle"><span class="bf-list-name">悬浮样式</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+        '<div class="bf-list-item" data-action="snapshot"><span class="bf-list-name">排版存档</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
       '</div>';
 
     document.body.appendChild(panel);
@@ -87,7 +87,7 @@ var Bg = {
       setTimeout(function(){ panel.remove(); }, 350);
     });
 
-    panel.querySelectorAll('.bf-grid-item').forEach(function(item) {
+        panel.querySelectorAll('.bf-list-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var action = item.dataset.action;
         if(action === 'theme') { /* 先空着 */ App.showToast('主题功能开发中'); }
