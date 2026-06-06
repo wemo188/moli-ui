@@ -145,9 +145,9 @@ var Bg = {
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
           '<div class="bf-divider"></div>' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><span class="bf-section-title" style="margin-bottom:0;">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
+                   '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
-          '<div style="height:40px;"></div>' +
+                    '<div class="bf-bottom-spacer"></div>' +
         '</div>' +
       '</div>';
 
