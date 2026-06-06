@@ -628,7 +628,7 @@
 .bf-controls input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: #1a1a1a;  /* 更浅的灰色轨道 */
+  background: #e8e8e8;  /* 更浅的灰色轨道 */
 }
 
 .bf-sub-panel input[type="range"]::-webkit-slider-thumb,
