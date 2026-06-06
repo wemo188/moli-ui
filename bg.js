@@ -133,14 +133,17 @@ var Bg = {
           '<div class="bf-divider"></div>' +
           '<div class="bf-section-title">图标样式</div>' +
           '<div class="bf-icon-preview" id="bfIconPreview"></div>' +
-          '<div class="bf-color-row"><span class="bf-ctrl-label">图案色</span><div class="bf-color-dot" id="bfIconColorDot" style="background:' + iconConfig.iconColor + ';"></div></div>' +
-          '<div class="bf-color-row"><span class="bf-ctrl-label">背景色</span><div class="bf-color-dot" id="bfIconBgDot" style="background:' + iconConfig.iconBg + ';"></div></div>' +
+                    '<div class="bf-color-row">' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconColorDot" style="background:' + iconConfig.iconColor + ';"></div><span class="bf-color-dot-label">图案</span></div>' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconBgDot" style="background:' + iconConfig.iconBg + ';"></div><span class="bf-color-dot-label">背景</span></div>' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><span class="bf-color-dot-label">边框</span></div>' +
+            '<button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button>' +
+          '</div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">毛玻璃</span><input type="range" id="bfIconBlur" min="0" max="30" step="1" value="' + iconConfig.blur + '"><span class="bf-ctrl-val" id="bfIconBlurVal">' + iconConfig.blur + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">透明度</span><input type="range" id="bfIconOpacity" min="0" max="1" step="0.05" value="' + iconConfig.opacity + '"><span class="bf-ctrl-val" id="bfIconOpacityVal">' + Math.round(iconConfig.opacity * 100) + '%</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
-          '<div class="bf-color-row"><span class="bf-ctrl-label">边框色</span><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><button class="bf-reset-btn" id="bfResetColor" type="button">恢复样式默认</button></div>' +
           '<div class="bf-divider"></div>' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><span class="bf-section-title" style="margin-bottom:0;">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
@@ -209,20 +212,13 @@ var Bg = {
     setTimeout(renderPreview, 100);
 
     // === Icon preview ===
-    function renderIconPreview() {
+        function renderIconPreview() {
       var prev = panel.querySelector('#bfIconPreview');
       if(!prev) return;
-      var html = '<div style="display:flex;justify-content:center;gap:12px;padding:14px;background:#f9f9f9;border-radius:12px;margin-bottom:14px;">';
+      var html = '';
       ['iconUser','iconChar','iconTheme','iconSettings'].forEach(function(pid) {
-        var ic = null;
-        for(var i=0;i<ICON_MAP.length;i++){if(ICON_MAP[i].parentId===pid){ic=ICON_MAP[i];break;}}
-        var customSrc = ic ? App.LS.get(ic.id) : null;
-        var content = customSrc
-          ? '<img src="' + App.escAttr(customSrc) + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'
-          : (DEFAULT_SVGS[pid] || '');
-        html += '<div class="app-icon-glass" style="width:52px;height:52px;flex-shrink:0;">' + content + '</div>';
+        html += '<div class="bf-icon-preview-item">' + (DEFAULT_SVGS[pid] || '') + '</div>';
       });
-      html += '</div>';
       prev.innerHTML = html;
     }
     renderIconPreview();
@@ -546,7 +542,7 @@ var Bg = {
     }
   },
 
-  applyTopIconStyle: function(cfg) {
+    applyTopIconStyle: function(cfg) {
     var styleId = 'topIconDynamicStyle';
     var styleEl = document.getElementById(styleId);
     if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
@@ -555,17 +551,15 @@ var Bg = {
     var opacity = cfg.opacity != null ? cfg.opacity : 1;
     var iconBg = cfg.iconBg || 'rgba(255,255,255,0.25)';
     var iconColor = cfg.iconColor || '#999999';
-    // Apply opacity only to background alpha
+    // 透明度只影响背景色的 alpha
     var bgWithOpacity = iconBg;
-    if(opacity < 1) {
-      var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
-      if(m) {
-        var baseAlpha = m[4] != null ? parseFloat(m[4]) : 1;
-        bgWithOpacity = 'rgba(' + m[1] + ',' + m[2] + ',' + m[3] + ',' + (baseAlpha * opacity).toFixed(3) + ')';
-      }
+    var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
+    if(m) {
+      var baseAlpha = m[4] != null ? parseFloat(m[4]) : 1;
+      bgWithOpacity = 'rgba(' + m[1] + ',' + m[2] + ',' + m[3] + ',' + (baseAlpha * opacity).toFixed(3) + ')';
     }
     styleEl.innerHTML =
-      '#appIconsRow > div > div:first-child {' +
+      '#appIconsRow > div > div:first-child, .bf-icon-preview-item {' +
         'border: ' + cfg.borderW + 'px solid ' + (cfg.borderColor||'#dcebff') + ' !important;' +
         'box-shadow: ' + cfg.shadow + 'px ' + cfg.shadow + 'px 0 ' + (cfg.shadowColor||'#dcebff') + ' !important;' +
         'border-radius: ' + radius + 'px !important;' +
@@ -573,16 +567,29 @@ var Bg = {
         'backdrop-filter: blur(' + blur + 'px) !important;' +
         '-webkit-backdrop-filter: blur(' + blur + 'px) !important;' +
       '}' +
+      // 只改 stroke 不改 fill —— 保留 mask 镂空效果
       '#appIconsRow > div > div:first-child svg > path,' +
       '#appIconsRow > div > div:first-child svg > circle,' +
       '#appIconsRow > div > div:first-child svg > rect,' +
       '#appIconsRow > div > div:first-child svg > line,' +
-      '#appIconsRow > div > div:first-child svg > ellipse {' +
+      '#appIconsRow > div > div:first-child svg > ellipse,' +
+      '.bf-icon-preview-item svg > path,' +
+      '.bf-icon-preview-item svg > circle,' +
+      '.bf-icon-preview-item svg > rect,' +
+      '.bf-icon-preview-item svg > line,' +
+      '.bf-icon-preview-item svg > ellipse {' +
         'stroke: ' + iconColor + ' !important;' +
+      '}' +
+      // fill 只给被 mask 的那个主体元素（有 mask 属性的）
+      '#appIconsRow > div > div:first-child svg > [mask],' +
+      '.bf-icon-preview-item svg > [mask] {' +
         'fill: ' + iconColor + ' !important;' +
       '}' +
-      '#appIconsRow > div > div:first-child svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
-      '#appIconsRow > div > div:first-child svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
+      // 没有 mask 的普通 fill 元素也要上色（比如没镂空的图标）
+      '#appIconsRow > div > div:first-child svg > path:not([mask]),' +
+      '.bf-icon-preview-item svg > path:not([mask]) {' +
+        'fill: none !important;' +
+      '}';
   }
 };
 
