@@ -19,7 +19,7 @@ var DEFAULT_SVGS = {
 var ICON_MAP = [
   { id: 'customIcon_user', label: 'User', containerId: 'iconUserImg', parentId: 'iconUser' },
   { id: 'customIcon_char', label: 'Char', containerId: 'iconCharImg', parentId: 'iconChar' },
-  { id: 'customIcon_theme', label: '美化', containerId: 'iconThemeImg', parentId: 'iconTheme' },
+  { id: 'customIcon_theme', label: '美化工坊', containerId: 'iconThemeImg', parentId: 'iconTheme' },
   { id: 'customIcon_settings', label: '设置', containerId: 'iconSettingsImg', parentId: 'iconSettings' },
   { id: 'customIcon_dockChat', label: '聊天', containerId: null, parentId: 'dockChat', selector: '#dockChat .mk-card' },
   { id: 'customIcon_dockStory', label: '剧情', containerId: null, parentId: 'dockStory', selector: '#dockStory .mk-card' },
@@ -60,7 +60,7 @@ var Bg = {
     panel.innerHTML =
       '<div class="bf-nav">' +
         '<button class="bf-back" id="bfMainBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
-        '<span class="bf-nav-title">美化</span>' +
+        '<span class="bf-nav-title">美化工坊</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="bf-list">' +
