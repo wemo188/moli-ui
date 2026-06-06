@@ -104,251 +104,247 @@ var Bg = {
   },
 
   /* ====== 背景图标 ====== */
-  openBgIcon: function() {
-    var old = document.getElementById('bfBgIconPanel');
-    if(old) old.remove();
+openBgIcon: function() {
+  var old = document.getElementById('bfBgIconPanel');
+  if(old) old.remove();
 
-    var bgData0 = App.LS.get('bgData') || {};
-    var bgData1 = App.LS.get('bgData_1') || {};
-    var iconConfig = App.LS.get('topIconConfig') || { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
-    if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
-    if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
+  var bgData0 = App.LS.get('bgData') || {};
+  var bgData1 = App.LS.get('bgData_1') || {};
+  var iconConfig = App.LS.get('topIconConfig') || { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
+  if(!iconConfig.borderColor) iconConfig.borderColor = '#dcebff';
+  if(!iconConfig.shadowColor) iconConfig.shadowColor = '#dcebff';
 
-    var currentPreviewPage = 0;
-    var tempBg = [JSON.parse(JSON.stringify(bgData0)), JSON.parse(JSON.stringify(bgData1))];
+  var currentPreviewPage = 0;
+  var tempBg = [JSON.parse(JSON.stringify(bgData0)), JSON.parse(JSON.stringify(bgData1))];
 
-    var panel = document.createElement('div');
-    panel.id = 'bfBgIconPanel';
-    panel.className = 'bf-sub-panel';
+  var panel = document.createElement('div');
+  panel.id = 'bfBgIconPanel';
+  panel.className = 'bf-sub-panel';
 
-    panel.innerHTML =
+  panel.innerHTML =
     '<div class="bf-nav">' +
       '<button class="bf-back" id="bfBgBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
       '<span class="bf-nav-title">背景图标</span>' +
       '<div class="bf-nav-right"></div>' +
     '</div>' +
-    '<div class="bf-scroll-content" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;">' +
-      '<div class="bf-preview-area" id="bfPreviewArea">' +
-        '<div class="bf-preview-slider" id="bfPreviewSlider">' +
-          '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
-          '<div class="bf-preview-page" id="bfPreviewPage1"></div>' +
-        '</div>' +
+    '<div class="bf-preview-area" id="bfPreviewArea">' +
+      '<div class="bf-preview-slider" id="bfPreviewSlider">' +
+        '<div class="bf-preview-page" id="bfPreviewPage0"></div>' +
+        '<div class="bf-preview-page" id="bfPreviewPage1"></div>' +
       '</div>' +
-      '<div class="bf-preview-dots">' +
-        '<button class="bf-preview-dot active" data-p="0" type="button"></button>' +
-        '<button class="bf-preview-dot" data-p="1" type="button"></button>' +
+    '</div>' +
+    '<div class="bf-preview-dots">' +
+      '<button class="bf-preview-dot active" data-p="0" type="button"></button>' +
+      '<button class="bf-preview-dot" data-p="1" type="button"></button>' +
+    '</div>' +
+    '<div class="bf-controls" id="bfBgControls">' +
+      '<div class="bf-upload-area" id="bfBgUpload">上传背景图</div>' +
+      '<input type="file" id="bfBgFile" accept="image/*" hidden>' +
+      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">虚化</span><input type="range" id="bfBlur" min="0" max="30" value="0"><span class="bf-ctrl-val" id="bfBlurVal">0px</span></div>' +
+      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">变暗</span><input type="range" id="bfDark" min="0" max="80" value="0"><span class="bf-ctrl-val" id="bfDarkVal">0%</span></div>' +
+      '<div class="bf-btn-row">' +
+        '<button class="bf-btn active" id="bfBgApply" type="button">应用背景</button>' +
+        '<button class="bf-btn" id="bfBgRemove" type="button">移除背景</button>' +
       '</div>' +
-      '<div class="bf-controls" id="bfBgControls">' +
-        '<div class="bf-upload-area" id="bfBgUpload">上传背景图</div>' +
-        '<input type="file" id="bfBgFile" accept="image/*" hidden>' +
-        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">虚化</span><input type="range" id="bfBlur" min="0" max="30" value="0"><span class="bf-ctrl-val" id="bfBlurVal">0px</span></div>' +
-        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">变暗</span><input type="range" id="bfDark" min="0" max="80" value="0"><span class="bf-ctrl-val" id="bfDarkVal">0%</span></div>' +
-        '<div class="bf-btn-row">' +
-          '<button class="bf-btn" id="bfBgApply" type="button">应用背景</button>' +
-          '<button class="bf-btn" id="bfBgRemove" type="button">移除背景</button>' +
-        '</div>' +
-        '<div class="bf-divider"></div>' +
-        '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">图标边框样式</div>' +
-        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
-        '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
-        '<div class="bf-color-row"><span class="bf-ctrl-label">颜色</span><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button></div>' +
-        '<div class="bf-divider"></div>' +
-        '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">替换图标</div>' +
-        '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
-      '</div>' +
+      '<div class="bf-divider"></div>' +
+      '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">图标边框样式</div>' +
+      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
+      '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
+      '<div class="bf-color-row"><span class="bf-ctrl-label">颜色</span><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button></div>' +
+      '<div class="bf-divider"></div>' +
+      '<div style="font-size:11px;font-weight:700;color:#333;margin-bottom:10px;">替换图标</div>' +
+      '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
     '</div>';
 
-    document.body.appendChild(panel);
-    requestAnimationFrame(function() { panel.classList.add('show'); });
-    App.bindSwipeBack(panel, function() { panel.remove(); });
+  document.body.appendChild(panel);
+  requestAnimationFrame(function() { panel.classList.add('show'); });
+  App.bindSwipeBack(panel, function() { panel.remove(); });
 
-    // 渲染预览
-    function renderPreview() {
-      var area = panel.querySelector('#bfPreviewArea');
-      var areaW = area.offsetWidth;
-      var areaH = area.offsetHeight;
-      var scale = areaW / window.innerWidth;
+  // 渲染预览
+  function renderPreview() {
+    var area = panel.querySelector('#bfPreviewArea');
+    var areaW = area.offsetWidth;
+    var scale = areaW / window.innerWidth;
 
-      [0, 1].forEach(function(idx) {
-        var page = panel.querySelector('#bfPreviewPage' + idx);
-        page.innerHTML = '';
-        var frame = document.createElement('div');
-        frame.className = 'bf-preview-frame';
-        frame.style.transform = 'scale(' + scale + ')';
-        frame.style.transformOrigin = 'top center';  // 从顶部开始，确保底部内容不丢失
-        frame.style.width = window.innerWidth + 'px';
-        frame.style.height = window.innerHeight + 'px';
+    [0, 1].forEach(function(idx) {
+      var page = panel.querySelector('#bfPreviewPage' + idx);
+      page.innerHTML = '';
+      var frame = document.createElement('div');
+      frame.className = 'bf-preview-frame';
+      frame.style.transform = 'scale(' + scale + ')';
+      frame.style.width = window.innerWidth + 'px';
+      frame.style.height = window.innerHeight + 'px';
 
-        // Clone the page content
-        var srcPage = document.querySelector('.screen-page-' + (idx + 1));
-        if(srcPage) {
-          var clone = srcPage.cloneNode(true);
-          clone.style.width = '100vw';
-          clone.style.height = '100vh';
-          clone.style.position = 'absolute';
-          clone.style.top = '0';
-          clone.style.left = '0';
-          frame.appendChild(clone);
-        }
+      // Clone the page content
+      var srcPage = document.querySelector('.screen-page-' + (idx + 1));
+      if(srcPage) {
+        var clone = srcPage.cloneNode(true);
+        clone.style.width = '100vw';
+        clone.style.height = '100vh';
+        clone.style.position = 'absolute';
+        clone.style.top = '0';
+        clone.style.left = '0';
+        frame.appendChild(clone);
+      }
 
-        // Apply bg
-        var bd = tempBg[idx];
-        if(bd && bd.src) {
-                  var bgDiv = document.createElement('div');
+      // Apply bg
+      var bd = tempBg[idx];
+      if(bd && bd.src) {
+        var bgDiv = document.createElement('div');
         bgDiv.className = 'bf-preview-bg';
         bgDiv.style.backgroundImage = 'url(' + bd.src + ')';
         bgDiv.style.filter = 'blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%)';
         frame.insertBefore(bgDiv, frame.firstChild);
-        }
-
-        page.appendChild(frame);
-      });
-    }
-
-    setTimeout(renderPreview, 100);
-
-    // Preview page switch
-    function switchPreview(idx) {
-      currentPreviewPage = idx;
-      panel.querySelector('#bfPreviewSlider').style.transform = 'translateX(' + (-idx * 50) + '%)';
-      panel.querySelectorAll('.bf-preview-dot').forEach(function(d) {
-        d.classList.toggle('active', parseInt(d.dataset.p) === idx);
-      });
-      // Update sliders
-      var bd = tempBg[idx] || {};
-      panel.querySelector('#bfBlur').value = bd.blur || 0;
-      panel.querySelector('#bfDark').value = bd.dark || 0;
-      panel.querySelector('#bfBlurVal').textContent = (bd.blur || 0) + 'px';
-      panel.querySelector('#bfDarkVal').textContent = (bd.dark || 0) + '%';
-    }
-
-    panel.querySelectorAll('.bf-preview-dot').forEach(function(dot) {
-      dot.addEventListener('click', function() { switchPreview(parseInt(dot.dataset.p)); });
-    });
-
-    // Swipe on preview area
-    var previewArea = panel.querySelector('#bfPreviewArea');
-    var psx = 0;
-    previewArea.addEventListener('touchstart', function(e) { psx = e.touches[0].clientX; }, {passive:true});
-    previewArea.addEventListener('touchend', function(e) {
-      var dx = e.changedTouches[0].clientX - psx;
-      if(Math.abs(dx) > 40) {
-        if(dx < 0 && currentPreviewPage < 1) switchPreview(1);
-        else if(dx > 0 && currentPreviewPage > 0) switchPreview(0);
       }
-    }, {passive:true});
 
-    // Upload
-    panel.querySelector('#bfBgUpload').addEventListener('click', function() { panel.querySelector('#bfBgFile').click(); });
-    panel.querySelector('#bfBgFile').addEventListener('change', function(e) {
-      var f = e.target.files[0]; if(!f) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var process = function(src) {
-          tempBg[currentPreviewPage].src = src;
-          tempBg[currentPreviewPage].blur = parseInt(panel.querySelector('#bfBlur').value);
-          tempBg[currentPreviewPage].dark = parseInt(panel.querySelector('#bfDark').value);
-          renderPreview();
-          App.showToast('预览中，点"应用背景"保存');
-        };
-        if(App.cropImage) App.cropImage(ev.target.result, process);
-        else process(ev.target.result);
+      page.appendChild(frame);
+    });
+  }
+
+  setTimeout(renderPreview, 100);
+
+  // Preview page switch
+  function switchPreview(idx) {
+    currentPreviewPage = idx;
+    panel.querySelector('#bfPreviewSlider').style.transform = 'translateX(' + (-idx * 50) + '%)';
+    panel.querySelectorAll('.bf-preview-dot').forEach(function(d) {
+      d.classList.toggle('active', parseInt(d.dataset.p) === idx);
+    });
+    // Update sliders
+    var bd = tempBg[idx] || {};
+    panel.querySelector('#bfBlur').value = bd.blur || 0;
+    panel.querySelector('#bfDark').value = bd.dark || 0;
+    panel.querySelector('#bfBlurVal').textContent = (bd.blur || 0) + 'px';
+    panel.querySelector('#bfDarkVal').textContent = (bd.dark || 0) + '%';
+  }
+
+  panel.querySelectorAll('.bf-preview-dot').forEach(function(dot) {
+    dot.addEventListener('click', function() { switchPreview(parseInt(dot.dataset.p)); });
+  });
+
+  // Swipe on preview area
+  var previewArea = panel.querySelector('#bfPreviewArea');
+  var psx = 0;
+  previewArea.addEventListener('touchstart', function(e) { psx = e.touches[0].clientX; }, {passive:true});
+  previewArea.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - psx;
+    if(Math.abs(dx) > 40) {
+      if(dx < 0 && currentPreviewPage < 1) switchPreview(1);
+      else if(dx > 0 && currentPreviewPage > 0) switchPreview(0);
+    }
+  }, {passive:true});
+
+  // Upload
+  panel.querySelector('#bfBgUpload').addEventListener('click', function() { panel.querySelector('#bfBgFile').click(); });
+  panel.querySelector('#bfBgFile').addEventListener('change', function(e) {
+    var f = e.target.files[0]; if(!f) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var process = function(src) {
+        tempBg[currentPreviewPage].src = src;
+        tempBg[currentPreviewPage].blur = parseInt(panel.querySelector('#bfBlur').value);
+        tempBg[currentPreviewPage].dark = parseInt(panel.querySelector('#bfDark').value);
+        renderPreview();
+        App.showToast('预览中，点"应用背景"保存');
       };
-      reader.readAsDataURL(f);
-      e.target.value = '';
-    });
+      if(App.cropImage) App.cropImage(ev.target.result, process);
+      else process(ev.target.result);
+    };
+    reader.readAsDataURL(f);
+    e.target.value = '';
+  });
 
-    // Sliders
-    panel.querySelector('#bfBlur').addEventListener('input', function() {
-      var v = parseInt(this.value);
-      panel.querySelector('#bfBlurVal').textContent = v + 'px';
-      tempBg[currentPreviewPage].blur = v;
-      renderPreview();
-    });
-    panel.querySelector('#bfDark').addEventListener('input', function() {
-      var v = parseInt(this.value);
-      panel.querySelector('#bfDarkVal').textContent = v + '%';
-      tempBg[currentPreviewPage].dark = v;
-      renderPreview();
-    });
+  // Sliders
+  panel.querySelector('#bfBlur').addEventListener('input', function() {
+    var v = parseInt(this.value);
+    panel.querySelector('#bfBlurVal').textContent = v + 'px';
+    tempBg[currentPreviewPage].blur = v;
+    renderPreview();
+  });
+  panel.querySelector('#bfDark').addEventListener('input', function() {
+    var v = parseInt(this.value);
+    panel.querySelector('#bfDarkVal').textContent = v + '%';
+    tempBg[currentPreviewPage].dark = v;
+    renderPreview();
+  });
 
-    // Apply/Remove
-    panel.querySelector('#bfBgApply').addEventListener('click', function() {
-      var bd = tempBg[currentPreviewPage];
-      if(!bd || !bd.src) { App.showToast('请先上传图片'); return; }
-      var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
-      try {
-        App.LS.set(key, bd);
-        Bg.applyBg(bd, currentPreviewPage);
-        App.showToast('第' + (currentPreviewPage+1) + '页背景已应用');
-      } catch(e) { App.showToast('图片太大，请压缩后重试'); }
-    });
+  // Apply/Remove
+  panel.querySelector('#bfBgApply').addEventListener('click', function() {
+    var bd = tempBg[currentPreviewPage];
+    if(!bd || !bd.src) { App.showToast('请先上传图片'); return; }
+    var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
+    try {
+      App.LS.set(key, bd);
+      Bg.applyBg(bd, currentPreviewPage);
+      App.showToast('第' + (currentPreviewPage+1) + '页背景已应用');
+    } catch(e) { App.showToast('图片太大，请压缩后重试'); }
+  });
 
-        panel.querySelector('#bfBgRemove').addEventListener('click', function() {
-      var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
-      App.LS.remove(key);
-      tempBg[currentPreviewPage] = {};
-      Bg.applyBg(null, currentPreviewPage);
-      panel.querySelector('#bfBlur').value = 0;
-      panel.querySelector('#bfDark').value = 0;
-      panel.querySelector('#bfBlurVal').textContent = '0px';
-      panel.querySelector('#bfDarkVal').textContent = '0%';
-      // 如果移除的是第二页，预览里用第一页的图
-      if(currentPreviewPage === 1 && tempBg[0].src) {
-        tempBg[1] = JSON.parse(JSON.stringify(tempBg[0]));
-      }
-      renderPreview();
-      App.showToast('背景已移除');
-    });
+  panel.querySelector('#bfBgRemove').addEventListener('click', function() {
+    var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
+    App.LS.remove(key);
+    tempBg[currentPreviewPage] = {};
+    Bg.applyBg(null, currentPreviewPage);
+    panel.querySelector('#bfBlur').value = 0;
+    panel.querySelector('#bfDark').value = 0;
+    panel.querySelector('#bfBlurVal').textContent = '0px';
+    panel.querySelector('#bfDarkVal').textContent = '0%';
+    // 如果移除的是第二页，预览里用第一页的图
+    if(currentPreviewPage === 1 && tempBg[0].src) {
+      tempBg[1] = JSON.parse(JSON.stringify(tempBg[0]));
+    }
+    renderPreview();
+    App.showToast('背景已移除');
+  });
 
-    // Icon border
-    panel.querySelector('#bfIconBorder').addEventListener('input', function() {
-      iconConfig.borderW = parseFloat(this.value);
-      panel.querySelector('#bfIconBorderVal').textContent = iconConfig.borderW + 'px';
-      App.LS.set('topIconConfig', iconConfig);
-      Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfIconShadow').addEventListener('input', function() {
-      iconConfig.shadow = parseInt(this.value);
-      panel.querySelector('#bfIconShadowVal').textContent = iconConfig.shadow + 'px';
-      App.LS.set('topIconConfig', iconConfig);
-      Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfColorDot').addEventListener('click', function(e) {
-      e.stopPropagation();
-      if(!App.openColorPicker) return;
-      App.openColorPicker(iconConfig.borderColor, function(hex) {
-        iconConfig.borderColor = hex; iconConfig.shadowColor = hex;
-        panel.querySelector('#bfColorDot').style.background = hex;
-        App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-      }, function(hex) {
-        iconConfig.borderColor = hex; iconConfig.shadowColor = hex;
-        panel.querySelector('#bfColorDot').style.background = hex;
-        Bg.applyTopIconStyle(iconConfig);
-      });
-    });
-    panel.querySelector('#bfResetColor').addEventListener('click', function() {
-      iconConfig = { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
-      panel.querySelector('#bfColorDot').style.background = '#dcebff';
-      panel.querySelector('#bfIconBorder').value = 1;
-      panel.querySelector('#bfIconShadow').value = 0;
-      panel.querySelector('#bfIconBorderVal').textContent = '1px';
-      panel.querySelector('#bfIconShadowVal').textContent = '0px';
+  // Icon border
+  panel.querySelector('#bfIconBorder').addEventListener('input', function() {
+    iconConfig.borderW = parseFloat(this.value);
+    panel.querySelector('#bfIconBorderVal').textContent = iconConfig.borderW + 'px';
+    App.LS.set('topIconConfig', iconConfig);
+    Bg.applyTopIconStyle(iconConfig);
+  });
+  panel.querySelector('#bfIconShadow').addEventListener('input', function() {
+    iconConfig.shadow = parseInt(this.value);
+    panel.querySelector('#bfIconShadowVal').textContent = iconConfig.shadow + 'px';
+    App.LS.set('topIconConfig', iconConfig);
+    Bg.applyTopIconStyle(iconConfig);
+  });
+  panel.querySelector('#bfColorDot').addEventListener('click', function(e) {
+    e.stopPropagation();
+    if(!App.openColorPicker) return;
+    App.openColorPicker(iconConfig.borderColor, function(hex) {
+      iconConfig.borderColor = hex; iconConfig.shadowColor = hex;
+      panel.querySelector('#bfColorDot').style.background = hex;
       App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-      App.showToast('已恢复默认');
+    }, function(hex) {
+      iconConfig.borderColor = hex; iconConfig.shadowColor = hex;
+      panel.querySelector('#bfColorDot').style.background = hex;
+      Bg.applyTopIconStyle(iconConfig);
     });
+  });
+  panel.querySelector('#bfResetColor').addEventListener('click', function() {
+    iconConfig = { borderW: 1, shadow: 0, borderColor: '#dcebff', shadowColor: '#dcebff' };
+    panel.querySelector('#bfColorDot').style.background = '#dcebff';
+    panel.querySelector('#bfIconBorder').value = 1;
+    panel.querySelector('#bfIconShadow').value = 0;
+    panel.querySelector('#bfIconBorderVal').textContent = '1px';
+    panel.querySelector('#bfIconShadowVal').textContent = '0px';
+    App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
+    App.showToast('已恢复默认');
+  });
 
-    // Icon grid
-    Bg.renderIconGridInPanel(panel);
+  // Icon grid
+  Bg.renderIconGridInPanel(panel);
 
-    // Back
-    panel.querySelector('#bfBgBack').addEventListener('click', function() {
-      panel.classList.remove('show'); panel.classList.add('hidden');
-      setTimeout(function() { panel.remove(); }, 350);
-    });
+  // Back
+  panel.querySelector('#bfBgBack').addEventListener('click', function() {
+    panel.classList.remove('show'); panel.classList.add('hidden');
+    setTimeout(function() { panel.remove(); }, 350);
+  });
 
-    switchPreview(0);
-  },
+  switchPreview(0);
+},
 
   renderIconGridInPanel: function(panel) {
     var grid = panel.querySelector('#bfIconGrid'); if(!grid) return;
