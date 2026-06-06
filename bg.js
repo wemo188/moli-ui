@@ -27,7 +27,7 @@ var ICON_MAP = [
   { id: 'customIcon_dockForum', label: '论坛', containerId: null, parentId: 'dockForum', selector: '#dockForum .mk-card' }
 ];
 
-var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15, iconSize: 42 };
+var DEF_ICON_CFG = { borderW: 0.5, shadow: 0, borderColor: '#ffffff', shadowColor: '#ffffff', iconColor: '#999999', iconBg: 'rgba(255,255,255,0.25)', blur: 12, opacity: 1, radius: 15, iconSize: 80 };
 
 var Bg = {
   _panelEl: null,
@@ -143,7 +143,7 @@ var Bg = {
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
-          '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="24" max="60" step="1" value="' + (iconConfig.iconSize||42) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||42) + 'px</span></div>' +
+                    '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="50" max="120" step="1" value="' + (iconConfig.iconSize||80) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||80) + 'px</span></div>' +
           '<div class="bf-divider"></div>' +
                    '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
