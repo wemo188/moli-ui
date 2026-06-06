@@ -17,7 +17,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   border-radius: 14px;
-  background: #e2e4e8;
+  background: #eaecf0;
   border: none;
   transition: background 0.15s, transform 0.15s;
 }
