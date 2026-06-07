@@ -193,9 +193,10 @@ var Puzzle = {
   Puzzle.bindDoubleTap(container);
 },
 
-  bindDoubleTap: function(container) {
+    bindDoubleTap: function(container) {
     var cardEl = container.querySelector('#pzCardInner');
-    if(!cardEl) return;
+    if(!cardEl || cardEl._pzTapBound) return;
+    cardEl._pzTapBound = true;
     var tapCount = 0, tapTimer = null;
     cardEl.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -206,9 +207,10 @@ var Puzzle = {
     });
   },
 
-  bindDrag: function(container) {
-    if(container._pzDragBound) return;
-    container._pzDragBound = true;
+    bindDrag: function(container) {
+    var cardEl = container.querySelector('#pzCardInner');
+    if(!cardEl || cardEl._pzDragBound) return;
+    cardEl._pzDragBound = true;
 
     var cardEl = container.querySelector('#pzCardInner');
     if(!cardEl) return;
