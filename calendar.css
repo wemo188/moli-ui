@@ -300,3 +300,174 @@
   z-index: 999;
   transition: none;
 }
+
+/* ====== 天气设置面板 ====== */
+.cal-panel-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 12px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+.cal-panel-header h2 {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.cal-panel-back {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cal-panel-back svg {
+  width: 20px;
+  height: 20px;
+  color: #1a1a1a;
+}
+
+.cal-panel-right {
+  width: 36px;
+}
+
+.cal-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 16px;
+}
+
+.cal-form-group {
+  margin-bottom: 20px;
+}
+
+.cal-form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.cal-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.cal-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cal-input-row .cal-input {
+  flex: 1;
+}
+
+.cal-icon-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cal-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  color: #1a1a1a;
+}
+
+.cal-btn {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cal-btn:active {
+  opacity: 0.7;
+}
+
+.cal-btn-dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.cal-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-toggle-label {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.cal-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.cal-toggle input {
+  display: none;
+}
+
+.cal-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+
+.cal-toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.cal-toggle input:checked + .cal-toggle-slider {
+  background: #1a1a1a;
+}
+
+.cal-toggle input:checked + .cal-toggle-slider::after {
+  transform: translateX(20px);
+}
+
+
