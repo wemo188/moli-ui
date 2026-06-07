@@ -701,8 +701,8 @@
 .pz-card svg {
   position: relative;
   z-index: 2;
-  width: 300px;
-  height: 300px;
+  width: 270px;
+  height: 270px;
 }
 
 .pz-edit-slots {
