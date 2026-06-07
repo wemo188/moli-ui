@@ -628,12 +628,12 @@
 /* 右头像的对话条：改到左边，尖角朝右 */
 .hl-chatbar-bl {
   position: absolute;
-  bottom: 100%;            /* 紧贴头像顶部 */
-  right: 100%;
-  margin-bottom: 10px;     /* 向上偏移 */
-  margin-right: -32.5px;   /* 水平居中 */
+  top: 100%;
+  right: 100%;           /* 改 right 为 left，跑到头像左边 */
+  margin-top: -80px;
+  margin-left: 5px;     /* 改 margin-right 为 margin-left */
   direction: ltr;
-  border-radius: 18px 18px 4px 18px;
+  border-radius: 18px 18px 4px 18px;   /* 尖角在右上角 → 朝右指向头像 */
 }
 
 /* 左头像的对话条：尖角在左上，文字从左到右 */
@@ -641,10 +641,10 @@
   position: absolute;
   top: 100%;
   left: 100%;
-  margin-top: 12px;        /* 正值向下，负值向上，原来 -20px 太靠上了 */
-  margin-left: -32.5px;    /* 水平居中 */
-  border-radius: 4px 18px 18px 18px;
-  direction: ltr;
+  margin-top: -20px;
+  margin-right: 5px;
+  border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
+  direction: ltr;                     /* 文字从左到右 */
 }
 
 .hl-chatbar-input {
