@@ -166,30 +166,31 @@
 
     <!-- 第二页 -->
     <section class="screen-page screen-page-2">
-      <div class="screen-page-inner" style="position:relative;height:100%;padding:12px;display:flex;align-items:center;justify-content:center;">
-        <div class="pixel-dialog" id="hlTextCard" style="max-width:320px;width:100%;">
-          <div class="pixel-header">
-            <div class="pixel-hearts">
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-            </div>
-            <div class="pixel-btns">
-              <div class="pixel-btn minimize"></div>
-              <div class="pixel-btn maximize"></div>
-              <div class="pixel-btn close"></div>
-            </div>
-          </div>
-          <div class="pixel-body">
-            <div class="pixel-text-area">
-              <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
-              <div class="pixel-text-divider"></div>
-              <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
-            </div>
-          </div>
+  <div class="screen-page-inner" style="position:relative;height:100%;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+    <div id="puzzleCard"></div>
+    <div class="pixel-dialog" id="hlTextCard" style="max-width:320px;width:100%;">
+      <div class="pixel-header">
+        <div class="pixel-hearts">
+          <div class="pixel-heart"><div class="ph-core"></div></div>
+          <div class="pixel-heart"><div class="ph-core"></div></div>
+          <div class="pixel-heart"><div class="ph-core"></div></div>
+        </div>
+        <div class="pixel-btns">
+          <div class="pixel-btn minimize"></div>
+          <div class="pixel-btn maximize"></div>
+          <div class="pixel-btn close"></div>
         </div>
       </div>
-    </section>
+      <div class="pixel-body">
+        <div class="pixel-text-area">
+          <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
+          <div class="pixel-text-divider"></div>
+          <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
   </div>
   <div class="screen-indicators">
