@@ -160,9 +160,8 @@ var Puzzle = {
     var sc = Puzzle.data.strokeColor || '#2a2a2a';
 
     container.innerHTML =
-      '<div class="mmg-pz-ok3">' +
-        '<div class="pz-card" id="pzCardInner">' +
-          '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="220" height="220">' +
+      '<div class="pz-card" id="pzCardInner">' +
+        '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="170" height="170">' +
             '<defs>' +
               '<clipPath id="pzk31"><path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z"/></clipPath>' +
               '<clipPath id="pzk32"><path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z"/></clipPath>' +
@@ -180,7 +179,7 @@ var Puzzle = {
               '<image id="pzImg3" clip-path="url(#pzk34)" x="24" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
             '</g>' +
           '</svg>' +
-        '</div>' +
+        '</svg>' +
       '</div>';
 
     // 恢复已保存的图片
