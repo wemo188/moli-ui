@@ -158,24 +158,24 @@ var Puzzle = {
 
   container.innerHTML =
     '<div class="pz-card" id="pzCardInner">' +
-      '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' +
-        '<defs>' +
-          '<clipPath id="pzk31"><path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z"/></clipPath>' +
-          '<clipPath id="pzk32"><path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z"/></clipPath>' +
-          '<clipPath id="pzk33"><path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z"/></clipPath>' +
-          '<clipPath id="pzk34"><path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z"/></clipPath>' +
-        '</defs>' +
-        '<path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z" stroke-linejoin="round"/>' +
-        '<image id="pzImg0" clip-path="url(#pzk31)" x="6" y="6" width="22" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-        '<path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z" stroke-linejoin="round"/>' +
-        '<image id="pzImg1" clip-path="url(#pzk32)" x="24" y="6" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-        '<path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z" stroke-linejoin="round"/>' +
-        '<image id="pzImg2" clip-path="url(#pzk33)" x="6" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-        '<g transform="translate(5 4) rotate(8 33 39)">' +
-          '<path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z" stroke-linejoin="round" stroke-dasharray="2 1.5"/>' +
-          '<image id="pzImg3" clip-path="url(#pzk34)" x="24" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-        '</g>' +
-      '</svg>' +
+       '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<clipPath id="pzk31"><path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z"/></clipPath>' +
+        '<clipPath id="pzk32"><path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z"/></clipPath>' +
+        '<clipPath id="pzk33"><path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z"/></clipPath>' +
+        '<clipPath id="pzk34"><path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z"/></clipPath>' +
+      '</defs>' +
+      '<path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>' +
+      '<image id="pzImg0" clip-path="url(#pzk31)" x="6" y="6" width="22" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
+      '<path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>' +
+      '<image id="pzImg1" clip-path="url(#pzk32)" x="24" y="6" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
+      '<path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>' +
+      '<image id="pzImg2" clip-path="url(#pzk33)" x="6" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
+      '<g transform="translate(5 4) rotate(8 33 39)">' +
+        '<path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="2 1.5"/>' +
+        '<image id="pzImg3" clip-path="url(#pzk34)" x="24" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
+      '</g>' +
+    '</svg>' +
     '</div>';
 
   Puzzle.data.imgs.forEach(function(src, idx) {
