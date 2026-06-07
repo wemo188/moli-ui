@@ -279,8 +279,9 @@ function renderIconPreview() {
 
     // === Preview page switch ===
     function switchPreview(idx) {
-      currentPreviewPage = idx;
-      panel.querySelector('#bfPreviewSlider').style.transform = 'translateX(' + (-idx * 50) + '%)';
+  currentPreviewPage = idx;
+  var slider = panel.querySelector('#bfPreviewSlider');
+  if(slider) slider.style.transform = 'translateX(' + (-idx * 50) + '%)';
       panel.querySelectorAll('.bf-preview-dot').forEach(function(d) {
         d.classList.toggle('active', parseInt(d.dataset.p) === idx);
       });
@@ -295,14 +296,38 @@ function renderIconPreview() {
     });
     var previewArea = panel.querySelector('#bfPreviewArea');
     var psx = 0;
-    previewArea.addEventListener('touchstart', function(e) { psx = e.touches[0].clientX; }, {passive:true});
-    previewArea.addEventListener('touchend', function(e) {
-      var dx = e.changedTouches[0].clientX - psx;
-      if(Math.abs(dx) > 40) {
-        if(dx < 0 && currentPreviewPage < 1) switchPreview(1);
-        else if(dx > 0 && currentPreviewPage > 0) switchPreview(0);
-      }
-    }, {passive:true});
+    var psx = 0, currentX = 0, isDragging = false;
+var slider = panel.querySelector('#bfPreviewSlider');
+
+previewArea.addEventListener('touchstart', function(e) { 
+  psx = e.touches[0].clientX; 
+  isDragging = true;
+  slider.style.transition = 'none';
+}, {passive:true});
+
+previewArea.addEventListener('touchmove', function(e) {
+  if(!isDragging) return;
+  e.preventDefault();
+  currentX = e.touches[0].clientX;
+  var dx = currentX - psx;
+  var percent = (-currentPreviewPage * 50) + (dx / previewArea.offsetWidth * 50);
+  percent = Math.min(0, Math.max(-50, percent));
+  slider.style.transform = 'translateX(' + percent + '%)';
+}, {passive:false});
+
+previewArea.addEventListener('touchend', function(e) {
+  isDragging = false;
+  slider.style.transition = '';
+  var dx = e.changedTouches[0].clientX - psx;
+  var threshold = 30;
+  if(Math.abs(dx) > threshold && ((dx < 0 && currentPreviewPage < 1) || (dx > 0 && currentPreviewPage > 0))) {
+    var newPage = dx < 0 ? 1 : 0;
+    switchPreview(newPage);
+  } else {
+    // 回弹到当前页
+    slider.style.transform = 'translateX(' + (-currentPreviewPage * 50) + '%)';
+  }
+}, {passive:true});
 
     // === Background upload/apply/remove ===
     panel.querySelector('#bfBgUpload').addEventListener('click', function() { panel.querySelector('#bfBgFile').click(); });
