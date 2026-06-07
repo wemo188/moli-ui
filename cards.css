@@ -629,11 +629,11 @@
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  right: 100%;           /* 改 right 为 left，跑到头像左边 */
-  margin-top: -103px;
-  margin-left: 30px;     /* 改 margin-right 为 margin-left */
+  right: 100%;
+  margin-top: -105px;
+  margin-right: -32.5px;    /* 向右偏移半个头像宽度，对准中间 */
   direction: ltr;
-  border-radius: 18px 18px 4px 18px;   /* 尖角在右上角 → 朝右指向头像 */
+  border-radius: 18px 18px 4px 18px;
 }
 
 /* 左头像的对话条：尖角在左上，文字从左到右 */
