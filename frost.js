@@ -141,13 +141,12 @@ var Pixel = {
    拼图组件 (Puzzle)
 ========================================================== */
 var Puzzle = {
-  data: { imgs: [null,null,null,null], posX: 0, posY: 0, strokeColor: '#2a2a2a' },
+  data: { imgs: [null,null,null,null], posX: 0, posY: 0 },
 
   load: function() {
     var saved = App.LS.get('puzzleCard');
     if(saved) {
       Puzzle.data = saved;
-      if(!Puzzle.data.strokeColor) Puzzle.data.strokeColor = '#2a2a2a';
       if(!Puzzle.data.imgs) Puzzle.data.imgs = [null,null,null,null];
     }
   },
@@ -157,32 +156,28 @@ var Puzzle = {
     var container = document.getElementById('puzzleCard');
     if(!container) return;
 
-    var sc = Puzzle.data.strokeColor || '#2a2a2a';
-
     container.innerHTML =
       '<div class="pz-card" id="pzCardInner">' +
-        '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="170" height="170">' +
+        '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="170" height="170">' +
             '<defs>' +
               '<clipPath id="pzk31"><path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z"/></clipPath>' +
               '<clipPath id="pzk32"><path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z"/></clipPath>' +
               '<clipPath id="pzk33"><path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z"/></clipPath>' +
               '<clipPath id="pzk34"><path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z"/></clipPath>' +
             '</defs>' +
-            '<path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z" fill="white" stroke="'+sc+'" stroke-width="0.8" stroke-linejoin="round"/>' +
+            '<path d="M6 6H24V13C26 13 28 14.5 28 17C28 19.5 26 21 24 21V28H6V6Z" stroke-width="0.8" stroke-linejoin="round"/>' +
             '<image id="pzImg0" clip-path="url(#pzk31)" x="6" y="6" width="22" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-            '<path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z" fill="white" stroke="'+sc+'" stroke-width="0.8" stroke-linejoin="round"/>' +
+            '<path d="M24 6H42V28H24V21C26 21 28 19.5 28 17C28 14.5 26 13 24 13V6Z" stroke-width="0.8" stroke-linejoin="round"/>' +
             '<image id="pzImg1" clip-path="url(#pzk32)" x="24" y="6" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
-            '<path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z" fill="white" stroke="'+sc+'" stroke-width="0.8" stroke-linejoin="round"/>' +
+            '<path d="M6 28H24V35C22 35 20 36.5 20 39C20 41.5 22 43 24 43V50H6V28Z" stroke-width="0.8" stroke-linejoin="round"/>' +
             '<image id="pzImg2" clip-path="url(#pzk33)" x="6" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
             '<g transform="translate(5 4) rotate(8 33 39)">' +
-              '<path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z" fill="white" stroke="'+sc+'" stroke-width="0.8" stroke-linejoin="round" stroke-dasharray="2 1.5"/>' +
+              '<path d="M24 28H42V50H24V43C26 43 28 41.5 28 39C28 36.5 26 35 24 35V28Z" stroke-width="0.8" stroke-linejoin="round" stroke-dasharray="2 1.5"/>' +
               '<image id="pzImg3" clip-path="url(#pzk34)" x="24" y="28" width="18" height="22" href="" preserveAspectRatio="xMidYMid slice"/>' +
             '</g>' +
           '</svg>' +
-        '</svg>' +
-      '</div>';
+        '</div>';
 
-    // 恢复已保存的图片
     Puzzle.data.imgs.forEach(function(src, idx) {
       if(src) {
         var img = document.getElementById('pzImg' + idx);
@@ -190,7 +185,6 @@ var Puzzle = {
       }
     });
 
-    // 恢复位置
     if(Puzzle.data.posX || Puzzle.data.posY) {
       container.style.transform = 'translate(' + Puzzle.data.posX + 'px,' + Puzzle.data.posY + 'px)';
     }
@@ -262,7 +256,6 @@ var Puzzle = {
     var old = App.$('#pzEditOverlay'); if(old) old.remove();
 
     var d = Puzzle.data;
-    var currentStroke = d.strokeColor || '#2a2a2a';
 
     var overlay = document.createElement('div');
     overlay.id = 'pzEditOverlay';
@@ -271,7 +264,6 @@ var Puzzle = {
     var panel = document.createElement('div');
     panel.className = 'pc-edit-panel';
 
-    // 构建4个缩略图槽
     var slotsHtml = '';
     for(var i = 0; i < 4; i++) {
       var thumbContent = d.imgs[i]
@@ -285,9 +277,6 @@ var Puzzle = {
       '<div class="pc-body">' +
         '<div class="pc-group"><span class="pc-label">上传图片</span></div>' +
         '<div class="pz-edit-slots">' + slotsHtml + '</div>' +
-        '<div class="pc-group"><span class="pc-label">线条颜色</span>' +
-          '<div class="pc-dot" id="pzStrokeDot" style="background:'+currentStroke+';width:28px;height:28px;border-radius:8px;"></div>' +
-        '</div>' +
       '</div>' +
       '<div class="pc-footer">' +
         '<button class="pc-btn pc-btn-save" id="pzSaveBtn" type="button">保 存</button>' +
@@ -297,7 +286,6 @@ var Puzzle = {
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    // 定位
     var pzContainer = document.getElementById('puzzleCard');
     if(pzContainer) {
       var rect = pzContainer.getBoundingClientRect();
@@ -312,16 +300,13 @@ var Puzzle = {
 
     if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
 
-    // 点击缩略图上传
     panel.querySelectorAll('.pz-edit-thumb').forEach(function(thumb) {
       thumb.addEventListener('click', function(e) {
         e.stopPropagation();
-        // 如果点的是删除按钮
         if(e.target.classList.contains('pz-edit-thumb-del')) {
           var delIdx = parseInt(e.target.dataset.idx);
           d.imgs[delIdx] = null;
           thumb.innerHTML = '<span class="pz-edit-thumb-placeholder">+</span>';
-          // 实时更新 SVG
           var svgImg = document.getElementById('pzImg' + delIdx);
           if(svgImg) svgImg.setAttribute('href', '');
           return;
@@ -335,7 +320,6 @@ var Puzzle = {
           reader.onload = function(r) {
             var src = r.target.result;
             var processImg = function(cropped) {
-              // 压缩
               var compress = new Image();
               compress.onload = function() {
                 var canvas = document.createElement('canvas');
@@ -344,9 +328,7 @@ var Puzzle = {
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(compress, 0, 0, w, h);
                 var result = canvas.toDataURL('image/jpeg', 0.85);
-                // 更新缩略图
                 thumb.innerHTML = '<img src="'+result+'"><div class="pz-edit-thumb-del" data-idx="'+idx+'">×</div>';
-                // 实时更新 SVG
                 var svgImg = document.getElementById('pzImg' + idx);
                 if(svgImg) svgImg.setAttribute('href', result);
                 d.imgs[idx] = result;
@@ -362,46 +344,16 @@ var Puzzle = {
       });
     });
 
-    // 线条颜色
-    panel.querySelector('#pzStrokeDot').addEventListener('click', function(e) {
-      e.stopPropagation();
-      if(!App.openColorPicker) return;
-      App.openColorPicker(currentStroke, function(hex) {
-        currentStroke = hex;
-        panel.querySelector('#pzStrokeDot').style.background = hex;
-        Puzzle.data.strokeColor = hex;
-        // 实时更新所有 stroke
-        var container = document.getElementById('puzzleCard');
-        if(container) {
-          container.querySelectorAll('.pz-card svg path').forEach(function(p) {
-            p.setAttribute('stroke', hex);
-          });
-        }
-      }, function(hex) {
-        currentStroke = hex;
-        panel.querySelector('#pzStrokeDot').style.background = hex;
-        var container = document.getElementById('puzzleCard');
-        if(container) {
-          container.querySelectorAll('.pz-card svg path').forEach(function(p) {
-            p.setAttribute('stroke', hex);
-          });
-        }
-      }, 'pz_stroke');
-    });
-
-    // 保存
     panel.querySelector('#pzSaveBtn').addEventListener('click', function(e) {
       e.stopPropagation();
-      Puzzle.data.strokeColor = currentStroke;
       Puzzle.save();
       overlay.remove();
       App.showToast('已保存');
     });
 
-    // 重置
     panel.querySelector('#pzResetBtn').addEventListener('click', function(e) {
       e.stopPropagation();
-      Puzzle.data = { imgs: [null,null,null,null], posX: 0, posY: 0, strokeColor: '#2a2a2a' };
+      Puzzle.data = { imgs: [null,null,null,null], posX: 0, posY: 0 };
       Puzzle.save();
       var container = document.getElementById('puzzleCard');
       if(container) container.style.transform = '';
@@ -410,7 +362,6 @@ var Puzzle = {
       App.showToast('已重置');
     });
 
-    // 关闭
     panel.querySelector('#pzCloseBtn').addEventListener('click', function(e) { e.stopPropagation(); overlay.remove(); });
     overlay.addEventListener('click', function(e) { if(e.target === overlay) overlay.remove(); });
   }
