@@ -5,9 +5,13 @@ var App=window.App;if(!App)return;
 function pad(n){return n<10?'0'+n:''+n;}
 
 var Cal={
-  weather:null,city:'',virtualCity:'',schedules:{},
-  _clockTimer:null,_refreshTimer:null,
+  weather:null,
+  city:'',
+  _clockTimer:null,
+  _refreshTimer:null,
   _weatherAnimate:true,
+  _dragX:0,
+  _dragY:0,
 
   _weatherMap:{
     '113':'晴','116':'多云','119':'阴','122':'阴','143':'雾',
@@ -40,14 +44,15 @@ var Cal={
 
   load:function(){
     Cal.city=App.LS.get('calCity')||'';
-    Cal.virtualCity=App.LS.get('calVirtualCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
-    Cal.schedules=App.LS.get('calSchedules')||{};
     var anim=App.LS.get('calWeatherAnimate');
     Cal._weatherAnimate=anim!==false;
   },
-  save:function(){App.LS.set('calCity',Cal.city);App.LS.set('calVirtualCity',Cal.virtualCity);App.LS.set('calWeather',Cal.weather);App.LS.set('calSchedules',Cal.schedules);},
-  todayKey:function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');},
+
+  save:function(){
+    App.LS.set('calCity',Cal.city);
+    App.LS.set('calWeather',Cal.weather);
+  },
 
   // ====== 时钟 ======
   startClock:function(){
@@ -174,6 +179,13 @@ var Cal={
     bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';
   },
 
+  // ====== 背景图 ======
+  applyBgImg:function(){
+    var el=App.$('#wtBgImg');if(!el)return;
+    var img=App.LS.get('calBgImg')||'';
+    el.style.backgroundImage=img?'url('+img+')':'';
+  },
+
   // ====== 天气获取 ======
   fetchWeather:function(city,callback){
     if(!city){if(callback)callback(null);return;}
@@ -190,12 +202,17 @@ var Cal={
     }).catch(function(){if(callback)callback(null);});
   },
 
-  getWeatherSummary:function(){if(!Cal.weather)return'';return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';},
-  getLocationForAI:function(){return Cal.virtualCity||Cal.city||'';},
+  getWeatherSummary:function(){
+    if(!Cal.weather)return'';
+    return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';
+  },
 
-  // ====== 天气设置面板 ======
+  getLocationForAI:function(){return Cal.city||'';},
+
+  // ====== 设置面板 ======
   openWeatherPanel:function(){
     var panel=App.$('#calPanel');if(!panel)return;
+    var bgImg=App.LS.get('calBgImg')||'';
     panel.innerHTML=
       '<div class="cal-panel-header">'+
         '<div class="cal-panel-back" id="closeCalPanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>'+
@@ -203,35 +220,34 @@ var Cal={
         '<div class="cal-panel-right"></div>'+
       '</div>'+
       '<div class="cal-panel-body">'+
-        '<div class="cal-info-card">'+
-          '<div class="cal-info-row"><span class="cal-info-label">真实城市</span><span class="cal-info-value">'+App.esc(Cal.city||'未设置')+'</span></div>'+
-          '<div class="cal-info-row"><span class="cal-info-label">虚拟城市</span><span class="cal-info-value">'+App.esc(Cal.virtualCity||'未设置')+'</span></div>'+
-          (Cal.weather?'<div class="cal-info-row"><span class="cal-info-label">温度</span><span class="cal-info-value">'+App.esc(Cal.weather.temp)+'°C</span></div><div class="cal-info-row"><span class="cal-info-label">天气</span><span class="cal-info-value">'+App.esc(Cal.weather.desc)+'</span></div><div class="cal-info-row"><span class="cal-info-label">湿度</span><span class="cal-info-value">'+App.esc(Cal.weather.humidity)+'%</span></div>':'')+
-        '</div>'+
+
         '<div class="cal-form-group">'+
-          '<label class="cal-form-label">真实城市（用于获取天气数据）</label>'+
+          '<label class="cal-form-label">城市</label>'+
           '<div class="cal-input-row">'+
-            '<input type="text" class="cal-input" id="calCityInput" placeholder="输入城市名..." value="'+App.esc(Cal.city||'')+'">'+
+            '<input type="text" class="cal-input" id="calCityInput" placeholder="输入城市名获取天气..." value="'+App.esc(Cal.city||'')+'">'+
             '<button class="cal-icon-btn" id="calSearchCityBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>'+
           '</div>'+
+          (Cal.weather?'<div style="font-size:11px;color:#666;margin-top:6px;">当前：'+App.esc(Cal.weather.desc)+' '+App.esc(Cal.weather.temp)+'°C</div>':'')+
         '</div>'+
-        '<div class="cal-form-group">'+
-          '<label class="cal-form-label">虚拟城市（发送给角色的地点）</label>'+
-          '<input type="text" class="cal-input" id="calVirtualCityInput" placeholder="如：长安、霍格沃茨..." value="'+App.esc(Cal.virtualCity||'')+'">'+
-          '<div style="font-size:11px;color:#999;margin-top:6px;line-height:1.5;">留空则使用真实城市。</div>'+
-        '</div>'+
+
         '<div class="cal-form-group">'+
           '<label class="cal-form-label">天气特效</label>'+
           '<div class="cal-toggle-row">'+
             '<span class="cal-toggle-label">动态效果</span>'+
             '<label class="cal-toggle"><input type="checkbox" id="calAnimToggle" '+(Cal._weatherAnimate?'checked':'')+'><span class="cal-toggle-slider"></span></label>'+
           '</div>'+
-          '<div style="font-size:11px;color:#999;margin-top:6px;line-height:1.5;">关闭后天气图标将静止显示。</div>'+
         '</div>'+
-        '<div style="display:flex;gap:8px;">'+
-          '<button class="cal-btn cal-btn-dark" id="calSaveBtn" type="button" style="flex:1;">保存</button>'+
-          '<button class="cal-btn cal-btn-dark" id="calRefreshBtn" type="button" style="flex:1;">刷新天气</button>'+
+
+        '<div class="cal-form-group">'+
+          '<label class="cal-form-label">背景图片</label>'+
+          '<div style="display:flex;gap:8px;align-items:center;">'+
+            '<button class="cal-btn cal-btn-dark" id="calBgUploadBtn" type="button">上传图片</button>'+
+            (bgImg?'<button class="cal-btn cal-btn-dark" id="calBgClearBtn" type="button">清除</button>':'')+
+          '</div>'+
+          (bgImg?'<div style="margin-top:8px;border-radius:12px;overflow:hidden;height:80px;"><img src="'+bgImg+'" style="width:100%;height:100%;object-fit:cover;"></div>':'')+
+          '<input type="file" id="calBgFileInput" accept="image/*" style="display:none;">'+
         '</div>'+
+
       '</div>';
 
     panel.classList.remove('hidden');
@@ -239,55 +255,96 @@ var Cal={
     App.bindSwipeBack(panel,function(){Cal.closePanel();});
 
     App.safeOn('#closeCalPanel','click',function(){Cal.closePanel();});
+
     App.safeOn('#calAnimToggle','change',function(){
       Cal._weatherAnimate=App.$('#calAnimToggle').checked;
       App.LS.set('calWeatherAnimate',Cal._weatherAnimate);
       Cal.renderWeatherEffect();
     });
-    App.safeOn('#calSaveBtn','click',function(){
-      var cityInput=App.$('#calCityInput').value.trim();
-      Cal.virtualCity=App.$('#calVirtualCityInput').value.trim();
-      if(cityInput&&cityInput!==Cal.city){
-        Cal.city=cityInput;Cal.save();
-        App.showToast('获取天气中...');
-        Cal.fetchWeather(Cal.city,function(w){
-          if(w){Cal.openWeatherPanel();App.showToast('已保存');}
-          else{Cal.openWeatherPanel();App.showToast('天气获取失败，城市已保存');}
-        });
-      }else{Cal.save();App.showToast('已保存');Cal.closePanel();}
-    });
+
     App.safeOn('#calSearchCityBtn','click',function(){
       var name=App.$('#calCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
-      App.showToast('获取中...');Cal.city=name;Cal.save();
+      App.showToast('获取天气中...');
+      Cal.city=name;Cal.save();
       Cal.fetchWeather(name,function(w){
-        if(w){Cal.openWeatherPanel();App.showToast('已切换：'+name);}
-        else App.showToast('获取失败');
+        if(w){Cal.openWeatherPanel();App.showToast(w.desc+' '+w.temp+'°C');}
+        else App.showToast('获取失败，请检查城市名');
       });
     });
-    App.safeOn('#calRefreshBtn','click',function(){
-      if(!Cal.city){App.showToast('请先设置城市');return;}
-      App.showToast('刷新中...');
-      Cal.fetchWeather(Cal.city,function(w){
-        if(w){Cal.openWeatherPanel();App.showToast('已刷新');}
-        else App.showToast('刷新失败');
-      });
+
+    App.safeOn('#calBgUploadBtn','click',function(){
+      App.$('#calBgFileInput').click();
     });
+
+    App.safeOn('#calBgFileInput','change',function(){
+      var file=App.$('#calBgFileInput').files[0];
+      if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(e){
+        App.LS.set('calBgImg',e.target.result);
+        Cal.applyBgImg();
+        Cal.openWeatherPanel();
+        App.showToast('背景已设置');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if(App.$('#calBgClearBtn')){
+      App.safeOn('#calBgClearBtn','click',function(){
+        App.LS.remove('calBgImg');
+        Cal.applyBgImg();
+        Cal.openWeatherPanel();
+        App.showToast('背景已清除');
+      });
+    }
   },
 
-  closePanel:function(){var panel=App.$('#calPanel');if(!panel)return;panel.classList.remove('show');setTimeout(function(){panel.classList.add('hidden');},350);},
+  closePanel:function(){
+    var panel=App.$('#calPanel');if(!panel)return;
+    panel.classList.remove('show');
+    setTimeout(function(){panel.classList.add('hidden');},350);
+  },
 
-  // ====== 日程相关（保持不变） ======
-  getSchedule:function(k){return Cal.schedules[k]||[];},
-  setSchedule:function(k,l){Cal.schedules[k]=l;Cal.save();},
-  addMemo:function(k,m){if(!Cal.schedules[k])Cal.schedules[k]=[];Cal.schedules[k].push(m);Cal.save();},
-  getMemosForDate:function(k){return Cal.schedules[k]||[];},
-  removeMemo:function(k,i){if(Cal.schedules[k]){Cal.schedules[k].splice(i,1);if(!Cal.schedules[k].length)delete Cal.schedules[k];Cal.save();}},
-  hasMemosForDate:function(k){return Cal.schedules[k]&&Cal.schedules[k].length>0;},
-  getScheduleSummary:function(){
-    var list=Cal.getSchedule(Cal.todayKey()),items=list.filter(function(item){return!item.type||item.type==='schedule';});
-    if(!items.length)return'今日无外出行程。';
-    return'今日行程:\n'+items.map(function(x){return(x.time||'')+' '+(x.content||'');}).join('\n');
+  // ====== 拖拽 ======
+  initDrag:function(){
+    var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
+    card._wtDragBound=true;
+    var DELAY=500;
+    var startX,startY,origX,origY,longPressed=false,timer,moved=false;
+
+    var saved=App.LS.get('wtCardPos');
+    if(saved){Cal._dragX=saved.x||0;Cal._dragY=saved.y||0;card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px)';}
+
+    card.addEventListener('touchstart',function(e){
+      var t=e.touches[0];startX=t.clientX;startY=t.clientY;
+      longPressed=false;moved=false;
+      timer=setTimeout(function(){
+        longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
+        card.style.transition='none';card.style.opacity='0.9';card.style.zIndex='999';
+        if(navigator.vibrate)navigator.vibrate(15);
+      },DELAY);
+    },{passive:true});
+
+    card.addEventListener('touchmove',function(e){
+      var t=e.touches[0];
+      if(timer&&!longPressed){
+        if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}
+        return;
+      }
+      if(!longPressed)return;
+      moved=true;e.preventDefault();e.stopPropagation();
+      Cal._dragX=origX+(t.clientX-startX);
+      Cal._dragY=origY+(t.clientY-startY);
+      card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px)';
+    },{passive:false});
+
+    card.addEventListener('touchend',function(){
+      clearTimeout(timer);timer=null;
+      card.style.opacity='';card.style.transition='';card.style.zIndex='';
+      if(longPressed&&moved){App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});}
+      longPressed=false;moved=false;
+    });
   },
 
   // ====== 绑定点击 ======
@@ -309,6 +366,8 @@ var Cal={
     Cal.startClock();
     Cal.renderWeekRow();
     Cal.renderWeatherEffect();
+    Cal.applyBgImg();
+    Cal.initDrag();
     Cal.bindClicks();
     if(Cal.city&&Cal.weather){
       var age=Date.now()-(Cal.weather.time||0);
@@ -320,7 +379,6 @@ var Cal={
     App.calendar=Cal;
   }
 };
+
 App.register('calendar',Cal);
 })();
-
-
