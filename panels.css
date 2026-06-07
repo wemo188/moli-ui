@@ -691,16 +691,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.pz-glass-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 24px;
-  border: none;
-  box-shadow: none;
-}
-
-.pz-card::before {
-  display: none;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .pz-card svg {
@@ -708,15 +712,11 @@
   z-index: 2;
 }
 
-/* 所有拼图线条和填充都用 CSS 控制 */
 .pz-card svg path {
   stroke: #ffffff !important;
-  fill: rgba(255, 255, 255, 0.6) !important;
+  fill: transparent !important;
 }
 
-/* =========================
-   拼图编辑面板
-========================= */
 .pz-edit-slots {
   display: grid;
   grid-template-columns: 1fr 1fr;
