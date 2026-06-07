@@ -705,12 +705,6 @@
   height: 300px;
 }
 
-.pz-card svg path {
-  stroke: #ffffff !important;
-  stroke-width: 1.5 !important;
-  fill: transparent !important;
-}
-
 .pz-edit-slots {
   display: grid;
   grid-template-columns: 1fr 1fr;
