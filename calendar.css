@@ -1,91 +1,332 @@
 
-/* 拖拽容器 */
-#calTimeRow {
+/* ====== 时间卡片整体容器 ====== */
+#wtCard {
+  --S: 1;
+  --wt-ink: #1a1a1a;
+  --wt-ink2: rgba(26,26,26,0.75);
+  --wt-ink3: rgba(26,26,26,0.5);
+  --wt-ink4: rgba(26,26,26,0.3);
+  --wt-line: rgba(26,26,26,0.08);
+  --wt-line2: rgba(26,26,26,0.04);
+  --wt-gold: rgba(26,26,26,0.25);
+  --wt-gold2: rgba(26,26,26,0.12);
+  position: relative;
+  z-index: 10;
   display: flex;
-  justify-content: center;  /* 整体居中 */
+  flex-direction: column;
   align-items: center;
-  margin-top: 15px;  /* 距离顶部 */
-  gap: 60px;  /* 改这个数字控制左右距离，想要多大就多大 */
+  margin-top: 15px;
 }
 
-/* 年份 */
-#calYear {
+/* ====== 170x170 毛玻璃容器 ====== */
+.wt-cw {
+  width: 170px;
+  height: 170px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 36px;
+  background: rgba(255,255,255,0);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+  margin-bottom: 6px;
+  overflow: hidden;
+  transform: scale(var(--S));
+  transform-origin: center center;
+}
+
+/* ====== 天气动效背景层 ====== */
+.wt-weather-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* 内容层 */
+.wt-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ====== 文字样式（全黑色） ====== */
+.wt-date {
   font-size: 11px;
-  color: #333;
+  color: var(--wt-ink);
   letter-spacing: 2px;
   font-weight: 600;
-  text-align: center;
 }
 
-/* 月份 */
-#calMonth {
-  font-size: 58px;
+.wt-time {
+  font-size: 54px;
   font-weight: 900;
-  color: #111;
+  color: var(--wt-ink);
   line-height: 1;
-  text-align: center;
-}
-
-#calMonthEn {
-  font-size: 11px;
-  color: #555;
-  letter-spacing: 1px;
-  font-weight: 500;
-  text-align: center;
-}
-
-/* 时钟 */
-#calClock {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  margin-top: 8px;
+  margin-top: -2px;
   font-variant-numeric: tabular-nums;
-  text-align: center;
 }
 
-#calSec {
+.wt-sec {
   font-size: 13px;
-  color: #666;
+  color: var(--wt-ink);
   margin-left: 2px;
 }
 
-/* 星期和日期共用一个表格布局 */
-.cal-table {
-  --cell-size: 28px;  /* 只改这一个数字 */
-  width: auto;
-  border-collapse: separate;
-  border-spacing: 4px 0px;
-  margin-top: 6px;
-  table-layout: fixed;
-  margin: 0 auto;
+.wt-wk {
+  font-size: 11px;
+  color: var(--wt-ink);
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
-.cal-table td {
-  width: var(--cell-size);
-  height: var(--cell-size);
-  text-align: center;
-  vertical-align: middle;
-  padding: 0;
-  font-size: 13px;
-  font-weight: 500;
+.wt-temp {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--wt-ink);
+  margin-top: 4px;
 }
 
-.cal-week td {
-  height: calc(var(--cell-size) - 8px);  /* 星期行自动比格子小8px */
-  font-size: 13px;
-}
-
-/* 日期格子 */
-.cal-day {
+.wt-deg {
   font-size: 10px;
-  color: #333;
-  border-radius: 5px;
+  color: var(--wt-ink);
 }
 
-/* 当天格子 */
-.cal-day.today {
-  background: #000;
+.wt-desc {
+  font-size: 10px;
+  color: var(--wt-ink);
+  margin-top: 1px;
+}
+
+/* 分隔线 */
+.wt-tl, .wt-wl {
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
+  margin: 4px 0;
+}
+
+.wt-vd {
+  width: 1px;
+  height: 12px;
+  background: linear-gradient(180deg, transparent, var(--wt-line2), transparent);
+}
+
+/* 功能标签 */
+.vf-lbl {
+  font-size: 9px;
+  color: var(--wt-ink4);
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.vf-hl {
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
+  margin: 3px 0;
+}
+
+/* ====== 下方 170px 日期条 ====== */
+.wt-week-row {
+  width: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: scale(var(--S));
+  transform-origin: center center;
+}
+
+.wt-week-day {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.wt-week-day.today {
+  background: #1a1a1a;
   color: #fff;
-  font-weight: 800;
+  font-weight: 900;
+}
+
+/* ====== 晴天：旋转太阳 ====== */
+.wt-sun-svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px; height: 130px;
+  opacity: 0.12;
+  animation: wtSunSpin 25s linear infinite;
+}
+.wt-static .wt-sun-svg { animation: none; }
+@keyframes wtSunSpin { 0%{transform:translate(-50%,-50%) rotate(0deg)} 100%{transform:translate(-50%,-50%) rotate(360deg)} }
+
+/* ====== 多云：飘动云朵 ====== */
+.wt-cloud-item {
+  position: absolute;
+  opacity: 0.15;
+  animation: wtCloudDrift linear infinite;
+}
+.wt-cloud-item:nth-child(1) { top: 10%; left: -90px; width: 85px; animation-duration: 14s; }
+.wt-cloud-item:nth-child(2) { top: 45%; left: -75px; width: 70px; animation-duration: 18s; animation-delay: -6s; opacity: 0.12; }
+.wt-cloud-item:nth-child(3) { top: 70%; left: -80px; width: 72px; animation-duration: 21s; animation-delay: -11s; opacity: 0.13; }
+.wt-static .wt-cloud-item { animation: none; left: 20%; opacity: 0.12; }
+.wt-static .wt-cloud-item:nth-child(2) { left: 45%; top: 50%; }
+.wt-static .wt-cloud-item:nth-child(3) { left: 10%; top: 72%; }
+@keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(280px)} }
+
+/* ====== 阴天：大片慢云 ====== */
+.wt-overcast-item {
+  position: absolute;
+  opacity: 0.2;
+  animation: wtOvercastDrift linear infinite;
+}
+.wt-overcast-item:nth-child(1) { top: 5%; left: -110px; width: 110px; animation-duration: 20s; }
+.wt-overcast-item:nth-child(2) { top: 38%; left: -100px; width: 100px; animation-duration: 25s; animation-delay: -8s; opacity: 0.17; }
+.wt-overcast-item:nth-child(3) { top: 62%; left: -105px; width: 105px; animation-duration: 28s; animation-delay: -14s; opacity: 0.19; }
+.wt-static .wt-overcast-item { animation: none; left: 15%; opacity: 0.15; }
+.wt-static .wt-overcast-item:nth-child(2) { left: 30%; top: 40%; }
+.wt-static .wt-overcast-item:nth-child(3) { left: 5%; top: 65%; }
+@keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(310px)} }
+
+/* ====== 雨丝 ====== */
+.wt-raindrop {
+  position: absolute;
+  top: -20px;
+  width: 1.5px;
+  background: linear-gradient(to bottom, transparent, rgba(60,60,60,0.6));
+  border-radius: 0 0 2px 2px;
+  animation: wtRainFall linear infinite;
+  transform: rotate(12deg);
+}
+.wt-static .wt-raindrop { animation: none; top: 30%; opacity: 0.4; }
+@keyframes wtRainFall {
+  0% { transform:rotate(12deg) translateY(-20px); opacity:0; }
+  10% { opacity:1; }
+  90% { opacity:1; }
+  100% { transform:rotate(12deg) translateY(200px); opacity:0; }
+}
+
+/* ====== 雷电 ====== */
+.wt-lightning {
+  position: absolute;
+  opacity: 0;
+  z-index: 3;
+}
+.wt-lightning:nth-child(1) { top: 8%; left: 25%; animation: wtFlash1 5s ease-in-out infinite; }
+.wt-lightning:nth-child(2) { top: 12%; left: 55%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
+.wt-static .wt-lightning { animation: none; opacity: 0.3; }
+.wt-static .wt-lightning:nth-child(2) { opacity: 0.2; }
+@keyframes wtFlash1 {
+  0%,84%,100%{opacity:0} 85%{opacity:0.9} 87%{opacity:0} 89%{opacity:0.7} 91%{opacity:0}
+}
+@keyframes wtFlash2 {
+  0%,78%,100%{opacity:0} 79%{opacity:0.8} 81%{opacity:0} 83%{opacity:0.6} 85%{opacity:0}
+}
+.wt-flash-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.15);
+  border-radius: 36px;
+  opacity: 0;
+  animation: wtFlashOverlay 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+.wt-static .wt-flash-overlay { animation: none; opacity: 0; }
+@keyframes wtFlashOverlay {
+  0%,84%,100%{opacity:0} 85%{opacity:0.3} 86%{opacity:0} 89%{opacity:0.15} 90%{opacity:0}
+}
+
+/* ====== 雪花 ====== */
+.wt-snow-item {
+  position: absolute;
+  top: -10px;
+  opacity: 0;
+  animation: wtSnowFall linear infinite;
+}
+.wt-static .wt-snow-item { animation: none; top: 30%; opacity: 0.4; }
+@keyframes wtSnowFall {
+  0% { transform:translateY(-10px) rotate(0deg); opacity:0; }
+  10% { opacity:0.7; }
+  90% { opacity:0.7; }
+  100% { transform:translateY(185px) rotate(360deg); opacity:0; }
+}
+
+/* ====== 雾 ====== */
+.wt-fog-layer {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  top: 0; left: -50%;
+  opacity: 0.15;
+  animation: wtFogBreath 6s ease-in-out infinite alternate;
+}
+.wt-fog-layer:nth-child(2) { animation-delay: -3s; opacity: 0.12; top: 20%; }
+.wt-static .wt-fog-layer { animation: none; opacity: 0.15; }
+@keyframes wtFogBreath {
+  0% { transform:translateX(-5%); opacity:0.12; }
+  100% { transform:translateX(5%); opacity:0.2; }
+}
+
+/* ====== 夜晚月亮 ====== */
+.wt-moon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px; height: 120px;
+  opacity: 0.14;
+}
+
+.wt-star {
+  position: absolute;
+  animation: wtStarTwinkle ease-in-out infinite alternate;
+}
+.wt-star::before,
+.wt-star::after {
+  content: '';
+  position: absolute;
+  background: rgba(30,30,30,0.6);
+  border-radius: 1px;
+}
+.wt-star::before {
+  width: 100%; height: 1.5px;
+  top: 50%; left: 0;
+  transform: translateY(-50%);
+}
+.wt-star::after {
+  width: 1.5px; height: 100%;
+  left: 50%; top: 0;
+  transform: translateX(-50%);
+}
+.wt-star:nth-child(2) { top: 20px; left: 18px; width: 6px; height: 6px; animation-duration: 2.5s; }
+.wt-star:nth-child(3) { top: 50px; left: 130px; width: 5px; height: 5px; animation-duration: 3s; animation-delay: -1s; }
+.wt-star:nth-child(4) { top: 100px; left: 22px; width: 4px; height: 4px; animation-duration: 2.8s; animation-delay: -0.5s; }
+.wt-star:nth-child(5) { top: 130px; left: 120px; width: 5px; height: 5px; animation-duration: 3.2s; animation-delay: -2s; }
+.wt-star:nth-child(6) { top: 28px; left: 100px; width: 4px; height: 4px; animation-duration: 2.6s; animation-delay: -1.5s; }
+.wt-star:nth-child(7) { top: 75px; left: 15px; width: 5px; height: 5px; animation-duration: 3.5s; animation-delay: -0.3s; }
+.wt-static .wt-star { animation: none; opacity: 0.5; }
+@keyframes wtStarTwinkle {
+  0% { opacity:0.2; transform:scale(0.7); }
+  100% { opacity:0.75; transform:scale(1.3); }
 }
