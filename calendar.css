@@ -1,24 +1,14 @@
-
-/* ====== 时间卡片整体容器 ====== */
+/* ====== 日历天气卡片容器 ====== */
 #wtCard {
-  --S: 1;
   --wt-ink: #1a1a1a;
-  --wt-ink2: rgba(26,26,26,0.75);
-  --wt-ink3: rgba(26,26,26,0.5);
-  --wt-ink4: rgba(26,26,26,0.3);
-  --wt-line: rgba(26,26,26,0.08);
-  --wt-line2: rgba(26,26,26,0.04);
-  --wt-gold: rgba(26,26,26,0.25);
-  --wt-gold2: rgba(26,26,26,0.12);
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 15px;
 }
 
-/* ====== 170x170 毛玻璃容器 ====== */
+/* ====== 170x170 毛玻璃方块 ====== */
 .wt-cw {
   width: 170px;
   height: 170px;
@@ -33,10 +23,7 @@
   -webkit-backdrop-filter: blur(7px);
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 4px 20px rgba(0,0,0,0.01);
-  margin-bottom: 6px;
   overflow: hidden;
-  transform: scale(var(--S));
-  transform-origin: center center;
 }
 
 /* ====== 天气动效背景层 ====== */
@@ -48,7 +35,7 @@
   z-index: 0;
 }
 
-/* 内容层 */
+/* ====== 内容层 ====== */
 .wt-content {
   position: relative;
   z-index: 1;
@@ -57,30 +44,26 @@
   align-items: center;
 }
 
-/* ====== 文字样式（全黑色） ====== */
-.wt-date {
+/* ====== 年份 ====== */
+#calYear {
   font-size: 11px;
   color: var(--wt-ink);
   letter-spacing: 2px;
   font-weight: 600;
 }
 
-.wt-time {
-  font-size: 54px;
+/* ====== 月份大数字（点击进天气设置） ====== */
+#calMonth {
+  font-size: 58px;
   font-weight: 900;
   color: var(--wt-ink);
   line-height: 1;
-  margin-top: -2px;
-  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+  cursor: pointer;
 }
 
-.wt-sec {
-  font-size: 13px;
-  color: var(--wt-ink);
-  margin-left: 2px;
-}
-
-.wt-wk {
+/* ====== 星期几 ====== */
+#calWeekday {
   font-size: 11px;
   color: var(--wt-ink);
   letter-spacing: 1.5px;
@@ -88,85 +71,50 @@
   margin-top: 2px;
 }
 
-.wt-temp {
-  font-size: 12px;
+/* ====== 时钟 ====== */
+#calClock {
+  font-size: 20px;
   font-weight: 700;
   color: var(--wt-ink);
-  margin-top: 4px;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
-.wt-deg {
-  font-size: 10px;
+#calSec {
+  font-size: 13px;
   color: var(--wt-ink);
+  margin-left: 2px;
 }
 
-.wt-desc {
-  font-size: 10px;
-  color: var(--wt-ink);
-  margin-top: 1px;
-}
-
-/* 分隔线 */
-.wt-tl, .wt-wl {
-  width: 60%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
-  margin: 4px 0;
-}
-
-.wt-vd {
-  width: 1px;
-  height: 12px;
-  background: linear-gradient(180deg, transparent, var(--wt-line2), transparent);
-}
-
-/* 功能标签 */
-.vf-lbl {
-  font-size: 9px;
-  color: var(--wt-ink4);
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-.vf-hl {
-  width: 80%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--wt-line), transparent);
-  margin: 3px 0;
-}
-
-/* ====== 下方 170px 日期条 ====== */
+/* ====== 下方日期条 ====== */
 .wt-week-row {
-  width: 170px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 8px 18px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transform: scale(var(--S));
-  transform-origin: center center;
+  border: 1.5px solid #ddd;
+  background: #fff;
 }
 
 .wt-week-day {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wt-ink);
 }
 
 .wt-week-day.today {
   background: #1a1a1a;
   color: #fff;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 /* ====== 晴天：旋转太阳 ====== */
