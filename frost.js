@@ -1,12 +1,4 @@
-墨墨，这个改动量比较大，我帮你整理一下要做的事：
 
-1. 把 `cards.js` 里所有像素框相关代码（`bindPixelEdit`、`openPixelEdit`、`applyPixelColors`、`pixelConfig` 等）搬到 `frost.js`
-2. 把拼图组件写进 `frost.js`，包含：拖拽、裁剪上传、数据保存/恢复
-3. `frost.js` 里面统一管理文字卡片 + 像素框 + 拼图三个组件
-
-我给你完整的新 `frost.js`：
-
-```javascript
 (function(){
 'use strict';
 var App = window.App; if(!App) return;
