@@ -16,62 +16,6 @@
   pointer-events: auto;
 }
 
-#cardIcon1 .card-icon-img svg,
-#cardIcon2 .card-icon-img svg {
-  width: 55%;
-  height: 55%;
-}
-
-#cardIcon1 .card-icon-img,
-#cardIcon2 .card-icon-img {
-  background: #1a1a1a !important;
-  border-color: transparent !important;
-}
-
-.card-icons-wrap {
-  display: flex;
-  gap: 12px;
-  justify-content: space-around;
-  width: 100%;
-}
-
-.card-icon-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.card-icon-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 15px;
-  border: 1.3px solid rgba(220,235,255,.9);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-icon-img img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  display: block;
-  pointer-events: none !important;
-  -webkit-user-drag: none !important;
-}
-
-.card-icon-label {
-  font-size: 12.5px;
-  color: #fff;
-  text-align: center;
-  letter-spacing: 1px;
-  font-weight: 800;
-}
-
 /* ====== 占位样式 ====== */
 .bx-tag.bx-tag-placeholder,
 .bx-ribbon-tab.bx-ribbon-placeholder { opacity: 0.3; }
@@ -101,9 +45,9 @@
   position: relative;
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
-  background: var(--THEME);
-  box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(0,0,0,.06),
-              0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.03);
+  background: linear-gradient(135deg, #ced4da 0%, var(--THEME) 50%, #ced4da 100%);
+  box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.15),
+              0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -111,13 +55,40 @@
 }
 
 #profileCard-L .bx-cd {
-  background: var(--profileCard-L-bg, #ffffff);
-  position: relative; z-index: 2;
+  position: relative;
+  z-index: 2;
   border-radius: calc(11px * var(--S));
   overflow: visible;
-  display: flex; flex-direction: column; align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 10px 10px 0 10px;
   box-sizing: border-box;
+  background: transparent;
+}
+
+/* 背景伪元素 - 透明度只影响背景不影响内容 */
+#profileCard-L .bx-cd::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--profileCard-L-bg, #ffffff);
+  opacity: var(--profileCard-L-bg-opacity, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 毛玻璃在外层 */
+#profileCard-L .bx-cd::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+  z-index: -2;
+  pointer-events: none;
 }
 
 #profileCard-L .bx-tag-wrap {
@@ -130,7 +101,8 @@
 
 #profileCard-L .bx-tag {
   --arrow: calc(10px * var(--S));
-  position: absolute; white-space: nowrap;
+  position: absolute;
+  white-space: nowrap;
   font-size: calc(9.5px * var(--S));
   font-weight: 600;
   letter-spacing: calc(1px * var(--S));
@@ -140,7 +112,8 @@
 }
 
 #profileCard-L .bx-tag1 {
-  top: 0; right: 0;
+  top: 0;
+  right: 0;
   background: var(--profileCard-L-tag-bg, linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%));
   color: var(--profileCard-L-tag-c, #fff);
   transform: rotate(-6deg);
@@ -159,18 +132,22 @@
 #profileCard-L .bx-av-box {
   width: 100%;
   height: calc(var(--CARD_H0) * var(--S));
-  cursor: pointer; display: block;
+  cursor: pointer;
+  display: block;
 }
 
 #profileCard-L .bx-av-front {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   border-radius: calc(8px * var(--S));
-  background-size: cover; background-position: center;
+  background-size: cover;
+  background-position: center;
   background-color: #e8edf2;
 }
 
 #profileCard-L .bx-name-bar {
-  width: 100%; text-align: center;
+  width: 100%;
+  text-align: center;
   margin-top: 0;
   position: relative;
   padding: calc(2px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
@@ -218,9 +195,9 @@
   position: relative;
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
-  background: var(--BLUE);
-  box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(0,0,0,.06),
-              0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.03);
+  background: linear-gradient(135deg, #ced4da 0%, var(--BLUE) 50%, #ced4da 100%);
+  box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.18),
+              0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -228,13 +205,38 @@
 }
 
 #profileCard-R .bx-cd {
-  background: var(--profileCard-R-bg, #ffffff);
-  position: relative; z-index: 2;
+  position: relative;
+  z-index: 2;
   border-radius: calc(11px * var(--S));
   overflow: visible;
-  display: flex; flex-direction: column; align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 10px 10px 0 10px;
   box-sizing: border-box;
+  background: transparent;
+}
+
+#profileCard-R .bx-cd::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--profileCard-R-bg, #ffffff);
+  opacity: var(--profileCard-R-bg-opacity, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+#profileCard-R .bx-cd::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+  z-index: -2;
+  pointer-events: none;
 }
 
 #profileCard-R .bx-side-ribbon {
@@ -242,7 +244,8 @@
   left: calc(-14px * var(--S));
   bottom: calc(15px * var(--S));
   z-index: 10;
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   gap: calc(6px * var(--S));
   pointer-events: none;
 }
@@ -274,18 +277,22 @@
 #profileCard-R .bx-av-box {
   width: 100%;
   height: calc(var(--CARD_H0) * var(--S));
-  cursor: pointer; display: block;
+  cursor: pointer;
+  display: block;
 }
 
 #profileCard-R .bx-av-front {
-  width: 100%; height: calc(100% + 1px);
+  width: 100%;
+  height: calc(100% + 1px);
   border-radius: calc(8px * var(--S));
-  background-size: cover; background-position: center;
+  background-size: cover;
+  background-position: center;
   background-color: #e8edf2;
 }
 
 #profileCard-R .bx-name-bar {
-  width: 100%; text-align: center;
+  width: 100%;
+  text-align: center;
   margin-top: 0;
   position: relative;
   padding: calc(2px * var(--S)) calc(6px * var(--S)) calc(2px * var(--S));
@@ -310,157 +317,29 @@
 
 /* ====== 空头像占位 ====== */
 .bx-av-placeholder {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 6px; color: #b0bec5;
-  background: #e8edf2; border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #b0bec5;
+  background: #e8edf2;
+  border-radius: 8px;
 }
 
 .bx-av-placeholder svg {
-  width: 36px; height: 36px;
-  stroke: #b0bec5; fill: none;
-  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  width: 36px;
+  height: 36px;
+  stroke: #b0bec5;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .bx-av-placeholder span { font-size: 10px; }
-
-.pixel-dialog {
-  display: inline-block;
-  background: #ffffff;
-  border: 2px solid #000000;
-  image-rendering: pixelated;
-  width: 100%;
-  margin-top: 14px;
-  pointer-events: auto;
-}
-
-.pixel-header {
-  height: 16px;
-  background: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 5px;
-}
-
-.pixel-hearts {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-}
-
-.pixel-heart {
-  width: 9px;
-  height: 8px;
-  position: relative;
-  image-rendering: pixelated;
-}
-
-.pixel-heart .ph-core {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  background: transparent;
-  box-shadow:
-    1px 0 0 #fff, 2px 0 0 #fff, 5px 0 0 #fff, 6px 0 0 #fff,
-    0px 1px 0 #fff, 1px 1px 0 #fff, 2px 1px 0 #fff, 3px 1px 0 #fff,
-    4px 1px 0 #fff, 5px 1px 0 #fff, 6px 1px 0 #fff, 7px 1px 0 #fff,
-    0px 2px 0 #fff, 1px 2px 0 #fff, 2px 2px 0 #fff, 3px 2px 0 #fff,
-    4px 2px 0 #fff, 5px 2px 0 #fff, 6px 2px 0 #fff, 7px 2px 0 #fff,
-    1px 3px 0 #fff, 2px 3px 0 #fff, 3px 3px 0 #fff, 4px 3px 0 #fff,
-    5px 3px 0 #fff, 6px 3px 0 #fff,
-    2px 4px 0 #fff, 3px 4px 0 #fff, 4px 4px 0 #fff, 5px 4px 0 #fff,
-    3px 5px 0 #fff, 4px 5px 0 #fff;
-}
-
-.pixel-btns {
-  display: flex;
-  gap: 2px;
-}
-
-.pixel-btn {
-  width: 9px;
-  height: 9px;
-  border: 1px solid #ffffff;
-  position: relative;
-  background: transparent;
-}
-
-.pixel-btn.minimize::after {
-  content: "";
-  position: absolute;
-  bottom: 2px;
-  left: 1px;
-  right: 1px;
-  height: 1px;
-  background: #ffffff;
-}
-
-.pixel-btn.maximize::after {
-  content: "";
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  right: 1px;
-  bottom: 1px;
-  border: 1px solid #ffffff;
-}
-
-.pixel-btn.close::before,
-.pixel-btn.close::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 7px;
-  height: 1px;
-  background: #ffffff;
-}
-.pixel-btn.close::before { transform: translate(-50%,-50%) rotate(45deg); }
-.pixel-btn.close::after { transform: translate(-50%,-50%) rotate(-45deg); }
-
-.pixel-body {
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pixel-text-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.pixel-text-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 12px;
-  color: #2a2a2a;
-  width: 100%;
-  padding: 6px 0;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 1px;
-  -webkit-appearance: none;
-  appearance: none;
-  box-shadow: none;
-}
-
-.pixel-text-input::placeholder {
-  color: #2a2a2a;
-  opacity: 0.3;
-}
-
-.pixel-text-divider {
-  width: 100%;
-  height: 0;
-  border-top: 1px dashed #000000;
-  opacity: 0.3;
-}
 
 /* =========================
    圆头像区域
@@ -499,9 +378,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.hl-avatar:active {
-  opacity: 0.7;
-}
+.hl-avatar:active { opacity: 0.7; }
 
 .hl-avatar-inner {
   position: relative;
@@ -542,9 +419,9 @@
   border: 1px solid var(--hl-border-c);
   border-radius: 8px;
   padding: 4px 3px;
-  min-width: 40px;           /* 加上这个，保证最小宽度 */
+  min-width: 40px;
   display: flex;
-  justify-content: center;   /* 让内容居中 */
+  justify-content: center;
 }
 
 .hl-bubble-right {
@@ -566,7 +443,6 @@
   border-right: 4px solid transparent;
 }
 
-/* 右边气泡箭头（朝下指向头像） */
 .hl-bubble-right .hl-bubble-arrow-outer {
   bottom: -6px;
   left: 8px;
@@ -580,7 +456,6 @@
   border-top: 5px solid white;
 }
 
-/* 左边气泡箭头（朝上指向头像） */
 .hl-bubble-left .hl-bubble-arrow-outer {
   top: -7px;
   right: 8px;
@@ -594,17 +469,18 @@
   border-bottom: 5px solid white;
 }
 
-.hl-bubble-input {
-  border: none;
-  outline: none;
-  background: transparent;
+.hl-bubble-display {
+  display: inline-block;
   font-size: 11px;
-  width: 20px;
-  color: var(--hl-border-c);
+  color: #1a1a1a;
+  min-width: 20px;
+  min-height: 1em;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.hl-bubble-input::placeholder {
-  color: var(--hl-border-c);
+.hl-bubble-display:empty::before {
+  content: '...';
   opacity: 0.4;
 }
 
@@ -625,212 +501,24 @@
   direction: rtl;
 }
 
-/* 右头像的对话条：改到左边，尖角朝右 */
 .hl-chatbar-bl {
   position: absolute;
   top: 100%;
-  right: 100%;           /* 改 right 为 left，跑到头像左边 */
-  margin-top: -80px;
-  margin-left: 5px;     /* 改 margin-right 为 margin-left */
+  right: 100%;
+  margin-top: -83px;
+  margin-left: 10px;
   direction: ltr;
-  border-radius: 18px 18px 4px 18px;   /* 尖角在右上角 → 朝右指向头像 */
+  border-radius: 18px 18px 4px 18px;
 }
 
-/* 左头像的对话条：尖角在左上，文字从左到右 */
 .hl-chatbar-bot {
   position: absolute;
   top: 100%;
   left: 100%;
   margin-top: -20px;
   margin-right: 5px;
-  border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
-  direction: ltr;                     /* 文字从左到右 */
-}
-
-.hl-chatbar-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 13px;
-  color: #2a2a2a;
-  min-width: 50px;
-  width: auto;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  -webkit-appearance: none;
-  appearance: none;
-  box-shadow: none;
+  border-radius: 4px 18px 18px 18px;
   direction: ltr;
-  unicode-bidi: plaintext;
-}
-
-.hl-chatbar-input::placeholder {
-  color: #2a2a2a;
-  opacity: 0.3;
-}
-
-/* =========================
-   拖拽反馈
-========================= */
-.hl-dragging {
-  opacity: 0.85;
-  z-index: 999 !important;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
-}
-
-/* =========================
-   像素框 CSS 变量驱动
-========================= */
-.pixel-dialog {
-  --pixel-heart-c: #ffffff;
-  --pixel-icon-c: #ffffff;
-  --pixel-bar-c: #000000;
-  --pixel-body-bg: #ffffff;
-  --pixel-font-c: #2a2a2a;
-  border-color: var(--pixel-bar-c);
-}
-
-.pixel-header {
-  background: var(--pixel-bar-c);
-}
-
-.pixel-heart .ph-core {
-  box-shadow:
-    1px 0 0 var(--pixel-heart-c), 2px 0 0 var(--pixel-heart-c), 5px 0 0 var(--pixel-heart-c), 6px 0 0 var(--pixel-heart-c),
-    0px 1px 0 var(--pixel-heart-c), 1px 1px 0 var(--pixel-heart-c), 2px 1px 0 var(--pixel-heart-c), 3px 1px 0 var(--pixel-heart-c),
-    4px 1px 0 var(--pixel-heart-c), 5px 1px 0 var(--pixel-heart-c), 6px 1px 0 var(--pixel-heart-c), 7px 1px 0 var(--pixel-heart-c),
-    0px 2px 0 var(--pixel-heart-c), 1px 2px 0 var(--pixel-heart-c), 2px 2px 0 var(--pixel-heart-c), 3px 2px 0 var(--pixel-heart-c),
-    4px 2px 0 var(--pixel-heart-c), 5px 2px 0 var(--pixel-heart-c), 6px 2px 0 var(--pixel-heart-c), 7px 2px 0 var(--pixel-heart-c),
-    1px 3px 0 var(--pixel-heart-c), 2px 3px 0 var(--pixel-heart-c), 3px 3px 0 var(--pixel-heart-c), 4px 3px 0 var(--pixel-heart-c),
-    5px 3px 0 var(--pixel-heart-c), 6px 3px 0 var(--pixel-heart-c),
-    2px 4px 0 var(--pixel-heart-c), 3px 4px 0 var(--pixel-heart-c), 4px 4px 0 var(--pixel-heart-c), 5px 4px 0 var(--pixel-heart-c),
-    3px 5px 0 var(--pixel-heart-c), 4px 5px 0 var(--pixel-heart-c);
-}
-
-.pixel-btn {
-  border-color: var(--pixel-icon-c);
-}
-.pixel-btn.minimize::after {
-  background: var(--pixel-icon-c);
-}
-.pixel-btn.maximize::after {
-  border-color: var(--pixel-icon-c);
-}
-.pixel-btn.close::before,
-.pixel-btn.close::after {
-  background: var(--pixel-icon-c);
-}
-
-.pixel-body {
-  background: var(--pixel-body-bg);
-}
-
-.pixel-text-input {
-  color: var(--pixel-font-c);
-}
-.pixel-text-input::placeholder {
-  color: var(--pixel-font-c);
-}
-
-.pixel-text-divider {
-  border-top-color: var(--pixel-bar-c);
-}
-
-/* =========================
-   圆头像 CSS 变量驱动
-========================= */
-.hl-avatar-unit {
-  --hl-border-c: #2a2a2a;
-  --hl-border-w: 1px;
-  --hl-font-c: #2a2a2a;
-  --hl-bar-opacity: 0.45;
-  --hl-bar-blur: 12px;
-  --hl-bar-color: rgba(255,255,255,0.45);
-}
-
-.hl-avatar-unit .hl-avatar {
-  border-width: var(--hl-border-w);
-  border-color: var(--hl-border-c);
-}
-
-.hl-avatar-unit .hl-bubble {
-  border-color: var(--hl-border-c);
-}
-
-.hl-avatar-unit .hl-bubble-input {
-  color: #1a1a1a;  /* 固定黑色，不跟变量 */
-}
-.hl-avatar-unit .hl-bubble-input::placeholder {
-  color: #1a1a1a;
-  opacity: 0.4;
-}
-
-.hl-avatar-unit .hl-bubble-right .hl-bubble-arrow-outer {
-  border-top-color: var(--hl-border-c);
-}
-.hl-avatar-unit .hl-bubble-left .hl-bubble-arrow-outer {
-  border-bottom-color: var(--hl-border-c);
-}
-
-.hl-avatar-unit .hl-chatbar {
-  background: var(--hl-bar-color);
-  backdrop-filter: blur(var(--hl-bar-blur));
-  -webkit-backdrop-filter: blur(var(--hl-bar-blur));
-}
-
-.hl-avatar-unit .hl-chatbar-input {
-  color: var(--hl-font-c);
-}
-.hl-avatar-unit .hl-chatbar-input::placeholder {
-  color: var(--hl-font-c);
-}
-
-/* 头像占位符颜色跟随 */
-.hl-avatar-unit .hl-avatar-placeholder circle,
-.hl-avatar-unit .hl-avatar-placeholder path {
-  stroke: var(--hl-border-c);
-}
-
-/* =========================
-   纯展示元素（替代 input）
-========================= */
-.pixel-text-display {
-  display: block;
-  font-size: 12px;
-  color: var(--pixel-font-c, #2a2a2a);
-  width: 100%;
-  padding: 6px 0;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 1px;
-  min-height: 1.4em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.pixel-text-display:empty::before {
-  content: attr(data-placeholder);
-  color: var(--pixel-font-c, #2a2a2a);
-  opacity: 0.3;
-}
-
-.hl-bubble-display {
-  display: inline-block;
-  font-size: 11px;
-  color: #1a1a1a;
-  min-width: 20px;
-  min-height: 1em;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.hl-bubble-display:empty::before {
-  content: '...';
-  opacity: 0.4;
 }
 
 .hl-chatbar-display {
@@ -865,7 +553,52 @@
   -webkit-touch-callout: none;
 }
 
-.hl-avatar-bg.has-img {
-  display: block;
+.hl-avatar-bg.has-img { display: block; }
+
+/* =========================
+   拖拽反馈
+========================= */
+.hl-dragging {
+  opacity: 0.85;
+  z-index: 999 !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
 }
 
+/* =========================
+   圆头像 CSS 变量驱动
+========================= */
+.hl-avatar-unit {
+  --hl-border-c: #2a2a2a;
+  --hl-border-w: 1px;
+  --hl-font-c: #2a2a2a;
+  --hl-bar-opacity: 0.45;
+  --hl-bar-blur: 12px;
+  --hl-bar-color: rgba(255,255,255,0.45);
+}
+
+.hl-avatar-unit .hl-avatar {
+  border-width: var(--hl-border-w);
+  border-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-bubble {
+  border-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-bubble-right .hl-bubble-arrow-outer {
+  border-top-color: var(--hl-border-c);
+}
+.hl-avatar-unit .hl-bubble-left .hl-bubble-arrow-outer {
+  border-bottom-color: var(--hl-border-c);
+}
+
+.hl-avatar-unit .hl-chatbar {
+  background: var(--hl-bar-color);
+  backdrop-filter: blur(var(--hl-bar-blur));
+  -webkit-backdrop-filter: blur(var(--hl-bar-blur));
+}
+
+.hl-avatar-unit .hl-avatar-placeholder circle,
+.hl-avatar-unit .hl-avatar-placeholder path {
+  stroke: var(--hl-border-c);
+}
