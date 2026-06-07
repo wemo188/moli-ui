@@ -40,7 +40,7 @@
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-       <!-- 第一页 -->
+           <!-- 第一页 -->
     <section class="screen-page screen-page-1">
       <div class="screen-page-inner" style="display:flex;flex-direction:column;min-height:100%;">
 
@@ -74,9 +74,14 @@
           </div>
         </div>
 
-        <!-- 2. 圆头像（左最左，右最右） -->
-        <div id="hlAvatarsRow" class="hl-avatars-row" style="justify-content:space-between;gap:0;padding:0 12px;margin-top:14px;">
-          <div id="hlAvatarWrapLeft" class="hl-avatar-unit" style="align-items:flex-start;">
+        <!-- 2. 圆头像：左头像贴最左，右头像贴最右 -->
+        <div id="hlAvatarsRow" class="hl-avatars-row" style="justify-content:space-between;gap:0;padding:0 16px;margin-top:14px;">
+          <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
+            <div class="hl-bubble hl-bubble-right">
+              <div class="hl-bubble-arrow-outer"></div>
+              <div class="hl-bubble-arrow-inner"></div>
+              <span class="hl-bubble-display" id="hlInputLeft"></span>
+            </div>
             <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
               <div class="hl-avatar-inner">
                 <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
@@ -86,17 +91,17 @@
                 <div class="hl-avatar-bg" id="hlImgLeft"></div>
               </div>
             </div>
-            <div class="hl-bubble hl-bubble-left" style="position:relative;bottom:auto;left:auto;margin-top:6px;margin-left:8px;">
-              <div class="hl-bubble-arrow-outer" style="display:none;"></div>
-              <div class="hl-bubble-arrow-inner" style="display:none;"></div>
-              <span class="hl-bubble-display" id="hlInputLeft"></span>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bot" style="position:relative;top:auto;left:auto;margin-top:6px;">
+            <div class="hl-chatbar hl-chatbar-bot">
               <span class="hl-chatbar-display" id="hlChatLeft" data-placeholder="说点什么..."></span>
             </div>
           </div>
 
-          <div id="hlAvatarWrapRight" class="hl-avatar-unit" style="align-items:flex-end;">
+          <div id="hlAvatarWrapRight" class="hl-avatar-unit">
+            <div class="hl-bubble hl-bubble-left">
+              <div class="hl-bubble-arrow-outer"></div>
+              <div class="hl-bubble-arrow-inner"></div>
+              <span class="hl-bubble-display" id="hlInputRight"></span>
+            </div>
             <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
               <div class="hl-avatar-inner">
                 <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
@@ -106,21 +111,15 @@
                 <div class="hl-avatar-bg" id="hlImgRight"></div>
               </div>
             </div>
-            <div class="hl-bubble hl-bubble-right" style="position:relative;top:auto;right:auto;margin-top:6px;margin-right:8px;">
-              <div class="hl-bubble-arrow-outer" style="display:none;"></div>
-              <div class="hl-bubble-arrow-inner" style="display:none;"></div>
-              <span class="hl-bubble-display" id="hlInputRight"></span>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bl" style="position:relative;top:auto;right:auto;margin-top:6px;">
+            <div class="hl-chatbar hl-chatbar-bl">
               <span class="hl-chatbar-display" id="hlChatRight" data-placeholder="说点什么..."></span>
             </div>
           </div>
         </div>
 
-        <!-- 3. 图标+拼图 并排 -->
-        <div id="iconsAndPuzzleRow" style="display:flex;align-items:flex-start;justify-content:space-between;padding:0 12px;margin-top:18px;width:100%;gap:16px;">
-          <!-- 左侧：两行图标 -->
-          <div id="appIconsRow" style="display:flex;flex-direction:column;gap:14px;flex-shrink:0;">
+        <!-- 3. 图标(左两行) + 拼图(右) -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:0 16px;margin-top:18px;width:100%;">
+          <div id="appIconsRow" style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;gap:16px;">
               <div id="iconUser">
                 <div id="iconUserImg"></div>
@@ -142,8 +141,7 @@
               </div>
             </div>
           </div>
-          <!-- 右侧：拼图 -->
-          <div id="puzzleCard" style="flex-shrink:0;"></div>
+          <div id="puzzleCard"></div>
         </div>
 
         <!-- 4. Eden文字卡片 -->
