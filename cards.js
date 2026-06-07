@@ -227,6 +227,16 @@ var Cards={
     Cards._restoreHlAvatar('hlImgLeft','avatar_hlLeft');
     Cards._restoreHlAvatar('hlImgRight','avatar_hlRight');
 
+    // 恢复气泡和对话条文字
+    var bubbleL=document.getElementById('hlInputLeft');
+    var bubbleR=document.getElementById('hlInputRight');
+    var chatL=document.getElementById('hlChatLeft');
+    var chatR=document.getElementById('hlChatRight');
+    if(bubbleL)bubbleL.textContent=App.LS.get('hlBubble_left')||'';
+    if(bubbleR)bubbleR.textContent=App.LS.get('hlBubble_right')||'';
+    if(chatL)chatL.textContent=App.LS.get('hlChat_left')||'';
+    if(chatR)chatR.textContent=App.LS.get('hlChat_right')||'';
+
     Cards._bindHlDrag('hlTextCard');
     Cards._bindHlDrag('hlAvatarWrapLeft');
     Cards._bindHlDrag('hlAvatarWrapRight');
