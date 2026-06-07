@@ -641,10 +641,10 @@
   position: absolute;
   top: 100%;
   left: 100%;
-  margin-top: -20px;
-  margin-right: 5px;
-  border-radius: 4px 18px 18px 18px;  /* 尖角在左上 */
-  direction: ltr;                     /* 文字从左到右 */
+  margin-top: 15px;        /* 正值向下，负值向上，原来 -20px 太靠上了 */
+  margin-left: -32.5px;    /* 水平居中 */
+  border-radius: 4px 18px 18px 18px;
+  direction: ltr;
 }
 
 .hl-chatbar-input {
