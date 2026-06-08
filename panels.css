@@ -560,6 +560,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  font-family: inherit !important;
+}
+
+.ft-item-preview[style*="font-family"] {
+  font-family: var(--ft-self-family) !important;
 }
 
 .ft-item-name {
