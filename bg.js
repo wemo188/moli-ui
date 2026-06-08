@@ -84,7 +84,7 @@ var Bg = {
     '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>' +
     '<div class="bf-list-info">' +
       '<span class="bf-list-name">字体选择</span>' +
-      '<span class="bf-list-sub">全局字体掌控</span>' +
+      '<span class="bf-list-sub">同时使用中英双种字体搭配</span>' +
     '</div>' +
     '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
   '</div>' +
