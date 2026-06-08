@@ -144,24 +144,22 @@ var Font={
     Font.loadByName(t.name,cb);
   },
 
-  _injectStyle:function(family){
-    var styleId='fontGlobalOverride';
-    var styleEl=document.getElementById(styleId);
-    if(!styleEl){
-      styleEl=document.createElement('style');
-      styleEl.id=styleId;
-      document.head.appendChild(styleEl);
-    }
-    if(!family || family===BUILTIN[0].family){
-      styleEl.textContent='';
-      document.body.style.fontFamily='';
-      return;
-    }
-    styleEl.textContent=
-      '*{font-family:'+family+' !important;}'+
-      '.ft-item-preview{font-family:inherit !important;}'+
-      '#ftPvText{font-family:inherit !important;}';
-  },
+_injectStyle:function(family){
+  var styleId='fontGlobalOverride';
+  var styleEl=document.getElementById(styleId);
+  if(!styleEl){
+    styleEl=document.createElement('style');
+    styleEl.id=styleId;
+    document.head.appendChild(styleEl);
+  }
+  if(!family || family===BUILTIN[0].family){
+    styleEl.textContent='';
+    document.body.style.fontFamily='';
+    return;
+  }
+  document.body.style.fontFamily=family;
+  styleEl.textContent='';
+},
 
   apply:function(){
     var name=Font.config.selected||'系统默认';
