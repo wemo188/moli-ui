@@ -287,7 +287,7 @@ var Cards={
   },
 
   bindEdit:function(){
-    document.querySelectorAll('#cardRow .bx-w').forEach(function(card){
+    document.querySelectorAll('.bx-w').forEach(function(card){
       var sub=card.querySelector('.bx-sub');
       if(sub&&!sub._dblBound){
         sub._dblBound=true;
