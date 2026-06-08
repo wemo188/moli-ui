@@ -145,20 +145,22 @@ var Font={
   },
 
 _injectStyle:function(family){
-  var styleId='fontGlobalOverride';
-  var styleEl=document.getElementById(styleId);
-  if(!styleEl){
-    styleEl=document.createElement('style');
-    styleEl.id=styleId;
-    document.head.appendChild(styleEl);
-  }
-  if(!family || family===BUILTIN[0].family){
+  try{
+    var styleId='fontGlobalOverride';
+    var styleEl=document.getElementById(styleId);
+    if(!styleEl){
+      styleEl=document.createElement('style');
+      styleEl.id=styleId;
+      document.head.appendChild(styleEl);
+    }
+    if(!family || family===BUILTIN[0].family){
+      styleEl.textContent='';
+      document.body.style.fontFamily='';
+      return;
+    }
+    document.body.style.fontFamily=family;
     styleEl.textContent='';
-    document.body.style.fontFamily='';
-    return;
-  }
-  document.body.style.fontFamily=family;
-  styleEl.textContent='';
+  }catch(e){console.warn('[font]',e);}
 },
 
   apply:function(){
