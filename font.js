@@ -8,7 +8,7 @@ var STORE_NAME='fontFiles';
 
 var BUILTIN=[
   {name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},
-  {name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},
+  {name:'霞鹜文楷',family:'LXGW WenKai,cursive'},
   {name:'思源宋体',family:'"Noto Serif SC",serif'},
   {name:'思源黑体',family:'"Noto Sans SC",sans-serif'},
   {name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},
@@ -87,6 +87,19 @@ function loadAllCustomFonts(list,cb){
   next();
 }
 
+/* 确保指定字体已加载 */
+function ensureLoaded(fontName,customList,cb){
+  if(!fontName){if(cb)cb();return;}
+  for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
+  var already=false;
+  document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
+  if(already){if(cb)cb();return;}
+  var t=null;
+  for(var j=0;j<customList.length;j++){if(customList[j].name===fontName){t=customList[j];break;}}
+  if(!t){if(cb)cb();return;}
+  loadAllCustomFonts([t],cb);
+}
+
 var Font={
   config:{},
   customList:[],
@@ -131,26 +144,7 @@ var Font={
 
   loadByName:function(fontName,cb){
     if(!fontName){if(cb)cb();return;}
-    for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
-    var already=false;
-    document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
-    if(already){if(cb)cb();return;}
-    var t=null;
-    for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===fontName){t=Font.customList[j];break;}}
-    if(!t){if(cb)cb();return;}
-    if(t.cssUrl){
-      if(!document.querySelector('link[href="'+t.cssUrl+'"]')){var lk=document.createElement('link');lk.rel='stylesheet';lk.href=t.cssUrl;document.head.appendChild(lk);}
-      if(cb)cb();return;
-    }
-    if(t.url){
-      var ff=new FontFace(t.name,'url('+t.url+')',{weight:'100 900'});
-      ff.load().then(function(l){document.fonts.add(l);if(cb)cb();}).catch(function(){if(cb)cb();});
-      return;
-    }
-    getOneFont(t.name,function(r){
-      if(r&&r.dataUrl){loadFontFace(r.name,r.dataUrl).then(function(){if(cb)cb();}).catch(function(){if(cb)cb();});}
-      else{if(cb)cb();}
-    });
+    ensureLoaded(fontName,Font.customList,cb);
   },
 
   loadByFamily:function(family,cb){
@@ -161,12 +155,7 @@ var Font={
     Font.loadByName(t.name,cb);
   },
 
-  /* 核心：用 <style> 标签强制覆盖所有元素的 font-family */
-  apply:function(){
-    var combo=Font._combo(Font.config.selectedEn,Font.config.selectedZh);
-    var scale=Font.getScale(Font.config.selectedZh);
-    Font.config.selected=Font.config.selectedZh;
-
+  _injectStyle:function(combo){
     var styleId='fontGlobalOverride';
     var styleEl=document.getElementById(styleId);
     if(!styleEl){
@@ -175,25 +164,24 @@ var Font={
       document.head.appendChild(styleEl);
     }
     styleEl.textContent=
-      'html,body,input,textarea,select,button,'+
-      '.main-content,.main-content *,'+
-      '.screen-page,.screen-page *,'+
-      '.dock,.dock *,'+
-      '.half-panel,.half-panel *,'+
-      '.fullpage-panel,.fullpage-panel *,'+
-      '.pixel-dialog,.pixel-dialog *,'+
-      '.bx-w,.bx-w *,'+
-      '.hl-avatar-unit,.hl-avatar-unit *,'+
-      '#edenText,#edenCard,#edenCard *,'+
-      '.eden-card,.eden-card *,'+
-      '#calTimeRow,#calTimeRow *'+
-      '{font-family:'+combo+' !important;}';
+      '*:not(.ft-item-preview):not(.ft-live-preview-text):not(.ft-live-preview-text *):not(#ftPvCn):not(#ftPvEn){font-family:'+combo+' !important;}';
+  },
 
+  apply:function(){
+    var combo=Font._combo(Font.config.selectedEn,Font.config.selectedZh);
+    var scale=Font.getScale(Font.config.selectedZh);
+    Font.config.selected=Font.config.selectedZh;
     document.documentElement.style.setProperty('--font-scale',scale);
 
-    setTimeout(function(){
-      document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
-    },100);
+    /* 先确保字体加载完毕再注入样式 */
+    ensureLoaded(Font.config.selectedZh,Font.customList,function(){
+      ensureLoaded(Font.config.selectedEn,Font.customList,function(){
+        Font._injectStyle(combo);
+        setTimeout(function(){
+          document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
+        },100);
+      });
+    });
   },
 
   open:function(){
@@ -453,5 +441,4 @@ var Font={
 
 App.register('font',Font);
 })();
-
 
