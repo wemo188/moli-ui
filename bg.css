@@ -105,10 +105,31 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 12px 16px 20px 16px;
   border-bottom: none;
   flex-shrink: 0;
   min-height: 56px;
+  flex-wrap: wrap;
+}
+
+.bf-nav-title {
+  font-size: 23px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  order: 1;
+  flex: auto;
+  text-align: center;
+}
+
+.bf-nav-title::after {
+  content: "customize";
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3b0;
+  margin-top: 2px;
 }
 
 .bf-back {
@@ -123,6 +144,7 @@
   color: #d1d5db;
   padding: 0;
   margin: 0;
+  order: 0;
 }
 
 .bf-back svg {
@@ -131,16 +153,9 @@
   display: block;
 }
 
-.bf-nav-title {
-  font-size: 23px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
-}
-
 .bf-nav-right {
   width: 40px;
+  order: 2;
 }
 
 /* =========================
