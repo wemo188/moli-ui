@@ -15,11 +15,14 @@ var BUILTIN=[
   {name:'马善政楷',family:'"Ma Shan Zheng",cursive'}
 ];
 
-var DEF_CFG={selected:'系统默认'};
-var PREVIEW_TEXT='遇你，如春水映梨花。<br>Meet you like spring water reflecting pear flower';
+var DEF_CFG={selected:'系统默认',selectedEn:'',selectedZh:''};
+var PREVIEW_CN='遇你，如春水映梨花。';
+var PREVIEW_EN='Meet you like spring water reflecting pear flower.';
 
 var _db=null;
-var _previewingName='';
+var _activeTab='zh';
+var _previewZh='';
+var _previewEn='';
 
 function openDB(cb){
   try{
@@ -73,6 +76,8 @@ var Font={
 
   load:function(){
     Font.config=App.LS.get('fontConfig')||JSON.parse(JSON.stringify(DEF_CFG));
+    if(!Font.config.selectedZh) Font.config.selectedZh = Font.config.selected || '系统默认';
+    if(!Font.config.selectedEn) Font.config.selectedEn = '';
     Font.customList=App.LS.get('fontCustomList')||[];
     Font.customList.forEach(function(f){if(f.scale==null)f.scale=1;});
   },
@@ -83,9 +88,10 @@ var Font={
   },
 
   getFamily:function(name){
+    if(!name) return '';
     for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===name)return BUILTIN[i].family;}
     for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===name)return Font.customList[j].family;}
-    return BUILTIN[0].family;
+    return '';
   },
 
   getScale:function(name){
@@ -94,9 +100,20 @@ var Font={
   },
 
   _getDisplayName:function(name){
+    if(!name) return '未设置';
     for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===name)return BUILTIN[i].name;}
     for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===name)return Font.customList[j].fileName||Font.customList[j].name;}
     return name;
+  },
+
+  /* 组合中英字体为最终 font-family */
+  _buildComboFamily: function(enName, zhName){
+    var enFamily = Font.getFamily(enName);
+    var zhFamily = Font.getFamily(zhName);
+    if(enFamily && zhFamily) return enFamily + ',' + zhFamily;
+    if(enFamily) return enFamily;
+    if(zhFamily) return zhFamily;
+    return BUILTIN[0].family;
   },
 
   _loadAllForPreview: function(cb){
@@ -172,20 +189,20 @@ var Font={
     Font.loadByName(target.name, cb);
   },
 
-  _updatePreviewArea: function(panel, name){
-    var family = Font.getFamily(name);
-    var displayName = Font._getDisplayName(name);
-    var isCurrentGlobal = (name === Font.config.selected);
-    _previewingName = name;
-
+  _updatePreviewArea: function(panel){
+    var comboFamily = Font._buildComboFamily(_previewEn, _previewZh);
     var textEl = panel.querySelector('.ft-live-preview-text');
-    var labelEl = panel.querySelector('.ft-live-preview-label');
+    var zhTag = panel.querySelector('#ftSlotZh');
+    var enTag = panel.querySelector('#ftSlotEn');
     var btnEl = panel.querySelector('#ftApplyBtn');
 
-    if(textEl) textEl.style.fontFamily = family;
-    if(labelEl) labelEl.textContent = '预览 · ' + displayName;
+    if(textEl) textEl.style.fontFamily = comboFamily;
+    if(zhTag) zhTag.textContent = '中文：' + Font._getDisplayName(_previewZh);
+    if(enTag) enTag.textContent = '英文：' + Font._getDisplayName(_previewEn);
+
+    var isSame = (_previewZh === Font.config.selectedZh && _previewEn === Font.config.selectedEn);
     if(btnEl){
-      if(isCurrentGlobal){
+      if(isSame){
         btnEl.classList.add('disabled');
         btnEl.textContent = '当前全局';
       } else {
@@ -195,12 +212,17 @@ var Font={
     }
   },
 
+  _getActivePreviewName: function(){
+    return _activeTab === 'en' ? _previewEn : _previewZh;
+  },
+
   apply: function(){
-    var name = Font.config.selected || '系统默认';
-    var family = Font.getFamily(name);
-    var scale = Font.getScale(name);
-    document.body.style.fontFamily = family;
+    var comboFamily = Font._buildComboFamily(Font.config.selectedEn, Font.config.selectedZh);
+    var scale = Font.getScale(Font.config.selectedZh);
+    document.body.style.fontFamily = comboFamily;
     document.documentElement.style.setProperty('--font-scale', scale);
+    /* 兼容旧的 selected 字段 */
+    Font.config.selected = Font.config.selectedZh;
     setTimeout(function(){
       var ribbons = document.querySelectorAll('.bx-ribbon-tab');
       ribbons.forEach(function(el){
@@ -220,7 +242,9 @@ var Font={
     panel.id = 'fontFullPanel';
     panel.className = 'font-fullpanel';
 
-    _previewingName = Font.config.selected || '系统默认';
+    _previewZh = Font.config.selectedZh || '系统默认';
+    _previewEn = Font.config.selectedEn || '';
+    _activeTab = 'zh';
 
     Font._loadAllForPreview(function(){
       Font.render(panel);
@@ -238,15 +262,13 @@ var Font={
     setTimeout(function(){ panel.remove(); }, 350);
   },
 
-    render:function(panel){
-    var selected=Font.config.selected||'系统默认';
-    var previewName = _previewingName || selected;
-    var previewFamily = Font.getFamily(previewName);
-    var previewDisplayName = Font._getDisplayName(previewName);
-    var isCurrentGlobal = (previewName === selected);
+  render:function(panel){
+    var comboFamily = Font._buildComboFamily(_previewEn, _previewZh);
+    var activeName = _activeTab === 'en' ? _previewEn : _previewZh;
+    var isSame = (_previewZh === Font.config.selectedZh && _previewEn === Font.config.selectedEn);
 
     var builtinHtml=BUILTIN.map(function(f){
-      var isActive=previewName===f.name;
+      var isActive = activeName===f.name;
       return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
         '<div class="ft-item-preview" style="font-family:'+f.family+' !important;">你好世界 Hello</div>' +
         '<div class="ft-item-name">'+App.esc(f.name)+'</div>' +
@@ -257,7 +279,7 @@ var Font={
     var customHtml='';
     if(Font.customList.length){
       customHtml=Font.customList.map(function(f){
-        var isActive=previewName===f.name;
+        var isActive = activeName===f.name;
         return '<div class="ft-custom-card'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
           '<div class="ft-custom-top">' +
           '<div class="ft-item-preview" style="font-family:'+f.family+' !important;">你好世界 Hello</div>' +
@@ -278,9 +300,16 @@ var Font={
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="ft-live-preview" id="ftLivePreview">' +
-        '<div class="ft-live-preview-label">预览 · '+App.esc(previewDisplayName)+'</div>' +
-        '<div class="ft-live-preview-text" style="font-family:'+previewFamily+' !important;">'+PREVIEW_TEXT+'</div>' +
-        '<button type="button" class="ft-live-preview-btn'+(isCurrentGlobal?' disabled':'')+'" id="ftApplyBtn">'+(isCurrentGlobal?'当前全局':'应用为全局')+'</button>' +
+        '<div class="ft-tab-row">' +
+          '<button type="button" class="ft-tab'+(_activeTab==='zh'?' active':'')+'" data-tab="zh">中文</button>' +
+          '<button type="button" class="ft-tab'+(_activeTab==='en'?' active':'')+'" data-tab="en">英文</button>' +
+        '</div>' +
+        '<div class="ft-live-preview-text" style="font-family:'+comboFamily+' !important;">'+PREVIEW_CN+'<br><span style="font-size:16px;opacity:0.7;">'+PREVIEW_EN+'</span></div>' +
+        '<div class="ft-slot-info">' +
+          '<span class="ft-slot-tag'+(_activeTab==='zh'?' active':'')+'" id="ftSlotZh">中文：'+App.esc(Font._getDisplayName(_previewZh))+'</span>' +
+          '<span class="ft-slot-tag'+(_activeTab==='en'?' active':'')+'" id="ftSlotEn">英文：'+App.esc(Font._getDisplayName(_previewEn))+'</span>' +
+        '</div>' +
+        '<button type="button" class="ft-live-preview-btn'+(isSame?' disabled':'')+'" id="ftApplyBtn">'+(isSame?'当前全局':'应用为全局')+'</button>' +
       '</div>' +
       '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 20px 0;">' +
         '<div class="hp-upload" id="ftUploadArea">' +
@@ -304,17 +333,29 @@ var Font={
   bindEvents:function(panel){
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
 
-    /* 应用为全局按钮 */
+    /* Tab 切换 */
+    panel.querySelectorAll('.ft-tab').forEach(function(tab){
+      tab.addEventListener('click', function(){
+        _activeTab = tab.dataset.tab;
+        panel.querySelectorAll('.ft-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===_activeTab);});
+        panel.querySelectorAll('.ft-slot-tag').forEach(function(s){
+          s.classList.toggle('active', (s.id==='ftSlotZh'&&_activeTab==='zh')||(s.id==='ftSlotEn'&&_activeTab==='en'));
+        });
+        /* 更新列表高亮 */
+        var activeName = _activeTab==='en'?_previewEn:_previewZh;
+        panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
+          el.classList.toggle('active', el.dataset.fname===activeName);
+        });
+      });
+    });
+
+    /* 应用为全局 */
     panel.querySelector('#ftApplyBtn').addEventListener('click',function(){
-      if(!_previewingName) return;
-      Font.config.selected = _previewingName;
+      Font.config.selectedZh = _previewZh;
+      Font.config.selectedEn = _previewEn;
       Font.save();
       Font.apply();
-      Font._updatePreviewArea(panel, _previewingName);
-      /* 更新列表高亮 */
-      panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-        el.classList.toggle('active', el.dataset.fname === _previewingName);
-      });
+      Font._updatePreviewArea(panel);
       App.showToast('已应用为全局字体');
     });
 
@@ -335,7 +376,7 @@ var Font={
         var family="'"+familyName+"',serif";
         Font.customList.push({name:fontName,family:family,fileName:familyName,scale:1,cssUrl:url});
         Font.save();
-        _previewingName = fontName;
+        if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
         Font.render(panel);
         App.showToast('已添加：'+familyName);
         return;
@@ -351,7 +392,7 @@ var Font={
         var family="'"+fontName+"',sans-serif";
         Font.customList.push({name:fontName,family:family,fileName:rawName,scale:1,url:url});
         Font.save();
-        _previewingName = fontName;
+        if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
         Font.render(panel);
         App.showToast('已添加：'+rawName);
       }).catch(function(){
@@ -374,7 +415,7 @@ var Font={
             var family="'"+fontName+"',sans-serif";
             Font.customList.push({name:fontName,family:family,fileName:file.name,scale:1});
             Font.save();
-            _previewingName = fontName;
+            if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
             Font.render(panel);
             App.showToast('已添加：'+file.name);
           });
@@ -384,13 +425,15 @@ var Font={
       e.target.value='';
     });
 
-    /* 点击字体列表 → 只更新预览，不改全局 */
+    /* 点击字体列表 → 填入当前 tab 对应的槽位 */
     panel.querySelectorAll('.ft-item').forEach(function(item){
       item.addEventListener('click',function(){
-        _previewingName = item.dataset.fname;
-        Font._updatePreviewArea(panel, _previewingName);
+        var fname = item.dataset.fname;
+        if(_activeTab==='en') _previewEn=fname; else _previewZh=fname;
+        Font._updatePreviewArea(panel);
+        var activeName = _activeTab==='en'?_previewEn:_previewZh;
         panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-          el.classList.toggle('active', el.dataset.fname === _previewingName);
+          el.classList.toggle('active', el.dataset.fname===activeName);
         });
       });
     });
@@ -398,10 +441,12 @@ var Font={
     panel.querySelectorAll('.ft-custom-card').forEach(function(card){
       card.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
-        _previewingName = card.dataset.fname;
-        Font._updatePreviewArea(panel, _previewingName);
+        var fname = card.dataset.fname;
+        if(_activeTab==='en') _previewEn=fname; else _previewZh=fname;
+        Font._updatePreviewArea(panel);
+        var activeName = _activeTab==='en'?_previewEn:_previewZh;
         panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-          el.classList.toggle('active', el.dataset.fname === _previewingName);
+          el.classList.toggle('active', el.dataset.fname===activeName);
         });
       });
     });
@@ -413,9 +458,11 @@ var Font={
         if(!confirm('删除这个字体？'))return;
         deleteFont(name,function(){
           Font.customList=Font.customList.filter(function(f){return f.name!==name;});
-          if(Font.config.selected===name){Font.config.selected='系统默认';Font.apply();}
-          if(_previewingName===name) _previewingName=Font.config.selected;
-          Font.save();Font.render(panel);
+          if(Font.config.selectedZh===name){Font.config.selectedZh='系统默认';}
+          if(Font.config.selectedEn===name){Font.config.selectedEn='';}
+          if(_previewZh===name) _previewZh=Font.config.selectedZh;
+          if(_previewEn===name) _previewEn=Font.config.selectedEn;
+          Font.save();Font.apply();Font.render(panel);
           App.showToast('已删除');
         });
       });
@@ -425,28 +472,35 @@ var Font={
   init:function(){
     openDB(function(){
       Font.load();
-      var selected = Font.config.selected || '系统默认';
-      var isBuiltin = false;
-      for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===selected){isBuiltin=true;break;}}
-      if(isBuiltin){Font.apply();return;}
-      var target = null;
-      for(var j=0;j<Font.customList.length;j++){
-        if(Font.customList[j].name===selected){target=Font.customList[j];break;}
+      var zhName = Font.config.selectedZh || Font.config.selected || '系统默认';
+      var enName = Font.config.selectedEn || '';
+
+      function applyAfterLoad(){
+        Font.config.selectedZh = zhName;
+        Font.config.selectedEn = enName;
+        Font.apply();
       }
-      if(!target){Font.apply();return;}
-      if(target.cssUrl){
-        var link=document.createElement('link');link.rel='stylesheet';link.href=target.cssUrl;document.head.appendChild(link);
-        Font.apply();return;
+
+      var isBuiltinZh = false;
+      for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===zhName){isBuiltinZh=true;break;}}
+
+      function loadEn(cb){
+        if(!enName){cb();return;}
+        var isBuiltinEn = false;
+        for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===enName){isBuiltinEn=true;break;}}
+        if(isBuiltinEn){cb();return;}
+        Font.loadByName(enName, cb);
       }
-      if(target.url){
-        var ff=new FontFace(target.name,'url('+target.url+')',{weight:'100 900'});
-        ff.load().then(function(loaded){document.fonts.add(loaded);Font.apply();}).catch(function(){Font.apply();});
-        return;
+
+      function loadZh(cb){
+        if(isBuiltinZh){cb();return;}
+        Font.loadByName(zhName, cb);
       }
-      getOneFont(target.name, function(result){
-        if(result&&result.dataUrl){
-          loadFontFace(result.name,result.dataUrl).then(function(){Font.apply();}).catch(function(){Font.apply();});
-        } else {Font.apply();}
+
+      loadZh(function(){
+        loadEn(function(){
+          applyAfterLoad();
+        });
       });
     });
     App.font=Font;
@@ -455,3 +509,4 @@ var Font={
 
 App.register('font',Font);
 })();
+
