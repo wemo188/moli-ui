@@ -527,7 +527,7 @@ var Eden = {
       '<div class="pc-body" style="gap:8px;">'+
         '<div class="pc-group"><span class="pc-label">文字内容</span><textarea id="edenTextInput" rows="4" style="width:100%;padding:7px 10px;font-size:12px;color:#000;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.15);border-radius:8px;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;">'+App.esc(d.text||'')+'</textarea></div>'+
         '<div class="pc-group"><span class="pc-label">字体</span><select id="edenFontSelect" style="width:100%;padding:7px 10px;font-size:12px;color:#000;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.15);border-radius:8px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;cursor:pointer;">'+fontOptionsHtml+'</select></div>'+
-        '<div class="pc-group"><span class="pc-label">字号</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSize" min="14" max="60" step="1" value="'+(d.fontSize||28)+'"><span class="pc-slider-val" id="edenSizeVal">'+(d.fontSize||28)+'px</span></div></div>'+
+        '<div class="pc-group"><span class="pc-label">字号</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSize" min="14" max="70" step="1" value="'+(d.fontSize||28)+'"><span class="pc-slider-val" id="edenSizeVal">'+(d.fontSize||28)+'px</span></div></div>'+
         '<div class="pc-group"><span class="pc-label">倾斜</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenRotate" min="-20" max="20" step="1" value="'+(d.rotate||0)+'"><span class="pc-slider-val" id="edenRotateVal">'+(d.rotate||0)+'°</span></div></div>'+
         '<div class="pc-group"><span class="pc-label">字间距</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSpacing" min="0" max="20" step="1" value="'+(d.spacing||2)+'"><span class="pc-slider-val" id="edenSpacingVal">'+(d.spacing||2)+'px</span></div></div>'+
         '<div class="pc-group"><span class="pc-label">行距</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenLineHeight" min="1.0" max="2.5" step="0.05" value="'+(d.lineHeight||1.4)+'"><span class="pc-slider-val" id="edenLineHeightVal">'+(d.lineHeight||1.4)+'</span></div></div>'+
@@ -569,7 +569,17 @@ var Eden = {
       el.style.transform = 'rotate('+panel.querySelector('#edenRotate').value+'deg)';
       el.style.letterSpacing = panel.querySelector('#edenSpacing').value+'px';
       el.style.lineHeight = panel.querySelector('#edenLineHeight').value;
-      el.style.color = currentFontColor;
+      if (currentFontColor && currentFontColor.indexOf('linear-gradient') === 0) {
+  el.style.background = currentFontColor;
+  el.style.backgroundClip = 'text';
+  el.style.webkitBackgroundClip = 'text';
+  el.style.color = 'transparent';
+} else {
+  el.style.background = '';
+  el.style.backgroundClip = '';
+  el.style.webkitBackgroundClip = '';
+  el.style.color = currentFontColor;
+}
       el.style.fontFamily = family||'';
       el.style.whiteSpace = 'pre-wrap'; el.style.wordBreak = 'break-word';
     }
