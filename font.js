@@ -91,6 +91,21 @@ var Font={
     return 1;
   },
 
+_loadedFontNames: [],
+
+_clearLoadedFonts: function(){
+  var toDelete = [];
+  document.fonts.forEach(function(ff){
+    // 只清理我们自己加载的自定义字体（以 Custom_ 或 CSS_ 开头的）
+    if(ff.family && (ff.family.indexOf('Custom_')===0 || ff.family.indexOf('CSS_')===0)){
+      toDelete.push(ff);
+    }
+  });
+  toDelete.forEach(function(ff){
+    try{ document.fonts.delete(ff); }catch(e){}
+  });
+},
+
   apply: function(){
     var name = Font.config.selected || '系统默认';
     var family = Font.getFamily(name);
@@ -108,54 +123,54 @@ var Font={
   },
 
   open:function(){
-    Font.load();
-    var old = document.getElementById('fontFullPanel');
-    if(old) { old.classList.remove('hidden'); old.classList.add('show'); return; }
+  Font.load();
+  var old = document.getElementById('fontFullPanel');
+  if(old) { old.classList.remove('hidden'); old.classList.add('show'); return; }
 
-    var panel = document.createElement('div');
-    panel.id = 'fontFullPanel';
-    panel.className = 'font-fullpanel';
+  var panel = document.createElement('div');
+  panel.id = 'fontFullPanel';
+  panel.className = 'font-fullpanel';
 
-    // 加载CSS类字体的link
-    Font.customList.forEach(function(f){
-      if(f.cssUrl){
+  // 加载CSS类字体的link
+  Font.customList.forEach(function(f){
+    if(f.cssUrl){
+      var existing = document.querySelector('link[href="'+f.cssUrl+'"]');
+      if(!existing){
         var link=document.createElement('link');link.rel='stylesheet';link.href=f.cssUrl;document.head.appendChild(link);
       }
-    });
-
-    // 逐个从DB加载字体，避免一次性内存爆炸
-    var dbFonts = Font.customList.filter(function(f){return !f.url&&!f.cssUrl;});
-    var loadIdx = 0;
-
-    function loadNextDBFont(){
-      if(loadIdx >= dbFonts.length){
-        // 再加载URL类字体
-        var urlFonts = Font.customList.filter(function(f){return f.url&&!f.cssUrl;});
-        var urlIdx = 0;
-        function loadNextURL(){
-          if(urlIdx >= urlFonts.length){
-            Font.render(panel);
-            document.body.appendChild(panel);
-            requestAnimationFrame(function(){ panel.classList.add('show'); });
-            App.bindSwipeBack(panel, function(){ Font.close(); });
-            return;
-          }
-          var uf = urlFonts[urlIdx];
-          var ff=new FontFace(uf.name,'url('+uf.url+')',{weight:'100 900'});
-          ff.load().then(function(loaded){document.fonts.add(loaded);urlIdx++;loadNextURL();}).catch(function(){urlIdx++;loadNextURL();});
-        }
-        loadNextURL();
-        return;
-      }
-      var f=dbFonts[loadIdx];
-      getOneFont(f.name, function(result){
-        if(result&&result.dataUrl){
-          loadFontFace(result.name,result.dataUrl).then(function(){loadIdx++;loadNextDBFont();}).catch(function(){loadIdx++;loadNextDBFont();});
-        } else {loadIdx++;loadNextDBFont();}
-      });
     }
-    loadNextDBFont();
-  },
+  });
+
+  // 只加载当前选中的字体，不加载全部
+  var selected = Font.config.selected || '系统默认';
+  var target = null;
+  for(var j=0;j<Font.customList.length;j++){
+    if(Font.customList[j].name===selected){target=Font.customList[j];break;}
+  }
+
+  function finishOpen(){
+    Font.render(panel);
+    document.body.appendChild(panel);
+    requestAnimationFrame(function(){ panel.classList.add('show'); });
+    App.bindSwipeBack(panel, function(){ Font.close(); });
+  }
+
+  if(!target || target.cssUrl){
+    // 内置或CSS字体，直接渲染
+    finishOpen();
+  } else if(target.url){
+    // URL字体，按需加载
+    var ff=new FontFace(target.name,'url('+target.url+')',{weight:'100 900'});
+    ff.load().then(function(loaded){document.fonts.add(loaded);finishOpen();}).catch(function(){finishOpen();});
+  } else {
+    // DB字体，只加载这一个
+    getOneFont(target.name, function(result){
+      if(result&&result.dataUrl){
+        loadFontFace(result.name,result.dataUrl).then(function(){finishOpen();}).catch(function(){finishOpen();});
+      } else {finishOpen();}
+    });
+  }
+},
 
   close:function(){
     var panel = document.getElementById('fontFullPanel');
@@ -294,20 +309,22 @@ var Font={
     });
 
     panel.querySelectorAll('.ft-item').forEach(function(item){
-      item.addEventListener('click',function(){
-        Font.config.selected=item.dataset.fname;
-        Font.save();Font.apply();Font.render(panel);
-      });
-    });
+  item.addEventListener('click',function(){
+    Font._clearLoadedFonts();
+    Font.config.selected=item.dataset.fname;
+    Font.save();Font.apply();Font.render(panel);
+  });
+});
 
-    panel.querySelectorAll('.ft-custom-card').forEach(function(card){
-      card.addEventListener('click',function(e){
-        if(e.target.closest('.ft-del-btn'))return;
-        if(e.target.closest('.ft-scale-slider'))return;
-        Font.config.selected=card.dataset.fname;
-        Font.save();Font.apply();Font.render(panel);
-      });
-    });
+panel.querySelectorAll('.ft-custom-card').forEach(function(card){
+  card.addEventListener('click',function(e){
+    if(e.target.closest('.ft-del-btn'))return;
+    if(e.target.closest('.ft-scale-slider'))return;
+    Font._clearLoadedFonts();
+    Font.config.selected=card.dataset.fname;
+    Font.save();Font.apply();Font.render(panel);
+  });
+});
 
     panel.querySelectorAll('.ft-del-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){
