@@ -423,22 +423,36 @@ var Eden = {
   },
 
   apply: function() {
-    var el = App.$('#edenText'); if(!el) return;
-    var d = Eden.data;
-    var scale = Eden.getSelectedScale();
-    var actualSize = Math.round((d.fontSize || 28) * scale);
-    el.textContent = d.text || '';
-    el.style.fontSize = actualSize + 'px';
-    el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
-    el.style.letterSpacing = (d.spacing || 0) + 'px';
-    el.style.lineHeight = (d.lineHeight || 1.4);
-    el.style.color = d.fontColor || '#1a1a1a';
-    el.style.fontFamily = d.fontFamily || '';
-    el.style.whiteSpace = 'pre-wrap';
-    el.style.wordBreak = 'break-word';
-    var card = App.$('#edenCard');
-    if(card && (d.posX || d.posY)) { card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)'; }
-  },
+  var el = App.$('#edenText'); if(!el) return;
+  var d = Eden.data;
+  var scale = Eden.getSelectedScale();
+  var actualSize = Math.round((d.fontSize || 28) * scale);
+  el.textContent = d.text || '';
+  el.style.fontSize = actualSize + 'px';
+  el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
+  el.style.letterSpacing = (d.spacing || 0) + 'px';
+  el.style.lineHeight = (d.lineHeight || 1.4);
+  
+  // 支持渐变色
+  var fontColor = d.fontColor || '#1a1a1a';
+  if (fontColor && fontColor.indexOf('linear-gradient') === 0) {
+    el.style.background = fontColor;
+    el.style.backgroundClip = 'text';
+    el.style.webkitBackgroundClip = 'text';
+    el.style.color = 'transparent';
+  } else {
+    el.style.background = '';
+    el.style.backgroundClip = '';
+    el.style.webkitBackgroundClip = '';
+    el.style.color = fontColor;
+  }
+  
+  el.style.fontFamily = d.fontFamily || '';
+  el.style.whiteSpace = 'pre-wrap';
+  el.style.wordBreak = 'break-word';
+  var card = App.$('#edenCard');
+  if(card && (d.posX || d.posY)) { card.style.transform = 'translate(' + d.posX + 'px, ' + d.posY + 'px)'; }
+},
 
   bindDrag: function() {
     var card = App.$('#edenCard'); if(!card) return;
