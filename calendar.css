@@ -120,8 +120,8 @@
   border-radius: 999px;
   border: 1px solid #eaecf0;
   background: rgba(255,255,255,0);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .wt-week-day {
