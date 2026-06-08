@@ -135,6 +135,43 @@ var Font={
     Font.loadByName(target.name, cb);
   },
 
+  _showPreview: function(panel, family, fileName){
+    var old = panel.querySelector('#ftPreviewBox');
+    if(old) old.remove();
+    var box = document.createElement('div');
+    box.id = 'ftPreviewBox';
+    box.style.cssText = 'margin:16px 20px;padding:24px 20px;background:rgba(126,163,201,0.06);border:1.5px solid rgba(126,163,201,0.2);border-radius:14px;text-align:center;';
+    box.innerHTML =
+      '<div style="font-size:11px;color:#8aa0b8;font-weight:600;margin-bottom:12px;letter-spacing:1px;">预览 · '+App.esc(fileName)+'</div>' +
+      '<div style="font-family:'+family+';font-size:22px;color:#2e4258;line-height:1.8;font-weight:500;">观我旧往同我仰春<br>知我晦暗许我春朝</div>' +
+      '<div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">' +
+        '<button type="button" id="ftPreviewApply" style="padding:10px 24px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">应用为全局</button>' +
+        '<button type="button" id="ftPreviewDismiss" style="padding:10px 24px;background:#eee;color:#666;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">仅保留</button>' +
+      '</div>';
+    var scrollBody = panel.querySelector('div[style*="overflow-y"]');
+    if(scrollBody) scrollBody.insertBefore(box, scrollBody.firstChild.nextSibling);
+    else panel.appendChild(box);
+
+    box.querySelector('#ftPreviewApply').addEventListener('click', function(){
+      var target = null;
+      for(var i=0;i<Font.customList.length;i++){if(Font.customList[i].family===family){target=Font.customList[i];break;}}
+      if(target){
+        Font._clearLoadedFonts();
+        Font.config.selected = target.name;
+        Font.save();
+        Font.apply();
+      }
+      box.remove();
+      Font.render(panel);
+      App.showToast('已应用为全局字体');
+    });
+
+    box.querySelector('#ftPreviewDismiss').addEventListener('click', function(){
+      box.remove();
+      App.showToast('字体已保留，可随时选用');
+    });
+  },
+
   apply: function(){
     var name = Font.config.selected || '系统默认';
     var family = Font.getFamily(name);
@@ -277,8 +314,9 @@ var Font={
         var fontName='CSS_'+familyName.replace(/\s+/g,'_')+'_'+Date.now();
         var family="'"+familyName+"',serif";
         Font.customList.push({name:fontName,family:family,fileName:familyName,scale:1,cssUrl:url});
-        Font.config.selected=fontName;
-        Font.save();Font.apply();Font.render(panel);
+        Font.save();
+        Font.render(panel);
+        Font._showPreview(panel, family, familyName);
         App.showToast('已添加：'+familyName);
         return;
       }
@@ -292,8 +330,9 @@ var Font={
         document.fonts.add(loaded);
         var family="'"+fontName+"',sans-serif";
         Font.customList.push({name:fontName,family:family,fileName:rawName,scale:1,url:url});
-        Font.config.selected=fontName;
-        Font.save();Font.apply();Font.render(panel);
+        Font.save();
+        Font.render(panel);
+        Font._showPreview(panel, family, rawName);
         App.showToast('已添加：'+rawName);
       }).catch(function(){
         App.showToast('加载失败，请检查URL');
@@ -314,10 +353,9 @@ var Font={
             if(!success){App.showToast('保存失败');return;}
             var family="'"+fontName+"',sans-serif";
             Font.customList.push({name:fontName,family:family,fileName:file.name,scale:1});
-            Font.config.selected=fontName;
             Font.save();
-            Font.apply();
             Font.render(panel);
+            Font._showPreview(panel, family, file.name);
             App.showToast('已添加：'+file.name);
           });
         });
@@ -422,4 +460,3 @@ var Font={
 
 App.register('font',Font);
 })();
-
