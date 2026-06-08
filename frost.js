@@ -588,7 +588,16 @@ if(d.fontFamily&&App.font&&App.font.loadByFamily)App.font.loadByFamily(d.fontFam
     ['edenSize','edenRotate','edenSpacing','edenLineHeight','edenTextInput'].forEach(function(id){
       var el = panel.querySelector('#'+id); if(el) el.addEventListener('input', preview);
     });
-    panel.querySelector('#edenFontSelect').addEventListener('change', preview);
+    panel.querySelector('#edenFontSelect').addEventListener('change', function(){
+  var selOpt = panel.querySelector('#edenFontSelect');
+  var selIdx = selOpt.selectedIndex;
+  var family = selOpt.options[selIdx] ? selOpt.options[selIdx].dataset.family : '';
+  if(family && App.font && App.font.loadByFamily){
+    App.font.loadByFamily(family, function(){ preview(); });
+  } else {
+    preview();
+  }
+});
 
     panel.querySelector('#edenColorDot').addEventListener('click', function(e){
       e.stopPropagation(); if(!App.openColorPicker) return;
