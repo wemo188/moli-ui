@@ -320,9 +320,45 @@ panel.querySelectorAll('.ft-custom-card').forEach(function(card){
   card.addEventListener('click',function(e){
     if(e.target.closest('.ft-del-btn'))return;
     if(e.target.closest('.ft-scale-slider'))return;
+    var fname = card.dataset.fname;
+    // 找到这个字体的配置
+    var target = null;
+    for(var i=0;i<Font.customList.length;i++){
+      if(Font.customList[i].name===fname){target=Font.customList[i];break;}
+    }
+    if(!target) return;
+
     Font._clearLoadedFonts();
-    Font.config.selected=card.dataset.fname;
-    Font.save();Font.apply();Font.render(panel);
+
+    function applyAndRender(){
+      Font.config.selected=fname;
+      Font.save();Font.apply();Font.render(panel);
+    }
+
+    // CSS字体
+    if(target.cssUrl){
+      var existing = document.querySelector('link[href="'+target.cssUrl+'"]');
+      if(!existing){
+        var link=document.createElement('link');link.rel='stylesheet';link.href=target.cssUrl;document.head.appendChild(link);
+      }
+      applyAndRender();
+    }
+    // URL字体
+    else if(target.url){
+      var ff=new FontFace(target.name,'url('+target.url+')',{weight:'100 900'});
+      ff.load().then(function(loaded){document.fonts.add(loaded);applyAndRender();}).catch(function(){App.showToast('字体加载失败');applyAndRender();});
+    }
+    // DB字体
+    else {
+      getOneFont(target.name, function(result){
+        if(result&&result.dataUrl){
+          loadFontFace(result.name,result.dataUrl).then(function(){applyAndRender();}).catch(function(){App.showToast('字体加载失败');applyAndRender();});
+        } else {
+          App.showToast('字体数据未找到');
+          applyAndRender();
+        }
+      });
+    }
   });
 });
 
