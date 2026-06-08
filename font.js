@@ -16,7 +16,7 @@ var BUILTIN=[
 ];
 
 var DEF_CFG={selected:'系统默认'};
-var PREVIEW_TEXT='观我旧往同我仰春<br>知我晦暗许我春朝';
+var PREVIEW_TEXT='遇你，如春水映梨花。<br>Meet you like spring water reflecting pear flower';
 
 var _db=null;
 var _previewingName='';
