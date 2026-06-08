@@ -641,7 +641,7 @@
 ========================= */
 .eden-card {
   width: 450px;
-  height: 200px;  /* 固定高度 */
+  height: 250px;  /* 固定高度 */
   max-width: 100%;
   overflow: visible; /* 文字超出就显示，不裁剪 */
   margin: 30px auto 10px;
