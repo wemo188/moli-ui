@@ -750,10 +750,6 @@
   color: #2e4258;
 }
 
-.ft-item-preview[style*="font-family"] {
-  font-family: inherit !important;
-}
-
 /* =========================
    文字卡片
 ========================= */
