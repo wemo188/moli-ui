@@ -380,6 +380,7 @@ var Eden = {
     fontSize: 38,
     rotate: 0,
     spacing: 2,
+    lineHeight: 1,
     fontColor: '#1a1a1a',
     fontName: '',
     fontFamily: '',
@@ -395,6 +396,7 @@ var Eden = {
       fontSize: saved.fontSize != null ? saved.fontSize : d.fontSize,
       rotate: saved.rotate != null ? saved.rotate : d.rotate,
       spacing: saved.spacing != null ? saved.spacing : d.spacing,
+      lineHeight: saved.lineHeight != null ? saved.lineHeight : d.lineHeight,
       fontColor: saved.fontColor || d.fontColor,
       fontName: saved.fontName || '',
       fontFamily: saved.fontFamily || '',
@@ -429,6 +431,7 @@ var Eden = {
     el.style.fontSize = actualSize + 'px';
     el.style.transform = 'rotate(' + (d.rotate || 0) + 'deg)';
     el.style.letterSpacing = (d.spacing || 0) + 'px';
+    el.style.lineHeight = (d.lineHeight || 1.4);
     el.style.color = d.fontColor || '#1a1a1a';
     el.style.fontFamily = d.fontFamily || '';
     el.style.whiteSpace = 'pre-wrap';
@@ -510,9 +513,10 @@ var Eden = {
       '<div class="pc-body" style="gap:8px;">'+
         '<div class="pc-group"><span class="pc-label">文字内容</span><textarea id="edenTextInput" rows="4" style="width:100%;padding:7px 10px;font-size:12px;color:#000;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.15);border-radius:8px;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;">'+App.esc(d.text||'')+'</textarea></div>'+
         '<div class="pc-group"><span class="pc-label">字体</span><select id="edenFontSelect" style="width:100%;padding:7px 10px;font-size:12px;color:#000;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.15);border-radius:8px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;cursor:pointer;">'+fontOptionsHtml+'</select></div>'+
-        '<div class="pc-group"><span class="pc-label">字号</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSize" min="14" max="60" value="'+(d.fontSize||28)+'"><span class="pc-slider-val" id="edenSizeVal">'+(d.fontSize||28)+'px</span></div></div>'+
-        '<div class="pc-group"><span class="pc-label">倾斜</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenRotate" min="-20" max="20" value="'+(d.rotate||0)+'"><span class="pc-slider-val" id="edenRotateVal">'+(d.rotate||0)+'°</span></div></div>'+
-        '<div class="pc-group"><span class="pc-label">间距</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSpacing" min="0" max="20" value="'+(d.spacing||2)+'"><span class="pc-slider-val" id="edenSpacingVal">'+(d.spacing||2)+'px</span></div></div>'+
+        '<div class="pc-group"><span class="pc-label">字号</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSize" min="14" max="60" step="1" value="'+(d.fontSize||28)+'"><span class="pc-slider-val" id="edenSizeVal">'+(d.fontSize||28)+'px</span></div></div>'+
+        '<div class="pc-group"><span class="pc-label">倾斜</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenRotate" min="-20" max="20" step="1" value="'+(d.rotate||0)+'"><span class="pc-slider-val" id="edenRotateVal">'+(d.rotate||0)+'°</span></div></div>'+
+        '<div class="pc-group"><span class="pc-label">字间距</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenSpacing" min="0" max="20" step="1" value="'+(d.spacing||2)+'"><span class="pc-slider-val" id="edenSpacingVal">'+(d.spacing||2)+'px</span></div></div>'+
+        '<div class="pc-group"><span class="pc-label">行距</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="edenLineHeight" min="1.0" max="2.5" step="0.05" value="'+(d.lineHeight||1.4)+'"><span class="pc-slider-val" id="edenLineHeightVal">'+(d.lineHeight||1.4)+'</span></div></div>'+
         '<div class="pc-group"><span class="pc-label">字色</span><div class="pc-dot" id="edenColorDot" style="background:'+currentFontColor+';width:28px;height:28px;border-radius:8px;"></div></div>'+
       '</div>'+
       '<div class="pc-footer"><button class="pc-btn pc-btn-save" id="edenSave" type="button">保 存</button><button class="pc-btn pc-btn-cancel" id="edenReset" type="button">重 置</button></div>';
@@ -524,7 +528,7 @@ var Eden = {
       var rect = edenCard.getBoundingClientRect();
       var left = rect.left + rect.width/2 - 140;
       if(left<8)left=8; if(left+280>window.innerWidth-8)left=window.innerWidth-288;
-      var top = rect.bottom+8; if(top+400>window.innerHeight-10)top=Math.max(10,rect.top-410);
+      var top = rect.bottom+8; if(top+430>window.innerHeight-10)top=Math.max(10,rect.top-440);
       panel.style.left=left+'px'; panel.style.top=top+'px';
     }
     if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
@@ -539,6 +543,7 @@ var Eden = {
       panel.querySelector('#edenSizeVal').textContent = panel.querySelector('#edenSize').value+'px';
       panel.querySelector('#edenRotateVal').textContent = panel.querySelector('#edenRotate').value+'°';
       panel.querySelector('#edenSpacingVal').textContent = panel.querySelector('#edenSpacing').value+'px';
+      panel.querySelector('#edenLineHeightVal').textContent = panel.querySelector('#edenLineHeight').value;
       var el = App.$('#edenText'); if(!el) return;
       var selOpt = panel.querySelector('#edenFontSelect');
       var selIdx = selOpt.selectedIndex;
@@ -549,12 +554,13 @@ var Eden = {
       el.style.fontSize = Math.round(baseSize*scale)+'px';
       el.style.transform = 'rotate('+panel.querySelector('#edenRotate').value+'deg)';
       el.style.letterSpacing = panel.querySelector('#edenSpacing').value+'px';
+      el.style.lineHeight = panel.querySelector('#edenLineHeight').value;
       el.style.color = currentFontColor;
       el.style.fontFamily = family||'';
       el.style.whiteSpace = 'pre-wrap'; el.style.wordBreak = 'break-word';
     }
 
-    ['edenSize','edenRotate','edenSpacing','edenTextInput'].forEach(function(id){
+    ['edenSize','edenRotate','edenSpacing','edenLineHeight','edenTextInput'].forEach(function(id){
       var el = panel.querySelector('#'+id); if(el) el.addEventListener('input', preview);
     });
     panel.querySelector('#edenFontSelect').addEventListener('change', preview);
@@ -574,6 +580,7 @@ var Eden = {
       Eden.data.fontSize = parseInt(panel.querySelector('#edenSize').value);
       Eden.data.rotate = parseInt(panel.querySelector('#edenRotate').value);
       Eden.data.spacing = parseInt(panel.querySelector('#edenSpacing').value);
+      Eden.data.lineHeight = parseFloat(panel.querySelector('#edenLineHeight').value);
       Eden.data.fontColor = currentFontColor;
       Eden.save(); Eden.apply(); overlay.remove(); App.showToast('已保存');
     });
