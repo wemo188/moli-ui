@@ -126,7 +126,7 @@
 .bf-nav-title::after {
   content: "customize";
   display: block;
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 500;
   color: #9ca3b0;
   margin-top: 2px;
