@@ -258,11 +258,11 @@ App.bindSwipeBack = function(el, onClose, opts) {
     var MIN_SIZE = 30;
 
     img.onload = function() {
-      var workspace = overlay.querySelector('.crop-workspace');
-      var maxW = workspace.clientWidth;
-      var maxH = workspace.clientHeight;
+  var workspace = overlay.querySelector('.crop-workspace');
+  var maxW = workspace.clientWidth - 40;  // 减去 padding
+  var maxH = workspace.clientHeight - 40;
 
-      scale = Math.min(maxW / img.width, maxH / img.height, 1);
+  scale = Math.min(maxW / img.width, maxH / img.height, 1);
       displayW = Math.round(img.width * scale);
       displayH = Math.round(img.height * scale);
 
