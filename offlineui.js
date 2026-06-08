@@ -174,8 +174,8 @@ if(bgEl){
   }
 }
 
-var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';}
-var cards=App.$('#olCardsWrap');if(cards){cards.style.fontFamily=ap.cardFont||ap.chatFont||'inherit';}
+var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';if(ap.chatFont&&App.font&&App.font.loadByFamily)App.font.loadByFamily(ap.chatFont);}
+var cards=App.$('#olCardsWrap');var _cardF=ap.cardFont||ap.chatFont||'';if(cards){cards.style.fontFamily=_cardF||'inherit';if(_cardF&&App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);}
 },
 
 formatProse:function(raw,cid,isU){var ap=cid?gAp(cid):JSON.parse(JSON.stringify(DEF_AP)),text=raw||'',tokens=[];
@@ -349,7 +349,7 @@ if(cardFontSel){
   var cList=App.LS.get('fontCustomList')||[];
   cList.forEach(function(f){cOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.cardFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});
   cardFontSel.innerHTML=cOpts;
-  cardFontSel.addEventListener('change',function(){ap.cardFont=this.value;sAp(cid,ap);O.applyAppearance(cid);});
+  cardFontSel.addEventListener('change',function(){ap.cardFont=this.value;if(this.value&&App.font&&App.font.loadByFamily){App.font.loadByFamily(this.value,function(){sAp(cid,ap);O.applyAppearance(cid);});}else{sAp(cid,ap);O.applyAppearance(cid);}});
 }
 
 var defCardT = ['银河歌颂', '梦想在冒险', '星星怀抱月夜', '明天想见你'];
@@ -481,7 +481,7 @@ App.$$('.ol-povu-btn').forEach(function(b){if(b.dataset.pov===ap.povUser)b.class
 App.$$('.ol-povc-btn').forEach(function(b){if(b.dataset.pov===ap.povChar)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-povc-btn')),b);ap.povChar=b.dataset.pov;save();});});
 var wc=App.$('#olWordCount');if(wc)wc.addEventListener('change',function(){ap.wordCount=parseInt(this.value)||0;save();});
 var cfSel=App.$('#olChatFont');
-if(cfSel){var cfOpts='<option value="">跟随全局</option>';var BT=[{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];BT.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.name)+'</option>';});var cl=App.LS.get('fontCustomList')||[];cl.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});cfSel.innerHTML=cfOpts;cfSel.addEventListener('change',function(){ap.chatFont=this.value;sr();});}
+if(cfSel){var cfOpts='<option value="">跟随全局</option>';var BT=[{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];BT.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.name)+'</option>';});var cl=App.LS.get('fontCustomList')||[];cl.forEach(function(f){cfOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.chatFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});cfSel.innerHTML=cfOpts;cfSel.addEventListener('change',function(){ap.chatFont=this.value;if(this.value&&App.font&&App.font.loadByFamily){App.font.loadByFamily(this.value,function(){sr();});}else{sr();}});
 App.$$('.ol-mode-btn').forEach(function(b){if(b.dataset.mode===ap.mode)b.classList.add('hp-btn-primary');b.addEventListener('click',function(){sa(Array.from(App.$$('.ol-mode-btn')),b);ap.mode=b.dataset.mode;sr();});});
 function bmt(cls,k){App.$$(cls).forEach(function(t){t.addEventListener('click',function(){t.classList.toggle('active');ap[k]=[];App.$$(cls+'.active').forEach(function(x){ap[k].push(x.dataset.val);});sr();});});}
 bmt('.ol-cQuote-qrec','cQuoteRec');bmt('.ol-cParen-prec','cParenRec');bmt('.ol-quote-qrec','quoteRec');bmt('.ol-paren-prec','parenRec');
