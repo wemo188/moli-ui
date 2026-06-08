@@ -22,47 +22,47 @@ var PREVIEW_EN='Meet you like spring water reflecting pear flower.';
 var _db=null;
 var _state={tab:'zh',zh:'系统默认',en:''};
 
-function openDB(cb){
+var openDB=function(cb){
   try{
     var req=indexedDB.open(DB_NAME,1);
     req.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME,{keyPath:'name'});};
     req.onsuccess=function(e){_db=e.target.result;if(cb)cb();};
     req.onerror=function(){if(cb)cb();};
   }catch(e){if(cb)cb();}
-}
+};
 
-function saveFont(name,dataUrl,cb){
+var saveFont=function(name,dataUrl,cb){
   if(!_db){if(cb)cb(false);return;}
   var tx=_db.transaction(STORE_NAME,'readwrite');
   tx.objectStore(STORE_NAME).put({name:name,dataUrl:dataUrl,time:Date.now()});
   tx.oncomplete=function(){if(cb)cb(true);};
   tx.onerror=function(){if(cb)cb(false);};
-}
+};
 
-function deleteFont(name,cb){
+var deleteFont=function(name,cb){
   if(!_db){if(cb)cb();return;}
   var tx=_db.transaction(STORE_NAME,'readwrite');
   tx.objectStore(STORE_NAME).delete(name);
   tx.oncomplete=function(){if(cb)cb();};
   tx.onerror=function(){if(cb)cb();};
-}
+};
 
-function getOneFont(name,cb){
+var getOneFont=function(name,cb){
   if(!_db){cb(null);return;}
   var tx=_db.transaction(STORE_NAME,'readonly');
   var req=tx.objectStore(STORE_NAME).get(name);
   req.onsuccess=function(){cb(req.result||null);};
   req.onerror=function(){cb(null);};
-}
+};
 
-function loadFontFace(name,dataUrl){
+var loadFontFace=function(name,dataUrl){
   var ff=new FontFace(name,'url('+dataUrl+')',{weight:'100 900'});
   return ff.load().then(function(loaded){document.fonts.add(loaded);return true;}).catch(function(){return false;});
-}
+};
 
-function loadAllCustomFonts(list,cb){
+var loadAllCustomFonts=function(list,cb){
   var i=0;
-  function next(){
+  var next=function(){
     if(i>=list.length){if(cb)cb();return;}
     var f=list[i];i++;
     if(f.cssUrl){
@@ -83,9 +83,9 @@ function loadAllCustomFonts(list,cb){
       if(result&&result.dataUrl){loadFontFace(result.name,result.dataUrl).then(function(){next();}).catch(function(){next();});}
       else{next();}
     });
-  }
+  };
   next();
-}
+};
 
 var Font={
   config:{},
@@ -163,9 +163,11 @@ var Font={
 
   apply:function(){
     var combo=Font._combo(Font.config.selectedEn,Font.config.selectedZh);
-    document.body.style.fontFamily=combo;
-    document.documentElement.style.setProperty('--font-scale',Font.getScale(Font.config.selectedZh));
+    var scale=Font.getScale(Font.config.selectedZh);
     Font.config.selected=Font.config.selectedZh;
+    console.log('[Font.apply]',combo,'zh='+Font.config.selectedZh,'en='+Font.config.selectedEn);
+    document.body.style.fontFamily=combo;
+    document.documentElement.style.setProperty('--font-scale',scale);
     setTimeout(function(){
       document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
     },100);
@@ -206,8 +208,6 @@ var Font={
     var active=_state.tab==='en'?_state.en:_state.zh;
 
     var listHtml='';
-
-    // 内置
     BUILTIN.forEach(function(f){
       listHtml+='<div class="ft-item'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
         '<div class="ft-item-preview" style="font-family:'+f.family+' !important">你好世界 Hello</div>'+
@@ -216,7 +216,6 @@ var Font={
       '</div>';
     });
 
-    // 自定义
     var customSection='';
     if(Font.customList.length){
       customSection='<div class="hp-section-label" style="margin-top:14px;">自定义字体</div>';
@@ -379,7 +378,6 @@ var Font={
       e.target.value='';
     });
 
-    /* 列表项点击 - 核心 */
     panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
       el.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
@@ -417,7 +415,7 @@ var Font={
       var zh=Font.config.selectedZh||Font.config.selected||'系统默认';
       var en=Font.config.selectedEn||'';
       var toLoad=[];
-      function isBuiltin(n){for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===n)return true;}return false;}
+      var isBuiltin=function(n){for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===n)return true;}return false;};
       if(!isBuiltin(zh)){for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===zh){toLoad.push(Font.customList[j]);break;}}}
       if(en&&!isBuiltin(en)){for(var k=0;k<Font.customList.length;k++){if(Font.customList[k].name===en){toLoad.push(Font.customList[k]);break;}}}
       loadAllCustomFonts(toLoad,function(){
