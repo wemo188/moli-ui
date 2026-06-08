@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -100,7 +99,7 @@ var Cal={
     if(cw){cw.classList.remove('wt-static');if(!Cal._weatherAnimate)cw.classList.add('wt-static');}
     if(!Cal.weather||!Cal.weather.code){
       var h=new Date().getHours();
-      if(h>=19||h<6){Cal._renderNight(bg);}
+      if(h>=19||h<6)Cal._renderNight(bg);
       return;
     }
     var effect=Cal._codeToEffect(Cal.weather.code);
@@ -118,66 +117,23 @@ var Cal={
     }
   },
 
-  _renderSunny:function(bg){
-    bg.innerHTML='<svg class="wt-sun-svg" viewBox="0 0 120 120" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><circle cx="60" cy="60" r="20"/><line x1="60" y1="8" x2="60" y2="22"/><line x1="60" y1="98" x2="60" y2="112"/><line x1="8" y1="60" x2="22" y2="60"/><line x1="98" y1="60" x2="112" y2="60"/><line x1="23" y1="23" x2="33" y2="33"/><line x1="87" y1="87" x2="97" y2="97"/><line x1="23" y1="97" x2="33" y2="87"/><line x1="87" y1="33" x2="97" y2="23"/></svg>';
-  },
+  _renderSunny:function(bg){bg.innerHTML='<svg class="wt-sun-svg" viewBox="0 0 120 120" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"><circle cx="60" cy="60" r="20"/><line x1="60" y1="8" x2="60" y2="22"/><line x1="60" y1="98" x2="60" y2="112"/><line x1="8" y1="60" x2="22" y2="60"/><line x1="98" y1="60" x2="112" y2="60"/><line x1="23" y1="23" x2="33" y2="33"/><line x1="87" y1="87" x2="97" y2="97"/><line x1="23" y1="97" x2="33" y2="87"/><line x1="87" y1="33" x2="97" y2="23"/></svg>';},
 
-  _renderNight:function(bg){
-    bg.innerHTML='<svg class="wt-moon" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><defs><mask id="wtMoonMask"><rect width="50" height="50" fill="white"/><circle cx="18" cy="22" r="15" fill="black"/></mask></defs><circle cx="25" cy="25" r="20" fill="rgba(30,30,30,0.9)" mask="url(#wtMoonMask)"/></svg><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div>';
-  },
+  _renderNight:function(bg){bg.innerHTML='<svg class="wt-moon" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><defs><mask id="wtMoonMask"><rect width="50" height="50" fill="white"/><circle cx="18" cy="22" r="15" fill="black"/></mask></defs><circle cx="25" cy="25" r="20" fill="rgba(30,30,30,0.9)" mask="url(#wtMoonMask)"/></svg><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div>';},
 
   _cloudPath:'M14 44C9 44 6 40.5 6 37C6 33.5 9 30 14 30C14 30 15 24 21 21C27 18 33 20 36 24C38 20 42 18 46 20C50 22 52 26 51 30C55 30 58 33.5 58 37C58 40.5 55 44 50 44H14Z',
 
-  _renderCloudy:function(bg){
-    var p=Cal._cloudPath;
-    bg.innerHTML='<svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg>';
-  },
+  _renderCloudy:function(bg){var p=Cal._cloudPath;bg.innerHTML='<svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg>';},
 
-  _renderOvercast:function(bg){
-    var p=Cal._cloudPath;
-    bg.innerHTML='<svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg>';
-  },
+  _renderOvercast:function(bg){var p=Cal._cloudPath;bg.innerHTML='<svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg>';},
 
-  _renderRain:function(bg,count,minDur,maxDur,minH,maxH){
-    for(var i=0;i<count;i++){
-      var drop=document.createElement('div');
-      drop.className='wt-raindrop';
-      drop.style.left=(5+Math.random()*90)+'%';
-      drop.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';
-      drop.style.animationDelay=(-Math.random()*3)+'s';
-      drop.style.height=(minH+Math.random()*(maxH-minH))+'px';
-      bg.appendChild(drop);
-    }
-  },
+  _renderRain:function(bg,count,minDur,maxDur,minH,maxH){for(var i=0;i<count;i++){var drop=document.createElement('div');drop.className='wt-raindrop';drop.style.left=(5+Math.random()*90)+'%';drop.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';drop.style.animationDelay=(-Math.random()*3)+'s';drop.style.height=(minH+Math.random()*(maxH-minH))+'px';bg.appendChild(drop);}},
 
-  _renderThunder:function(bg){
-    bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="24" height="45" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="20" height="35" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';
-    Cal._renderRain(bg,18,0.7,1.2,15,24);
-  },
+  _renderThunder:function(bg){bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="24" height="45" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="20" height="35" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';Cal._renderRain(bg,18,0.7,1.2,15,24);},
 
-  _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){
-    for(var i=0;i<count;i++){
-      var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      svg.setAttribute('viewBox','0 0 20 20');
-      svg.setAttribute('class','wt-snow-item');
-      var size=minSize+Math.random()*(maxSize-minSize);
-      svg.style.left=(5+Math.random()*90)+'%';
-      svg.style.width=size+'px';svg.style.height=size+'px';
-      svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';
-      svg.style.animationDelay=(-Math.random()*6)+'s';
-      var path=document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');
-      path.setAttribute('stroke','rgba(50,50,50,0.7)');
-      path.setAttribute('stroke-width','1.2');
-      path.setAttribute('stroke-linecap','round');
-      path.setAttribute('fill','none');
-      svg.appendChild(path);bg.appendChild(svg);
-    }
-  },
+  _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){for(var i=0;i<count;i++){var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('class','wt-snow-item');var size=minSize+Math.random()*(maxSize-minSize);svg.style.left=(5+Math.random()*90)+'%';svg.style.width=size+'px';svg.style.height=size+'px';svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';svg.style.animationDelay=(-Math.random()*6)+'s';var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');path.setAttribute('stroke','rgba(50,50,50,0.7)');path.setAttribute('stroke-width','1.2');path.setAttribute('stroke-linecap','round');path.setAttribute('fill','none');svg.appendChild(path);bg.appendChild(svg);}},
 
-  _renderFog:function(bg){
-    bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';
-  },
+  _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
 
   // ====== 背景图 ======
   applyBgImg:function(){
@@ -193,117 +149,215 @@ var Cal={
       if(data&&data.current_condition&&data.current_condition.length){
         var c=data.current_condition[0];
         var code=c.weatherCode||'';
-        var desc=Cal._weatherMap[code]||
-                 (c.lang_zh&&c.lang_zh.length?c.lang_zh[0].value:'')||
-                 (c.weatherDesc&&c.weatherDesc.length?c.weatherDesc[0].value:'')||'未知';
+        var desc=Cal._weatherMap[code]||(c.lang_zh&&c.lang_zh.length?c.lang_zh[0].value:'')|| (c.weatherDesc&&c.weatherDesc.length?c.weatherDesc[0].value:'')||'未知';
         Cal.weather={temp:c.temp_C,humidity:c.humidity,desc:desc,code:code,time:Date.now()};
         Cal.save();Cal.renderWeatherEffect();if(callback)callback(Cal.weather);
       }else{if(callback)callback(null);}
     }).catch(function(){if(callback)callback(null);});
   },
 
-  getWeatherSummary:function(){
-    if(!Cal.weather)return'';
-    return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';
-  },
-
+  getWeatherSummary:function(){if(!Cal.weather)return'';return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';},
   getLocationForAI:function(){return Cal.city||'';},
 
-  // ====== 设置面板 ======
-  openWeatherPanel:function(){
-    var panel=App.$('#calPanel');if(!panel)return;
-    var bgImg=App.LS.get('calBgImg')||'';
+  // ====== 双击弹出编辑卡片 ======
+  _editPanel:null,
+
+  openEditPanel:function(){
+    if(Cal._editPanel){Cal._editPanel.remove();Cal._editPanel=null;return;}
+
+    var card=App.$('#wtCard');if(!card)return;
+    var overlay=document.createElement('div');
+    overlay.className='pc-edit-overlay';
+    overlay.style.zIndex='100020';
+    Cal._editPanel=overlay;
+
+    var panel=document.createElement('div');
+    panel.className='pc-edit-panel';
     panel.innerHTML=
-      '<div class="cal-panel-header">'+
-        '<div class="cal-panel-back" id="closeCalPanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>'+
-        '<h2>天气设置</h2>'+
-        '<div class="cal-panel-right"></div>'+
-      '</div>'+
-      '<div class="cal-panel-body">'+
-
-        '<div class="cal-form-group">'+
-          '<label class="cal-form-label">城市</label>'+
-          '<div class="cal-input-row">'+
-            '<input type="text" class="cal-input" id="calCityInput" placeholder="输入城市名获取天气..." value="'+App.esc(Cal.city||'')+'">'+
-            '<button class="cal-icon-btn" id="calSearchCityBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>'+
+      '<div class="pc-header">天气设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
+      '<div class="pc-body">'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">城市</span>'+
+          '<div class="pc-av-row">'+
+            '<input type="text" class="pc-input" id="wtCityInput" placeholder="输入城市名..." value="'+App.esc(Cal.city||'')+'">'+
+            '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
           '</div>'+
-          (Cal.weather?'<div style="font-size:11px;color:#666;margin-top:6px;">当前：'+App.esc(Cal.weather.desc)+' '+App.esc(Cal.weather.temp)+'°C</div>':'')+
+          (Cal.weather?'<span class="pc-label" style="margin-top:4px;font-weight:500;opacity:0.7;">'+App.esc(Cal.weather.desc)+' '+App.esc(Cal.weather.temp)+'°C</span>':'')+
         '</div>'+
-
-        '<div class="cal-form-group">'+
-          '<label class="cal-form-label">天气特效</label>'+
-          '<div class="cal-toggle-row">'+
-            '<span class="cal-toggle-label">动态效果</span>'+
-            '<label class="cal-toggle"><input type="checkbox" id="calAnimToggle" '+(Cal._weatherAnimate?'checked':'')+'><span class="cal-toggle-slider"></span></label>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">动态特效</span>'+
+          '<div class="pc-av-row">'+
+            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:auto;padding:0 10px;font-size:11px;font-weight:700;">'+(Cal._weatherAnimate?'开':'关')+'</div>'+
           '</div>'+
         '</div>'+
-
-        '<div class="cal-form-group">'+
-          '<label class="cal-form-label">背景图片</label>'+
-          '<div style="display:flex;gap:8px;align-items:center;">'+
-            '<button class="cal-btn cal-btn-dark" id="calBgUploadBtn" type="button">上传图片</button>'+
-            (bgImg?'<button class="cal-btn cal-btn-dark" id="calBgClearBtn" type="button">清除</button>':'')+
+        '<div class="pc-group">'+
+          '<span class="pc-label">背景图片</span>'+
+          '<div class="pc-av-row">'+
+            '<div class="pc-icon-btn" id="wtBgUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+            '<div class="pc-icon-btn danger" id="wtBgClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
           '</div>'+
-          (bgImg?'<div style="margin-top:8px;border-radius:12px;overflow:hidden;height:80px;"><img src="'+bgImg+'" style="width:100%;height:100%;object-fit:cover;"></div>':'')+
-          '<input type="file" id="calBgFileInput" accept="image/*" style="display:none;">'+
+          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
         '</div>'+
-
       '</div>';
 
-    panel.classList.remove('hidden');
-    setTimeout(function(){panel.classList.add('show');},20);
-    App.bindSwipeBack(panel,function(){Cal.closePanel();});
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
 
-    App.safeOn('#closeCalPanel','click',function(){Cal.closePanel();});
+    // 定位到格子附近
+    var rect=card.getBoundingClientRect();
+    var left=rect.left;
+    var top=rect.bottom+8;
+    if(left+270>window.innerWidth-8)left=window.innerWidth-278;
+    if(left<8)left=8;
+    if(top+350>window.innerHeight-10)top=rect.top-358;
+    if(top<10)top=10;
+    panel.style.left=left+'px';
+    panel.style.top=top+'px';
 
-    App.safeOn('#calAnimToggle','change',function(){
-      Cal._weatherAnimate=App.$('#calAnimToggle').checked;
-      App.LS.set('calWeatherAnimate',Cal._weatherAnimate);
-      Cal.renderWeatherEffect();
-    });
+    // 关闭
+    panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
+    panel.addEventListener('click',function(e){e.stopPropagation();});
 
-    App.safeOn('#calSearchCityBtn','click',function(){
-      var name=App.$('#calCityInput').value.trim();
+    // 城市搜索
+    panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
+      var name=panel.querySelector('#wtCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
       App.showToast('获取天气中...');
       Cal.city=name;Cal.save();
       Cal.fetchWeather(name,function(w){
-        if(w){Cal.openWeatherPanel();App.showToast(w.desc+' '+w.temp+'°C');}
-        else App.showToast('获取失败，请检查城市名');
+        if(w){Cal.openEditPanel();Cal.openEditPanel();App.showToast(w.desc+' '+w.temp+'°C');}
+        else App.showToast('获取失败');
       });
     });
 
-    App.safeOn('#calBgUploadBtn','click',function(){
-      App.$('#calBgFileInput').click();
+    // 动态开关
+    panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
+      Cal._weatherAnimate=!Cal._weatherAnimate;
+      App.LS.set('calWeatherAnimate',Cal._weatherAnimate);
+      this.textContent=Cal._weatherAnimate?'开':'关';
+      Cal.renderWeatherEffect();
     });
 
-    App.safeOn('#calBgFileInput','change',function(){
-      var file=App.$('#calBgFileInput').files[0];
-      if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(e){
-        App.LS.set('calBgImg',e.target.result);
-        Cal.applyBgImg();
-        Cal.openWeatherPanel();
-        App.showToast('背景已设置');
-      };
-      reader.readAsDataURL(file);
+    // 上传背景
+    panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){
+      panel.querySelector('#wtBgFileInput').click();
     });
 
-    if(App.$('#calBgClearBtn')){
-      App.safeOn('#calBgClearBtn','click',function(){
-        App.LS.remove('calBgImg');
-        Cal.applyBgImg();
-        Cal.openWeatherPanel();
-        App.showToast('背景已清除');
-      });
-    }
+    panel.querySelector('#wtBgFileInput').addEventListener('change',function(){
+  var file=this.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    App.cropImage(e.target.result,function(croppedData){
+      App.LS.set('calBgImg',croppedData);
+      Cal.applyBgImg();
+      App.showToast('背景已设置');
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+    // 清除背景
+    panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){
+      App.LS.remove('calBgImg');
+      Cal.applyBgImg();
+      App.showToast('背景已清除');
+    });
   },
 
-  closePanel:function(){
-    var panel=App.$('#calPanel');if(!panel)return;
-    panel.classList.remove('show');
-    setTimeout(function(){panel.classList.add('hidden');},350);
+  // ====== 裁剪弹窗 ======
+  openCropDialog:function(src){
+    var overlay=document.createElement('div');
+    overlay.className='wt-crop-overlay';
+
+    overlay.innerHTML=
+      '<div class="wt-crop-box" id="wtCropBox">'+
+        '<img class="wt-crop-img" id="wtCropImg" src="'+src+'">'+
+      '</div>'+
+      '<div class="wt-crop-hint">拖动和双指缩放调整位置</div>'+
+      '<div class="wt-crop-btns">'+
+        '<button class="wt-crop-btn wt-crop-btn-cancel" id="wtCropCancel">取消</button>'+
+        '<button class="wt-crop-btn wt-crop-btn-ok" id="wtCropOk">确定</button>'+
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var img=overlay.querySelector('#wtCropImg');
+    var box=overlay.querySelector('#wtCropBox');
+    var ox=0,oy=0,scale=1,lastDist=0;
+    var startX,startY,startOX,startOY;
+
+    img.onload=function(){
+      // 初始缩放：让图片填满170框
+      var bw=170,bh=170;
+      var iw=img.naturalWidth,ih=img.naturalHeight;
+      scale=Math.max(bw/iw,bh/ih);
+      ox=(bw-iw*scale)/2;
+      oy=(bh-ih*scale)/2;
+      applyT();
+    };
+
+    function applyT(){img.style.transform='translate('+ox+'px,'+oy+'px) scale('+scale+')';img.style.transformOrigin='0 0';}
+
+    // 拖拽
+    box.addEventListener('touchstart',function(e){
+      if(e.touches.length===1){
+        startX=e.touches[0].clientX;startY=e.touches[0].clientY;
+        startOX=ox;startOY=oy;
+      }else if(e.touches.length===2){
+        lastDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+      }
+      e.preventDefault();
+    },{passive:false});
+
+    box.addEventListener('touchmove',function(e){
+      if(e.touches.length===1){
+        ox=startOX+(e.touches[0].clientX-startX);
+        oy=startOY+(e.touches[0].clientY-startY);
+        applyT();
+      }else if(e.touches.length===2){
+        var dist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+        if(lastDist>0){
+          scale*=dist/lastDist;
+          if(scale<0.3)scale=0.3;if(scale>5)scale=5;
+          applyT();
+        }
+        lastDist=dist;
+      }
+      e.preventDefault();
+    },{passive:false});
+
+    // 鼠标拖拽（PC调试用）
+    var mouseDown=false;
+    box.addEventListener('mousedown',function(e){mouseDown=true;startX=e.clientX;startY=e.clientY;startOX=ox;startOY=oy;e.preventDefault();});
+    document.addEventListener('mousemove',function handler(e){if(!mouseDown)return;ox=startOX+(e.clientX-startX);oy=startOY+(e.clientY-startY);applyT();});
+    document.addEventListener('mouseup',function(){mouseDown=false;});
+
+    // 滚轮缩放
+    box.addEventListener('wheel',function(e){e.preventDefault();scale*=e.deltaY>0?0.9:1.1;if(scale<0.3)scale=0.3;if(scale>5)scale=5;applyT();},{passive:false});
+
+    // 确定
+    overlay.querySelector('#wtCropOk').addEventListener('click',function(){
+      var canvas=document.createElement('canvas');
+      canvas.width=170;canvas.height=170;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(img,ox/scale,oy/scale,170/scale,170/scale,0,0,170,170);
+      // 用变换方式重绘
+      ctx.clearRect(0,0,170,170);
+      ctx.save();
+      ctx.translate(ox,oy);
+      ctx.scale(scale,scale);
+      ctx.drawImage(img,0,0);
+      ctx.restore();
+      var dataUrl=canvas.toDataURL('image/jpeg',0.85);
+      App.LS.set('calBgImg',dataUrl);
+      Cal.applyBgImg();
+      overlay.remove();
+      App.showToast('背景已设置');
+    });
+
+    // 取消
+    overlay.querySelector('#wtCropCancel').addEventListener('click',function(){overlay.remove();});
   },
 
   // ====== 拖拽 ======
@@ -321,36 +375,38 @@ var Cal={
       longPressed=false;moved=false;
       timer=setTimeout(function(){
         longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
-        card.style.transition='none';card.style.opacity='0.9';card.style.zIndex='999';
+        card.classList.add('wt-dragging');
         if(navigator.vibrate)navigator.vibrate(15);
       },DELAY);
     },{passive:true});
 
     card.addEventListener('touchmove',function(e){
       var t=e.touches[0];
-      if(timer&&!longPressed){
-        if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}
-        return;
-      }
+      if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
       if(!longPressed)return;
       moved=true;e.preventDefault();e.stopPropagation();
-      Cal._dragX=origX+(t.clientX-startX);
-      Cal._dragY=origY+(t.clientY-startY);
+      Cal._dragX=origX+(t.clientX-startX);Cal._dragY=origY+(t.clientY-startY);
       card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px)';
     },{passive:false});
 
     card.addEventListener('touchend',function(){
       clearTimeout(timer);timer=null;
-      card.style.opacity='';card.style.transition='';card.style.zIndex='';
-      if(longPressed&&moved){App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});}
+      card.classList.remove('wt-dragging');
+      if(longPressed&&moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
       longPressed=false;moved=false;
     });
   },
 
-  // ====== 绑定点击 ======
+  // ====== 双击绑定 ======
   bindClicks:function(){
-    var monthEl=App.$('#calMonth');
-    if(monthEl)monthEl.addEventListener('click',function(e){e.stopPropagation();Cal.openWeatherPanel();});
+    var monthEl=App.$('#calMonth');if(!monthEl)return;
+    var lastTap=0;
+    monthEl.addEventListener('click',function(e){
+      e.stopPropagation();
+      var now=Date.now();
+      if(now-lastTap<350){Cal.openEditPanel();}
+      lastTap=now;
+    });
   },
 
   // ====== 自动刷新 ======
@@ -362,7 +418,6 @@ var Cal={
   // ====== 初始化 ======
   init:function(){
     Cal.load();
-    if(!App.$('#calPanel')){var panel=document.createElement('div');panel.id='calPanel';panel.className='fullpage-panel hidden';document.body.appendChild(panel);}
     Cal.startClock();
     Cal.renderWeekRow();
     Cal.renderWeatherEffect();
