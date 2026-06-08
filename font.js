@@ -238,7 +238,7 @@ var Font={
     setTimeout(function(){ panel.remove(); }, 350);
   },
 
-  render:function(panel){
+    render:function(panel){
     var selected=Font.config.selected||'系统默认';
     var previewName = _previewingName || selected;
     var previewFamily = Font.getFamily(previewName);
@@ -277,12 +277,12 @@ var Font={
         '<span class="bf-nav-title">字体选择</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
+      '<div class="ft-live-preview" id="ftLivePreview">' +
+        '<div class="ft-live-preview-label">预览 · '+App.esc(previewDisplayName)+'</div>' +
+        '<div class="ft-live-preview-text" style="font-family:'+previewFamily+' !important;">'+PREVIEW_TEXT+'</div>' +
+        '<button type="button" class="ft-live-preview-btn'+(isCurrentGlobal?' disabled':'')+'" id="ftApplyBtn">'+(isCurrentGlobal?'当前全局':'应用为全局')+'</button>' +
+      '</div>' +
       '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 20px 0;">' +
-        '<div class="ft-live-preview" id="ftLivePreview">' +
-          '<div class="ft-live-preview-label">预览 · '+App.esc(previewDisplayName)+'</div>' +
-          '<div class="ft-live-preview-text" style="font-family:'+previewFamily+' !important;">'+PREVIEW_TEXT+'</div>' +
-          '<button type="button" class="ft-live-preview-btn'+(isCurrentGlobal?' disabled':'')+'" id="ftApplyBtn">'+(isCurrentGlobal?'当前全局':'应用为全局')+'</button>' +
-        '</div>' +
         '<div class="hp-upload" id="ftUploadArea">' +
           '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
           '上传字体文件' +
