@@ -701,7 +701,7 @@ previewArea.addEventListener('touchend', function(e) {
     // 容器样式
     var containerCSS =
       '#appIconsRow > div > div:first-child, .bf-icon-preview-item {' +
-        'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#ffffff')+' !important;' +
+        'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#d1d5db')+' !important;' +
         'box-shadow: '+cfg.shadow+'px '+cfg.shadow+'px 0 '+(cfg.shadowColor||'#ffffff')+' !important;' +
         'border-radius: '+radius+'px !important;' +
         'background: '+bgWithOpacity+' !important;' +
