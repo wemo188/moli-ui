@@ -637,16 +637,14 @@
 }
 
 /* =========================
-   字体面板 - 常驻预览区
+   字体面板 - 常驻预览区（固定）
 ========================= */
 .ft-live-preview {
-  margin-bottom: 18px;
-  padding: 28px 20px;
+  padding: 24px 20px;
   background: rgba(126,163,201,0.04);
-  border: 1.5px solid rgba(126,163,201,0.15);
-  border-radius: 14px;
+  border-bottom: 1.5px solid rgba(126,163,201,0.15);
   text-align: center;
-  position: relative;
+  flex-shrink: 0;
 }
 
 .ft-live-preview-label {
@@ -689,6 +687,10 @@
   background: #ddd;
   color: #999;
   pointer-events: none;
+}
+
+.ft-item-preview[style*="font-family"] {
+  font-family: inherit !important;
 }
 
 /* =========================
