@@ -15,13 +15,13 @@ var BUILTIN=[
   {name:'马善政楷',family:'"Ma Shan Zheng",cursive'}
 ];
 
-var DEF_CFG={selected:'系统默认',selectedEn:'',selectedZh:''};
+var DEF_CFG={selected:'系统默认',selectedEn:'',selectedZh:'系统默认'};
 var PREVIEW_CN='遇你，如春水映梨花。';
-var PREVIEW_EN='Meet you like spring water reflecting pear flower';
+var PREVIEW_EN='Meet you like spring water reflecting pear flower.';
 
 var _db=null;
 var _activeTab='zh';
-var _previewZh='';
+var _previewZh='系统默认';
 var _previewEn='';
 
 function openDB(cb){
@@ -57,14 +57,6 @@ function getOneFont(name,cb){
   req.onerror=function(){cb(null);};
 }
 
-function getAllFonts(cb){
-  if(!_db){cb([]);return;}
-  var tx=_db.transaction(STORE_NAME,'readonly');
-  var req=tx.objectStore(STORE_NAME).getAll();
-  req.onsuccess=function(){cb(req.result||[]);};
-  req.onerror=function(){cb([]);};
-}
-
 function loadFontFace(name,dataUrl){
   var ff=new FontFace(name,'url('+dataUrl+')', { weight: '100 900' });
   return ff.load().then(function(loaded){document.fonts.add(loaded);return true;}).catch(function(){return false;});
@@ -77,7 +69,7 @@ var Font={
   load:function(){
     Font.config=App.LS.get('fontConfig')||JSON.parse(JSON.stringify(DEF_CFG));
     if(!Font.config.selectedZh) Font.config.selectedZh = Font.config.selected || '系统默认';
-    if(!Font.config.selectedEn) Font.config.selectedEn = '';
+    if(Font.config.selectedEn==null) Font.config.selectedEn = '';
     Font.customList=App.LS.get('fontCustomList')||[];
     Font.customList.forEach(function(f){if(f.scale==null)f.scale=1;});
   },
@@ -106,14 +98,11 @@ var Font={
     return name;
   },
 
-  /* 组合中英字体为最终 font-family */
   _buildComboFamily: function(enName, zhName){
     var enFamily = Font.getFamily(enName);
-    var zhFamily = Font.getFamily(zhName);
-    if(enFamily && zhFamily) return enFamily + ',' + zhFamily;
-    if(enFamily) return enFamily;
-    if(zhFamily) return zhFamily;
-    return BUILTIN[0].family;
+    var zhFamily = Font.getFamily(zhName) || BUILTIN[0].family;
+    if(enFamily) return enFamily + ',' + zhFamily;
+    return zhFamily;
   },
 
   _loadAllForPreview: function(cb){
@@ -189,18 +178,24 @@ var Font={
     Font.loadByName(target.name, cb);
   },
 
-  _updatePreviewArea: function(panel){
+  _refreshPreview: function(panel){
     var comboFamily = Font._buildComboFamily(_previewEn, _previewZh);
-    var textEl = panel.querySelector('.ft-live-preview-text');
+    var textEl = panel.querySelector('#ftPreviewText');
     var zhTag = panel.querySelector('#ftSlotZh');
     var enTag = panel.querySelector('#ftSlotEn');
     var btnEl = panel.querySelector('#ftApplyBtn');
 
     if(textEl) textEl.style.fontFamily = comboFamily;
-    if(zhTag) zhTag.textContent = '中文：' + Font._getDisplayName(_previewZh);
-    if(enTag) enTag.textContent = '英文：' + Font._getDisplayName(_previewEn);
+    if(zhTag){
+      zhTag.textContent = '中文：' + Font._getDisplayName(_previewZh);
+      zhTag.classList.toggle('active', _activeTab==='zh');
+    }
+    if(enTag){
+      enTag.textContent = '英文：' + Font._getDisplayName(_previewEn || '');
+      enTag.classList.toggle('active', _activeTab==='en');
+    }
 
-    var isSame = (_previewZh === Font.config.selectedZh && _previewEn === Font.config.selectedEn);
+    var isSame = (_previewZh === (Font.config.selectedZh||'系统默认') && _previewEn === (Font.config.selectedEn||''));
     if(btnEl){
       if(isSame){
         btnEl.classList.add('disabled');
@@ -210,10 +205,12 @@ var Font={
         btnEl.textContent = '应用为全局';
       }
     }
-  },
 
-  _getActivePreviewName: function(){
-    return _activeTab === 'en' ? _previewEn : _previewZh;
+    /* 更新列表高亮 */
+    var activeName = _activeTab==='en' ? _previewEn : _previewZh;
+    panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
+      el.classList.toggle('active', el.dataset.fname===activeName);
+    });
   },
 
   apply: function(){
@@ -221,7 +218,6 @@ var Font={
     var scale = Font.getScale(Font.config.selectedZh);
     document.body.style.fontFamily = comboFamily;
     document.documentElement.style.setProperty('--font-scale', scale);
-    /* 兼容旧的 selected 字段 */
     Font.config.selected = Font.config.selectedZh;
     setTimeout(function(){
       var ribbons = document.querySelectorAll('.bx-ribbon-tab');
@@ -247,7 +243,7 @@ var Font={
     _activeTab = 'zh';
 
     Font._loadAllForPreview(function(){
-      Font.render(panel);
+      Font._buildPanel(panel);
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
       App.bindSwipeBack(panel, function(){ Font.close(); });
@@ -262,15 +258,15 @@ var Font={
     setTimeout(function(){ panel.remove(); }, 350);
   },
 
-  render:function(panel){
+  _buildPanel: function(panel){
     var comboFamily = Font._buildComboFamily(_previewEn, _previewZh);
-    var activeName = _activeTab === 'en' ? _previewEn : _previewZh;
-    var isSame = (_previewZh === Font.config.selectedZh && _previewEn === Font.config.selectedEn);
+    var isSame = (_previewZh === (Font.config.selectedZh||'系统默认') && _previewEn === (Font.config.selectedEn||''));
+    var activeName = _activeTab==='en' ? _previewEn : _previewZh;
 
     var builtinHtml=BUILTIN.map(function(f){
       var isActive = activeName===f.name;
       return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
-        '<div class="ft-item-preview" style="font-family:'+f.family+' !important;">你好世界 Hello</div>' +
+        '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello 123</div>' +
         '<div class="ft-item-name">'+App.esc(f.name)+'</div>' +
         '<div class="ft-item-check"></div>' +
       '</div>';
@@ -282,7 +278,7 @@ var Font={
         var isActive = activeName===f.name;
         return '<div class="ft-custom-card'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
           '<div class="ft-custom-top">' +
-          '<div class="ft-item-preview" style="font-family:'+f.family+' !important;">你好世界 Hello</div>' +
+          '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello 123</div>' +
             '<div class="ft-item-name">'+App.esc(f.fileName||f.name)+'</div>' +
             '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">' +
               '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
@@ -299,19 +295,21 @@ var Font={
         '<span class="bf-nav-title">字体选择</span>' +
         '<div class="bf-nav-right"></div>' +
       '</div>' +
-      '<div class="ft-live-preview" id="ftLivePreview">' +
+      '<div class="ft-live-preview">' +
         '<div class="ft-tab-row">' +
           '<button type="button" class="ft-tab'+(_activeTab==='zh'?' active':'')+'" data-tab="zh">中文</button>' +
           '<button type="button" class="ft-tab'+(_activeTab==='en'?' active':'')+'" data-tab="en">英文</button>' +
         '</div>' +
-        '<div class="ft-live-preview-text" style="font-family:'+comboFamily+' !important;">'+PREVIEW_CN+'<br><span style="font-size:16px;opacity:0.7;">'+PREVIEW_EN+'</span></div>' +
+        '<div class="ft-live-preview-text" id="ftPreviewText" style="font-family:'+comboFamily+';">' +
+          PREVIEW_CN + '<br><span style="font-size:16px;opacity:0.7;">' + PREVIEW_EN + '</span>' +
+        '</div>' +
         '<div class="ft-slot-info">' +
           '<span class="ft-slot-tag'+(_activeTab==='zh'?' active':'')+'" id="ftSlotZh">中文：'+App.esc(Font._getDisplayName(_previewZh))+'</span>' +
-          '<span class="ft-slot-tag'+(_activeTab==='en'?' active':'')+'" id="ftSlotEn">英文：'+App.esc(Font._getDisplayName(_previewEn))+'</span>' +
+          '<span class="ft-slot-tag'+(_activeTab==='en'?' active':'')+'" id="ftSlotEn">英文：'+App.esc(Font._getDisplayName(_previewEn||''))+'</span>' +
         '</div>' +
         '<button type="button" class="ft-live-preview-btn'+(isSame?' disabled':'')+'" id="ftApplyBtn">'+(isSame?'当前全局':'应用为全局')+'</button>' +
       '</div>' +
-      '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 20px 0;">' +
+      '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 20px 0;" id="ftScrollBody">' +
         '<div class="hp-upload" id="ftUploadArea">' +
           '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
           '上传字体文件' +
@@ -321,16 +319,70 @@ var Font={
           '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
           'URL导入字体' +
         '</div>' +
-        (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list">' + customHtml + '</div>' : '') +
+        (customHtml ? '<div class="hp-section-label">自定义字体</div><div class="ft-list" id="ftCustomList">' + customHtml + '</div>' : '') +
         '<div class="hp-section-label">内置字体</div>' +
-        '<div class="ft-list">' + builtinHtml + '</div>' +
+        '<div class="ft-list" id="ftBuiltinList">' + builtinHtml + '</div>' +
         '<div style="height:40px;"></div>' +
       '</div>';
 
-    Font.bindEvents(panel);
+    Font._bindAllEvents(panel);
   },
 
-  bindEvents:function(panel){
+  _rebuildList: function(panel){
+    var activeName = _activeTab==='en' ? _previewEn : _previewZh;
+    var scrollBody = panel.querySelector('#ftScrollBody');
+    if(!scrollBody) return;
+
+    var builtinHtml=BUILTIN.map(function(f){
+      var isActive = activeName===f.name;
+      return '<div class="ft-item'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
+        '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello 123</div>' +
+        '<div class="ft-item-name">'+App.esc(f.name)+'</div>' +
+        '<div class="ft-item-check"></div>' +
+      '</div>';
+    }).join('');
+
+    var customHtml='';
+    if(Font.customList.length){
+      customHtml=Font.customList.map(function(f){
+        var isActive = activeName===f.name;
+        return '<div class="ft-custom-card'+(isActive?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">' +
+          '<div class="ft-custom-top">' +
+          '<div class="ft-item-preview" style="font-family:'+f.family+';">你好世界 Hello 123</div>' +
+            '<div class="ft-item-name">'+App.esc(f.fileName||f.name)+'</div>' +
+            '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">' +
+              '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>' +
+            '</div>' +
+            '<div class="ft-item-check"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* 保留上传按钮，替换列表区域 */
+    var oldCustom = scrollBody.querySelector('#ftCustomList');
+    var oldCustomLabel = null;
+    if(oldCustom){
+      oldCustomLabel = oldCustom.previousElementSibling;
+      oldCustom.remove();
+      if(oldCustomLabel && oldCustomLabel.classList.contains('hp-section-label')) oldCustomLabel.remove();
+    }
+
+    var builtinList = scrollBody.querySelector('#ftBuiltinList');
+    if(builtinList) builtinList.innerHTML = builtinHtml;
+
+    if(customHtml){
+      var builtinLabel = builtinList ? builtinList.previousElementSibling : null;
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = '<div class="hp-section-label">自定义字体</div><div class="ft-list" id="ftCustomList">' + customHtml + '</div>';
+      if(builtinLabel) builtinLabel.parentNode.insertBefore(wrapper.children[1], builtinLabel);
+      if(builtinLabel) builtinLabel.parentNode.insertBefore(wrapper.children[0], builtinLabel.parentNode.querySelector('#ftCustomList'));
+    }
+
+    Font._bindListEvents(panel);
+  },
+
+  _bindAllEvents: function(panel){
     panel.querySelector('#ftCloseBtn').addEventListener('click',function(){Font.close();});
 
     /* Tab 切换 */
@@ -338,14 +390,7 @@ var Font={
       tab.addEventListener('click', function(){
         _activeTab = tab.dataset.tab;
         panel.querySelectorAll('.ft-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===_activeTab);});
-        panel.querySelectorAll('.ft-slot-tag').forEach(function(s){
-          s.classList.toggle('active', (s.id==='ftSlotZh'&&_activeTab==='zh')||(s.id==='ftSlotEn'&&_activeTab==='en'));
-        });
-        /* 更新列表高亮 */
-        var activeName = _activeTab==='en'?_previewEn:_previewZh;
-        panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-          el.classList.toggle('active', el.dataset.fname===activeName);
-        });
+        Font._refreshPreview(panel);
       });
     });
 
@@ -355,11 +400,12 @@ var Font={
       Font.config.selectedEn = _previewEn;
       Font.save();
       Font.apply();
-      Font._updatePreviewArea(panel);
+      Font._refreshPreview(panel);
       App.showToast('已应用为全局字体');
     });
 
     panel.querySelector('#ftUploadArea').addEventListener('click',function(){panel.querySelector('#ftFileInput').click();});
+
     panel.querySelector('#ftUrlArea').addEventListener('click',function(){
       var url=prompt('输入字体URL（支持 .ttf/.woff2 或 CSS链接）：');
       if(!url||!url.trim())return;
@@ -377,7 +423,8 @@ var Font={
         Font.customList.push({name:fontName,family:family,fileName:familyName,scale:1,cssUrl:url});
         Font.save();
         if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
-        Font.render(panel);
+        Font._rebuildList(panel);
+        Font._refreshPreview(panel);
         App.showToast('已添加：'+familyName);
         return;
       }
@@ -393,7 +440,8 @@ var Font={
         Font.customList.push({name:fontName,family:family,fileName:rawName,scale:1,url:url});
         Font.save();
         if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
-        Font.render(panel);
+        Font._rebuildList(panel);
+        Font._refreshPreview(panel);
         App.showToast('已添加：'+rawName);
       }).catch(function(){
         App.showToast('加载失败，请检查URL');
@@ -416,7 +464,8 @@ var Font={
             Font.customList.push({name:fontName,family:family,fileName:file.name,scale:1});
             Font.save();
             if(_activeTab==='en') _previewEn=fontName; else _previewZh=fontName;
-            Font.render(panel);
+            Font._rebuildList(panel);
+            Font._refreshPreview(panel);
             App.showToast('已添加：'+file.name);
           });
         });
@@ -425,33 +474,34 @@ var Font={
       e.target.value='';
     });
 
-    /* 点击字体列表 → 填入当前 tab 对应的槽位 */
+    Font._bindListEvents(panel);
+  },
+
+  _bindListEvents: function(panel){
     panel.querySelectorAll('.ft-item').forEach(function(item){
+      if(item._ftBound) return;
+      item._ftBound = true;
       item.addEventListener('click',function(){
         var fname = item.dataset.fname;
         if(_activeTab==='en') _previewEn=fname; else _previewZh=fname;
-        Font._updatePreviewArea(panel);
-        var activeName = _activeTab==='en'?_previewEn:_previewZh;
-        panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-          el.classList.toggle('active', el.dataset.fname===activeName);
-        });
+        Font._refreshPreview(panel);
       });
     });
 
     panel.querySelectorAll('.ft-custom-card').forEach(function(card){
+      if(card._ftBound) return;
+      card._ftBound = true;
       card.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
         var fname = card.dataset.fname;
         if(_activeTab==='en') _previewEn=fname; else _previewZh=fname;
-        Font._updatePreviewArea(panel);
-        var activeName = _activeTab==='en'?_previewEn:_previewZh;
-        panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
-          el.classList.toggle('active', el.dataset.fname===activeName);
-        });
+        Font._refreshPreview(panel);
       });
     });
 
     panel.querySelectorAll('.ft-del-btn').forEach(function(btn){
+      if(btn._ftBound) return;
+      btn._ftBound = true;
       btn.addEventListener('click',function(e){
         e.stopPropagation();
         var name=btn.dataset.del;if(!name)return;
@@ -460,14 +510,19 @@ var Font={
           Font.customList=Font.customList.filter(function(f){return f.name!==name;});
           if(Font.config.selectedZh===name){Font.config.selectedZh='系统默认';}
           if(Font.config.selectedEn===name){Font.config.selectedEn='';}
-          if(_previewZh===name) _previewZh=Font.config.selectedZh;
-          if(_previewEn===name) _previewEn=Font.config.selectedEn;
-          Font.save();Font.apply();Font.render(panel);
+          if(_previewZh===name) _previewZh='系统默认';
+          if(_previewEn===name) _previewEn='';
+          Font.save();Font.apply();
+          Font._rebuildList(panel);
+          Font._refreshPreview(panel);
           App.showToast('已删除');
         });
       });
     });
   },
+
+  /* 兼容旧版本调用 */
+  render: function(panel){ Font._buildPanel(panel); },
 
   init:function(){
     openDB(function(){
@@ -481,24 +536,16 @@ var Font={
         Font.apply();
       }
 
-      var isBuiltinZh = false;
-      for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===zhName){isBuiltinZh=true;break;}}
-
-      function loadEn(cb){
-        if(!enName){cb();return;}
-        var isBuiltinEn = false;
-        for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===enName){isBuiltinEn=true;break;}}
-        if(isBuiltinEn){cb();return;}
-        Font.loadByName(enName, cb);
+      function loadOne(name, cb){
+        if(!name){cb();return;}
+        var isBuiltin = false;
+        for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===name){isBuiltin=true;break;}}
+        if(isBuiltin){cb();return;}
+        Font.loadByName(name, cb);
       }
 
-      function loadZh(cb){
-        if(isBuiltinZh){cb();return;}
-        Font.loadByName(zhName, cb);
-      }
-
-      loadZh(function(){
-        loadEn(function(){
+      loadOne(zhName, function(){
+        loadOne(enName, function(){
           applyAfterLoad();
         });
       });
