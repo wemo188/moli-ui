@@ -636,11 +636,12 @@
   text-align: right;
 }
 
+
 /* =========================
    字体面板 - 常驻预览区（固定）
 ========================= */
 .ft-live-preview {
-  padding: 24px 20px;
+  padding: 20px 20px 24px;
   background: rgba(126,163,201,0.04);
   border-bottom: 1.5px solid rgba(126,163,201,0.15);
   text-align: center;
@@ -652,19 +653,19 @@
   color: #8aa0b8;
   font-weight: 600;
   letter-spacing: 1px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .ft-live-preview-text {
-  font-size: 22px;
+  font-size: 20px;
   color: #2e4258;
   line-height: 2;
   font-weight: 500;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .ft-live-preview-btn {
-  margin-top: 16px;
+  margin-top: 14px;
   padding: 10px 28px;
   background: #1a1a1a;
   color: #fff;
@@ -687,6 +688,66 @@
   background: #ddd;
   color: #999;
   pointer-events: none;
+}
+
+/* Tab 切换 */
+.ft-tab-row {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(126,163,201,0.2);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ft-tab {
+  padding: 8px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #8aa0b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 1px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.ft-tab.active {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.ft-tab:not(.active):active {
+  background: rgba(126,163,201,0.1);
+}
+
+/* 当前选择标签 */
+.ft-slot-info {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: #8aa0b8;
+}
+
+.ft-slot-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(126,163,201,0.08);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ft-slot-tag.active {
+  background: rgba(26,26,26,0.08);
+  color: #2e4258;
 }
 
 .ft-item-preview[style*="font-family"] {
