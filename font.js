@@ -17,7 +17,7 @@ var BUILTIN=[
 
 var DEF_CFG={selected:'系统默认',selectedEn:'',selectedZh:''};
 var PREVIEW_CN='遇你，如春水映梨花。';
-var PREVIEW_EN='Meet you like spring water reflecting pear flower.';
+var PREVIEW_EN='Meet you like spring water reflecting pear flower';
 
 var _db=null;
 var _activeTab='zh';
