@@ -53,7 +53,7 @@ var Cards={
       pcL.style.setProperty('--profileCard-L-sub-c',lc.subC);
       pcL.style.setProperty('--profileCard-L-bg-opacity',lc.bgOpacity!=null?lc.bgOpacity:1);
       pcL.style.setProperty('--profileCard-L-bg-blur',(lc.bgBlur||0)+'px');
-    if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;if(App.font&&App.font.loadByFamily)App.font.loadByFamily(lc.fontFamily);}else{pcL.style.fontFamily='';}
+    if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;pcL.classList.add('font-custom');}else{pcL.style.fontFamily='';pcL.classList.remove('font-custom');}
 
     }
     if(pcR){
@@ -67,7 +67,7 @@ var Cards={
       pcR.style.setProperty('--profileCard-R-sub-c',rc.subC);
       pcR.style.setProperty('--profileCard-R-bg-opacity',rc.bgOpacity!=null?rc.bgOpacity:1);
       pcR.style.setProperty('--profileCard-R-bg-blur',(rc.bgBlur||0)+'px');
-     if(rc.fontFamily){pcR.style.fontFamily=rc.fontFamily;if(App.font&&App.font.loadByFamily)App.font.loadByFamily(rc.fontFamily);}else{pcR.style.fontFamily='';}
+     if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;pcL.classList.add('font-custom');}else{pcL.style.fontFamily='';pcL.classList.remove('font-custom');}
     }
   },
 
@@ -106,11 +106,8 @@ var Cards={
     }
 
     if(cfg.fontFamily){
-  var chatDisp=wr.querySelector('.hl-chatbar-display');
-  var bubbleDisp=wr.querySelector('.hl-bubble-display');
-  if(chatDisp)chatDisp.style.fontFamily=cfg.fontFamily;
-  if(bubbleDisp)bubbleDisp.style.fontFamily=cfg.fontFamily;
-  if(App.font&&App.font.loadByFamily)App.font.loadByFamily(cfg.fontFamily);
+  chatDisp.style.fontFamily=cfg.fontFamily;chatDisp.classList.add('font-custom');
+  bubbleDisp.style.fontFamily=cfg.fontFamily;bubbleDisp.classList.add('font-custom');
 }
   },
 
