@@ -54,6 +54,52 @@ body {
   overflow-x: hidden;
 }
 
+/* =========================
+   ★ 第一页默认布局基准
+   恢复布局时以此为准
+========================= */
+#row1 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 10px 12px 0;
+  width: 100%;
+  margin-top: 5px;
+}
+
+#row2 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 0 12px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+#hlAvatarsRow {
+  justify-content: space-between;
+  gap: 0;
+  padding: 0 16px;
+  margin-top: 14px;
+}
+
+#appIconsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+#edenCard {
+  margin-top: auto;
+  padding: 0 12px 100px;
+}
+
+#edenText {
+  font-size: 38px;
+}
+
 .bg-slider {
   position: fixed;
   top: -1px;
