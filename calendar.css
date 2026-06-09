@@ -164,9 +164,9 @@
   opacity: 0.15;
   animation: wtCloudDrift linear infinite;
 }
-.wt-cloud-item:nth-child(1) { top: 10%; left: -90px; width: 85px; animation-duration: 14s; }
-.wt-cloud-item:nth-child(2) { top: 45%; left: -75px; width: 70px; animation-duration: 18s; animation-delay: -6s; opacity: 0.12; }
-.wt-cloud-item:nth-child(3) { top: 70%; left: -80px; width: 72px; animation-duration: 21s; animation-delay: -11s; opacity: 0.13; }
+.wt-cloud-item:nth-child(1) { top: 10%; left: -90px; width: 55px; animation-duration: 14s; }
+.wt-cloud-item:nth-child(2) { top: 45%; left: -75px; width: 45px; animation-duration: 18s; animation-delay: -6s; opacity: 0.12; }
+.wt-cloud-item:nth-child(3) { top: 70%; left: -80px; width: 50px; animation-duration: 21s; animation-delay: -11s; opacity: 0.13; }
 .wt-static .wt-cloud-item { animation: none; left: 20%; opacity: 0.12; }
 .wt-static .wt-cloud-item:nth-child(2) { left: 45%; top: 50%; }
 .wt-static .wt-cloud-item:nth-child(3) { left: 10%; top: 72%; }
