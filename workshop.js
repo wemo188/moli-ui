@@ -411,6 +411,7 @@
     },
 
     resetAllLayout: function() {
+  if (!confirm('确定要恢复默认布局吗？所有组件将回到初始位置。')) return;
   App.LS.remove('wtCardPos');
   App.LS.remove('appIconOffsets');
   App.LS.remove('calTimeOffset');
