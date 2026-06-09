@@ -36,8 +36,7 @@ var Pixel = {
     el.style.setProperty('--pixel-bar-c', pc.barColor||'#000000');
     el.style.setProperty('--pixel-body-bg', pc.bodyBg||'#ffffff');
     el.style.setProperty('--pixel-font-c', pc.fontColor||'#2a2a2a');
-    el.style.fontFamily=d.fontFamily||'';
-if(d.fontFamily)el.classList.add('font-custom');else el.classList.remove('font-custom');
+    if，(pc.fontFamily){el.style.fontFamily=pc.fontFamily;el.classList.add('font-custom');}else{el.style.fontFamily='';el.classList.remove('font-custom');}
   },
 
   renderDisplayTexts: function() {
@@ -449,7 +448,7 @@ var Eden = {
   }
   
   el.style.fontFamily = d.fontFamily || '';
-if(d.fontFamily&&App.font&&App.font.loadByFamily)App.font.loadByFamily(d.fontFamily);
+if(d.fontFamily){el.classList.add('font-custom');if(App.font&&App.font.loadByFamily)App.font.loadByFamily(d.fontFamily);}else{el.classList.remove('font-custom');}
   el.style.whiteSpace = 'pre-wrap';
   el.style.wordBreak = 'break-word';
   var card = App.$('#edenCard');
