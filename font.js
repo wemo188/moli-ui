@@ -185,7 +185,6 @@ var Font={
       '.bf-sub-panel,.bf-sub-panel *,'+
       '.font-fullpanel,.font-fullpanel *,'+
       '.pc-edit-panel,.pc-edit-panel *,'+
-      '.bx-sub,.bx-name,.bx-tag,'+
       '.hl-chatbar-display,.hl-bubble-display,'+
       '.app-icon-label,'+
       '.pixel-text-display,'+
