@@ -131,23 +131,18 @@ r.style.setProperty('--ol-u-av-size',ap.uAvSize+'px');r.style.setProperty('--ol-
 r.style.setProperty('--ol-u-bubble-radius',ap.uBubbleRadius+'px');r.style.setProperty('--ol-u-bubble-width',ap.uBubbleWidth+'%');
 r.style.setProperty('--ol-u-bubble-border-w',ap.uBubbleBorderW+'px');r.style.setProperty('--ol-u-bubble-border-color',ap.uBubbleBorderColor);
 r.style.setProperty('--ol-u-text-size',(ap.uTextSize||16)+'px');r.style.setProperty('--ol-u-text-weight',String(ap.uTextWeight||400));r.style.setProperty('--ol-u-text-lh',String(ap.uTextLH||1.85));r.style.setProperty('--ol-u-text-color',ap.uTextColor||'#2e4258');
-
 r.style.setProperty('--ol-c-bubble-bg',ap.cBubbleBg);
 r.style.setProperty('--ol-c-bubble-opacity',(ap.cBubbleOpacity!=null?ap.cBubbleOpacity:100)/100);
 r.style.setProperty('--ol-c-bubble-blur',(ap.cBubbleBlur||0)+'px');
 r.style.setProperty('--ol-u-bubble-bg',ap.uBubbleBg);
 r.style.setProperty('--ol-u-bubble-opacity',(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100);
 r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
-
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.12));
 r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
-
 r.style.setProperty('--ol-card-bg', ap.cardBg || '#ffffff');
 r.style.setProperty('--ol-card-text', ap.cardTextColor || '#7ea3c9');
-
 r.style.setProperty('--ol-top-fade', ap.topBgColor === 'transparent' ? 'transparent' : ap.topBgColor);
-
 var wrap=App.$('#olInputWrap');
 if(wrap){
   r.style.setProperty('--ol-bar-bg', ap.barBg);
@@ -159,8 +154,6 @@ if(wrap){
   r.style.setProperty('--ol-input-text', ap.inputTextColor || '#adcdea');
   var inp2=App.$('#olInput');if(inp2)inp2.placeholder=ap.placeholder||'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚';
 }
-
-/* ★ 彻底修复背景更新逻辑：直接强刷背景 */
 var bgEl=App.$('#olBg');
 if(bgEl){
   var savedBg = App.LS.get('olBg_'+cid);
@@ -173,9 +166,23 @@ if(bgEl){
     bgEl.style.filter='none';
   }
 }
-
-var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';if(ap.chatFont)msgs.classList.add('font-custom');else msgs.classList.remove('font-custom');}
-var cards=App.$('#olCardsWrap');var _cardF=ap.cardFont||ap.chatFont||'';if(cards){cards.style.fontFamily=_cardF||'inherit';if(_cardF){cards.classList.add('font-custom');if(App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);}else{cards.classList.remove('font-custom');}}
+var msgs=App.$('#olMsgs');
+if(msgs){
+  if(ap.chatFont){msgs.style.fontFamily=ap.chatFont;msgs.classList.add('font-custom');}
+  else{msgs.style.fontFamily='';msgs.classList.remove('font-custom');}
+}
+var cards=App.$('#olCardsWrap');
+var _cardF=ap.cardFont||ap.chatFont||'';
+if(cards){
+  if(_cardF){
+    cards.style.fontFamily=_cardF;
+    cards.classList.add('font-custom');
+    if(App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);
+  }else{
+    cards.style.fontFamily='';
+    cards.classList.remove('font-custom');
+  }
+}
 },
 
 formatProse:function(raw,cid,isU){var ap=cid?gAp(cid):JSON.parse(JSON.stringify(DEF_AP)),text=raw||'',tokens=[];
