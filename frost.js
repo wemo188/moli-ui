@@ -36,7 +36,8 @@ var Pixel = {
     el.style.setProperty('--pixel-bar-c', pc.barColor||'#000000');
     el.style.setProperty('--pixel-body-bg', pc.bodyBg||'#ffffff');
     el.style.setProperty('--pixel-font-c', pc.fontColor||'#2a2a2a');
-    if(pc.fontFamily){el.style.fontFamily=pc.fontFamily;if(App.font&&App.font.loadByFamily)App.font.loadByFamily(pc.fontFamily);}else{el.style.fontFamily='';}
+    el.style.fontFamily=d.fontFamily||'';
+if(d.fontFamily)el.classList.add('font-custom');else el.classList.remove('font-custom');
   },
 
   renderDisplayTexts: function() {
