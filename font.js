@@ -8,7 +8,7 @@ var STORE_NAME='fontFiles';
 
 var BUILTIN=[
   {name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},
-  {name:'霞鹜文楷',family:'LXGW WenKai,cursive'},
+  {name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},
   {name:'思源宋体',family:'"Noto Serif SC",serif'},
   {name:'思源黑体',family:'"Noto Sans SC",sans-serif'},
   {name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},
@@ -86,18 +86,6 @@ function loadAllCustomFonts(list,cb){
   next();
 }
 
-function ensureLoaded(fontName,customList,cb){
-  if(!fontName){if(cb)cb();return;}
-  for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
-  var already=false;
-  document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
-  if(already){if(cb)cb();return;}
-  var t=null;
-  for(var j=0;j<customList.length;j++){if(customList[j].name===fontName){t=customList[j];break;}}
-  if(!t){if(cb)cb();return;}
-  loadAllCustomFonts([t],cb);
-}
-
 var Font={
   config:{},
   customList:[],
@@ -133,7 +121,15 @@ var Font={
   },
 
   loadByName:function(fontName,cb){
-    ensureLoaded(fontName,Font.customList,cb);
+    if(!fontName){if(cb)cb();return;}
+    for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
+    var already=false;
+    document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
+    if(already){if(cb)cb();return;}
+    var t=null;
+    for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===fontName){t=Font.customList[j];break;}}
+    if(!t){if(cb)cb();return;}
+    loadAllCustomFonts([t],cb);
   },
 
   loadByFamily:function(family,cb){
@@ -144,37 +140,15 @@ var Font={
     Font.loadByName(t.name,cb);
   },
 
-_injectStyle:function(family){
-  try{
-    var styleId='fontGlobalOverride';
-    var styleEl=document.getElementById(styleId);
-    if(!styleEl){
-      styleEl=document.createElement('style');
-      styleEl.id=styleId;
-      document.head.appendChild(styleEl);
-    }
-    if(!family || family===BUILTIN[0].family){
-      styleEl.textContent='';
-      document.body.style.fontFamily='';
-      return;
-    }
-    document.body.style.fontFamily=family;
-    styleEl.textContent='';
-  }catch(e){console.warn('[font]',e);}
-},
-
   apply:function(){
     var name=Font.config.selected||'系统默认';
     var family=Font.getFamily(name)||BUILTIN[0].family;
     var scale=Font.getScale(name);
     document.documentElement.style.setProperty('--font-scale',scale);
-
-    ensureLoaded(name,Font.customList,function(){
-      Font._injectStyle(family);
-      setTimeout(function(){
-        document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
-      },100);
-    });
+    document.body.style.fontFamily=family;
+    setTimeout(function(){
+      document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
+    },100);
   },
 
   open:function(){
@@ -382,11 +356,10 @@ _injectStyle:function(family){
   init:function(){
     openDB(function(){
       Font.load();
-      var selected=Font.config.selected||'系统默认';
-      var isBuiltin=false;
-      for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===selected){isBuiltin=true;break;}}
-      if(isBuiltin){Font.apply();return;}
-      ensureLoaded(selected,Font.customList,function(){Font.apply();});
+      /* 启动时加载所有自定义字体，确保各组件设置的字体都可用 */
+      loadAllCustomFonts(Font.customList,function(){
+        Font.apply();
+      });
     });
     App.font=Font;
   }
