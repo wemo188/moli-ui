@@ -151,17 +151,31 @@ var Font={
   },
 
   apply:function(){
-    var zhName=Font.config.selectedZh||'系统默认';
-    var enName=Font.config.selectedEn||'';
-    var combo=Font._combo(enName,zhName);
-    var scale=Font.getScale(zhName);
-    Font.config.selected=zhName;
-    document.body.style.fontFamily=combo;
-    document.documentElement.style.setProperty('--font-scale',scale);
-    setTimeout(function(){
-      document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
-    },100);
-  },
+  var zhName=Font.config.selectedZh||'系统默认';
+  var enName=Font.config.selectedEn||'';
+  var combo=Font._combo(enName,zhName);
+  var scale=Font.getScale(zhName);
+  Font.config.selected=zhName;
+  document.documentElement.style.setProperty('--font-scale',scale);
+
+  var styleId='fontGlobalOverride';
+  var styleEl=document.getElementById(styleId);
+  if(!styleEl){
+    styleEl=document.createElement('style');
+    styleEl.id=styleId;
+    document.head.appendChild(styleEl);
+  }
+
+  if(zhName==='系统默认'&&!enName){
+    styleEl.textContent='';
+  } else {
+    styleEl.textContent='*{font-family:'+combo+' !important}';
+  }
+
+  setTimeout(function(){
+    document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
+  },100);
+},
 
   open:function(){
     Font.load();
