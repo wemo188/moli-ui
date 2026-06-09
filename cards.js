@@ -67,7 +67,7 @@ var Cards={
       pcR.style.setProperty('--profileCard-R-sub-c',rc.subC);
       pcR.style.setProperty('--profileCard-R-bg-opacity',rc.bgOpacity!=null?rc.bgOpacity:1);
       pcR.style.setProperty('--profileCard-R-bg-blur',(rc.bgBlur||0)+'px');
-     if(lc.fontFamily){pcL.style.fontFamily=lc.fontFamily;pcL.classList.add('font-custom');}else{pcL.style.fontFamily='';pcL.classList.remove('font-custom');}
+     if(rc.fontFamily){pcR.style.fontFamily=rc.fontFamily;pcR.classList.add('font-custom');}else{pcR.style.fontFamily='';pcR.classList.remove('font-custom');}
     }
   },
 
@@ -106,8 +106,15 @@ var Cards={
     }
 
     if(cfg.fontFamily){
-  chatDisp.style.fontFamily=cfg.fontFamily;chatDisp.classList.add('font-custom');
-  bubbleDisp.style.fontFamily=cfg.fontFamily;bubbleDisp.classList.add('font-custom');
+  var chatDisp=wr.querySelector('.hl-chatbar-display');
+  var bubbleDisp=wr.querySelector('.hl-bubble-display');
+  if(chatDisp){chatDisp.style.fontFamily=cfg.fontFamily;chatDisp.classList.add('font-custom');}
+  if(bubbleDisp){bubbleDisp.style.fontFamily=cfg.fontFamily;bubbleDisp.classList.add('font-custom');}
+} else {
+  var chatDisp2=wr.querySelector('.hl-chatbar-display');
+  var bubbleDisp2=wr.querySelector('.hl-bubble-display');
+  if(chatDisp2){chatDisp2.style.fontFamily='';chatDisp2.classList.remove('font-custom');}
+  if(bubbleDisp2){bubbleDisp2.style.fontFamily='';bubbleDisp2.classList.remove('font-custom');}
 }
   },
 
