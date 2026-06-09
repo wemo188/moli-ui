@@ -190,7 +190,7 @@
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  background: #000;
+  background: #fff;
 }
 
 .bf-preview-slider {
@@ -500,8 +500,8 @@
 }
 
 .app-icon-glass {
-  width: 80px;
-  height: 80px;
+  width: 73px;
+  height: 73px;
   overflow: hidden;
   display: flex;
   align-items: center;
