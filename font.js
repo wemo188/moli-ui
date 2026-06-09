@@ -176,7 +176,8 @@ var Font={
     styleEl.textContent='';
   } else {
     styleEl.textContent=
-      '*:not(.font-custom){font-family:'+combo+' !important}';
+  '*{font-family:'+combo+' !important}'+
+  '.font-custom,.font-custom *{font-family:inherit !important}';
   }
 
   setTimeout(function(){
