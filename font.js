@@ -123,12 +123,18 @@ var Font={
     return name;
   },
 
-  _combo:function(enName,zhName){
-    var ef=Font.getFamily(enName);
-    var zf=Font.getFamily(zhName)||BUILTIN[0].family;
-    if(ef)return ef+','+zf;
-    return zf;
-  },
+ _combo:function(enName,zhName){
+  var ef=Font.getFamily(enName);
+  var zf=Font.getFamily(zhName)||BUILTIN[0].family;
+  // 去掉各自尾部的通用族名，最后统一加 sans-serif
+  function stripGeneric(f){
+    return f.replace(/,\s*(serif|sans-serif|cursive|monospace|fantasy)\s*$/i,'').trim();
+  }
+  var parts=[];
+  if(ef)parts.push(stripGeneric(ef));
+  parts.push(stripGeneric(zf));
+  return parts.join(',')+',sans-serif';
+},
 
   loadByName:function(fontName,cb){
     if(!fontName){if(cb)cb();return;}
