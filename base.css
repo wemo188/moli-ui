@@ -348,7 +348,8 @@ img.img-fill { transform: none !important; }
 
 #edenCard {
   margin-top: auto;
-  padding: 0 12px 100px;
+  padding: 0 12px;
+  margin-bottom: 10px;
 }
 
 #edenText {
