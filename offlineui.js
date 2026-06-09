@@ -174,7 +174,8 @@ if(bgEl){
   }
 }
 
-var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';if(ap.chatFont&&App.font&&App.font.loadByFamily)App.font.loadByFamily(ap.chatFont);}
+var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';if(ap.chatFont)msgs.classList.add('font-custom');else msgs.classList.remove('font-custom');}
+if(cards){cards.style.fontFamily=_cardF||'';if(_cardF)cards.classList.add('font-custom');else cards.classList.remove('font-custom');}
 var cards=App.$('#olCardsWrap');var _cardF=ap.cardFont||ap.chatFont||'';if(cards){cards.style.fontFamily=_cardF||'inherit';if(_cardF&&App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);}
 },
 
