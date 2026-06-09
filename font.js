@@ -8,7 +8,7 @@ var STORE_NAME='fontFiles';
 
 var BUILTIN=[
   {name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},
-  {name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},
+  {name:'霞鹜文楷',family:"'LXGW WenKai',serif"},
   {name:'思源宋体',family:'"Noto Serif SC",serif'},
   {name:'思源黑体',family:'"Noto Sans SC",sans-serif'},
   {name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},
@@ -354,9 +354,16 @@ var Font={
   render:function(panel){Font._build(panel);},
 
   init:function(){
+    // 注入霞鹜文楷 CDN（Google Fonts 可能不稳定）
+    if(!document.querySelector('link[href*="lxgw-wenkai"]')){
+      var lxgw=document.createElement('link');
+      lxgw.rel='stylesheet';
+      lxgw.href='https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css';
+      document.head.appendChild(lxgw);
+    }
+
     openDB(function(){
       Font.load();
-      /* 启动时加载所有自定义字体，确保各组件设置的字体都可用 */
       loadAllCustomFonts(Font.customList,function(){
         Font.apply();
       });
