@@ -175,7 +175,8 @@ var Font={
   if(zhName==='系统默认'&&!enName){
     styleEl.textContent='';
   } else {
-    styleEl.textContent='*{font-family:'+combo+' !important}';
+    styleEl.textContent=
+      '*:not(.font-custom){font-family:'+combo+' !important}';
   }
 
   setTimeout(function(){
