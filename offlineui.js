@@ -175,8 +175,7 @@ if(bgEl){
 }
 
 var msgs=App.$('#olMsgs');if(msgs){msgs.style.fontFamily=ap.chatFont||'';if(ap.chatFont)msgs.classList.add('font-custom');else msgs.classList.remove('font-custom');}
-if(cards){cards.style.fontFamily=_cardF||'';if(_cardF)cards.classList.add('font-custom');else cards.classList.remove('font-custom');}
-var cards=App.$('#olCardsWrap');var _cardF=ap.cardFont||ap.chatFont||'';if(cards){cards.style.fontFamily=_cardF||'inherit';if(_cardF&&App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);}
+var cards=App.$('#olCardsWrap');var _cardF=ap.cardFont||ap.chatFont||'';if(cards){cards.style.fontFamily=_cardF||'inherit';if(_cardF){cards.classList.add('font-custom');if(App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);}else{cards.classList.remove('font-custom');}}
 },
 
 formatProse:function(raw,cid,isU){var ap=cid?gAp(cid):JSON.parse(JSON.stringify(DEF_AP)),text=raw||'',tokens=[];
