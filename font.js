@@ -162,38 +162,11 @@ var Font={
   var combo=Font._combo(enName,zhName);
   var scale=Font.getScale(zhName);
   Font.config.selected=zhName;
+  document.body.style.fontFamily=combo;
   document.documentElement.style.setProperty('--font-scale',scale);
 
-  var styleId='fontGlobalOverride';
-  var styleEl=document.getElementById(styleId);
-  if(!styleEl){
-    styleEl=document.createElement('style');
-    styleEl.id=styleId;
-    document.head.appendChild(styleEl);
-  }
-
-  if(zhName==='系统默认'&&!enName){
-    styleEl.textContent='';
-  } else {
-    styleEl.textContent=
-      'html,body,input,textarea,select,button,'+
-      '.main-content,.page-slider,.screen-page,.screen-page-inner,'+
-      '.dock,.dock *,'+
-      '.half-panel,.half-panel *,'+
-      '.fullpage-panel,.fullpage-panel *,'+
-      '.beautify-panel,.beautify-panel *,'+
-      '.bf-sub-panel,.bf-sub-panel *,'+
-      '.font-fullpanel,.font-fullpanel *,'+
-      '.pc-edit-panel,.pc-edit-panel *,'+
-      '.hl-chatbar-display,.hl-bubble-display,'+
-      '.app-icon-label,'+
-      '.pixel-text-display,'+
-      '.eden-text,#edenText,'+
-      '.cal-table,.cal-table *,#calMonth,#calYear,#calMonthEn,#calClock,'+
-      '.ol-root,.ol-root *,'+
-      '.toast'+
-      '{font-family:'+combo+'}';
-  }
+  var styleEl=document.getElementById('fontGlobalOverride');
+  if(styleEl)styleEl.textContent='';
 
   setTimeout(function(){
     document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
