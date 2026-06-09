@@ -123,15 +123,6 @@
   text-align: center;
 }
 
-.bf-nav-title::after {
-  content: "customize";
-  display: block;
-  font-size: 21px;
-  font-weight: 600;
-  color: #9ca3b0;
-  margin-top: 2px;
-}
-
 .bf-back {
   width: 44px;
   height: 44px;
