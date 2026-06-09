@@ -176,8 +176,24 @@ var Font={
     styleEl.textContent='';
   } else {
     styleEl.textContent=
-  '*{font-family:'+combo+' !important}'+
-  '.font-custom,.font-custom *{font-family:inherit !important}';
+      'html,body,input,textarea,select,button,'+
+      '.main-content,.page-slider,.screen-page,.screen-page-inner,'+
+      '.dock,.dock *,'+
+      '.half-panel,.half-panel *,'+
+      '.fullpage-panel,.fullpage-panel *,'+
+      '.beautify-panel,.beautify-panel *,'+
+      '.bf-sub-panel,.bf-sub-panel *,'+
+      '.font-fullpanel,.font-fullpanel *,'+
+      '.pc-edit-panel,.pc-edit-panel *,'+
+      '.bx-sub,.bx-name,.bx-tag,'+
+      '.hl-chatbar-display,.hl-bubble-display,'+
+      '.app-icon-label,'+
+      '.pixel-text-display,'+
+      '.eden-text,#edenText,'+
+      '.cal-table,.cal-table *,#calMonth,#calYear,#calMonthEn,#calClock,'+
+      '.ol-root,.ol-root *,'+
+      '.toast'+
+      '{font-family:'+combo+'}';
   }
 
   setTimeout(function(){
