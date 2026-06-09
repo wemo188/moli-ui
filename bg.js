@@ -64,56 +64,39 @@ var Bg = {
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="bf-list">' +
-  '<div class="bf-list-item" data-action="theme">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">主题应用</span>' +
-      '<span class="bf-list-sub">清灰 · 玉蓝 · 欢粉 · 夜色</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-  '<div class="bf-list-item" data-action="bgicon">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">背景图标</span>' +
-      '<span class="bf-list-sub">背景与图标的改朝换代</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-  '<div class="bf-list-item" data-action="font">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">字体选择</span>' +
-      '<span class="bf-list-sub">同时使用中英双种字体搭配</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-  '<div class="bf-list-item" data-action="component">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">组件定义</span>' +
-      '<span class="bf-list-sub">标签卡册 · 气泡对话等零零碎碎</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-  '<div class="bf-list-item" data-action="ballstyle">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">悬浮样式</span>' +
-      '<span class="bf-list-sub">更换小助手的形象吧</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-  '<div class="bf-list-item" data-action="snapshot">' +
-    '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
-    '<div class="bf-list-info">' +
-      '<span class="bf-list-name">排版存档</span>' +
-      '<span class="bf-list-sub">各种搭配一键保存，藏宝藏</span>' +
-    '</div>' +
-    '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-  '</div>' +
-'</div>';
-  document.body.appendChild(panel);
+        '<div class="bf-list-item" data-action="theme">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">主题应用</span><span class="bf-list-sub">清灰 · 玉蓝 · 欢粉 · 夜色</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div class="bf-list-item" data-action="bgicon">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">背景图标</span><span class="bf-list-sub">背景与图标的改朝换代</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div class="bf-list-item" data-action="font">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">字体选择</span><span class="bf-list-sub">同时使用中英双种字体搭配</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div class="bf-list-item" data-action="component">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">组件定义</span><span class="bf-list-sub">标签卡册 · 气泡对话等零零碎碎</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div class="bf-list-item" data-action="ballstyle">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象吧</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div class="bf-list-item" data-action="snapshot">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">排版存档</span><span class="bf-list-sub">各种搭配一键保存，藏宝藏</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(panel);
     Bg._panelEl = panel;
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.classList.remove('show'); panel.classList.add('hidden'); setTimeout(function(){ panel.remove(); }, 350); });
@@ -175,10 +158,10 @@ var Bg = {
           '<div class="bf-divider"></div>' +
           '<div class="bf-section-title">图标样式</div>' +
           '<div class="bf-icon-preview" id="bfIconPreview"></div>' +
-                    '<div class="bf-color-row">' +
-            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconColorDot" style="background:' + iconConfig.iconColor + ';"></div><span class="bf-color-dot-label">图案</span></div>' +
-            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconBgDot" style="background:' + iconConfig.iconBg + ';"></div><span class="bf-color-dot-label">背景</span></div>' +
-            '<div class="bf-color-item"><div class="bf-color-dot" id="bfColorDot" style="background:' + iconConfig.borderColor + ';"></div><span class="bf-color-dot-label">边框</span></div>' +
+          '<div class="bf-color-row">' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconColorDot"></div><span class="bf-color-dot-label">图案</span></div>' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfIconBgDot"></div><span class="bf-color-dot-label">背景</span></div>' +
+            '<div class="bf-color-item"><div class="bf-color-dot" id="bfColorDot"></div><span class="bf-color-dot-label">边框</span></div>' +
             '<button class="bf-reset-btn" id="bfResetColor" type="button">恢复默认</button>' +
           '</div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">毛玻璃</span><input type="range" id="bfIconBlur" min="0" max="30" step="1" value="' + iconConfig.blur + '"><span class="bf-ctrl-val" id="bfIconBlurVal">' + iconConfig.blur + 'px</span></div>' +
@@ -186,11 +169,11 @@ var Bg = {
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">边框</span><input type="range" id="bfIconBorder" min="0" max="6" step="0.5" value="' + iconConfig.borderW + '"><span class="bf-ctrl-val" id="bfIconBorderVal">' + iconConfig.borderW + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
-                    '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="50" max="120" step="1" value="' + (iconConfig.iconSize||80) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||80) + 'px</span></div>' +
+          '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="50" max="120" step="1" value="' + (iconConfig.iconSize||73) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||73) + 'px</span></div>' +
           '<div class="bf-divider"></div>' +
-                   '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
+          '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
-                    '<div class="bf-bottom-spacer"></div>' +
+          '<div class="bf-bottom-spacer"></div>' +
         '</div>' +
       '</div>';
 
@@ -198,7 +181,12 @@ var Bg = {
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.remove(); });
 
-function renderIconPreview() {
+    // 设置颜色点的初始颜色
+    panel.querySelector('#bfIconColorDot').style.background = iconConfig.iconColor;
+    panel.querySelector('#bfIconBgDot').style.background = iconConfig.iconBg;
+    panel.querySelector('#bfColorDot').style.background = iconConfig.borderColor;
+
+    function renderIconPreview() {
       var prev = panel.querySelector('#bfIconPreview');
       if(!prev) return;
       var bd = tempBg[currentPreviewPage];
@@ -211,15 +199,13 @@ function renderIconPreview() {
       });
       html += '</div></div>';
       prev.innerHTML = html;
-      // 背景只需要动态设置图片和滤镜
       var bgEl = panel.querySelector('#bfIconPreviewBg');
       if(bgEl && bd && bd.src) {
         bgEl.style.backgroundImage = 'url(' + bd.src + ')';
         bgEl.style.filter = 'blur(' + (bd.blur||0) + 'px) brightness(' + (100-(bd.dark||0)) + '%)';
       }
     }
-    
-    // === renderPreview ===
+
     function renderPreview() {
       var area = panel.querySelector('#bfPreviewArea');
       var areaW = area.offsetWidth;
@@ -237,11 +223,7 @@ function renderIconPreview() {
         var srcPage = document.querySelector('.screen-page-' + (idx + 1));
         if(srcPage) {
           var clone = srcPage.cloneNode(true);
-          clone.style.width = '100vw';
-          clone.style.height = '100vh';
-          clone.style.position = 'absolute';
-          clone.style.top = '0';
-          clone.style.left = '0';
+          clone.style.cssText = 'width:100vw;height:100vh;position:absolute;top:0;left:0;';
           frame.appendChild(clone);
         }
         var fixedEls = ['#dockBar', '.screen-indicators'];
@@ -249,15 +231,8 @@ function renderIconPreview() {
           var src = document.querySelector(sel);
           if(src) {
             var fc = src.cloneNode(true);
-            fc.style.position = 'absolute';
-            fc.style.zIndex = '100';
             var rect = src.getBoundingClientRect();
-            fc.style.left = rect.left + 'px';
-            fc.style.top = rect.top + 'px';
-            fc.style.width = rect.width + 'px';
-            fc.style.bottom = 'auto';
-            fc.style.right = 'auto';
-            fc.style.transform = 'none';
+            fc.style.cssText = 'position:absolute;z-index:100;left:'+rect.left+'px;top:'+rect.top+'px;width:'+rect.width+'px;bottom:auto;right:auto;transform:none;';
             frame.appendChild(fc);
           }
         });
@@ -272,16 +247,15 @@ function renderIconPreview() {
         }
         page.appendChild(frame);
       });
-      renderIconPreview(); 
+      renderIconPreview();
     }
     setTimeout(renderPreview, 100);
     renderIconPreview();
 
-    // === Preview page switch ===
     function switchPreview(idx) {
-  currentPreviewPage = idx;
-  var slider = panel.querySelector('#bfPreviewSlider');
-  if(slider) slider.style.transform = 'translateX(' + (-idx * 50) + '%)';
+      currentPreviewPage = idx;
+      var slider = panel.querySelector('#bfPreviewSlider');
+      if(slider) slider.style.transform = 'translateX(' + (-idx * 50) + '%)';
       panel.querySelectorAll('.bf-preview-dot').forEach(function(d) {
         d.classList.toggle('active', parseInt(d.dataset.p) === idx);
       });
@@ -294,42 +268,41 @@ function renderIconPreview() {
     panel.querySelectorAll('.bf-preview-dot').forEach(function(dot) {
       dot.addEventListener('click', function() { switchPreview(parseInt(dot.dataset.p)); });
     });
+
+    // 预览区滑动
     var previewArea = panel.querySelector('#bfPreviewArea');
-    var psx = 0;
     var psx = 0, currentX = 0, isDragging = false;
-var slider = panel.querySelector('#bfPreviewSlider');
+    var slider = panel.querySelector('#bfPreviewSlider');
 
-previewArea.addEventListener('touchstart', function(e) { 
-  psx = e.touches[0].clientX; 
-  isDragging = true;
-  slider.style.transition = 'none';
-}, {passive:true});
+    previewArea.addEventListener('touchstart', function(e) {
+      psx = e.touches[0].clientX;
+      isDragging = true;
+      slider.style.transition = 'none';
+    }, {passive:true});
 
-previewArea.addEventListener('touchmove', function(e) {
-  if(!isDragging) return;
-  e.preventDefault();
-  currentX = e.touches[0].clientX;
-  var dx = currentX - psx;
-  var percent = (-currentPreviewPage * 50) + (dx / previewArea.offsetWidth * 50);
-  percent = Math.min(0, Math.max(-50, percent));
-  slider.style.transform = 'translateX(' + percent + '%)';
-}, {passive:false});
+    previewArea.addEventListener('touchmove', function(e) {
+      if(!isDragging) return;
+      e.preventDefault();
+      currentX = e.touches[0].clientX;
+      var dx = currentX - psx;
+      var percent = (-currentPreviewPage * 50) + (dx / previewArea.offsetWidth * 50);
+      percent = Math.min(0, Math.max(-50, percent));
+      slider.style.transform = 'translateX(' + percent + '%)';
+    }, {passive:false});
 
-previewArea.addEventListener('touchend', function(e) {
-  isDragging = false;
-  slider.style.transition = '';
-  var dx = e.changedTouches[0].clientX - psx;
-  var threshold = 30;
-  if(Math.abs(dx) > threshold && ((dx < 0 && currentPreviewPage < 1) || (dx > 0 && currentPreviewPage > 0))) {
-    var newPage = dx < 0 ? 1 : 0;
-    switchPreview(newPage);
-  } else {
-    // 回弹到当前页
-    slider.style.transform = 'translateX(' + (-currentPreviewPage * 50) + '%)';
-  }
-}, {passive:true});
+    previewArea.addEventListener('touchend', function(e) {
+      isDragging = false;
+      slider.style.transition = '';
+      var dx = e.changedTouches[0].clientX - psx;
+      var threshold = 30;
+      if(Math.abs(dx) > threshold && ((dx < 0 && currentPreviewPage < 1) || (dx > 0 && currentPreviewPage > 0))) {
+        switchPreview(dx < 0 ? 1 : 0);
+      } else {
+        slider.style.transform = 'translateX(' + (-currentPreviewPage * 50) + '%)';
+      }
+    }, {passive:true});
 
-    // === Background upload/apply/remove ===
+    // 背景上传/应用/移除
     panel.querySelector('#bfBgUpload').addEventListener('click', function() { panel.querySelector('#bfBgFile').click(); });
     panel.querySelector('#bfBgFile').addEventListener('change', function(e) {
       var f = e.target.files[0]; if(!f) return;
@@ -381,7 +354,7 @@ previewArea.addEventListener('touchend', function(e) {
       App.showToast('背景已移除');
     });
 
-    // === Icon style controls ===
+    // 图标样式控制
     panel.querySelector('#bfIconColorDot').addEventListener('click', function(e) {
       e.stopPropagation(); if(!App.openColorPicker) return;
       App.openColorPicker(iconConfig.iconColor, function(hex) {
@@ -402,36 +375,6 @@ previewArea.addEventListener('touchend', function(e) {
         Bg.applyTopIconStyle(iconConfig); renderIconPreview();
       });
     });
-    panel.querySelector('#bfIconBlur').addEventListener('input', function() {
-      iconConfig.blur = parseInt(this.value);
-      panel.querySelector('#bfIconBlurVal').textContent = iconConfig.blur + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfIconOpacity').addEventListener('input', function() {
-      iconConfig.opacity = parseFloat(this.value);
-      panel.querySelector('#bfIconOpacityVal').textContent = Math.round(iconConfig.opacity * 100) + '%';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfIconBorder').addEventListener('input', function() {
-      iconConfig.borderW = parseFloat(this.value);
-      panel.querySelector('#bfIconBorderVal').textContent = iconConfig.borderW + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfIconShadow').addEventListener('input', function() {
-      iconConfig.shadow = parseInt(this.value);
-      panel.querySelector('#bfIconShadowVal').textContent = iconConfig.shadow + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
-    panel.querySelector('#bfIconRadius').addEventListener('input', function() {
-      iconConfig.radius = parseInt(this.value);
-      panel.querySelector('#bfIconRadiusVal').textContent = iconConfig.radius + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
-        panel.querySelector('#bfIconSize').addEventListener('input', function() {
-      iconConfig.iconSize = parseInt(this.value);
-      panel.querySelector('#bfIconSizeVal').textContent = iconConfig.iconSize + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig);
-    });
     panel.querySelector('#bfColorDot').addEventListener('click', function(e) {
       e.stopPropagation(); if(!App.openColorPicker) return;
       App.openColorPicker(iconConfig.borderColor, function(hex) {
@@ -444,6 +387,23 @@ previewArea.addEventListener('touchend', function(e) {
         Bg.applyTopIconStyle(iconConfig);
       });
     });
+
+    var sliderIds = ['bfIconBlur','bfIconOpacity','bfIconBorder','bfIconShadow','bfIconRadius','bfIconSize'];
+    var sliderKeys = ['blur','opacity','borderW','shadow','radius','iconSize'];
+    var sliderValIds = ['bfIconBlurVal','bfIconOpacityVal','bfIconBorderVal','bfIconShadowVal','bfIconRadiusVal','bfIconSizeVal'];
+    var sliderUnits = ['px','%','px','px','px','px'];
+
+    sliderIds.forEach(function(sid, i) {
+      panel.querySelector('#'+sid).addEventListener('input', function() {
+        var v = sid === 'bfIconOpacity' ? parseFloat(this.value) : parseInt(this.value);
+        iconConfig[sliderKeys[i]] = v;
+        var display = sid === 'bfIconOpacity' ? Math.round(v * 100) : v;
+        panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
+        App.LS.set('topIconConfig', iconConfig);
+        Bg.applyTopIconStyle(iconConfig);
+      });
+    });
+
     panel.querySelector('#bfResetColor').addEventListener('click', function() {
       iconConfig = JSON.parse(JSON.stringify(DEF_ICON_CFG));
       panel.querySelector('#bfColorDot').style.background = DEF_ICON_CFG.borderColor;
@@ -454,18 +414,21 @@ previewArea.addEventListener('touchend', function(e) {
       panel.querySelector('#bfIconRadius').value = DEF_ICON_CFG.radius;
       panel.querySelector('#bfIconBlur').value = DEF_ICON_CFG.blur;
       panel.querySelector('#bfIconOpacity').value = DEF_ICON_CFG.opacity;
+      panel.querySelector('#bfIconSize').value = DEF_ICON_CFG.iconSize;
       panel.querySelector('#bfIconBorderVal').textContent = DEF_ICON_CFG.borderW + 'px';
       panel.querySelector('#bfIconShadowVal').textContent = DEF_ICON_CFG.shadow + 'px';
       panel.querySelector('#bfIconRadiusVal').textContent = DEF_ICON_CFG.radius + 'px';
       panel.querySelector('#bfIconBlurVal').textContent = DEF_ICON_CFG.blur + 'px';
-      panel.querySelector('#bfIconOpacityVal').textContent = '100%';
-            panel.querySelector('#bfIconSize').value = DEF_ICON_CFG.iconSize;
+      panel.querySelector('#bfIconOpacityVal').textContent = Math.round(DEF_ICON_CFG.opacity * 100) + '%';
       panel.querySelector('#bfIconSizeVal').textContent = DEF_ICON_CFG.iconSize + 'px';
-      App.LS.set('topIconConfig', iconConfig); Bg.applyTopIconStyle(iconConfig); renderIconPreview();
+      // ★ 删除动态样式，回到CSS默认
+      var dynStyle = document.getElementById('topIconDynamicStyle');
+      if(dynStyle) dynStyle.remove();
+      App.LS.remove('topIconConfig');
+      renderIconPreview();
       App.showToast('已恢复默认');
     });
 
-    // === Reset all icons ===
     panel.querySelector('#bfResetIcons').addEventListener('click', function() {
       ICON_MAP.forEach(function(ic) { App.LS.remove(ic.id); });
       Bg.renderAllIcons();
@@ -500,10 +463,10 @@ previewArea.addEventListener('touchend', function(e) {
     var menu = document.createElement('div');
     menu.className = 'bf-modal-overlay';
     menu.innerHTML = '<div class="bf-modal-box">' +
-  '<button class="bf-modal-btn bf-modal-btn-primary" data-act="upload" type="button">上传新图片</button>' +
-  '<button class="bf-modal-btn bf-modal-btn-secondary" data-act="reset" type="button">恢复默认</button>' +
-  '<button class="bf-modal-btn bf-modal-btn-cancel" data-act="cancel" type="button">取消</button>' +
-'</div>';
+      '<button class="bf-modal-btn bf-modal-btn-primary" data-act="upload" type="button">上传新图片</button>' +
+      '<button class="bf-modal-btn bf-modal-btn-secondary" data-act="reset" type="button">恢复默认</button>' +
+      '<button class="bf-modal-btn bf-modal-btn-cancel" data-act="cancel" type="button">取消</button>' +
+    '</div>';
     document.body.appendChild(menu);
     menu.addEventListener('click', function(e) { if(e.target === menu) menu.remove(); });
     menu.querySelectorAll('button').forEach(function(btn) {
@@ -531,59 +494,36 @@ previewArea.addEventListener('touchend', function(e) {
   openFontFull: function() { if(App.font) App.font.open(); },
 
   openComponent: function() {
-  var old = document.getElementById('bfComponentPanel'); 
-  if(old) old.remove();
-  
-  var panel = document.createElement('div');
-  panel.id = 'bfComponentPanel'; 
-  panel.className = 'bf-component-panel';
-  
-  // 正确的 HTML：只有恢复布局按钮，不要复制 openMain 的列表
-  panel.innerHTML =
-    '<div class="beautify-container">' +
-      '<div class="bf-nav">' +
-        '<button class="bf-back" id="bfCompBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
-        '<span class="bf-nav-title">组件定义</span>' +
-        '<div class="bf-nav-right"></div>' +
-      '</div>' +
-      '<div class="bf-comp-body">' +
-        '<button class="bf-comp-reset-btn" id="bfResetLayout" type="button">恢复布局</button>' +
-        '<div class="bf-comp-hint">将所有组件位置恢复到默认状态</div>' +
-      '</div>' +
-    '</div>';
-  
-  document.body.appendChild(panel);
-  requestAnimationFrame(function() { panel.classList.add('show'); });
-  App.bindSwipeBack(panel, function() { panel.remove(); });
-  
-  // 注意：这里查找的是 bfCompBack，与上面的 id 匹配
-  panel.querySelector('#bfCompBack').addEventListener('click', function() { 
-    panel.classList.remove('show'); 
-    panel.classList.add('hidden'); 
-    setTimeout(function() { panel.remove(); }, 350); 
-  });
-  
-  panel.querySelector('#bfResetLayout').addEventListener('click', function() {
-    App.LS.remove('wtCardPos'); 
-    App.LS.remove('appIconOffsets'); 
-    App.LS.remove('calTimeOffset');
-    var calRow = App.$('#calTimeRow'); 
-    if(calRow) calRow.style.transform = '';
-    document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ 
-      el.style.transform = ''; 
+    var old = document.getElementById('bfComponentPanel');
+    if(old) old.remove();
+    var panel = document.createElement('div');
+    panel.id = 'bfComponentPanel';
+    panel.className = 'bf-component-panel';
+    panel.innerHTML =
+      '<div class="beautify-container">' +
+        '<div class="bf-nav">' +
+          '<button class="bf-back" id="bfCompBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+          '<span class="bf-nav-title">组件定义</span>' +
+          '<div class="bf-nav-right"></div>' +
+        '</div>' +
+        '<div class="bf-comp-body">' +
+          '<button class="bf-comp-reset-btn" id="bfResetLayout" type="button">恢复布局</button>' +
+          '<div class="bf-comp-hint">将所有组件位置恢复到默认状态</div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(panel);
+    requestAnimationFrame(function() { panel.classList.add('show'); });
+    App.bindSwipeBack(panel, function() { panel.remove(); });
+    panel.querySelector('#bfCompBack').addEventListener('click', function() {
+      panel.classList.remove('show'); panel.classList.add('hidden');
+      setTimeout(function() { panel.remove(); }, 350);
     });
-    if(App.modules.cards) App.modules.cards.resetAllPositions();
-    var edenData = App.LS.get('edenCard'); 
-    if(edenData) { 
-      edenData.posX = 0; 
-      edenData.posY = 0; 
-      App.LS.set('edenCard', edenData); 
-    }
-    var edenCard = App.$('#edenCard'); 
-    if(edenCard) edenCard.style.transform = '';
-    App.showToast('布局已恢复');
-  });
-},
+    panel.querySelector('#bfResetLayout').addEventListener('click', function() {
+      if(App.workshop && App.workshop.resetAllLayout) {
+        App.workshop.resetAllLayout();
+      }
+    });
+  },
 
   openBallStyle: function() { if(App.openBallSettings) App.openBallSettings(); },
   openSnapshot: function() { if(App.workshop && App.workshop.openSnapshot) App.workshop.openSnapshot(); },
@@ -667,16 +607,15 @@ previewArea.addEventListener('touchend', function(e) {
     }
   },
 
-      applyTopIconStyle: function(cfg) {
+  applyTopIconStyle: function(cfg) {
     var styleId = 'topIconDynamicStyle';
     var styleEl = document.getElementById(styleId);
-    if(!styleEl) { 
-        styleEl = document.createElement('style'); 
-        styleEl.id = styleId; 
-        document.head.appendChild(styleEl); 
+    if(!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = styleId;
+      document.head.appendChild(styleEl);
     }
-    
-    // 直接使用 cfg 的值，因为调用前已经保证了所有属性都存在
+
     var radius = cfg.radius;
     var blur = cfg.blur;
     var opacity = cfg.opacity;
@@ -684,12 +623,9 @@ previewArea.addEventListener('touchend', function(e) {
     var iconColor = cfg.iconColor;
     var iconSize = cfg.iconSize;
 
-    // 背景色处理：渐变走 opacity 属性，纯色走 rgba alpha
     var bgWithOpacity = iconBg;
-    var useOpacityProp = false;
-        if(iconBg.indexOf('gradient') >= 0) {
+    if(iconBg.indexOf('gradient') >= 0) {
       bgWithOpacity = 'transparent';
-      useOpacityProp = false;
     } else {
       var r=255, g=255, b=255, a=1;
       var m = iconBg.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
@@ -698,73 +634,52 @@ previewArea.addEventListener('touchend', function(e) {
       bgWithOpacity = 'rgba('+r+','+g+','+b+','+(a*opacity).toFixed(3)+')';
     }
 
-    // 容器样式
+    var sel1 = '.app-icon-glass';
+    var sel2 = '.bf-icon-preview-item';
+
     var containerCSS =
-      '#appIconsRow > div > div:first-child, .bf-icon-preview-item {' +
+      sel1+','+sel2+' {' +
         'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#d1d5db')+' !important;' +
         'box-shadow: '+cfg.shadow+'px '+cfg.shadow+'px 0 '+(cfg.shadowColor||'#ffffff')+' !important;' +
         'border-radius: '+radius+'px !important;' +
         'background: '+bgWithOpacity+' !important;' +
         'backdrop-filter: blur('+blur+'px) !important;' +
         '-webkit-backdrop-filter: blur('+blur+'px) !important;' +
-        (useOpacityProp ? 'opacity: '+opacity+' !important;' : '') +
+        'width: '+iconSize+'px !important;' +
+        'height: '+iconSize+'px !important;' +
       '}';
 
-    // 渐变背景层（用 ::before，这样透明度只影响背景不影响图案）
     var gradBgCSS = '';
     if(iconBg.indexOf('gradient') >= 0) {
-      var sel1 = '#appIconsRow > div > div:first-child';
-      var sel2 = '.bf-icon-preview-item';
       gradBgCSS =
-        sel1+','+sel2+' { position: relative; }' +
-                sel1+'::before,'+sel2+'::before {' +
-          'content: "";' +
-          'position: absolute;' +
-          'inset: -1px;' +
-          'background: '+iconBg+';' +
-          'border-radius: inherit;' +
-          'opacity: '+opacity+';' +
-          'pointer-events: none;' +
-          'z-index: 0;' +
+        sel1+'::before,'+sel2+'::before {' +
+          'content: "";position: absolute;inset: -1px;' +
+          'background: '+iconBg+';border-radius: inherit;' +
+          'opacity: '+opacity+';pointer-events: none;z-index: 0;' +
         '}' +
         sel1+' svg,'+sel2+' svg { position: relative; z-index: 1; }';
     }
-    
-                // 图标容器尺寸 + SVG 自适应
-    var svgCSS =
-      '#appIconsRow > div > div:first-child {' +
-        'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
-      '}' +
-      '#appIconsRow > div > div:first-child svg,' +
-      '.bf-icon-preview-item svg {' +
-        'width: 55% !important; height: 55% !important;' +
-      '}' +
-      '.bf-icon-preview-item {' +
-        'width: '+iconSize+'px !important; height: '+iconSize+'px !important;' +
-      '}';
 
-           // 图标颜色（渐变不支持 stroke，跳过）
     var iconColorCSS = '';
     if(iconColor.indexOf('gradient') === -1) {
-      var s1 = '#appIconsRow > div > div:first-child svg > ';
-      var s2 = '.bf-icon-preview-item svg > ';
+      var c1 = sel1+' svg > ';
+      var c2 = sel2+' svg > ';
       iconColorCSS =
-        s1+'path,'+s1+'circle,'+s1+'rect,'+s1+'line,'+s1+'ellipse,' +
-        s2+'path,'+s2+'circle,'+s2+'rect,'+s2+'line,'+s2+'ellipse {' +
+        c1+'path,'+c1+'circle,'+c1+'rect,'+c1+'line,'+c1+'ellipse,' +
+        c2+'path,'+c2+'circle,'+c2+'rect,'+c2+'line,'+c2+'ellipse {' +
           'stroke: '+iconColor+' !important;' +
         '}' +
-        s1+'[mask],'+s2+'[mask] { fill: '+iconColor+' !important; }' +
-        s1+'path:not([mask]),'+s2+'path:not([mask]) { fill: none !important; }';
+        c1+'[mask],'+c2+'[mask] { fill: '+iconColor+' !important; }' +
+        c1+'path:not([mask]),'+c2+'path:not([mask]) { fill: none !important; }';
     }
 
-    // mask 保护
     var maskCSS =
-      '#appIconsRow > div > div:first-child svg mask > rect:first-child,' +
-      '.bf-icon-preview-item svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
-      '#appIconsRow > div > div:first-child svg mask > *:not(rect:first-child),' +
-      '.bf-icon-preview-item svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
+      sel1+' svg mask > rect:first-child,' +
+      sel2+' svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
+      sel1+' svg mask > *:not(rect:first-child),' +
+      sel2+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
 
-        styleEl.innerHTML = containerCSS + gradBgCSS + svgCSS + iconColorCSS + maskCSS;
+    styleEl.innerHTML = containerCSS + gradBgCSS + iconColorCSS + maskCSS;
   }
 };
 
