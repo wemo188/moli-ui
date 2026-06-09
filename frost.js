@@ -36,7 +36,7 @@ var Pixel = {
     el.style.setProperty('--pixel-bar-c', pc.barColor||'#000000');
     el.style.setProperty('--pixel-body-bg', pc.bodyBg||'#ffffff');
     el.style.setProperty('--pixel-font-c', pc.fontColor||'#2a2a2a');
-    if，(pc.fontFamily){el.style.fontFamily=pc.fontFamily;el.classList.add('font-custom');}else{el.style.fontFamily='';el.classList.remove('font-custom');}
+    if(pc.fontFamily){el.style.fontFamily=pc.fontFamily;el.classList.add('font-custom');}else{el.style.fontFamily='';el.classList.remove('font-custom');}
   },
 
   renderDisplayTexts: function() {
