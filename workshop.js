@@ -40,7 +40,7 @@
       menu.innerHTML =
         '<div class="ball-card-slider" id="ballCardSlider">' +
 
-          '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
+           '<div class="ball-card-page" data-page="0" style="width:' + PG0_W + 'px">' +
             '<div class="bm-card">' +
               '<div class="bm-title">悬浮助手</div>' +
               '<div class="bm-grid">' +
@@ -51,6 +51,7 @@
                 tkBlack('data', '数据', 'data') +
                 tkBlack('console', '控制台', 'console') +
                 tkBlack('promptlog', '日志', 'prompt') +
+                tkBlack('resetLayout', '恢复', '布局') +
               '</div>' +
               '<div class="bm-bottom-line"></div>' +
             '</div>' +
@@ -83,22 +84,36 @@
     },
 
     bindMenuEvents: function() {
-      var menu = Workshop.menuEl;
+  var menu = Workshop.menuEl;
 
-      menu.querySelectorAll('.bm-tk').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var action = item.dataset.action;
-          if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
-          if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
-          if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
-          if (action === 'memory') { Workshop.close(); setTimeout(function() { Workshop.openMemoryPicker(); }, 220); return; }
-          if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
-          if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
-          if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
-        });
-      });
-    },
+  menu.querySelectorAll('.bm-tk').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.dataset.action;
+      if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
+      if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
+      if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
+      if (action === 'memory') { Workshop.close(); setTimeout(function() { Workshop.openMemoryPicker(); }, 220); return; }
+      if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
+      if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
+      if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
+      if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
+    });
+  });
+
+  menu.querySelectorAll('.bm-wk').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.dataset.action;
+      if (action === 'theme') { Workshop.close(); setTimeout(function() { if (App.theme) App.theme.open(); }, 220); return; }
+      if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
+      if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
+      if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
+      if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
+      if (action === 'snapshot') { Workshop.close(); setTimeout(function() { Workshop.openSnapshot(); }, 220); return; }
+    });
+  });
+},
 
     openMemoryPicker: function() {
       var chars = App.character ? App.character.list : [];
