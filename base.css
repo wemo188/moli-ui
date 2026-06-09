@@ -48,6 +48,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+.screen-page-inner {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 .bg-slider {
   position: fixed;
   top: -1px;
