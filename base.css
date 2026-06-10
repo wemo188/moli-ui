@@ -15,7 +15,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
+  background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 15px;
   line-height: 1.6;
@@ -54,9 +54,9 @@ body {
 .bg-slider {
   position: fixed;
   left: 0;
-  top: 0;
+  top: calc(-1 * env(safe-area-inset-top, 0px));
   width: 200vw;
-  height: 100%;
+  height: calc(100% + env(safe-area-inset-top, 0px));
   z-index: 0;
   display: flex;
   pointer-events: none;
@@ -70,7 +70,6 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: var(--bg-primary);
 }
 
 /* =========================
