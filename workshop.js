@@ -476,22 +476,51 @@
 },
 
     resetAllLayout: function() {
-  if (!confirm('确定要恢复默认布局吗？所有组件将回到初始位置。')) return;
-  App.LS.remove('wtCardPos');
-  App.LS.remove('appIconOffsets');
-  App.LS.remove('calTimeOffset');
-  if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
-  var wtCard = App.$('#wtCard');
-  if (wtCard) wtCard.style.transform = '';
-  var calRow = App.$('#calTimeRow');
-  if (calRow) calRow.style.transform = '';
-  document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ el.style.transform = ''; });
-  if (App.modules.cards) App.modules.cards.resetAllPositions();
-  var edenData = App.LS.get('edenCard');
-  if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
-  var edenCard = App.$('#edenCard');
-  if (edenCard) edenCard.style.transform = '';
-  App.showToast('布局已恢复');
+  var old = App.$('#resetLayoutConfirm');
+  if (old) old.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'resetLayoutConfirm';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:200010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+
+  overlay.innerHTML =
+    '<div style="background:#fff;border-radius:16px;padding:28px 24px 20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);text-align:center;">' +
+      '<div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">恢复默认布局</div>' +
+      '<div style="font-size:12px;color:#999;margin-bottom:20px;line-height:1.5;">所有组件将回到初始位置，<br>此操作不可撤销。</div>' +
+      '<div style="display:flex;gap:10px;">' +
+        '<button id="resetLayoutCancel" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#ebecee;color:#666;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">取消</button>' +
+        '<button id="resetLayoutOk" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">确定</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  overlay.querySelector('#resetLayoutCancel').addEventListener('click', function() {
+    overlay.remove();
+  });
+
+  overlay.querySelector('#resetLayoutOk').addEventListener('click', function() {
+    overlay.remove();
+    App.LS.remove('wtCardPos');
+    App.LS.remove('appIconOffsets');
+    App.LS.remove('calTimeOffset');
+    if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
+    var wtCard = App.$('#wtCard');
+    if (wtCard) wtCard.style.transform = '';
+    var calRow = App.$('#calTimeRow');
+    if (calRow) calRow.style.transform = '';
+    document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ el.style.transform = ''; });
+    if (App.modules.cards) App.modules.cards.resetAllPositions();
+    var edenData = App.LS.get('edenCard');
+    if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
+    var edenCard = App.$('#edenCard');
+    if (edenCard) edenCard.style.transform = '';
+    App.showToast('布局已恢复');
+  });
 },
 
     openSnapshot: function() {
