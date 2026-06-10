@@ -200,13 +200,13 @@ var Font={
   loadByName:function(fontName,cb){
     if(!fontName){if(cb)cb();return;}
     for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
-    var info=Font._getInfo(fontName);
-    if(!info){if(cb)cb();return;}
-    if(isFileFont(info)){
-      loadFileFontOnDemand(info,cb);
-    } else {
-      loadNonFileFonts([info],cb);
-    }
+    var already=false;
+    document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
+    if(already){if(cb)cb();return;}
+    var t=null;
+    for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===fontName){t=Font.customList[j];break;}}
+    if(!t){if(cb)cb();return;}
+    loadAllCustomFonts([t],cb);
   },
 
   loadByFamily:function(family,cb){
@@ -590,25 +590,8 @@ var Font={
     }
     openDB(function(){
       Font.load();
-      // ★ 初始化时只加载 URL/CSS 字体 + 当前选中的文件字体
-      loadNonFileFonts(Font.customList,function(){
-        // 当前选中的文件字体需要加载
-        var zhInfo=Font._getInfo(Font.config.selectedZh);
-        var enInfo=Font._getInfo(Font.config.selectedEn);
-        var toLoad=[];
-        if(zhInfo && isFileFont(zhInfo)) toLoad.push(zhInfo);
-        if(enInfo && isFileFont(enInfo)) toLoad.push(enInfo);
-        if(toLoad.length===0){
-          Font.apply();
-        } else {
-          var done=0;
-          toLoad.forEach(function(info){
-            loadFileFontOnDemand(info,function(){
-              done++;
-              if(done>=toLoad.length) Font.apply();
-            });
-          });
-        }
+      loadAllCustomFonts(Font.customList,function(){
+        Font.apply();
       });
     });
     App.font=Font;
