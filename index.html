@@ -243,19 +243,25 @@
     var bottomGap = parseFloat(getComputedStyle(div).bottom) || 0;
     document.body.removeChild(div);
     
-    // 根据实际距离动态调整页面指示器位置
+    // 根据实际距离动态调整页面指示器和 Dock 栏
     var indicator = document.querySelector('.screen-indicators');
-    if (indicator) {
-      if (bottomGap > 30) {
-        indicator.style.bottom = '10px';   // 带 Home Bar 的 PWA
-      } else if (bottomGap > 15) {
-        indicator.style.bottom = '6px';    // 不带 Home Bar 的 PWA
-      } else {
-        indicator.style.bottom = '4px';    // 普通模式兜底
-      }
+    var dock = document.querySelector('.dock');
+    
+    if (bottomGap > 30) {
+      // 带 Home Bar 的 PWA
+      if (indicator) indicator.style.bottom = '10px';
+      if (dock) dock.style.bottom = '20px';
+    } else if (bottomGap > 15) {
+      // 不带 Home Bar 的 PWA
+      if (indicator) indicator.style.bottom = '6px';
+      if (dock) dock.style.bottom = '15px';
+    } else {
+      // 普通模式兜底
+      if (indicator) indicator.style.bottom = '4px';
+      if (dock) dock.style.bottom = '25px';
     }
     
-    // 同时调整第二页内容区底部距离
+    // 同时调整内容区底部距离
     var screenPages = document.querySelectorAll('.screen-page');
     if (screenPages.length && bottomGap > 30) {
       for (var i = 0; i < screenPages.length; i++) {
