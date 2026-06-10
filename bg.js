@@ -394,15 +394,15 @@ var Bg = {
     var sliderUnits = ['px','%','px','px','px','px'];
 
     sliderIds.forEach(function(sid, i) {
-      panel.querySelector('#'+sid).addEventListener('input', function() {
-        var v = sid === 'bfIconOpacity' ? parseFloat(this.value) : parseInt(this.value);
-        iconConfig[sliderKeys[i]] = v;
-        var display = sid === 'bfIconOpacity' ? Math.round(v * 100) : v;
-        panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
-        App.LS.set('topIconConfig', iconConfig);
-        Bg.applyTopIconStyle(iconConfig);
-      });
-    });
+  panel.querySelector('#'+sid).addEventListener('input', function() {
+    var v = parseFloat(this.value);
+    iconConfig[sliderKeys[i]] = v;
+    var display = sid === 'bfIconOpacity' ? Math.round(v * 100) : v;
+    panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
+    App.LS.set('topIconConfig', iconConfig);
+    Bg.applyTopIconStyle(iconConfig);
+  });
+});
 
     panel.querySelector('#bfResetColor').addEventListener('click', function() {
       iconConfig = JSON.parse(JSON.stringify(DEF_ICON_CFG));
