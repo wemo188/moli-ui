@@ -396,6 +396,10 @@
   border-radius: 14px;
   overflow: hidden;
   padding: 24px 16px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bf-icon-preview-bg {
