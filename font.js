@@ -21,6 +21,10 @@ var PREVIEW_EN='Meet you like spring water reflecting pear flower.';
 
 var _db=null;
 var _state={tab:'zh',zh:'系统默认',en:''};
+/* ★ 记录当前已加载的文件字体名，用于释放 */
+var _loadedFileFonts={};
+
+var CATEGORY_LABELS = { zh: '中文', en: '英文', both: '通用' };
 
 function openDB(cb){
   try{
@@ -60,11 +64,31 @@ function loadFontFace(name,dataUrl){
   return ff.load().then(function(loaded){document.fonts.add(loaded);return true;}).catch(function(){return false;});
 }
 
-function loadAllCustomFonts(list,cb){
+/* ★ 释放文件字体的缓存 */
+function unloadFontFace(name){
+  var toDelete=[];
+  document.fonts.forEach(function(ff){
+    if(ff.family===name || ff.family==="'"+name+"'") toDelete.push(ff);
+  });
+  toDelete.forEach(function(ff){
+    try{document.fonts.delete(ff);}catch(e){}
+  });
+  delete _loadedFileFonts[name];
+}
+
+/* ★ 判断字体是文件上传的（没有 url 也没有 cssUrl） */
+function isFileFont(f){
+  return !f.url && !f.cssUrl;
+}
+
+/* ★ 只加载 URL 和 CSS 类型的字体，文件字体跳过 */
+function loadNonFileFonts(list,cb){
   var i=0;
   function next(){
     if(i>=list.length){if(cb)cb();return;}
     var f=list[i];i++;
+    // 文件字体跳过，等用户点击时才加载
+    if(isFileFont(f)){next();return;}
     if(f.cssUrl){
       if(!document.querySelector('link[href="'+f.cssUrl+'"]')){
         var link=document.createElement('link');link.rel='stylesheet';link.href=f.cssUrl;document.head.appendChild(link);
@@ -79,16 +103,42 @@ function loadAllCustomFonts(list,cb){
       ff2.load().then(function(loaded){document.fonts.add(loaded);next();}).catch(function(){next();});
       return;
     }
-    getOneFont(f.name,function(result){
-      if(result&&result.dataUrl){loadFontFace(result.name,result.dataUrl).then(function(){next();}).catch(function(){next();});}
-      else{next();}
-    });
+    next();
   }
   next();
 }
 
-/* ★ 分类标签映射 */
-var CATEGORY_LABELS = { zh: '中文', en: '英文', both: '通用' };
+/* ★ 按需加载单个文件字体 */
+function loadFileFontOnDemand(fontInfo,cb){
+  if(!fontInfo || !isFileFont(fontInfo)){if(cb)cb();return;}
+  // 已经加载过了
+  if(_loadedFileFonts[fontInfo.name]){if(cb)cb();return;}
+  // 检查 document.fonts 里是否已有
+  var already=false;
+  document.fonts.forEach(function(ff){if(ff.family===fontInfo.name)already=true;});
+  if(already){_loadedFileFonts[fontInfo.name]=true;if(cb)cb();return;}
+  // 从 IndexedDB 读取
+  getOneFont(fontInfo.name,function(result){
+    if(result&&result.dataUrl){
+      loadFontFace(result.name,result.dataUrl).then(function(ok){
+        if(ok) _loadedFileFonts[fontInfo.name]=true;
+        if(cb)cb();
+      }).catch(function(){if(cb)cb();});
+    } else {
+      if(cb)cb();
+    }
+  });
+}
+
+/* ★ 释放不再使用的文件字体 */
+function releaseUnusedFileFonts(keepNames){
+  var loaded=Object.keys(_loadedFileFonts);
+  loaded.forEach(function(name){
+    if(keepNames.indexOf(name)===-1){
+      unloadFontFace(name);
+    }
+  });
+}
 
 var Font={
   config:{},
@@ -101,7 +151,7 @@ var Font={
     Font.customList=App.LS.get('fontCustomList')||[];
     Font.customList.forEach(function(f){
       if(f.scale==null)f.scale=1;
-      if(!f.category)f.category='both'; /* ★ 旧数据兼容，默认归为通用 */
+      if(!f.category)f.category='both';
     });
   },
 
@@ -129,6 +179,12 @@ var Font={
     return name;
   },
 
+  _getInfo:function(name){
+    if(!name)return null;
+    for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===name)return Font.customList[j];}
+    return null;
+  },
+
   _combo:function(enName,zhName){
     var ef=Font.getFamily(enName);
     var zf=Font.getFamily(zhName)||BUILTIN[0].family;
@@ -144,13 +200,13 @@ var Font={
   loadByName:function(fontName,cb){
     if(!fontName){if(cb)cb();return;}
     for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fontName){if(cb)cb();return;}}
-    var already=false;
-    document.fonts.forEach(function(ff){if(ff.family===fontName)already=true;});
-    if(already){if(cb)cb();return;}
-    var t=null;
-    for(var j=0;j<Font.customList.length;j++){if(Font.customList[j].name===fontName){t=Font.customList[j];break;}}
-    if(!t){if(cb)cb();return;}
-    loadAllCustomFonts([t],cb);
+    var info=Font._getInfo(fontName);
+    if(!info){if(cb)cb();return;}
+    if(isFileFont(info)){
+      loadFileFontOnDemand(info,cb);
+    } else {
+      loadNonFileFonts([info],cb);
+    }
   },
 
   loadByFamily:function(family,cb){
@@ -161,19 +217,46 @@ var Font={
     Font.loadByName(t.name,cb);
   },
 
+  /* ★ 应用字体时，按需加载文件字体并释放旧的 */
   apply:function(){
     var zhName=Font.config.selectedZh||'系统默认';
     var enName=Font.config.selectedEn||'';
-    var combo=Font._combo(enName,zhName);
-    var scale=Font.getScale(zhName);
     Font.config.selected=zhName;
-    document.body.style.fontFamily=combo;
-    document.documentElement.style.setProperty('--font-scale',scale);
-    var styleEl=document.getElementById('fontGlobalOverride');
-    if(styleEl)styleEl.textContent='';
-    setTimeout(function(){
-      document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
-    },100);
+
+    var keepNames=[];
+    var zhInfo=Font._getInfo(zhName);
+    var enInfo=Font._getInfo(enName);
+
+    var toLoad=[];
+    if(zhInfo && isFileFont(zhInfo)){toLoad.push(zhInfo);keepNames.push(zhInfo.name);}
+    if(enInfo && isFileFont(enInfo)){toLoad.push(enInfo);keepNames.push(enInfo.name);}
+
+    // 释放不再使用的文件字体
+    releaseUnusedFileFonts(keepNames);
+
+    function doApply(){
+      var combo=Font._combo(enName,zhName);
+      var scale=Font.getScale(zhName);
+      document.body.style.fontFamily=combo;
+      document.documentElement.style.setProperty('--font-scale',scale);
+      var styleEl=document.getElementById('fontGlobalOverride');
+      if(styleEl)styleEl.textContent='';
+      setTimeout(function(){
+        document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
+      },100);
+    }
+
+    if(toLoad.length===0){
+      doApply();
+    } else {
+      var loaded=0;
+      toLoad.forEach(function(info){
+        loadFileFontOnDemand(info,function(){
+          loaded++;
+          if(loaded>=toLoad.length) doApply();
+        });
+      });
+    }
   },
 
   open:function(){
@@ -186,7 +269,8 @@ var Font={
     var panel=document.createElement('div');
     panel.id='fontFullPanel';
     panel.className='font-fullpanel';
-    loadAllCustomFonts(Font.customList,function(){
+    // ★ 只加载 URL/CSS 字体，文件字体不预加载
+    loadNonFileFonts(Font.customList,function(){
       Font._build(panel);
       document.body.appendChild(panel);
       requestAnimationFrame(function(){panel.classList.add('show');});
@@ -201,7 +285,6 @@ var Font={
     setTimeout(function(){p.remove();},350);
   },
 
-  /* ★ 上传后弹出分类选择 */
   _askCategory:function(fileName, cb){
     var overlay=document.createElement('div');
     overlay.className='bf-modal-overlay';
@@ -242,7 +325,6 @@ var Font={
       '</div>';
     });
 
-    /* ★ 按分类分组显示自定义字体 */
     var customZh=Font.customList.filter(function(f){return f.category==='zh';});
     var customEn=Font.customList.filter(function(f){return f.category==='en';});
     var customBoth=Font.customList.filter(function(f){return !f.category||f.category==='both';});
@@ -255,16 +337,23 @@ var Font={
       '</div>';
       list.forEach(function(f){
         var catTag=CATEGORY_LABELS[f.category]||'通用';
+        var isFile=isFileFont(f);
+        var isLoaded=_loadedFileFonts[f.name];
+        // ★ 文件字体未加载时，预览文字用系统字体显示，加上提示标签
+        var previewStyle=(!isFile || isLoaded)?'font-family:'+f.family+' !important':'';
+        var loadTag=isFile && !isLoaded?'<span style="display:inline-block;margin-left:4px;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(255,180,0,.12);color:#b8860b;">点击加载</span>':'';
         html+='<div class="ft-custom-card'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
           '<div class="ft-custom-top">'+
-            '<div class="ft-item-preview" style="font-family:'+f.family+' !important">你好世界 Hello 123</div>'+
+            '<div class="ft-item-preview" style="'+previewStyle+'">你好世界 Hello 123</div>'+
             '<div class="ft-item-name">'+
-              App.esc(f.fileName||f.name)+
+              App.esc(f.fileName||f.name)+loadTag+
               '<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;background:'+
                 (f.category==='zh'?'rgba(201,112,107,.12);color:#c9706b':
                  f.category==='en'?'rgba(79,121,166,.12);color:#4f79a6':
                  'rgba(156,163,176,.12);color:#9ca3b0')+
               ';">'+catTag+'</span>'+
+              (isFile?'<span style="display:inline-block;margin-left:4px;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(156,163,176,.1);color:#9ca3b0;">本地</span>':
+                      '<span style="display:inline-block;margin-left:4px;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(79,166,79,.1);color:#5a9a5a;">URL</span>')+
             '</div>'+
             '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">'+
               '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'+
@@ -376,7 +465,6 @@ var Font={
 
     panel.querySelector('#ftUpload').addEventListener('click',function(){panel.querySelector('#ftFile').click();});
 
-    /* ★ URL导入 - 加分类选择 */
     panel.querySelector('#ftUrl').addEventListener('click',function(){
       var url=prompt('输入字体URL（支持 .ttf/.woff2 或 CSS链接）：');
       if(!url||!url.trim())return;
@@ -415,12 +503,10 @@ var Font={
       });
     });
 
-    /* ★ 文件上传 - 加分类选择 */
     panel.querySelector('#ftFile').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
       var raw=file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_');
       e.target.value='';
-
       Font._askCategory(file.name,function(cat){
         if(!cat)return;
         App.showToast('加载中...');
@@ -430,6 +516,7 @@ var Font={
           var dataUrl=ev.target.result;
           loadFontFace(name,dataUrl).then(function(ok){
             if(!ok){App.showToast('字体加载失败');return;}
+            _loadedFileFonts[name]=true;
             saveFont(name,dataUrl,function(ok2){
               if(!ok2){App.showToast('保存失败');return;}
               Font.customList.push({name:name,family:"'"+name+"',sans-serif",fileName:file.name,scale:1,category:cat});
@@ -444,13 +531,31 @@ var Font={
       });
     });
 
+    /* ★ 点击字体项：文件字体按需加载，加载完刷新预览 */
     panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
       el.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
         var fname=el.dataset.fname;
-        if(_state.tab==='en')_state.en=fname;
-        else _state.zh=fname;
-        Font._update(panel);
+        var info=Font._getInfo(fname);
+
+        function doSelect(){
+          if(_state.tab==='en')_state.en=fname;
+          else _state.zh=fname;
+          Font._update(panel);
+        }
+
+        // 如果是文件字体且未加载，先加载再选中
+        if(info && isFileFont(info) && !_loadedFileFonts[info.name]){
+          App.showToast('加载字体中...');
+          loadFileFontOnDemand(info,function(){
+            // 加载完成后重新build以刷新预览文字和标签
+            doSelect();
+            Font._build(panel);
+            App.showToast('字体已加载');
+          });
+        } else {
+          doSelect();
+        }
       });
     });
 
@@ -459,6 +564,8 @@ var Font={
         e.stopPropagation();
         var name=btn.dataset.del;if(!name)return;
         if(!confirm('删除这个字体？'))return;
+        // 释放字体缓存
+        unloadFontFace(name);
         deleteFont(name,function(){
           Font.customList=Font.customList.filter(function(f){return f.name!==name;});
           if(Font.config.selectedZh===name)Font.config.selectedZh='系统默认';
@@ -484,8 +591,25 @@ var Font={
     }
     openDB(function(){
       Font.load();
-      loadAllCustomFonts(Font.customList,function(){
-        Font.apply();
+      // ★ 初始化时只加载 URL/CSS 字体 + 当前选中的文件字体
+      loadNonFileFonts(Font.customList,function(){
+        // 当前选中的文件字体需要加载
+        var zhInfo=Font._getInfo(Font.config.selectedZh);
+        var enInfo=Font._getInfo(Font.config.selectedEn);
+        var toLoad=[];
+        if(zhInfo && isFileFont(zhInfo)) toLoad.push(zhInfo);
+        if(enInfo && isFileFont(enInfo)) toLoad.push(enInfo);
+        if(toLoad.length===0){
+          Font.apply();
+        } else {
+          var done=0;
+          toLoad.forEach(function(info){
+            loadFileFontOnDemand(info,function(){
+              done++;
+              if(done>=toLoad.length) Font.apply();
+            });
+          });
+        }
       });
     });
     App.font=Font;
