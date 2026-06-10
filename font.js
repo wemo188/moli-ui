@@ -256,9 +256,15 @@ var Font={
       '</div>';
       list.forEach(function(f){
         var catTag=CATEGORY_LABELS[f.category]||'通用';
+        // ★ 检查字体是否已加载，没加载的不设font-family，避免卡崩
+        var isLoaded=false;
+        document.fonts.forEach(function(ff){if(ff.family===f.name)isLoaded=true;});
+        if(!isLoaded && f.cssUrl) isLoaded=true; // CSS链接字体默认可用
+        if(!isLoaded && f.url) isLoaded=false; // URL字体需要实际加载才算
+        var previewStyle=isLoaded?'font-family:'+f.family+' !important':'';
         html+='<div class="ft-custom-card'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
           '<div class="ft-custom-top">'+
-            '<div class="ft-item-preview" style="font-family:'+f.family+' !important">你好世界 Hello 123</div>'+
+            '<div class="ft-item-preview" style="'+previewStyle+'">你好世界 Hello 123</div>'+
             '<div class="ft-item-name">'+
               App.esc(f.fileName||f.name)+
               '<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;background:'+
@@ -445,13 +451,43 @@ var Font={
       });
     });
 
-    panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
+        panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
       el.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
         var fname=el.dataset.fname;
-        if(_state.tab==='en')_state.en=fname;
-        else _state.zh=fname;
-        Font._update(panel);
+
+        // 内置字体或空名字直接选中
+        if(!fname){
+          if(_state.tab==='en')_state.en=fname;
+          else _state.zh=fname;
+          Font._update(panel);
+          return;
+        }
+        for(var i=0;i<BUILTIN.length;i++){
+          if(BUILTIN[i].name===fname){
+            if(_state.tab==='en')_state.en=fname;
+            else _state.zh=fname;
+            Font._update(panel);
+            return;
+          }
+        }
+
+        // 自定义字体：检查是否已加载
+        var already=false;
+        document.fonts.forEach(function(ff){if(ff.family===fname)already=true;});
+
+        if(already){
+          if(_state.tab==='en')_state.en=fname;
+          else _state.zh=fname;
+          Font._update(panel);
+        } else {
+          // 按需加载这一个字体
+          Font.loadByName(fname,function(){
+            if(_state.tab==='en')_state.en=fname;
+            else _state.zh=fname;
+            Font._build(panel); // 重新build刷新预览
+          });
+        }
       });
     });
 
@@ -483,9 +519,17 @@ var Font={
       lxgw.href='https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css';
       document.head.appendChild(lxgw);
     }
+
     openDB(function(){
       Font.load();
-      loadAllCustomFonts(Font.customList,function(){
+      // ★ 只加载当前选中的字体，不加载全部30个
+      var toLoad = [];
+      var zhName = Font.config.selectedZh || '系统默认';
+      var enName = Font.config.selectedEn || '';
+      Font.customList.forEach(function(f){
+        if(f.name === zhName || f.name === enName) toLoad.push(f);
+      });
+      loadAllCustomFonts(toLoad, function(){
         Font.apply();
       });
     });
