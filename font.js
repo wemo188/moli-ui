@@ -520,14 +520,29 @@ var Font={
       document.head.appendChild(lxgw);
     }
 
-    openDB(function(){
+        openDB(function(){
       Font.load();
-      // ★ 只加载当前选中的字体，不加载全部30个
-      var toLoad = [];
+      // ★ 扫描所有 LS 数据，找出正在被使用的字体名
+      var usedNames = {};
       var zhName = Font.config.selectedZh || '系统默认';
       var enName = Font.config.selectedEn || '';
+      if(zhName) usedNames[zhName] = true;
+      if(enName) usedNames[enName] = true;
+      // 扫描整个缓存，找所有包含字体名的值
+      var allCache = App.LS._cache || {};
+      var allStr = '';
+      try { allStr = JSON.stringify(allCache); } catch(e) {}
       Font.customList.forEach(function(f){
-        if(f.name === zhName || f.name === enName) toLoad.push(f);
+        if(allStr.indexOf(f.name) !== -1) usedNames[f.name] = true;
+        if(allStr.indexOf(f.family) !== -1) usedNames[f.name] = true;
+      });
+
+      var toLoad = [];
+      Font.customList.forEach(function(f){
+        // URL/CSS 字体全部加载（不占内存）
+        if(f.url || f.cssUrl){ toLoad.push(f); return; }
+        // 文件字体：只加载正在被使用的
+        if(usedNames[f.name]) toLoad.push(f);
       });
       loadAllCustomFonts(toLoad, function(){
         Font.apply();
