@@ -332,17 +332,21 @@ img.img-fill { transform: none !important; }
   width: 100%;
 }
 
-#hlAvatarsRow {
-  justify-content: space-between;
-  gap: 0;
-  padding: 0 10px;
-  margin-top: 19px;
+#wtCard {
+  margin-top: 18px; /* 数字越大，天气卡片越往下走 */
 }
 
 #appIconsRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px 16px;
+}
+
+#hlAvatarsRow {
+  justify-content: space-between;
+  gap: 0;
+  padding: 0 10px;
+  margin-top: 19px;
 }
 
 #edenCard {
