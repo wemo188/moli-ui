@@ -369,20 +369,57 @@
       panel.querySelector('#wsImportBtn').addEventListener('click', function() { panel.querySelector('#wsImportFile').click(); });
 
       panel.querySelector('#wsImportFile').addEventListener('change', function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          try {
-            var data = JSON.parse(ev.target.result);
-            Object.keys(data).forEach(function(key) { App.LS.set(key, data[key]); });
-            App.showToast('导入成功，即将刷新');
+  var file = e.target.files[0];
+  if (!file) return;
+  if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+
+      // ★ 如果有字体文件数据，先导入到 GlobalFontDB
+      var fontFiles = data.__fontFiles__;
+      delete data.__fontFiles__;
+
+      Object.keys(data).forEach(function(key) { App.LS.set(key, data[key]); });
+
+      if (fontFiles && fontFiles.length > 0) {
+        try {
+          var req = indexedDB.open('GlobalFontDB', 1);
+          req.onupgradeneeded = function(e2) {
+            var db = e2.target.result;
+            if (!db.objectStoreNames.contains('fontFiles')) db.createObjectStore('fontFiles', { keyPath: 'name' });
+          };
+          req.onsuccess = function(e2) {
+            var db = e2.target.result;
+            var tx = db.transaction('fontFiles', 'readwrite');
+            var store = tx.objectStore('fontFiles');
+            fontFiles.forEach(function(f) { store.put(f); });
+            tx.oncomplete = function() {
+              App.showToast('导入成功（含字体），即将刷新');
+              setTimeout(function() { location.reload(); }, 1000);
+            };
+            tx.onerror = function() {
+              App.showToast('导入成功（字体写入失败），即将刷新');
+              setTimeout(function() { location.reload(); }, 1000);
+            };
+          };
+          req.onerror = function() {
+            App.showToast('导入成功（字体库打开失败），即将刷新');
             setTimeout(function() { location.reload(); }, 1000);
-          } catch(err) { App.showToast('导入失败：文件格式错误'); }
-        };
-        reader.readAsText(file);
-      });
+          };
+        } catch(ex) {
+          App.showToast('导入成功，即将刷新');
+          setTimeout(function() { location.reload(); }, 1000);
+        }
+      } else {
+        App.showToast('导入成功，即将刷新');
+        setTimeout(function() { location.reload(); }, 1000);
+      }
+    } catch(err) { App.showToast('导入失败：文件格式错误'); }
+  };
+  reader.readAsText(file);
+});
 
       panel.querySelector('#wsOpenStorage').addEventListener('click', function() { Workshop.openStorage(); });
 
@@ -398,17 +435,45 @@
     },
 
     exportData: function() {
-      var data = {};
-      var keys = Object.keys(App.LS._cache || {});
-      keys.forEach(function(key) { data[key] = App.LS.get(key); });
-      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      App.showToast('数据已导出');
-    },
+  var data = {};
+  var keys = Object.keys(App.LS._cache || {});
+  keys.forEach(function(key) { data[key] = App.LS.get(key); });
+
+  // ★ 同时导出 GlobalFontDB 里的字体文件
+  function exportFontDB(cb) {
+    try {
+      var req = indexedDB.open('GlobalFontDB', 1);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('fontFiles')) db.createObjectStore('fontFiles', { keyPath: 'name' });
+      };
+      req.onsuccess = function(e) {
+        var db = e.target.result;
+        try {
+          var tx = db.transaction('fontFiles', 'readonly');
+          var store = tx.objectStore('fontFiles');
+          var all = store.getAll();
+          all.onsuccess = function() { cb(all.result || []); };
+          all.onerror = function() { cb([]); };
+        } catch(ex) { cb([]); }
+      };
+      req.onerror = function() { cb([]); };
+    } catch(e) { cb([]); }
+  }
+
+  exportFontDB(function(fonts) {
+    if (fonts.length > 0) {
+      data.__fontFiles__ = fonts;
+    }
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    App.showToast('数据已导出');
+  });
+},
 
     resetAllLayout: function() {
   if (!confirm('确定要恢复默认布局吗？所有组件将回到初始位置。')) return;
