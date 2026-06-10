@@ -53,10 +53,12 @@ body {
 ========================= */
 .bg-slider {
   position: fixed;
-  top: 0;
   left: 0;
+  /* ★ 强行往上拔进刘海里 */
+  top: calc(-1 * env(safe-area-inset-top, 0px));
   width: 200vw;
-  height: 100%;
+  /* ★ 高度加上刘海和底部的距离，完美撑满整屏 */
+  height: calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
   z-index: 0;
   display: flex;
   pointer-events: none;
@@ -272,7 +274,7 @@ img.img-fill { transform: none !important; }
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - env(safe-area-inset-top, 0));
+  height: 100%; /* ★ 改成 100%，完美填满外层，一分不多一分不少 */
 }
 
 .screen-indicators {
