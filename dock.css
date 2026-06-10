@@ -44,15 +44,16 @@
   border-radius: 14px;
   width: 65px;
   height: 65px;
-  border: 1px solid rgba(255,255,255,.55);
-  box-shadow: 0 10px 24px rgba(20,35,55,.14);
-  overflow: hidden;
-  transition: transform 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 10px 24px rgba(20,35,55,.14);
+  overflow: hidden;
+  transition: transform 0.15s;
 }
 
 .mk-card svg {
+  width: 32px;
+  height: 32px;
   display: block;
 }
