@@ -296,7 +296,7 @@ img.img-fill { transform: none !important; }
   height: 5px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,.9);
+  background: rgba(0,0,0,.7);
   cursor: pointer;
   transition: all 0.2s ease;
 }
