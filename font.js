@@ -264,7 +264,7 @@ var Font={
         var previewStyle=isLoaded?'font-family:'+f.family+' !important':'';
         html+='<div class="ft-custom-card'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
           '<div class="ft-custom-top">'+
-            '<div class="ft-item-preview" style="'+previewStyle+'">你好世界 Hello 123</div>'+
+            '<div class="ft-item-preview">你好世界 Hello 123</div>'+
             '<div class="ft-item-name">'+
               App.esc(f.fileName||f.name)+
               '<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;background:'+
