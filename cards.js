@@ -553,7 +553,6 @@ var Cards={
           '<button class="pc-btn pc-btn-cancel" id="pcUrlBtn" type="button" style="padding:8px;font-size:12px;">URL</button>'+
           '<div class="pc-icon-btn danger" id="pcDelAvatar" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>'+
         '</div></div>'+
-        '<div class="pc-group"><span class="pc-label">名字</span><input type="text" class="pc-input" id="pcName" value="'+App.escAttr(d.name||'')+'"></div>'+
         '<div class="pc-group"><span class="pc-label">签名</span><input type="text" class="pc-input" id="pcSub" value="'+App.escAttr(d.sub||defSub)+'"></div>'+
         '<div class="pc-group"><span class="pc-label">标签 1</span><input type="text" class="pc-input" id="pcTag1" value="'+App.escAttr(d.tag1||'')+'"></div>'+
         '<div class="pc-group"><span class="pc-label">标签 2</span><input type="text" class="pc-input" id="pcTag2" value="'+App.escAttr(d.tag2||'')+'"></div>'+
@@ -641,13 +640,12 @@ var Cards={
     panel.querySelector('#pcSaveBtn').addEventListener('click',function(e){
       e.stopPropagation();
       Cards.data[side]={
-        avatar:tempAvatar,
-        name:((panel.querySelector('#pcName')||{}).value||'').trim(),
-        sub:((panel.querySelector('#pcSub')||{}).value||'').trim(),
-        tag1:((panel.querySelector('#pcTag1')||{}).value||'').trim(),
-        tag2:((panel.querySelector('#pcTag2')||{}).value||'').trim(),
-        colors:col
-      };
+  avatar:tempAvatar,
+  sub:((panel.querySelector('#pcSub')||{}).value||'').trim(),
+  tag1:((panel.querySelector('#pcTag1')||{}).value||'').trim(),
+  tag2:((panel.querySelector('#pcTag2')||{}).value||'').trim(),
+  colors:col
+};
       Cards.save();Cards.render();overlay.remove();
       App.showToast('已保存');
     });
