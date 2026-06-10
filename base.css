@@ -261,7 +261,7 @@ img.img-fill { transform: none !important; }
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: calc(20px + env(safe-area-inset-top, 0)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
+  padding: calc(15px + env(safe-area-inset-top, 0)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
 }
 
@@ -333,7 +333,7 @@ img.img-fill { transform: none !important; }
 }
 
 #wtCard {
-  margin-top: 6px; /* 数字越大，天气卡片越往下走 */
+  margin-top: 3px; /* 数字越大，天气卡片越往下走 */
 }
 
 #appIconsRow {
@@ -346,13 +346,13 @@ img.img-fill { transform: none !important; }
   justify-content: space-between;
   gap: 0;
   padding: 0 5px;
-  margin-top: 27px;
+  margin-top: 30px;
 }
 
 #edenCard {
   margin-top: auto;
   padding: 0 1px;
-  margin-bottom: 160px;
+  margin-bottom: 140px;
 }
 
 #edenText {
