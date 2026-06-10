@@ -594,15 +594,27 @@ var Bg = {
     if(data && data.src) {
       layer.style.backgroundImage = 'url(' + data.src + ')';
       layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
-    } else {
-      if(pageIdx === 1) {
-        var page0 = App.LS.get('bgData') || {};
-        if(page0.src) { layer.style.backgroundImage = 'url(' + page0.src + ')'; layer.style.filter = 'blur(' + (page0.blur||0) + 'px) brightness(' + (100-(page0.dark||0)) + '%)'; }
-        else { layer.style.backgroundImage = ''; layer.style.filter = ''; }
+    } else if(pageIdx === 1) {
+      // ★ 第二页没有单独背景时，跟随第一页
+      var page0 = App.LS.get('bgData') || {};
+      if(page0.src) {
+        layer.style.backgroundImage = 'url(' + page0.src + ')';
+        layer.style.filter = 'blur(' + (page0.blur||0) + 'px) brightness(' + (100-(page0.dark||0)) + '%)';
       } else {
-        layer.style.backgroundImage = ''; layer.style.filter = '';
-        var page1Data = App.LS.get('bgData_1') || {};
-        if(!page1Data.src) { Bg.applyBg(null, 1); }
+        layer.style.backgroundImage = '';
+        layer.style.filter = '';
+      }
+    } else {
+      // ★ 第一页移除背景时，同时让第二页也跟着更新
+      layer.style.backgroundImage = '';
+      layer.style.filter = '';
+      var page1Data = App.LS.get('bgData_1') || {};
+      if(!page1Data.src) {
+        var layer1 = document.getElementById('bgLayer1');
+        if(layer1) {
+          layer1.style.backgroundImage = '';
+          layer1.style.filter = '';
+        }
       }
     }
   },
