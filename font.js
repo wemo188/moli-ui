@@ -269,13 +269,11 @@ var Font={
     var panel=document.createElement('div');
     panel.id='fontFullPanel';
     panel.className='font-fullpanel';
-    // ★ 只加载 URL/CSS 字体，文件字体不预加载
-    loadNonFileFonts(Font.customList,function(){
-      Font._build(panel);
-      document.body.appendChild(panel);
-      requestAnimationFrame(function(){panel.classList.add('show');});
-      App.bindSwipeBack(panel,function(){Font.close();});
-    });
+    // ★ 不再预加载全部字体，直接打开面板
+    Font._build(panel);
+    document.body.appendChild(panel);
+    requestAnimationFrame(function(){panel.classList.add('show');});
+    App.bindSwipeBack(panel,function(){Font.close();});
   },
 
   close:function(){
@@ -536,7 +534,6 @@ var Font={
       el.addEventListener('click',function(e){
         if(e.target.closest('.ft-del-btn'))return;
         var fname=el.dataset.fname;
-        var info=Font._getInfo(fname);
 
         function doSelect(){
           if(_state.tab==='en')_state.en=fname;
@@ -544,18 +541,20 @@ var Font={
           Font._update(panel);
         }
 
-        // 如果是文件字体且未加载，先加载再选中
-        if(info && isFileFont(info) && !_loadedFileFonts[info.name]){
-          App.showToast('加载字体中...');
-          loadFileFontOnDemand(info,function(){
-            // 加载完成后重新build以刷新预览文字和标签
-            doSelect();
-            Font._build(panel);
-            App.showToast('字体已加载');
-          });
-        } else {
+        // 空名字（跟随中文）或内置字体，直接选中
+        if(!fname){doSelect();return;}
+        for(var i=0;i<BUILTIN.length;i++){if(BUILTIN[i].name===fname){doSelect();return;}}
+
+        // 检查是否已加载
+        var already=false;
+        document.fonts.forEach(function(ff){if(ff.family===fname)already=true;});
+        if(already){doSelect();return;}
+
+        // 没加载过，按需加载
+        Font.loadByName(fname,function(){
           doSelect();
-        }
+          Font._build(panel);
+        });
       });
     });
 
