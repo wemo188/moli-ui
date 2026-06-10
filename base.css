@@ -296,7 +296,7 @@ img.img-fill { transform: none !important; }
   height: 5px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,.1);
+  background: rgba(0,0,0,.9);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -304,7 +304,7 @@ img.img-fill { transform: none !important; }
 .screen-dot.active {
   width: 14px;
   border-radius: 999px;
-  background: #fff;
+  background: #d1d5db;
   box-shadow: 0 0 8px rgba(255,255,255,0.4);
 }
 
