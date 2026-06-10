@@ -227,6 +227,53 @@
 
 <!-- ====== JS ====== -->
 <script>
+// ========== PWA 底部适配 ==========
+(function() {
+  function adjustPWABottomBar() {
+    var isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true;
+    
+    // 非 PWA 模式不需要调整
+    if (!isPWA) return;
+    
+    // 获取 safe-area-inset-bottom 实际值
+    var div = document.createElement('div');
+    div.style.cssText = 'position: fixed; bottom: env(safe-area-inset-bottom, 0px); visibility: hidden; height: 0;';
+    document.body.appendChild(div);
+    var bottomGap = parseFloat(getComputedStyle(div).bottom) || 0;
+    document.body.removeChild(div);
+    
+    // 根据实际距离动态调整页面指示器位置
+    var indicator = document.querySelector('.screen-indicators');
+    if (indicator) {
+      if (bottomGap > 30) {
+        indicator.style.bottom = '10px';   // 带 Home Bar 的 PWA
+      } else if (bottomGap > 15) {
+        indicator.style.bottom = '6px';    // 不带 Home Bar 的 PWA
+      } else {
+        indicator.style.bottom = '4px';    // 普通模式兜底
+      }
+    }
+    
+    // 同时调整第二页内容区底部距离
+    var screenPages = document.querySelectorAll('.screen-page');
+    if (screenPages.length && bottomGap > 30) {
+      for (var i = 0; i < screenPages.length; i++) {
+        screenPages[i].style.paddingBottom = '20px';
+      }
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', adjustPWABottomBar);
+  } else {
+    adjustPWABottomBar();
+  }
+  window.addEventListener('resize', adjustPWABottomBar);
+})();
+</script>
+
+<script>
 (function(){
   var v = Date.now();
   var files = [
@@ -258,6 +305,5 @@
 </script>
 </body>
 </html>
-
 
   
