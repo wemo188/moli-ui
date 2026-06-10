@@ -328,12 +328,12 @@ img.img-fill { transform: none !important; }
   align-items: flex-start;
   gap: 35px;
   padding: 0 12px;
-  margin-top: 18px;
+  margin-top: 22px;
   width: 100%;
 }
 
 #wtCard {
-  margin-top: 10px; /* 数字越大，天气卡片越往下走 */
+  margin-top: 8px; /* 数字越大，天气卡片越往下走 */
 }
 
 #appIconsRow {
@@ -346,7 +346,7 @@ img.img-fill { transform: none !important; }
   justify-content: space-between;
   gap: 0;
   padding: 0 5px;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 #edenCard {
