@@ -87,6 +87,9 @@ function loadAllCustomFonts(list,cb){
   next();
 }
 
+/* ★ 分类标签映射 */
+var CATEGORY_LABELS = { zh: '中文', en: '英文', both: '通用' };
+
 var Font={
   config:{},
   customList:[],
@@ -96,7 +99,10 @@ var Font={
     if(!Font.config.selectedZh)Font.config.selectedZh=Font.config.selected||'系统默认';
     if(Font.config.selectedEn==null)Font.config.selectedEn='';
     Font.customList=App.LS.get('fontCustomList')||[];
-    Font.customList.forEach(function(f){if(f.scale==null)f.scale=1;});
+    Font.customList.forEach(function(f){
+      if(f.scale==null)f.scale=1;
+      if(!f.category)f.category='both'; /* ★ 旧数据兼容，默认归为通用 */
+    });
   },
 
   save:function(){
@@ -123,18 +129,17 @@ var Font={
     return name;
   },
 
- _combo:function(enName,zhName){
-  var ef=Font.getFamily(enName);
-  var zf=Font.getFamily(zhName)||BUILTIN[0].family;
-  // 去掉各自尾部的通用族名，最后统一加 sans-serif
-  function stripGeneric(f){
-    return f.replace(/,\s*(serif|sans-serif|cursive|monospace|fantasy)\s*$/i,'').trim();
-  }
-  var parts=[];
-  if(ef)parts.push(stripGeneric(ef));
-  parts.push(stripGeneric(zf));
-  return parts.join(',')+',sans-serif';
-},
+  _combo:function(enName,zhName){
+    var ef=Font.getFamily(enName);
+    var zf=Font.getFamily(zhName)||BUILTIN[0].family;
+    function stripGeneric(f){
+      return f.replace(/,\s*(serif|sans-serif|cursive|monospace|fantasy)\s*$/i,'').trim();
+    }
+    var parts=[];
+    if(ef)parts.push(stripGeneric(ef));
+    parts.push(stripGeneric(zf));
+    return parts.join(',')+',sans-serif';
+  },
 
   loadByName:function(fontName,cb){
     if(!fontName){if(cb)cb();return;}
@@ -157,35 +162,30 @@ var Font={
   },
 
   apply:function(){
-  var zhName=Font.config.selectedZh||'系统默认';
-  var enName=Font.config.selectedEn||'';
-  var combo=Font._combo(enName,zhName);
-  var scale=Font.getScale(zhName);
-  Font.config.selected=zhName;
-  document.body.style.fontFamily=combo;
-  document.documentElement.style.setProperty('--font-scale',scale);
-
-  var styleEl=document.getElementById('fontGlobalOverride');
-  if(styleEl)styleEl.textContent='';
-
-  setTimeout(function(){
-    document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
-  },100);
-},
+    var zhName=Font.config.selectedZh||'系统默认';
+    var enName=Font.config.selectedEn||'';
+    var combo=Font._combo(enName,zhName);
+    var scale=Font.getScale(zhName);
+    Font.config.selected=zhName;
+    document.body.style.fontFamily=combo;
+    document.documentElement.style.setProperty('--font-scale',scale);
+    var styleEl=document.getElementById('fontGlobalOverride');
+    if(styleEl)styleEl.textContent='';
+    setTimeout(function(){
+      document.querySelectorAll('.bx-ribbon-tab').forEach(function(el){el.style.display='none';el.offsetHeight;el.style.display='';});
+    },100);
+  },
 
   open:function(){
     Font.load();
     var old=document.getElementById('fontFullPanel');
     if(old){old.classList.remove('hidden');old.classList.add('show');return;}
-
     _state.zh=Font.config.selectedZh||'系统默认';
     _state.en=Font.config.selectedEn||'';
     _state.tab='zh';
-
     var panel=document.createElement('div');
     panel.id='fontFullPanel';
     panel.className='font-fullpanel';
-
     loadAllCustomFonts(Font.customList,function(){
       Font._build(panel);
       document.body.appendChild(panel);
@@ -199,6 +199,32 @@ var Font={
     if(!p)return;
     p.classList.remove('show');p.classList.add('hidden');
     setTimeout(function(){p.remove();},350);
+  },
+
+  /* ★ 上传后弹出分类选择 */
+  _askCategory:function(fileName, cb){
+    var overlay=document.createElement('div');
+    overlay.className='bf-modal-overlay';
+    overlay.innerHTML=
+      '<div class="bf-modal-box">'+
+        '<div style="font-size:15px;font-weight:700;color:#1a1a1a;text-align:center;margin-bottom:4px;">字体分类</div>'+
+        '<div style="font-size:12px;color:#999;text-align:center;margin-bottom:14px;">'+App.esc(fileName)+'</div>'+
+        '<button class="bf-modal-btn bf-modal-btn-primary" data-cat="zh" type="button">中文字体</button>'+
+        '<button class="bf-modal-btn bf-modal-btn-primary" data-cat="en" type="button" style="background:#4a5a75;">英文字体</button>'+
+        '<button class="bf-modal-btn bf-modal-btn-secondary" data-cat="both" type="button">通用（中英都用）</button>'+
+        '<button class="bf-modal-btn bf-modal-btn-cancel" data-cat="cancel" type="button">取消</button>'+
+      '</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click',function(e){if(e.target===overlay){overlay.remove();cb(null);}});
+    overlay.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var cat=btn.dataset.cat;
+        overlay.remove();
+        if(cat==='cancel'){cb(null);}
+        else{cb(cat);}
+      });
+    });
   },
 
   _build:function(panel){
@@ -216,14 +242,30 @@ var Font={
       '</div>';
     });
 
-    var customSection='';
-    if(Font.customList.length){
-      customSection='<div class="hp-section-label" style="margin-top:14px;">自定义字体</div>';
-      Font.customList.forEach(function(f){
-        customSection+='<div class="ft-custom-card'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
+    /* ★ 按分类分组显示自定义字体 */
+    var customZh=Font.customList.filter(function(f){return f.category==='zh';});
+    var customEn=Font.customList.filter(function(f){return f.category==='en';});
+    var customBoth=Font.customList.filter(function(f){return !f.category||f.category==='both';});
+
+    function buildCustomGroup(title,list){
+      if(!list.length)return '';
+      var html='<div class="hp-section-label" style="margin-top:14px;display:flex;align-items:center;gap:8px;">'+
+        '<span>'+title+'</span>'+
+        '<span style="font-size:11px;color:#bbb;font-weight:400;">'+list.length+'个</span>'+
+      '</div>';
+      list.forEach(function(f){
+        var catTag=CATEGORY_LABELS[f.category]||'通用';
+        html+='<div class="ft-custom-card'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
           '<div class="ft-custom-top">'+
             '<div class="ft-item-preview" style="font-family:'+f.family+' !important">你好世界 Hello 123</div>'+
-            '<div class="ft-item-name">'+App.esc(f.fileName||f.name)+'</div>'+
+            '<div class="ft-item-name">'+
+              App.esc(f.fileName||f.name)+
+              '<span style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;background:'+
+                (f.category==='zh'?'rgba(201,112,107,.12);color:#c9706b':
+                 f.category==='en'?'rgba(79,121,166,.12);color:#4f79a6':
+                 'rgba(156,163,176,.12);color:#9ca3b0')+
+              ';">'+catTag+'</span>'+
+            '</div>'+
             '<div class="ft-del-btn" data-del="'+App.escAttr(f.name)+'">'+
               '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg>'+
             '</div>'+
@@ -231,9 +273,14 @@ var Font={
           '</div>'+
         '</div>';
       });
+      return html;
     }
 
-    /* 英文tab额外加一个"跟随中文"选项 */
+    var customSection='';
+    customSection+=buildCustomGroup('中文字体',customZh);
+    customSection+=buildCustomGroup('英文字体',customEn);
+    customSection+=buildCustomGroup('通用字体',customBoth);
+
     var enExtraOption='';
     if(_state.tab==='en'){
       enExtraOption='<div class="ft-item'+(!_state.en?' active':'')+'" data-fname="">'+
@@ -288,23 +335,19 @@ var Font={
     var zhF=Font.getFamily(_state.zh)||BUILTIN[0].family;
     var enF=Font.getFamily(_state.en);
     var isSame=(_state.zh===(Font.config.selectedZh||'系统默认')&&_state.en===(Font.config.selectedEn||''));
-
     var cn=panel.querySelector('#ftPvCn');
     var en=panel.querySelector('#ftPvEn');
     if(cn)cn.setAttribute('style','font-family:'+zhF+' !important');
     if(en)en.setAttribute('style','font-family:'+(enF||zhF)+' !important;font-size:16px;opacity:0.7;margin-top:6px');
-
     var tzh=panel.querySelector('#ftTagZh');
     var ten=panel.querySelector('#ftTagEn');
     if(tzh){tzh.textContent='中：'+Font._getName(_state.zh);tzh.classList.toggle('active',_state.tab==='zh');}
     if(ten){ten.textContent='英：'+Font._getName(_state.en);ten.classList.toggle('active',_state.tab==='en');}
-
     var btn=panel.querySelector('#ftApply');
     if(btn){
       if(isSame){btn.classList.add('disabled');btn.textContent='当前全局';}
       else{btn.classList.remove('disabled');btn.textContent='应用为全局';}
     }
-
     var active=_state.tab==='en'?_state.en:_state.zh;
     panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
       el.classList.toggle('active',el.dataset.fname===active);
@@ -318,7 +361,6 @@ var Font={
       tab.addEventListener('click',function(){
         _state.tab=tab.dataset.t;
         panel.querySelectorAll('.ft-tab').forEach(function(t){t.classList.toggle('active',t.dataset.t===_state.tab);});
-        /* 切换tab时重新build列表（英文tab有额外选项） */
         Font._build(panel);
       });
     });
@@ -334,60 +376,72 @@ var Font={
 
     panel.querySelector('#ftUpload').addEventListener('click',function(){panel.querySelector('#ftFile').click();});
 
+    /* ★ URL导入 - 加分类选择 */
     panel.querySelector('#ftUrl').addEventListener('click',function(){
       var url=prompt('输入字体URL（支持 .ttf/.woff2 或 CSS链接）：');
       if(!url||!url.trim())return;
       url=url.trim();
       if(url.match(/\.css(\?|$)/i)){
-        var link=document.createElement('link');link.rel='stylesheet';link.href=url;document.head.appendChild(link);
         var fn=prompt('输入 font-family 名称：');
         if(!fn||!fn.trim()){App.showToast('已取消');return;}
         fn=fn.trim();
-        var name='CSS_'+fn.replace(/\s+/g,'_')+'_'+Date.now();
-        Font.customList.push({name:name,family:"'"+fn+"',serif",fileName:fn,scale:1,cssUrl:url});
-        Font.save();
-        if(_state.tab==='en')_state.en=name;else _state.zh=name;
-        Font._build(panel);
-        App.showToast('已添加：'+fn);
+        Font._askCategory(fn,function(cat){
+          if(!cat)return;
+          var link=document.createElement('link');link.rel='stylesheet';link.href=url;document.head.appendChild(link);
+          var name='CSS_'+fn.replace(/\s+/g,'_')+'_'+Date.now();
+          Font.customList.push({name:name,family:"'"+fn+"',serif",fileName:fn,scale:1,cssUrl:url,category:cat});
+          Font.save();
+          if(_state.tab==='en')_state.en=name;else _state.zh=name;
+          Font._build(panel);
+          App.showToast('已添加：'+fn);
+        });
         return;
       }
       var m=url.match(/([^\/]+)\.(ttf|otf|woff2?)$/i);
       var raw=m?m[1]:'URLFont';
-      var name='Custom_'+raw.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_')+'_'+Date.now();
-      App.showToast('加载中...');
-      var ff=new FontFace(name,'url('+url+')',{weight:'100 900'});
-      ff.load().then(function(l){
-        document.fonts.add(l);
-        Font.customList.push({name:name,family:"'"+name+"',sans-serif",fileName:raw,scale:1,url:url});
-        Font.save();
-        if(_state.tab==='en')_state.en=name;else _state.zh=name;
-        Font._build(panel);
-        App.showToast('已添加：'+raw);
-      }).catch(function(){App.showToast('加载失败');});
+      Font._askCategory(raw,function(cat){
+        if(!cat)return;
+        App.showToast('加载中...');
+        var name='Custom_'+raw.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_')+'_'+Date.now();
+        var ff=new FontFace(name,'url('+url+')',{weight:'100 900'});
+        ff.load().then(function(l){
+          document.fonts.add(l);
+          Font.customList.push({name:name,family:"'"+name+"',sans-serif",fileName:raw,scale:1,url:url,category:cat});
+          Font.save();
+          if(_state.tab==='en')_state.en=name;else _state.zh=name;
+          Font._build(panel);
+          App.showToast('已添加：'+raw);
+        }).catch(function(){App.showToast('加载失败');});
+      });
     });
 
+    /* ★ 文件上传 - 加分类选择 */
     panel.querySelector('#ftFile').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
       var raw=file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g,'_');
-      var name='Custom_'+raw+'_'+Date.now();
-      App.showToast('加载中...');
-      var reader=new FileReader();
-      reader.onload=function(ev){
-        var dataUrl=ev.target.result;
-        loadFontFace(name,dataUrl).then(function(ok){
-          if(!ok){App.showToast('字体加载失败');return;}
-          saveFont(name,dataUrl,function(ok2){
-            if(!ok2){App.showToast('保存失败');return;}
-            Font.customList.push({name:name,family:"'"+name+"',sans-serif",fileName:file.name,scale:1});
-            Font.save();
-            if(_state.tab==='en')_state.en=name;else _state.zh=name;
-            Font._build(panel);
-            App.showToast('已添加：'+file.name);
-          });
-        });
-      };
-      reader.readAsDataURL(file);
       e.target.value='';
+
+      Font._askCategory(file.name,function(cat){
+        if(!cat)return;
+        App.showToast('加载中...');
+        var name='Custom_'+raw+'_'+Date.now();
+        var reader=new FileReader();
+        reader.onload=function(ev){
+          var dataUrl=ev.target.result;
+          loadFontFace(name,dataUrl).then(function(ok){
+            if(!ok){App.showToast('字体加载失败');return;}
+            saveFont(name,dataUrl,function(ok2){
+              if(!ok2){App.showToast('保存失败');return;}
+              Font.customList.push({name:name,family:"'"+name+"',sans-serif",fileName:file.name,scale:1,category:cat});
+              Font.save();
+              if(_state.tab==='en')_state.en=name;else _state.zh=name;
+              Font._build(panel);
+              App.showToast('已添加：'+file.name);
+            });
+          });
+        };
+        reader.readAsDataURL(file);
+      });
     });
 
     panel.querySelectorAll('.ft-item,.ft-custom-card').forEach(function(el){
@@ -428,7 +482,6 @@ var Font={
       lxgw.href='https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css';
       document.head.appendChild(lxgw);
     }
-
     openDB(function(){
       Font.load();
       loadAllCustomFonts(Font.customList,function(){
@@ -441,4 +494,3 @@ var Font={
 
 App.register('font',Font);
 })();
-
