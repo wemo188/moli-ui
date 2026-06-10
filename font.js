@@ -237,7 +237,7 @@ var Font={
     var listHtml='';
     BUILTIN.forEach(function(f){
       listHtml+='<div class="ft-item'+(active===f.name?' active':'')+'" data-fname="'+App.escAttr(f.name)+'">'+
-        '<div class="ft-item-preview" style="font-family:'+f.family+' !important">你好世界 Hello 123</div>'+
+                   '<div class="ft-item-preview">你好世界 Hello 123</div>'+
         '<div class="ft-item-name">'+App.esc(f.name)+'</div>'+
         '<div class="ft-item-check"></div>'+
       '</div>';
