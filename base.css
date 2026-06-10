@@ -53,10 +53,10 @@ body {
 ========================= */
 .bg-slider {
   position: fixed;
+  top: 0;
   left: 0;
-  top: calc(-1 * env(safe-area-inset-top, 0));
   width: 200vw;
-  height: calc(100vh + env(safe-area-inset-top, 0) + env(safe-area-inset-bottom, 0));
+  height: 100%;
   z-index: 0;
   display: flex;
   pointer-events: none;
