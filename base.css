@@ -49,14 +49,14 @@ body {
 }
 
 /* =========================
-   背景层 - 穿透刘海屏
+   背景层 
 ========================= */
 .bg-slider {
   position: fixed;
+  top: -1px;
   left: 0;
-  top: calc(-1 * env(safe-area-inset-top, 0px));
   width: 200vw;
-  height: calc(100% + env(safe-area-inset-top, 0px));
+  height: calc(100vh + 2px);
   z-index: 0;
   display: flex;
   pointer-events: none;
@@ -238,8 +238,8 @@ img.img-fill { transform: none !important; }
 .page-slider-main {
   position: relative;
   width: 100vw;
-  height: 100%;
-  min-height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   padding: 0 !important;
   overflow: hidden;
 }
@@ -247,16 +247,16 @@ img.img-fill { transform: none !important; }
 .page-slider {
   display: flex;
   width: 200vw;
-  height: 100%;
-  min-height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   will-change: transform;
   touch-action: none;
 }
 
 .screen-page {
   width: 100vw;
-  height: 100%;
-  min-height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   flex-shrink: 0;
   display: flex;
   align-items: flex-start;
@@ -272,7 +272,7 @@ img.img-fill { transform: none !important; }
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  min-height: 100vh;
 }
 
 .screen-indicators {
