@@ -40,127 +40,160 @@
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-    <!-- 第一页 -->
-    <section class="screen-page screen-page-1">
-      <div class="screen-page-inner">
+   <!-- 第一页 -->
+<section class="screen-page screen-page-1">
+  <div class="screen-page-inner">
 
-        <!-- 第一行：左角色卡 + 右角色卡 并列 -->
-        <div id="row1">
-          <div class="bx-w" id="profileCard-L" data-side="left">
-            <div class="bx-tag-wrap">
-              <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
-              <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
-            </div>
-            <div class="bx-cw"><div class="bx-cd">
-              <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-              <div class="bx-name-bar">
-                <div class="bx-name bx-name-placeholder">角色名</div>
-                <div class="bx-sub">一句话签名</div>
-              </div>
-            </div></div>
-          </div>
-
-          <div class="bx-w" id="profileCard-R" data-side="right">
-            <div class="bx-cw"><div class="bx-cd">
-              <div class="bx-side-ribbon">
-                <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
-                <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
-              </div>
-              <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-              <div class="bx-name-bar">
-                <div class="bx-name bx-name-placeholder">角色名</div>
-                <div class="bx-sub">一句话签名</div>
-              </div>
-            </div></div>
-          </div>
+    <!-- 第零行：票券日历 -->
+    <div id="row0">
+      <div class="tk17" id="wtCard">
+        <div class="tk17-bgimg" id="tkBgArea"></div>
+        <div class="tk17-glass" id="tkGlass">
+          <div class="tk17-stripes"></div>
         </div>
 
-        <!-- 第二行：天气日历(左) + 四图标(右) -->
-        <div id="row2">
-          <div id="wtCard">
-            <div class="wt-cw">
-              <div id="wtBgImg" class="wt-bg-img"></div>
-              <div id="wtWeatherBg" class="wt-weather-bg"></div>
-              <div class="wt-content">
-                <div id="calYear">2026</div>
-                <div id="calMonth">6</div>
-                <div id="calWeekday">THURSDAY</div>
-                <div id="calClock"><span id="calTime">00:00</span><span id="calSec">:00</span></div>
-              </div>
+        <div class="tk17-left">
+          <div class="tk17-avatar" id="tkAvatar">
+            <div class="tk17-avatar-ph" id="tkAvatarPh">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+              <span>UP</span>
             </div>
-
+            <input type="file" accept="image/*" id="tkAvatarFile" style="display:none">
           </div>
-
-          <div id="appIconsRow">
-            <div id="iconUser">
-              <div id="iconUserImg"></div>
-              <div id="iconUserLabel">User</div>
-            </div>
-            <div id="iconChar">
-              <div id="iconCharImg"></div>
-              <div id="iconCharLabel">Char</div>
-            </div>
-            <div id="iconTheme">
-              <div id="iconThemeImg"></div>
-              <div id="iconThemeLabel">美化</div>
-            </div>
-            <div id="iconSettings">
-              <div id="iconSettingsImg"></div>
-              <div id="iconSettingsLabel">设置</div>
+          <div class="tk17-msg">
+            <div class="tk17-msg-name" id="tkMsgName">昵称</div>
+            <div id="tkMsgSign">签名</div>
+            <div class="tk17-msg-loc">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+              <span id="tkMsgLoc">地点</span>
             </div>
           </div>
         </div>
 
-        <!-- 第三行：圆头像 -->
-        <div id="hlAvatarsRow" class="hl-avatars-row">
-          <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
-            <div class="hl-bubble hl-bubble-right">
-              <div class="hl-bubble-arrow-outer"></div>
-              <div class="hl-bubble-arrow-inner"></div>
-              <span class="hl-bubble-display" id="hlInputLeft"></span>
-            </div>
-            <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
-              <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
-                <div class="hl-avatar-bg" id="hlImgLeft"></div>
-              </div>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bot">
-              <span class="hl-chatbar-display" id="hlChatLeft" data-placeholder="说点什么..."></span>
-            </div>
-          </div>
+        <div class="tk17-sep">
+          <div class="tk17-notch-top"></div>
+          <div class="tk17-notch-bot"></div>
+        </div>
 
-          <div id="hlAvatarWrapRight" class="hl-avatar-unit">
-            <div class="hl-bubble hl-bubble-left">
-              <div class="hl-bubble-arrow-outer"></div>
-              <div class="hl-bubble-arrow-inner"></div>
-              <span class="hl-bubble-display" id="hlInputRight"></span>
-            </div>
-            <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
-              <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
-                <div class="hl-avatar-bg" id="hlImgRight"></div>
-              </div>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bl">
-              <span class="hl-chatbar-display" id="hlChatRight" data-placeholder="说点什么..."></span>
-            </div>
+        <div class="tk17-right">
+          <div id="wtWeatherBg" class="tk17-weather-layer"></div>
+          <div class="tk17-right-info">
+            <span class="tk17-right-year" id="calYear">2026</span>
+            <span id="calMonthDay">06/10</span>
+            <span id="calWeekday">Wednesday</span>
+            <span id="calClock">00:00:00</span>
           </div>
         </div>
 
-        <!-- 第四行：文字卡片 -->
-        <div id="edenCard">
-          <div id="edenText">文字填写区域，可以多行</div>
-        </div>
-
+        <div class="tk17-dashed"></div>
       </div>
-    </section>
+    </div>
+
+    <!-- 第一行：左组 + 右组 -->
+    <div id="row1">
+      <div class="card-group card-group-left">
+        <div class="bx-w" id="profileCard-L" data-side="left">
+          <div class="bx-tag-wrap">
+            <div class="bx-tag bx-tag1 bx-tag-placeholder">标签</div>
+            <div class="bx-tag bx-tag2 bx-tag-placeholder">标签</div>
+          </div>
+          <div class="bx-cw"><div class="bx-cd">
+            <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+            <div class="bx-name-bar">
+              <div class="bx-name bx-name-placeholder">角色名</div>
+              <div class="bx-sub">一句话签名</div>
+            </div>
+          </div></div>
+        </div>
+        <div class="card-group-icons">
+          <div id="iconChar">
+            <div id="iconCharImg"></div>
+            <div id="iconCharLabel">Char</div>
+          </div>
+          <div id="iconUser">
+            <div id="iconUserImg"></div>
+            <div id="iconUserLabel">User</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-group card-group-right">
+        <div class="card-group-icons">
+          <div id="iconTheme">
+            <div id="iconThemeImg"></div>
+            <div id="iconThemeLabel">美化</div>
+          </div>
+          <div id="iconSettings">
+            <div id="iconSettingsImg"></div>
+            <div id="iconSettingsLabel">设置</div>
+          </div>
+        </div>
+        <div class="bx-w" id="profileCard-R" data-side="right">
+          <div class="bx-cw"><div class="bx-cd">
+            <div class="bx-side-ribbon">
+              <div class="bx-ribbon-tab r1 bx-ribbon-placeholder">标签</div>
+              <div class="bx-ribbon-tab r2 bx-ribbon-placeholder">标签</div>
+            </div>
+            <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+            <div class="bx-name-bar">
+              <div class="bx-name bx-name-placeholder">角色名</div>
+              <div class="bx-sub">一句话签名</div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三行：圆头像 -->
+    <div id="hlAvatarsRow" class="hl-avatars-row">
+      <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
+        <div class="hl-bubble hl-bubble-right">
+          <div class="hl-bubble-arrow-outer"></div>
+          <div class="hl-bubble-arrow-inner"></div>
+          <span class="hl-bubble-display" id="hlInputLeft"></span>
+        </div>
+        <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
+          <div class="hl-avatar-inner">
+            <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+              <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="hl-avatar-bg" id="hlImgLeft"></div>
+          </div>
+        </div>
+        <div class="hl-chatbar hl-chatbar-bot">
+          <span class="hl-chatbar-display" id="hlChatLeft" data-placeholder="说点什么..."></span>
+        </div>
+      </div>
+
+      <div id="hlAvatarWrapRight" class="hl-avatar-unit">
+        <div class="hl-bubble hl-bubble-left">
+          <div class="hl-bubble-arrow-outer"></div>
+          <div class="hl-bubble-arrow-inner"></div>
+          <span class="hl-bubble-display" id="hlInputRight"></span>
+        </div>
+        <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
+          <div class="hl-avatar-inner">
+            <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+              <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="hl-avatar-bg" id="hlImgRight"></div>
+          </div>
+        </div>
+        <div class="hl-chatbar hl-chatbar-bl">
+          <span class="hl-chatbar-display" id="hlChatRight" data-placeholder="说点什么..."></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第四行：文字卡片 -->
+    <div id="edenCard">
+      <div id="edenText">文字填写区域，可以多行</div>
+    </div>
+
+  </div>
+</section>
 
     <!-- 第二页 -->
     <section class="screen-page screen-page-2">
