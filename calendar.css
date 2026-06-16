@@ -83,36 +83,6 @@
   gap: 14px;
 }
 
-.tk17-avatar {
-  width: 60px; height: 60px;
-  border-radius: 50%;
-  border: 1.5px solid #d1d5db;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.5);
-  position: relative;
-  flex-shrink: 0;
-}
-.tk17-avatar img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; z-index: 1;
-}
-.tk17-avatar-ph {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 2px; color: #999;
-  transition: opacity .3s;
-}
-.tk17-avatar-ph svg { opacity: .5; }
-.tk17-avatar-ph span {
-  font-size: 7px; letter-spacing: .5px;
-  font-family: 'SF Mono','Menlo',monospace;
-  color: #999;
-}
-
 .tk17-msg {
   flex: 1; font-size: 11px; color: #111;
   line-height: 1.9; letter-spacing: .5px;
