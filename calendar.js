@@ -55,48 +55,27 @@ var Cal={
 
   // ====== 时钟 ======
   startClock:function(){
-    var yearEl=App.$('#calYear'),monthEl=App.$('#calMonth'),wkEl=App.$('#calWeekday'),timeEl=App.$('#calTime'),secEl=App.$('#calSec');
-    if(!timeEl||!secEl)return;
-    var WEEKDAYS_EN=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    var yearEl=App.$('#calYear'),mdEl=App.$('#calMonthDay'),wkEl=App.$('#calWeekday'),clockEl=App.$('#calClock');
+    if(!clockEl)return;
+    var WEEKDAYS_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     function tick(){
       var d=new Date();
       if(yearEl)yearEl.textContent=d.getFullYear();
-      if(monthEl)monthEl.textContent=d.getMonth()+1;
+      if(mdEl)mdEl.textContent=pad(d.getMonth()+1)+'/'+pad(d.getDate());
       if(wkEl)wkEl.textContent=WEEKDAYS_EN[d.getDay()];
-      timeEl.textContent=pad(d.getHours())+':'+pad(d.getMinutes());
-      secEl.textContent=':'+pad(d.getSeconds());
+      clockEl.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
     }
     tick();
     if(Cal._clockTimer)clearInterval(Cal._clockTimer);
     Cal._clockTimer=setInterval(tick,1000);
   },
 
-  // ====== 日期条 ======
-  renderWeekRow:function(){
-    var container=App.$('#calSide');if(!container)return;
-    var now=new Date();
-    var today=now.getDate();
-    var month=now.getMonth();
-    var dayOfWeek=now.getDay();
-    var weekStart=new Date(now);
-    weekStart.setDate(today-dayOfWeek);
-    var html='';
-    for(var i=0;i<7;i++){
-      var d=new Date(weekStart);
-      d.setDate(weekStart.getDate()+i);
-      var dayNum=d.getDate();
-      var cls='wt-week-day'+((dayNum===today&&d.getMonth()===month)?' today':'');
-      html+='<div class="'+cls+'">'+dayNum+'</div>';
-    }
-    container.innerHTML=html;
-  },
-
-  // ====== 天气动效 ======
+  // ====== 天气动效（渲染进右半边） ======
   renderWeatherEffect:function(){
     var bg=App.$('#wtWeatherBg');if(!bg)return;
     bg.innerHTML='';
-    var cw=bg.closest('.wt-cw');
-    if(cw){cw.classList.remove('wt-static');if(!Cal._weatherAnimate)cw.classList.add('wt-static');}
+    var card=App.$('#wtCard');
+    if(card){card.classList.remove('wt-static');if(!Cal._weatherAnimate)card.classList.add('wt-static');}
     if(!Cal.weather||!Cal.weather.code){
       var h=new Date().getHours();
       if(h>=19||h<6)Cal._renderNight(bg);
@@ -108,11 +87,11 @@ var Cal={
       case'night':Cal._renderNight(bg);break;
       case'cloudy':Cal._renderCloudy(bg);break;
       case'overcast':Cal._renderOvercast(bg);break;
-      case'lightrain':Cal._renderRain(bg,8,1.5,2.2,12,18);break;
-      case'heavyrain':Cal._renderRain(bg,22,0.8,1.3,16,26);break;
+      case'lightrain':Cal._renderRain(bg,5,1.5,2.2,8,12);break;
+      case'heavyrain':Cal._renderRain(bg,12,0.8,1.3,10,16);break;
       case'thunder':Cal._renderThunder(bg);break;
-      case'lightsnow':Cal._renderSnow(bg,10,4,6,5,8);break;
-      case'heavysnow':Cal._renderSnow(bg,24,2.5,4,6,11);break;
+      case'lightsnow':Cal._renderSnow(bg,6,4,6,3,5);break;
+      case'heavysnow':Cal._renderSnow(bg,14,2.5,4,4,7);break;
       case'fog':Cal._renderFog(bg);break;
     }
   },
@@ -129,17 +108,46 @@ var Cal={
 
   _renderRain:function(bg,count,minDur,maxDur,minH,maxH){for(var i=0;i<count;i++){var drop=document.createElement('div');drop.className='wt-raindrop';drop.style.left=(5+Math.random()*90)+'%';drop.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';drop.style.animationDelay=(-Math.random()*3)+'s';drop.style.height=(minH+Math.random()*(maxH-minH))+'px';bg.appendChild(drop);}},
 
-  _renderThunder:function(bg){bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="24" height="45" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="20" height="35" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';Cal._renderRain(bg,18,0.7,1.2,15,24);},
+  _renderThunder:function(bg){bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="16" height="30" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="12" height="22" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';Cal._renderRain(bg,8,0.7,1.2,8,14);},
 
   _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){for(var i=0;i<count;i++){var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('class','wt-snow-item');var size=minSize+Math.random()*(maxSize-minSize);svg.style.left=(5+Math.random()*90)+'%';svg.style.width=size+'px';svg.style.height=size+'px';svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';svg.style.animationDelay=(-Math.random()*6)+'s';var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');path.setAttribute('stroke','rgba(50,50,50,0.7)');path.setAttribute('stroke-width','1.2');path.setAttribute('stroke-linecap','round');path.setAttribute('fill','none');svg.appendChild(path);bg.appendChild(svg);}},
 
   _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
 
-  // ====== 背景图 ======
-  applyBgImg:function(){
-    var el=App.$('#wtBgImg');if(!el)return;
-    var img=App.LS.get('calBgImg')||'';
-    el.style.backgroundImage=img?'url('+img+')':'';
+  // ====== 头像 ======
+  initAvatar:function(){
+    var avatar=App.$('#tkAvatar');
+    var fileInput=App.$('#tkAvatarFile');
+    var ph=App.$('#tkAvatarPh');
+    if(!avatar||!fileInput)return;
+
+    // 恢复已保存的头像
+    var savedAvatar=App.LS.get('tkAvatarImg');
+    if(savedAvatar){
+      var img=document.createElement('img');
+      img.src=savedAvatar;
+      avatar.appendChild(img);
+      if(ph)ph.style.opacity='0';
+    }
+
+    avatar.addEventListener('click',function(){ fileInput.click(); });
+    fileInput.addEventListener('change',function(e){
+      var file=e.target.files[0];if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var process=function(src){
+          var old=avatar.querySelector('img');if(old)old.remove();
+          var img=document.createElement('img');img.src=src;
+          avatar.appendChild(img);
+          if(ph)ph.style.opacity='0';
+          App.LS.set('tkAvatarImg',src);
+        };
+        if(App.cropImage)App.cropImage(ev.target.result,process);
+        else process(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      e.target.value='';
+    });
   },
 
   // ====== 天气获取 ======
@@ -174,10 +182,10 @@ var Cal={
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
     panel.innerHTML=
-      '<div class="pc-header">天气设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
+      '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
         '<div class="pc-group">'+
-          '<span class="pc-label">城市</span>'+
+          '<span class="pc-label">城市（天气）</span>'+
           '<div class="pc-av-row">'+
             '<input type="text" class="pc-input" id="wtCityInput" placeholder="输入城市名..." value="'+App.esc(Cal.city||'')+'">'+
             '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
@@ -191,12 +199,19 @@ var Cal={
           '</div>'+
         '</div>'+
         '<div class="pc-group">'+
-          '<span class="pc-label">背景图片</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtBgUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
-            '<div class="pc-icon-btn danger" id="wtBgClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
-          '</div>'+
-          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
+          '<span class="pc-label">昵称</span>'+
+          '<input type="text" class="pc-input" id="wtNameInput" placeholder="昵称..." value="'+App.esc(App.LS.get('tkMsgName')||'')+'">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">签名</span>'+
+          '<input type="text" class="pc-input" id="wtSignInput" placeholder="签名..." value="'+App.esc(App.LS.get('tkMsgSign')||'')+'">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">地点</span>'+
+          '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<button class="pc-icon-btn" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
         '</div>'+
       '</div>';
 
@@ -205,11 +220,11 @@ var Cal={
 
     // 定位到格子附近
     var rect=card.getBoundingClientRect();
-    var left=rect.left;
+    var left=rect.left+20;
     var top=rect.bottom+8;
     if(left+270>window.innerWidth-8)left=window.innerWidth-278;
     if(left<8)left=8;
-    if(top+350>window.innerHeight-10)top=rect.top-358;
+    if(top+400>window.innerHeight-10)top=rect.top-410;
     if(top<10)top=10;
     panel.style.left=left+'px';
     panel.style.top=top+'px';
@@ -239,125 +254,46 @@ var Cal={
       Cal.renderWeatherEffect();
     });
 
-    // 上传背景
-    panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){
-      panel.querySelector('#wtBgFileInput').click();
-    });
-
-    panel.querySelector('#wtBgFileInput').addEventListener('change',function(){
-  var file=this.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    App.cropImage(e.target.result,function(croppedData){
-      App.LS.set('calBgImg',croppedData);
-      Cal.applyBgImg();
-      App.showToast('背景已设置');
-    });
-  };
-  reader.readAsDataURL(file);
-});
-
-    // 清除背景
-    panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){
-      App.LS.remove('calBgImg');
-      Cal.applyBgImg();
-      App.showToast('背景已清除');
+    // 保存文字
+    panel.querySelector('#wtEditSave').addEventListener('click',function(){
+      var name=panel.querySelector('#wtNameInput').value.trim();
+      var sign=panel.querySelector('#wtSignInput').value.trim();
+      var loc=panel.querySelector('#wtLocInput').value.trim();
+      App.LS.set('tkMsgName',name);
+      App.LS.set('tkMsgSign',sign);
+      App.LS.set('tkMsgLoc',loc);
+      Cal.applyTexts();
+      Cal.openEditPanel();
+      App.showToast('已保存');
     });
   },
 
-  // ====== 裁剪弹窗 ======
-  openCropDialog:function(src){
-    var overlay=document.createElement('div');
-    overlay.className='wt-crop-overlay';
+  // ====== 恢复文字 ======
+  applyTexts:function(){
+    var nameEl=App.$('#tkMsgName');
+    var signEl=App.$('#tkMsgSign');
+    var locEl=App.$('#tkMsgLoc');
+    var n=App.LS.get('tkMsgName');
+    var s=App.LS.get('tkMsgSign');
+    var l=App.LS.get('tkMsgLoc');
+    if(nameEl&&n)nameEl.textContent=n;
+    if(signEl&&s)signEl.textContent=s;
+    if(locEl&&l)locEl.textContent=l;
+  },
 
-    overlay.innerHTML=
-      '<div class="wt-crop-box" id="wtCropBox">'+
-        '<img class="wt-crop-img" id="wtCropImg" src="'+src+'">'+
-      '</div>'+
-      '<div class="wt-crop-hint">拖动和双指缩放调整位置</div>'+
-      '<div class="wt-crop-btns">'+
-        '<button class="wt-crop-btn wt-crop-btn-cancel" id="wtCropCancel">取消</button>'+
-        '<button class="wt-crop-btn wt-crop-btn-ok" id="wtCropOk">确定</button>'+
-      '</div>';
-
-    document.body.appendChild(overlay);
-
-    var img=overlay.querySelector('#wtCropImg');
-    var box=overlay.querySelector('#wtCropBox');
-    var ox=0,oy=0,scale=1,lastDist=0;
-    var startX,startY,startOX,startOY;
-
-    img.onload=function(){
-      // 初始缩放：让图片填满170框
-      var bw=170,bh=170;
-      var iw=img.naturalWidth,ih=img.naturalHeight;
-      scale=Math.max(bw/iw,bh/ih);
-      ox=(bw-iw*scale)/2;
-      oy=(bh-ih*scale)/2;
-      applyT();
-    };
-
-    function applyT(){img.style.transform='translate('+ox+'px,'+oy+'px) scale('+scale+')';img.style.transformOrigin='0 0';}
-
-    // 拖拽
-    box.addEventListener('touchstart',function(e){
-      if(e.touches.length===1){
-        startX=e.touches[0].clientX;startY=e.touches[0].clientY;
-        startOX=ox;startOY=oy;
-      }else if(e.touches.length===2){
-        lastDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
-      }
-      e.preventDefault();
-    },{passive:false});
-
-    box.addEventListener('touchmove',function(e){
-      if(e.touches.length===1){
-        ox=startOX+(e.touches[0].clientX-startX);
-        oy=startOY+(e.touches[0].clientY-startY);
-        applyT();
-      }else if(e.touches.length===2){
-        var dist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
-        if(lastDist>0){
-          scale*=dist/lastDist;
-          if(scale<0.3)scale=0.3;if(scale>5)scale=5;
-          applyT();
-        }
-        lastDist=dist;
-      }
-      e.preventDefault();
-    },{passive:false});
-
-    // 鼠标拖拽（PC调试用）
-    var mouseDown=false;
-    box.addEventListener('mousedown',function(e){mouseDown=true;startX=e.clientX;startY=e.clientY;startOX=ox;startOY=oy;e.preventDefault();});
-    document.addEventListener('mousemove',function handler(e){if(!mouseDown)return;ox=startOX+(e.clientX-startX);oy=startOY+(e.clientY-startY);applyT();});
-    document.addEventListener('mouseup',function(){mouseDown=false;});
-
-    // 滚轮缩放
-    box.addEventListener('wheel',function(e){e.preventDefault();scale*=e.deltaY>0?0.9:1.1;if(scale<0.3)scale=0.3;if(scale>5)scale=5;applyT();},{passive:false});
-
-    // 确定
-    overlay.querySelector('#wtCropOk').addEventListener('click',function(){
-      var canvas=document.createElement('canvas');
-      canvas.width=170;canvas.height=170;
-      var ctx=canvas.getContext('2d');
-      ctx.drawImage(img,ox/scale,oy/scale,170/scale,170/scale,0,0,170,170);
-      // 用变换方式重绘
-      ctx.clearRect(0,0,170,170);
-      ctx.save();
-      ctx.translate(ox,oy);
-      ctx.scale(scale,scale);
-      ctx.drawImage(img,0,0);
-      ctx.restore();
-      var dataUrl=canvas.toDataURL('image/jpeg',0.85);
-      App.LS.set('calBgImg',dataUrl);
-      Cal.applyBgImg();
-      overlay.remove();
-      App.showToast('背景已设置');
-    });
-
-    // 取消
-    overlay.querySelector('#wtCropCancel').addEventListener('click',function(){overlay.remove();});
+  // ====== 背景图（保留API但不再有按钮） ======
+  applyBgImg:function(){
+    var el=App.$('#tkBgArea');if(!el)return;
+    var img=App.LS.get('calBgImg')||'';
+    if(img){
+      el.style.backgroundImage='url('+img+')';
+      var glass=App.$('#tkGlass');
+      if(glass)glass.classList.add('hide');
+    }else{
+      el.style.backgroundImage='';
+      var glass=App.$('#tkGlass');
+      if(glass)glass.classList.remove('hide');
+    }
   },
 
   // ====== 拖拽 ======
@@ -375,7 +311,7 @@ var Cal={
       longPressed=false;moved=false;
       timer=setTimeout(function(){
         longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
-        card.classList.add('wt-dragging');
+        card.style.transition='none';
         if(navigator.vibrate)navigator.vibrate(15);
       },DELAY);
     },{passive:true});
@@ -391,7 +327,7 @@ var Cal={
 
     card.addEventListener('touchend',function(){
       clearTimeout(timer);timer=null;
-      card.classList.remove('wt-dragging');
+      card.style.transition='';
       if(longPressed&&moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
       longPressed=false;moved=false;
     });
@@ -399,9 +335,9 @@ var Cal={
 
   // ====== 双击绑定 ======
   bindClicks:function(){
-    var monthEl=App.$('#calMonth');if(!monthEl)return;
+    var rightEl=App.$('.tk17-right');if(!rightEl)return;
     var lastTap=0;
-    monthEl.addEventListener('click',function(e){
+    rightEl.addEventListener('click',function(e){
       e.stopPropagation();
       var now=Date.now();
       if(now-lastTap<350){Cal.openEditPanel();}
@@ -419,9 +355,10 @@ var Cal={
   init:function(){
     Cal.load();
     Cal.startClock();
-    Cal.renderWeekRow();
     Cal.renderWeatherEffect();
     Cal.applyBgImg();
+    Cal.applyTexts();
+    Cal.initAvatar();
     Cal.initDrag();
     Cal.bindClicks();
     if(Cal.city&&Cal.weather){
