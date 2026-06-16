@@ -314,10 +314,10 @@ img.img-fill { transform: none !important; }
 ========================= */
 /* 第零行：票券日历 */
 #row0 {
-  width: 100%;
-  padding: 0 0;
+  width: calc(100% + 36px);
+  margin-left: -18px;
   margin-bottom: 18px;
-  padding-right: 65px;
+  padding-right: 83px;
 }
 
 /* 第一行：左组 + 右组 */
