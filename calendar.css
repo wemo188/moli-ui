@@ -1,200 +1,258 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap');
-
-/* ================================================
-   天气格子容器
-   ================================================ */
-#wtCard {
-  --wt-ink: #1a1a1a;
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.15s ease;
-}
-
-#wtCard.wt-dragging {
-  opacity: 0.9;
-  z-index: 999;
-  transition: none;
-}
-
-/* ================================================
-   170x170 毛玻璃方块
-   ================================================ */
-.wt-cw {
-  width: 170px;
-  height: 170px;
+/* =========================
+   票券日历 tk17
+========================= */
+.tk17 {
+  width: 100%;
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  border: 1px solid #eaecf0;
-  background: rgba(255,255,255,0);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.01);
-  overflow: hidden;
+  align-items: stretch;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
 }
 
-.wt-bg-img {
+.tk17-bgimg {
   position: absolute;
   inset: 0;
+  border-radius: 5px;
+  overflow: hidden;
   z-index: 0;
-  border-radius: 15px;
+  -webkit-mask-image:
+    radial-gradient(circle 7.5px at calc(100% - 68px) 0, transparent 7px, black 7.5px),
+    radial-gradient(circle 7.5px at calc(100% - 68px) 100%, transparent 7px, black 7.5px);
+  -webkit-mask-size: 100% 51%;
+  -webkit-mask-position: top, bottom;
+  -webkit-mask-repeat: no-repeat;
+  mask-image:
+    radial-gradient(circle 7.5px at calc(100% - 68px) 0, transparent 7px, black 7.5px),
+    radial-gradient(circle 7.5px at calc(100% - 68px) 100%, transparent 7px, black 7.5px);
+  mask-size: 100% 51%;
+  mask-position: top, bottom;
+  mask-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  pointer-events: none;
 }
 
-.wt-weather-bg {
+.tk17-glass {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 5px;
+  -webkit-mask-image:
+    radial-gradient(circle 7.5px at calc(100% - 68px) 0, transparent 7px, black 7.5px),
+    radial-gradient(circle 7.5px at calc(100% - 68px) 100%, transparent 7px, black 7.5px);
+  -webkit-mask-size: 100% 51%;
+  -webkit-mask-position: top, bottom;
+  -webkit-mask-repeat: no-repeat;
+  mask-image:
+    radial-gradient(circle 7.5px at calc(100% - 68px) 0, transparent 7px, black 7.5px),
+    radial-gradient(circle 7.5px at calc(100% - 68px) 100%, transparent 7px, black 7.5px);
+  mask-size: 100% 51%;
+  mask-position: top, bottom;
+  mask-repeat: no-repeat;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+.tk17-glass.hide {
+  opacity: 0;
+}
+
+.tk17-stripes {
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 68px;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.045) 3px, rgba(0,0,0,0.045) 4px);
+  border-radius: 0 10px 10px 0;
+}
+
+.tk17-left {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  border: 1px solid #1a1a1a;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+  display: flex;
+  align-items: center;
+  padding: 16px 14px;
+  box-sizing: border-box;
+  gap: 14px;
+}
+
+.tk17-avatar {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid #1a1a1a;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.5);
+  position: relative;
+  flex-shrink: 0;
+}
+.tk17-avatar:active { opacity: .85; }
+.tk17-avatar img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; z-index: 1;
+}
+.tk17-avatar-ph {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 2px; color: #555;
+  transition: opacity .3s;
+}
+.tk17-avatar-ph svg { opacity: .7; }
+.tk17-avatar-ph span {
+  font-size: 7px; letter-spacing: .5px;
+  font-family: 'SF Mono','Menlo',monospace;
+}
+
+.tk17-msg {
+  flex: 1; font-size: 11px; color: #111;
+  line-height: 1.9; letter-spacing: .5px;
+}
+.tk17-msg-name { font-weight: 600; font-size: 12px; }
+.tk17-msg-loc {
+  font-size: 10px; color: #444;
+  display: flex; align-items: center; gap: 3px;
+}
+.tk17-msg-loc svg {
+  width: 10px; height: 10px; fill: #111; flex-shrink: 0;
+}
+
+.tk17-sep {
+  width: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.tk17-notch-top {
+  position: absolute;
+  top: 0; left: 0;
+  width: 16px; height: 8px;
+  border: 1px solid #1a1a1a;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-sizing: border-box;
+}
+
+.tk17-notch-bot {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 16px; height: 8px;
+  border: 1px solid #1a1a1a;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  box-sizing: border-box;
+}
+
+.tk17-right {
+  width: 60px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  border: 1px solid #1a1a1a;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 天气动效层嵌入右边 */
+.tk17-weather-layer {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 0;
+  border-radius: 0 5px 5px 0;
 }
 
-.wt-content {
+.tk17-right-info {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1px;
+  font-size: 8px;
+  color: #222;
+  letter-spacing: .5px;
+  line-height: 1.5;
+  text-align: center;
+}
+.tk17-right-year {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tk17-dashed {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  right: 68px;
+  width: 0;
+  border-left: 1px dashed rgba(0,0,0,0.35);
+  z-index: 5;
 }
 
 /* ================================================
-   文字样式
+   天气动效（复用旧的，容器改为 .tk17-weather-layer）
    ================================================ */
-#calYear {
-  font-size: 11px;
-  color: var(--wt-ink);
-  letter-spacing: 2px;
-  font-weight: 600;
-}
 
-#calMonth {
-  font-size: 58px;
-  font-weight: 900;
-  color: var(--wt-ink);
-  line-height: 1;
-  margin-top: 2px;
-  cursor: pointer;
-}
-
-#calWeekday {
-  font-size: 11px;
-  color: var(--wt-ink);
-  letter-spacing: 1.5px;
-  font-weight: 700;
-  margin-top: 2px;
-}
-
-#calClock {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--wt-ink);
-  margin-top: 8px;
-  font-variant-numeric: tabular-nums;
-}
-
-#calSec {
-  font-size: 13px;
-  color: var(--wt-ink);
-  margin-left: 2px;
-}
-
-/* ================================================
-   日期条
-   ================================================ */
-#calSide {
-  width: 170px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 5px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #eaecf0;
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-}
-
-.wt-week-day {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--wt-ink);
-}
-
-.wt-week-day.today {
-  background: #9ca3b0;
-  color: #fff;
-  font-weight: 900;
-}
-
-/* ================================================
-   天气动效：晴天
-   ================================================ */
+/* 晴天 */
 .wt-sun-svg {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 130px; height: 130px;
+  width: 50px; height: 50px;
   opacity: 0.12;
   animation: wtSunSpin 25s linear infinite;
 }
 .wt-static .wt-sun-svg { animation: none; }
 @keyframes wtSunSpin { 0%{transform:translate(-50%,-50%) rotate(0deg)} 100%{transform:translate(-50%,-50%) rotate(360deg)} }
 
-/* ================================================
-   天气动效：多云
-   ================================================ */
+/* 多云 */
 .wt-cloud-item {
   position: absolute;
   opacity: 0.15;
   animation: wtCloudDrift linear infinite;
 }
-.wt-cloud-item:nth-child(1) { top: 10%; left: -90px; width: 55px; animation-duration: 14s; }
-.wt-cloud-item:nth-child(2) { top: 45%; left: -75px; width: 45px; animation-duration: 18s; animation-delay: -6s; opacity: 0.12; }
-.wt-cloud-item:nth-child(3) { top: 70%; left: -80px; width: 50px; animation-duration: 21s; animation-delay: -11s; opacity: 0.13; }
+.wt-cloud-item:nth-child(1) { top: 10%; left: -30px; width: 28px; animation-duration: 8s; }
+.wt-cloud-item:nth-child(2) { top: 45%; left: -25px; width: 22px; animation-duration: 11s; animation-delay: -3s; opacity: 0.12; }
+.wt-cloud-item:nth-child(3) { top: 70%; left: -28px; width: 25px; animation-duration: 13s; animation-delay: -6s; opacity: 0.13; }
 .wt-static .wt-cloud-item { animation: none; left: 20%; opacity: 0.12; }
-.wt-static .wt-cloud-item:nth-child(2) { left: 45%; top: 50%; }
-.wt-static .wt-cloud-item:nth-child(3) { left: 10%; top: 72%; }
-@keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(280px)} }
+@keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(100px)} }
 
-/* ================================================
-   天气动效：阴天
-   ================================================ */
+/* 阴天 */
 .wt-overcast-item {
   position: absolute;
   opacity: 0.2;
   animation: wtOvercastDrift linear infinite;
 }
-.wt-overcast-item:nth-child(1) { top: 5%; left: -110px; width: 110px; animation-duration: 20s; }
-.wt-overcast-item:nth-child(2) { top: 38%; left: -100px; width: 100px; animation-duration: 25s; animation-delay: -8s; opacity: 0.17; }
-.wt-overcast-item:nth-child(3) { top: 62%; left: -105px; width: 105px; animation-duration: 28s; animation-delay: -14s; opacity: 0.19; }
+.wt-overcast-item:nth-child(1) { top: 5%; left: -35px; width: 35px; animation-duration: 12s; }
+.wt-overcast-item:nth-child(2) { top: 38%; left: -30px; width: 30px; animation-duration: 15s; animation-delay: -5s; opacity: 0.17; }
+.wt-overcast-item:nth-child(3) { top: 62%; left: -32px; width: 32px; animation-duration: 17s; animation-delay: -9s; opacity: 0.19; }
 .wt-static .wt-overcast-item { animation: none; left: 15%; opacity: 0.15; }
-.wt-static .wt-overcast-item:nth-child(2) { left: 30%; top: 40%; }
-.wt-static .wt-overcast-item:nth-child(3) { left: 5%; top: 65%; }
-@keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(310px)} }
+@keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(110px)} }
 
-/* ================================================
-   天气动效：雨
-   ================================================ */
+/* 雨 */
 .wt-raindrop {
   position: absolute;
-  top: -20px;
-  width: 1.5px;
+  top: -10px;
+  width: 1px;
   background: linear-gradient(to bottom, transparent, rgba(60,60,60,0.6));
   border-radius: 0 0 2px 2px;
   animation: wtRainFall linear infinite;
@@ -202,24 +260,21 @@
 }
 .wt-static .wt-raindrop { animation: none; top: 30%; opacity: 0.4; }
 @keyframes wtRainFall {
-  0% { transform:rotate(12deg) translateY(-20px); opacity:0; }
+  0% { transform:rotate(12deg) translateY(-10px); opacity:0; }
   10% { opacity:1; }
   90% { opacity:1; }
-  100% { transform:rotate(12deg) translateY(200px); opacity:0; }
+  100% { transform:rotate(12deg) translateY(100px); opacity:0; }
 }
 
-/* ================================================
-   天气动效：雷电
-   ================================================ */
+/* 雷电 */
 .wt-lightning {
   position: absolute;
   opacity: 0;
   z-index: 3;
 }
-.wt-lightning:nth-child(1) { top: 8%; left: 25%; animation: wtFlash1 5s ease-in-out infinite; }
-.wt-lightning:nth-child(2) { top: 12%; left: 55%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
+.wt-lightning:nth-child(1) { top: 8%; left: 15%; animation: wtFlash1 5s ease-in-out infinite; }
+.wt-lightning:nth-child(2) { top: 12%; left: 45%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
 .wt-static .wt-lightning { animation: none; opacity: 0.3; }
-.wt-static .wt-lightning:nth-child(2) { opacity: 0.2; }
 @keyframes wtFlash1 { 0%,84%,100%{opacity:0} 85%{opacity:0.9} 87%{opacity:0} 89%{opacity:0.7} 91%{opacity:0} }
 @keyframes wtFlash2 { 0%,78%,100%{opacity:0} 79%{opacity:0.8} 81%{opacity:0} 83%{opacity:0.6} 85%{opacity:0} }
 
@@ -227,7 +282,7 @@
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.15);
-  border-radius: 36px;
+  border-radius: 0 5px 5px 0;
   opacity: 0;
   animation: wtFlashOverlay 5s ease-in-out infinite;
   pointer-events: none;
@@ -236,26 +291,22 @@
 .wt-static .wt-flash-overlay { animation: none; opacity: 0; }
 @keyframes wtFlashOverlay { 0%,84%,100%{opacity:0} 85%{opacity:0.3} 86%{opacity:0} 89%{opacity:0.15} 90%{opacity:0} }
 
-/* ================================================
-   天气动效：雪
-   ================================================ */
+/* 雪 */
 .wt-snow-item {
   position: absolute;
-  top: -10px;
+  top: -6px;
   opacity: 0;
   animation: wtSnowFall linear infinite;
 }
 .wt-static .wt-snow-item { animation: none; top: 30%; opacity: 0.4; }
 @keyframes wtSnowFall {
-  0% { transform:translateY(-10px) rotate(0deg); opacity:0; }
+  0% { transform:translateY(-6px) rotate(0deg); opacity:0; }
   10% { opacity:0.7; }
   90% { opacity:0.7; }
-  100% { transform:translateY(185px) rotate(360deg); opacity:0; }
+  100% { transform:translateY(90px) rotate(360deg); opacity:0; }
 }
 
-/* ================================================
-   天气动效：雾
-   ================================================ */
+/* 雾 */
 .wt-fog-layer {
   position: absolute;
   width: 200%;
@@ -268,14 +319,12 @@
 .wt-static .wt-fog-layer { animation: none; opacity: 0.15; }
 @keyframes wtFogBreath { 0%{transform:translateX(-5%);opacity:0.12;} 100%{transform:translateX(5%);opacity:0.2;} }
 
-/* ================================================
-   天气动效：夜晚
-   ================================================ */
+/* 夜晚 */
 .wt-moon {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 120px; height: 120px;
+  width: 40px; height: 40px;
   opacity: 0.14;
 }
 
@@ -290,14 +339,13 @@
   background: rgba(30,30,30,0.6);
   border-radius: 1px;
 }
-.wt-star::before { width: 100%; height: 1.5px; top: 50%; left: 0; transform: translateY(-50%); }
-.wt-star::after { width: 1.5px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
-.wt-star:nth-child(2) { top: 20px; left: 18px; width: 6px; height: 6px; animation-duration: 2.5s; }
-.wt-star:nth-child(3) { top: 50px; left: 130px; width: 5px; height: 5px; animation-duration: 3s; animation-delay: -1s; }
-.wt-star:nth-child(4) { top: 100px; left: 22px; width: 4px; height: 4px; animation-duration: 2.8s; animation-delay: -0.5s; }
-.wt-star:nth-child(5) { top: 130px; left: 120px; width: 5px; height: 5px; animation-duration: 3.2s; animation-delay: -2s; }
-.wt-star:nth-child(6) { top: 28px; left: 100px; width: 4px; height: 4px; animation-duration: 2.6s; animation-delay: -1.5s; }
-.wt-star:nth-child(7) { top: 75px; left: 15px; width: 5px; height: 5px; animation-duration: 3.5s; animation-delay: -0.3s; }
+.wt-star::before { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%); }
+.wt-star::after { width: 1px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
+.wt-star:nth-child(2) { top: 8px; left: 6px; width: 4px; height: 4px; animation-duration: 2.5s; }
+.wt-star:nth-child(3) { top: 20px; left: 45px; width: 3px; height: 3px; animation-duration: 3s; animation-delay: -1s; }
+.wt-star:nth-child(4) { top: 40px; left: 8px; width: 3px; height: 3px; animation-duration: 2.8s; animation-delay: -0.5s; }
+.wt-star:nth-child(5) { top: 50px; left: 42px; width: 3px; height: 3px; animation-duration: 3.2s; animation-delay: -2s; }
+.wt-star:nth-child(6) { top: 10px; left: 35px; width: 3px; height: 3px; animation-duration: 2.6s; animation-delay: -1.5s; }
+.wt-star:nth-child(7) { top: 30px; left: 5px; width: 3px; height: 3px; animation-duration: 3.5s; animation-delay: -0.3s; }
 .wt-static .wt-star { animation: none; opacity: 0.5; }
 @keyframes wtStarTwinkle { 0%{opacity:0.2;transform:scale(0.7);} 100%{opacity:0.75;transform:scale(1.3);} }
-
