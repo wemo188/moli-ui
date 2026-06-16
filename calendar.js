@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -104,6 +105,65 @@ var Cal={
   _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){for(var i=0;i<count;i++){var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('class','wt-snow-item');var size=minSize+Math.random()*(maxSize-minSize);svg.style.left=(5+Math.random()*90)+'%';svg.style.width=size+'px';svg.style.height=size+'px';svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';svg.style.animationDelay=(-Math.random()*6)+'s';var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');path.setAttribute('stroke','rgba(50,50,50,0.7)');path.setAttribute('stroke-width','1.2');path.setAttribute('stroke-linecap','round');path.setAttribute('fill','none');svg.appendChild(path);bg.appendChild(svg);}},
   _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
 
+  // ====== 字体选项构建 ======
+  _buildFontOptions:function(currentFamily){
+    var BUILTIN=[
+      {name:'跟随全局',family:''},
+      {name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},
+      {name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},
+      {name:'思源宋体',family:'"Noto Serif SC",serif'},
+      {name:'思源黑体',family:'"Noto Sans SC",sans-serif'},
+      {name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},
+      {name:'马善政楷',family:'"Ma Shan Zheng",cursive'}
+    ];
+    var custom=(App.font&&App.font.customList)||[];
+    var all=BUILTIN.concat(custom.map(function(f){return{name:f.fileName||f.name,family:f.family};}));
+    return all.map(function(f){
+      var sel=(currentFamily===f.family)?'selected':'';
+      return '<option value="'+App.escAttr(f.family)+'" '+sel+'>'+App.esc(f.name)+'</option>';
+    }).join('');
+  },
+
+  // ====== 应用字体 ======
+  applyFont:function(){
+    var card=App.$('#wtCard');if(!card)return;
+    var fam=App.LS.get('tkFontFamily')||'';
+    if(fam){
+      card.style.fontFamily=fam;
+    }else{
+      card.style.fontFamily='';
+    }
+  },
+
+  // ====== 应用文字 ======
+  applyTexts:function(){
+    var nameEl=App.$('#tkMsgName');
+    var signEl=App.$('#tkMsgSign');
+    var locEl=App.$('#tkMsgLoc');
+    var n=App.LS.get('tkMsgName');
+    var s=App.LS.get('tkMsgSign');
+    var l=App.LS.get('tkMsgLoc');
+    if(nameEl&&n)nameEl.textContent=n;
+    if(signEl&&s)signEl.textContent=s;
+    if(locEl&&l)locEl.textContent=l;
+  },
+
+  // ====== 背景图 ======
+  applyBgImg:function(){
+    var el=App.$('#tkBgArea');if(!el)return;
+    var img=App.LS.get('calBgImg')||'';
+    if(img){
+      el.style.backgroundImage='url('+img+')';
+      var glass=App.$('#tkGlass');
+      if(glass)glass.classList.add('hide');
+    }else{
+      el.style.backgroundImage='';
+      var glass=App.$('#tkGlass');
+      if(glass)glass.classList.remove('hide');
+    }
+  },
+
+  // ====== 天气获取 ======
   fetchWeather:function(city,callback){
     if(!city){if(callback)callback(null);return;}
     fetch('https://wttr.in/'+encodeURIComponent(city)+'?format=j1').then(function(r){if(!r.ok)throw new Error();return r.json();}).then(function(data){
@@ -120,6 +180,7 @@ var Cal={
   getWeatherSummary:function(){if(!Cal.weather)return'';return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';},
   getLocationForAI:function(){return Cal.city||'';},
 
+  // ====== 编辑面板 ======
   _editPanel:null,
 
   openEditPanel:function(){
@@ -172,6 +233,10 @@ var Cal={
         '<div class="pc-group">'+
           '<span class="pc-label">地点</span>'+
           '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">字体</span>'+
+          '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
         '</div>'+
         '<div class="pc-group">'+
           '<button class="pc-icon-btn" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
@@ -240,46 +305,31 @@ var Cal={
       Cal.renderWeatherEffect();
     });
 
-    // 保存文字
+    // 字体实时预览
+    panel.querySelector('#wtFontSelect').addEventListener('change',function(){
+      var fam=this.value;
+      App.LS.set('tkFontFamily',fam);
+      Cal.applyFont();
+    });
+
+    // 保存
     panel.querySelector('#wtEditSave').addEventListener('click',function(){
       var name=panel.querySelector('#wtNameInput').value.trim();
       var sign=panel.querySelector('#wtSignInput').value.trim();
       var loc=panel.querySelector('#wtLocInput').value.trim();
+      var font=panel.querySelector('#wtFontSelect').value;
       App.LS.set('tkMsgName',name);
       App.LS.set('tkMsgSign',sign);
       App.LS.set('tkMsgLoc',loc);
+      App.LS.set('tkFontFamily',font);
       Cal.applyTexts();
+      Cal.applyFont();
       Cal.openEditPanel();
       App.showToast('已保存');
     });
   },
 
-  applyTexts:function(){
-    var nameEl=App.$('#tkMsgName');
-    var signEl=App.$('#tkMsgSign');
-    var locEl=App.$('#tkMsgLoc');
-    var n=App.LS.get('tkMsgName');
-    var s=App.LS.get('tkMsgSign');
-    var l=App.LS.get('tkMsgLoc');
-    if(nameEl&&n)nameEl.textContent=n;
-    if(signEl&&s)signEl.textContent=s;
-    if(locEl&&l)locEl.textContent=l;
-  },
-
-  applyBgImg:function(){
-    var el=App.$('#tkBgArea');if(!el)return;
-    var img=App.LS.get('calBgImg')||'';
-    if(img){
-      el.style.backgroundImage='url('+img+')';
-      var glass=App.$('#tkGlass');
-      if(glass)glass.classList.add('hide');
-    }else{
-      el.style.backgroundImage='';
-      var glass=App.$('#tkGlass');
-      if(glass)glass.classList.remove('hide');
-    }
-  },
-
+  // ====== 拖拽 ======
   initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
@@ -316,6 +366,7 @@ var Cal={
     });
   },
 
+  // ====== 双击打开编辑 ======
   bindClicks:function(){
     var rightEl=App.$('.tk17-right');if(!rightEl)return;
     var lastTap=0;
@@ -327,17 +378,20 @@ var Cal={
     });
   },
 
+  // ====== 自动刷新 ======
   startAutoRefresh:function(){
     if(Cal._refreshTimer)clearInterval(Cal._refreshTimer);
     Cal._refreshTimer=setInterval(function(){if(Cal.city)Cal.fetchWeather(Cal.city,function(){});},30*60*1000);
   },
 
+  // ====== 初始化 ======
   init:function(){
     Cal.load();
     Cal.startClock();
     Cal.renderWeatherEffect();
     Cal.applyBgImg();
     Cal.applyTexts();
+    Cal.applyFont();
     Cal.initDrag();
     Cal.bindClicks();
     if(Cal.city&&Cal.weather){
