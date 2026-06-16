@@ -344,7 +344,7 @@ img.img-fill { transform: none !important; }
 }
 
 .card-group-left .card-group-icons {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .card-group-right {
@@ -352,7 +352,7 @@ img.img-fill { transform: none !important; }
 }
 
 .card-group-right .card-group-icons {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 /* 图标行（每组两个图标并排） */
