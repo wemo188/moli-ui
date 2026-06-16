@@ -602,3 +602,11 @@
 .hl-avatar-unit .hl-avatar-placeholder path {
   stroke: var(--hl-border-c);
 }
+
+/* =========================
+   卡片组内图标适配
+========================= */
+.card-group-icons .app-icon-item,
+.card-group-icons > div {
+  pointer-events: auto;
+}
