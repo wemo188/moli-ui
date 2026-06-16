@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -53,7 +54,6 @@ var Cal={
     App.LS.set('calWeather',Cal.weather);
   },
 
-  // ====== 时钟 ======
   startClock:function(){
     var yearEl=App.$('#calYear'),mdEl=App.$('#calMonthDay'),wkEl=App.$('#calWeekday'),clockEl=App.$('#calClock');
     if(!clockEl)return;
@@ -70,7 +70,6 @@ var Cal={
     Cal._clockTimer=setInterval(tick,1000);
   },
 
-  // ====== 天气动效（渲染进右半边） ======
   renderWeatherEffect:function(){
     var bg=App.$('#wtWeatherBg');if(!bg)return;
     bg.innerHTML='';
@@ -114,40 +113,17 @@ var Cal={
 
   _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
 
-  // ====== 头像 ======
-  initAvatar:function(){
-    var avatar=App.$('#tkAvatar');
-    var fileInput=App.$('#tkAvatarFile');
+  // ====== 恢复头像 ======
+  applyAvatar:function(){
+    var avatar=App.$('#tkAvatar');if(!avatar)return;
     var ph=App.$('#tkAvatarPh');
-    if(!avatar||!fileInput)return;
-
-    // 恢复已保存的头像
     var savedAvatar=App.LS.get('tkAvatarImg');
     if(savedAvatar){
-      var img=document.createElement('img');
-      img.src=savedAvatar;
+      var old=avatar.querySelector('img');if(old)old.remove();
+      var img=document.createElement('img');img.src=savedAvatar;
       avatar.appendChild(img);
       if(ph)ph.style.opacity='0';
     }
-
-    avatar.addEventListener('click',function(){ fileInput.click(); });
-    fileInput.addEventListener('change',function(e){
-      var file=e.target.files[0];if(!file)return;
-      var reader=new FileReader();
-      reader.onload=function(ev){
-        var process=function(src){
-          var old=avatar.querySelector('img');if(old)old.remove();
-          var img=document.createElement('img');img.src=src;
-          avatar.appendChild(img);
-          if(ph)ph.style.opacity='0';
-          App.LS.set('tkAvatarImg',src);
-        };
-        if(App.cropImage)App.cropImage(ev.target.result,process);
-        else process(ev.target.result);
-      };
-      reader.readAsDataURL(file);
-      e.target.value='';
-    });
   },
 
   // ====== 天气获取 ======
@@ -167,7 +143,7 @@ var Cal={
   getWeatherSummary:function(){if(!Cal.weather)return'';return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';},
   getLocationForAI:function(){return Cal.city||'';},
 
-  // ====== 双击弹出编辑卡片 ======
+  // ====== 编辑面板（头像+背景+文字+天气全在这里） ======
   _editPanel:null,
 
   openEditPanel:function(){
@@ -179,11 +155,36 @@ var Cal={
     overlay.style.zIndex='100020';
     Cal._editPanel=overlay;
 
+    var savedAvatar=App.LS.get('tkAvatarImg')||'';
+    var avatarPreviewHtml=savedAvatar
+      ?'<img src="'+App.escAttr(savedAvatar)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#999" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>';
+
+    var hasBgImg=!!App.LS.get('calBgImg');
+
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">头像</span>'+
+          '<div class="pc-av-row">'+
+            '<div id="wtAvatarPreview" style="width:40px;height:40px;border-radius:50%;border:1.5px solid #d1d5db;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f9f9f9;cursor:pointer;flex-shrink:0;">'+avatarPreviewHtml+'</div>'+
+            '<div class="pc-icon-btn" id="wtAvatarUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+            '<div class="pc-icon-btn danger" id="wtAvatarClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+          '</div>'+
+          '<input type="file" id="wtAvatarFileInput" accept="image/*" style="display:none;">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">背景图片</span>'+
+          '<div class="pc-av-row">'+
+            '<div class="pc-icon-btn" id="wtBgUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+            '<div class="pc-icon-btn danger" id="wtBgClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+            (hasBgImg?'<span style="font-size:10px;color:#999;font-weight:600;">已设置</span>':'')+
+          '</div>'+
+          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
+        '</div>'+
         '<div class="pc-group">'+
           '<span class="pc-label">城市（天气）</span>'+
           '<div class="pc-av-row">'+
@@ -218,21 +219,74 @@ var Cal={
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    // 定位到格子附近
     var rect=card.getBoundingClientRect();
     var left=rect.left+20;
     var top=rect.bottom+8;
     if(left+270>window.innerWidth-8)left=window.innerWidth-278;
     if(left<8)left=8;
-    if(top+400>window.innerHeight-10)top=rect.top-410;
+    if(top+500>window.innerHeight-10)top=rect.top-510;
     if(top<10)top=10;
     panel.style.left=left+'px';
     panel.style.top=top+'px';
 
-    // 关闭
     panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
+
+    // 头像上传
+    panel.querySelector('#wtAvatarUploadBtn').addEventListener('click',function(){
+      panel.querySelector('#wtAvatarFileInput').click();
+    });
+    panel.querySelector('#wtAvatarFileInput').addEventListener('change',function(e){
+      var file=e.target.files[0];if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var process=function(src){
+          App.LS.set('tkAvatarImg',src);
+          Cal.applyAvatar();
+          var prev=panel.querySelector('#wtAvatarPreview');
+          if(prev)prev.innerHTML='<img src="'+App.escAttr(src)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+          App.showToast('头像已设置');
+        };
+        if(App.cropImage)App.cropImage(ev.target.result,process);
+        else process(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      e.target.value='';
+    });
+    panel.querySelector('#wtAvatarClearBtn').addEventListener('click',function(){
+      App.LS.remove('tkAvatarImg');
+      var avatar=App.$('#tkAvatar');
+      if(avatar){var old=avatar.querySelector('img');if(old)old.remove();var ph=App.$('#tkAvatarPh');if(ph)ph.style.opacity='1';}
+      var prev=panel.querySelector('#wtAvatarPreview');
+      if(prev)prev.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#999" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>';
+      App.showToast('头像已清除');
+    });
+
+    // 背景上传
+    panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){
+      panel.querySelector('#wtBgFileInput').click();
+    });
+    panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
+      var file=e.target.files[0];if(!file)return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var process=function(src){
+          App.LS.set('calBgImg',src);
+          Cal.applyBgImg();
+          App.showToast('背景已设置');
+        };
+        if(App.cropImage)App.cropImage(ev.target.result,process);
+        else process(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      e.target.value='';
+    });
+    panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){
+      App.LS.remove('calBgImg');
+      Cal.applyBgImg();
+      App.showToast('背景已清除');
+    });
 
     // 城市搜索
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
@@ -268,7 +322,6 @@ var Cal={
     });
   },
 
-  // ====== 恢复文字 ======
   applyTexts:function(){
     var nameEl=App.$('#tkMsgName');
     var signEl=App.$('#tkMsgSign');
@@ -281,7 +334,6 @@ var Cal={
     if(locEl&&l)locEl.textContent=l;
   },
 
-  // ====== 背景图（保留API但不再有按钮） ======
   applyBgImg:function(){
     var el=App.$('#tkBgArea');if(!el)return;
     var img=App.LS.get('calBgImg')||'';
@@ -296,7 +348,6 @@ var Cal={
     }
   },
 
-  // ====== 拖拽 ======
   initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
@@ -333,7 +384,6 @@ var Cal={
     });
   },
 
-  // ====== 双击绑定 ======
   bindClicks:function(){
     var rightEl=App.$('.tk17-right');if(!rightEl)return;
     var lastTap=0;
@@ -345,20 +395,18 @@ var Cal={
     });
   },
 
-  // ====== 自动刷新 ======
   startAutoRefresh:function(){
     if(Cal._refreshTimer)clearInterval(Cal._refreshTimer);
     Cal._refreshTimer=setInterval(function(){if(Cal.city)Cal.fetchWeather(Cal.city,function(){});},30*60*1000);
   },
 
-  // ====== 初始化 ======
   init:function(){
     Cal.load();
     Cal.startClock();
     Cal.renderWeatherEffect();
     Cal.applyBgImg();
     Cal.applyTexts();
-    Cal.initAvatar();
+    Cal.applyAvatar();
     Cal.initDrag();
     Cal.bindClicks();
     if(Cal.city&&Cal.weather){
