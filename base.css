@@ -312,34 +312,44 @@ img.img-fill { transform: none !important; }
    ★ 第一页默认布局基准
    恢复布局时以此为准
 ========================= */
+/* 第零行：票券日历 */
+#row0 {
+  width: 100%;
+  padding: 0 4px;
+  margin-bottom: 18px;
+}
+
+/* 第一行：左组 + 右组 */
 #row1 {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 35px;
-  padding: 1px 12px 0;
+  gap: 20px;
+  padding: 0 8px;
   width: 100%;
-  margin-top: 1px;
 }
 
-#row2 {
+/* 左组：角色卡在上，图标在下 */
+.card-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-group-left {
+  /* 左组：卡在上 图标在下 */
+}
+
+.card-group-right {
+  /* 右组：图标在上 卡在下 */
+}
+
+/* 图标行（每组两个图标并排） */
+.card-group-icons {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 38px;
-  padding: 0 12px;
-  margin-top: 22px;
-  width: 100%;
-}
-
-#wtCard {
-  margin-top: 3px; /* 数字越大，天气卡片越往下走 */
-}
-
-#appIconsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
+  gap: 14px;
 }
 
 #hlAvatarsRow {
