@@ -261,7 +261,7 @@ img.img-fill { transform: none !important; }
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: calc(10px + env(safe-area-inset-top, 0)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
+  padding: calc(5px + env(safe-area-inset-top, 0)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
 }
 
@@ -316,7 +316,7 @@ img.img-fill { transform: none !important; }
 #row0 {
   width: calc(100% + 36px);
   margin-left: -18px;
-  margin-top: -1px;
+  margin-top: 0;
   margin-bottom: 20px;
   padding-right: 48px;
 }
@@ -344,7 +344,7 @@ img.img-fill { transform: none !important; }
 }
 
 .card-group-left .card-group-icons {
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
 .card-group-right {
