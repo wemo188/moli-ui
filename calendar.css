@@ -84,11 +84,10 @@
 }
 
 .tk17-avatar {
-  width: 55px; height: 55px;
+  width: 60px; height: 60px;
   border-radius: 50%;
   border: 1.5px solid #d1d5db;
   overflow: hidden;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,7 +96,6 @@
   position: relative;
   flex-shrink: 0;
 }
-.tk17-avatar:active { opacity: .85; }
 .tk17-avatar img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -105,12 +103,14 @@
 }
 .tk17-avatar-ph {
   display: flex; flex-direction: column;
-  align-items: center; gap: 2px; color: #555;
+  align-items: center; gap: 2px; color: #999;
   transition: opacity .3s;
 }
-.tk17-avatar-ph svg { opacity: .7; }
+.tk17-avatar-ph svg { opacity: .5; }
 .tk17-avatar-ph span {
   font-size: 7px; letter-spacing: .5px;
+  font-family: 'SF Mono','Menlo',monospace;
+  color: #999;
 }
 
 .tk17-msg {
@@ -137,7 +137,7 @@
   position: absolute;
   top: 0; left: 0;
   width: 16px; height: 8px;
-  border: 1px solid #1a1a1a;
+  border: 1px solid #d1d5db;
   border-top: none;
   border-radius: 0 0 8px 8px;
   box-sizing: border-box;
@@ -147,7 +147,7 @@
   position: absolute;
   bottom: 0; left: 0;
   width: 16px; height: 8px;
-  border: 1px solid #1a1a1a;
+  border: 1px solid #d1d5db;
   border-bottom: none;
   border-radius: 8px 8px 0 0;
   box-sizing: border-box;
@@ -158,7 +158,7 @@
   flex-shrink: 0;
   position: relative;
   z-index: 2;
-  border: 1px solid #1a1a1a;
+  border: 1px solid #d1d5db;
   border-left: none;
   border-radius: 0 5px 5px 0;
   box-sizing: border-box;
@@ -168,7 +168,7 @@
   overflow: hidden;
 }
 
-/* 天气动效层嵌入右边 */
+/* 天气动效层 */
 .tk17-weather-layer {
   position: absolute;
   inset: 0;
@@ -184,15 +184,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
-  font-size: 8px;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
   color: #222;
   letter-spacing: .5px;
   line-height: 1.5;
   text-align: center;
 }
 .tk17-right-year {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -203,15 +204,13 @@
   bottom: 10px;
   right: 98px;
   width: 0;
-  border-left: 1px dashed rgba(0,0,0,0.35);
+  border-left: 1px dashed rgba(209,213,219,0.7);
   z-index: 5;
 }
 
 /* ================================================
-   天气动效（复用旧的，容器改为 .tk17-weather-layer）
+   天气动效
    ================================================ */
-
-/* 晴天 */
 .wt-sun-svg {
   position: absolute;
   top: 50%; left: 50%;
@@ -223,7 +222,6 @@
 .wt-static .wt-sun-svg { animation: none; }
 @keyframes wtSunSpin { 0%{transform:translate(-50%,-50%) rotate(0deg)} 100%{transform:translate(-50%,-50%) rotate(360deg)} }
 
-/* 多云 */
 .wt-cloud-item {
   position: absolute;
   opacity: 0.15;
@@ -235,7 +233,6 @@
 .wt-static .wt-cloud-item { animation: none; left: 20%; opacity: 0.12; }
 @keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(100px)} }
 
-/* 阴天 */
 .wt-overcast-item {
   position: absolute;
   opacity: 0.2;
@@ -247,7 +244,6 @@
 .wt-static .wt-overcast-item { animation: none; left: 15%; opacity: 0.15; }
 @keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(110px)} }
 
-/* 雨 */
 .wt-raindrop {
   position: absolute;
   top: -10px;
@@ -265,7 +261,6 @@
   100% { transform:rotate(12deg) translateY(100px); opacity:0; }
 }
 
-/* 雷电 */
 .wt-lightning {
   position: absolute;
   opacity: 0;
@@ -290,7 +285,6 @@
 .wt-static .wt-flash-overlay { animation: none; opacity: 0; }
 @keyframes wtFlashOverlay { 0%,84%,100%{opacity:0} 85%{opacity:0.3} 86%{opacity:0} 89%{opacity:0.15} 90%{opacity:0} }
 
-/* 雪 */
 .wt-snow-item {
   position: absolute;
   top: -6px;
@@ -305,7 +299,6 @@
   100% { transform:translateY(90px) rotate(360deg); opacity:0; }
 }
 
-/* 雾 */
 .wt-fog-layer {
   position: absolute;
   width: 200%;
@@ -318,7 +311,6 @@
 .wt-static .wt-fog-layer { animation: none; opacity: 0.15; }
 @keyframes wtFogBreath { 0%{transform:translateX(-5%);opacity:0.12;} 100%{transform:translateX(5%);opacity:0.2;} }
 
-/* 夜晚 */
 .wt-moon {
   position: absolute;
   top: 50%; left: 50%;
