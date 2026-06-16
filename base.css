@@ -316,7 +316,7 @@ img.img-fill { transform: none !important; }
 #row0 {
   width: calc(100% + 36px);
   margin-left: -18px;
-  margin-top: -8px;
+  margin-top: -5px;
   margin-bottom: 20px;
   padding-right: 58px;
 }
