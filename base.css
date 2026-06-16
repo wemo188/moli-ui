@@ -316,7 +316,7 @@ img.img-fill { transform: none !important; }
 #row0 {
   width: calc(100% + 36px);
   margin-left: -18px;
-  margin-bottom: 18px;
+  margin-bottom: 15px;
   padding-right: 68px;
 }
 
@@ -357,7 +357,7 @@ img.img-fill { transform: none !important; }
   justify-content: space-between;
   gap: 0;
   padding: 0 5px;
-  margin-top: 30px;
+  margin-top: 34px;
 }
 
 #edenCard {
