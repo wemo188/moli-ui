@@ -362,7 +362,7 @@ var Font={
   },
 
   _bindEvents:function(panel){
-    panel.querySelector('#ftClose').addEventListener('click',function(){Font.close();});
+    panel.querySelector('#fontFullBack').addEventListener('click',function(){Font.close();});
 
     panel.querySelectorAll('.ft-tab').forEach(function(tab){
       tab.addEventListener('click',function(){
