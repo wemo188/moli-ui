@@ -211,8 +211,8 @@ img.img-fill { transform: none !important; }
 }
 
 #floatingBall.url-mode {
-  width: auto !important;
-  height: auto !important;
+  width: 70px !important;
+  height: 70px !important;
   border-radius: 0;
   overflow: visible;
   border: none;
@@ -221,8 +221,8 @@ img.img-fill { transform: none !important; }
 }
 
 #floatingBall.url-mode #mascotImg {
-  width: 150px;
-  height: 150px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   border-radius: 0;
   animation: none !important;
