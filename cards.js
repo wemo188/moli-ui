@@ -334,8 +334,8 @@ var Cards={
     });
   },
 
-  applyDragOffsets:function(){
-    ['profileCard-R','profileCard-L','cardIcon1','cardIcon2','hlTextCard','hlAvatarWrapLeft','hlAvatarWrapRight'].forEach(function(id){
+    applyDragOffsets:function(){
+    ['profileCard-R','profileCard-L','hlTextCard','hlAvatarWrapLeft','hlAvatarWrapRight'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var off=Cards._dragOffsets[id];
       if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
@@ -386,41 +386,12 @@ var Cards={
 
   resetAllPositions:function(){
     Cards._dragOffsets={};Cards.saveDrag();
-    ['profileCard-R','profileCard-L','cardIcon1','cardIcon2','hlTextCard','hlAvatarWrapLeft','hlAvatarWrapRight'].forEach(function(id){
+    ['profileCard-R','profileCard-L','hlTextCard','hlAvatarWrapLeft','hlAvatarWrapRight'].forEach(function(id){
       var el=App.$('#'+id);if(el){el.style.transform='';el.style.transition='';}
     });
   },
 
-  bindIconsDragAndUpload:function(){
-    if(this._iconsBound)return;this._iconsBound=true;
-    ['cardIcon1','cardIcon2'].forEach(function(id){
-      var el=App.$('#'+id);if(!el)return;
-      var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
-      el.addEventListener('touchstart',function(e){
-        e.preventDefault();var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
-        timer=setTimeout(function(){
-          longPressed=true;var off=Cards._dragOffsets[id]||{x:0,y:0};startOX=off.x;startOY=off.y;
-          el.style.transition='none';el.style.opacity='0.85';el.style.zIndex='999';
-          if(navigator.vibrate)navigator.vibrate(15);
-        },DRAG_DELAY);
-      },{passive:false});
-      el.addEventListener('touchmove',function(e){
-        var t=e.touches[0];
-        if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
-        if(!longPressed)return;moved=true;e.preventDefault();e.stopPropagation();
-        var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
-        var otherId=(id==='cardIcon1')?'cardIcon2':'cardIcon1';
-        var otherOff=Cards._dragOffsets[otherId]||{x:0,y:0};
-        if(Math.abs(ny-otherOff.y)<15)ny=otherOff.y;
-        el.style.transform='translate('+nx+'px,'+ny+'px)';Cards._dragOffsets[id]={x:nx,y:ny};
-      },{passive:false});
-      el.addEventListener('touchend',function(e){
-        clearTimeout(timer);timer=null;el.style.opacity='';el.style.transition='';el.style.zIndex='';
-        if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
-        longPressed=false;moved=false;
-      });
-    });
-  },
+    bindIconsDragAndUpload:function(){},
 
   /* ====== 圆头像编辑 ====== */
   bindHlEdit:function(){
