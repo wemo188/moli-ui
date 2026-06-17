@@ -7,12 +7,37 @@ var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
 var DEF_SUB_L='一句话签名';
 var DEF_SUB_R='一句话签名';
 
-var DEF_COLORS_L={bg:'#ffffff',border:'#bbd3ef',borderW:3,tagBg:'#9dbfe0',tagC:'#ffffff',tag2Bg:'#bbd3ef',tag2C:'#4a5a75',subC:'#6a8caf',bgOpacity:1,bgBlur:0,fontFamily:''};
-var DEF_COLORS_R={bg:'#ffffff',border:'#8ca3c2',borderW:3,tagBg:'#7a9abd',tagC:'#ffffff',tag2Bg:'#b5c6db',tag2C:'#4a5a75',subC:'#5c728a',bgOpacity:1,bgBlur:0,fontFamily:''};
+var DEF_COLORS_L = {
+  bg: 'linear-gradient(187deg,#ffffff,#d1d5db)',
+  border: '#ffffff',
+  borderW: 0,
+  tagBg: 'linear-gradient(132deg,#ffffff,#d0d2d6)',
+  tagC: '#000000',
+  tag2Bg: 'linear-gradient(180deg,#ffffff,#a8b0bb)',
+  tag2C: '#000000',
+  subC: '#474f5c',
+  bgOpacity: 1,
+  bgBlur: 0,
+  fontFamily: ''
+};
+
+var DEF_COLORS_R = {
+  bg: 'linear-gradient(323deg,#ffffff,#9ca3b0)',
+  border: '#ffffff',
+  borderW: 0,
+  tagBg: 'linear-gradient(143deg,#ffffff,#d1d5db)',
+  tagC: '#000000',
+  tag2Bg: 'linear-gradient(113deg,#ffffff,#d1d5db)',
+  tag2C: '#000000',
+  subC: '#4d5666',
+  bgOpacity: 1,
+  bgBlur: 0,
+  fontFamily: ''
+};
 
 var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
 
-var DRAG_DELAY=650;
+var DRAG_DELAY=500;
 
 var Cards={
   data:{},_dragOffsets:{},hlConfig:{},
