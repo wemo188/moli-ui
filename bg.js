@@ -489,7 +489,7 @@ var Bg = {
 
   openFontFull: function() { if(App.font) App.font.open(); },
 
-  openBallStyleFull: function() {
+    openBallStyleFull: function() {
     var old = document.getElementById('bfBallStylePanel');
     if(old) old.remove();
 
@@ -498,9 +498,23 @@ var Bg = {
       ? (config.customImg || config.ballImg || '')
       : (App.mascot ? App.mascot.sprites.idle : '');
 
+    // 读取已保存的URL列表
+    var savedUrls = App.LS.get('ballUrlList') || [];
+
     var panel = document.createElement('div');
     panel.id = 'bfBallStylePanel';
     panel.className = 'bf-sub-panel';
+
+    function buildUrlListHtml() {
+      if(!savedUrls.length) return '<div style="font-size:12px;color:#bbb;text-align:center;padding:12px 0;">还没有保存的图片</div>';
+      return savedUrls.map(function(url, i) {
+        return '<div class="bf-url-item" data-idx="' + i + '">' +
+          '<div class="bf-url-thumb"><img src="' + App.escAttr(url) + '" onerror="this.style.display=\'none\'"></div>' +
+          '<div class="bf-url-text">' + App.esc(url) + '</div>' +
+          '<button class="bf-url-del" data-idx="' + i + '" type="button">✕</button>' +
+        '</div>';
+      }).join('');
+    }
 
     panel.innerHTML =
       '<div class="bf-nav">' +
@@ -510,7 +524,7 @@ var Bg = {
       '</div>' +
       '<div class="bf-scroll-body">' +
         '<div style="padding:30px 20px 10px;display:flex;flex-direction:column;align-items:center;">' +
-          '<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#f5f5f5;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:20px;">' +
+          '<div id="bfBallPreviewWrap" style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#f5f5f5;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:20px;">' +
             '<img id="bfBallPreview" src="' + App.escAttr(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
           '</div>' +
         '</div>' +
@@ -521,10 +535,19 @@ var Bg = {
             '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;' : '') + '">悬浮球</button>' +
           '</div>' +
           '<div id="bfBallImgGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
-            '<div class="bf-section-title">自定义图片</div>' +
-            '<input type="text" id="bfBallImgUrl" placeholder="图片URL..." value="' + App.escAttr(config.customImg || '') + '" style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;color:#333;background:#fafafa;outline:none;margin-bottom:10px;box-sizing:border-box;font-family:inherit;">' +
-            '<div class="bf-upload-area" id="bfBallUploadArea">从相册选择</div>' +
+            '<div class="bf-section-title">添加图片</div>' +
+            '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+              '<input type="text" id="bfBallImgUrl" placeholder="粘贴图片URL..." value="" style="flex:1;min-width:0;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;color:#333;background:#fafafa;outline:none;box-sizing:border-box;font-family:inherit;">' +
+              '<button type="button" id="bfBallAddUrl" style="padding:12px 16px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;">添加</button>' +
+            '</div>' +
+            '<div class="bf-upload-area" id="bfBallUploadArea">从相册上传</div>' +
             '<input type="file" id="bfBallFileInput" accept="image/*" hidden>' +
+            '<div class="bf-divider"></div>' +
+            '<div class="bf-section-header">' +
+              '<span class="bf-section-title" style="margin-bottom:0;">已保存的图片</span>' +
+              '<span style="font-size:11px;color:#999;" id="bfBallUrlCount">' + savedUrls.length + ' 个</span>' +
+            '</div>' +
+            '<div id="bfBallUrlList">' + buildUrlListHtml() + '</div>' +
           '</div>' +
           '<div class="bf-divider"></div>' +
           '<div class="bf-btn-row">' +
@@ -543,11 +566,50 @@ var Bg = {
 
     var currentMode = config.mode || 'mascot';
 
+    function refreshUrlList() {
+      var listEl = panel.querySelector('#bfBallUrlList');
+      var countEl = panel.querySelector('#bfBallUrlCount');
+      if(listEl) listEl.innerHTML = buildUrlListHtml();
+      if(countEl) countEl.textContent = savedUrls.length + ' 个';
+      bindUrlEvents();
+    }
+
+    function bindUrlEvents() {
+      // 点击URL项 → 使用该图片
+      panel.querySelectorAll('.bf-url-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          if(e.target.closest('.bf-url-del')) return;
+          var idx = parseInt(item.dataset.idx);
+          var url = savedUrls[idx];
+          if(url) {
+            panel.querySelector('#bfBallPreview').src = url;
+            panel.querySelector('#bfBallImgUrl').value = url;
+            // 高亮选中
+            panel.querySelectorAll('.bf-url-item').forEach(function(it) { it.classList.remove('bf-url-active'); });
+            item.classList.add('bf-url-active');
+          }
+        });
+      });
+      // 删除
+      panel.querySelectorAll('.bf-url-del').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var idx = parseInt(btn.dataset.idx);
+          savedUrls.splice(idx, 1);
+          App.LS.set('ballUrlList', savedUrls);
+          refreshUrlList();
+        });
+      });
+    }
+    bindUrlEvents();
+
+    // 返回
     panel.querySelector('#bfBallBack').addEventListener('click', function() {
       panel.classList.remove('show'); panel.classList.add('hidden');
       setTimeout(function() { panel.remove(); }, 350);
     });
 
+    // 模式切换
     panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
@@ -559,7 +621,7 @@ var Bg = {
         if(currentMode === 'ball') {
           imgGroup.style.display = '';
           var url = panel.querySelector('#bfBallImgUrl').value.trim();
-          panel.querySelector('#bfBallPreview').src = url || config.ballImg || '';
+          panel.querySelector('#bfBallPreview').src = url || config.customImg || config.ballImg || '';
         } else {
           imgGroup.style.display = 'none';
           panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
@@ -567,11 +629,25 @@ var Bg = {
       });
     });
 
+    // 添加URL按钮
+    panel.querySelector('#bfBallAddUrl').addEventListener('click', function() {
+      var url = panel.querySelector('#bfBallImgUrl').value.trim();
+      if(!url) { App.showToast('请输入图片URL'); return; }
+      if(savedUrls.indexOf(url) !== -1) { App.showToast('已存在'); return; }
+      savedUrls.push(url);
+      App.LS.set('ballUrlList', savedUrls);
+      panel.querySelector('#bfBallPreview').src = url;
+      refreshUrlList();
+      App.showToast('已添加');
+    });
+
+    // URL输入实时预览
     panel.querySelector('#bfBallImgUrl').addEventListener('input', function() {
       var v = this.value.trim();
       if(v) panel.querySelector('#bfBallPreview').src = v;
     });
 
+    // 从相册选择
     panel.querySelector('#bfBallUploadArea').addEventListener('click', function() {
       panel.querySelector('#bfBallFileInput').click();
     });
@@ -580,24 +656,20 @@ var Bg = {
       var file = e.target.files[0]; if(!file) return;
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var max = 200;
-          var w = img.width, h = img.height;
-          if(w > h) { if(w > max) { h = h * max / w; w = max; } }
-          else { if(h > max) { w = w * max / h; h = max; } }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          var compressed = canvas.toDataURL('image/png', 0.9);
-          panel.querySelector('#bfBallImgUrl').value = compressed;
-          panel.querySelector('#bfBallPreview').src = compressed;
-        };
-        img.src = ev.target.result;
+        var dataUrl = ev.target.result;
+        panel.querySelector('#bfBallImgUrl').value = dataUrl;
+        panel.querySelector('#bfBallPreview').src = dataUrl;
+        // 自动加到列表
+        if(savedUrls.indexOf(dataUrl) === -1) {
+          savedUrls.push(dataUrl);
+          App.LS.set('ballUrlList', savedUrls);
+          refreshUrlList();
+        }
       };
       reader.readAsDataURL(file);
     });
 
+    // 保存
     panel.querySelector('#bfBallSave').addEventListener('click', function() {
       App.ballConfig.mode = currentMode;
       if(currentMode === 'ball') {
@@ -609,11 +681,14 @@ var Bg = {
       App.showToast('已保存 · ' + label);
     });
 
+    // 恢复默认
     panel.querySelector('#bfBallReset').addEventListener('click', function() {
       var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/B7m3lY7.md.png', customImg: '', scale: 1 };
       App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
       App.saveBallConfig();
       App.applyBallMode();
+      savedUrls = [];
+      App.LS.set('ballUrlList', savedUrls);
       panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
       panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
         b.style.background = ''; b.style.color = ''; b.classList.remove('active');
@@ -622,11 +697,12 @@ var Bg = {
       if(mascotBtn) { mascotBtn.style.background = '#1a1a1a'; mascotBtn.style.color = '#fff'; mascotBtn.classList.add('active'); }
       panel.querySelector('#bfBallImgGroup').style.display = 'none';
       panel.querySelector('#bfBallImgUrl').value = '';
+      refreshUrlList();
       currentMode = 'mascot';
       App.showToast('已恢复默认');
     });
   },
-
+  
   openSnapshot: function() {
     var old = document.getElementById('bfSnapshotPanel');
     if(old) { old.remove(); return; }
