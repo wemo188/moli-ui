@@ -1641,7 +1641,7 @@ App.closePanel = function() {
     });
   };
 
-  App.init = function() {
+    App.init = function() {
     App.state.ball = App.$('#floatingBall');
     if (!App.state.ball) return;
     App.initFloatingBall();
@@ -1650,6 +1650,11 @@ App.closePanel = function() {
     
     /* 页面初次加载时扫描静态面板 */
     App.initHalfPanelControls();
+
+    /* 所有模块就绪，显示页面 */
+    requestAnimationFrame(function(){
+      document.body.style.opacity = '1';
+    });
   };
   
 })();
