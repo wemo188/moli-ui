@@ -1452,12 +1452,6 @@ btn.classList.add('active');
 
     App.loadBallConfig();
     App.applyBallMode();
-
-    if (App.ballConfig.mode === 'mascot') {
-      setTimeout(function() {
-        if (App.mascot) App.mascot.doAction('wave');
-      }, 1000);
-    }
   };
 
   App.runInits = function() {
