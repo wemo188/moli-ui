@@ -264,6 +264,7 @@ img.img-fill { transform: none !important; }
   touch-action: none;
 }
 
+/* 电脑端 */
 .screen-page {
   width: 100vw;
   height: 100vh;
@@ -274,6 +275,13 @@ img.img-fill { transform: none !important; }
   justify-content: center;
   padding: calc(5px + env(safe-area-inset-top, 0)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
+}
+
+/* 手机端 */
+@media (max-width: 640px) {
+  .screen-page {
+    padding: calc(5px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
+  }
 }
 
 .screen-page-inner {
@@ -474,12 +482,6 @@ img.img-fill { transform: none !important; }
 .icon-longpress-menu-item:active {
   background: var(--accent);
   color: #fff;
-}
-
-@media (max-width: 640px) {
-  .screen-page {
-    padding: calc(28px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
-  }
 }
 
 /* =========================
