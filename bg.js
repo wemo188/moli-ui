@@ -84,11 +84,6 @@ var Bg = {
           '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象吧</span></div>' +
           '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
-        '<div class="bf-list-item" data-action="snapshot">' +
-          '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
-          '<div class="bf-list-info"><span class="bf-list-name">排版存档</span><span class="bf-list-sub">各种搭配一键保存，藏宝藏</span></div>' +
-          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-        '</div>' +
       '</div>';
 
     document.body.appendChild(panel);
@@ -106,7 +101,6 @@ var Bg = {
         else if(action === 'bgicon') { Bg.openBgIcon(); }
         else if(action === 'font') { Bg.openFontFull(); }
         else if(action === 'ballstyle') { Bg.openBallStyleFull(); }
-        else if(action === 'snapshot') { Bg.openSnapshot(); }
       });
     });
   },
