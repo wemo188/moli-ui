@@ -674,3 +674,150 @@
 .bf-bottom-spacer {
   height: 40px;
 }
+
+/* =========================
+   排版存档面板
+========================= */
+.snap-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  will-change: transform, opacity;
+}
+
+.snap-panel.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.snap-panel.show { transform: translateX(0); opacity: 1; }
+
+.snap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(12px + env(safe-area-inset-top, 0)) 16px 20px 16px;
+  border-bottom: none;
+  flex-shrink: 0;
+}
+
+.snap-toolbar {
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.snap-toolbar-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 1px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.snap-toolbar-btn:active { opacity: 0.7; }
+
+.snap-toolbar-btn.primary {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.snap-toolbar-btn.secondary {
+  background: #eaecf0;
+  color: #666;
+}
+
+.snap-hint {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #999;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.snap-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #bbb;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.snap-card {
+  margin: 8px 16px;
+  padding: 14px;
+  background: #eaecf0;
+  border: none;
+  border-radius: 12px;
+}
+
+.snap-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.snap-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.snap-card-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.snap-card-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.snap-card-btn {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+  border: none;
+}
+
+.snap-card-btn:active { opacity: 0.7; }
+
+.snap-card-btn.restore {
+  flex: 1;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.snap-card-btn.export {
+  background: #dbdee2;
+  color: #666;
+}
+
+.snap-card-btn.delete {
+  background: rgba(201,112,107,0.08);
+  color: #c9706b;
+}
+
