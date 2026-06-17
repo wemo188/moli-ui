@@ -709,7 +709,7 @@ var Bg = {
 
     // 恢复默认
     panel.querySelector('#bfBallReset').addEventListener('click', function() {
-      var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/B7m3lY7.md.png', customImg: '', urlSrc: '', scale: 1 };
+      var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/Bbt1vK7.md.png', customImg: '', urlSrc: '', scale: 1 };
       App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
       App.saveBallConfig();
       App.applyBallMode();
