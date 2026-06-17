@@ -489,27 +489,28 @@ var Bg = {
 
   openFontFull: function() { if(App.font) App.font.open(); },
 
-    openBallStyleFull: function() {
+      openBallStyleFull: function() {
     var old = document.getElementById('bfBallStylePanel');
     if(old) old.remove();
 
     var config = App.ballConfig || {};
-    var currentSrc = config.mode === 'ball'
-      ? (config.customImg || config.ballImg || '')
-      : (App.mascot ? App.mascot.sprites.idle : '');
-
-    // 读取已保存的URL列表
     var savedUrls = App.LS.get('ballUrlList') || [];
+
+    function getCurrentPreviewSrc() {
+      if(config.mode === 'ball') return config.customImg || config.ballImg || '';
+      if(config.mode === 'url') return config.urlSrc || '';
+      return App.mascot ? App.mascot.sprites.idle : '';
+    }
 
     var panel = document.createElement('div');
     panel.id = 'bfBallStylePanel';
     panel.className = 'bf-sub-panel';
 
     function buildUrlListHtml() {
-      if(!savedUrls.length) return '<div style="font-size:12px;color:#bbb;text-align:center;padding:12px 0;">还没有保存的图片</div>';
+      if(!savedUrls.length) return '<div style="font-size:12px;color:#bbb;text-align:center;padding:12px 0;">还没有保存的URL</div>';
       return savedUrls.map(function(url, i) {
-        return '<div class="bf-url-item" data-idx="' + i + '">' +
-          '<div class="bf-url-thumb"><img src="' + App.escAttr(url) + '" onerror="this.style.display=\'none\'"></div>' +
+        var isActive = config.urlSrc === url;
+        return '<div class="bf-url-item' + (isActive ? ' bf-url-active' : '') + '" data-idx="' + i + '">' +
           '<div class="bf-url-text">' + App.esc(url) + '</div>' +
           '<button class="bf-url-del" data-idx="' + i + '" type="button">✕</button>' +
         '</div>';
@@ -525,30 +526,41 @@ var Bg = {
       '<div class="bf-scroll-body">' +
         '<div style="padding:30px 20px 10px;display:flex;flex-direction:column;align-items:center;">' +
           '<div id="bfBallPreviewWrap" style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#f5f5f5;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:20px;">' +
-            '<img id="bfBallPreview" src="' + App.escAttr(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
+            '<img id="bfBallPreview" src="' + App.escAttr(getCurrentPreviewSrc()) + '" style="width:100%;height:100%;object-fit:cover;">' +
           '</div>' +
         '</div>' +
         '<div class="bf-controls">' +
           '<div class="bf-section-title">模式选择</div>' +
-          '<div class="bf-btn-row" style="margin-bottom:20px;">' +
-            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'mascot' ? ' active' : '') + '" data-mode="mascot" style="' + (config.mode === 'mascot' ? 'background:#1a1a1a;color:#fff;' : '') + '">小助手</button>' +
-            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;' : '') + '">悬浮球</button>' +
+          '<div style="display:flex;gap:8px;margin-bottom:20px;">' +
+            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'mascot' ? ' active' : '') + '" data-mode="mascot" style="flex:1;' + (config.mode === 'mascot' ? 'background:#1a1a1a;color:#fff;' : '') + '">小助手</button>' +
+            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="flex:1;' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;' : '') + '">悬浮球</button>' +
+            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'url' ? ' active' : '') + '" data-mode="url" style="flex:1;' + (config.mode === 'url' ? 'background:#1a1a1a;color:#fff;' : '') + '">URL</button>' +
           '</div>' +
-          '<div id="bfBallImgGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
-            '<div class="bf-section-title">添加图片</div>' +
+
+          /* 悬浮球模式 - 上传照片 */
+          '<div id="bfBallUploadGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
+            '<div class="bf-section-title">上传照片</div>' +
+            '<div class="bf-upload-area" id="bfBallUploadArea">从相册选择</div>' +
+            '<input type="file" id="bfBallFileInput" accept="image/*" hidden>' +
+            '<div id="bfBallUploadStatus" style="font-size:11px;color:#999;text-align:center;margin-top:4px;">' +
+              (config.customImg ? '已上传图片' : '还没有上传照片') +
+            '</div>' +
+          '</div>' +
+
+          /* URL模式 - 添加/管理URL */
+          '<div id="bfBallUrlGroup" style="' + (config.mode === 'url' ? '' : 'display:none;') + '">' +
+            '<div class="bf-section-title">添加图片URL</div>' +
             '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
               '<input type="text" id="bfBallImgUrl" placeholder="粘贴图片URL..." value="" style="flex:1;min-width:0;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;color:#333;background:#fafafa;outline:none;box-sizing:border-box;font-family:inherit;">' +
               '<button type="button" id="bfBallAddUrl" style="padding:12px 16px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;">添加</button>' +
             '</div>' +
-            '<div class="bf-upload-area" id="bfBallUploadArea">从相册上传</div>' +
-            '<input type="file" id="bfBallFileInput" accept="image/*" hidden>' +
-            '<div class="bf-divider"></div>' +
             '<div class="bf-section-header">' +
-              '<span class="bf-section-title" style="margin-bottom:0;">已保存的图片</span>' +
+              '<span class="bf-section-title" style="margin-bottom:0;">已保存</span>' +
               '<span style="font-size:11px;color:#999;" id="bfBallUrlCount">' + savedUrls.length + ' 个</span>' +
             '</div>' +
             '<div id="bfBallUrlList">' + buildUrlListHtml() + '</div>' +
           '</div>' +
+
           '<div class="bf-divider"></div>' +
           '<div class="bf-btn-row">' +
             '<button class="bf-btn active" id="bfBallSave" type="button">保存</button>' +
@@ -575,7 +587,6 @@ var Bg = {
     }
 
     function bindUrlEvents() {
-      // 点击URL项 → 使用该图片
       panel.querySelectorAll('.bf-url-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           if(e.target.closest('.bf-url-del')) return;
@@ -583,14 +594,12 @@ var Bg = {
           var url = savedUrls[idx];
           if(url) {
             panel.querySelector('#bfBallPreview').src = url;
-            panel.querySelector('#bfBallImgUrl').value = url;
-            // 高亮选中
+            config.urlSrc = url;
             panel.querySelectorAll('.bf-url-item').forEach(function(it) { it.classList.remove('bf-url-active'); });
             item.classList.add('bf-url-active');
           }
         });
       });
-      // 删除
       panel.querySelectorAll('.bf-url-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -617,26 +626,35 @@ var Bg = {
         });
         btn.style.background = '#1a1a1a'; btn.style.color = '#fff'; btn.classList.add('active');
         currentMode = btn.dataset.mode;
-        var imgGroup = panel.querySelector('#bfBallImgGroup');
+
+        var uploadGroup = panel.querySelector('#bfBallUploadGroup');
+        var urlGroup = panel.querySelector('#bfBallUrlGroup');
+
+        uploadGroup.style.display = 'none';
+        urlGroup.style.display = 'none';
+
         if(currentMode === 'ball') {
-          imgGroup.style.display = '';
-          var url = panel.querySelector('#bfBallImgUrl').value.trim();
-          panel.querySelector('#bfBallPreview').src = url || config.customImg || config.ballImg || '';
+          uploadGroup.style.display = '';
+          panel.querySelector('#bfBallPreview').src = config.customImg || config.ballImg || '';
+        } else if(currentMode === 'url') {
+          urlGroup.style.display = '';
+          panel.querySelector('#bfBallPreview').src = config.urlSrc || '';
         } else {
-          imgGroup.style.display = 'none';
           panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
         }
       });
     });
 
-    // 添加URL按钮
+    // 添加URL
     panel.querySelector('#bfBallAddUrl').addEventListener('click', function() {
       var url = panel.querySelector('#bfBallImgUrl').value.trim();
       if(!url) { App.showToast('请输入图片URL'); return; }
       if(savedUrls.indexOf(url) !== -1) { App.showToast('已存在'); return; }
       savedUrls.push(url);
       App.LS.set('ballUrlList', savedUrls);
+      config.urlSrc = url;
       panel.querySelector('#bfBallPreview').src = url;
+      panel.querySelector('#bfBallImgUrl').value = '';
       refreshUrlList();
       App.showToast('已添加');
     });
@@ -647,7 +665,7 @@ var Bg = {
       if(v) panel.querySelector('#bfBallPreview').src = v;
     });
 
-    // 从相册选择
+    // 从相册上传（悬浮球模式）
     panel.querySelector('#bfBallUploadArea').addEventListener('click', function() {
       panel.querySelector('#bfBallFileInput').click();
     });
@@ -656,15 +674,21 @@ var Bg = {
       var file = e.target.files[0]; if(!file) return;
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var dataUrl = ev.target.result;
-        panel.querySelector('#bfBallImgUrl').value = dataUrl;
-        panel.querySelector('#bfBallPreview').src = dataUrl;
-        // 自动加到列表
-        if(savedUrls.indexOf(dataUrl) === -1) {
-          savedUrls.push(dataUrl);
-          App.LS.set('ballUrlList', savedUrls);
-          refreshUrlList();
-        }
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var max = 200;
+          var w = img.width, h = img.height;
+          if(w > h) { if(w > max) { h = h * max / w; w = max; } }
+          else { if(h > max) { w = w * max / h; h = max; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/png', 0.9);
+          config.customImg = compressed;
+          panel.querySelector('#bfBallPreview').src = compressed;
+          panel.querySelector('#bfBallUploadStatus').textContent = '已上传图片';
+        };
+        img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     });
@@ -673,30 +697,35 @@ var Bg = {
     panel.querySelector('#bfBallSave').addEventListener('click', function() {
       App.ballConfig.mode = currentMode;
       if(currentMode === 'ball') {
-        App.ballConfig.customImg = panel.querySelector('#bfBallImgUrl').value.trim();
+        App.ballConfig.customImg = config.customImg || '';
+      } else if(currentMode === 'url') {
+        App.ballConfig.urlSrc = config.urlSrc || '';
       }
       App.saveBallConfig();
       App.applyBallMode();
-      var label = currentMode === 'mascot' ? '小助手模式' : '悬浮球模式';
-      App.showToast('已保存 · ' + label);
+      var labels = { mascot: '小助手模式', ball: '悬浮球模式', url: 'URL模式' };
+      App.showToast('已保存 · ' + (labels[currentMode] || ''));
     });
 
     // 恢复默认
     panel.querySelector('#bfBallReset').addEventListener('click', function() {
-      var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/B7m3lY7.md.png', customImg: '', scale: 1 };
+      var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/B7m3lY7.md.png', customImg: '', urlSrc: '', scale: 1 };
       App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
       App.saveBallConfig();
       App.applyBallMode();
       savedUrls = [];
       App.LS.set('ballUrlList', savedUrls);
+      config.customImg = '';
+      config.urlSrc = '';
       panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
       panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
         b.style.background = ''; b.style.color = ''; b.classList.remove('active');
       });
       var mascotBtn = panel.querySelector('.bf-ball-mode-btn[data-mode="mascot"]');
       if(mascotBtn) { mascotBtn.style.background = '#1a1a1a'; mascotBtn.style.color = '#fff'; mascotBtn.classList.add('active'); }
-      panel.querySelector('#bfBallImgGroup').style.display = 'none';
-      panel.querySelector('#bfBallImgUrl').value = '';
+      panel.querySelector('#bfBallUploadGroup').style.display = 'none';
+      panel.querySelector('#bfBallUrlGroup').style.display = 'none';
+      panel.querySelector('#bfBallUploadStatus').textContent = '还没有上传照片';
       refreshUrlList();
       currentMode = 'mascot';
       App.showToast('已恢复默认');
