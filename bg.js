@@ -550,24 +550,52 @@ var Bg = {
     Bg.bindIconDrag();
   },
 
-  bindIconDrag: function() {
+    bindIconDrag: function() {
     var DELAY = 500;
-    ['iconUser','iconChar','iconTheme','iconSettings'].forEach(function(id) {
+    var SNAP = 12;
+    var ALL_ICONS = ['iconUser','iconChar','iconTheme','iconSettings'];
+
+    ALL_ICONS.forEach(function(id) {
       var el = document.getElementById(id); if(!el || el._bgDragBound) return;
       el._bgDragBound = true;
       var startX, startY, origX, origY, longPressed = false, timer, moved = false;
+
       el.addEventListener('touchstart', function(e) {
         var t = e.touches[0]; startX = t.clientX; startY = t.clientY; longPressed = false; moved = false;
-        timer = setTimeout(function() { longPressed = true; var off = Bg._getIconOffset(id); origX = off.x; origY = off.y; el.style.transition = 'none'; el.style.zIndex = '999'; if(navigator.vibrate) navigator.vibrate(15); }, DELAY);
+        timer = setTimeout(function() {
+          longPressed = true;
+          var off = Bg._getIconOffset(id); origX = off.x; origY = off.y;
+          el.style.transition = 'none'; el.style.zIndex = '999';
+          if(navigator.vibrate) navigator.vibrate(15);
+        }, DELAY);
       }, {passive:true});
+
       el.addEventListener('touchmove', function(e) {
         var t = e.touches[0];
-        if(timer && !longPressed) { if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;} return; }
-        if(!longPressed) return; moved=true; e.preventDefault(); e.stopPropagation();
-        el.style.transform = 'translate('+(origX+(t.clientX-startX))+'px,'+(origY+(t.clientY-startY))+'px)';
+        if(timer && !longPressed) {
+          if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}
+          return;
+        }
+        if(!longPressed) return;
+        moved = true; e.preventDefault(); e.stopPropagation();
+
+        var nx = origX + (t.clientX - startX);
+        var ny = origY + (t.clientY - startY);
+
+        // 磁吸对齐：跟其他任意图标的X轴和Y轴对齐
+        ALL_ICONS.forEach(function(otherId) {
+          if(otherId === id) return;
+          var otherOff = Bg._getIconOffset(otherId);
+          if(Math.abs(ny - otherOff.y) < SNAP) ny = otherOff.y;
+          if(Math.abs(nx - otherOff.x) < SNAP) nx = otherOff.x;
+        });
+
+        el.style.transform = 'translate('+nx+'px,'+ny+'px)';
       }, {passive:false});
+
       el.addEventListener('touchend', function(e) {
-        clearTimeout(timer); timer=null; el.style.transition=''; el.style.zIndex='';
+        clearTimeout(timer); timer=null;
+        el.style.transition=''; el.style.zIndex='';
         if(longPressed && moved) { Bg._saveIconOffset(id, el); e.stopPropagation(); }
         longPressed=false; moved=false;
       });
