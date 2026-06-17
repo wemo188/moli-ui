@@ -151,46 +151,6 @@ img.img-fill { transform: none !important; }
 .floating-ball:active { transform: scale(0.92); }
 .floating-ball.active { transform: scale(1.05); }
 
-@keyframes mascotFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.mascot-img.breathing { animation: mascotFloat 3s ease-in-out infinite; }
-
-@keyframes mascotWave {
-  0% { transform: rotate(0deg); }
-  20% { transform: rotate(-3deg); }
-  40% { transform: rotate(3deg); }
-  60% { transform: rotate(-2deg); }
-  80% { transform: rotate(2deg); }
-  100% { transform: rotate(0deg); }
-}
-.mascot-img.waving { animation: mascotWave 0.8s ease-in-out; }
-
-@keyframes mascotTilt {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(-5deg) translateX(-2px); }
-  100% { transform: rotate(0deg); }
-}
-.mascot-img.tilting { animation: mascotTilt 1.2s ease-in-out; }
-
-@keyframes mascotBounce {
-  0% { transform: translateY(0) scale(1); }
-  30% { transform: translateY(-8px) scale(1.05); }
-  60% { transform: translateY(0) scale(0.97); }
-  100% { transform: translateY(0) scale(1); }
-}
-.mascot-img.surprised { animation: mascotBounce 0.6s ease-out; }
-
-@keyframes mascotHappy {
-  0% { transform: translateY(0) rotate(0); }
-  25% { transform: translateY(-4px) rotate(3deg); }
-  50% { transform: translateY(0) rotate(-3deg); }
-  75% { transform: translateY(-4px) rotate(2deg); }
-  100% { transform: translateY(0) rotate(0); }
-}
-.mascot-img.happy { animation: mascotHappy 0.8s ease-in-out; }
-
 /* 悬浮球模式 */
 #floatingBall.ball-mode {
   width: 65px !important;
