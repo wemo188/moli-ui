@@ -79,6 +79,11 @@ var Bg = {
           '<div class="bf-list-info"><span class="bf-list-name">字体选择</span><span class="bf-list-sub">同时使用中英双种字体搭配</span></div>' +
           '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
+        '<div class="bf-list-item" data-action="ballstyle">' +
+          '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
+          '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象吧</span></div>' +
+          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
         '<div class="bf-list-item" data-action="snapshot">' +
           '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
           '<div class="bf-list-info"><span class="bf-list-name">排版存档</span><span class="bf-list-sub">各种搭配一键保存，藏宝藏</span></div>' +
@@ -100,7 +105,7 @@ var Bg = {
         if(action === 'theme') { App.showToast('主题功能开发中'); }
         else if(action === 'bgicon') { Bg.openBgIcon(); }
         else if(action === 'font') { Bg.openFontFull(); }
-        else if(action === 'ballstyle') { Bg.openBallStyle(); }
+        else if(action === 'ballstyle') { Bg.openBallStyleFull(); }
         else if(action === 'snapshot') { Bg.openSnapshot(); }
       });
     });
@@ -162,7 +167,7 @@ var Bg = {
           '<div class="bf-divider"></div>' +
           '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
-                   '<div class="bf-divider"></div>' +
+          '<div class="bf-divider"></div>' +
           '<div class="bf-section-title">布局管理</div>' +
           '<div class="bf-btn-row">' +
             '<button class="bf-btn" id="bfResetLayoutBtn" type="button">恢复布局</button>' +
@@ -176,7 +181,6 @@ var Bg = {
     requestAnimationFrame(function() { panel.classList.add('show'); });
     App.bindSwipeBack(panel, function() { panel.remove(); });
 
-    // 设置颜色点的初始颜色
     panel.querySelector('#bfIconColorDot').style.background = iconConfig.iconColor;
     panel.querySelector('#bfIconBgDot').style.background = iconConfig.iconBg;
     panel.querySelector('#bfColorDot').style.background = iconConfig.borderColor;
@@ -264,7 +268,6 @@ var Bg = {
       dot.addEventListener('click', function() { switchPreview(parseInt(dot.dataset.p)); });
     });
 
-    // 预览区滑动
     var previewArea = panel.querySelector('#bfPreviewArea');
     var psx = 0, currentX = 0, isDragging = false;
     var slider = panel.querySelector('#bfPreviewSlider');
@@ -297,7 +300,6 @@ var Bg = {
       }
     }, {passive:true});
 
-    // 背景上传/应用/移除
     panel.querySelector('#bfBgUpload').addEventListener('click', function() { panel.querySelector('#bfBgFile').click(); });
     panel.querySelector('#bfBgFile').addEventListener('change', function(e) {
       var f = e.target.files[0]; if(!f) return;
@@ -349,7 +351,6 @@ var Bg = {
       App.showToast('背景已移除');
     });
 
-    // 图标样式控制
     panel.querySelector('#bfIconColorDot').addEventListener('click', function(e) {
       e.stopPropagation(); if(!App.openColorPicker) return;
       App.openColorPicker(iconConfig.iconColor, function(hex) {
@@ -389,15 +390,15 @@ var Bg = {
     var sliderUnits = ['px','%','px','px','px','px'];
 
     sliderIds.forEach(function(sid, i) {
-  panel.querySelector('#'+sid).addEventListener('input', function() {
-    var v = parseFloat(this.value);
-    iconConfig[sliderKeys[i]] = v;
-    var display = sid === 'bfIconOpacity' ? Math.round(v * 100) : v;
-    panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
-    App.LS.set('topIconConfig', iconConfig);
-    Bg.applyTopIconStyle(iconConfig);
-  });
-});
+      panel.querySelector('#'+sid).addEventListener('input', function() {
+        var v = parseFloat(this.value);
+        iconConfig[sliderKeys[i]] = v;
+        var display = sid === 'bfIconOpacity' ? Math.round(v * 100) : v;
+        panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
+        App.LS.set('topIconConfig', iconConfig);
+        Bg.applyTopIconStyle(iconConfig);
+      });
+    });
 
     panel.querySelector('#bfResetColor').addEventListener('click', function() {
       iconConfig = JSON.parse(JSON.stringify(DEF_ICON_CFG));
@@ -416,7 +417,6 @@ var Bg = {
       panel.querySelector('#bfIconBlurVal').textContent = DEF_ICON_CFG.blur + 'px';
       panel.querySelector('#bfIconOpacityVal').textContent = Math.round(DEF_ICON_CFG.opacity * 100) + '%';
       panel.querySelector('#bfIconSizeVal').textContent = DEF_ICON_CFG.iconSize + 'px';
-      // ★ 删除动态样式，回到CSS默认
       var dynStyle = document.getElementById('topIconDynamicStyle');
       if(dynStyle) dynStyle.remove();
       App.LS.remove('topIconConfig');
@@ -434,16 +434,16 @@ var Bg = {
 
     Bg.renderIconGridInPanel(panel);
 
-    panel.querySelector('#bfBgBack').addEventListener('click', function() {
-      panel.classList.remove('show'); panel.classList.add('hidden');
-      setTimeout(function() { panel.remove(); }, 350);
-    });
-
     panel.querySelector('#bfResetLayoutBtn').addEventListener('click', function() {
       if(App.workshop && App.workshop.resetAllLayout) App.workshop.resetAllLayout();
     });
     panel.querySelector('#bfSnapshotBtn').addEventListener('click', function() {
-      if(App.workshop && App.workshop.openSnapshot) App.workshop.openSnapshot();
+      Bg.openSnapshot();
+    });
+
+    panel.querySelector('#bfBgBack').addEventListener('click', function() {
+      panel.classList.remove('show'); panel.classList.add('hidden');
+      setTimeout(function() { panel.remove(); }, 350);
     });
 
     switchPreview(0);
@@ -495,8 +495,334 @@ var Bg = {
 
   openFontFull: function() { if(App.font) App.font.open(); },
 
-  openBallStyle: function() { if(App.openBallSettings) App.openBallSettings(); },
-  openSnapshot: function() { if(App.workshop && App.workshop.openSnapshot) App.workshop.openSnapshot(); },
+  openBallStyleFull: function() {
+    var old = document.getElementById('bfBallStylePanel');
+    if(old) old.remove();
+
+    var config = App.ballConfig || {};
+    var currentSrc = config.mode === 'ball'
+      ? (config.customImg || config.ballImg || '')
+      : (App.mascot ? App.mascot.sprites.idle : '');
+
+    var panel = document.createElement('div');
+    panel.id = 'bfBallStylePanel';
+    panel.className = 'bf-sub-panel';
+
+    panel.innerHTML =
+      '<div class="bf-nav">' +
+        '<button class="bf-back" id="bfBallBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+        '<span class="bf-nav-title">悬浮样式</span>' +
+        '<div class="bf-nav-right"></div>' +
+      '</div>' +
+      '<div class="bf-scroll-body">' +
+        '<div style="padding:30px 20px 10px;display:flex;flex-direction:column;align-items:center;">' +
+          '<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#f5f5f5;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:20px;">' +
+            '<img id="bfBallPreview" src="' + App.escAttr(currentSrc) + '" style="width:100%;height:100%;object-fit:cover;">' +
+          '</div>' +
+        '</div>' +
+        '<div class="bf-controls">' +
+          '<div class="bf-section-title">模式选择</div>' +
+          '<div class="bf-btn-row" style="margin-bottom:20px;">' +
+            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'mascot' ? ' active' : '') + '" data-mode="mascot" style="' + (config.mode === 'mascot' ? 'background:#1a1a1a;color:#fff;' : '') + '">小助手</button>' +
+            '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;' : '') + '">悬浮球</button>' +
+          '</div>' +
+          '<div id="bfBallImgGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
+            '<div class="bf-section-title">自定义图片</div>' +
+            '<input type="text" id="bfBallImgUrl" placeholder="图片URL..." value="' + App.escAttr(config.customImg || '') + '" style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;color:#333;background:#fafafa;outline:none;margin-bottom:10px;box-sizing:border-box;font-family:inherit;">' +
+            '<div class="bf-upload-area" id="bfBallUploadArea">从相册选择</div>' +
+            '<input type="file" id="bfBallFileInput" accept="image/*" hidden>' +
+          '</div>' +
+          '<div class="bf-divider"></div>' +
+          '<div class="bf-btn-row">' +
+            '<button class="bf-btn active" id="bfBallSave" type="button">保存</button>' +
+          '</div>' +
+          '<div style="text-align:center;margin-top:6px;">' +
+            '<button type="button" id="bfBallReset" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;font-family:inherit;">恢复默认</button>' +
+          '</div>' +
+          '<div class="bf-bottom-spacer"></div>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(panel);
+    requestAnimationFrame(function() { panel.classList.add('show'); });
+    App.bindSwipeBack(panel, function() { panel.remove(); });
+
+    var currentMode = config.mode || 'mascot';
+
+    panel.querySelector('#bfBallBack').addEventListener('click', function() {
+      panel.classList.remove('show'); panel.classList.add('hidden');
+      setTimeout(function() { panel.remove(); }, 350);
+    });
+
+    panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
+          b.style.background = ''; b.style.color = ''; b.classList.remove('active');
+        });
+        btn.style.background = '#1a1a1a'; btn.style.color = '#fff'; btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        var imgGroup = panel.querySelector('#bfBallImgGroup');
+        if(currentMode === 'ball') {
+          imgGroup.style.display = '';
+          var url = panel.querySelector('#bfBallImgUrl').value.trim();
+          panel.querySelector('#bfBallPreview').src = url || config.ballImg || '';
+        } else {
+          imgGroup.style.display = 'none';
+          panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
+        }
+      });
+    });
+
+    panel.querySelector('#bfBallImgUrl').addEventListener('input', function() {
+      var v = this.value.trim();
+      if(v) panel.querySelector('#bfBallPreview').src = v;
+    });
+
+    panel.querySelector('#bfBallUploadArea').addEventListener('click', function() {
+      panel.querySelector('#bfBallFileInput').click();
+    });
+
+    panel.querySelector('#bfBallFileInput').addEventListener('change', function(e) {
+      var file = e.target.files[0]; if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var max = 200;
+          var w = img.width, h = img.height;
+          if(w > h) { if(w > max) { h = h * max / w; w = max; } }
+          else { if(h > max) { w = w * max / h; h = max; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          var compressed = canvas.toDataURL('image/png', 0.9);
+          panel.querySelector('#bfBallImgUrl').value = compressed;
+          panel.querySelector('#bfBallPreview').src = compressed;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    panel.querySelector('#bfBallSave').addEventListener('click', function() {
+      App.ballConfig.mode = currentMode;
+      if(currentMode === 'ball') {
+        App.ballConfig.customImg = panel.querySelector('#bfBallImgUrl').value.trim();
+      }
+      App.saveBallConfig();
+      App.applyBallMode();
+      var label = currentMode === 'mascot' ? '小助手模式' : '悬浮球模式';
+      App.showToast('已保存 · ' + label);
+    });
+
+    panel.querySelector('#bfBallReset').addEventListener('click', function() {
+      var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/B7m3lY7.md.png', customImg: '', scale: 1 };
+      App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
+      App.saveBallConfig();
+      App.applyBallMode();
+      panel.querySelector('#bfBallPreview').src = App.mascot ? App.mascot.sprites.idle : '';
+      panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
+        b.style.background = ''; b.style.color = ''; b.classList.remove('active');
+      });
+      var mascotBtn = panel.querySelector('.bf-ball-mode-btn[data-mode="mascot"]');
+      if(mascotBtn) { mascotBtn.style.background = '#1a1a1a'; mascotBtn.style.color = '#fff'; mascotBtn.classList.add('active'); }
+      panel.querySelector('#bfBallImgGroup').style.display = 'none';
+      panel.querySelector('#bfBallImgUrl').value = '';
+      currentMode = 'mascot';
+      App.showToast('已恢复默认');
+    });
+  },
+
+  openSnapshot: function() {
+    var old = document.getElementById('bfSnapshotPanel');
+    if(old) { old.remove(); return; }
+
+    var LAYOUT_KEYS = [
+      'profileCards', 'cardDragOffsets', 'searchBoxData',
+      'searchText_left', 'searchText_right', 'searchText_left_manual', 'searchText_right_manual',
+      'avatar_search1', 'avatar_search2',
+      'edenCard', 'bgData', 'topIconConfig',
+      'customIcon_cg', 'customIcon_lt',
+      'customIcon_dockMine', 'customIcon_dockLong', 'customIcon_dockShort', 'customIcon_dockCheck',
+      'dockConfig', 'ballConfig', 'floatingBallPos', 'wtCardPos', 'wtCardConfig',
+      'fontConfig', 'fontCustomList'
+    ];
+    var MAX_SLOTS = 10;
+
+    function getSnapshots() { return App.LS.get('layoutSnapshots') || []; }
+    function saveSnapshots(list) { App.LS.set('layoutSnapshots', list); }
+
+    function captureNow() {
+      var data = {};
+      LAYOUT_KEYS.forEach(function(k) {
+        var v = App.LS.get(k);
+        if(v !== null && v !== undefined) data[k] = v;
+      });
+      return data;
+    }
+
+    function restoreSnapshot(snap) {
+      LAYOUT_KEYS.forEach(function(k) { App.LS.remove(k); });
+      Object.keys(snap.data).forEach(function(k) { App.LS.set(k, snap.data[k]); });
+      App.showToast('已恢复，即将刷新');
+      setTimeout(function() { location.reload(); }, 800);
+    }
+
+    function fmtTime(ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' +
+        String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    }
+
+    var panel = document.createElement('div');
+    panel.id = 'bfSnapshotPanel';
+    panel.className = 'snap-panel';
+
+    function renderPanel() {
+      var snaps = getSnapshots();
+      var listHtml = '';
+      if(!snaps.length) {
+        listHtml = '<div class="snap-empty">还没有存档<br>点击上方按钮保存当前排版</div>';
+      } else {
+        listHtml = snaps.map(function(s, i) {
+          return '<div class="snap-card">' +
+            '<div class="snap-card-header">' +
+              '<div>' +
+                '<div class="snap-card-name" data-idx="' + i + '" title="点击重命名">' + App.esc(s.name) + '</div>' +
+                '<div class="snap-card-time">' + fmtTime(s.ts) + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="snap-card-btns">' +
+              '<button class="snap-card-btn restore" data-idx="' + i + '" type="button">恢复</button>' +
+              '<button class="snap-card-btn export" data-idx="' + i + '" type="button">导出</button>' +
+              '<button class="snap-card-btn delete" data-idx="' + i + '" type="button">删除</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      panel.innerHTML =
+        '<div class="snap-header">' +
+          '<button class="bf-back" id="snapBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
+          '<span class="bf-nav-title">排版存档</span>' +
+          '<div class="bf-nav-right"></div>' +
+        '</div>' +
+        '<div class="snap-toolbar">' +
+          '<button class="snap-toolbar-btn primary" id="snapSaveBtn" type="button">保存当前排版</button>' +
+          '<button class="snap-toolbar-btn secondary" id="snapImportBtn" type="button">导入</button>' +
+          '<input type="file" id="snapImportFile" accept=".json" hidden>' +
+        '</div>' +
+        '<div class="snap-hint">最多保存 ' + MAX_SLOTS + ' 个存档。包含卡片、背景、图标、字体、位置等全部排版数据。</div>' +
+        '<div class="snap-list" id="snapList">' + listHtml + '</div>';
+
+      panel.querySelector('#snapBack').addEventListener('click', function() {
+        panel.classList.remove('show'); panel.classList.add('hidden');
+        setTimeout(function() { panel.remove(); }, 350);
+      });
+
+      panel.querySelector('#snapSaveBtn').addEventListener('click', function() {
+        var snaps = getSnapshots();
+        if(snaps.length >= MAX_SLOTS) {
+          if(!confirm('已达到 ' + MAX_SLOTS + ' 个存档上限，将覆盖最早的存档。继续？')) return;
+          snaps.shift();
+        }
+        var name = prompt('给这个存档起个名字：', '存档 ' + (snaps.length + 1));
+        if(name === null) return;
+        name = name.trim() || ('存档 ' + new Date().toLocaleDateString());
+        var snap = { name: name, ts: Date.now(), data: captureNow() };
+        snaps.push(snap);
+        saveSnapshots(snaps);
+        renderPanel();
+        App.showToast('已保存');
+      });
+
+      panel.querySelector('#snapImportBtn').addEventListener('click', function() {
+        panel.querySelector('#snapImportFile').click();
+      });
+
+      panel.querySelector('#snapImportFile').addEventListener('change', function(e) {
+        var file = e.target.files[0]; if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          try {
+            var snap = JSON.parse(ev.target.result);
+            if(!snap.data || !snap.name) throw new Error();
+            var snaps = getSnapshots();
+            if(snaps.length >= MAX_SLOTS) snaps.shift();
+            snap.ts = Date.now();
+            snaps.push(snap);
+            saveSnapshots(snaps);
+            renderPanel();
+            App.showToast('已导入：' + snap.name);
+          } catch(err) { App.showToast('文件格式错误'); }
+        };
+        reader.readAsText(file);
+      });
+
+      panel.querySelectorAll('.snap-card-btn.restore').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.dataset.idx);
+          var snaps = getSnapshots();
+          if(!snaps[idx]) return;
+          if(!confirm('恢复此存档将覆盖当前排版，确定？')) return;
+          restoreSnapshot(snaps[idx]);
+        });
+      });
+
+      panel.querySelectorAll('.snap-card-btn.export').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.dataset.idx);
+          var snaps = getSnapshots();
+          if(!snaps[idx]) return;
+          var blob = new Blob([JSON.stringify(snaps[idx], null, 2)], { type: 'application/json' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'layout-' + snaps[idx].name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_') + '.json';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          App.showToast('已导出');
+        });
+      });
+
+      panel.querySelectorAll('.snap-card-btn.delete').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.dataset.idx);
+          if(!confirm('确定删除这个存档？')) return;
+          var snaps = getSnapshots();
+          snaps.splice(idx, 1);
+          saveSnapshots(snaps);
+          renderPanel();
+          App.showToast('已删除');
+        });
+      });
+
+      panel.querySelectorAll('.snap-card-name').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var idx = parseInt(el.dataset.idx);
+          var snaps = getSnapshots();
+          if(!snaps[idx]) return;
+          var newName = prompt('修改存档名字：', snaps[idx].name);
+          if(newName === null) return;
+          newName = newName.trim();
+          if(!newName) return;
+          snaps[idx].name = newName;
+          saveSnapshots(snaps);
+          renderPanel();
+          App.showToast('已重命名');
+        });
+      });
+    }
+
+    document.body.appendChild(panel);
+    requestAnimationFrame(function() { panel.classList.add('show'); });
+    App.bindSwipeBack(panel, function() {
+      panel.classList.remove('show'); panel.classList.add('hidden');
+      setTimeout(function() { panel.remove(); }, 350);
+    });
+    renderPanel();
+  },
 
   renderAllIcons: function() {
     ICON_MAP.forEach(function(ic) {
@@ -520,7 +846,7 @@ var Bg = {
     Bg.bindIconDrag();
   },
 
-    bindIconDrag: function() {
+  bindIconDrag: function() {
     var DELAY = 500;
     var SNAP = 12;
     var ALL_ICONS = ['iconUser','iconChar','iconTheme','iconSettings'];
@@ -548,18 +874,14 @@ var Bg = {
         }
         if(!longPressed) return;
         moved = true; e.preventDefault(); e.stopPropagation();
-
         var nx = origX + (t.clientX - startX);
         var ny = origY + (t.clientY - startY);
-
-        // 磁吸对齐：跟其他任意图标的X轴和Y轴对齐
         ALL_ICONS.forEach(function(otherId) {
           if(otherId === id) return;
           var otherOff = Bg._getIconOffset(otherId);
           if(Math.abs(ny - otherOff.y) < SNAP) ny = otherOff.y;
           if(Math.abs(nx - otherOff.x) < SNAP) nx = otherOff.x;
         });
-
         el.style.transform = 'translate('+nx+'px,'+ny+'px)';
       }, {passive:false});
 
@@ -593,7 +915,6 @@ var Bg = {
       layer.style.backgroundImage = 'url(' + data.src + ')';
       layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
     } else if(pageIdx === 1) {
-      // ★ 第二页没有单独背景时，跟随第一页
       var page0 = App.LS.get('bgData') || {};
       if(page0.src) {
         layer.style.backgroundImage = 'url(' + page0.src + ')';
@@ -603,7 +924,6 @@ var Bg = {
         layer.style.filter = '';
       }
     } else {
-      // ★ 第一页移除背景时，同时让第二页也跟着更新
       layer.style.backgroundImage = '';
       layer.style.filter = '';
       var page1Data = App.LS.get('bgData_1') || {};
@@ -695,4 +1015,3 @@ var Bg = {
 
 App.register('bg', Bg);
 })();
-
