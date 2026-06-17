@@ -27,12 +27,12 @@
   --W0: 180px;
   --CARD_H0: 170px;
   --PAD0: 10px;
-  --INK: var(--profileCard-L-name-c, #4a5a75);
-  --THEME: var(--profileCard-L-border-c, #bbd3ef);
-  --LABEL_C: var(--profileCard-L-sub-c, #6a8caf);
-  --border-c: rgba(187,211,239,.8);
-  --LINE_C: rgba(187,211,239,.5);
-  --bx-border-w: var(--profileCard-L-border-w, 3px);
+  --INK: #474f5c;
+  --THEME: #ffffff; 
+  --LABEL_C: #474f5c; 
+  --border-c: #ffffff; 
+  --LINE_C: rgba(255,255,255,.5); 
+  --bx-border-w: 0px; 
   width: calc(var(--W0) * var(--S));
   flex-shrink: 0;
   user-select: none;
@@ -73,8 +73,8 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--profileCard-L-bg, #ffffff);
-  opacity: var(--profileCard-L-bg-opacity, 1);
+  background: linear-gradient(187deg, #ffffff, #d1d5db); /* 改为渐变 */
+  opacity: 1;
   z-index: -1;
   pointer-events: none;
 }
@@ -114,19 +114,19 @@
 #profileCard-L .bx-tag1 {
   top: 0;
   right: 0;
-  background: var(--profileCard-L-tag-bg, linear-gradient(90deg, #9dbfe0 0%, #bbd3ef 100%));
-  color: var(--profileCard-L-tag-c, #fff);
+  background: linear-gradient(132deg, #ffffff, #d0d2d6);
+  color: #000000; /* 改为 #000 */
   transform: rotate(-6deg);
-  text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
+  text-shadow: none; /* 去掉阴影 */
 }
 
 #profileCard-L .bx-tag2 {
   top: calc(22px * var(--S));
   right: calc(-6px * var(--S));
-  background: var(--profileCard-L-tag2-bg, linear-gradient(90deg, #bbd3ef 0%, #ffffff 100%));
-  color: var(--profileCard-L-tag2-c, var(--INK));
+  background: linear-gradient(180deg, #ffffff, #a8b0bb);
+  color: #000000; /* 改为 #000 */
   transform: rotate(2deg);
-  text-shadow: 0 calc(1px * var(--S)) calc(1px * var(--S)) rgba(255,255,255,.5);
+  text-shadow: none; /* 去掉阴影 */
 }
 
 #profileCard-L .bx-av-box {
@@ -176,13 +176,13 @@
   --W0: 180px;
   --CARD_H0: 170px;
   --PAD0: 10px;
-  --INK: var(--profileCard-R-name-c, #4a5a75);
-  --BLUE: var(--profileCard-R-border-c, #8ca3c2);
+  --INK: #4d5666; /* 改为 #4d5666 */
+  --BLUE: #ffffff; /* 改为 #ffffff */
   --BLUE_L: #b5c6db;
-  --LABEL_C: var(--profileCard-R-sub-c, #5c728a);
-  --border-c: rgba(79,121,166,.55);
-  --LINE_C: rgba(140,163,194,.45);
-  --bx-border-w: var(--profileCard-R-border-w, 3px);
+  --LABEL_C: #4d5666; /* 改为 #4d5666 */
+  --border-c: #ffffff; /* 改为 #ffffff */
+  --LINE_C: rgba(255,255,255,.45);
+  --bx-border-w: 0px; /* 改为 0 */
   width: calc(var(--W0) * var(--S));
   user-select: none;
   --PAD: calc(var(--PAD0) * var(--S));
@@ -222,8 +222,8 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--profileCard-R-bg, #ffffff);
-  opacity: var(--profileCard-R-bg-opacity, 1);
+  background: linear-gradient(323deg, #ffffff, #9ca3b0);
+  opacity: 1;
   z-index: -1;
   pointer-events: none;
 }
@@ -263,15 +263,14 @@
 }
 
 #profileCard-R .bx-ribbon-tab.r1 {
-  background: var(--profileCard-R-tag-bg, linear-gradient(180deg, #7a9abd 0%, #8ca3c2 100%));
-  color: var(--profileCard-R-tag-c, #fff);
-  text-shadow: 0 calc(1px * var(--S)) calc(2px * var(--S)) rgba(0,0,0,.15);
+  background: linear-gradient(143deg, #ffffff, #d1d5db);
+  color: #000000;
+  text-shadow: none;
 }
 
 #profileCard-R .bx-ribbon-tab.r2 {
-  background: var(--profileCard-R-tag2-bg, linear-gradient(180deg, #dfe6ee 0%, #b5c6db 100%));
-  color: var(--profileCard-R-tag2-c, var(--INK));
-  font-size: calc(9px * var(--S));
+  background: linear-gradient(113deg, #ffffff, #d1d5db);
+  color: #000000;
 }
 
 #profileCard-R .bx-av-box {
@@ -313,6 +312,11 @@
   color: var(--LABEL_C);
   margin: 5px 0;
   letter-spacing: calc(1px * var(--S));
+}
+
+#profileCard-L .bx-cw,
+#profileCard-R .bx-cw {
+  padding: 0px; /* 边框为0时不需要内边距 */
 }
 
 /* ====== 空头像占位 ====== */
