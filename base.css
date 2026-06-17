@@ -193,11 +193,12 @@ img.img-fill { transform: none !important; }
 
 /* 悬浮球模式 */
 #floatingBall.ball-mode {
-  width: 48px !important;
-  height: 48px !important;
+  width: 65px !important;
+  height: 65px !important;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border: 1px solid #000000;
+  box-shadow: none;
 }
 
 #floatingBall.ball-mode #mascotImg {
@@ -206,6 +207,7 @@ img.img-fill { transform: none !important; }
   object-fit: cover;
   border-radius: 50%;
   animation: none !important;
+  filter: none;
 }
 
 /* =========================
