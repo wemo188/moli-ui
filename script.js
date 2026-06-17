@@ -882,7 +882,7 @@ btn.classList.add('active');
 
   var BALL_DEFAULTS = {
     mode: 'mascot',
-    ballImg: 'https://iili.io/B7m3lY7.md.png',
+    ballImg: 'https://iili.io/CoweDHN.md.png',
     customImg: '',
     scale: 1
   };
@@ -1329,10 +1329,10 @@ btn.classList.add('active');
     App.mascot = {
       img: App.$('#mascotImg'),
       sprites: {
-        idle:      'https://iili.io/BzMi2Jj.md.png',
-        blink:     'https://iili.io/BzW0ys1.md.png',
-        smile:     'https://iili.io/BzV3a9V.md.png',
-        waveHappy: 'https://iili.io/BzVxcAb.md.png'
+                idle:      'https://iili.io/CoweDHN.md.png',
+        blink:     'https://iili.io/CoweDHN.md.png',
+        smile:     'https://iili.io/CoweDHN.md.png',
+        waveHappy: 'https://iili.io/CoweDHN.md.png'
       },
       currentState: 'idle',
       animLock: false,
