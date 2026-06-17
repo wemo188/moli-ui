@@ -127,8 +127,8 @@ img.img-fill { transform: none !important; }
 }
 
 .floating-ball.mascot-ball {
-  width: 150px;
-  height: 150px;
+  width: 60px;
+  height: 60px;
   border-radius: 0;
   background: transparent;
   border: none;
@@ -140,8 +140,8 @@ img.img-fill { transform: none !important; }
 }
 
 .mascot-img {
-  width: 150px;
-  height: 150px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
