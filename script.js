@@ -1160,7 +1160,7 @@ btn.classList.add('active');
       e.preventDefault();
 
       var scale = App.ballConfig.scale || 1;
-      var baseSize = ball.classList.contains('ball-mode') ? 48 : 150;
+      var baseSize = ball.classList.contains('ball-mode') ? 65 : 150;
       var actualSize = baseSize * scale;
 
       /* ★ 拖拽时动态计算边界，防止拖出屏幕 */
@@ -1186,7 +1186,7 @@ btn.classList.add('active');
             
             /* 校验越界 */
             var scale = App.ballConfig.scale;
-            var baseSize = ball.classList.contains('ball-mode') ? 48 : 150;
+            var baseSize = ball.classList.contains('ball-mode') ? 65 : 150;
             var actualSize = baseSize * scale;
             var currentX = parseFloat(ball.style.left) || ball.offsetLeft || 0;
             var currentY = parseFloat(ball.style.top) || ball.offsetTop || 0;
