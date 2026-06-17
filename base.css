@@ -93,7 +93,18 @@ body {
 #wtCard,
 .pc-header,
 .cp-header,
-#wsConsoleHeader {
+#wsConsoleHeader,
+.app-icon-item,
+.app-icon-glass,
+.card-group-icons,
+#iconUser,
+#iconChar,
+#iconTheme,
+#iconSettings,
+.hl-avatar,
+.hl-avatar-unit,
+.hl-chatbar,
+.hl-bubble {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   user-select: none !important;
