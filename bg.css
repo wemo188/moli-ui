@@ -847,23 +847,6 @@
   background: #f5f5f5;
 }
 
-.bf-url-thumb {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #d1d5db;
-  flex-shrink: 0;
-  border: 1px solid #000;
-}
-
-.bf-url-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 .bf-url-text {
   flex: 1;
   min-width: 0;
@@ -894,4 +877,3 @@
 .bf-url-del:active {
   background: rgba(201,112,107,0.25);
 }
-
