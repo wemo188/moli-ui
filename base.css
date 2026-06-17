@@ -280,7 +280,7 @@ img.img-fill { transform: none !important; }
 /* 手机端 */
 @media (max-width: 640px) {
   .screen-page {
-    padding: calc(5px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
+    padding: calc(10px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
   }
 }
 
@@ -336,7 +336,7 @@ img.img-fill { transform: none !important; }
   width: calc(100% + 36px);
   margin-left: -18px;
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   padding-right: 48px;
 }
 
