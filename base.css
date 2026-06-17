@@ -210,6 +210,24 @@ img.img-fill { transform: none !important; }
   filter: none;
 }
 
+#floatingBall.url-mode {
+  width: 65px !important;
+  height: 65px !important;
+  border-radius: 50%;
+  overflow: hidden;
+  border: none;
+  box-shadow: none;
+}
+
+#floatingBall.url-mode #mascotImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  animation: none !important;
+  filter: none;
+}
+
 /* =========================
    Toast
 ========================= */
