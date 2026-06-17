@@ -11,7 +11,7 @@ var DEFAULT_SVGS = {
   iconTheme: '<svg viewBox="-4 -4 72 72" fill="none" width="56" height="56"><mask id="pm1"><rect x="-4" y="-4" width="72" height="72" fill="white"/><circle cx="20" cy="26" r="4.5" fill="black"/><circle cx="32" cy="18" r="4.5" fill="black"/><circle cx="44" cy="26" r="4.5" fill="black"/><circle cx="22" cy="38" r="4.5" fill="black"/></mask><path d="M32 8C18.7 8 8 18.7 8 32C8 45.3 18.7 56 32 56C34.2 56 36 54.2 36 52C36 51 35.6 50.1 35 49.4C34.4 48.7 34 47.8 34 46.8C34 44.6 35.8 42.8 38 42.8H42C50.3 42.8 57 36.1 57 27.8C57 16.9 45.7 8 32 8Z" stroke="#9ca3b0" stroke-width="2.2" fill="#9ca3b0" mask="url(#pm1)"/><circle cx="20" cy="26" r="4.5" stroke="#9ca3b0" stroke-width="1.8" fill="none"/><circle cx="32" cy="18" r="4.5" stroke="#9ca3b0" stroke-width="1.8" fill="none"/><circle cx="44" cy="26" r="4.5" stroke="#9ca3b0" stroke-width="1.8" fill="none"/><circle cx="22" cy="38" r="4.5" stroke="#9ca3b0" stroke-width="1.8" fill="none"/></svg>',
   iconSettings: '<svg viewBox="8 8 48 48" fill="none" width="56" height="56"><mask id="gm1"><rect x="8" y="8" width="48" height="48" fill="white"/><circle cx="32" cy="32" r="7" fill="black"/></mask><path d="M30 14.5H34L35 19C36.5 19.4 37.9 20 39.2 20.8L43 18L46 21L43.2 24.7C44 26 44.6 27.4 45 28.9L49.5 30V34L45 35.1C44.6 36.6 44 38 43.2 39.3L46 43L43 46L39.2 43.2C37.9 44 36.5 44.6 35 45L34 49.5H30L29 45C27.5 44.6 26.1 44 24.8 43.2L21 46L18 43L20.8 39.3C20 38 19.4 36.6 19 35.1L14.5 34V30L19 28.9C19.4 27.4 20 26 20.8 24.7L18 21L21 18L24.8 20.8C26.1 20 27.5 19.4 29 19L30 14.5Z" stroke="#9ca3b0" stroke-width="2.2" stroke-linejoin="round" fill="#9ca3b0" mask="url(#gm1)"/><circle cx="32" cy="32" r="7" stroke="#9ca3b0" stroke-width="1.8" fill="none"/></svg>',
   dockChat: '<svg viewBox="0 0 64 64" fill="none" width="40" height="40"><mask id="cm1"><rect width="64" height="64" fill="white"/><line x1="23" y1="27.5" x2="41" y2="27.5" stroke="black" stroke-width="4" stroke-linecap="round"/><line x1="23" y1="34.5" x2="35" y2="34.5" stroke="black" stroke-width="4" stroke-linecap="round"/></mask><path d="M32 15C21.5 15 13 22 13 31C13 36 16 40.5 20.6 43.2L18.5 50L26 46.4C27.9 46.9 29.9 47 32 47C42.5 47 51 40 51 31C51 22 42.5 15 32 15Z" stroke="#9ca3b0" stroke-width="2.2" fill="#9ca3b0" mask="url(#cm1)"/></svg>',
-  dockStory: '<svg viewBox="0 0 64 64" fill="none" width="34" height="34"><mask id="sm1"><rect width="64" height="64" fill="white"/><path d="M33 20L40 29L33 38L26 29Z" fill="black"/><circle cx="33" cy="29" r="3" fill="black"/></mask><rect x="14" y="6" width="38" height="46" rx="4" fill="#9ca3b0" mask="url(#sm1)"/><line x1="10" y1="10" x2="10" y2="48" stroke="#9ca3b0" stroke-width="2.2" stroke-linecap="round"/><line x1="10" y1="10" x2="14" y2="10" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="48" x2="14" y2="48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/><path d="M33 20L40 29L33 38L26 29Z" stroke="#9ca3b0" stroke-width="1.6" stroke-linejoin="round" fill="none"/><circle cx="33" cy="29" r="3" stroke="#9ca3b0" stroke-width="1.4" fill="none"/><path d="M10 52H52" stroke="#aaa" stroke-width="1.4" stroke-linecap="round"/><path d="M10 55H52" stroke="#bbb" stroke-width="1.2" stroke-linecap="round"/><path d="M10 58H52" stroke="#ccc" stroke-width="1" stroke-linecap="round"/></svg>',
+  dockStory: '<svg viewBox="0 0 64 64" fill="none" width="32" height="32"><mask id="sm1"><rect width="64" height="64" fill="white"/><path d="M33 20L40 29L33 38L26 29Z" fill="black"/><circle cx="33" cy="29" r="3" fill="black"/></mask><rect x="14" y="6" width="38" height="46" rx="4" fill="#9ca3b0" mask="url(#sm1)"/><line x1="10" y1="10" x2="10" y2="48" stroke="#9ca3b0" stroke-width="2.2" stroke-linecap="round"/><line x1="10" y1="10" x2="14" y2="10" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="48" x2="14" y2="48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/><path d="M33 20L40 29L33 38L26 29Z" stroke="#9ca3b0" stroke-width="1.6" stroke-linejoin="round" fill="none"/><circle cx="33" cy="29" r="3" stroke="#9ca3b0" stroke-width="1.4" fill="none"/><path d="M10 52H52" stroke="#aaa" stroke-width="1.4" stroke-linecap="round"/><path d="M10 55H52" stroke="#bbb" stroke-width="1.2" stroke-linecap="round"/><path d="M10 58H52" stroke="#ccc" stroke-width="1" stroke-linecap="round"/></svg>',
   dockCheckin: '<svg viewBox="0 0 64 64" fill="none" width="38" height="38"><mask id="ck1"><rect width="64" height="64" fill="white"/><rect x="21" y="18" width="22" height="28" rx="1.5" fill="black"/><circle cx="32" cy="50" r="2.5" fill="black"/></mask><rect x="18" y="10" width="28" height="44" rx="4" fill="#9ca3b0" mask="url(#ck1)"/><line x1="28" y1="13" x2="36" y2="13" stroke="#9ca3b0" stroke-width="1.6" stroke-linecap="round"/><rect x="21" y="18" width="22" height="28" rx="1.5" fill="none" stroke="#9ca3b0" stroke-width="1.4"/><circle cx="32" cy="50" r="2.5" stroke="#9ca3b0" stroke-width="1.5" fill="none"/><line x1="24" y1="23" x2="40" y2="23" stroke="#9ca3b0" stroke-width="1.4" stroke-linecap="round"/><line x1="24" y1="28" x2="35" y2="28" stroke="#9ca3b0" stroke-width="1.2" stroke-linecap="round"/><line x1="24" y1="33" x2="39" y2="33" stroke="#9ca3b0" stroke-width="1.4" stroke-linecap="round"/><line x1="24" y1="38" x2="33" y2="38" stroke="#9ca3b0" stroke-width="1.2" stroke-linecap="round"/></svg>',
   dockForum: '<svg viewBox="0 0 64 64" fill="none" width="40" height="40"><mask id="em1"><rect width="64" height="64" fill="white"/><ellipse cx="32" cy="32" rx="7" ry="18" stroke="black" stroke-width="1.4" fill="none"/><path d="M14 26H50" stroke="black" stroke-width="1.2"/><path d="M16 38H48" stroke="black" stroke-width="1.2"/></mask><circle cx="32" cy="32" r="18" stroke="#9ca3b0" stroke-width="2.2" fill="#9ca3b0" mask="url(#em1)"/><ellipse cx="32" cy="32" rx="28" ry="10" stroke="#9ca3b0" stroke-width="1.8" fill="none" transform="rotate(-20 32 32)"/><circle cx="52" cy="20" r="3" fill="#9ca3b0" stroke="#9ca3b0" stroke-width="1.4"/></svg>'
 };
@@ -27,7 +27,7 @@ var ICON_MAP = [
   { id: 'customIcon_dockForum', label: '论坛', containerId: null, parentId: 'dockForum', selector: '#dockForum .mk-card' }
 ];
 
-var DEF_ICON_CFG = { borderW: 1, shadow: 0, borderColor: '#d1d5db', shadowColor: '#ffffff', iconColor: '#9ca3b0', iconBg: 'rgba(255,255,255,0.2)', blur: 8, opacity: 0.2, radius: 15, iconSize: 73 };
+var DEF_ICON_CFG = { borderW: 1, shadow: 0, borderColor: '#d1d5db', shadowColor: '#ffffff', iconColor: '#9ca3b0', iconBg: 'rgba(255,255,255,0.2)', blur: 8, opacity: 0.2, radius: 15, iconSize: 70, labelSize: 13 };
 
 var Bg = {
   _panelEl: null,
@@ -158,6 +158,7 @@ var Bg = {
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">阴影</span><input type="range" id="bfIconShadow" min="0" max="16" step="1" value="' + iconConfig.shadow + '"><span class="bf-ctrl-val" id="bfIconShadowVal">' + iconConfig.shadow + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">圆角</span><input type="range" id="bfIconRadius" min="0" max="50" step="1" value="' + iconConfig.radius + '"><span class="bf-ctrl-val" id="bfIconRadiusVal">' + iconConfig.radius + 'px</span></div>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">图标大小</span><input type="range" id="bfIconSize" min="50" max="90" step="1" value="' + (iconConfig.iconSize||73) + '"><span class="bf-ctrl-val" id="bfIconSizeVal">' + (iconConfig.iconSize||73) + 'px</span></div>' +
+          '<div class="bf-ctrl-row"><span class="bf-ctrl-label">标签字号</span><input type="range" id="bfLabelSize" min="8" max="20" step="1" value="' + (iconConfig.labelSize||13) + '"><span class="bf-ctrl-val" id="bfLabelSizeVal">' + (iconConfig.labelSize||13) + 'px</span></div>' +
           '<div class="bf-divider"></div>' +
           '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
@@ -184,11 +185,12 @@ var Bg = {
       if(!prev) return;
       var bd = tempBg[currentPreviewPage];
       if(!bd || !bd.src) bd = tempBg[0];
+      var previewLabels = { iconUser: 'User', iconChar: 'Char', iconTheme: '美化', iconSettings: '设置' };
       var html = '<div class="bf-icon-preview-wrap">' +
         '<div class="bf-icon-preview-bg" id="bfIconPreviewBg"></div>' +
         '<div class="bf-icon-preview-row">';
       ['iconUser','iconChar','iconTheme','iconSettings'].forEach(function(pid) {
-        html += '<div class="bf-icon-preview-item">' + (DEFAULT_SVGS[pid] || '') + '</div>';
+        html += '<div class="bf-icon-preview-unit"><div class="bf-icon-preview-item">' + (DEFAULT_SVGS[pid] || '') + '</div><div class="bf-icon-preview-label">' + previewLabels[pid] + '</div></div>';
       });
       html += '</div></div>';
       prev.innerHTML = html;
@@ -378,10 +380,10 @@ var Bg = {
       });
     });
 
-    var sliderIds = ['bfIconBlur','bfIconOpacity','bfIconBorder','bfIconShadow','bfIconRadius','bfIconSize'];
-    var sliderKeys = ['blur','opacity','borderW','shadow','radius','iconSize'];
-    var sliderValIds = ['bfIconBlurVal','bfIconOpacityVal','bfIconBorderVal','bfIconShadowVal','bfIconRadiusVal','bfIconSizeVal'];
-    var sliderUnits = ['px','%','px','px','px','px'];
+    var sliderIds = ['bfIconBlur','bfIconOpacity','bfIconBorder','bfIconShadow','bfIconRadius','bfIconSize','bfLabelSize'];
+    var sliderKeys = ['blur','opacity','borderW','shadow','radius','iconSize','labelSize'];
+    var sliderValIds = ['bfIconBlurVal','bfIconOpacityVal','bfIconBorderVal','bfIconShadowVal','bfIconRadiusVal','bfIconSizeVal','bfLabelSizeVal'];
+    var sliderUnits = ['px','%','px','px','px','px','px'];
 
     sliderIds.forEach(function(sid, i) {
       panel.querySelector('#'+sid).addEventListener('input', function() {
@@ -391,6 +393,7 @@ var Bg = {
         panel.querySelector('#'+sliderValIds[i]).textContent = display + sliderUnits[i];
         App.LS.set('topIconConfig', iconConfig);
         Bg.applyTopIconStyle(iconConfig);
+        if(sid === 'bfLabelSize') renderIconPreview();
       });
     });
 
@@ -405,12 +408,14 @@ var Bg = {
       panel.querySelector('#bfIconBlur').value = DEF_ICON_CFG.blur;
       panel.querySelector('#bfIconOpacity').value = DEF_ICON_CFG.opacity;
       panel.querySelector('#bfIconSize').value = DEF_ICON_CFG.iconSize;
+      panel.querySelector('#bfLabelSize').value = DEF_ICON_CFG.labelSize;
       panel.querySelector('#bfIconBorderVal').textContent = DEF_ICON_CFG.borderW + 'px';
       panel.querySelector('#bfIconShadowVal').textContent = DEF_ICON_CFG.shadow + 'px';
       panel.querySelector('#bfIconRadiusVal').textContent = DEF_ICON_CFG.radius + 'px';
       panel.querySelector('#bfIconBlurVal').textContent = DEF_ICON_CFG.blur + 'px';
       panel.querySelector('#bfIconOpacityVal').textContent = Math.round(DEF_ICON_CFG.opacity * 100) + '%';
       panel.querySelector('#bfIconSizeVal').textContent = DEF_ICON_CFG.iconSize + 'px';
+      panel.querySelector('#bfLabelSizeVal').textContent = DEF_ICON_CFG.labelSize + 'px';
       var dynStyle = document.getElementById('topIconDynamicStyle');
       if(dynStyle) dynStyle.remove();
       App.LS.remove('topIconConfig');
@@ -489,7 +494,7 @@ var Bg = {
 
   openFontFull: function() { if(App.font) App.font.open(); },
 
-      openBallStyleFull: function() {
+  openBallStyleFull: function() {
     var old = document.getElementById('bfBallStylePanel');
     if(old) old.remove();
 
@@ -536,8 +541,6 @@ var Bg = {
             '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'ball' ? ' active' : '') + '" data-mode="ball" style="flex:1;' + (config.mode === 'ball' ? 'background:#1a1a1a;color:#fff;' : '') + '">悬浮球</button>' +
             '<button type="button" class="bf-btn bf-ball-mode-btn' + (config.mode === 'url' ? ' active' : '') + '" data-mode="url" style="flex:1;' + (config.mode === 'url' ? 'background:#1a1a1a;color:#fff;' : '') + '">URL</button>' +
           '</div>' +
-
-          /* 悬浮球模式 - 上传照片 */
           '<div id="bfBallUploadGroup" style="' + (config.mode === 'ball' ? '' : 'display:none;') + '">' +
             '<div class="bf-section-title">上传照片</div>' +
             '<div class="bf-upload-area" id="bfBallUploadArea">从相册选择</div>' +
@@ -546,8 +549,6 @@ var Bg = {
               (config.customImg ? '已上传图片' : '还没有上传照片') +
             '</div>' +
           '</div>' +
-
-          /* URL模式 - 添加/管理URL */
           '<div id="bfBallUrlGroup" style="' + (config.mode === 'url' ? '' : 'display:none;') + '">' +
             '<div class="bf-section-title">添加图片URL</div>' +
             '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
@@ -560,7 +561,6 @@ var Bg = {
             '</div>' +
             '<div id="bfBallUrlList">' + buildUrlListHtml() + '</div>' +
           '</div>' +
-
           '<div class="bf-divider"></div>' +
           '<div class="bf-btn-row">' +
             '<button class="bf-btn active" id="bfBallSave" type="button">保存</button>' +
@@ -612,13 +612,11 @@ var Bg = {
     }
     bindUrlEvents();
 
-    // 返回
     panel.querySelector('#bfBallBack').addEventListener('click', function() {
       panel.classList.remove('show'); panel.classList.add('hidden');
       setTimeout(function() { panel.remove(); }, 350);
     });
 
-    // 模式切换
     panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         panel.querySelectorAll('.bf-ball-mode-btn').forEach(function(b) {
@@ -626,13 +624,10 @@ var Bg = {
         });
         btn.style.background = '#1a1a1a'; btn.style.color = '#fff'; btn.classList.add('active');
         currentMode = btn.dataset.mode;
-
         var uploadGroup = panel.querySelector('#bfBallUploadGroup');
         var urlGroup = panel.querySelector('#bfBallUrlGroup');
-
         uploadGroup.style.display = 'none';
         urlGroup.style.display = 'none';
-
         if(currentMode === 'ball') {
           uploadGroup.style.display = '';
           panel.querySelector('#bfBallPreview').src = config.customImg || config.ballImg || '';
@@ -645,7 +640,6 @@ var Bg = {
       });
     });
 
-    // 添加URL
     panel.querySelector('#bfBallAddUrl').addEventListener('click', function() {
       var url = panel.querySelector('#bfBallImgUrl').value.trim();
       if(!url) { App.showToast('请输入图片URL'); return; }
@@ -659,13 +653,11 @@ var Bg = {
       App.showToast('已添加');
     });
 
-    // URL输入实时预览
     panel.querySelector('#bfBallImgUrl').addEventListener('input', function() {
       var v = this.value.trim();
       if(v) panel.querySelector('#bfBallPreview').src = v;
     });
 
-    // 从相册上传（悬浮球模式）
     panel.querySelector('#bfBallUploadArea').addEventListener('click', function() {
       panel.querySelector('#bfBallFileInput').click();
     });
@@ -693,7 +685,6 @@ var Bg = {
       reader.readAsDataURL(file);
     });
 
-    // 保存
     panel.querySelector('#bfBallSave').addEventListener('click', function() {
       App.ballConfig.mode = currentMode;
       if(currentMode === 'ball') {
@@ -707,7 +698,6 @@ var Bg = {
       App.showToast('已保存 · ' + (labels[currentMode] || ''));
     });
 
-    // 恢复默认
     panel.querySelector('#bfBallReset').addEventListener('click', function() {
       var BALL_DEFAULTS = { mode: 'mascot', ballImg: 'https://iili.io/Bbt1vK7.md.png', customImg: '', urlSrc: '', scale: 1 };
       App.ballConfig = JSON.parse(JSON.stringify(BALL_DEFAULTS));
@@ -731,7 +721,7 @@ var Bg = {
       App.showToast('已恢复默认');
     });
   },
-  
+
   openSnapshot: function() {
     var old = document.getElementById('bfSnapshotPanel');
     if(old) { old.remove(); return; }
@@ -1108,7 +1098,9 @@ var Bg = {
       sel1+' svg mask > *:not(rect:first-child),' +
       sel2+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
 
-    styleEl.innerHTML = containerCSS + gradBgCSS + iconColorCSS + maskCSS;
+    var labelCSS = '.app-icon-label, .bf-icon-preview-label { font-size: ' + (cfg.labelSize || 13) + 'px !important; }';
+
+    styleEl.innerHTML = containerCSS + gradBgCSS + iconColorCSS + maskCSS + labelCSS;
   }
 };
 
