@@ -211,19 +211,20 @@ img.img-fill { transform: none !important; }
 }
 
 #floatingBall.url-mode {
-  width: 65px !important;
-  height: 65px !important;
-  border-radius: 50%;
-  overflow: hidden;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0;
+  overflow: visible;
   border: none;
   box-shadow: none;
+  background: transparent;
 }
 
 #floatingBall.url-mode #mascotImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 0;
   animation: none !important;
   filter: none;
 }
