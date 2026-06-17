@@ -79,16 +79,6 @@ var Bg = {
           '<div class="bf-list-info"><span class="bf-list-name">字体选择</span><span class="bf-list-sub">同时使用中英双种字体搭配</span></div>' +
           '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
-        '<div class="bf-list-item" data-action="component">' +
-          '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' +
-          '<div class="bf-list-info"><span class="bf-list-name">组件定义</span><span class="bf-list-sub">标签卡册 · 气泡对话等零零碎碎</span></div>' +
-          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-        '</div>' +
-        '<div class="bf-list-item" data-action="ballstyle">' +
-          '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
-          '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象吧</span></div>' +
-          '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
-        '</div>' +
         '<div class="bf-list-item" data-action="snapshot">' +
           '<svg class="bf-list-icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
           '<div class="bf-list-info"><span class="bf-list-name">排版存档</span><span class="bf-list-sub">各种搭配一键保存，藏宝藏</span></div>' +
@@ -110,7 +100,6 @@ var Bg = {
         if(action === 'theme') { App.showToast('主题功能开发中'); }
         else if(action === 'bgicon') { Bg.openBgIcon(); }
         else if(action === 'font') { Bg.openFontFull(); }
-        else if(action === 'component') { Bg.openComponent(); }
         else if(action === 'ballstyle') { Bg.openBallStyle(); }
         else if(action === 'snapshot') { Bg.openSnapshot(); }
       });
@@ -173,6 +162,12 @@ var Bg = {
           '<div class="bf-divider"></div>' +
           '<div class="bf-section-header"><span class="bf-section-title">替换图标</span><button class="bf-reset-btn" id="bfResetIcons" type="button">全部恢复</button></div>' +
           '<div class="bf-icon-grid" id="bfIconGrid"></div>' +
+                   '<div class="bf-divider"></div>' +
+          '<div class="bf-section-title">布局管理</div>' +
+          '<div class="bf-btn-row">' +
+            '<button class="bf-btn" id="bfResetLayoutBtn" type="button">恢复布局</button>' +
+            '<button class="bf-btn active" id="bfSnapshotBtn" type="button">排版存档</button>' +
+          '</div>' +
           '<div class="bf-bottom-spacer"></div>' +
         '</div>' +
       '</div>';
@@ -444,6 +439,13 @@ var Bg = {
       setTimeout(function() { panel.remove(); }, 350);
     });
 
+    panel.querySelector('#bfResetLayoutBtn').addEventListener('click', function() {
+      if(App.workshop && App.workshop.resetAllLayout) App.workshop.resetAllLayout();
+    });
+    panel.querySelector('#bfSnapshotBtn').addEventListener('click', function() {
+      if(App.workshop && App.workshop.openSnapshot) App.workshop.openSnapshot();
+    });
+
     switchPreview(0);
   },
 
@@ -492,38 +494,6 @@ var Bg = {
   },
 
   openFontFull: function() { if(App.font) App.font.open(); },
-
-  openComponent: function() {
-    var old = document.getElementById('bfComponentPanel');
-    if(old) old.remove();
-    var panel = document.createElement('div');
-    panel.id = 'bfComponentPanel';
-    panel.className = 'bf-component-panel';
-    panel.innerHTML =
-      '<div class="beautify-container">' +
-        '<div class="bf-nav">' +
-          '<button class="bf-back" id="bfCompBack" type="button">' + BACK_BUTTON_SVG + '</button>' +
-          '<span class="bf-nav-title">组件定义</span>' +
-          '<div class="bf-nav-right"></div>' +
-        '</div>' +
-        '<div class="bf-comp-body">' +
-          '<button class="bf-comp-reset-btn" id="bfResetLayout" type="button">恢复布局</button>' +
-          '<div class="bf-comp-hint">将所有组件位置恢复到默认状态</div>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(panel);
-    requestAnimationFrame(function() { panel.classList.add('show'); });
-    App.bindSwipeBack(panel, function() { panel.remove(); });
-    panel.querySelector('#bfCompBack').addEventListener('click', function() {
-      panel.classList.remove('show'); panel.classList.add('hidden');
-      setTimeout(function() { panel.remove(); }, 350);
-    });
-    panel.querySelector('#bfResetLayout').addEventListener('click', function() {
-      if(App.workshop && App.workshop.resetAllLayout) {
-        App.workshop.resetAllLayout();
-      }
-    });
-  },
 
   openBallStyle: function() { if(App.openBallSettings) App.openBallSettings(); },
   openSnapshot: function() { if(App.workshop && App.workshop.openSnapshot) App.workshop.openSnapshot(); },
