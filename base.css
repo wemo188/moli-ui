@@ -328,7 +328,7 @@ img.img-fill { transform: none !important; }
   width: calc(100% + 36px);
   margin-left: -18px;
   margin-top: 0;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
   padding-right: 48px;
 }
 
