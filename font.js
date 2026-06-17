@@ -299,7 +299,7 @@ var Font={
 
     panel.innerHTML=
       '<div class="bf-nav">'+
-        '<button class="bf-back" id="ftClose" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>'+
+       '<button class="bf-back" id="fontFullBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
         '<span class="bf-nav-title">字体选择</span>'+
         '<div class="bf-nav-right"></div>'+
       '</div>'+
