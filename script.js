@@ -880,10 +880,11 @@ btn.classList.add('active');
     if (App.workshop) App.workshop.positionMenu();
   };
 
-  var BALL_DEFAULTS = {
+    var BALL_DEFAULTS = {
     mode: 'mascot',
     ballImg: 'https://iili.io/B7m3lY7.md.png',
     customImg: '',
+    urlSrc: '',
     scale: 1
   };
 
@@ -897,7 +898,7 @@ btn.classList.add('active');
     App.LS.set('ballConfig', App.ballConfig);
   };
 
-  App.applyBallMode = function() {
+    App.applyBallMode = function() {
     var ball = App.state.ball;
     var img = App.$('#mascotImg');
     if (!ball || !img) return;
@@ -905,27 +906,33 @@ btn.classList.add('active');
     var config = App.ballConfig;
     var scale = config.scale || 1;
     
-    /* 设定锚点为左上角，并应用缩放大小 */
     ball.style.transformOrigin = 'top left';
     ball.style.transform = 'scale(' + scale + ')';
 
+    // 先清除所有模式class
+    ball.classList.remove('ball-mode', 'mascot-mode', 'url-mode');
+
     if (config.mode === 'ball') {
       ball.classList.add('ball-mode');
-      ball.classList.remove('mascot-mode');
-
       var src = config.customImg || config.ballImg;
       img.src = src;
       img.classList.remove('breathing', 'waving', 'happy');
-
+      if (App.mascot) {
+        clearTimeout(App.mascot.blinkTimer);
+        clearTimeout(App.mascot.idleTimer);
+        App.mascot.animLock = true;
+      }
+    } else if (config.mode === 'url') {
+      ball.classList.add('url-mode');
+      img.src = config.urlSrc || config.ballImg;
+      img.classList.remove('breathing', 'waving', 'happy');
       if (App.mascot) {
         clearTimeout(App.mascot.blinkTimer);
         clearTimeout(App.mascot.idleTimer);
         App.mascot.animLock = true;
       }
     } else {
-      ball.classList.remove('ball-mode');
       ball.classList.add('mascot-mode');
-
       if (App.mascot) {
         App.mascot.animLock = false;
         App.mascot.goIdle();
@@ -1160,7 +1167,7 @@ btn.classList.add('active');
       e.preventDefault();
 
       var scale = App.ballConfig.scale || 1;
-      var baseSize = ball.classList.contains('ball-mode') ? 65 : 150;
+      var baseSize = (ball.classList.contains('ball-mode') || ball.classList.contains('url-mode')) ? 65 : 150;
       var actualSize = baseSize * scale;
 
       /* ★ 拖拽时动态计算边界，防止拖出屏幕 */
@@ -1186,7 +1193,7 @@ btn.classList.add('active');
             
             /* 校验越界 */
             var scale = App.ballConfig.scale;
-            var baseSize = ball.classList.contains('ball-mode') ? 65 : 150;
+            var baseSize = (ball.classList.contains('ball-mode') || ball.classList.contains('url-mode')) ? 65 : 150;
             var actualSize = baseSize * scale;
             var currentX = parseFloat(ball.style.left) || ball.offsetLeft || 0;
             var currentY = parseFloat(ball.style.top) || ball.offsetTop || 0;
