@@ -97,7 +97,7 @@
 .c6-header-btn:active { transform: scale(0.88); }
 .c6-header-btn svg {
   width: 20px; height: 20px;
-  fill: none; stroke: rgba(0,0,0,0.6);
+  fill: none; stroke: #000000;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
@@ -230,7 +230,7 @@
 .c6-tab-icon:active { transform: scale(0.88); }
 .c6-tab-icon svg {
   width: 16px; height: 16px;
-  fill: none; stroke: rgba(0,0,0,0.4);
+  fill: none; stroke: #000000;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
