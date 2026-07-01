@@ -15,9 +15,6 @@
       Wechat.panelEl = panel;
       Wechat.currentPage = 'chats';
       Wechat.currentTab = 'chats';
-      if (!App.LS.get('wxFullScreen') && App.LS.get('wxFullScreen') !== false) {
-        App.LS.set('wxFullScreen', true);
-      }
       Wechat.render();
       panel.classList.remove('hidden');
       requestAnimationFrame(function() { panel.classList.add('show'); });
@@ -76,7 +73,7 @@
     render: function() {
       var panel = Wechat.panelEl;
       if (!panel) return;
-      var isFS = App.LS.get('wxFullScreen') !== false;
+      var isFS = App.LS.get('wxFullScreen') || false;
       var wrapClass = isFS ? 'wx-fullscreen' : '';
 
       var showTab = Wechat.currentPage === 'chats';
@@ -85,7 +82,7 @@
         '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
 
           '<div class="c6-header">' +
-            '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+            '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
             '<div class="c6-header-title">Chat</div>' +
             '<div style="position:relative;">' +
               '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
@@ -111,6 +108,7 @@
                   '<div class="c6-tab' + (Wechat.currentTab === 'groups' ? ' c6-active' : '') + '" data-tab="groups">groups</div>' +
                 '</div>' +
                 '<div class="c6-tab-icons">' +
+                  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>' +
                   '<div class="c6-tab-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>' +
                 '</div>' +
               '</div>' +
@@ -121,6 +119,10 @@
           '</div>' +
 
           '<div class="c6-footer">' +
+            '<div class="c6-footer-item' + (Wechat.currentPage === 'chats' ? ' c6-f-active' : '') + '" data-page="chats">' +
+              '<div class="c6-footer-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.92 2 10.75c0 2.65 1.48 4.96 3.76 6.37-.24 1.25-.8 2.84-.8 2.84a1 1 0 0 0 1.25 1.05s2.5-.66 4.18-1.54C10.9 19.64 11.45 19.67 12 19.67c5.52 0 10-3.92 10-8.92S17.52 2 12 2z"/></svg></div>' +
+              '<div class="c6-footer-label">Chats</div>' +
+            '</div>' +
             '<div class="c6-footer-item' + (Wechat.currentPage === 'contacts' ? ' c6-f-active' : '') + '" data-page="contacts">' +
               '<div class="c6-footer-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>' +
               '<div class="c6-footer-label">Contacts</div>' +
@@ -323,6 +325,7 @@
         return;
       }
 
+      // 有用户：顶部创建按钮 + 完整 PSP 卡片列表（带所有按键）
       var headerHtml =
         '<div class="c6-me-list-header">' +
           '<div class="c6-me-list-title">我的身份</div>' +
@@ -337,6 +340,7 @@
           '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
         '</div>';
 
+      // 用 user 模块的 renderListInto 渲染完整卡片（带按键、配色、编辑、删除等）
       var cardsContainer = body.querySelector('#wxMeUserCards');
       if (App.user.renderListInto) {
         App.user.renderListInto(cardsContainer);
@@ -429,7 +433,7 @@
             if (item.dataset.action === 'addFriend') {
               App.showToast('加好友 · 开发中');
             } else if (item.dataset.action === 'toggleFrame') {
-              var cur = App.LS.get('wxFullScreen') !== false;
+              var cur = App.LS.get('wxFullScreen') || false;
               App.LS.set('wxFullScreen', !cur);
               Wechat.render();
             } else if (item.dataset.action === 'changeTheme') {
@@ -549,3 +553,4 @@
 
   App.register('wechat', Wechat);
 })();
+
