@@ -307,6 +307,7 @@
   background: #1a1a1a;
   color: #fff;
   transition: all 0.15s;
+  text-align: center;
 }
 
 .bf-btn:active { opacity: 0.7; }
@@ -380,6 +381,7 @@
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
+  text-align: center;
 }
 
 .bf-reset-btn:active { opacity: 0.7; }
@@ -721,6 +723,7 @@
   letter-spacing: 1px;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s;
+  text-align: center;
 }
 
 .snap-toolbar-btn:active { opacity: 0.7; }
@@ -801,6 +804,7 @@
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s;
   border: none;
+  text-align: center;
 }
 
 .snap-card-btn:active { opacity: 0.7; }
