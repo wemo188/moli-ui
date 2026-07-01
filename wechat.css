@@ -86,6 +86,9 @@
   position: relative;
   z-index: 10;
 }
+.wx-fullscreen .c6-header {
+  padding-top: calc(10px + env(safe-area-inset-top, 0));
+}
 
 .c6-header-btn {
   width: 36px; height: 36px;
