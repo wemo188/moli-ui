@@ -82,10 +82,10 @@
         '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
 
           '<div class="c6-header">' +
-            '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-            '<div class="c6-header-title">Chat</div>' +
-            '<div style="position:relative;">' +
-              '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
+  '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+  '<div class="c6-header-title">Chat</div>' +
+  '<div style="position:relative;">' +
+    '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
               '<div class="c6-add-menu" id="wxAddMenu">' +
                 '<div class="c6-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
                 '<div class="c6-add-menu-item" data-action="toggleFrame"><span>' + (isFS ? '手机框模式' : '全屏模式') + '</span></div>' +
@@ -108,9 +108,8 @@
                   '<div class="c6-tab' + (Wechat.currentTab === 'groups' ? ' c6-active' : '') + '" data-tab="groups">groups</div>' +
                 '</div>' +
                 '<div class="c6-tab-icons">' +
-                  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>' +
-                  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>' +
-                '</div>' +
+  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24" stroke="#000000"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>' +
+'</div>' +
               '</div>' +
             '</div>'
             ) : '') +
