@@ -438,11 +438,24 @@
   var data = {};
   var keys = Object.keys(App.LS._cache || {});
   keys.forEach(function(key) {
-    // ★ 字体列表特殊处理：只保留 URL/CSS 字体，去掉文件字体
+    // ★ 字体列表：只保留 URL/CSS 字体
     if(key === 'fontCustomList') {
       var list = App.LS.get(key) || [];
       var filtered = list.filter(function(f) { return f.url || f.cssUrl; });
       if(filtered.length > 0) data[key] = filtered;
+      return;
+    }
+    // ★ 字体配置：如果选中的是文件字体，重置为系统默认
+    if(key === 'fontConfig') {
+      var cfg = JSON.parse(JSON.stringify(App.LS.get(key) || {}));
+      var urlNames = {};
+      (App.LS.get('fontCustomList') || []).forEach(function(f) {
+        if(f.url || f.cssUrl) urlNames[f.name] = true;
+      });
+      if(cfg.selectedZh && !urlNames[cfg.selectedZh]) cfg.selectedZh = '系统默认';
+      if(cfg.selectedEn && !urlNames[cfg.selectedEn]) cfg.selectedEn = '';
+      if(cfg.selected && !urlNames[cfg.selected]) cfg.selected = '系统默认';
+      data[key] = cfg;
       return;
     }
     data[key] = App.LS.get(key);
