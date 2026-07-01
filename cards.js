@@ -35,7 +35,7 @@ var DEF_COLORS_R = {
   fontFamily: ''
 };
 
-var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'rgba(255,255,255,0.45)',barOpacity:0.45,barBlur:12,borderColor:'#2a2a2a'};
+var DEF_HL={borderWidth:1,fontFamily:'',fontColor:'#2a2a2a',barColor:'#ffffff',barOpacity:0.45,barBlur:12,borderColor:'#d1d5db'};
 
 var DRAG_DELAY=500;
 
