@@ -238,7 +238,7 @@
         });
       }
 
-      document.body.appendChild(panel);
+      document.body.appendChild(panel);App.bindSwipeBack(panel, function() { panel.remove(); });
       renderList();
     },
 
@@ -356,7 +356,7 @@
           '</div>' +
         '</div>';
 
-      document.body.appendChild(panel);
+      document.body.appendChild(panel);App.bindSwipeBack(panel, function() { panel.remove(); });
 
       var sizeEl = panel.querySelector('#wsStorageSize');
       if (App.LS && App.LS.getTotalSize) {
