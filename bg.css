@@ -562,6 +562,10 @@
   pointer-events: none;
   -webkit-user-drag: none;
   border-radius: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
 }
 
 .app-dock-custom-img {
@@ -572,6 +576,10 @@
   pointer-events: none;
   -webkit-user-drag: none;
   border-radius: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
 }
 
 /* =========================
