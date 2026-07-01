@@ -437,7 +437,16 @@
     exportData: function() {
   var data = {};
   var keys = Object.keys(App.LS._cache || {});
-  keys.forEach(function(key) { data[key] = App.LS.get(key); });
+  keys.forEach(function(key) {
+    // ★ 字体列表特殊处理：只保留 URL/CSS 字体，去掉文件字体
+    if(key === 'fontCustomList') {
+      var list = App.LS.get(key) || [];
+      var filtered = list.filter(function(f) { return f.url || f.cssUrl; });
+      if(filtered.length > 0) data[key] = filtered;
+      return;
+    }
+    data[key] = App.LS.get(key);
+  });
   var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
