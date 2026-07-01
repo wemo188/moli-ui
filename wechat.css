@@ -500,17 +500,30 @@
 }
 
 /* ====== 蓝色主题 ====== */
-.wx-theme-blue .c6-tab-wrap {
-  border-color: rgba(126,163,201,.15);
-}
-.wx-theme-blue .c6-chat-item {
-  border: 1.5px solid rgba(126,163,201,.15);
+.wx-theme-blue .wx-inner {
+  background: #f5f5f5;
 }
 .wx-theme-blue .c6-header {
-  border-bottom-color: rgba(126,163,201,.15);
+  background: #fff;
+  border-bottom: 1.5px solid rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-main {
+  background: #f5f5f5;
+}
+.wx-theme-blue .c6-body {
+  background: #f5f5f5;
+}
+.wx-theme-blue .c6-tab-wrap {
+  background: #fff;
+  border: 1.5px solid rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-chat-item {
+  background: #fff;
+  border: 1.5px solid rgba(126,163,201,.15);
 }
 .wx-theme-blue .c6-footer {
-  border-top-color: rgba(126,163,201,.15);
+  background: #fff;
+  border-top: 1.5px solid rgba(126,163,201,.15);
 }
 .wx-theme-blue .c6-footer-icon svg {
   fill: rgba(126,163,201,0.4);
@@ -526,17 +539,30 @@
 }
 
 /* ====== 粉色主题 ====== */
-.wx-theme-pink .c6-tab-wrap {
-  border-color: rgba(245,180,190,.15);
-}
-.wx-theme-pink .c6-chat-item {
-  border: 1.5px solid rgba(245,180,190,.15);
+.wx-theme-pink .wx-inner {
+  background: #f5f5f5;
 }
 .wx-theme-pink .c6-header {
-  border-bottom-color: rgba(245,180,190,.15);
+  background: #fff;
+  border-bottom: 1.5px solid rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-main {
+  background: #f5f5f5;
+}
+.wx-theme-pink .c6-body {
+  background: #f5f5f5;
+}
+.wx-theme-pink .c6-tab-wrap {
+  background: #fff;
+  border: 1.5px solid rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-chat-item {
+  background: #fff;
+  border: 1.5px solid rgba(245,180,190,.15);
 }
 .wx-theme-pink .c6-footer {
-  border-top-color: rgba(245,180,190,.15);
+  background: #fff;
+  border-top: 1.5px solid rgba(245,180,190,.15);
 }
 .wx-theme-pink .c6-footer-icon svg {
   fill: rgba(245,180,190,0.5);
