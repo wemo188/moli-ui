@@ -683,38 +683,78 @@
       if (old) { old.remove(); return; }
 
       var labelMap = {
-        'userList': '用户档案', 'characterList': '角色列表', 'bgData': '主页背景图',
-        'profileCards': '卡片组件', 'cmGlobal': '角色管理-全局设置', 'cmChars': '角色管理-个别设置',
-        'activeApi': '当前API', 'apiConfigs': 'API配置列表', 'apiParams': 'API参数',
-        'calCity': '天气城市', 'calWeather': '天气数据', 'calSchedules': '日程数据',
-        'wtCardConfig': '时间栏调色', 'wtCardPos': '时间栏位置', 'floatingBallPos': '悬浮球位置',
-        'ballConfig': '悬浮球设置', 'charCardMode': '角色卡片模式', 'activeUserId': '当前用户',
-        'wxAliases': '微信备注名', 'wxPins': '微信置顶', 'wxFullScreen': '微信全屏模式',
-        'chatFavorites': '聊天收藏', 'cpPresets': '调色板预设', 'worldbookEntries': '世界书',
-        'worldbooks': '世界书列表', 'presetList': '预设列表', 'presetConfig': '预设配置'
-      };
+  'userList': '用户档案',
+  'characterList': '角色列表',
+  'bgData': '第一页背景图',
+  'bgData_1': '第二页背景图',
+  'profileCards': '角色卡片配置',
+  'cmGlobal': '角色管理-全局设置',
+  'cmChars': '角色管理-个别设置',
+  'activeApi': '当前使用的API',
+  'apiConfigs': 'API配置列表',
+  'apiParams': 'API参数设置',
+  'calCity': '天气-城市',
+  'calWeather': '天气-数据缓存',
+  'calSchedules': '日历-日程数据',
+  'wtCardConfig': '时间卡片-调色配置',
+  'wtCardPos': '时间卡片-拖拽位置',
+  'floatingBallPos': '悬浮球-位置',
+  'ballConfig': '悬浮球-模式设置',
+  'charCardMode': '角色卡片显示模式',
+  'activeUserId': '当前用户ID',
+  'wxAliases': '微信-备注名',
+  'wxPins': '微信-置顶列表',
+  'wxFullScreen': '微信-全屏模式',
+  'chatFavorites': '聊天-收藏消息',
+  'cpPresets': '调色板-预设颜色',
+  'worldbookEntries': '世界书-条目',
+  'worldbooks': '世界书-列表',
+  'presetList': '预设-列表',
+  'presetConfig': '预设-当前配置',
+  'fontConfig': '字体-全局配置',
+  'fontCustomList': '字体-自定义列表',
+  'topIconConfig': '主页图标-样式配置',
+  'appIconOffsets': '主页图标-拖拽位置',
+  'calTimeOffset': '时间栏-拖拽位置',
+  'layoutSnapshots': '排版存档列表',
+  'dockConfig': 'Dock栏-配置',
+  'edenCard': '文字卡片-配置',
+  'cardDragOffsets': '卡片-拖拽位置',
+  'searchText_left': '左圆头像-对话文字',
+  'searchText_right': '右圆头像-对话文字',
+  'searchText_left_manual': '左圆头像-手动文字',
+  'searchText_right_manual': '右圆头像-手动文字',
+  'avatar_search1': '左圆头像-头像图片',
+  'avatar_search2': '右圆头像-头像图片'
+};
 
-      function getLabel(key) {
-        if (labelMap[key]) return labelMap[key];
-        if (key.startsWith('chatBg_')) return '聊天背景图';
-        if (key.startsWith('chatMsgs_')) return '聊天记录';
-        if (key.startsWith('chatTint_')) return '晕染设置';
-        if (key.startsWith('chatScene_')) return '聊天场景';
-        if (key.startsWith('chatPalette_')) return '聊天调色板';
-        if (key.startsWith('chatAvShape_')) return '头像形状';
-        if (key.startsWith('chatAvHide_')) return '头像隐藏';
-        if (key.startsWith('chatUnread_')) return '未读消息';
-        if (key.startsWith('stickerCache_')) return '表情包缓存';
-        if (key.startsWith('iconImg_')) return '自定义图标';
-        if (key.startsWith('font_')) return '自定义字体';
-        if (key.startsWith('edenCard')) return 'Eden卡片';
-        if (key.startsWith('searchText_')) return '对话框文字';
-        if (key.startsWith('avatar_search')) return '对话框头像';
-        if (key.startsWith('cardDragOffsets')) return '卡片拖拽位置';
-        if (key.startsWith('memories_')) return '角色记忆';
-        if (key.startsWith('memorySendConfig_')) return '记忆发送设置';
-        return '其他';
-      }
+function getLabel(key) {
+  if (labelMap[key]) return labelMap[key];
+  if (key.startsWith('chatBg_')) return '聊天背景图（' + key.replace('chatBg_','') + '）';
+  if (key.startsWith('chatMsgs_')) return '聊天记录（' + key.replace('chatMsgs_','') + '）';
+  if (key.startsWith('chatTint_')) return '聊天晕染（' + key.replace('chatTint_','') + '）';
+  if (key.startsWith('chatScene_')) return '聊天场景（' + key.replace('chatScene_','') + '）';
+  if (key.startsWith('chatPalette_')) return '聊天调色板（' + key.replace('chatPalette_','') + '）';
+  if (key.startsWith('chatAvShape_')) return '聊天头像形状（' + key.replace('chatAvShape_','') + '）';
+  if (key.startsWith('chatAvHide_')) return '聊天头像隐藏（' + key.replace('chatAvHide_','') + '）';
+  if (key.startsWith('chatUnread_')) return '未读消息数（' + key.replace('chatUnread_','') + '）';
+  if (key.startsWith('stickerCache_')) return '表情包缓存（' + key.replace('stickerCache_','') + '）';
+  if (key.startsWith('iconImg_')) return '自定义图标图片';
+  if (key.startsWith('customIcon_')) return '自定义图标（' + key.replace('customIcon_','') + '）';
+  if (key.startsWith('font_')) return '字体文件数据';
+  if (key.startsWith('edenCard')) return '文字卡片';
+  if (key.startsWith('searchText_')) return '圆头像-文字';
+  if (key.startsWith('avatar_search')) return '圆头像-头像';
+  if (key.startsWith('cardDragOffsets')) return '卡片拖拽位置';
+  if (key.startsWith('memories_')) return '角色记忆（' + key.replace('memories_','') + '）';
+  if (key.startsWith('memorySendConfig_')) return '记忆发送设置（' + key.replace('memorySendConfig_','') + '）';
+  if (key.startsWith('hlText_')) return '圆头像-气泡文字';
+  if (key.startsWith('hlChat_')) return '圆头像-对话条文字';
+  if (key.startsWith('hlImg_')) return '圆头像-图片';
+  if (key.startsWith('profileCard')) return '角色卡片（' + key + '）';
+  // 最后兜底：显示原始key名
+  return '数据：' + key;
+}
 
       var cacheKeys = Object.keys(App.LS._cache || {});
       var items = [];
