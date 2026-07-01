@@ -75,22 +75,29 @@
       if (!panel) return;
       var isFS = App.LS.get('wxFullScreen');
 if (isFS === null) isFS = true;
-      var wrapClass = isFS ? 'wx-fullscreen' : '';
+var wxTheme = App.LS.get('wxTheme') || '';
+var themeClass = wxTheme ? ' wx-theme-' + wxTheme : '';
+var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
 
       var showTab = Wechat.currentPage === 'chats';
 
       panel.innerHTML =
         '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
 
-          '<div class="c6-header">' +
-  '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+         '<div class="c6-header">' +
+  '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" style="width:22px;height:22px;" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+  '<div class="c6-header-title">Chat</div>' +
+  '<div style="position:relative;">' +
+    '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" style="width:22px;height:22px;" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
   '<div class="c6-header-title">Chat</div>' +
   '<div style="position:relative;">' +
     '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
               '<div class="c6-add-menu" id="wxAddMenu">' +
                 '<div class="c6-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
                 '<div class="c6-add-menu-item" data-action="toggleFrame"><span>' + (isFS ? '手机框模式' : '全屏模式') + '</span></div>' +
-                '<div class="c6-add-menu-item" data-action="changeTheme"><span>更换主题</span></div>' +
+                '<div class="c6-add-menu-item" data-action="themeBlue"><span>蓝色主题</span></div>' +
+'<div class="c6-add-menu-item" data-action="themePink"><span>粉色主题</span></div>' +
+'<div class="c6-add-menu-item" data-action="themeDefault"><span>默认主题</span></div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -436,10 +443,19 @@ if (isFS === null) isFS = true;
               var cur = App.LS.get('wxFullScreen') || false;
               App.LS.set('wxFullScreen', !cur);
               Wechat.render();
-            } else if (item.dataset.action === 'changeTheme') {
-              Wechat.close();
-              setTimeout(function() { App.openPanel('themePanel'); }, 380);
-            }
+          } else if (item.dataset.action === 'themeBlue') {
+  App.LS.set('wxTheme', 'blue');
+  Wechat.render();
+  App.showToast('已切换蓝色主题');
+} else if (item.dataset.action === 'themePink') {
+  App.LS.set('wxTheme', 'pink');
+  Wechat.render();
+  App.showToast('已切换粉色主题');
+} else if (item.dataset.action === 'themeDefault') {
+  App.LS.set('wxTheme', '');
+  Wechat.render();
+  App.showToast('已恢复默认主题');
+}
           });
         });
 
