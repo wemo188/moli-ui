@@ -499,3 +499,54 @@
   padding: 10px 0;
 }
 
+/* ====== 蓝色主题 ====== */
+.wx-theme-blue .c6-tab-wrap {
+  border-color: rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-chat-item {
+  border: 1.5px solid rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-header {
+  border-bottom-color: rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-footer {
+  border-top-color: rgba(126,163,201,.15);
+}
+.wx-theme-blue .c6-footer-icon svg {
+  fill: rgba(126,163,201,0.4);
+}
+.wx-theme-blue .c6-footer-item.c6-f-active .c6-footer-icon svg {
+  fill: rgba(126,163,201,0.85);
+}
+.wx-theme-blue .c6-footer-label {
+  color: rgba(126,163,201,0.45);
+}
+.wx-theme-blue .c6-footer-item.c6-f-active .c6-footer-label {
+  color: rgba(126,163,201,0.85);
+}
+
+/* ====== 粉色主题 ====== */
+.wx-theme-pink .c6-tab-wrap {
+  border-color: rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-chat-item {
+  border: 1.5px solid rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-header {
+  border-bottom-color: rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-footer {
+  border-top-color: rgba(245,180,190,.15);
+}
+.wx-theme-pink .c6-footer-icon svg {
+  fill: rgba(245,180,190,0.5);
+}
+.wx-theme-pink .c6-footer-item.c6-f-active .c6-footer-icon svg {
+  fill: rgba(245,160,175,0.75);
+}
+.wx-theme-pink .c6-footer-label {
+  color: rgba(245,180,190,0.5);
+}
+.wx-theme-pink .c6-footer-item.c6-f-active .c6-footer-label {
+  color: rgba(245,160,175,0.75);
+}
