@@ -1,4 +1,6 @@
+**wechat.css 完整：**
 
+```css
 /* ====== 微信面板 ====== */
 #wechatPanel {
   background: none !important;
@@ -13,6 +15,7 @@
   position: fixed;
   inset: 0;
   z-index: 1;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 /* ====== 动画 ====== */
@@ -52,7 +55,7 @@
 .wx-fullscreen .wx-phone {
   width: 100%; max-width: none;
   height: 100vh; height: 100dvh;
-  margin: 0; border-radius: 0; padding: 0; background: none; box-shadow: none;
+  margin: 0; border-radius: 0; padding: env(safe-area-inset-top, 0) 0 0 0; background: none; box-shadow: none;
   position: fixed; top: 0; left: 0;
 }
 
@@ -66,6 +69,7 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   overflow: visible;
+  padding-top: 0;
 }
 
 .wx-inner {
@@ -249,14 +253,14 @@
 .c6-chat-item {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 16px;
-  background: rgba(0,0,0,0.03);
+  background: rgba(209,213,219,0.25);
   margin: 0 12px 8px;
   border-radius: 20px;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: background 0.2s;
 }
-.c6-chat-item:active { background: rgba(0,0,0,0.07); }
-.c6-chat-item.pinned { background: rgba(0,0,0,0.06); }
+.c6-chat-item:active { background: rgba(209,213,219,0.4); }
+.c6-chat-item.pinned { background: rgba(209,213,219,0.35); }
 
 .c6-chat-avatar {
   width: 56px; height: 56px; border-radius: 50%;
@@ -322,13 +326,13 @@
 }
 .c6-footer-icon svg {
   width: 28px; height: 28px;
-  fill: rgba(0,0,0,0.3); transition: fill 0.2s;
+  fill: #b0b5bd; transition: fill 0.2s;
 }
 .c6-footer-item.c6-f-active .c6-footer-icon svg { fill: rgba(0,0,0,0.7); }
 
 .c6-footer-label {
   font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
-  color: rgba(0,0,0,0.35); transition: color 0.2s;
+  color: #b0b5bd; transition: color 0.2s;
 }
 .c6-footer-item.c6-f-active .c6-footer-label { color: rgba(0,0,0,0.7); }
 
@@ -496,3 +500,4 @@
   -webkit-overflow-scrolling: touch;
   padding: 10px 0;
 }
+
