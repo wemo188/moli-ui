@@ -1055,8 +1055,9 @@ var Bg = {
 
     var sel1 = '.app-icon-glass';
     var sel2 = '.bf-icon-preview-item';
+    var sel3 = '.mk-card';
 
-    var containerCSS =
+        var containerCSS =
       sel1+','+sel2+' {' +
         'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#d1d5db')+' !important;' +
         'box-shadow: '+cfg.shadow+'px '+cfg.shadow+'px 0 '+(cfg.shadowColor||'#ffffff')+' !important;' +
@@ -1066,37 +1067,49 @@ var Bg = {
         '-webkit-backdrop-filter: blur('+blur+'px) !important;' +
         'width: '+iconSize+'px !important;' +
         'height: '+iconSize+'px !important;' +
+      '}' +
+      sel3+' {' +
+        'border: '+cfg.borderW+'px solid '+(cfg.borderColor||'#d1d5db')+' !important;' +
+        'box-shadow: '+cfg.shadow+'px '+cfg.shadow+'px 0 '+(cfg.shadowColor||'#ffffff')+' !important;' +
+        'border-radius: '+radius+'px !important;' +
+        'background: '+bgWithOpacity+' !important;' +
+        'backdrop-filter: blur('+blur+'px) !important;' +
+        '-webkit-backdrop-filter: blur('+blur+'px) !important;' +
       '}';
 
     var gradBgCSS = '';
     if(iconBg.indexOf('gradient') >= 0) {
-      gradBgCSS =
-        sel1+'::before,'+sel2+'::before {' +
+            gradBgCSS =
+        sel1+'::before,'+sel2+'::before,'+sel3+'::before {' +
           'content: "";position: absolute;inset: -1px;' +
           'background: '+iconBg+';border-radius: inherit;' +
           'opacity: '+opacity+';pointer-events: none;z-index: 0;' +
         '}' +
-        sel1+' svg,'+sel2+' svg { position: relative; z-index: 1; }';
+        sel1+' svg,'+sel2+' svg,'+sel3+' svg { position: relative; z-index: 1; }';
     }
 
     var iconColorCSS = '';
     if(iconColor.indexOf('gradient') === -1) {
-      var c1 = sel1+' svg > ';
+            var c1 = sel1+' svg > ';
       var c2 = sel2+' svg > ';
+      var c3 = sel3+' svg > ';
       iconColorCSS =
         c1+'path,'+c1+'circle,'+c1+'rect,'+c1+'line,'+c1+'ellipse,' +
-        c2+'path,'+c2+'circle,'+c2+'rect,'+c2+'line,'+c2+'ellipse {' +
+        c2+'path,'+c2+'circle,'+c2+'rect,'+c2+'line,'+c2+'ellipse,' +
+        c3+'path,'+c3+'circle,'+c3+'rect,'+c3+'line,'+c3+'ellipse {' +
           'stroke: '+iconColor+' !important;' +
         '}' +
-        c1+'[mask],'+c2+'[mask] { fill: '+iconColor+' !important; }' +
-        c1+'path:not([mask]),'+c2+'path:not([mask]) { fill: none !important; }';
+        c1+'[mask],'+c2+'[mask],'+c3+'[mask] { fill: '+iconColor+' !important; }' +
+        c1+'path:not([mask]),'+c2+'path:not([mask]),'+c3+'path:not([mask]) { fill: none !important; }';
     }
 
-    var maskCSS =
+        var maskCSS =
       sel1+' svg mask > rect:first-child,' +
-      sel2+' svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
+      sel2+' svg mask > rect:first-child,' +
+      sel3+' svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
       sel1+' svg mask > *:not(rect:first-child),' +
-      sel2+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
+      sel2+' svg mask > *:not(rect:first-child),' +
+      sel3+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
 
     var labelCSS = '.app-icon-label, .bf-icon-preview-label { font-size: ' + (cfg.labelSize || 13) + 'px !important; }';
 
