@@ -519,7 +519,7 @@
 }
 .wx-theme-blue .c6-chat-item {
   background: #fff;
-  border: 1.5px solid rgba(126,163,201,.15);
+  border: 1.5px solid rgba(126,163,201,.25);
 }
 .wx-theme-blue .c6-footer {
   background: #fff;
@@ -558,7 +558,7 @@
 }
 .wx-theme-pink .c6-chat-item {
   background: #fff;
-  border: 1.5px solid rgba(245,180,190,.15);
+  border: 1.5px solid rgba(245,180,190,.25);
 }
 .wx-theme-pink .c6-footer {
   background: #fff;
