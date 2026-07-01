@@ -1111,9 +1111,11 @@ var Bg = {
       sel2+' svg mask > *:not(rect:first-child),' +
       sel3+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
 
-    var labelCSS = '.app-icon-label, .bf-icon-preview-label { font-size: ' + (cfg.labelSize || 13) + 'px !important; }';
+        var labelCSS = '.app-icon-label, .bf-icon-preview-label { font-size: ' + (cfg.labelSize || 13) + 'px !important; }';
 
-    styleEl.innerHTML = containerCSS + gradBgCSS + iconColorCSS + maskCSS + labelCSS;
+    var contentCSS = sel1+' svg,'+sel1+' img,'+sel2+' svg,'+sel2+' img,'+sel3+' svg,'+sel3+' img { opacity: 1 !important; position: relative; z-index: 1; }';
+
+    styleEl.innerHTML = containerCSS + gradBgCSS + iconColorCSS + maskCSS + labelCSS + contentCSS;
   }
 };
 
