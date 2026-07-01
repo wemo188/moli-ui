@@ -71,7 +71,7 @@ var Bg = {
         '</div>' +
         '<div class="bf-list-item" data-action="bgicon">' +
           '<svg class="bf-list-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' +
-          '<div class="bf-list-info"><span class="bf-list-name">背景图标</span><span class="bf-list-sub">背景与图标的改朝换代</span></div>' +
+          '<div class="bf-list-info"><span class="bf-list-name">背景图标</span><span class="bf-list-sub">背景图片与图标组件</span></div>' +
           '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
         '<div class="bf-list-item" data-action="font">' +
@@ -81,7 +81,7 @@ var Bg = {
         '</div>' +
         '<div class="bf-list-item" data-action="ballstyle">' +
           '<svg class="bf-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>' +
-          '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象吧</span></div>' +
+          '<div class="bf-list-info"><span class="bf-list-name">悬浮样式</span><span class="bf-list-sub">更换小助手的形象</span></div>' +
           '<svg class="bf-list-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
       '</div>';
