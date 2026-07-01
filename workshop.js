@@ -438,41 +438,13 @@
   var data = {};
   var keys = Object.keys(App.LS._cache || {});
   keys.forEach(function(key) { data[key] = App.LS.get(key); });
-
-  // ★ 同时导出 GlobalFontDB 里的字体文件
-  function exportFontDB(cb) {
-    try {
-      var req = indexedDB.open('GlobalFontDB', 1);
-      req.onupgradeneeded = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('fontFiles')) db.createObjectStore('fontFiles', { keyPath: 'name' });
-      };
-      req.onsuccess = function(e) {
-        var db = e.target.result;
-        try {
-          var tx = db.transaction('fontFiles', 'readonly');
-          var store = tx.objectStore('fontFiles');
-          var all = store.getAll();
-          all.onsuccess = function() { cb(all.result || []); };
-          all.onerror = function() { cb([]); };
-        } catch(ex) { cb([]); }
-      };
-      req.onerror = function() { cb([]); };
-    } catch(e) { cb([]); }
-  }
-
-  exportFontDB(function(fonts) {
-    if (fonts.length > 0) {
-      data.__fontFiles__ = fonts;
-    }
-    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    App.showToast('数据已导出');
-  });
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  App.showToast('数据已导出');
 },
 
     resetAllLayout: function() {
