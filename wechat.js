@@ -73,7 +73,8 @@
     render: function() {
       var panel = Wechat.panelEl;
       if (!panel) return;
-      var isFS = App.LS.get('wxFullScreen') || false;
+      var isFS = App.LS.get('wxFullScreen');
+if (isFS === null) isFS = true;
       var wrapClass = isFS ? 'wx-fullscreen' : '';
 
       var showTab = Wechat.currentPage === 'chats';
