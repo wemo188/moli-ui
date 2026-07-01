@@ -46,7 +46,7 @@ var Bg = {
     Bg.applyBg(bgData1, 1);
     var iconConfig = App.LS.get('topIconConfig') || JSON.parse(JSON.stringify(DEF_ICON_CFG));
     Object.keys(DEF_ICON_CFG).forEach(function(k){ if(iconConfig[k]==null) iconConfig[k]=DEF_ICON_CFG[k]; });
-    if(App.LS.get('topIconConfig')) Bg.applyTopIconStyle(iconConfig);
+    Bg.applyTopIconStyle(iconConfig);
     App.safeOn('#iconTheme', 'click', function() { Bg.openMain(); });
     App.bg = Bg;
   },
