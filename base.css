@@ -261,7 +261,7 @@ img.img-fill { transform: none !important; }
 /* 手机端 */
 @media (max-width: 640px) {
   .screen-page {
-    padding: calc(10px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
+    padding: calc(20px + env(safe-area-inset-top, 0)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
   }
 }
 
