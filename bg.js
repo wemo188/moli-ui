@@ -1114,13 +1114,19 @@ var Bg = {
         c1+'path:not([mask]),'+c2+'path:not([mask]),'+c3+'path:not([mask]) { fill: none !important; }';
     }
 
-        var maskCSS =
+            var maskCSS =
       sel1+' svg mask > rect:first-child,' +
       sel2+' svg mask > rect:first-child,' +
       sel3+' svg mask > rect:first-child { fill: white !important; stroke: none !important; }' +
-      sel1+' svg mask > *:not(rect:first-child),' +
-      sel2+' svg mask > *:not(rect:first-child),' +
-      sel3+' svg mask > *:not(rect:first-child) { fill: black !important; stroke: black !important; }';
+      sel1+' svg mask > path,' +
+      sel2+' svg mask > path,' +
+      sel3+' svg mask > path { fill: black !important; stroke: black !important; }' +
+      sel1+' svg mask > ellipse,' +
+      sel2+' svg mask > ellipse,' +
+      sel3+' svg mask > ellipse { stroke: black !important; }' +
+      sel1+' svg mask > circle,' +
+      sel2+' svg mask > circle,' +
+      sel3+' svg mask > circle { fill: black !important; stroke: black !important; }';
 
         var labelCSS = '.app-icon-label, .bf-icon-preview-label { font-size: ' + (cfg.labelSize || 13) + 'px !important; }';
 
