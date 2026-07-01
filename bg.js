@@ -326,11 +326,22 @@ var Bg = {
       tempBg[currentPreviewPage].dark = v;
       renderPreview();
     });
-    panel.querySelector('#bfBgApply').addEventListener('click', function() {
+        panel.querySelector('#bfBgApply').addEventListener('click', function() {
       var bd = tempBg[currentPreviewPage];
       if(!bd || !bd.src) { App.showToast('请先上传图片'); return; }
       var key = currentPreviewPage === 0 ? 'bgData' : 'bgData_1';
-      try { App.LS.set(key, bd); Bg.applyBg(bd, currentPreviewPage); App.showToast('第' + (currentPreviewPage+1) + '页背景已应用'); }
+      try {
+        App.LS.set(key, bd);
+        Bg.applyBg(bd, currentPreviewPage);
+        // ★ 第一页更新时，如果第二页没有单独背景，跟着第一页
+        if(currentPreviewPage === 0) {
+          var page1Data = App.LS.get('bgData_1') || {};
+          if(!page1Data.src) {
+            Bg.applyBg(bd, 1);
+          }
+        }
+        App.showToast('第' + (currentPreviewPage+1) + '页背景已应用');
+      }
       catch(e) { App.showToast('图片太大，请压缩后重试'); }
     });
     panel.querySelector('#bfBgRemove').addEventListener('click', function() {
