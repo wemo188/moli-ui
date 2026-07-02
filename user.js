@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 215, sat: 22, lit: 94, radius: 60 };
+  var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
@@ -159,11 +159,10 @@
 
       panel.innerHTML =
         '<div class="up-list-header app-header-safe">' +
-          '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-          '<div class="up-list-title-wrap"><div class="up-list-title">此间相</div></div>' +
-          '<div class="up-list-add" id="upListAdd"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>' +
+          '<div class="up-list-back" id="upListBack">' + POWER_ICON + '</div>' +
+          '<div class="up-list-title">用户列表</div>' +
+          '<div class="up-list-add" id="upListAdd">+</div>' +
         '</div>' +
-        '<div class="up-list-divider"></div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + cardsHtml + '</div>';
 
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
