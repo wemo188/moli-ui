@@ -846,7 +846,7 @@
 
 /* ====== 蓝色主题 ====== */
 .wx-theme-blue .wx-inner {
-  background: rgba(209,213,219,0.25);
+    background: #f4f7fc;
 }
 
 .wx-theme-blue .c6-header {
@@ -855,11 +855,11 @@
 }
 
 .wx-theme-blue .c6-main {
-  background: rgba(209,213,219,0.25);
+    background: #f4f7fc;
 }
 
 .wx-theme-blue .c6-body {
-  background: rgba(209,213,219,0.25);
+    background: #f4f7fc;
 }
 
 .wx-theme-blue .c6-tab-wrap {
