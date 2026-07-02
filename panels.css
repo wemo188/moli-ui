@@ -644,23 +644,15 @@
 ========================= */
 .ft-live-preview {
   padding: 20px 20px 24px;
-  background: rgba(126,163,201,0.04);
-  border-bottom: 1.5px solid rgba(126,163,201,0.15);
+  background: rgba(248,248,248,0.65);
+  border-bottom: 1.5px solid rgba(248,248,248,0.95);
   text-align: center;
   flex-shrink: 0;
 }
 
-.ft-live-preview-label {
-  font-size: 11px;
-  color: #8aa0b8;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
 .ft-live-preview-text {
   font-size: 20px;
-  color: #2e4258;
+  color: #1a1a1a;
   line-height: 2;
   font-weight: 500;
   letter-spacing: 1px;
@@ -687,8 +679,8 @@
 }
 
 .ft-live-preview-btn.disabled {
-  background: #ddd;
-  color: #999;
+  background: #dbdee2;
+  color: #666;
   pointer-events: none;
 }
 
