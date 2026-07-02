@@ -3,7 +3,7 @@
 'use strict';
 var App=window.App;if(!App)return;
 
-var EMPTY={name:'',sub:'',avatar:'',tag1:'',tag2:'',colors:null};
+var EMPTY={sub:'',avatar:'',tag1:'',tag2:'',colors:null};
 var DEF_SUB_L='一句话签名';
 var DEF_SUB_R='一句话签名';
 
@@ -215,13 +215,12 @@ var Cards={
       var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
       var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
       var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
-      var lName=L.name||'角色名',lSub=L.sub||DEF_SUB_L;
-      var lNameC=L.name?'':' bx-name-placeholder';
+      var lSub=L.sub||DEF_SUB_L;
       pcL.innerHTML=
         '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div></div>'+
         '<div class="bx-cw"><div class="bx-cd">'+
           '<div class="bx-av-box">'+lFront+'</div>'+
-          '<div class="bx-name-bar"><div class="bx-name'+lNameC+'">'+App.esc(lName)+'</div><div class="bx-sub">'+App.esc(lSub)+'</div></div>'+
+          '<div class="bx-name-bar"><div class="bx-sub">'+App.esc(lSub)+'</div></div>'+
         '</div></div>';
     }
 
@@ -236,7 +235,7 @@ var Cards={
         '<div class="bx-cw"><div class="bx-cd">'+
           '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
           '<div class="bx-av-box">'+rFront+'</div>'+
-          '<div class="bx-name-bar"><div class="bx-name'+rNameC+'">'+App.esc(rName)+'</div><div class="bx-sub">'+App.esc(rSub)+'</div></div>'+
+          '<div class="bx-name-bar"><div class="bx-sub">'+App.esc(rSub)+'</div></div>'+
         '</div></div>';
     }
 
