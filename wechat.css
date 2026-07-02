@@ -846,7 +846,7 @@
 
 /* ====== 蓝色主题 ====== */
 .wx-theme-blue .wx-inner {
-    background: #f4f7fc;
+  background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-blue .c6-header {
@@ -855,11 +855,11 @@
 }
 
 .wx-theme-blue .c6-main {
-    background: #f4f7fc;
+  background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-blue .c6-body {
-    background: #f4f7fc;
+  background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-blue .c6-tab-wrap {
@@ -903,7 +903,7 @@
 }
 
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 10px solid #e8eef5;
+  border: 10px solid #f4f7fc;
   box-shadow:
     0 0 0 1px rgba(200,210,225,.4),
     0 14px 40px rgba(20,50,100,.12),
@@ -913,7 +913,7 @@
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone::before,
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone::after,
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone .wx-side-key {
-  background: linear-gradient(180deg, #ffffff, #e8eef5);
+  background: linear-gradient(180deg, #ffffff, #f4f7fc);
   border: 1px solid rgba(200,210,225,.6);
   box-shadow:
     0 2px 6px rgba(20,50,100,.10),
@@ -922,7 +922,7 @@
 
 /* ====== 粉色主题 ====== */
 .wx-theme-pink .wx-inner {
-  background: rgba(209,213,219,0.25);
+    background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-pink .c6-header {
@@ -931,11 +931,11 @@
 }
 
 .wx-theme-pink .c6-main {
-  background: rgba(209,213,219,0.25);
+    background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-pink .c6-body {
-  background: rgba(209,213,219,0.25);
+    background: rgba(248,248,248,0.95);
 }
 
 .wx-theme-pink .c6-tab-wrap {
