@@ -903,7 +903,7 @@
 }
 
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 10px solid #e8eef8;
+  border: 10px solid #e8eef5;
   box-shadow:
     0 0 0 1px rgba(200,210,225,.4),
     0 14px 40px rgba(20,50,100,.12),
@@ -913,7 +913,7 @@
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone::before,
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone::after,
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone .wx-side-key {
-  background: linear-gradient(180deg, #ffffff, #e8eef8);
+  background: linear-gradient(180deg, #ffffff, #e8eef5);
   border: 1px solid rgba(200,210,225,.6);
   box-shadow:
     0 2px 6px rgba(20,50,100,.10),
