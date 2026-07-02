@@ -180,14 +180,10 @@
   padding: 4px 0;
 }
 
-.up-back-svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: #999;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.up-header-btn svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .up-header-title {
