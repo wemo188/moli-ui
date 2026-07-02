@@ -56,12 +56,57 @@
     getActiveUser: function() { User.load(); return User.list[0] || null; },
 
     open: function() {
-      if (App.archive) App.archive.open('user');
-    },
+  User.load();
+  var panel = App.$('#userListPanel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'userListPanel';
+    panel.className = 'archive-panel fullpage-panel hidden';
+    panel.innerHTML =
+      '<div class="archive-header">' +
+        '<div class="archive-header-btn" id="userListBack">' + BACK_ICON + '</div>' +
+        '<div class="archive-header-title">USER</div>' +
+        '<div class="archive-header-btn archive-header-add" id="userListAdd">+</div>' +
+      '</div>' +
+      '<div class="archive-content" id="archivePanelUser"></div>';
+    document.body.appendChild(panel);
 
-    close: function() {
-      if (App.archive) App.archive.close();
-    },
+    App.bindSwipeBack(panel, function() {
+      User.close();
+    });
+  }
+
+  User.renderList();
+  panel.style.display = 'flex';
+  requestAnimationFrame(function() {
+    panel.classList.remove('hidden');
+    panel.classList.add('show');
+  });
+
+  var backBtn = App.$('#userListBack');
+  if (backBtn) {
+    backBtn.onclick = function() {
+      User.close();
+    };
+  }
+
+  var addBtn = App.$('#userListAdd');
+  if (addBtn) {
+    addBtn.onclick = function() {
+      User.renderProfile();
+    };
+  }
+},
+
+close: function() {
+  var panel = App.$('#userListPanel');
+  if (!panel) return;
+  panel.classList.remove('show');
+  panel.classList.add('hidden');
+  setTimeout(function() {
+    panel.style.display = 'none';
+  }, 350);
+},
 
     renderList: function() {
       var container = App.$('#archivePanelUser');
@@ -316,6 +361,7 @@
       var pp = document.createElement('div');
       pp.id = 'userProfilePanel';
             pp.className = 'up-panel fullpage-panel' + sealedClass;
+            editor.className = 'up-expand-panel fullpage-panel';
 
       pp.innerHTML =
         '<div class="profile-header">' +
@@ -598,11 +644,11 @@
       });
     },
 
-        init: function() {
-      User.load();
-      App.user = User;
-      App.safeOn('#iconUser', 'click', function() { User.open(); });
-    }
+init: function() {
+  User.load();
+  App.user = User;
+  App.safeOn('#iconUser', 'click', function() { User.open(); });
+}
   };
 
   App.register('user', User);
