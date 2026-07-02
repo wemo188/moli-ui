@@ -66,35 +66,6 @@
 }
 
 /* ===========================
-   列表页 - Tab 面板内容切换
-   =========================== */
-.archive-tab-panel {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.25s;
-}
-
-/* 当前激活 tab */
-.archive-tab-panel.archive-tab-active {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* 右侧隐藏 tab */
-.archive-tab-panel.archive-tab-right {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-/* 左侧隐藏 tab */
-.archive-tab-panel.archive-tab-left {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-/* ===========================
    列表页 - 卡片区
    =========================== */
 .archive-content {
