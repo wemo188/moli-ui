@@ -27,36 +27,117 @@
 /* ====== 手机框 ====== */
 .wx-phone {
   position: relative;
-  width: calc(100% - 40px);
-  max-width: 100%;
-  margin: 30px auto;
-  margin-bottom: calc(50px + env(safe-area-inset-bottom, 20px));
-  border-radius: 50px;
-  background: #1a1a1a;
-  padding: 12px;
+  width: 280px;
+  height: 540px;
+  margin: 0 auto;
+  margin-top: calc(30px + env(safe-area-inset-top, 20px));
+  margin-bottom: calc(30px + env(safe-area-inset-bottom, 20px));
+  background: transparent;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px - env(safe-area-inset-bottom, 20px));
   flex-shrink: 0;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.wx-phone::before,
+.wx-phone::after,
+.wx-phone .wx-side-key {
+  content: "";
+  position: absolute;
+  background: linear-gradient(180deg, #ffffff, #e8eef8);
+  border: 1px solid rgba(200, 210, 225, .6);
+  box-shadow:
+    0 2px 6px rgba(20, 50, 100, .10),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  z-index: 1;
+}
+
+/* 左上侧键 */
+.wx-phone::before {
+  left: -5px;
+  top: 105px;
+  width: 5px;
+  height: 36px;
+  border-radius: 5px 0 0 5px;
+}
+
+/* 左下侧键 */
+.wx-phone::after {
+  left: -5px;
+  top: 152px;
+  width: 5px;
+  height: 50px;
+  border-radius: 5px 0 0 5px;
+}
+
+/* 右侧键 */
+.wx-side-key.wx-side-right {
+  position: absolute;
+  right: -5px;
+  top: 135px;
+  width: 5px;
+  height: 64px;
+  border-radius: 0 5px 5px 0;
+  background: linear-gradient(180deg, #ffffff, #e8eef8);
+  border: 1px solid rgba(200, 210, 225, .6);
+  box-shadow:
+    0 2px 6px rgba(20, 50, 100, .10),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  z-index: 1;
 }
 
 .wx-phone > .wx-inner {
-  border-radius: 40px;
+  position: relative;
+  z-index: 2;
+  border-radius: 36px;
+  background: #f4f7fc;
+  border: 10px solid #e8eef8;
+  box-shadow:
+    0 0 0 1px rgba(200,210,225,.4),
+    0 14px 40px rgba(20,50,100,.12),
+    0 2px 8px rgba(20,50,100,.06);
   overflow: hidden;
+  height: 540px;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }
 
+.wx-phone > .wx-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.38), transparent 42%),
+    linear-gradient(315deg, rgba(255,255,255,.16), transparent 44%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .5;
+  z-index: 100;
+}
+
 .wx-fullscreen .wx-phone {
   width: 100%; max-width: none;
-  height: 100vh; height: 100dvh;
+  height: 100vh;
   margin: 0; border-radius: 0; padding: 0; background: none; box-shadow: none;
   position: fixed; top: 0; left: 0;
 }
 
+.wx-fullscreen .wx-phone::before,
+.wx-fullscreen .wx-phone::after,
+.wx-fullscreen .wx-side-key {
+  display: none;
+}
+
 .wx-fullscreen .wx-phone > .wx-inner {
   border-radius: 0;
+  border: none;
+  background: #fff;
+  box-shadow: none;
+  height: 100%;
+}
+
+.wx-fullscreen .wx-phone > .wx-inner::after {
+  display: none;
 }
 
 .wx-fullscreen #wxWrap,
