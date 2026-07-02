@@ -38,19 +38,6 @@
   flex-shrink: 0;
 }
 
-.wx-phone::before,
-.wx-phone::after,
-.wx-phone .wx-side-key {
-  content: "";
-  position: absolute;
-  background: linear-gradient(180deg, #ffffff, #e8eef8);
-  border: 1px solid rgba(200, 210, 225, .6);
-  box-shadow:
-    0 2px 6px rgba(20, 50, 100, .10),
-    inset 0 1px 0 rgba(255,255,255,.95);
-  z-index: 1;
-}
-
 /* 左上侧键 */
 .wx-phone::before {
   left: -5px;
@@ -89,16 +76,29 @@
   position: relative;
   z-index: 2;
   border-radius: 36px;
-  background: #f4f7fc;
-  border: 10px solid #e8eef8;
+  background: #ffffff;
+  border: 10px solid #f1f1f1;
   box-shadow:
-    0 0 0 1px rgba(200,210,225,.4),
-    0 14px 40px rgba(20,50,100,.12),
-    0 2px 8px rgba(20,50,100,.06);
+    0 0 0 1px rgba(220,220,220,.5),
+    0 14px 40px rgba(0,0,0,.10),
+    0 2px 8px rgba(0,0,0,.05);
   overflow: hidden;
   height: 100%;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+}
+
+.wx-phone::before,
+.wx-phone::after,
+.wx-phone .wx-side-key {
+  content: "";
+  position: absolute;
+  background: linear-gradient(180deg, #ffffff, #f1f1f1);
+  border: 1px solid rgba(220,220,220,.7);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  z-index: 1;
 }
 
 .wx-phone > .wx-inner::after {
@@ -622,6 +622,25 @@
   fill: rgba(126,163,201,0.3);
 }
 
+.wx-theme-blue .wx-phone > .wx-inner {
+  background: #f4f7fc;
+  border-color: #e8eef8;
+  box-shadow:
+    0 0 0 1px rgba(200,210,225,.4),
+    0 14px 40px rgba(20,50,100,.12),
+    0 2px 8px rgba(20,50,100,.06);
+}
+
+.wx-theme-blue .wx-phone::before,
+.wx-theme-blue .wx-phone::after,
+.wx-theme-blue .wx-phone .wx-side-key {
+  background: linear-gradient(180deg, #ffffff, #e8eef8);
+  border-color: rgba(200,210,225,.6);
+  box-shadow:
+    0 2px 6px rgba(20,50,100,.10),
+    inset 0 1px 0 rgba(255,255,255,.95);
+}
+
 /* ====== 粉色主题 ====== */
 .wx-theme-pink .wx-inner {
   background: #fafafa;
@@ -667,6 +686,25 @@
 }
 .wx-theme-pink .c6-star-sm svg {
   fill: rgba(245,180,190,0.4);
+}
+
+.wx-theme-pink .wx-phone > .wx-inner {
+  background: #fff6f8;
+  border-color: #fde7ec;
+  box-shadow:
+    0 0 0 1px rgba(245,180,190,.35),
+    0 14px 40px rgba(120,40,70,.10),
+    0 2px 8px rgba(120,40,70,.05);
+}
+
+.wx-theme-pink .wx-phone::before,
+.wx-theme-pink .wx-phone::after,
+.wx-theme-pink .wx-phone .wx-side-key {
+  background: linear-gradient(180deg, #ffffff, #fde7ec);
+  border-color: rgba(245,180,190,.55);
+  box-shadow:
+    0 2px 6px rgba(120,40,70,.08),
+    inset 0 1px 0 rgba(255,255,255,.95);
 }
 
 /* ====== 二级菜单 ====== */
