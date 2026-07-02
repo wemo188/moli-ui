@@ -2,7 +2,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 15px 16px 40px;
+  padding: 8px 10px 40px;
   background: #fff;
 }
 
@@ -13,21 +13,21 @@
 
 /* ====== 顶部栏 ====== */
 .cl-topbar-wrap {
-  margin: 0 auto 12px; max-width: 400px;
+  margin: 0 auto 20px; max-width: 400px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 4px; gap: 8px; height: 36px;
+  padding: 0 0; gap: 8px; height: 36px;
 }
 
 /* ★ 统一返回按钮（圆圈箭头） */
 .cl-esc {
-  width: 36px; height: 36px;
+  width: 42px; height: 42px;
   display: flex; align-items: center; justify-content: center;
   background: none; border: none;
   color: var(--page-dark); cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: all 0.2s;
   flex-shrink: 0;
 }
-.cl-esc svg { width: 22px; height: 22px; }
+.cl-esc svg { width: 26px; height: 26px; }
 .cl-esc:active { opacity: 0.5; }
 
 /* ★ 中间猫爪+标题区（改成 17px） */
@@ -84,7 +84,7 @@
 /* 卡片头部 */
 .cl-header {
   display: flex; align-items: flex-start; justify-content: space-between;
-  padding: 6px 20px 6px;
+  padding: 6px 20px 7px;
   border-bottom: var(--card-line) solid var(--card-border-c);
   position: relative; overflow: hidden; transition: all 0.3s;
 }
@@ -108,7 +108,7 @@
   display: inline-flex; align-items: center; gap: 6px;
   background: #111; color: #fff;
   border: 3px solid #111;
-  padding: 7px 14px; font-size: 12px; font-weight: 900;
+  padding: 6px 14px; font-size: 12px; font-weight: 900;
   letter-spacing: 1.5px; cursor: pointer;
   box-shadow: 3px 3px 0 #111;
   transition: all 0.3s; z-index: 1;
@@ -166,7 +166,7 @@
 .cl-act-edit svg { width: 11px; height: 11px; }
 .cl-act-del { background: #f7f9fc; color: #999; }
 .cl-act-del:active { background: #e85d5d; color: #fff; }
-.cl-act-del svg { width: 10px; height: 10px; }
+.cl-act-del svg { width: 11px; height: 11px; }
 
 /* ★ 绑定按钮（星星符号） */
 .cl-act-bind { background: #f7f9fc; color: #111; border-bottom: var(--card-line) solid var(--card-border-c); }
