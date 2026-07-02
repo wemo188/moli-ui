@@ -159,7 +159,7 @@ var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r=
       panel.innerHTML =
   '<div class="up-list-header">' +
     '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-    '<div class="up-list-title">◈ 此间相 ◈</div>' +
+    '<div class="up-list-title">此间相</div>' +
     '<div class="up-list-add" id="upListAdd"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>' +
   '</div>' +
   '<div class="up-list-divider"></div>' +
