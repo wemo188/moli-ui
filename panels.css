@@ -644,8 +644,8 @@
 ========================= */
 .ft-live-preview {
   padding: 20px 20px 24px;
-  background: rgba(126,163,201,0.08);
-  border-bottom: 1.5px solid rgba(126,163,201,0.4);
+  background: rgba(126,163,201,0.03);
+  border-bottom: 1.5px solid rgba(126,163,201,0.1);
   text-align: center;
   flex-shrink: 0;
 }
@@ -685,7 +685,7 @@
 }
 
 .ft-live-preview-btn.disabled {
-  background: #dbdee2;
+  background: #ebecee;
   color: #1a1a1a;
   pointer-events: none;
 }
