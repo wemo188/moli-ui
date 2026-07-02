@@ -320,43 +320,29 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       });
     },
 
-    renderMeTab: function(body) {
-      if (!App.user) { body.innerHTML = '<div class="c6-empty"><div class="c6-empty-text">用户模块未加载</div></div>'; return; }
-      App.user.load();
-      var users = App.user.list;
+        renderMeTab: function(body) {
+      var hasUserModule = !!App.user;
+      var users = [];
 
-      if (!users.length) {
-        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="c6-empty-text">还未创建用户身份</div><button class="c6-empty-btn" id="wxCreateUser">创建身份</button></div>';
-        App.safeOn('#wxCreateUser', 'click', function() {
-          if (App.user) App.user.renderProfile();
-        });
-        return;
+      if (hasUserModule) {
+        App.user.load();
+        users = App.user.list || [];
       }
 
-      // 有用户：顶部创建按钮 + 完整 PSP 卡片列表（带所有按键）
-      var headerHtml =
-        '<div class="c6-me-list-header">' +
-          '<div class="c6-me-list-title">我的身份</div>' +
-          '<div class="c6-me-list-add" id="wxMeCreateNew">+ 创建新身份</div>' +
-        '</div>';
+      var profileHtml = users.length
+        ? '<div class="c6-me-item"><span class="c6-me-item-text">已创建身份 ' + users.length + ' 个</span><span class="c6-me-item-arrow">由 User 管理</span></div>'
+        : '<div class="c6-me-item"><span class="c6-me-item-text">用户身份</span><span class="c6-me-item-arrow">请前往 User 创建</span></div>';
 
-      body.innerHTML = headerHtml +
-        '<div id="wxMeUserCards" style="padding:0 0 20px;"></div>' +
+      body.innerHTML =
+        '<div class="c6-me-list-header">' +
+          '<div class="c6-me-list-title">我的</div>' +
+        '</div>' +
         '<div class="c6-me-list">' +
+          profileHtml +
           '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
           '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
           '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
         '</div>';
-
-      // 用 user 模块的 renderListInto 渲染完整卡片（带按键、配色、编辑、删除等）
-      var cardsContainer = body.querySelector('#wxMeUserCards');
-      if (App.user.renderListInto) {
-        App.user.renderListInto(cardsContainer);
-      }
-
-      App.safeOn('#wxMeCreateNew', 'click', function() {
-        if (App.user) App.user.renderProfile();
-      });
 
       App.safeOn('#wxMeFavs', 'click', function() {
         Wechat.renderFavsPage(body);
