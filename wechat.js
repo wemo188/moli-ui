@@ -321,36 +321,23 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
     },
 
         renderMeTab: function(body) {
-      var hasUserModule = !!App.user;
-      var users = [];
+  body.innerHTML =
+    '<div class="c6-me-list-header">' +
+      '<div class="c6-me-list-title">我的</div>' +
+    '</div>' +
+    '<div class="c6-me-list">' +
+      '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
+      '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
+      '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
+    '</div>';
 
-      if (hasUserModule) {
-        App.user.load();
-        users = App.user.list || [];
-      }
+  App.safeOn('#wxMeFavs', 'click', function() {
+    Wechat.renderFavsPage(body);
+  });
 
-      var profileHtml = users.length
-        ? '<div class="c6-me-item"><span class="c6-me-item-text">已创建身份 ' + users.length + ' 个</span><span class="c6-me-item-arrow">由 User 管理</span></div>'
-        : '<div class="c6-me-item"><span class="c6-me-item-text">用户身份</span><span class="c6-me-item-arrow">请前往 User 创建</span></div>';
-
-      body.innerHTML =
-        '<div class="c6-me-list-header">' +
-          '<div class="c6-me-list-title">我的</div>' +
-        '</div>' +
-        '<div class="c6-me-list">' +
-          profileHtml +
-          '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
-          '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
-          '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
-        '</div>';
-
-      App.safeOn('#wxMeFavs', 'click', function() {
-        Wechat.renderFavsPage(body);
-      });
-
-      App.safeOn('#wxMeAssets', 'click', function() { App.showToast('资产功能开发中'); });
-      App.safeOn('#wxMeStickers', 'click', function() { App.showToast('表情包功能开发中'); });
-    },
+  App.safeOn('#wxMeAssets', 'click', function() { App.showToast('资产功能开发中'); });
+  App.safeOn('#wxMeStickers', 'click', function() { App.showToast('表情包功能开发中'); });
+},
 
     renderFavsPage: function(body) {
       var favs = App.LS.get('chatFavorites') || [];
