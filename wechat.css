@@ -349,8 +349,8 @@
 .c6-star-main svg {
   width: 100%;
   height: 100%;
-  fill: rgba(209,213,219,0.7);
-  stroke: rgba(209,213,219,0.6);
+  fill: rgba(209,213,219,0.9);
+  stroke: rgba(209,213,219,0.8);
   stroke-width: 0.5;
 }
 
@@ -363,7 +363,7 @@
 .c6-star-sm svg {
   width: 100%;
   height: 100%;
-  fill: rgba(209,213,219,0.6);
+  fill: rgba(209,213,219,0.8);
   stroke: none;
 }
 
