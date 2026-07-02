@@ -330,7 +330,6 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       }
 
       var profileHtml = users.length
-        ? '<div class="c6-me-item"><span class="c6-me-item-text">已创建身份 ' + users.length + ' 个</span><span class="c6-me-item-arrow">由 User 管理</span></div>'
         : '<div class="c6-me-item"><span class="c6-me-item-text">用户身份</span><span class="c6-me-item-arrow">请前往 User 创建</span></div>';
 
       body.innerHTML =
