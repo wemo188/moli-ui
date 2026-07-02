@@ -453,14 +453,16 @@ charPhone: d.charPhone, charWechat: d.charWechat,
   var ex = App.character.getById(CharMgr.editingCharId);
   if (ex) {
     Object.keys(charObj).forEach(function(k) {
-      if (k === 'avatar') { ex.avatar = charObj.avatar; }
-      else ex[k] = charObj[k];
+      if (k === 'avatar') { 
+        ex.avatar = charObj.avatar;
+        ex.cover = charObj.avatar; // ★ 编辑页保存时同步头像到背景
+      } else ex[k] = charObj[k];
     });
     App.character.save();
   }
 } else {
   charObj.id = 'char-' + Date.now();
-  charObj.cover = '';
+  charObj.cover = charObj.avatar; // ★ 新建时也同步
   charObj.worldbookMounted = false;
   charObj.modeColors = [{}, {}, {}];
   App.character.list.push(charObj);
