@@ -98,7 +98,12 @@
               sat = u.cardSat != null ? u.cardSat : DEFAULT_CARD.sat,
               lit = u.cardLit != null ? u.cardLit : DEFAULT_CARD.lit,
               radius = u.cardRadius != null ? u.cardRadius : DEFAULT_CARD.radius;
-          var cardBg = 'linear-gradient(155deg,hsl(' + hue + ',' + sat + '%,' + (+lit-2) + '%) 0%,hsl(' + hue + ',' + sat + '%,' + (+lit+2) + '%) 30%,hsl(' + hue + ',' + sat + '%,' + (+lit+4) + '%) 52%,hsl(' + hue + ',' + sat + '%,' + (+lit+1) + '%) 74%,hsl(' + hue + ',' + sat + '%,' + (+lit-3) + '%))';
+          var cardBg = 'linear-gradient(155deg,' +
+  'hsla(' + hue + ',' + sat + '%,' + (+lit-2) + '%, 0.9) 0%,' +
+  'hsla(' + hue + ',' + sat + '%,' + (+lit+2) + '%, 0.82) 30%,' +
+  'hsla(' + hue + ',' + sat + '%,' + (+lit+4) + '%, 0.95) 52%,' +
+  'hsla(' + hue + ',' + sat + '%,' + (+lit+1) + '%, 0.84) 74%,' +
+  'hsla(' + hue + ',' + sat + '%,' + (+lit-3) + '%, 0.9))';
 var borderC = 'hsl(' + hue + ',' + sat + '%,' + Math.max(0, +lit-6) + '%)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
           var vars = pcVars(hue, sat, lit);
@@ -220,7 +225,12 @@ var borderC = 'hsl(' + hue + ',' + sat + '%,' + Math.max(0, +lit-6) + '%)';
           card.querySelector('.p14-lit-val').textContent = l;
           var preview = card.querySelector('.p14-color-preview');
           if (preview) preview.style.background = 'hsl(' + h + ',' + s + '%,' + l + '%)';
-          card.style.background = 'linear-gradient(155deg,hsl(' + h + ',' + s + '%,' + (+l-2) + '%) 0%,hsl(' + h + ',' + s + '%,' + (+l+2) + '%) 30%,hsl(' + h + ',' + s + '%,' + (+l+4) + '%) 52%,hsl(' + h + ',' + s + '%,' + (+l+1) + '%) 74%,hsl(' + h + ',' + s + '%,' + (+l-3) + '%))';
+          card.style.background = 'linear-gradient(155deg,' +
+  'hsla(' + h + ',' + s + '%,' + (+l-2) + '%, 0.9) 0%,' +
+  'hsla(' + h + ',' + s + '%,' + (+l+2) + '%, 0.82) 30%,' +
+  'hsla(' + h + ',' + s + '%,' + (+l+4) + '%, 0.95) 52%,' +
+  'hsla(' + h + ',' + s + '%,' + (+l+1) + '%, 0.84) 74%,' +
+  'hsla(' + h + ',' + s + '%,' + (+l-3) + '%, 0.9))';
 card.style.borderColor = 'hsl(' + h + ',' + s + '%,' + Math.max(0, +l-6) + '%)';
           setPcVars(card, h, s, l);
         });
