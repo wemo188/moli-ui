@@ -616,8 +616,8 @@ var wbText = wbMounted ? '已加载' : '世界书';
         if (Character._drag) Character._drag.active = false;
       });
 
-            App.character = Character;
-      App.safeOn('#dockArchive', 'click', function() { Character.open(); });
+                  App.character = Character;
+      App.safeOn('#iconChar', 'click', function() { Character.open(); });
     }
   };
 
