@@ -158,13 +158,14 @@
       }
 
       panel.innerHTML =
-       '<div class="up-list-header">' +
-          '<div class="up-list-back" id="upListBack">' + POWER_ICON + '</div>' +
-          '<div class="up-list-title">此间相</div>' +
-          '<div class="up-list-add" id="upListAdd">+</div>' +
-        '</div>' +
-        '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + cardsHtml + '</div>';
-
+  '<div class="up-list-header">' +
+    '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
+    '<div class="up-list-title">此间相</div>' +
+    '<div class="up-list-add" id="upListAdd"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>' +
+  '</div>' +
+  '<div class="up-list-divider"></div>' +
+  '<div class="p14-list-wrap">' + cardsHtml + '</div>';
+  
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
       panel.querySelector('#upListAdd').addEventListener('click', function() { User.renderProfile(null); });
       User._bindListEvents(panel);
@@ -221,7 +222,7 @@
           card.querySelector('.p14-lit-val').textContent = l;
           var preview = card.querySelector('.p14-color-preview');
           if (preview) preview.style.background = 'hsl(' + h + ',' + s + '%,' + l + '%)';
-          card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
+         card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.94),hsla(' + h + ',' + s + '%,' + (+l+4) + '%,0.84) 30%,rgba(255,255,255,0.98) 52%,hsla(' + h + ',' + s + '%,' + (+l+2) + '%,0.88) 74%,hsla(' + h + ',' + s + '%,' + l + '%,0.92))';
           card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
           setPcVars(card, h, s, l);
         });
