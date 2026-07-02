@@ -35,6 +35,8 @@ body {
   --radius: 16px;
   --radius-sm: 10px;
   --safe-bottom: env(safe-area-inset-bottom, 20px);
+--safe-top: env(safe-area-inset-top, 0px);
+--app-header-top: calc(10px + var(--safe-top));
 }
 
 * {
@@ -942,4 +944,8 @@ input[type="range"]::-webkit-slider-thumb:active {
 input[type="range"] {
   flex: 1;
   min-width: 0;
+}
+
+.app-header-safe {
+  padding-top: var(--app-header-top) !important;
 }
