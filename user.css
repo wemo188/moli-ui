@@ -108,7 +108,7 @@
   height: 2px;
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
   border-radius: 999px;
-  margin: 0 16px 10px;
+  margin: 5px 16px 20px;
   box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
