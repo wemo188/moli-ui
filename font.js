@@ -310,7 +310,7 @@ var Font={
         '</div>'+
         '<div class="ft-live-preview-text">'+
           '<div id="ftPvCn" style="font-family:'+zhF+' !important">'+PREVIEW_CN+'</div>'+
-          '<div id="ftPvEn" style="font-family:'+(enF||zhF)+' !important;font-size:16px;opacity:0.7;margin-top:6px;">'+PREVIEW_EN+'</div>'+
+          '<div id="ftPvEn" style="font-family:'+(enF||zhF)+' !important;">'+PREVIEW_EN+'</div>'+
         '</div>'+
         '<div class="ft-slot-info">'+
           '<span class="ft-slot-tag'+(_state.tab==='zh'?' active':'')+'" id="ftTagZh">中：'+App.esc(Font._getName(_state.zh))+'</span>'+
