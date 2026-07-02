@@ -149,7 +149,7 @@
               '</div>' +
               '<div class="p14-panel-row p14-panel-row-center"><div class="p14-panel-label">圆角</div>' +
                 '<div class="p14-slider-wrap p14-slider-wrap-flex">' +
-                  '<div class="p14-slider-item"><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="50" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
+                  '<div class="p14-slider-item"><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="20" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
