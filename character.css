@@ -1,3 +1,11 @@
+#clPageInner {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 15px 16px 40px;
+  background: #fff;
+}
+
 /* ====== 页面模式 ====== */
 .cl-page { --page-dark:#111; --page-accent:#88abda; --page-light:#fff; }
 .cl-page.mode-frost { --page-dark:#6b7280; --page-accent:#9ca3af; --page-light:#f3f4f6; }
