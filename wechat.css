@@ -110,7 +110,7 @@
 
 /* ====== 默认主题手机框：白色 ====== */
 #wxWrap:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 13px solid #d1d5db;
+  border: 13px solid #f1f1f1;
   box-shadow:
     0 0 0 1px rgba(220,220,220,.5),
     0 14px 40px rgba(0,0,0,.10),
