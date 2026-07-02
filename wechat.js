@@ -82,7 +82,7 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       var showTab = Wechat.currentPage === 'chats';
 
       panel.innerHTML =
-        '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-inner" id="wxInner">' +
+       '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-side-key wx-side-right"></div><div class="wx-inner" id="wxInner">' +
 
         '<div class="c6-header">' +
   '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
