@@ -651,11 +651,17 @@
 }
 
 .ft-live-preview-text {
-  font-size: 20px;
+  font-size: 22px;
   color: #1a1a1a;
   line-height: 2;
   font-weight: 500;
   letter-spacing: 1px;
+}
+#ftPvEn {
+  font-size: 20px;
+  opacity: 0.7;
+  margin-top: 6px;
+  display: block;  /* 确保换行 */
 }
 
 .ft-live-preview-btn {
@@ -680,7 +686,7 @@
 
 .ft-live-preview-btn.disabled {
   background: #dbdee2;
-  color: #666;
+  color: #1a1a1a;
   pointer-events: none;
 }
 
@@ -702,7 +708,7 @@
   padding: 8px 24px;
   font-size: 13px;
   font-weight: 700;
-  color: #8aa0b8;
+  color: #1a1a1a;
   background: transparent;
   border: none;
   cursor: pointer;
