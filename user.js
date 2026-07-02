@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 218, sat: 18, lit: 93, radius: 50 };
+  var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
@@ -21,20 +21,21 @@
   ];
 
   function pcVars(hue, sat, lit) {
-    var s = Math.max(0, Math.min(100, +sat));
-    var l = Math.max(0, Math.min(100, +lit));
-    return '--pc1:hsl('+hue+','+s+'%,'+Math.min(100,l+4)+'%);--pc2:hsl('+hue+','+s+'%,'+Math.min(100,l+1)+'%);--pc3:hsl('+hue+','+s+'%,'+l+'%);--pc4:hsl('+hue+','+s+'%,'+Math.max(0,l-6)+'%);--pc5:hsl('+hue+','+s+'%,'+Math.max(0,l-10)+'%);';
-}
+    var bs = Math.max(0, Math.min(70, +sat));
+    var bl = Math.max(30, Math.min(70, +lit));
+    return '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
+  }
 
   function setPcVars(card, h, s, l) {
-    s = Math.max(0, Math.min(100, +s));
-    l = Math.max(0, Math.min(100, +l));
-    card.style.setProperty('--pc1', 'hsl('+h+','+s+'%,'+Math.min(100,l+4)+'%)');
-    card.style.setProperty('--pc2', 'hsl('+h+','+s+'%,'+Math.min(100,l+1)+'%)');
-    card.style.setProperty('--pc3', 'hsl('+h+','+s+'%,'+l+'%)');
-    card.style.setProperty('--pc4', 'hsl('+h+','+s+'%,'+Math.max(0,l-6)+'%)');
-    card.style.setProperty('--pc5', 'hsl('+h+','+s+'%,'+Math.max(0,l-10)+'%)');
-}
+    var bs = Math.max(0, Math.min(70, +s));
+    var bl = Math.max(30, Math.min(70, +l));
+    card.style.setProperty('--pc5', 'hsla('+h+','+bs+'%,'+bl+'%,0.5)');
+    card.style.setProperty('--pc25', 'hsla('+h+','+bs+'%,'+bl+'%,0.25)');
+    card.style.setProperty('--pc45', 'hsla('+h+','+bs+'%,'+bl+'%,0.45)');
+    card.style.setProperty('--pc35', 'hsla('+h+','+bs+'%,'+bl+'%,0.35)');
+    card.style.setProperty('--pc18', 'hsla('+h+','+bs+'%,'+bl+'%,0.18)');
+    card.style.setProperty('--pc1', 'hsla('+h+','+bs+'%,'+bl+'%,0.1)');
+  }
 
   function randomWxId() {
     var chars = 'abcdefghijklmnopqrstuvwxyz';
@@ -98,13 +99,8 @@
               sat = u.cardSat != null ? u.cardSat : DEFAULT_CARD.sat,
               lit = u.cardLit != null ? u.cardLit : DEFAULT_CARD.lit,
               radius = u.cardRadius != null ? u.cardRadius : DEFAULT_CARD.radius;
-          var cardBg = 'linear-gradient(155deg,' +
-  'hsla(' + hue + ',' + sat + '%,' + (+lit-2) + '%, 0.9) 0%,' +
-  'hsla(' + hue + ',' + sat + '%,' + (+lit+2) + '%, 0.82) 30%,' +
-  'hsla(' + hue + ',' + sat + '%,' + (+lit+4) + '%, 0.95) 52%,' +
-  'hsla(' + hue + ',' + sat + '%,' + (+lit+1) + '%, 0.84) 74%,' +
-  'hsla(' + hue + ',' + sat + '%,' + (+lit-3) + '%, 0.9))';
-var borderC = 'hsl(' + hue + ',' + sat + '%,' + Math.max(0, +lit-6) + '%)';
+          var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
+          var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
           var vars = pcVars(hue, sat, lit);
 
@@ -153,7 +149,7 @@ var borderC = 'hsl(' + hue + ',' + sat + '%,' + Math.max(0, +lit-6) + '%)';
               '</div>' +
               '<div class="p14-panel-row p14-panel-row-center"><div class="p14-panel-label">圆角</div>' +
                 '<div class="p14-slider-wrap p14-slider-wrap-flex">' +
-                  '<div class="p14-slider-item"><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="10" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
+                  '<div class="p14-slider-item"><input type="range" class="p14-slider p14-radius" data-uid="' + u.id + '" min="50" max="70" value="' + radius + '"><span class="p14-slider-val p14-radius-val">' + radius + 'px</span></div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -225,13 +221,8 @@ var borderC = 'hsl(' + hue + ',' + sat + '%,' + Math.max(0, +lit-6) + '%)';
           card.querySelector('.p14-lit-val').textContent = l;
           var preview = card.querySelector('.p14-color-preview');
           if (preview) preview.style.background = 'hsl(' + h + ',' + s + '%,' + l + '%)';
-          card.style.background = 'linear-gradient(155deg,' +
-  'hsla(' + h + ',' + s + '%,' + (+l-2) + '%, 0.9) 0%,' +
-  'hsla(' + h + ',' + s + '%,' + (+l+2) + '%, 0.82) 30%,' +
-  'hsla(' + h + ',' + s + '%,' + (+l+4) + '%, 0.95) 52%,' +
-  'hsla(' + h + ',' + s + '%,' + (+l+1) + '%, 0.84) 74%,' +
-  'hsla(' + h + ',' + s + '%,' + (+l-3) + '%, 0.9))';
-card.style.borderColor = 'hsl(' + h + ',' + s + '%,' + Math.max(0, +l-6) + '%)';
+          card.style.background = 'linear-gradient(155deg,hsla(' + h + ',' + s + '%,' + l + '%,0.6),hsla(' + h + ',' + s + '%,' + (+l+5) + '%,0.45) 25%,hsla(' + h + ',' + s + '%,' + (+l+10) + '%,0.7) 45%,hsla(' + h + ',' + s + '%,' + (+l+3) + '%,0.5) 65%,hsla(' + h + ',' + s + '%,' + l + '%,0.55))';
+          card.style.borderColor = 'hsla(' + h + ',' + s + '%,' + l + '%,0.5)';
           setPcVars(card, h, s, l);
         });
       });
