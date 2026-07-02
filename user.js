@@ -158,7 +158,7 @@
       }
 
       panel.innerHTML =
-        '<div class="up-list-header app-header-safe">' +
+       '<div class="up-list-header">' +
           '<div class="up-list-back" id="upListBack">' + POWER_ICON + '</div>' +
           '<div class="up-list-title">此间相</div>' +
           '<div class="up-list-add" id="upListAdd">+</div>' +
