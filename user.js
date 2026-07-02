@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 210, sat: 72, lit: 90, radius: 60 };
+  var DEFAULT_CARD = { hue: 215, sat: 12, lit: 92, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
@@ -160,7 +160,7 @@
       panel.innerHTML =
         '<div class="up-list-header app-header-safe">' +
           '<div class="up-list-back" id="upListBack">' + POWER_ICON + '</div>' +
-          '<div class="up-list-title">用户列表</div>' +
+          '<div class="up-list-title">此间相</div>' +
           '<div class="up-list-add" id="upListAdd">+</div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px 40px;">' + cardsHtml + '</div>';
