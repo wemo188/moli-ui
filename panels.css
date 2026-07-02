@@ -644,8 +644,8 @@
 ========================= */
 .ft-live-preview {
   padding: 20px 20px 24px;
-  background: rgba(248,248,248,0.65);
-  border-bottom: 1.5px solid rgba(248,248,248,0.95);
+  background: rgba(126,163,201,0.08);
+  border-bottom: 1.5px solid rgba(126,163,201,0.4);
   text-align: center;
   flex-shrink: 0;
 }
@@ -734,20 +734,31 @@
   gap: 16px;
   margin-top: 12px;
   font-size: 11px;
-  color: #1a1a1a;
+  color: #666;
 }
 
 .ft-slot-tag {
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(126,163,201,0.08);
+  background: #eaecf0;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
 .ft-slot-tag.active {
   background: #eaecf0;
-  color: #666;
+  color: #1a1a1a;
+}
+
+/* 字体面板 - 上传按钮灰色系（不污染全局） */
+.font-fullpanel .hp-upload {
+  border: 2px dashed rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.02);
+  color: #999;
+}
+
+.font-fullpanel .hp-upload:active {
+  border-color: #999;
 }
 
 /* =========================
