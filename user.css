@@ -121,23 +121,30 @@
    编辑页 - 面板容器 (userProfilePanel)
    =========================== */
 .up-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 10001;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  transform: translateX(100%);
+  opacity: 0;
 }
 
-/* 面板滑入 */
 .up-panel.up-panel-in {
   transform: translateX(0);
   opacity: 1;
 }
 
-/* 面板滑出 */
 .up-panel.up-panel-out {
   transform: translateX(100%);
   opacity: 0;
 }
 
-/* 跳过动画 */
 .up-panel.up-panel-no-anim {
   transition: none;
 }
@@ -669,8 +676,18 @@
    展开编辑器面板
    =========================== */
 .up-expand-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 10004;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  transform: translateY(100%);
+  opacity: 0;
   overflow: hidden;
 }
 
