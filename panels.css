@@ -734,7 +734,7 @@
   gap: 16px;
   margin-top: 12px;
   font-size: 11px;
-  color: #8aa0b8;
+  color: #1a1a1a;
 }
 
 .ft-slot-tag {
@@ -747,7 +747,7 @@
 
 .ft-slot-tag.active {
   background: #eaecf0;
-  color: #2e4258;
+  color: #666;
 }
 
 /* =========================
