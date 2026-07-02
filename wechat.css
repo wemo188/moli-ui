@@ -110,7 +110,6 @@
 
 /* ====== 默认主题手机框：白色 ====== */
 #wxWrap:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  background: #ffffff;
   border: 10px solid #f1f1f1;
   box-shadow:
     0 0 0 1px rgba(220,220,220,.5),
@@ -904,7 +903,6 @@
 }
 
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  background: #f4f7fc;
   border: 10px solid #e8eef8;
   box-shadow:
     0 0 0 1px rgba(200,210,225,.4),
@@ -981,7 +979,6 @@
 }
 
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  background: #fff6f8;
   border: 10px solid #fde7ec;
   box-shadow:
     0 0 0 1px rgba(245,180,190,.35),
