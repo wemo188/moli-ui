@@ -13,7 +13,10 @@
 ========================= */
 .fullpage-panel {
   position: fixed;
-  inset: 0;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - env(safe-area-inset-top, 0px));
   z-index: 10000;
   background: var(--bg-primary);
   display: flex;
@@ -22,8 +25,6 @@
   will-change: transform, opacity;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .fullpage-panel.hidden {
