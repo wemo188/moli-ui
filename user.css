@@ -52,26 +52,14 @@
    列表页 - 面板容器 (archivePanel)
    =========================== */
 .archive-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 10000;
   background: #fff;
   display: none;
-  flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateX(100%);
-  opacity: 0;
 }
 
-/* 面板可见 */
 .archive-panel.archive-visible {
   display: flex;
 }
 
-/* 面板滑入 */
 .archive-panel.archive-in {
   transform: translateX(0);
   opacity: 1;
@@ -133,18 +121,8 @@
    编辑页 - 面板容器 (userProfilePanel)
    =========================== */
 .up-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 10001;
   background: #fff;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateX(100%);
-  opacity: 0;
 }
 
 /* 面板滑入 */
@@ -691,18 +669,8 @@
    展开编辑器面板
    =========================== */
 .up-expand-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 10004;
   background: #fff;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
-  transform: translateY(100%);
-  opacity: 0;
   overflow: hidden;
 }
 
