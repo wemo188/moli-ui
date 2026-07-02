@@ -7,44 +7,85 @@
   justify-content: space-between;
   padding: 8px 16px 6px;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
+  border-bottom: none;
+  position: relative;
 }
 
-/* 标题栏按钮容器 */
 .archive-header-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(232,236,241,0.92));
+  border: 1.5px solid rgba(213,218,225,0.95);
+  box-shadow: 0 2px 8px rgba(169,175,184,0.14), inset 0 1px 1px rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* 标题栏 SVG 图标 */
 .archive-header-svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   fill: none;
-  stroke: #999;
-  stroke-width: 2;
+  stroke: #7c8693;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* 标题栏标题文字 */
 .archive-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 124px;
+  height: 38px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(233,236,241,0.94), rgba(245,247,250,0.84) 30%, rgba(255,255,255,0.98) 52%, rgba(238,241,246,0.88) 74%, rgba(229,233,238,0.92));
+  border: 1.5px solid rgba(214,220,228,0.95);
+  box-shadow: 0 4px 16px rgba(160,168,178,0.1), inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -0.5px 0 rgba(210,216,224,0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   font-size: 15px;
-  font-weight: 800;
-  color: #1a1a1a;
-  letter-spacing: 2px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #5f6977;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-/* 标题栏新增按钮 */
+.archive-header-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.74), transparent);
+  pointer-events: none;
+  border-radius: 14px 14px 0 0;
+}
+
 .archive-header-add {
   font-size: 24px;
-  color: #999;
+  color: #7c8693;
   font-weight: 300;
+}
+
+.archive-divider {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
+  border-radius: 999px;
+  margin: 0 18px 2px;
+  box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
 /* ===========================
