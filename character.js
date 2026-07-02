@@ -83,12 +83,15 @@
       Character.load();
       var panel = App.$('#charPanel');
       if (!panel) return;
-      panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+            panel.className = 'fullpage-panel hidden';
+      panel.style.display = 'flex';
       Character.renderList();
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
-        panel.style.transform = 'translateX(0)';
-        panel.style.opacity = '1';
-      }); });
+            requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          panel.classList.remove('hidden');
+          panel.classList.add('show');
+        });
+      });
       App.bindSwipeBack(panel, function() { Character.close(); });
     },
 
@@ -97,8 +100,8 @@
       if (!panel) return;
       var popup = document.querySelector('#clColorPopup');
       if (popup) popup.remove();
-      panel.style.transform = 'translateX(100%)';
-      panel.style.opacity = '0';
+            panel.classList.remove('show');
+      panel.classList.add('hidden');
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
