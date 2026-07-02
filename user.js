@@ -598,9 +598,10 @@
       });
     },
 
-    init: function() {
-  User.load();
-  App.user = User;
+        init: function() {
+      User.load();
+      App.user = User;
+      App.safeOn('#iconUser', 'click', function() { User.open(); });
     }
   };
 
