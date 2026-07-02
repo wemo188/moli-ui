@@ -120,6 +120,13 @@
   font-size: 14px;
 }
 
+.p14-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 4px 40px;
+}
+
 /* ===========================
    编辑页 - 面板容器 (userProfilePanel)
    =========================== */
