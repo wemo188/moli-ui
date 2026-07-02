@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 215, sat: 12, lit: 92, radius: 30 };
+  var DEFAULT_CARD = { hue: 215, sat: 35, lit: 90, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
@@ -99,7 +99,7 @@
               sat = u.cardSat != null ? u.cardSat : DEFAULT_CARD.sat,
               lit = u.cardLit != null ? u.cardLit : DEFAULT_CARD.lit,
               radius = u.cardRadius != null ? u.cardRadius : DEFAULT_CARD.radius;
-          var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.6),hsla(' + hue + ',' + sat + '%,' + (+lit+5) + '%,0.45) 25%,hsla(' + hue + ',' + sat + '%,' + (+lit+10) + '%,0.7) 45%,hsla(' + hue + ',' + sat + '%,' + (+lit+3) + '%,0.5) 65%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.55))';
+          var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.94),hsla(' + hue + ',' + sat + '%,' + (+lit+4) + '%,0.84) 30%,rgba(255,255,255,0.98) 52%,hsla(' + hue + ',' + sat + '%,' + (+lit+2) + '%,0.88) 74%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.92))';
           var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
           var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.esc(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
           var vars = pcVars(hue, sat, lit);
