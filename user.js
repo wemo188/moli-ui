@@ -343,7 +343,7 @@ var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r=
 
       pp.innerHTML =
         '<div class="profile-header app-header-safe">' +
-          '<div id="upProfileBack" class="up-header-btn">' + BACK_ICON + '</div>' +
+         '<div id="upProfileBack" class="up-header-btn"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="#999" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="#999" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
           '<div class="up-header-title">PROFILE</div>' +
           '<div id="upRebuild" class="up-header-rebuild' + (User.sealed ? '' : ' up-hidden') + '" data-edit-id="' + (editId || '') + '">重建</div>' +
         '</div>' +
