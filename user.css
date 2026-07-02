@@ -25,6 +25,7 @@
   box-shadow: 0 2px 8px rgba(169,175,184,0.14), inset 0 1px 1px rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  position: relative;
 }
 
 .archive-header-svg {
@@ -39,8 +40,9 @@
 
 .archive-header-title {
   position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   min-width: 124px;
   height: 38px;
   padding: 0 18px;
