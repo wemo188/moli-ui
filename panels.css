@@ -644,8 +644,8 @@
 ========================= */
 .ft-live-preview {
   padding: 20px 20px 24px;
-  background: rgba(126,163,201,0.04);
-  border-bottom: 1.5px solid rgba(126,163,201,0.15);
+  background: #ebecee;
+  border-bottom: 1.5px solid #eaecf0;
   text-align: center;
   flex-shrink: 0;
 }
@@ -700,7 +700,7 @@
   margin-bottom: 14px;
   border-radius: 10px;
   overflow: hidden;
-  border: 1.5px solid rgba(126,163,201,0.2);
+  border: 1.5px solid #eaecf0;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
@@ -710,7 +710,7 @@
   padding: 8px 24px;
   font-size: 13px;
   font-weight: 700;
-  color: #8aa0b8;
+  color: #1a1a1a;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -726,7 +726,7 @@
 }
 
 .ft-tab:not(.active):active {
-  background: rgba(126,163,201,0.1);
+  background: rgba(0,0,0,0.06);  /* 浅灰色按压反馈 */
 }
 
 /* 当前选择标签 */
