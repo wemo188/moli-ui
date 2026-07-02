@@ -1,4 +1,22 @@
+（他靠在椅背上，指尖轻敲桌面，语气很轻松）
 
+好，这几个改动我一次性理清楚再动手。
+
+你要的效果是：
+1. 角色列表顶部栏：左边关机图标换成圆圈箭头返回按钮
+2. 猫爪挪到"样式一"文字旁边，点猫爪切换模式，中间标题 17px，右边创建字体也大点
+3. 绑定按钮旁边的链接符号换成星星
+4. 卡片里删掉小头像，只保留大背景图框
+5. 大背景图框不再有点击上传功能（去掉点击事件）
+6. 在编辑页上传的头像会实时更新到背景图框里（编辑页保存后 cover = avatar）
+
+我来改 `character.js` 和 `character.css`：
+
+---
+
+**character.js** 完整替换：
+
+```javascript
 (function() {
   'use strict';
   var App = window.App;
@@ -7,6 +25,7 @@
   var MODES = ['', 'mode-frost', 'mode-mono'];
   var MODE_LABELS = ['样式一', '样式二', '样式三'];
   var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var UNIFIED_BACK = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   var MODE_CFG = [
     {
@@ -83,10 +102,10 @@
       Character.load();
       var panel = App.$('#charPanel');
       if (!panel) return;
-            panel.className = 'fullpage-panel hidden';
+      panel.className = 'fullpage-panel hidden';
       panel.style.display = 'flex';
       Character.renderList();
-            requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
         requestAnimationFrame(function() {
           panel.classList.remove('hidden');
           panel.classList.add('show');
@@ -100,7 +119,7 @@
       if (!panel) return;
       var popup = document.querySelector('#clColorPopup');
       if (popup) popup.remove();
-            panel.classList.remove('show');
+      panel.classList.remove('show');
       panel.classList.add('hidden');
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
@@ -124,17 +143,15 @@
           var idx = String(i + 1).padStart(2, '0');
           var name = App.esc(c.name || '未命名');
 
-          var avatarHtml = c.avatar
-            ? '<img src="' + App.escAttr(c.avatar) + '">'
-            : '<div class="cl-avatar-empty"></div>';
-          var coverHtml = c.cover
-            ? '<img src="' + App.escAttr(c.cover) + '">'
+          var coverSrc = c.avatar || c.cover || '';
+          var coverHtml = coverSrc
+            ? '<img src="' + App.escAttr(coverSrc) + '">'
             : '<div class="cl-cover-empty"></div>';
 
           var wbCount = (c.worldbookIds && c.worldbookIds.length) || 0;
-var wbMounted = wbCount > 0;
-var wbClass = wbMounted ? ' mounted' : '';
-var wbText = wbMounted ? '已加载' : '世界书';
+          var wbMounted = wbCount > 0;
+          var wbClass = wbMounted ? ' mounted' : '';
+          var wbText = wbMounted ? '已加载' : '世界书';
 
           return '<div class="char-list-wrap" data-char-id="' + c.id + '">' +
             '<div class="cl-top-bar"></div>' +
@@ -145,11 +162,10 @@ var wbText = wbMounted ? '已加载' : '世界书';
             '<div class="cl-body"><div class="cl-item">' +
               '<div class="cl-item-index">' + idx + '</div>' +
               '<div class="cl-item-main">' +
-                '<div class="cl-cover cl-cover-box" data-id="' + c.id + '">' + coverHtml + '</div>' +
-                '<div class="cl-avatar cl-avatar-box" data-id="' + c.id + '">' + avatarHtml + '</div>' +
+                '<div class="cl-cover">' + coverHtml + '</div>' +
               '</div>' +
               '<div class="cl-actions">' +
-                '<div class="cl-act-btn cl-act-bind" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>绑定</div>' +
+                '<div class="cl-act-btn cl-act-bind" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>绑定</div>' +
                 '<div class="cl-act-btn cl-act-edit" data-id="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5l3 3L12 15H9v-3z"/></svg>编辑</div>' +
                 '<div class="cl-act-btn cl-act-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14h12l1-14"/></svg><span class="cl-del-text" data-id="' + c.id + '">删除</span></div>' +
               '</div>' +
@@ -185,10 +201,10 @@ var wbText = wbMounted ? '已加载' : '世界书';
       panel.innerHTML =
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px 40px;background:#fff;">' +
         '<div class="cl-topbar-wrap">' +
-  '<div class="cl-esc" id="clEsc"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
-  '<div class="cl-mode-btn" id="clModeBtn">' + MODE_LABELS[mi] + '</div>' +
-  '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
-'</div>' +
+          '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
+          '<div class="cl-mode-center" id="clModeCenter"><span class="cl-paw-toggle" id="clPawToggle">🐾</span><span class="cl-mode-label" id="clModeLabel">' + MODE_LABELS[mi] + '</span></div>' +
+          '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
+        '</div>' +
           cardsHtml +
         '</div>' +
         popupHtml;
@@ -209,30 +225,17 @@ var wbText = wbMounted ? '已加载' : '世界书';
 
       panel.querySelector('#clEsc').addEventListener('click', function() { Character.close(); });
 
-      panel.querySelector('#clModeBtn').addEventListener('click', function() {
+      panel.querySelector('#clPawToggle').addEventListener('click', function() {
         MODES.forEach(function(m) { if (m) pageEl.classList.remove(m); });
         Character.currentMode = (Character.currentMode + 1) % MODES.length;
         if (MODES[Character.currentMode]) pageEl.classList.add(MODES[Character.currentMode]);
-        this.textContent = MODE_LABELS[Character.currentMode];
+        panel.querySelector('#clModeLabel').textContent = MODE_LABELS[Character.currentMode];
         Character.saveMode();
         Character.renderList();
       });
 
       panel.querySelector('#clNewBtn').addEventListener('click', function() {
         if (App.charMgr) App.charMgr.open();
-      });
-
-      panel.querySelectorAll('.cl-avatar-box').forEach(function(box) {
-        box.addEventListener('click', function(e) {
-          e.stopPropagation();
-          Character.uploadImage(box.dataset.id, 'avatar', box);
-        });
-      });
-
-      panel.querySelectorAll('.cl-cover-box').forEach(function(box) {
-        box.addEventListener('click', function() {
-          Character.uploadImage(box.dataset.id, 'cover', box);
-        });
       });
 
       panel.querySelectorAll('.cl-wb-btn').forEach(function(btn) {
@@ -289,26 +292,26 @@ var wbText = wbMounted ? '已加载' : '世界书';
             Character.save();
 
             if (selected.length > 0) {
-  btn.classList.add('mounted');
-  btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已加载';
-} else {
-  btn.classList.remove('mounted');
-  btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
-}
+              btn.classList.add('mounted');
+              btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>已加载';
+            } else {
+              btn.classList.remove('mounted');
+              btn.innerHTML = '<span class="plus-icon">' + BOOK_SVG + '</span>世界书';
+            }
             overlay.remove();
             App.showToast(selected.length ? '已加载 ' + selected.length + ' 本世界书' : '已取消挂载');
           });
         });
       });
 
-           panel.querySelectorAll('.cl-act-bind').forEach(function(btn) {
+      panel.querySelectorAll('.cl-act-bind').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var charId = btn.dataset.id;
           if (!App.user) { App.showToast('用户模块未加载'); return; }
           App.user.load();
           var users = App.user.list;
-          if (!users.length) { App.showToast('请先在微信「Me」创建用户身份'); return; }
+          if (!users.length) { App.showToast('请先创建用户身份'); return; }
 
           var bindings = App.LS.get('charUserBindings') || {};
 
@@ -483,125 +486,10 @@ var wbText = wbMounted ? '已加载' : '世界书';
       });
     },
 
-    uploadImage: function(charId, field, box) {
-      var old = App.$('#imgSourceMenu');
-      if (old) old.remove();
-
-      var menu = document.createElement('div');
-      menu.id = 'imgSourceMenu';
-      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-      menu.innerHTML =
-        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;margin-bottom:4px;">选择图片来源</div>' +
-          '<button id="imgFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
-          '<button id="imgFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
-          '<button id="imgFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除图片</button>' +
-          '<button id="imgFromCancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
-        '</div>';
-      document.body.appendChild(menu);
-
-      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelector('#imgFromCancel').addEventListener('click', function() { menu.remove(); });
-
-      menu.querySelector('#imgFromDel').addEventListener('click', function() {
-        menu.remove();
-        var c = Character.getById(charId);
-        if (c) { c[field] = ''; Character.save(); }
-        if (field === 'avatar') box.innerHTML = '<div class="cl-avatar-empty"></div>';
-        else box.innerHTML = '<div class="cl-cover-empty"></div>';
-        App.showToast('已删除');
-      });
-
-      menu.querySelector('#imgFromAlbum').addEventListener('click', function() {
-        menu.remove();
-        var input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        document.body.appendChild(input);
-        input.onchange = function(e) {
-          var file = e.target.files[0];
-          document.body.removeChild(input);
-          if (!file) return;
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            var src = ev.target.result;
-            if (App.cropImage) {
-              App.cropImage(src, function(cropped) {
-                var c = Character.getById(charId);
-                if (c) { c[field] = cropped; Character.save(); }
-                box.innerHTML = '<img src="' + cropped + '">';
-              });
-            } else {
-              Character._compressAndSet(src, charId, field, box);
-            }
-          };
-          reader.readAsDataURL(file);
-        };
-        input.click();
-      });
-
-      menu.querySelector('#imgFromUrl').addEventListener('click', function() {
-        menu.remove();
-        var urlPanel = document.createElement('div');
-        urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-        urlPanel.innerHTML =
-          '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
-            '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;">输入图片URL</div>' +
-            '<input id="imgUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
-            '<div id="imgUrlPreview" style="display:none;width:100%;height:120px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f5f5f5;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
-            '<div style="display:flex;gap:8px;">' +
-              '<button id="imgUrlConfirm" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
-              '<button id="imgUrlCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
-            '</div>' +
-          '</div>';
-        document.body.appendChild(urlPanel);
-
-        urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
-        urlPanel.querySelector('#imgUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
-
-        var previewBox = urlPanel.querySelector('#imgUrlPreview');
-        var previewImg = previewBox.querySelector('img');
-        urlPanel.querySelector('#imgUrlInput').addEventListener('input', function() {
-          var v = this.value.trim();
-          if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
-            previewImg.src = v; previewBox.style.display = 'block';
-            previewImg.onerror = function() { previewBox.style.display = 'none'; };
-          } else { previewBox.style.display = 'none'; }
-        });
-
-        urlPanel.querySelector('#imgUrlConfirm').addEventListener('click', function() {
-          var url = urlPanel.querySelector('#imgUrlInput').value.trim();
-          if (!url) { App.showToast('请输入URL'); return; }
-          urlPanel.remove();
-          var c = Character.getById(charId);
-          if (c) { c[field] = url; Character.save(); }
-          box.innerHTML = '<img src="' + App.escAttr(url) + '">';
-          App.showToast('已设置');
-        });
-      });
-    },
-
-    _compressAndSet: function(src, charId, field, box) {
-      var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement('canvas');
-        var max = field === 'avatar' ? 512 : 1200;
-        var w = img.width, h = img.height;
-        if (w > h) { if (w > max) { h = h * max / w; w = max; } }
-        else { if (h > max) { w = w * max / h; h = max; } }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.92);
-        var c = Character.getById(charId);
-        if (c) { c[field] = compressed; Character.save(); }
-        box.innerHTML = '<img src="' + compressed + '">';
-      };
-      img.src = src;
-    },
-
     init: function() {
       Character.load();
       if (!App.$('#charPanel')) {
-        var panel = document.createElement('div');
+      var panel = document.createElement('div');
         panel.id = 'charPanel';
         panel.style.display = 'none';
         document.body.appendChild(panel);
@@ -619,10 +507,11 @@ var wbText = wbMounted ? '已加载' : '世界书';
         if (Character._drag) Character._drag.active = false;
       });
 
-                  App.character = Character;
+      App.character = Character;
       App.safeOn('#iconChar', 'click', function() { Character.open(); });
     }
   };
 
   App.register('character', Character);
 })();
+      
