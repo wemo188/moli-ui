@@ -110,7 +110,7 @@
 
 /* ====== 默认主题手机框：白色 ====== */
 #wxWrap:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 10px solid #f1f1f1;
+  border: 15px solid #f1f1f1;
   box-shadow:
     0 0 0 1px rgba(220,220,220,.5),
     0 14px 40px rgba(0,0,0,.10),
@@ -903,7 +903,7 @@
 }
 
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 10px solid #f4f7fc;
+  border: 15px solid #f4f7fc;
   box-shadow:
     0 0 0 1px rgba(200,210,225,.4),
     0 14px 40px rgba(20,50,100,.12),
@@ -979,7 +979,7 @@
 }
 
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone > .wx-inner {
-  border: 10px solid #fde7ec;
+  border: 15px solid rgba(245,180,190,0.3);
   box-shadow:
     0 0 0 1px rgba(245,180,190,.35),
     0 14px 40px rgba(120,40,70,.10),
@@ -989,7 +989,7 @@
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone::before,
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone::after,
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone .wx-side-key {
-  background: linear-gradient(180deg, #ffffff, #fde7ec);
+  background: linear-gradient(180deg, #ffffff, rgba(245,180,190,0.3));
   border: 1px solid rgba(245,180,190,.55);
   box-shadow:
     0 2px 6px rgba(120,40,70,.08),
