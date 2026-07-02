@@ -44,8 +44,8 @@
 #wxWrap:not(.wx-fullscreen) .wx-phone {
   width: calc(100% - 40px);
   max-width: 420px;
-  height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 20px));
-  max-height: 760px;
+  height: calc(100vh - 60px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 20px));
+  max-height: 960px;
 }
 
 .wx-phone::before,
