@@ -13,8 +13,7 @@
     { key: 'age', en: 'AGE', cn: '年龄' },
     { key: 'birthday', en: 'BIRTHDAY', cn: '生日' },
     { key: 'phone', en: 'PHONE', cn: '手机号' },
-    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' },
-    { key: 'wechatPwd', en: 'WECHAT PWD', cn: '微信密码' }
+    { key: 'wechatId', en: 'WECHAT ID', cn: '微信号' }
   ];
   var FIELDS_LONG = [
     { key: 'bio', en: 'DESCRIPTION', cn: '个人描述' }
@@ -312,9 +311,7 @@
         var ph = '';
         if (f.key === 'phone') ph = '输入十位虚拟数字,或者留空随机生成';
         else if (f.key === 'wechatId') ph = '留空随机生成 wx_xxxx';
-        else if (f.key === 'wechatPwd') ph = '留空则默认无微信密码';
         var displayVal = val || '—';
-        if (f.key === 'wechatPwd' && !val) displayVal = '无密码';
         return '<div class="up-field">' +
           '<div class="up-field-label"><div class="up-field-dot"></div><div class="up-field-key">' + f.cn + ' ' + f.en + '</div></div>' +
           '<div class="up-field-line">' +
@@ -523,7 +520,6 @@
         var display = el.parentNode.querySelector('.up-field-display');
         if (display) {
           var val = el.value.trim();
-          if (el.dataset.key === 'wechatPwd' && !val) val = '无密码';
           display.textContent = val || '—';
         }
       });
