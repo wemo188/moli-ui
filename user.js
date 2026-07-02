@@ -315,7 +315,7 @@
 
       var pp = document.createElement('div');
       pp.id = 'userProfilePanel';
-      pp.className = 'up-panel' + sealedClass;
+            pp.className = 'up-panel fullpage-panel' + sealedClass;
 
       pp.innerHTML =
         '<div class="profile-header">' +
@@ -416,7 +416,7 @@
       if (old) old.remove();
       var editor = document.createElement('div');
       editor.id = 'upExpandEditor';
-      editor.className = 'up-expand-panel';
+            editor.className = 'up-expand-panel fullpage-panel';
       editor.innerHTML =
         '<div class="expand-header">' +
           '<button id="upExpBack" class="up-expand-header-btn" type="button">' +
