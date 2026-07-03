@@ -1,6 +1,5 @@
-
 /* ===========================
-   列表页 - 顶部导航（银白色）
+   列表页 - 顶部导航（银白色 5个圆圈均分）
    =========================== */
 .up-list-header {
   position: relative;
@@ -12,27 +11,34 @@
   flex-shrink: 0;
 }
 
-.up-list-back {
-  width: 34px;
-  height: 34px;
+.up-header-circle {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(232,236,241,0.92));
   border: 1.5px solid rgba(213,218,225,0.95);
-  box-shadow: 0 2px 8px rgba(169,175,184,0.14), inset 0 1px 1px rgba(255,255,255,0.95);
+  box-shadow: 0 3px 10px rgba(169,175,184,0.12), inset 0 1px 1px rgba(255,255,255,0.95);
   color: #7c8693;
   flex-shrink: 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.up-list-back, .up-list-add {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.up-list-back:active { transform: scale(0.9); }
+.up-list-back:active, .up-list-add:active {
+  transform: scale(0.9);
+  box-shadow: 0 1px 4px rgba(169,175,184,0.1);
+}
 
-.up-list-back svg {
-  width: 16px;
-  height: 16px;
+.up-list-back svg, .up-list-add svg {
+  width: 18px;
+  height: 18px;
   stroke: #7c8693;
   fill: none;
   stroke-width: 2.2;
@@ -40,68 +46,13 @@
   stroke-linejoin: round;
 }
 
-.up-list-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 124px;
-  height: 40px;
-  padding: 0 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  background: linear-gradient(155deg, rgba(233,236,241,0.94), rgba(245,247,250,0.84) 30%, rgba(255,255,255,0.98) 52%, rgba(238,241,246,0.88) 74%, rgba(229,233,238,0.92));
-  border: 1.5px solid rgba(214,220,228,0.95);
-  box-shadow: 0 4px 16px rgba(160,168,178,0.1), inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -0.5px 0 rgba(210,216,224,0.42);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  overflow: hidden;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #5f6977;
+.up-list-char {
+  font-size: 15px;
+  font-weight: 800;
+  color: #7c8693;
+  letter-spacing: 0;
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-  white-space: nowrap;
-}
-
-.up-list-title::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 55%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.74), transparent);
   pointer-events: none;
-}
-
-.up-list-add {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(232,236,241,0.92));
-  border: 1.5px solid rgba(213,218,225,0.95);
-  box-shadow: 0 2px 8px rgba(169,175,184,0.14), inset 0 1px 1px rgba(255,255,255,0.95);
-  color: #7c8693;
-  flex-shrink: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.up-list-add:active { transform: scale(0.9); }
-
-.up-list-add svg {
-  width: 16px;
-  height: 16px;
-  stroke: #7c8693;
-  fill: none;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .up-list-divider {
@@ -1501,4 +1452,3 @@
 .up-profile-scroll {
   position: relative;
 }
-
