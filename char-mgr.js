@@ -61,7 +61,7 @@
 
       CharMgr.render(page, existing);
 
-      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
         page.style.transform = 'translateX(0)';
         page.style.opacity = '1';
       }); });
