@@ -119,7 +119,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
 
       page.innerHTML =
                '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+                    '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (isNew ? '添加角色' : '编辑角色') + '</span>' +
           '<div style="width:36px;"></div>' +
         '</div>' +
