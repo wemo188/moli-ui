@@ -762,7 +762,7 @@
 }
 .cl-modal-btn {
   flex: 1;
-  padding: 8px;
+  padding: 6px;
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -872,7 +872,7 @@
   color: #fff; 
   background: #88abda; /* 🌟 哥哥给你加了个小色块背景，这样右边就不会显得空了 */
   padding: 3px 8px;
-  border-radius: 15px;
+  border-radius: 30px;
   font-weight: 700; 
   letter-spacing: 0.5px;
 }
