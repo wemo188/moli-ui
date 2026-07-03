@@ -700,79 +700,19 @@
     },
 
     _showBgMenu: function() {
-      var old = App.$('#charBgMenu'); if (old) old.remove();
-      var menu = document.createElement('div');
-      menu.id = 'charBgMenu';
-      menu.className = 'cl-overlay';
-      menu.innerHTML =
-        '<div class="cl-modal cl-bg-modal">' +
-          '<div class="cl-bg-title">设置页面背景</div>' +
-          '<button class="cl-bg-btn" data-type="album">从相册选择</button>' +
-          '<button class="cl-bg-btn" data-type="url">输入图片 URL</button>' +
-          '<button class="cl-bg-btn cl-bg-btn-del" data-type="del">清除背景</button>' +
-          '<button class="cl-bg-btn cl-bg-btn-cancel" data-type="cancel">取消</button>' +
-        '</div>';
-      document.body.appendChild(menu);
-
-      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelectorAll('.cl-bg-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var type = btn.dataset.type;
-          menu.remove();
-          if (type === 'cancel') return;
-          if (type === 'del') {
+      App.showImagePicker({
+        title: '设置页面背景',
+        deleteText: '清除背景',
+        callback: function(src) {
+          if (src) {
+            App.LS.set('charPageBg', src);
+            App.showToast('背景已设置');
+          } else {
             App.LS.remove('charPageBg');
             App.showToast('背景已清除');
-            Character.renderList();
-            return;
           }
-                    if (type === 'album') {
-            var input = document.createElement('input');
-            input.type = 'file'; input.accept = 'image/*';
-            input.onchange = function(ev) {
-              var file = ev.target.files[0]; if (!file) return;
-              var reader = new FileReader();
-              reader.onload = function(r) {
-                // 🌟 完美接上我们已有的裁剪工具
-                if (App.cropImage) {
-                  App.cropImage(r.target.result, function(cropped) {
-                    App.LS.set('charPageBg', cropped);
-                    App.showToast('背景已设置');
-                    Character.renderList();
-                  });
-                } else {
-                  App.LS.set('charPageBg', r.target.result);
-                  App.showToast('背景已设置');
-                  Character.renderList();
-                }
-              };
-              reader.readAsDataURL(file);
-            };
-            input.click();
-            return;
-          }
-          if (type === 'url') {
-            var uOverlay = document.createElement('div');
-            uOverlay.className = 'cl-overlay';
-            uOverlay.innerHTML = 
-              '<div class="cl-modal cl-bg-modal">' +
-                '<div class="cl-bg-title">输入图片 URL</div>' +
-                '<input type="text" id="bgUrlInput" class="cl-bg-input" placeholder="https://...">' +
-                '<div class="cl-bg-btn-row">' +
-                  '<button class="cl-bg-btn cl-bg-btn-primary" id="bgUrlOk">确定</button>' +
-                  '<button class="cl-bg-btn" id="bgUrlNo">取消</button>' +
-                '</div>' +
-              '</div>';
-            document.body.appendChild(uOverlay);
-            uOverlay.querySelector('#bgUrlNo').onclick = function(){ uOverlay.remove(); };
-            uOverlay.querySelector('#bgUrlOk').onclick = function(){
-               var val = uOverlay.querySelector('#bgUrlInput').value.trim();
-               if(val) { App.LS.set('charPageBg', val); App.showToast('背景已设置'); Character.renderList(); }
-               uOverlay.remove();
-            };
-          }
-        });
+          Character.renderList();
+        }
       });
     },
 
