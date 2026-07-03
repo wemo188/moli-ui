@@ -258,6 +258,15 @@
   margin-bottom: 6px;
 }
 
+/* 全局弹窗的说明文字 */
+.gip-desc {
+  font-size: 12.5px;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: center;
+  line-height: 1.5;
+}
+
 .gip-btn {
   width: 100%;
   padding: 12px;
