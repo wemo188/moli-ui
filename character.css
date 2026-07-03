@@ -497,7 +497,7 @@
    ============================ */
 .cl-color-popup {
   position: fixed;
-  width: 200px;
+  width: 250px;
   background: rgba(255,255,255,0.78);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
@@ -512,7 +512,7 @@
 }
 .cl-color-popup.show { display: flex; }
 .cl-color-popup-title {
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 2px;
   color: #555;
@@ -523,12 +523,12 @@
 }
 .cl-color-popup-title:active { cursor: grabbing; }
 .cl-color-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.cl-color-custom-item { display: flex; align-items: center; gap: 4px; }
-.cl-color-custom-item label { font-size: 8px; font-weight: 700; color: #333; letter-spacing: 0.5px; }
+.cl-color-custom-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.cl-color-custom-item label { font-size: 12px; font-weight: 700; color: #333; letter-spacing: 0.5px; }
 
 .cl-cc {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
   border: 1.5px solid #ddd;
   cursor: pointer;
