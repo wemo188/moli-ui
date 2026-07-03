@@ -1,3 +1,10 @@
+/* 长按分类选择遮罩 */
+.cl-cat-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10100;
+  background: rgba(0,0,0,0.01);
+}
 
 /* ============================
    角色列表页容器
