@@ -55,7 +55,7 @@
 
       var page = document.createElement('div');
       page.id = 'charMgrPage';
-      page.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10001;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+      page.className = 'cm-main-panel'; // 🌟 换成干净的类名
       document.body.appendChild(page);
       CharMgr._pageEl = page;
 
@@ -479,71 +479,18 @@ charPhone: d.charPhone, charWechat: d.charWechat,
       App.showToast('角色已保存');
     },
 
-    _showAvatarMenu: function(box) {
-      var old = App.$('#avatarSourceMenu'); if (old) old.remove();
-      var menu = document.createElement('div');
-      menu.id = 'avatarSourceMenu';
-      menu.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-      menu.innerHTML =
-        '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:10px;">' +
-          '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;margin-bottom:4px;">选择头像来源</div>' +
-          '<button id="avFromAlbum" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">从相册选择</button>' +
-          '<button id="avFromUrl" type="button" style="padding:12px;border:1.5px solid #ddd;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">输入图片URL</button>' +
-          '<button id="avFromDel" type="button" style="padding:12px;border:1.5px solid #eee;border-radius:10px;background:#fafafa;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">删除头像</button>' +
-          '<button id="avFromCancel" type="button" style="padding:10px;border:none;background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit;">取消</button>' +
-        '</div>';
-      document.body.appendChild(menu);
-      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
-      menu.querySelector('#avFromCancel').addEventListener('click', function() { menu.remove(); });
-      menu.querySelector('#avFromDel').addEventListener('click', function() { menu.remove(); CharMgr.tempAvatar = e.avatar || ''; box.innerHTML = '<span class="cc-avatar-empty">PHOTO</span>'; });
-      menu.querySelector('#avFromAlbum').addEventListener('click', function() {
-        menu.remove();
-        var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; document.body.appendChild(input);
-        input.onchange = function(ev) {
-          var file = ev.target.files[0]; document.body.removeChild(input); if (!file) return;
-          var reader = new FileReader();
-          reader.onload = function(r) {
-            if (App.cropImage) { App.cropImage(r.target.result, function(c) { CharMgr.tempAvatar = c; box.innerHTML = '<img src="' + c + '">'; }); }
-            else { CharMgr.tempAvatar = r.target.result; box.innerHTML = '<img src="' + r.target.result + '">'; }
-          };
-          reader.readAsDataURL(file);
-        };
-        input.click();
-      });
-      menu.querySelector('#avFromUrl').addEventListener('click', function() {
-        menu.remove();
-        var urlPanel = document.createElement('div');
-        urlPanel.style.cssText = 'position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);';
-        urlPanel.innerHTML =
-          '<div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:20px;width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px;">' +
-            '<div style="font-size:13px;font-weight:700;color:#333;text-align:center;letter-spacing:1px;">输入头像URL</div>' +
-            '<input id="avUrlInput" type="text" placeholder="https://..." style="padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:#333;">' +
-            '<div id="avUrlPreview" style="display:none;width:80px;height:80px;border-radius:50%;overflow:hidden;border:1px solid #eee;background:#f5f5f5;margin:0 auto;"><img style="width:100%;height:100%;object-fit:cover;display:block;"></div>' +
-            '<div style="display:flex;gap:8px;">' +
-              '<button id="avUrlConfirm" type="button" style="flex:1;padding:11px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">确定</button>' +
-              '<button id="avUrlCancel" type="button" style="flex:1;padding:11px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">取消</button>' +
-            '</div>' +
-          '</div>';
-        document.body.appendChild(urlPanel);
-        urlPanel.addEventListener('click', function(e) { if (e.target === urlPanel) urlPanel.remove(); });
-        urlPanel.querySelector('#avUrlCancel').addEventListener('click', function() { urlPanel.remove(); });
-        var previewBox = urlPanel.querySelector('#avUrlPreview'); var previewImg = previewBox.querySelector('img');
-        urlPanel.querySelector('#avUrlInput').addEventListener('input', function() {
-          var val = this.value.trim();
-          if (val && (val.startsWith('http://') || val.startsWith('https://'))) { previewImg.src = val; previewBox.style.display = 'block'; previewImg.onerror = function() { previewBox.style.display = 'none'; }; }
-          else { previewBox.style.display = 'none'; }
-        });
-        urlPanel.querySelector('#avUrlConfirm').addEventListener('click', function() {
-          var url = urlPanel.querySelector('#avUrlInput').value.trim();
-          if (!url) { App.showToast('请输入URL'); return; }
-          urlPanel.remove();
-          CharMgr.tempAvatar = url;
-          box.innerHTML = '<img src="' + App.escAttr(url) + '">';
-          App.showToast('头像已设置');
-        });
+      _showAvatarMenu: function(box) {
+      App.showImagePicker({
+        title: '设置角色头像',
+        deleteText: '删除头像',
+        callback: function(src) {
+          CharMgr.tempAvatar = src;
+          box.innerHTML = src ? '<img src="' + App.escAttr(src) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
+          App.showToast(src ? '头像已设置' : '头像已删除');
+        }
       });
     },
-
+    
     openExpand: function(textarea, isDialogue) {
       if (CharMgr._expandEl) CharMgr._expandEl.remove();
       var ed = document.createElement('div'); 
