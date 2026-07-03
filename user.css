@@ -47,6 +47,8 @@
 }
 
 .up-list-char {
+  width: 40px;   /* 改这里 */
+  height: 40px;  /* 改这里 */
   font-size: 17px;
   font-weight: 800;
   color: #7c8693;
