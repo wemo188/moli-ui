@@ -166,9 +166,10 @@
       var savedBg = App.LS.get('charPageBg') || '';
       var bgHtml = savedBg ? '<div class="cl-custom-bg" style="background-image: url(' + App.escAttr(savedBg) + ');"></div>' : '';
 
+      // 🌟 哥哥把 bgHtml 移到了 cl-page 外面，并且给 cl-page 加了透明标记
       panel.innerHTML =
-        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner">' +
         bgHtml +
+        '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + (savedBg ? ' has-custom-bg' : '') + '" id="clPageInner">' +
         '<div class="cl-topbar-wrap">' +
         '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
         '<div class="cl-mode-center" id="clModeCenter"><span class="cl-mode-label" id="clModeLabel">' + MODE_LABELS[mi] + '</span><span class="cl-paw-toggle" id="clPawToggle">🐾</span></div>' +
@@ -726,16 +727,25 @@
             Character.renderList();
             return;
           }
-          if (type === 'album') {
+                    if (type === 'album') {
             var input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
             input.onchange = function(ev) {
               var file = ev.target.files[0]; if (!file) return;
               var reader = new FileReader();
               reader.onload = function(r) {
-                App.LS.set('charPageBg', r.target.result);
-                App.showToast('背景已设置');
-                Character.renderList();
+                // 🌟 完美接上我们已有的裁剪工具
+                if (App.cropImage) {
+                  App.cropImage(r.target.result, function(cropped) {
+                    App.LS.set('charPageBg', cropped);
+                    App.showToast('背景已设置');
+                    Character.renderList();
+                  });
+                } else {
+                  App.LS.set('charPageBg', r.target.result);
+                  App.showToast('背景已设置');
+                  Character.renderList();
+                }
               };
               reader.readAsDataURL(file);
             };
