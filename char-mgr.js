@@ -66,7 +66,8 @@
         page.style.opacity = '1';
       }); });
 
-      App.bindSwipeBack(page, function() { CharMgr.close(); });
+            // 🌟 滑动返回时，执行静默保存
+      App.bindSwipeBack(page, function() { CharMgr.doSave(page, true); });
     },
 
     close: function() {
@@ -279,7 +280,8 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
     },
 
     bindEvents: function(page) {
-      page.querySelector('#cmBackBtn').addEventListener('click', function() { CharMgr.close(); });
+      // 🌟 点击左上角返回时，执行静默保存
+      page.querySelector('#cmBackBtn').addEventListener('click', function() { CharMgr.doSave(page, true); });
 
       // 头像
       page.querySelector('#cmAvatarBox').addEventListener('click', function() { CharMgr._showAvatarMenu(this); });
@@ -388,10 +390,12 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       page.querySelector('#cmSaveBtn').addEventListener('click', function() { CharMgr.doSave(page); });
     },
 
-    doSave: function(page) {
+        doSave: function(page, isSilent) {
       var name = (page.querySelector('#cmNameInput') || {}).value || '';
       name = name.trim();
-      if (!name) { App.showToast('请输入角色名'); return; }
+      
+      // 🌟 如果退出时名字是空的，自动给个名字，防止无法退出
+      if (!name) name = '未命名'; 
       if (!App.character) return;
 
       var d = {};
@@ -409,11 +413,10 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         greeting: '',
         gender: d.gender || '', age: d.age || '', birthday: d.birthday || '',
         callName: d.callName || '', relation: d.relation || '',
-charPhone: d.charPhone, charWechat: d.charWechat,
+        charPhone: d.charPhone, charWechat: d.charWechat,
         contactMode: cr ? cr.value : 'direct'
       };
 
-      // 收集设置
       var gv = function(id) { var e = page.querySelector('#' + id); return e ? e.value : ''; };
       var gc = function(id) { var e = page.querySelector('#' + id); return e ? e.checked : false; };
       var biStyleEl = page.querySelector('input[name="cmBiStyle"]:checked');
@@ -448,35 +451,36 @@ charPhone: d.charPhone, charWechat: d.charWechat,
         presPenalty: parseFloat(gv('cmPres') || 0.3)
       };
 
-      // 保存角色
       if (CharMgr.editingCharId) {
-  var ex = App.character.getById(CharMgr.editingCharId);
-  if (ex) {
-    Object.keys(charObj).forEach(function(k) {
-      if (k === 'avatar') { 
-        ex.avatar = charObj.avatar;
-        ex.cover = charObj.avatar; // ★ 编辑页保存时同步头像到背景
-      } else ex[k] = charObj[k];
-    });
-    App.character.save();
-  }
-} else {
-  charObj.id = 'char-' + Date.now();
-  charObj.cover = charObj.avatar; // ★ 新建时也同步
-  charObj.worldbookMounted = false;
-  charObj.modeColors = [{}, {}, {}];
-  App.character.list.push(charObj);
-  App.character.save();
-  CharMgr.editingCharId = charObj.id;
-}
+        var ex = App.character.getById(CharMgr.editingCharId);
+        if (ex) {
+          Object.keys(charObj).forEach(function(k) {
+            if (k === 'avatar') { 
+              ex.avatar = charObj.avatar;
+              ex.cover = charObj.avatar; 
+            } else ex[k] = charObj[k];
+          });
+          App.character.save();
+        }
+      } else {
+        charObj.id = 'char-' + Date.now();
+        charObj.cover = charObj.avatar; 
+        charObj.worldbookMounted = false;
+        charObj.modeColors = [{}, {}, {}];
+        App.character.list.push(charObj);
+        App.character.save();
+        CharMgr.editingCharId = charObj.id;
+      }
 
-      // 保存设置
       CharMgr.charConfigs[CharMgr.editingCharId] = cfgObj;
       CharMgr.save();
 
       CharMgr.close();
       if (App.character) App.character.renderList();
-      App.showToast('角色已保存');
+      
+      if (!isSilent) {
+        App.showToast('角色已保存');
+      }
     },
 
       _showAvatarMenu: function(box) {
@@ -541,52 +545,16 @@ charPhone: d.charPhone, charWechat: d.charWechat,
         }
       }
 
-      function saveAndClose(isSwipe) {
+            function saveAndClose(isSwipe) {
         textarea.value = ed.querySelector('#cmExpTA').value;
         forceClose(isSwipe);
       }
 
-      function handleReturn(isSwipe) {
-        var currentVal = ed.querySelector('#cmExpTA').value;
-        if (currentVal !== initialValue) {
-          var old = App.$('#cmUnsavedMenu'); if (old) old.remove();
-          var menu = document.createElement('div');
-          menu.id = 'cmUnsavedMenu';
-          // 🌟 换成了全局弹窗背景层
-          menu.className = 'gip-overlay'; 
-          menu.innerHTML =
-            // 🌟 换成了全局的 modal、title、btn 类名
-            '<div class="gip-modal">' +
-              '<div class="gip-title">未保存修改</div>' +
-              '<div class="gip-desc">您有尚未保存的编辑内容，<br>是否保存后再离开？</div>' +
-              '<button class="gip-btn gip-btn-primary" id="usSave">保存并离开</button>' +
-              '<button class="gip-btn gip-btn-del" id="usDiscard">放弃修改</button>' +
-              '<button class="gip-btn gip-btn-cancel" id="usCancel">取消</button>' +
-            '</div>';
-          document.body.appendChild(menu);
-
-          menu.querySelector('#usCancel').onclick = function() { 
-            menu.remove(); 
-            if (isSwipe) {
-              // 🌟 取消的话，清空右滑留下的内联样式，自动受 class 控制吸回原位
-              ed.style.transition = 'transform 0.35s cubic-bezier(.32,.72,0,1), opacity 0.3s ease';
-              ed.style.transform = '';
-              ed.style.opacity = '';
-            }
-          };
-          menu.querySelector('#usSave').onclick = function() { menu.remove(); saveAndClose(isSwipe); };
-          menu.querySelector('#usDiscard').onclick = function() { menu.remove(); forceClose(isSwipe); };
-        } else {
-          forceClose(isSwipe);
-        }
-      }
-
-      // 点击走上下降，滑动走右滑
-      ed.querySelector('#cmExpBack').addEventListener('click', function() { handleReturn(false); });
+      // 🌟 无论是点击返回、完成，还是滑动返回，全部一键保存！
+      ed.querySelector('#cmExpBack').addEventListener('click', function() { saveAndClose(false); });
       ed.querySelector('#cmExpDone').addEventListener('click', function() { saveAndClose(false); });
-      
-      App.bindSwipeBack(ed, function() { handleReturn(true); });
-    },
+      App.bindSwipeBack(ed, function() { saveAndClose(true); });
+    }, // openExpand 结束
 
     init: function() {
       CharMgr.load();
