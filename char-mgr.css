@@ -266,6 +266,24 @@
 .cc-expand-title-tag.blue::after { border-left-color: #88abda; }
 
 /* ============================
+   角色编辑器主面板
+   ============================ */
+.cm-main-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10001;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.3s;
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* ============================
    展开文本编辑器 (无内联样式洁净版)
    ============================ */
 .cc-expand-panel {
