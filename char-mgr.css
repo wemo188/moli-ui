@@ -264,3 +264,136 @@
 }
 .cc-expand-title-tag.blue { background: #88abda; }
 .cc-expand-title-tag.blue::after { border-left-color: #88abda; }
+
+/* ============================
+   展开文本编辑器 (无内联样式洁净版)
+   ============================ */
+.cc-expand-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10003;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(100%); /* 默认在底下 */
+  transition: transform 0.35s cubic-bezier(.32,.72,0,1), opacity 0.3s ease;
+}
+
+/* 升起 */
+.cc-expand-panel.cc-expand-panel-in {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 降落 */
+.cc-expand-panel.cc-expand-panel-out-down {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+/* 顶部栏 */
+.cc-expand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 12px;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+/* 滚动体 */
+.cc-expand-body {
+  flex: 1;
+  padding: 0 16px 40px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+}
+
+/* 漫画风输入框 */
+.cc-expand-comic-box {
+  background: #fff;
+  border: 3.5px solid #111;
+  box-shadow: 6px 6px 0 #111;
+  position: relative;
+  overflow: hidden;
+}
+
+.cc-expand-comic-top {
+  background: #111;
+  height: 4px;
+  width: 100%;
+}
+
+.cc-expand-comic-bot {
+  height: 8px;
+  background: linear-gradient(90deg, #111 30%, #88abda 30%, #88abda 65%, #111 65%);
+}
+
+.cc-expand-comic-corner {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 3px, #88abda 3px, #88abda 5px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.cc-expand-comic-inner {
+  min-height: calc(100vh - 220px);
+  border: 1.5px dashed #c8d4e2;
+  margin: 14px;
+  background: repeating-linear-gradient(0deg, transparent, transparent 22px, #eef2f7 22px, #eef2f7 23px);
+  position: relative;
+}
+
+.cc-expand-quote-left {
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #88abda;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cc-expand-quote-right {
+  position: absolute;
+  bottom: 4px;
+  right: 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #88abda;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 文本域 */
+.cc-expand-textarea {
+  width: 100%;
+  min-height: calc(100vh - 250px);
+  border: none;
+  background: transparent;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 22px;
+  box-sizing: border-box;
+}
+
+.cc-expand-textarea.is-dialogue-ta {
+  padding: 12px 14px 12px 26px; /* 对话框缩进 */
+}
