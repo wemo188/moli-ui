@@ -13,19 +13,19 @@
     {
       defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
       controls: [
-        { key: 'border', label: '框线', cssVar: '--card-border-c' },
-        { key: 'accent', label: '主调', cssVar: '--card-accent' },
-        { key: 'bg',     label: '底色', cssVar: '--card-bg' },
-        { key: 'left',   label: '左侧', cssVar: '--card-left' }
+        { key: 'border', label: '框', cssVar: '--card-border-c' },
+        { key: 'accent', label: '中', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底', cssVar: '--card-bg' },
+        { key: 'left',   label: '左', cssVar: '--card-left' }
       ]
     },
     {
       defaults: { accent: '#9ca3af', line: 2, outer: 2 },
-      controls: [{ key: 'accent', label: '主调', cssVar: '--card-accent' }]
+      controls: [{ key: 'accent', label: '中', cssVar: '--card-accent' }]
     },
     {
       defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
-      controls: [{ key: 'border', label: '框线', cssVar: '--card-border-c' }]
+      controls: [{ key: 'border', label: '线', cssVar: '--card-border-c' }]
     }
   ];
 
@@ -468,9 +468,9 @@
       }
     },
 
-    // ====== 长按卡片 → 分类选择（遮罩层，菜单在手指上方） ======
-        _showCatPicker: function(charId, touchX, touchY) {
-          var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
+    // ====== 长按卡片 → 分类选择（防误关保护，精美 SVG 勾勾） ======
+    _showCatPicker: function(charId, touchX, touchY) {
+      var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
       var assignable = categories.filter(function(c) { return c !== '全部'; });
       if (!assignable.length) { App.showToast('请先添加分类'); return; }
 
@@ -486,8 +486,11 @@
       var menu = document.createElement('div');
       menu.className = 'cl-mgr-menu';
 
+      // ★ 换成了超好看的蓝色 SVG 粗线打勾
+      var svgCheck = '<svg viewBox="0 0 24 24" style="margin-left:auto;width:18px;height:18px;fill:none;stroke:#88abda;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
       var itemsHtml = assignable.map(function(cat) {
-        var check = cat === currentCat ? '<span style="font-size:10px;color:#88abda;font-weight:700;margin-left:auto;">✓</span>' : '';
+        var check = cat === currentCat ? svgCheck : '';
         return '<div class="cl-mgr-menu-item" data-pickcat="' + App.escAttr(cat) + '" style="display:flex;align-items:center;gap:8px;">' + App.esc(cat) + check + '</div>';
       }).join('');
 
@@ -510,7 +513,7 @@
         menu.style.top = top + 'px';
       });
 
-      // ★ 关键修复：延迟 400ms 才允许点击关闭，防止松手瞬间被当作点击
+      // ★ 防误关：400ms 内拦截所有点击
       var canClose = false;
       setTimeout(function() { canClose = true; }, 400);
 
@@ -524,6 +527,7 @@
       menu.querySelectorAll('.cl-mgr-menu-item').forEach(function(item) {
         item.addEventListener('click', function(ev) {
           ev.stopPropagation();
+          if (!canClose) return; // 也拦截过快的选项点击
           overlay.remove();
           var cat = item.dataset.pickcat;
           var charCatsNow = App.LS.get('charCatMap') || {};
@@ -541,7 +545,7 @@
       });
     },
 
-    // ====== 管理徽章菜单（多选 / 修改标签 / 删除分类） ======
+    // ====== 管理徽章菜单 ======
     _showMgrMenu: function(anchor) {
       var old = document.querySelector('.cl-mgr-menu');
       if (old) { old.remove(); return; }
