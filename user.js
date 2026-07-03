@@ -170,33 +170,19 @@ var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r=
       User._bindListEvents(panel);
     },
 
-       _bindListEvents: function(panel) {
-      /* ★ 哥哥给你加的保护罩：让面板里的点击不会冒泡出去触发别的收起机制 ★ */
-      panel.querySelectorAll('.p14-panel').forEach(function(p) {
-        p.addEventListener('click', function(e) {
-          e.stopPropagation(); // 只要在面板内部点，就不会影响外面的世界
-        });
-      });
-
-      /* ★ 绝对控制权：只有点猫爪才会展开或收起 ★ */
+     _bindListEvents: function(panel) {
+      /* ★ 墨墨的绝对自由控制权：只管自己，互不干扰 ★ */
       panel.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
-          e.stopPropagation();
+          e.stopPropagation(); // 防止点击冒泡
           var uid = btn.dataset.uid;
           var p = panel.querySelector('[data-panel-uid="' + uid + '"]');
           if (!p) return;
           
-          var isOpen = p.classList.contains('p14-open');
-          
-          // 先把所有的面板收起，猫爪恢复原状
-          panel.querySelectorAll('.p14-panel.p14-open').forEach(function(x) { x.classList.remove('p14-open'); });
-          panel.querySelectorAll('.p14-paw-btn.p14-active').forEach(function(x) { x.classList.remove('p14-active'); });
-          
-          // 如果当前是没打开的状态，那就打开它；如果是打开的，上面那步就已经把它关掉了
-          if (!isOpen) { 
-            p.classList.add('p14-open'); 
-            btn.classList.add('p14-active'); 
-          }
+          // 哥哥把原本“关掉所有人”的代码删掉了！
+          // 现在它只管切换自己的状态，你想开几个就开几个
+          p.classList.toggle('p14-open');
+          btn.classList.toggle('p14-active');
         });
       });
 
