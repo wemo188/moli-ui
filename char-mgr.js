@@ -605,14 +605,16 @@ charPhone: d.charPhone, charWechat: d.charWechat,
           var old = App.$('#cmUnsavedMenu'); if (old) old.remove();
           var menu = document.createElement('div');
           menu.id = 'cmUnsavedMenu';
-          menu.className = 'cl-overlay';
+          // 🌟 换成了全局弹窗背景层
+          menu.className = 'gip-overlay'; 
           menu.innerHTML =
-            '<div class="cl-modal cl-bg-modal">' +
-              '<div class="cl-bg-title">未保存修改</div>' +
-              '<div class="cl-bg-desc">您有尚未保存的编辑内容，<br>是否保存后再离开？</div>' +
-              '<button class="cl-bg-btn cl-bg-btn-primary" id="usSave">保存并离开</button>' +
-              '<button class="cl-bg-btn cl-bg-btn-del" id="usDiscard">放弃修改</button>' +
-              '<button class="cl-bg-btn cl-bg-btn-cancel" id="usCancel">取消</button>' +
+            // 🌟 换成了全局的 modal、title、btn 类名
+            '<div class="gip-modal">' +
+              '<div class="gip-title">未保存修改</div>' +
+              '<div class="gip-desc">您有尚未保存的编辑内容，<br>是否保存后再离开？</div>' +
+              '<button class="gip-btn gip-btn-primary" id="usSave">保存并离开</button>' +
+              '<button class="gip-btn gip-btn-del" id="usDiscard">放弃修改</button>' +
+              '<button class="gip-btn gip-btn-cancel" id="usCancel">取消</button>' +
             '</div>';
           document.body.appendChild(menu);
 
