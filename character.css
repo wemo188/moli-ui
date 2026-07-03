@@ -1014,14 +1014,23 @@
    自定义页面背景层与菜单按钮 (全拆分优雅版)
    ============================ */
 .cl-custom-bg {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  /* 🌟 核心魔法：使用负向偏移，强行穿透顶部的刘海和底部的安全白底 */
+  top: calc(-1 * env(safe-area-inset-top, 0px));
+  bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
   z-index: 0;
   pointer-events: none;
   background-size: cover;
   background-position: center;
   opacity: 0.55; 
   mix-blend-mode: multiply; 
+}
+
+/* 🌟 让列表原本的底色变透明，这样背景图才能完美透出来 */
+.cl-page.has-custom-bg {
+  background: transparent !important;
 }
 
 .cl-topbar-wrap, 
