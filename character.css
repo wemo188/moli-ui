@@ -107,7 +107,7 @@
 }
 
 /* ============================
-   管理徽章按钮（三横线）
+   功能徽章按钮（管理 & 添加专属样式）
    ============================ */
 .cl-cat-mgr {
   display: flex;
@@ -119,24 +119,27 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 管理 - 深灰实线外圈 */
 .cl-cat-mgr-stamp {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2.5px solid #555;
+  border: 2.5px solid #9ca3af; /* 专属深灰色实线 */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background: #fff;
+  background: #fdfdfd;
 }
+
+/* 管理 - 浅灰虚线内圈 */
 .cl-cat-mgr-stamp::before {
   content: '';
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  border: 1.5px dashed #ccc;
+  border: 1.5px dashed #d1d5db; /* 专属浅灰色虚线 */
 }
 
 .cl-cat-mgr-icon {
@@ -149,7 +152,7 @@
   display: block;
   width: 14px;
   height: 2px;
-  background: #888;
+  background: #8b92a0;
   border-radius: 1px;
   transition: background 0.2s;
 }
@@ -157,12 +160,36 @@
 .cl-cat-mgr-label {
   font-size: 10px;
   font-weight: 700;
-  color: #999;
+  color: #9ca3af;
   letter-spacing: 1px;
   transition: color 0.2s;
 }
 
-.cl-cat-mgr:active .cl-cat-mgr-stamp { transform: scale(0.9); }
+.cl-cat-mgr:active .cl-cat-mgr-stamp { 
+  transform: scale(0.9); 
+  background: #f3f4f6; 
+}
+
+/* ====== 添加分类徽章（强制覆盖默认样式） ====== */
+.cl-cat-item[data-cat="__add__"] .cl-cat-stamp {
+  border: 2.5px solid #9ca3af; /* 统一深灰色实线 */
+  background: #fdfdfd;
+}
+.cl-cat-item[data-cat="__add__"] .cl-cat-stamp::before {
+  border-color: #d1d5db; /* 统一浅灰色虚线 */
+}
+.cl-cat-item[data-cat="__add__"] .cl-cat-stamp-text {
+  color: #8b92a0; 
+  font-size: 20px; /* 把加号稍微放大一点更精致 */
+  font-weight: 700;
+  margin-top: -2px; /* 视觉微调居中 */
+}
+.cl-cat-item[data-cat="__add__"] .cl-cat-label {
+  color: #9ca3af; 
+}
+.cl-cat-item[data-cat="__add__"]:active .cl-cat-stamp { 
+  background: #f3f4f6; 
+}
 
 /* ============================
    管理菜单
