@@ -1108,7 +1108,7 @@
 
 /* 危险删除按钮 */
 .cl-bg-btn-del { border-color: #fce8e8; background: #fdf2f2; color: #b91c1c; } 
-.cl-bg-btn-del:active { background: #fce8e8; }
+.cl-bg-btn-del:active { background: #fff; }
 
 /* 柔和的取消按钮 */
 .cl-bg-btn-cancel { border: none; background: none; color: #9ca3af; }
