@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 215, sat: 35, lit: 90, radius: 60 };
+  var DEFAULT_CARD = { hue: 215, sat: 45, lit: 92, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
