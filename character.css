@@ -813,7 +813,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px; /* 上下留白稍微拉开，配合大头像 */
+  padding: 10px 16px; /* 上下留白稍微拉开，配合大头像 */
   cursor: pointer;
   border-bottom: 1px solid rgba(0,0,0,0.03);
   -webkit-tap-highlight-color: transparent;
@@ -830,8 +830,8 @@
   gap: 12px; /* 名字和头像的距离刚刚好 */
 }
 .cl-bind-avatar {
-  width: 38px; /* 🌟 头像放大 */
-  height: 38px;
+  width: 45px; /* 🌟 头像放大 */
+  height: 45px;
   border-radius: 50%;
   object-fit: cover;
   border: 1.5px solid rgba(136, 171, 218, 0.3); /* 加上淡淡的主题色边框，精致感拉满 */
@@ -841,8 +841,8 @@
 
 /* 没头像时的空状态 */
 .cl-bind-avatar-empty {
-  width: 38px; /* 🌟 同步放大 */
-  height: 38px;
+  width: 45px; /* 🌟 同步放大 */
+  height: 45px;
   border-radius: 50%;
   background: #f8fafc;
   border: 1.5px dashed rgba(136, 171, 218, 0.4);
@@ -852,8 +852,8 @@
 }
 .cl-bind-avatar-empty::after {
   content: "";
-  width: 20px; /* SVG图标也同步放大 */
-  height: 20px;
+  width: 25px; /* SVG图标也同步放大 */
+  height: 25px;
   /* 哥哥把空头像小人换成了你的主题蓝 */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%2388abda' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -879,7 +879,7 @@
 
 /* 底部取消按钮 */
 .cl-bind-cancel {
-  padding: 14px 16px;
+  padding: 10px 16px;
   border-top: 1.5px solid #eee;
   text-align: center;
 }
