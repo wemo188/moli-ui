@@ -4,7 +4,7 @@
   var App = window.App;
   if (!App) return;
 
-  var DEFAULT_CARD = { hue: 215, sat: 45, lit: 92, radius: 60 };
+  var DEFAULT_CARD = { hue: 215, sat: 35, lit: 90, radius: 60 };
 
   var FIELDS_SHORT = [
     { key: 'realName', en: 'NAME', cn: '姓名' },
@@ -42,9 +42,6 @@
     for (var i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * 26)];
     return 'wx_' + r;
   }
-
-var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="#999" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="#999" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var POWER_ICON = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
 
   var User = {
     list: [],
@@ -156,31 +153,31 @@ var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r=
         }).join('');
       }
 
+      // ★ 这里改成了 5 个圆圈均匀分布的设计！
       panel.innerHTML =
-  '<div class="up-list-header">' +
-    '<div class="up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-    '<div class="up-list-title">此间相</div>' +
-    '<div class="up-list-add" id="upListAdd"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>' +
-  '</div>' +
-  '<div class="up-list-divider"></div>' +
-  '<div class="p14-list-wrap">' + cardsHtml + '</div>';
+        '<div class="up-list-header">' +
+          '<div class="up-header-circle up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
+          '<div class="up-header-circle up-list-char">此</div>' +
+          '<div class="up-header-circle up-list-char">间</div>' +
+          '<div class="up-header-circle up-list-char">相</div>' +
+          '<div class="up-header-circle up-list-add" id="upListAdd"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></div>' +
+        '</div>' +
+        '<div class="up-list-divider"></div>' +
+        '<div class="p14-list-wrap">' + cardsHtml + '</div>';
   
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
       panel.querySelector('#upListAdd').addEventListener('click', function() { User.renderProfile(null); });
       User._bindListEvents(panel);
     },
 
-     _bindListEvents: function(panel) {
-      /* ★ 墨墨的绝对自由控制权：只管自己，互不干扰 ★ */
+    _bindListEvents: function(panel) {
+      // ★ 独立的猫爪切换，互不干扰
       panel.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
-          e.stopPropagation(); // 防止点击冒泡
+          e.stopPropagation();
           var uid = btn.dataset.uid;
           var p = panel.querySelector('[data-panel-uid="' + uid + '"]');
           if (!p) return;
-          
-          // 哥哥把原本“关掉所有人”的代码删掉了！
-          // 现在它只管切换自己的状态，你想开几个就开几个
           p.classList.toggle('p14-open');
           btn.classList.toggle('p14-active');
         });
@@ -649,3 +646,4 @@ var BACK_ICON = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r=
 
   App.register('user', User);
 })();
+
