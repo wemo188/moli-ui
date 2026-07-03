@@ -123,7 +123,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2.5px solid #d0d0d0;
+  border: 2.5px solid #555;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,7 +136,7 @@
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  border: 1.5px dashed #e0e0e0;
+  border: 1.5px dashed #ccc;
 }
 
 .cl-cat-mgr-icon {
@@ -149,7 +149,7 @@
   display: block;
   width: 14px;
   height: 2px;
-  background: #ccc;
+  background: #888;
   border-radius: 1px;
   transition: background 0.2s;
 }
@@ -157,7 +157,7 @@
 .cl-cat-mgr-label {
   font-size: 10px;
   font-weight: 700;
-  color: #bbb;
+  color: #999;
   letter-spacing: 1px;
   transition: color 0.2s;
 }
