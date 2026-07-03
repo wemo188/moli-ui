@@ -126,31 +126,34 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
 
           // ========== 基础信息 ==========
-          '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
-            '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
-              '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
-'<div style="flex:1;"><div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div></div>' +
-            '<div class="cm-field-grid">' +
-              '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">年龄 AGE</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">生日 BIRTHDAY</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">对你的称呼 CALL</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
-            '</div>' +
-            '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系 RELATION</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
-            '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
-            '<div class="cm-field-grid">' +
-              '<div class="cm-field"><div class="cm-field-label">手机号 PHONE</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + v('charPhone') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">微信号 WECHAT</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + v('charWechat') + '"></div>' +
-            '</div>' +
-            '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
-            '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录 CONTACT</div>' +
-            '<div class="cm-radio-row">' +
-              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC1" value="direct"' + rc('direct') + '><label class="cm-radio-label" for="cmC1">直接添加</label></div>' +
-              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待对方来加</label></div>' +
-              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">由你主动添加</label></div>' +
-            '</div>' +
-            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
-          '</div></div><div class="cm-comic-bar-bot"></div></div>' +
+'<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
+  '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
+    '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
+    '<div style="flex:1;">' +
+      '<div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div>' +
+    '</div>' +
+  '</div>' +
+  '<div class="cm-field-grid">' +
+    '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
+    '<div class="cm-field"><div class="cm-field-label">年龄 AGE</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
+    '<div class="cm-field"><div class="cm-field-label">生日 BIRTHDAY</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
+    '<div class="cm-field"><div class="cm-field-label">对你的称呼 CALL</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
+  '</div>' +
+  '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系 RELATION</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
+  '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
+  '<div class="cm-field-grid">' +
+    '<div class="cm-field"><div class="cm-field-label">手机号 PHONE</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + v('charPhone') + '"></div>' +
+    '<div class="cm-field"><div class="cm-field-label">微信号 WECHAT</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + v('charWechat') + '"></div>' +
+  '</div>' +
+  '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
+  '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录 CONTACT</div>' +
+  '<div class="cm-radio-row">' +
+    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC1" value="direct"' + rc('direct') + '><label class="cm-radio-label" for="cmC1">直接添加</label></div>' +
+    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待对方来加</label></div>' +
+    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">由你主动添加</label></div>' +
+  '</div>' +
+  '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
+'</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 角色档案 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-blue">角色档案</div></div><div class="cm-section-body">' +
