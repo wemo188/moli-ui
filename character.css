@@ -498,7 +498,7 @@
 .cl-color-popup {
   position: fixed;
   width: 200px;
-  background: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.9);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
   border-radius: 10px;
@@ -522,7 +522,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 .cl-color-popup-title:active { cursor: grabbing; }
-.cl-color-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cl-color-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;  /* 均匀分布 */
+  gap: 4px;
+  flex-wrap: wrap;
+}
 .cl-color-custom-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .cl-color-custom-item label { font-size: 12px; font-weight: 700; color: #333; letter-spacing: 0.5px; }
 
