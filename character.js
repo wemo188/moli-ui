@@ -91,7 +91,7 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-        renderList: function() {
+            renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
       var oldPopup = document.querySelector('#clColorPopup');
