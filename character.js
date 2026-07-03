@@ -13,19 +13,19 @@
     {
       defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
       controls: [
-        { key: 'border', label: '框线', cssVar: '--card-border-c' },
-        { key: 'accent', label: '主调', cssVar: '--card-accent' },
-        { key: 'bg',     label: '底色', cssVar: '--card-bg' },
-        { key: 'left',   label: '左侧', cssVar: '--card-left' }
+        { key: 'border', label: '框', cssVar: '--card-border-c' },
+        { key: 'accent', label: '中', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底', cssVar: '--card-bg' },
+        { key: 'left',   label: '左', cssVar: '--card-left' }
       ]
     },
     {
       defaults: { accent: '#9ca3af', line: 2, outer: 2 },
-      controls: [{ key: 'accent', label: '主调', cssVar: '--card-accent' }]
+      controls: [{ key: 'accent', label: '中', cssVar: '--card-accent' }]
     },
     {
       defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
-      controls: [{ key: 'border', label: '线条', cssVar: '--card-border-c' }]
+      controls: [{ key: 'border', label: '线', cssVar: '--card-border-c' }]
     }
   ];
 
@@ -91,7 +91,7 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-          renderList: function() {
+    renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
       var oldPopup = document.querySelector('#clColorPopup');
@@ -157,7 +157,7 @@
       }).join('');
 
       var popupHtml = '<div class="cl-color-popup" id="clColorPopup">' +
-        '<div class="cl-color-popup-title">编辑配色</div>' +
+        '<div class="cl-color-popup-title">自定义配色</div>' +
         '<div class="cl-color-custom" id="clPopupColors">' + popupColorsHtml + '</div>' +
         '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + cfg.defaults.line + '" class="cl-cc-line"><span class="cl-line-val">' + cfg.defaults.line + 'px</span></div>' +
         '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + cfg.defaults.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + cfg.defaults.outer + 'px</span></div>' +
@@ -236,7 +236,7 @@
             lpFired = true;
             lpTimer = null;
             var cid = card.dataset.charId;
-            Character._showCatPicker(cid, card, startX, startY);
+            Character._showCatPicker(cid, startX, startY);
           }, 500);
         }, { passive: true });
 
@@ -252,15 +252,10 @@
 
         card.addEventListener('touchend', function(e) {
           if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-          // 长按触发后，阻止后续 click 等，但不关闭菜单
-          if (lpFired) {
-            e.preventDefault();
-            // 不重置 lpFired，让菜单保持
-          }
+          if (lpFired) { e.preventDefault(); }
         });
 
         card.addEventListener('click', function(e) {
-          // 长按刚触发，吞掉这次 click
           if (lpFired) { e.stopPropagation(); lpFired = false; return; }
           if (!multiMode) return;
           var cid = card.dataset.charId;
@@ -289,7 +284,6 @@
         bar.innerHTML =
           '<div class="cl-multiselect-bar"><div class="cl-ms-left"><span class="cl-ms-close" id="clMsClose">✕</span><span class="cl-ms-count">已选 ' + ids.length + ' 个</span></div>' +
           '<div class="cl-ms-actions"><button class="cl-ms-btn" id="clMsMove" type="button">移动分组</button></div></div>';
-
         bar.querySelector('#clMsClose').addEventListener('click', function() { Character._exitMultiMode(); });
         bar.querySelector('#clMsMove').addEventListener('click', function() {
           if (!ids.length) { App.showToast('请先选择角色'); return; }
@@ -474,8 +468,8 @@
       }
     },
 
-    // ====== 长按卡片 → 分类选择（用遮罩层，不会松手消失） ======
-    _showCatPicker: function(charId, cardEl, touchX, touchY) {
+    // ====== 长按卡片 → 分类选择（遮罩层，菜单在手指上方） ======
+    _showCatPicker: function(charId, touchX, touchY) {
       var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
       var assignable = categories.filter(function(c) { return c !== '全部'; });
       if (!assignable.length) { App.showToast('请先添加分类'); return; }
@@ -502,20 +496,26 @@
       overlay.appendChild(menu);
       document.body.appendChild(overlay);
 
-      // 定位到手指附近
-      var left = (touchX || 100) - 75;
-      var top = (touchY || 200) - 20;
-      if (left < 10) left = 10;
-      if (left + 150 > window.innerWidth - 10) left = window.innerWidth - 160;
-      if (top < 10) top = 10;
-      if (top + 200 > window.innerHeight - 10) top = window.innerHeight - 210;
-      menu.style.left = left + 'px';
-      menu.style.top = top + 'px';
+      // 先渲染拿到菜单实际高度，再定位到手指上方
+      requestAnimationFrame(function() {
+        var menuH = menu.offsetHeight;
+        var menuW = menu.offsetWidth || 150;
+        var left = touchX - menuW / 2;
+        var top = touchY - menuH - 20;
 
-      // 点遮罩关闭
+        if (left < 10) left = 10;
+        if (left + menuW > window.innerWidth - 10) left = window.innerWidth - menuW - 10;
+        if (top < 10) top = touchY + 20;
+
+        menu.style.left = left + 'px';
+        menu.style.top = top + 'px';
+      });
+
       overlay.addEventListener('click', function(e) {
         if (e.target === overlay) overlay.remove();
       });
+
+      menu.addEventListener('click', function(e) { e.stopPropagation(); });
 
       menu.querySelectorAll('.cl-mgr-menu-item').forEach(function(item) {
         item.addEventListener('click', function(ev) {
@@ -537,7 +537,7 @@
       });
     },
 
-    // ====== 管理徽章菜单 ======
+    // ====== 管理徽章菜单（多选 / 修改标签 / 删除分类） ======
     _showMgrMenu: function(anchor) {
       var old = document.querySelector('.cl-mgr-menu');
       if (old) { old.remove(); return; }
@@ -599,7 +599,6 @@
                 var idx = cats.indexOf(oldName);
                 if (idx >= 0) cats[idx] = newName;
                 App.LS.set('charCategories', cats);
-                // 同步更新角色的分类映射
                 var charCats = App.LS.get('charCatMap') || {};
                 Object.keys(charCats).forEach(function(cid) {
                   if (charCats[cid] === oldName) charCats[cid] = newName;
