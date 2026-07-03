@@ -13,19 +13,19 @@
     {
       defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
       controls: [
-        { key: 'border', label: '框', cssVar: '--card-border-c' },
-        { key: 'accent', label: '中', cssVar: '--card-accent' },
-        { key: 'bg',     label: '底', cssVar: '--card-bg' },
-        { key: 'left',   label: '左', cssVar: '--card-left' }
+        { key: 'border', label: '框线', cssVar: '--card-border-c' },
+        { key: 'accent', label: '主调', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底色', cssVar: '--card-bg' },
+        { key: 'left',   label: '左侧', cssVar: '--card-left' }
       ]
     },
     {
       defaults: { accent: '#9ca3af', line: 2, outer: 2 },
-      controls: [{ key: 'accent', label: '中', cssVar: '--card-accent' }]
+      controls: [{ key: 'accent', label: '主调', cssVar: '--card-accent' }]
     },
     {
       defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
-      controls: [{ key: 'border', label: '线', cssVar: '--card-border-c' }]
+      controls: [{ key: 'border', label: '框线', cssVar: '--card-border-c' }]
     }
   ];
 
