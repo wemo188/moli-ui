@@ -469,7 +469,7 @@
     },
 
     // ====== 长按卡片 → 分类选择（防误关保护，精美 SVG 勾勾） ======
-    _showCatPicker: function(charId, touchX, touchY) {
+       _showCatPicker: function(charId, touchX, touchY) {
       var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
       var assignable = categories.filter(function(c) { return c !== '全部'; });
       if (!assignable.length) { App.showToast('请先添加分类'); return; }
@@ -482,11 +482,13 @@
 
       var overlay = document.createElement('div');
       overlay.className = 'cl-cat-picker-overlay';
+      // ★ 关键修复：强行让移动端浏览器识别它为可点击区域
+      overlay.style.cursor = 'pointer';
 
       var menu = document.createElement('div');
       menu.className = 'cl-mgr-menu';
+      menu.style.cursor = 'default';
 
-      // ★ 换成了超好看的蓝色 SVG 粗线打勾
       var svgCheck = '<svg viewBox="0 0 24 24" style="margin-left:auto;width:18px;height:18px;fill:none;stroke:#88abda;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
       var itemsHtml = assignable.map(function(cat) {
@@ -513,21 +515,25 @@
         menu.style.top = top + 'px';
       });
 
-      // ★ 防误关：400ms 内拦截所有点击
+      // 防误关：350ms 内拦截所有点击，度过你长按松手的那一瞬间
       var canClose = false;
-      setTimeout(function() { canClose = true; }, 400);
+      setTimeout(function() { canClose = true; }, 350);
 
-      overlay.addEventListener('click', function(e) {
+      // ★ 关键修复：全面覆盖 click 和 touchstart，只要摸到空白处就关
+      function handleClose(e) {
         if (!canClose) return;
-        if (e.target === overlay) overlay.remove();
-      });
-
-      menu.addEventListener('click', function(e) { e.stopPropagation(); });
+        if (e.target === overlay) {
+          e.preventDefault();
+          overlay.remove();
+        }
+      }
+      overlay.addEventListener('click', handleClose);
+      overlay.addEventListener('touchstart', handleClose, { passive: false });
 
       menu.querySelectorAll('.cl-mgr-menu-item').forEach(function(item) {
         item.addEventListener('click', function(ev) {
           ev.stopPropagation();
-          if (!canClose) return; // 也拦截过快的选项点击
+          if (!canClose) return;
           overlay.remove();
           var cat = item.dataset.pickcat;
           var charCatsNow = App.LS.get('charCatMap') || {};
