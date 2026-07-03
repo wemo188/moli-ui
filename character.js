@@ -469,8 +469,8 @@
     },
 
     // ====== 长按卡片 → 分类选择（遮罩层，菜单在手指上方） ======
-    _showCatPicker: function(charId, touchX, touchY) {
-      var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
+        _showCatPicker: function(charId, touchX, touchY) {
+          var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
       var assignable = categories.filter(function(c) { return c !== '全部'; });
       if (!assignable.length) { App.showToast('请先添加分类'); return; }
 
@@ -496,7 +496,6 @@
       overlay.appendChild(menu);
       document.body.appendChild(overlay);
 
-      // 先渲染拿到菜单实际高度，再定位到手指上方
       requestAnimationFrame(function() {
         var menuH = menu.offsetHeight;
         var menuW = menu.offsetWidth || 150;
@@ -511,7 +510,12 @@
         menu.style.top = top + 'px';
       });
 
+      // ★ 关键修复：延迟 400ms 才允许点击关闭，防止松手瞬间被当作点击
+      var canClose = false;
+      setTimeout(function() { canClose = true; }, 400);
+
       overlay.addEventListener('click', function(e) {
+        if (!canClose) return;
         if (e.target === overlay) overlay.remove();
       });
 
