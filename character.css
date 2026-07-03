@@ -733,7 +733,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 14px;
-  width: 300px;
+  width: 250px;
   max-height: 70vh;
   box-shadow: 0 8px 30px rgba(0,0,0,0.15);
   display: flex;
@@ -743,7 +743,7 @@
 .cl-modal-title {
   padding: 16px 18px 12px;
   border-bottom: 1.5px solid #eee;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #111;
   letter-spacing: 1px;
@@ -762,7 +762,7 @@
 }
 .cl-modal-btn {
   flex: 1;
-  padding: 11px;
+  padding: 8px;
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -789,14 +789,14 @@
 .cl-wb-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: #111; }
 .cl-wb-info { flex: 1; min-width: 0; }
 .cl-wb-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #333;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.cl-wb-count { font-size: 12px; color: #aaa; margin-top: 2px; }
+.cl-wb-count { font-size: 13px; color: #aaa; margin-top: 2px; }
 
 /* 绑定用户弹窗 */
 .cl-bind-modal {
