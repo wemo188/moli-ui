@@ -118,8 +118,8 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       });
 
       page.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+               '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+          '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (isNew ? '添加角色' : '编辑角色') + '</span>' +
           '<div style="width:36px;"></div>' +
         '</div>' +
@@ -545,39 +545,98 @@ charPhone: d.charPhone, charWechat: d.charWechat,
     },
 
     openExpand: function(textarea, isDialogue) {
-  if (CharMgr._expandEl) CharMgr._expandEl.remove();
-  var ed = document.createElement('div'); CharMgr._expandEl = ed;
-  ed.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10003;background:#fff;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateY(100%);opacity:0;overflow:hidden;';
-  ed.innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-      '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
-      '<div class="cc-expand-title-tag' + (isDialogue ? '' : ' blue') + '">' + (isDialogue ? '示例对话' : '编辑内容') + '</div>' +
-      '<button class="cc-top-btn" id="cmExpDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
-    '</div>' +
-    '<div style="flex:1;padding:0 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;">' +
-      '<div style="background:#fff;border:3.5px solid #111;box-shadow:6px 6px 0 #111;position:relative;overflow:hidden;">' +
-        '<div style="background:#111;height:4px;width:100%;"></div>' +
-        '<div style="position:absolute;top:4px;right:0;width:40px;height:40px;background:repeating-linear-gradient(-45deg,transparent,transparent 3px,#88abda 3px,#88abda 5px);opacity:.35;pointer-events:none;"></div>' +
-        '<div style="min-height:calc(100vh - 220px);border:1.5px dashed #c8d4e2;margin:14px;background:repeating-linear-gradient(0deg,transparent,transparent 22px,#eef2f7 22px,#eef2f7 23px);position:relative;">' +
-          (isDialogue ? '<div style="position:absolute;top:8px;left:6px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">「</div><div style="position:absolute;bottom:4px;right:10px;font-size:22px;font-weight:900;color:#88abda;line-height:1;pointer-events:none;z-index:1;">」</div>' : '') +
-          '<textarea id="cmExpTA" style="width:100%;min-height:calc(100vh - 250px);border:none;background:transparent;padding:12px ' + (isDialogue ? '14px 12px 26px' : '14px') + ';font-size:14px;color:#333;outline:none;resize:vertical;font-family:inherit;line-height:22px;box-sizing:border-box;" placeholder="">' + App.esc(textarea.value) + '</textarea>' +
+      if (CharMgr._expandEl) CharMgr._expandEl.remove();
+      var ed = document.createElement('div'); 
+      CharMgr._expandEl = ed;
+      
+      // 🌟 只留一个干净的类名，样式全交出去
+      ed.className = 'cc-expand-panel';
+      
+      ed.innerHTML =
+        '<div class="cc-expand-header">' +
+          '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+          '<div class="cc-expand-title-tag' + (isDialogue ? '' : ' blue') + '">' + (isDialogue ? '示例对话' : '编辑内容') + '</div>' +
+          '<button class="cc-top-btn" id="cmExpDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
-        '<div style="height:8px;background:linear-gradient(90deg,#111 30%,#88abda 30%,#88abda 65%,#111 65%);"></div>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(ed);
-  requestAnimationFrame(function() { requestAnimationFrame(function() {
-    ed.style.transform = 'translateY(0)'; ed.style.opacity = '1';
-  }); });
-  var ta = ed.querySelector('#cmExpTA'); if (ta) ta.focus();
-  function done() {
-    textarea.value = ed.querySelector('#cmExpTA').value;
-    ed.style.transform = 'translateY(100%)'; ed.style.opacity = '0';
-    setTimeout(function() { if (ed.parentNode) ed.remove(); CharMgr._expandEl = null; }, 350);
-  }
-  ed.querySelector('#cmExpBack').addEventListener('click', done);
-  ed.querySelector('#cmExpDone').addEventListener('click', done);
-},
+        '<div class="cc-expand-body">' +
+          '<div class="cc-expand-comic-box">' +
+            '<div class="cc-expand-comic-top"></div>' +
+            '<div class="cc-expand-comic-corner"></div>' +
+            '<div class="cc-expand-comic-inner">' +
+              (isDialogue ? '<div class="cc-expand-quote-left">「</div><div class="cc-expand-quote-right">」</div>' : '') +
+              '<textarea id="cmExpTA" class="cc-expand-textarea ' + (isDialogue ? 'is-dialogue-ta' : '') + '" placeholder="">' + App.esc(textarea.value) + '</textarea>' +
+            '</div>' +
+            '<div class="cc-expand-comic-bot"></div>' +
+          '</div>' +
+        '</div>';
+      
+      document.body.appendChild(ed);
+
+      // 🌟 动画升起 (Slide Up)
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        ed.classList.add('cc-expand-panel-in');
+      }); });
+
+      var ta = ed.querySelector('#cmExpTA'); 
+      if (ta) ta.focus();
+      
+      var initialValue = textarea.value; 
+
+      // 强制关闭 (分点击下降和滑动消失)
+      function forceClose(isSwipe) {
+        if (isSwipe) {
+          if (ed.parentNode) ed.remove(); CharMgr._expandEl = null;
+        } else {
+          ed.classList.remove('cc-expand-panel-in');
+          ed.classList.add('cc-expand-panel-out-down'); // 🌟 点击时，向下降落
+          setTimeout(function() { if (ed.parentNode) ed.remove(); CharMgr._expandEl = null; }, 350);
+        }
+      }
+
+      function saveAndClose(isSwipe) {
+        textarea.value = ed.querySelector('#cmExpTA').value;
+        forceClose(isSwipe);
+      }
+
+      function handleReturn(isSwipe) {
+        var currentVal = ed.querySelector('#cmExpTA').value;
+        if (currentVal !== initialValue) {
+          var old = App.$('#cmUnsavedMenu'); if (old) old.remove();
+          var menu = document.createElement('div');
+          menu.id = 'cmUnsavedMenu';
+          menu.className = 'cl-overlay';
+          menu.innerHTML =
+            '<div class="cl-modal cl-bg-modal">' +
+              '<div class="cl-bg-title">未保存修改</div>' +
+              '<div class="cl-bg-desc">您有尚未保存的编辑内容，<br>是否保存后再离开？</div>' +
+              '<button class="cl-bg-btn cl-bg-btn-primary" id="usSave">保存并离开</button>' +
+              '<button class="cl-bg-btn cl-bg-btn-del" id="usDiscard">放弃修改</button>' +
+              '<button class="cl-bg-btn cl-bg-btn-cancel" id="usCancel">取消</button>' +
+            '</div>';
+          document.body.appendChild(menu);
+
+          menu.querySelector('#usCancel').onclick = function() { 
+            menu.remove(); 
+            if (isSwipe) {
+              // 🌟 取消的话，清空右滑留下的内联样式，自动受 class 控制吸回原位
+              ed.style.transition = 'transform 0.35s cubic-bezier(.32,.72,0,1), opacity 0.3s ease';
+              ed.style.transform = '';
+              ed.style.opacity = '';
+            }
+          };
+          menu.querySelector('#usSave').onclick = function() { menu.remove(); saveAndClose(isSwipe); };
+          menu.querySelector('#usDiscard').onclick = function() { menu.remove(); forceClose(isSwipe); };
+        } else {
+          forceClose(isSwipe);
+        }
+      }
+
+      // 点击走上下降，滑动走右滑
+      ed.querySelector('#cmExpBack').addEventListener('click', function() { handleReturn(false); });
+      ed.querySelector('#cmExpDone').addEventListener('click', function() { saveAndClose(false); });
+      
+      App.bindSwipeBack(ed, function() { handleReturn(true); });
+    },
 
     init: function() {
       CharMgr.load();
