@@ -216,6 +216,107 @@ App.bindSwipeBack = function(el, onClose, opts) {
   }, { passive: true });
 };
 
+  // =========================
+  // 全局公共：相册/URL图片选择器
+  // =========================
+  App.showImagePicker = function(options) {
+    options = options || {};
+    var title = options.title || '选择图片来源';
+    var hasDelete = options.hasDelete !== false;
+    var deleteText = options.deleteText || '删除图片';
+    var callback = options.callback || function(){};
+
+    var old = App.$('#globalImgPicker');
+    if (old) old.remove();
+
+    var menu = document.createElement('div');
+    menu.id = 'globalImgPicker';
+    menu.className = 'gip-overlay';
+    
+    var delBtnHtml = hasDelete ? '<button class="gip-btn gip-btn-del" data-type="del">' + App.esc(deleteText) + '</button>' : '';
+
+    menu.innerHTML =
+      '<div class="gip-modal">' +
+        '<div class="gip-title">' + App.esc(title) + '</div>' +
+        '<button class="gip-btn" data-type="album">从相册选择</button>' +
+        '<button class="gip-btn" data-type="url">输入图片 URL</button>' +
+        delBtnHtml +
+        '<button class="gip-btn gip-btn-cancel" data-type="cancel">取消</button>' +
+      '</div>';
+
+    document.body.appendChild(menu);
+
+    menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+
+    menu.querySelectorAll('.gip-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var type = btn.dataset.type;
+        menu.remove();
+
+        if (type === 'cancel') return;
+        if (type === 'del') {
+          callback(''); // 返回空字符串表示删除
+          return;
+        }
+        if (type === 'album') {
+          var input = document.createElement('input');
+          input.type = 'file'; input.accept = 'image/*';
+          input.onchange = function(ev) {
+            var file = ev.target.files[0]; if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(r) {
+              if (App.cropImage) {
+                App.cropImage(r.target.result, function(cropped) { callback(cropped); });
+              } else {
+                callback(r.target.result);
+              }
+            };
+            reader.readAsDataURL(file);
+          };
+          input.click();
+          return;
+        }
+        if (type === 'url') {
+          var uOverlay = document.createElement('div');
+          uOverlay.className = 'gip-overlay';
+          uOverlay.innerHTML = 
+            '<div class="gip-modal">' +
+              '<div class="gip-title">输入图片 URL</div>' +
+              '<input type="text" id="gipUrlInput" class="gip-input" placeholder="https://...">' +
+              '<div id="gipUrlPreview" class="gip-preview"><img class="gip-preview-img"></div>' +
+              '<div class="gip-btn-row">' +
+                '<button class="gip-btn gip-btn-primary" id="gipUrlOk">确定</button>' +
+                '<button class="gip-btn" id="gipUrlNo">取消</button>' +
+              '</div>' +
+            '</div>';
+          document.body.appendChild(uOverlay);
+          
+          var pBox = uOverlay.querySelector('#gipUrlPreview');
+          var pImg = pBox.querySelector('.gip-preview-img');
+
+          uOverlay.querySelector('#gipUrlInput').addEventListener('input', function() {
+            var val = this.value.trim();
+            if (val && (val.startsWith('http://') || val.startsWith('https://'))) {
+              pImg.src = val; pBox.style.display = 'block';
+              pImg.onerror = function() { pBox.style.display = 'none'; };
+            } else {
+              pBox.style.display = 'none';
+            }
+          });
+
+          uOverlay.addEventListener('click', function(ev) { if (ev.target === uOverlay) uOverlay.remove(); });
+          uOverlay.querySelector('#gipUrlNo').onclick = function(){ uOverlay.remove(); };
+          uOverlay.querySelector('#gipUrlOk').onclick = function(){
+             var val = uOverlay.querySelector('#gipUrlInput').value.trim();
+             if(val) callback(val);
+             uOverlay.remove();
+          };
+        }
+      });
+    });
+  };
+  
   App.cropImage = function(src, callback) {
     var overlay = document.createElement('div');
     overlay.className = 'crop-overlay';
