@@ -335,7 +335,7 @@
         });
       });
 
-      // ====== 绑定 ======
+            // ====== 绑定 ======
       panel.querySelectorAll('.cl-act-bind').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -347,10 +347,19 @@
           var bindings = App.LS.get('charUserBindings') || {};
           var overlay = document.createElement('div');
           overlay.className = 'cl-overlay';
+          
+          // 🌟 哥哥在这里帮你加上了头像判定和 HTML 结构
           var listHtml = users.map(function(u) {
             var isBound = bindings[charId] === u.id;
-            return '<div class="cl-bind-item" data-uid="' + u.id + '"><span class="cl-bind-name">' + App.esc(u.nickname || u.realName || '未命名') + '</span>' + (isBound ? '<span class="cl-bind-current">当前绑定</span>' : '') + '</div>';
+            var avHtml = u.avatar 
+              ? '<img class="cl-bind-avatar" src="' + App.escAttr(u.avatar) + '">' 
+              : '<div class="cl-bind-avatar-empty"></div>';
+            return '<div class="cl-bind-item" data-uid="' + u.id + '">' +
+                     '<div class="cl-bind-left">' + avHtml + '<span class="cl-bind-name">' + App.esc(u.nickname || u.realName || '未命名') + '</span></div>' + 
+                     (isBound ? '<span class="cl-bind-current">当前绑定</span>' : '') + 
+                   '</div>';
           }).join('');
+          
           overlay.innerHTML = '<div class="cl-bind-modal"><div class="cl-modal-title">绑定用户</div>' + listHtml + '<div class="cl-bind-cancel"><button id="bindCancel" type="button">取消</button></div></div>';
           document.body.appendChild(overlay);
           overlay.addEventListener('click', function(ev) { if (ev.target === overlay) overlay.remove(); });
