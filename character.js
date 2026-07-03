@@ -163,8 +163,12 @@
         '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + cfg.defaults.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + cfg.defaults.outer + 'px</span></div>' +
         '<button class="cl-popup-reset" type="button">重置</button></div>';
 
+      var savedBg = App.LS.get('charPageBg') || '';
+      var bgHtml = savedBg ? '<div class="cl-custom-bg" style="background-image: url(' + App.escAttr(savedBg) + ');"></div>' : '';
+
       panel.innerHTML =
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner">' +
+        bgHtml +
         '<div class="cl-topbar-wrap">' +
         '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
         '<div class="cl-mode-center" id="clModeCenter"><span class="cl-mode-label" id="clModeLabel">' + MODE_LABELS[mi] + '</span><span class="cl-paw-toggle" id="clPawToggle">🐾</span></div>' +
@@ -567,11 +571,11 @@
 
       var menu = document.createElement('div');
       menu.className = 'cl-mgr-menu';
-      menu.innerHTML =
+            menu.innerHTML =
+        '<div class="cl-mgr-menu-item" data-act="bg">页面背景</div>' +
         '<div class="cl-mgr-menu-item" data-act="multi">多选</div>' +
         '<div class="cl-mgr-menu-item" data-act="rename">修改标签名称</div>' +
         '<div class="cl-mgr-menu-item cl-mgr-danger" data-act="delcat">删除分类</div>';
-
       document.body.appendChild(menu);
 
       var rect = anchor.getBoundingClientRect();
@@ -594,7 +598,10 @@
           document.removeEventListener('click', closeMenu);
           var act = item.dataset.act;
 
-          if (act === 'multi') {
+          if (act === 'bg') {
+            Character._showBgMenu();
+
+          } else if (act === 'multi') {
             Character._enterMultiMode();
 
           } else if (act === 'rename') {
@@ -687,6 +694,74 @@
           overlay.remove();
           if (onDone) onDone();
           App.showToast(ids.length + ' 个角色已移动到「' + cat + '」');
+        });
+      });
+    },
+
+    _showBgMenu: function() {
+      var old = App.$('#charBgMenu'); if (old) old.remove();
+      var menu = document.createElement('div');
+      menu.id = 'charBgMenu';
+      menu.className = 'cl-overlay';
+      menu.innerHTML =
+        '<div class="cl-modal cl-bg-modal">' +
+          '<div class="cl-bg-title">设置页面背景</div>' +
+          '<button class="cl-bg-btn" data-type="album">从相册选择</button>' +
+          '<button class="cl-bg-btn" data-type="url">输入图片 URL</button>' +
+          '<button class="cl-bg-btn cl-bg-btn-del" data-type="del">清除背景</button>' +
+          '<button class="cl-bg-btn cl-bg-btn-cancel" data-type="cancel">取消</button>' +
+        '</div>';
+      document.body.appendChild(menu);
+
+      menu.addEventListener('click', function(e) { if (e.target === menu) menu.remove(); });
+      menu.querySelectorAll('.cl-bg-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var type = btn.dataset.type;
+          menu.remove();
+          if (type === 'cancel') return;
+          if (type === 'del') {
+            App.LS.remove('charPageBg');
+            App.showToast('背景已清除');
+            Character.renderList();
+            return;
+          }
+          if (type === 'album') {
+            var input = document.createElement('input');
+            input.type = 'file'; input.accept = 'image/*';
+            input.onchange = function(ev) {
+              var file = ev.target.files[0]; if (!file) return;
+              var reader = new FileReader();
+              reader.onload = function(r) {
+                App.LS.set('charPageBg', r.target.result);
+                App.showToast('背景已设置');
+                Character.renderList();
+              };
+              reader.readAsDataURL(file);
+            };
+            input.click();
+            return;
+          }
+          if (type === 'url') {
+            var uOverlay = document.createElement('div');
+            uOverlay.className = 'cl-overlay';
+            uOverlay.innerHTML = 
+              '<div class="cl-modal cl-bg-modal">' +
+                '<div class="cl-bg-title">输入图片 URL</div>' +
+                '<input type="text" id="bgUrlInput" class="cl-bg-input" placeholder="https://...">' +
+                '<div class="cl-bg-btn-row">' +
+                  '<button class="cl-bg-btn cl-bg-btn-primary" id="bgUrlOk">确定</button>' +
+                  '<button class="cl-bg-btn" id="bgUrlNo">取消</button>' +
+                '</div>' +
+              '</div>';
+            document.body.appendChild(uOverlay);
+            uOverlay.querySelector('#bgUrlNo').onclick = function(){ uOverlay.remove(); };
+            uOverlay.querySelector('#bgUrlOk').onclick = function(){
+               var val = uOverlay.querySelector('#bgUrlInput').value.trim();
+               if(val) { App.LS.set('charPageBg', val); App.showToast('背景已设置'); Character.renderList(); }
+               uOverlay.remove();
+            };
+          }
         });
       });
     },
