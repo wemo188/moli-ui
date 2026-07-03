@@ -89,6 +89,106 @@
 .cl-new-btn:active { opacity: 0.5; }
 
 /* ============================
+   顶部标题下方分隔线
+   ============================ */
+.cl-topbar-divider {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
+  border-radius: 999px;
+  margin: 5px 16px 0;
+  box-shadow: 0 0 4px rgba(233,236,241,0.32);
+}
+
+/* ============================
+   管理徽章按钮（三横线）
+   ============================ */
+.cl-cat-mgr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cl-cat-mgr-stamp {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2.5px solid #d0d0d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #fff;
+}
+.cl-cat-mgr-stamp::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 1.5px dashed #e0e0e0;
+}
+
+.cl-cat-mgr-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+.cl-cat-mgr-icon span {
+  display: block;
+  width: 14px;
+  height: 2px;
+  background: #ccc;
+  border-radius: 1px;
+  transition: background 0.2s;
+}
+
+.cl-cat-mgr-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #bbb;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+
+.cl-cat-mgr:active .cl-cat-mgr-stamp { transform: scale(0.9); }
+
+/* ============================
+   管理菜单
+   ============================ */
+.cl-mgr-menu {
+  position: fixed;
+  z-index: 10100;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid #111;
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 150px;
+  box-shadow: 4px 4px 0 #111;
+}
+.cl-mgr-menu-item {
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  letter-spacing: 1px;
+  -webkit-tap-highlight-color: transparent;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.cl-mgr-menu-item:last-child { border-bottom: none; }
+.cl-mgr-menu-item:active { background: #f0f4f8; }
+.cl-mgr-menu-item.cl-mgr-danger { color: #c85a55; }
+
+/* ============================
    分类导航 · 印章徽章
    ============================ */
 .cl-cat-nav {
@@ -793,3 +893,17 @@
 .mode-mono .cl-change-label { color: var(--card-border-c); }
 .mode-mono .cl-change-dot:nth-child(1) { background: var(--card-border-c); }
 .mode-mono .cl-change-dot:nth-child(2) { background: var(--card-border-c); }
+
+/* ============================
+   防止选中
+   ============================ */
+.char-list-wrap,
+.cl-cat-nav,
+.cl-cat-item,
+.cl-context-menu,
+.cl-context-item {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
