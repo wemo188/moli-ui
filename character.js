@@ -13,19 +13,19 @@
     {
       defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
       controls: [
-        { key: 'border', label: '框', cssVar: '--card-border-c' },
-        { key: 'accent', label: '中', cssVar: '--card-accent' },
-        { key: 'bg',     label: '底', cssVar: '--card-bg' },
-        { key: 'left',   label: '左', cssVar: '--card-left' }
+        { key: 'border', label: '框线', cssVar: '--card-border-c' },
+        { key: 'accent', label: '主调', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底色', cssVar: '--card-bg' },
+        { key: 'left',   label: '左侧', cssVar: '--card-left' }
       ]
     },
     {
       defaults: { accent: '#9ca3af', line: 2, outer: 2 },
-      controls: [{ key: 'accent', label: '中', cssVar: '--card-accent' }]
+      controls: [{ key: 'accent', label: '主调', cssVar: '--card-accent' }]
     },
     {
       defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
-      controls: [{ key: 'border', label: '线', cssVar: '--card-border-c' }]
+      controls: [{ key: 'border', label: '线条', cssVar: '--card-border-c' }]
     }
   ];
 
@@ -157,7 +157,7 @@
       }).join('');
 
       var popupHtml = '<div class="cl-color-popup" id="clColorPopup">' +
-        '<div class="cl-color-popup-title">自定义配色</div>' +
+        '<div class="cl-color-popup-title">编辑配色</div>' +
         '<div class="cl-color-custom" id="clPopupColors">' + popupColorsHtml + '</div>' +
         '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + cfg.defaults.line + '" class="cl-cc-line"><span class="cl-line-val">' + cfg.defaults.line + 'px</span></div>' +
         '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + cfg.defaults.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + cfg.defaults.outer + 'px</span></div>' +
