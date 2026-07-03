@@ -91,7 +91,7 @@
       setTimeout(function() { panel.style.display = 'none'; }, 350);
     },
 
-    renderList: function() {
+        renderList: function() {
       var panel = App.$('#charPanel');
       if (!panel) return;
       var oldPopup = document.querySelector('#clColorPopup');
@@ -109,7 +109,6 @@
         filteredChars = chars.filter(function(c) { return charCats[c.id] === currentCat; });
       }
 
-      // 管理徽章 + 分类导航
       var catNavHtml = '<div class="cl-cat-nav" id="clCatNav">';
       catNavHtml += '<div class="cl-cat-mgr" id="clCatMgr"><div class="cl-cat-mgr-stamp"><div class="cl-cat-mgr-icon"><span></span><span></span><span></span></div></div><span class="cl-cat-mgr-label">管理</span></div>';
       categories.forEach(function(cat) {
@@ -119,7 +118,6 @@
       });
       catNavHtml += '<div class="cl-cat-item" data-cat="__add__"><div class="cl-cat-stamp"><span class="cl-cat-stamp-text">＋</span></div><span class="cl-cat-label">添加</span></div></div>';
 
-      // 卡片
       var cardsHtml = '';
       if (!filteredChars.length) {
         cardsHtml = '<div class="cl-empty">暂无角色</div>';
@@ -152,7 +150,6 @@
         }).join('');
       }
 
-      // 调色盘
       var cfg = MODE_CFG[mi];
       var popupColorsHtml = cfg.controls.map(function(ctrl) {
         var def = cfg.defaults;
@@ -166,7 +163,6 @@
         '<div class="cl-line-row"><label>外框</label><input type="range" min="0.5" max="6" step="0.5" value="' + cfg.defaults.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + cfg.defaults.outer + 'px</span></div>' +
         '<button class="cl-popup-reset" type="button">重置</button></div>';
 
-      // 组装
       panel.innerHTML =
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + '" id="clPageInner">' +
         '<div class="cl-topbar-wrap">' +
@@ -187,14 +183,13 @@
       var multiMode = false;
       var selectedIds = [];
 
-      // 应用配色
       panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
         var cid = card.dataset.charId;
         var c = Character.getById(cid);
         if (c) Character.applyCardVars(card, Character.getColors(c, mi), mi);
       });
 
-      // ====== 管理徽章点击 ======
+      // ====== 管理徽章 ======
       var mgrBtn = panel.querySelector('#clCatMgr');
       if (mgrBtn) {
         mgrBtn.addEventListener('click', function(e) {
@@ -223,30 +218,37 @@
           Character._currentCat = cat;
           Character.renderList();
         });
-
-        // 长按分类可删除
-        var catLpTimer = null;
-        item.addEventListener('touchstart', function() {
-          var cat = item.dataset.cat;
-          if (cat === '全部' || cat === '__add__') return;
-          catLpTimer = setTimeout(function() {
-            catLpTimer = null;
-            if (confirm('删除分类「' + cat + '」？')) {
-              var cats = App.LS.get('charCategories') || categories;
-              cats = cats.filter(function(c) { return c !== cat; });
-              App.LS.set('charCategories', cats);
-              if (Character._currentCat === cat) Character._currentCat = '全部';
-              Character.renderList();
-              App.showToast('已删除分类');
-            }
-          }, 600);
-        }, { passive: true });
-        item.addEventListener('touchend', function() { if (catLpTimer) { clearTimeout(catLpTimer); catLpTimer = null; } });
-        item.addEventListener('touchmove', function() { if (catLpTimer) { clearTimeout(catLpTimer); catLpTimer = null; } });
       });
 
-      // ====== 多选模式下点击卡片 ======
+      // ====== 长按卡片 → 弹出分类选择 ======
       panel.querySelectorAll('.char-list-wrap').forEach(function(card) {
+        var lpTimer = null;
+        var lpFired = false;
+
+        card.addEventListener('touchstart', function(e) {
+          if (multiMode) return;
+          lpFired = false;
+          lpTimer = setTimeout(function() {
+            lpFired = true;
+            lpTimer = null;
+            var cid = card.dataset.charId;
+            Character._showCatPicker(cid, card);
+          }, 500);
+        }, { passive: true });
+
+        card.addEventListener('touchmove', function() {
+          if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
+        }, { passive: true });
+
+        card.addEventListener('touchend', function(e) {
+          if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
+          if (lpFired) {
+            e.preventDefault();
+            lpFired = false;
+          }
+        });
+
+        // 多选模式点击
         card.addEventListener('click', function() {
           if (!multiMode) return;
           var cid = card.dataset.charId;
@@ -257,7 +259,7 @@
         });
       });
 
-      // ====== 多选方法 ======
+      // ====== 多选 ======
       Character._enterMultiMode = function() {
         multiMode = true; selectedIds = [];
         panel.querySelectorAll('.char-list-wrap').forEach(function(c) { c.classList.add('cl-ms-mode'); c.classList.remove('cl-selected'); });
@@ -274,13 +276,8 @@
         if (!bar) return;
         bar.innerHTML =
           '<div class="cl-multiselect-bar"><div class="cl-ms-left"><span class="cl-ms-close" id="clMsClose">✕</span><span class="cl-ms-count">已选 ' + ids.length + ' 个</span></div>' +
-          '<div class="cl-ms-actions"><button class="cl-ms-btn" id="clMsMove" type="button">移动分组</button><button class="cl-ms-btn cl-ms-btn-danger" id="clMsDel" type="button">删除</button></div></div>';
-
+          '<div class="cl-ms-actions"><button class="cl-ms-btn cl-ms-btn-danger" id="clMsDel" type="button">删除</button></div></div>';
         bar.querySelector('#clMsClose').addEventListener('click', function() { Character._exitMultiMode(); });
-        bar.querySelector('#clMsMove').addEventListener('click', function() {
-          if (!ids.length) { App.showToast('请先选择角色'); return; }
-          Character._showMoveOverlay(ids, function() { Character._exitMultiMode(); Character.renderList(); });
-        });
         bar.querySelector('#clMsDel').addEventListener('click', function() {
           if (!ids.length) { App.showToast('请先选择角色'); return; }
           if (!confirm('确定删除选中的 ' + ids.length + ' 个角色？')) return;
@@ -467,8 +464,66 @@
       }
     },
 
-    // ====== 管理菜单 ======
-       _showMgrMenu: function(anchor) {
+    // ====== 长按卡片 → 分类选择器 ======
+    _showCatPicker: function(charId, cardEl) {
+      var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
+      var assignable = categories.filter(function(c) { return c !== '全部'; });
+      if (!assignable.length) { App.showToast('请先添加分类'); return; }
+
+      var charCats = App.LS.get('charCatMap') || {};
+      var currentCat = charCats[charId] || '';
+
+      var old = document.querySelector('.cl-mgr-menu');
+      if (old) old.remove();
+
+      var menu = document.createElement('div');
+      menu.className = 'cl-mgr-menu';
+
+      var itemsHtml = assignable.map(function(cat) {
+        var activeHtml = cat === currentCat ? '<span style="font-size:10px;color:#88abda;font-weight:700;margin-left:auto;">✓</span>' : '';
+        return '<div class="cl-mgr-menu-item" data-pickcat="' + App.escAttr(cat) + '" style="display:flex;align-items:center;gap:8px;">' + App.esc(cat) + activeHtml + '</div>';
+      }).join('');
+
+      var clearHtml = currentCat ? '<div class="cl-mgr-menu-item cl-mgr-danger" data-pickcat="__clear__">取消分类</div>' : '';
+
+      menu.innerHTML = itemsHtml + clearHtml;
+      document.body.appendChild(menu);
+
+      var rect = cardEl.getBoundingClientRect();
+      var left = rect.left + rect.width / 2 - 75;
+      var top = rect.top - menu.offsetHeight - 6;
+      if (left < 10) left = 10;
+      if (left + 150 > window.innerWidth - 10) left = window.innerWidth - 160;
+      if (top < 10) top = rect.bottom + 6;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+
+      function closeMenu() { if (menu.parentNode) menu.remove(); document.removeEventListener('click', closeMenu); }
+      setTimeout(function() { document.addEventListener('click', closeMenu); }, 10);
+
+      menu.querySelectorAll('.cl-mgr-menu-item').forEach(function(item) {
+        item.addEventListener('click', function(ev) {
+          ev.stopPropagation();
+          menu.remove();
+          document.removeEventListener('click', closeMenu);
+          var cat = item.dataset.pickcat;
+          var charCatsNow = App.LS.get('charCatMap') || {};
+          if (cat === '__clear__') {
+            delete charCatsNow[charId];
+            App.LS.set('charCatMap', charCatsNow);
+            App.showToast('已取消分类');
+          } else {
+            charCatsNow[charId] = cat;
+            App.LS.set('charCatMap', charCatsNow);
+            App.showToast('已归入「' + cat + '」');
+          }
+          Character.renderList();
+        });
+      });
+    },
+
+    // ====== 管理徽章菜单 ======
+    _showMgrMenu: function(anchor) {
       var old = document.querySelector('.cl-mgr-menu');
       if (old) { old.remove(); return; }
 
@@ -476,7 +531,6 @@
       menu.className = 'cl-mgr-menu';
       menu.innerHTML =
         '<div class="cl-mgr-menu-item" data-act="multi">多选</div>' +
-        '<div class="cl-mgr-menu-item" data-act="move">移动分组</div>' +
         '<div class="cl-mgr-menu-item cl-mgr-danger" data-act="delcat">删除分类</div>';
 
       document.body.appendChild(menu);
@@ -503,9 +557,6 @@
 
           if (act === 'multi') {
             Character._enterMultiMode();
-          } else if (act === 'move') {
-            Character._enterMultiMode();
-            App.showToast('请选择要移动的角色');
           } else if (act === 'delcat') {
             var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
             var deletable = categories.filter(function(c) { return c !== '全部'; });
@@ -533,32 +584,6 @@
               });
             });
           }
-        });
-      });
-    },
-
-    // ====== 移动分组弹窗 ======
-    _showMoveOverlay: function(ids, onDone) {
-      var categories = App.LS.get('charCategories') || ['全部', '现代', '古代', '玄幻', '西幻'];
-      var cats = categories.filter(function(c) { return c !== '全部'; });
-      var overlay = document.createElement('div');
-      overlay.className = 'cl-overlay';
-      var moveHtml = cats.map(function(c) {
-        return '<div class="cl-context-item" data-mcat="' + App.escAttr(c) + '">' + App.esc(c) + '</div>';
-      }).join('');
-      overlay.innerHTML = '<div class="cl-move-modal"><div class="cl-move-title">移动到分组</div>' + moveHtml + '<div class="cl-context-item cl-move-cancel" id="clMoveCancel">取消</div></div>';
-      document.body.appendChild(overlay);
-      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-      overlay.querySelector('#clMoveCancel').addEventListener('click', function() { overlay.remove(); });
-      overlay.querySelectorAll('[data-mcat]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var cat = btn.dataset.mcat;
-          var charCats = App.LS.get('charCatMap') || {};
-          ids.forEach(function(id) { charCats[id] = cat; });
-          App.LS.set('charCatMap', charCats);
-          overlay.remove();
-          if (onDone) onDone();
-          App.showToast(ids.length + ' 个角色已移动到「' + cat + '」');
         });
       });
     },
