@@ -497,7 +497,7 @@
    ============================ */
 .cl-color-popup {
   position: fixed;
-  width: 250px;
+  width: 200px;
   background: rgba(255,255,255,0.78);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
@@ -536,7 +536,7 @@
 }
 
 .cl-line-row { display: flex; align-items: center; gap: 5px; }
-.cl-line-row label { font-size: 8px; font-weight: 700; color: #333; letter-spacing: 0.5px; flex-shrink: 0; }
+.cl-line-row label { font-size: 10px; font-weight: 700; color: #333; letter-spacing: 0.5px; flex-shrink: 0; }
 .cl-line-row input[type="range"] {
   flex: 1;
   height: 2px;
@@ -555,11 +555,11 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   cursor: pointer;
 }
-.cl-line-val, .cl-outer-val { font-size: 8px; font-weight: 700; color: #333; min-width: 24px; text-align: right; }
+.cl-line-val, .cl-outer-val { font-size: 10px; font-weight: 700; color: #333; min-width: 24px; text-align: right; }
 
 .cl-popup-reset {
   align-self: flex-end;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 1px;
   color: #333;
