@@ -682,7 +682,7 @@
   transform: rotate(45deg) translate(-1px, -1px);
 }
 .char-list-wrap.cl-selected {
-  outline: 3px solid #88abda;
+  outline: 3px solid #000;
   outline-offset: -3px;
 }
 
@@ -803,7 +803,7 @@
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px; /* 圆角稍微调大一点点，更可爱 */
+  border-radius: 12px; /* 圆角稍微调大一点点，更可爱 */
   width: 245px; /* 🌟 哥哥把宽度收紧了，右边就不会太空 */
   max-height: 60vh;
   overflow-y: auto;
@@ -830,8 +830,8 @@
   gap: 12px; /* 名字和头像的距离刚刚好 */
 }
 .cl-bind-avatar {
-  width: 45px; /* 🌟 头像放大 */
-  height: 45px;
+  width: 48px; /* 🌟 头像放大 */
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   border: 1.5px solid rgba(136, 171, 218, 0.3); /* 加上淡淡的主题色边框，精致感拉满 */
@@ -841,8 +841,8 @@
 
 /* 没头像时的空状态 */
 .cl-bind-avatar-empty {
-  width: 45px; /* 🌟 同步放大 */
-  height: 45px;
+  width: 48px; /* 🌟 同步放大 */
+  height: 48px;
   border-radius: 50%;
   background: #f8fafc;
   border: 1.5px dashed rgba(136, 171, 218, 0.4);
@@ -872,7 +872,7 @@
   color: #fff; 
   background: #88abda; /* 🌟 哥哥给你加了个小色块背景，这样右边就不会显得空了 */
   padding: 3px 8px;
-  border-radius: 8px;
+  border-radius: 15px;
   font-weight: 700; 
   letter-spacing: 0.5px;
 }
