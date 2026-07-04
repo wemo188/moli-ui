@@ -119,11 +119,12 @@
       catNavHtml += '<div class="cl-cat-item" data-cat="__add__"><div class="cl-cat-stamp"><span class="cl-cat-stamp-text">＋</span></div><span class="cl-cat-label">添加</span></div></div>';
 
       var cardsHtml = '';
-      if (!filteredChars.length) {
+            if (!filteredChars.length) {
         cardsHtml = '<div class="cl-empty">暂无角色</div>';
       } else {
+        var totalChars = filteredChars.length; // 🌟 先获取总数
         cardsHtml = filteredChars.map(function(c, i) {
-          var idx = String(i + 1).padStart(2, '0');
+          var idx = String(totalChars - i).padStart(2, '0'); // 🌟 用总数减去当前位置，实现完美倒序！
           var name = App.esc(c.name || '未命名');
           var coverSrc = c.avatar || c.cover || '';
           var coverHtml = coverSrc ? '<img src="' + App.escAttr(coverSrc) + '" draggable="false">' : '<div class="cl-cover-empty"></div>';
