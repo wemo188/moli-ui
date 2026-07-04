@@ -686,21 +686,7 @@
   outline-offset: -3px;
 }
 
-/* ============================
-   长按右键菜单
-   ============================ */
-.cl-context-menu {
-  position: fixed;
-  z-index: 10100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 2px solid #111;
-  border-radius: 8px;
-  padding: 6px 0;
-  min-width: 150px;
-  box-shadow: 4px 4px 0 #111;
-}
+/* 借用的列表项样式 */
 .cl-context-item {
   padding: 11px 18px;
   font-size: 13px;
@@ -711,9 +697,7 @@
   -webkit-tap-highlight-color: transparent;
   border-bottom: 1px solid rgba(0,0,0,0.04);
 }
-.cl-context-item:last-child { border-bottom: none; }
 .cl-context-item:active { background: #f0f4f8; }
-.cl-context-item.cl-ctx-danger { color: #c85a55; }
 
 /* ============================
    通用弹窗（世界书/绑定/移动）
