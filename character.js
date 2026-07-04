@@ -167,11 +167,10 @@
       var bgHtml = savedBg ? '<div class="cl-custom-bg" style="background-image: url(' + App.escAttr(savedBg) + ');"></div>' : '';
 
       // 🌟 哥哥把 bgHtml 移到了 cl-page 外面，并且给 cl-page 加了透明标记
-      panel.innerHTML =
+            panel.innerHTML =
         bgHtml +
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + (savedBg ? ' has-custom-bg' : '') + '" id="clPageInner">' +
         
-        // 🌟 从这里开始包裹：高级磨砂吸顶层
         '<div class="cl-sticky-header">' + 
           '<div class="cl-topbar-wrap">' +
             '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
@@ -182,9 +181,11 @@
           '<div id="clMultiBar"></div>' +
           catNavHtml + 
         '</div>' + 
-        // 🌟 包裹层结束，下面是正常的卡片列表
         
-        cardsHtml + '</div>' + popupHtml;
+        // 🌟 哥哥在这里包了一层专属滚动区，用来做消失特效！
+        '<div class="cl-scroll-area">' + cardsHtml + '</div>' + 
+        
+        '</div>' + popupHtml;
 
       var pageEl = panel.querySelector('#clPageInner');
       var popup = panel.querySelector('#clColorPopup');
