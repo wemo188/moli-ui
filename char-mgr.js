@@ -490,7 +490,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         charObj.cover = charObj.avatar; 
         charObj.worldbookMounted = false;
         charObj.modeColors = [{}, {}, {}];
-        App.character.list.push(charObj);
+        App.character.list.unshift(charObj); // 🌟 换成 unshift，新角色就会永远在第一个！
         App.character.save();
         CharMgr.editingCharId = charObj.id;
       }
