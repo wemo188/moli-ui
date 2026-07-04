@@ -82,7 +82,7 @@
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
   border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
-  display: flex; flex-direction: column; padding: 8px 20px; box-sizing: border-box; gap: 1px;
+  display: flex; flex-direction: column; padding: 8px 20px 8px 5px; box-sizing: border-box; gap: 1px;
 }
 
 /* 8. 第一行：头像+名字+地点（同行布局） */
