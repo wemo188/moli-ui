@@ -207,7 +207,6 @@ var Cal={
   openEditPanel:function(){
     if(Cal._editPanel){Cal._editPanel.remove();Cal._editPanel=null;return;}
 
-    var hasBgImg=!!App.LS.get('calBgImg');
     var currentColor = App.LS.get('tkColor') || '#111111';
 
     var overlay=document.createElement('div');
@@ -216,57 +215,58 @@ var Cal={
     Cal._editPanel=overlay;
 
     var panel=document.createElement('div');
-    panel.className='pc-edit-panel'; // 完全遵循你的公共 CSS
+    panel.className='pc-edit-panel';
     
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       
       '<div class="pc-body">'+
-        '<div class="pc-group">'+
-          '<span class="pc-label">左侧头像</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtAvUploadBtn" title="更换头像"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
-            '<div class="pc-icon-btn danger" id="wtAvClearBtn" title="恢复默认"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+        // 1. 头像和背景放同一行
+        '<div style="display:flex; gap:12px;">'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">左侧头像</span>'+
+            '<div class="pc-av-row">'+
+              '<div class="pc-icon-btn" id="wtAvUploadBtn" title="更换头像"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+              '<div class="pc-icon-btn danger" id="wtAvClearBtn" title="恢复默认"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">背景图片</span>'+
+            '<div class="pc-av-row">'+
+              '<div class="pc-icon-btn" id="wtBgUploadBtn" title="上传背景"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+              '<div class="pc-icon-btn danger" id="wtBgClearBtn" title="清除背景"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+            '</div>'+
+            '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
           '</div>'+
         '</div>'+
 
-        '<div class="pc-group">'+
-          '<span class="pc-label">背景图片</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtBgUploadBtn" title="上传背景"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
-            '<div class="pc-icon-btn danger" id="wtBgClearBtn" title="清除背景"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
-            (hasBgImg?'<span style="font-size:10px;color:#999;font-weight:600;display:flex;align-items:center;">已设置</span>':'')+
+        // 2. 城市和动态开关放同一行 (去掉了多余的天气文本)
+        '<div style="display:flex; gap:12px;">'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">城市（获取天气）</span>'+
+            '<div class="pc-av-row">'+
+              '<input type="text" class="pc-input" id="wtCityInput" placeholder="输入城市名..." value="'+App.esc(Cal.city||'')+'">'+
+              '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
+            '</div>'+
           '</div>'+
-          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
-        '</div>'+
-
-        '<div class="pc-group">'+
-          '<span class="pc-label">城市（获取天气）</span>'+
-          '<div class="pc-av-row">'+
-            '<input type="text" class="pc-input" id="wtCityInput" placeholder="输入城市名..." value="'+App.esc(Cal.city||'')+'">'+
-            '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
-          '</div>'+
-          (Cal.weather?'<span class="pc-label" style="margin-top:4px;font-weight:500;opacity:0.7;">'+App.esc(Cal.weather.desc)+' '+App.esc(Cal.weather.temp)+'°C</span>':'')+
-        '</div>'+
-
-        '<div class="pc-group">'+
-          '<span class="pc-label">动态特效</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:auto;padding:0 10px;font-size:11px;font-weight:700;">'+(Cal._weatherAnimate?'开':'关')+'</div>'+
+          '<div class="pc-group" style="width:70px; flex-shrink:0;">'+
+            '<span class="pc-label">动态特效</span>'+
+            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:100%;font-size:11px;font-weight:700;">'+(Cal._weatherAnimate?'开':'关')+'</div>'+
           '</div>'+
         '</div>'+
 
+        // 3. 地点提到了签名上方
         '<div class="pc-group">'+
           '<span class="pc-label">昵称</span>'+
           '<input type="text" class="pc-input" id="wtNameInput" placeholder="昵称..." value="'+App.esc(App.LS.get('tkMsgName')||'')+'">'+
         '</div>'+
         '<div class="pc-group">'+
-          '<span class="pc-label">签名</span>'+
-          '<input type="text" class="pc-input" id="wtSignInput" placeholder="签名..." value="'+App.esc(App.LS.get('tkMsgSign')||'')+'">'+
-        '</div>'+
-        '<div class="pc-group">'+
           '<span class="pc-label">地点</span>'+
           '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">签名</span>'+
+          '<input type="text" class="pc-input" id="wtSignInput" placeholder="签名..." value="'+App.esc(App.LS.get('tkMsgSign')||'')+'">'+
         '</div>'+
 
         '<div class="pc-group">'+
@@ -285,14 +285,14 @@ var Cal={
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    // 关键修正：用 JS 计算 left 和 top 让它刚好停在底部居中，且不加任何锁死 CSS！拖拽逻辑丝滑保留！
+    // 动态计算初始坐标，停留在底部，但不使用死板的 CSS 强制锁定，保留组件原有的顺滑拖拽
     var pRect = panel.getBoundingClientRect();
-    var left = (window.innerWidth - pRect.width) / 2;
-    var top = window.innerHeight - pRect.height - 40; // 距离底部留点安全边距
-    if (top < 10) top = 10;
+    var startLeft = (window.innerWidth - pRect.width) / 2;
+    var startTop = window.innerHeight - pRect.height - 40;
+    if (startTop < 10) startTop = 10;
     
-    panel.style.left = left + 'px';
-    panel.style.top = top + 'px';
+    panel.style.left = startLeft + 'px';
+    panel.style.top = startTop + 'px';
 
     panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
