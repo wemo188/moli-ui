@@ -307,7 +307,7 @@
     },
 
     // 🌟 头像与气泡的悬浮拖拽
-    _bindHlDrag: function(id) {
+       _bindHlDrag: function(id) {
       var el = document.getElementById(id); if (!el) return;
       var DELAY = 500;
       var startX, startY, origX, origY, longPressed = false, timer, moved = false;
@@ -320,11 +320,13 @@
           longPressed = true;
           var off = Cards._dragOffsets[id] || {x: 0, y: 0}; origX = off.x; origY = off.y;
           el.classList.add('hl-dragging');
-          
-          el.classList.add('is-grabbed'); // 灵魂摇晃
+          el.classList.add('is-grabbed'); 
           el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          el.style.transform = 'translate(' + origX + 'px,' + origY + 'px) scale(1.05)'; // 放大
-          if (navigator.vibrate) navigator.vibrate(15); // 单次震动
+          // 🌟 核心：注入变量 --t
+          var tf = 'translate(' + origX + 'px,' + origY + 'px) scale(1.05)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
+          if (navigator.vibrate) navigator.vibrate(15); 
         }, DELAY);
       }, {passive: true});
 
@@ -333,9 +335,11 @@
         if (timer && !longPressed) { if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { clearTimeout(timer); timer = null; } return; }
         if (!longPressed) return; moved = true; e.preventDefault(); e.stopPropagation();
         var nx = origX + (t.clientX - startX); var ny = origY + (t.clientY - startY);
-        
-        el.style.transition = 'none'; // 移动时关动画
-        el.style.transform = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
+        el.style.transition = 'none'; 
+        // 🌟 核心：注入变量 --t
+        var tf = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
+        el.style.setProperty('--t', tf);
+        el.style.transform = tf;
         Cards._dragOffsets[id] = {x: nx, y: ny};
         var avatarInside = el.querySelector('.hl-avatar');
         if (avatarInside) avatarInside._dragMoved = true;
@@ -346,11 +350,12 @@
         el.classList.remove('is-grabbed');
         if (longPressed) {
           if (moved) { Cards.saveDrag(); e.stopPropagation(); }
-          
           el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
           var curOff = Cards._dragOffsets[id] || {x: 0, y: 0};
-          el.style.transform = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)'; // 回弹
-          
+          // 🌟 核心：注入变量 --t
+          var tf = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
           setTimeout(function() { el.style.transition = ''; }, 350);
         }
         longPressed = false; moved = false;
@@ -384,11 +389,16 @@
       });
     },
 
-    applyDragOffsets: function() {
+        applyDragOffsets: function() {
       ['profileCard-R', 'profileCard-L', 'hlTextCard', 'hlAvatarWrapLeft', 'hlAvatarWrapRight'].forEach(function(id) {
         var el = App.$('#' + id); if (!el) return;
         var off = Cards._dragOffsets[id];
-        if (off) el.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
+        if (off) {
+          // 🌟 把初始坐标注入到 --t 变量里
+          var tf = 'translate(' + off.x + 'px,' + off.y + 'px)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
+        }
       });
       var topCard = Cards._dragOffsets._topCard;
       if (topCard) {
@@ -400,7 +410,7 @@
     },
 
     // 🌟 名片的悬浮拖拽
-    bindDrag: function() {
+        bindDrag: function() {
       ['profileCard-R', 'profileCard-L'].forEach(function(id) {
         var el = App.$('#' + id); if (!el) return;
         var avBox = el.querySelector('.bx-av-box'); if (!avBox) return;
@@ -411,14 +421,16 @@
           var t = e.touches[0]; startX = t.clientX; startY = t.clientY; longPressed = false; moved = false;
           timer = setTimeout(function() {
             longPressed = true; var off = Cards._dragOffsets[id] || {x: 0, y: 0}; startOX = off.x; startOY = off.y;
-            
-            el.classList.add('is-grabbed'); // 灵魂摇晃
+            el.classList.add('is-grabbed'); 
             el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
-            el.style.transform = 'translate(' + startOX + 'px,' + startOY + 'px) scale(1.05)'; // 放大
+            // 🌟 核心：注入变量 --t
+            var tf = 'translate(' + startOX + 'px,' + startOY + 'px) scale(1.05)';
+            el.style.setProperty('--t', tf);
+            el.style.transform = tf;
             el.style.opacity = '0.95';
             el.style.zIndex = '999';
             el.style.boxShadow = '0 15px 35px rgba(0,0,0,0.15)';
-            if (navigator.vibrate) navigator.vibrate(15); // 单次震动
+            if (navigator.vibrate) navigator.vibrate(15); 
           }, DRAG_DELAY);
         }, {passive: true});
 
@@ -427,9 +439,11 @@
           if (timer && !longPressed) { if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { clearTimeout(timer); timer = null; } return; }
           if (!longPressed) return; moved = true; e.preventDefault(); e.stopPropagation();
           var nx = startOX + t.clientX - startX, ny = startOY + t.clientY - startY;
-          
-          el.style.transition = 'none'; // 移动时关动画
-          el.style.transform = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
+          el.style.transition = 'none'; 
+          // 🌟 核心：注入变量 --t
+          var tf = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
           Cards._dragOffsets[id] = {x: nx, y: ny};
         }, {passive: false});
 
@@ -440,15 +454,16 @@
           el.style.boxShadow = ''; 
           if (longPressed) {
             if (moved) { Cards._dragOffsets._topCard = id; Cards.saveDrag(); e.stopPropagation(); }
-            
             el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
             var curOff = Cards._dragOffsets[id] || {x: 0, y: 0};
-            el.style.transform = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)'; // 回弹
+            // 🌟 核心：注入变量 --t
+            var tf = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)';
+            el.style.setProperty('--t', tf);
+            el.style.transform = tf;
             el.style.zIndex = '50';
             ['profileCard-R', 'profileCard-L'].forEach(function(sid) {
               if (sid !== id) { var s = App.$('#' + sid); if (s) s.style.zIndex = '1'; }
             });
-            
             setTimeout(function() { el.style.transition = ''; }, 350);
           } else {
             el.style.zIndex = '';
