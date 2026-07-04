@@ -737,7 +737,7 @@
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1.5px solid #eee;
+  border-top: 1px solid #eee;
 }
 .cl-modal-btn {
   flex: 1;
@@ -779,7 +779,7 @@
 
 /* 绑定用户弹窗 */
 .cl-bind-modal {
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   border-radius: 12px; /* 圆角稍微调大一点点，更可爱 */
