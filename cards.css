@@ -366,8 +366,8 @@
 
 .hl-avatar {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   border: 1px solid var(--hl-border-c);
   background: white;
