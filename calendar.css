@@ -155,7 +155,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #222;
   letter-spacing: .5px;
@@ -167,6 +167,11 @@
   font-weight: 700;
   letter-spacing: 1px;
   display: none;  /* ← 新增这行 */
+}
+
+#calMonthDay {
+  font-size: 16px;      /* 日期单独调大 */
+  font-weight: 700;
 }
 
 .tk17-dashed {
