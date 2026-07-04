@@ -257,7 +257,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div>' +
+            '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
             '<div class="cm-sep"></div>' +
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
@@ -346,10 +346,10 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
               if (!models.length) { App.showToast('未找到模型'); return; }
               var list = page.querySelector('#cmImgModelList'); if (!list) return;
               var currentVal = (page.querySelector('#cmImgModel') || {}).value || '';
-              var searchHtml = '<input type="text" id="cmImgModelSearch" placeholder="搜索模型..." style="width:calc(100% - 16px);margin:6px 8px;padding:6px 10px;border:1px solid #eee;border-radius:6px;font-size:12px;outline:none;font-family:inherit;color:#333;box-sizing:border-box;">';
+              var searchHtml = '<input type="text" id="cmImgModelSearch" class="cm-model-search" placeholder="搜索模型...">';
               var itemsHtml = models.map(function(m) {
-                var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
-                return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>';
+                var selClass = m === currentVal ? ' is-active' : '';
+                return '<div class="cm-img-model-item' + selClass + '" data-model="' + App.escAttr(m) + '">' + App.esc(m) + '</div>';
               }).join('');
               list.innerHTML = searchHtml + '<div id="cmImgModelResults">' + itemsHtml + '</div>';
               list.style.display = 'block';
@@ -360,12 +360,19 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
               }
               bindClicks();
               var searchInput = list.querySelector('#cmImgModelSearch');
-              if (searchInput) {
+                            if (searchInput) {
                 searchInput.addEventListener('input', function() {
                   var kw = this.value.trim().toLowerCase();
                   var filtered = kw ? models.filter(function(m) { return m.toLowerCase().indexOf(kw) >= 0; }) : models;
                   var results = list.querySelector('#cmImgModelResults');
-                  if (results) { results.innerHTML = filtered.map(function(m) { var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : ''; return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>'; }).join(''); bindClicks(); }
+                  if (results) { 
+                    // 🌟 这里就是哥哥刚才没说清楚的地方，换成纯净的类名
+                    results.innerHTML = filtered.map(function(m) { 
+                      var selClass = m === currentVal ? ' is-active' : ''; 
+                      return '<div class="cm-img-model-item' + selClass + '" data-model="' + App.escAttr(m) + '">' + App.esc(m) + '</div>'; 
+                    }).join(''); 
+                    bindClicks(); 
+                  }
                 });
                 searchInput.addEventListener('click', function(e) { e.stopPropagation(); });
               }
