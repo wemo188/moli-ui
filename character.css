@@ -1063,11 +1063,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 10px 0 60px; /* 留出舒适的上下滑动空间 */
-  
-  /* 🌟 核心魔法：用黑色遮罩显现内容，用透明遮罩让两端羽化消失！ */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25px, black calc(100% - 25px), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 25px, black calc(100% - 25px), transparent 100%);
+  padding: 10px 0 60px; 
 }
 
 /* 彻底隐藏 Chrome/Safari 的滚动条 */
