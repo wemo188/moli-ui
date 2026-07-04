@@ -1,6 +1,13 @@
-/* 颜色变量 - 所有文字继承 */
-:root {
-  --tk-color: #111111;
+/* =========================
+   票券日历 tk17 (圆角修复 & 颜色锁定)
+========================= */
+.tk17 {
+  --tk-color: #111111; /* 把变量直接绑在卡片本身上，最稳妥！ */
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
 }
 
 /* 强制所有文字颜色统一，干掉所有的透明度干扰！ */
@@ -12,34 +19,28 @@
 .tk17-datetime span,
 .tk17-right-info,
 .tk17-wt-temp,
-.tk17-wt-desc {
+.tk17-wt-desc,
+#calMonthDay,
+#calWeekday,
+#calClock {
   color: var(--tk-color) !important;
-  opacity: 1 !important; /* 强制干掉半透明 */
+  opacity: 1 !important; 
 }
 
 .tk17-msg-loc svg {
   fill: var(--tk-color) !important;
-  opacity: 1 !important; /* 图标也强制统一颜色 */
+  opacity: 1 !important; 
 }
 
 /* =========================
-   票券日历 tk17 (最终去透明度纯净版)
+   票券背景与玻璃质感 (修改了遮罩大缺口)
 ========================= */
-.tk17 {
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
-}
-
 .tk17-bgimg {
-  position: absolute;
-  inset: 0;
-  border-radius: 5px 16px 16px 5px;
-  overflow: hidden;
-  z-index: 0;
-  -webkit-mask-image: radial-gradient(circle 7.5px at calc(100% - 98px) 0, transparent 7px, black 7.5px), radial-gradient(circle 7.5px at calc(100% - 98px) 100%, transparent 7px, black 7.5px);
+  position: absolute; inset: 0;
+  border-radius: 5px; /* 左右统一小圆角 */
+  overflow: hidden; z-index: 0;
+  /* 这里的 14.5px 和 104px 就是放大后的半圆缺口算法 */
+  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
@@ -48,18 +49,17 @@
   position: absolute; inset: 0;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: 5px 16px 16px 5px;
-  -webkit-mask-image: radial-gradient(circle 7.5px at calc(100% - 98px) 0, transparent 7px, black 7.5px), radial-gradient(circle 7.5px at calc(100% - 98px) 100%, transparent 7px, black 7.5px);
+  border-radius: 5px;
+  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
 }
-
 .tk17-glass.hide { opacity: 0; }
 
 .tk17-stripes {
-  position: absolute; top: 0; bottom: 0; right: 0; width: 98px;
+  position: absolute; top: 0; bottom: 0; right: 0; width: 104px;
   background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.045) 3px, rgba(0,0,0,0.045) 4px);
-  border-radius: 0 16px 16px 0;
+  border-radius: 0 5px 5px 0;
 }
 
 /* 左侧主信息区 */
@@ -80,29 +80,45 @@
 .tk17-msg-loc { display: flex; align-items: center; gap: 4px; font-size: 12px; }
 .tk17-msg-loc svg { width: 11px; height: 11px; flex-shrink: 0; }
 
-/* 注意这里彻底删除了 opacity */
 .tk17-sign { font-size: 13px; padding-left: 2px; margin-top: 2px; }
 .tk17-divider { height: 1px; background: rgba(209,213,219,0.7); margin: 4px 0; width: 100%; }
 
 .tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
 .tk17-datetime #calMonthDay { font-size: 15px; font-weight: 700; }
 
-.tk17-sep { width: 16px; flex-shrink: 0; position: relative; z-index: 3; }
-.tk17-notch-top { position: absolute; top: 0; left: 0; width: 16px; height: 8px; border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 8px 8px; box-sizing: border-box; }
-.tk17-notch-bot { position: absolute; bottom: 0; left: 0; width: 16px; height: 8px; border: 1px solid #d1d5db; border-bottom: none; border-radius: 8px 8px 0 0; box-sizing: border-box; }
+/* =========================
+   中间缺口区 (放大版)
+========================= */
+.tk17-sep { 
+  width: 28px; /* 缝隙变宽，容纳更大的半圆 */
+  flex-shrink: 0; position: relative; z-index: 3; 
+}
+.tk17-notch-top { 
+  position: absolute; top: 0; left: 0; width: 28px; height: 14px; 
+  border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 14px 14px; box-sizing: border-box; 
+}
+.tk17-notch-bot { 
+  position: absolute; bottom: 0; left: 0; width: 28px; height: 14px; 
+  border: 1px solid #d1d5db; border-bottom: none; border-radius: 14px 14px 0 0; box-sizing: border-box; 
+}
 
+/* 右侧天气专属区 */
 .tk17-right {
   width: 90px; flex-shrink: 0; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-left: none; border-radius: 0 16px 16px 0;
+  border: 1px solid #d1d5db; border-left: none; border-radius: 0 5px 5px 0; 
   display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
 }
 
-.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 16px 16px 0; }
+.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 5px 5px 0; }
 .tk17-right-info { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .tk17-wt-temp { font-size: 20px; font-weight: 700; }
 .tk17-wt-desc { font-size: 13px; font-weight: 600; }
 
-.tk17-dashed { position: absolute; top: 10px; bottom: 10px; right: 98px; width: 0; border-left: 1px dashed rgba(209,213,219,0.7); z-index: 5; }
+/* 虚线的位置也跟着大缺口挪动 */
+.tk17-dashed { 
+  position: absolute; top: 12px; bottom: 12px; right: 104px; width: 0; 
+  border-left: 1px dashed rgba(209,213,219,0.7); z-index: 5; 
+}
 
 /* ================================================
    天气动效
