@@ -968,15 +968,13 @@ input[type="range"] {
    极致交互：长按抓起时的悬浮摇晃动画
    ============================ */
 @keyframes dragWiggle {
-  0%   { transform: rotate(0deg); }
-  25%  { transform: rotate(-1.5deg); }
-  50%  { transform: rotate(1.5deg); }
-  75%  { transform: rotate(-0.8deg); }
-  100% { transform: rotate(0deg); }
+  0%   { transform: var(--t) rotate(0deg); }
+  25%  { transform: var(--t) rotate(-1.5deg); }
+  50%  { transform: var(--t) rotate(1.5deg); }
+  75%  { transform: var(--t) rotate(-0.8deg); }
+  100% { transform: var(--t) rotate(0deg); }
 }
 
-/* 赋予拖拽状态下拿起的瞬间摇晃（单次） */
 .is-grabbed {
-  animation: dragWiggle 0.4s ease-out; /* 🌟 恢复单次！干脆利落！ */
+  animation: dragWiggle 0.4s ease-out;
 }
-
