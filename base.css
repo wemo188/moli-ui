@@ -365,7 +365,7 @@ img.img-fill { transform: none !important; }
 #hlAvatarsRow {
   display: flex;
   flex-direction: column; /* 🌟 变成上下垂直排列 */
-  gap: 20px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
+  gap: 15px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
   padding: 0 5px;
   margin-top: 25px;
 }
