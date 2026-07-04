@@ -240,7 +240,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
             '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
             '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
-            '<div class="cm-tip" style="margin-bottom:12px;"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
+           '<div class="cm-tip" style="margin-bottom:12px;"><div class="cm-tip-icon">!</div><div class="cm-tip-text">表情包生成需要支持图片生成的模型（如 gpt-image-1、dall-e-3 等）。普通文字模型无法生成图片。留空则表情包以文字标记显示。</div></div>' +
             '<div class="cm-sep"></div>' +
 
             // 这里继续接上朋友圈
