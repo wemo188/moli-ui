@@ -463,13 +463,20 @@ var Cal={
     });
   },
 
-    initDrag:function(){
+      initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
     var DELAY=500;
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
     var saved=App.LS.get('wtCardPos');
-    if(saved){Cal._dragX=saved.x||0;Cal._dragY=saved.y||0;card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px)';}
+    
+    if(saved){
+      Cal._dragX=saved.x||0;Cal._dragY=saved.y||0;
+      // 🌟 初始位置：注入变量 --t
+      var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px)';
+      card.style.setProperty('--t', tf);
+      card.style.transform = tf;
+    }
 
     card.addEventListener('touchstart',function(e){
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;
@@ -477,10 +484,15 @@ var Cal={
       timer=setTimeout(function(){
         longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
         
-        // 🌟 拿起的瞬间：附加阻尼动画、放大 1.05 倍、加深悬浮阴影、并触发灵魂摇晃！
+        // 🌟 拿起的瞬间：附加阻尼动画、放大 1.05 倍、触发灵魂摇晃！
         card.classList.add('is-grabbed'); 
         card.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
-        card.style.transform='translate('+origX+'px,'+origY+'px) scale(1.05)';
+        
+        // 🌟 核心修复：把坐标存进变量 --t，防止被摇晃动画闪现覆盖
+        var tf = 'translate('+origX+'px,'+origY+'px) scale(1.05)';
+        card.style.setProperty('--t', tf);
+        card.style.transform = tf;
+        
         card.style.zIndex='999';
         card.style.boxShadow='0 25px 50px rgba(0,0,0,0.18)'; 
         if(navigator.vibrate)navigator.vibrate(15);
@@ -494,9 +506,12 @@ var Cal={
       moved=true;e.preventDefault();e.stopPropagation();
       Cal._dragX=origX+(t.clientX-startX);Cal._dragY=origY+(t.clientY-startY);
       
-      // 🌟 移动时：关掉动画保证绝对跟手，但保持放大状态
       card.style.transition='none';
-      card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1.05)';
+      
+      // 🌟 移动时：注入变量 --t
+      var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1.05)';
+      card.style.setProperty('--t', tf);
+      card.style.transform = tf;
     },{passive:false});
 
     card.addEventListener('touchend',function(){
@@ -509,11 +524,15 @@ var Cal={
       if(longPressed){
         if(moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
         
-        // 🌟 落地松手：开启果冻回弹动画，缩回原比例
+        // 🌟 落地松手：果冻回弹
         card.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1)';
-        card.style.zIndex=''; 
         
+        // 🌟 落地时：注入变量 --t
+        var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1)';
+        card.style.setProperty('--t', tf);
+        card.style.transform = tf;
+        
+        card.style.zIndex=''; 
         setTimeout(function(){ card.style.transition=''; }, 350);
       } else {
         card.style.zIndex='';
