@@ -285,7 +285,7 @@ var Cards={
     Cards._restoreHlPos('hlAvatarWrapRight');
   },
 
-  _bindHlDrag:function(id){
+   _bindHlDrag:function(id){
     var el=document.getElementById(id);if(!el)return;
     var DELAY=500;
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
@@ -294,10 +294,16 @@ var Cards={
       var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
       var avatarInside=el.querySelector('.hl-avatar');
       if(avatarInside)avatarInside._dragMoved=false;
-      timer=setTimeout(function(){
+            timer=setTimeout(function(){
         longPressed=true;
         var off=Cards._dragOffsets[id]||{x:0,y:0};origX=off.x;origY=off.y;
-        el.classList.add('hl-dragging');el.style.transition='none';
+        el.classList.add('hl-dragging');
+        
+        // 🌟 赋予灵魂抖动！
+        el.classList.add('is-grabbed'); // 👈 加了这句！
+        
+        el.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform='translate('+origX+'px,'+origY+'px) scale(1.05)';
         if(navigator.vibrate)navigator.vibrate(15);
       },DELAY);
     },{passive:true});
@@ -307,14 +313,29 @@ var Cards={
       if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
       if(!longPressed)return;moved=true;e.preventDefault();e.stopPropagation();
       var nx=origX+(t.clientX-startX);var ny=origY+(t.clientY-startY);
-      el.style.transform='translate('+nx+'px,'+ny+'px)';Cards._dragOffsets[id]={x:nx,y:ny};
+      
+      // 🌟 移动时：关动画，保持放大跟手
+      el.style.transition='none'; 
+      el.style.transform='translate('+nx+'px,'+ny+'px) scale(1.05)';
+      Cards._dragOffsets[id]={x:nx,y:ny};
       var avatarInside=el.querySelector('.hl-avatar');
       if(avatarInside)avatarInside._dragMoved=true;
     },{passive:false});
 
     el.addEventListener('touchend',function(e){
-      clearTimeout(timer);timer=null;el.classList.remove('hl-dragging');el.style.transition='';
-      if(longPressed&&moved){Cards.saveDrag();e.stopPropagation();}
+      clearTimeout(timer);timer=null;
+      el.classList.remove('hl-dragging');
+      el.classList.remove('is-grabbed'); // 👈 落地松手时删掉它
+      if(longPressed){
+        if(moved){Cards.saveDrag();e.stopPropagation();}
+        
+        // 🌟 落地松手：果冻回弹到原比例
+        el.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        var curOff = Cards._dragOffsets[id] || {x:0,y:0};
+        el.style.transform='translate('+curOff.x+'px,'+curOff.y+'px) scale(1)';
+        
+        setTimeout(function(){ el.style.transition=''; }, 350);
+      }
       longPressed=false;moved=false;
     });
   },
@@ -362,36 +383,64 @@ var Cards={
     }
   },
 
-  bindDrag:function(){
+    bindDrag:function(){
     ['profileCard-R','profileCard-L'].forEach(function(id){
       var el=App.$('#'+id);if(!el)return;
       var avBox=el.querySelector('.bx-av-box');if(!avBox)return;
       var startX,startY,startOX,startOY,longPressed=false,timer,moved=false;
+      
       avBox.addEventListener('touchstart',function(e){
         if(e.target.closest('.bx-av-placeholder'))return;
         var t=e.touches[0];startX=t.clientX;startY=t.clientY;longPressed=false;moved=false;
-        timer=setTimeout(function(){
+                timer=setTimeout(function(){
           longPressed=true;var off=Cards._dragOffsets[id]||{x:0,y:0};startOX=off.x;startOY=off.y;
-          el.style.transition='none';el.style.opacity='0.9';el.style.zIndex='999';
+          
+          // 🌟 开启弹性阻尼动画，放大，加深阴影，并赋予摇晃灵魂！
+          el.classList.add('is-grabbed'); // 👈 加了这句！
+          
+          el.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
+          el.style.transform='translate('+startOX+'px,'+startOY+'px) scale(1.05)';
+          el.style.opacity='0.95';
+          el.style.zIndex='999';
+          el.style.boxShadow='0 15px 35px rgba(0,0,0,0.15)';
           if(navigator.vibrate)navigator.vibrate(15);
         },DRAG_DELAY);
       },{passive:true});
+
       avBox.addEventListener('touchmove',function(e){
         var t=e.touches[0];
         if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
         if(!longPressed)return;moved=true;e.preventDefault();e.stopPropagation();
         var nx=startOX+t.clientX-startX,ny=startOY+t.clientY-startY;
-        el.style.transform='translate('+nx+'px,'+ny+'px)';Cards._dragOffsets[id]={x:nx,y:ny};
+        
+        // 🌟 移动时：关掉动画保证绝对跟手，但保持放大状态
+        el.style.transition='none'; 
+        el.style.transform='translate('+nx+'px,'+ny+'px) scale(1.05)';
+        Cards._dragOffsets[id]={x:nx,y:ny};
       },{passive:false});
+
       avBox.addEventListener('touchend',function(e){
-        clearTimeout(timer);timer=null;el.style.opacity='';el.style.transition='';
-        if(longPressed&&moved){
+        clearTimeout(timer);timer=null;
+        el.classList.remove('is-grabbed'); // 👈 落地松手时删掉它
+        el.style.opacity='';
+        el.style.boxShadow=''; // 恢复原阴影
+        if(longPressed){
+          if(moved){Cards._dragOffsets._topCard=id;Cards.saveDrag();e.stopPropagation();}
+          
+          // 🌟 落地松手：开启回弹动画，缩回原比例 scale(1)
+          el.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          var curOff = Cards._dragOffsets[id] || {x:0,y:0};
+          el.style.transform='translate('+curOff.x+'px,'+curOff.y+'px) scale(1)';
           el.style.zIndex='50';
           ['profileCard-R','profileCard-L'].forEach(function(sid){
             if(sid!==id){var s=App.$('#'+sid);if(s)s.style.zIndex='1';}
           });
-          Cards._dragOffsets._topCard=id;Cards.saveDrag();e.stopPropagation();
-        }else{el.style.zIndex='';}
+          
+          // 动画播完后清理 transition
+          setTimeout(function(){ el.style.transition=''; }, 350);
+        }else{
+          el.style.zIndex='';
+        }
         longPressed=false;moved=false;
       });
     });
