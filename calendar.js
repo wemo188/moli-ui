@@ -463,7 +463,7 @@ var Cal={
     });
   },
 
-  initDrag:function(){
+    initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
     var DELAY=500;
@@ -476,21 +476,48 @@ var Cal={
       longPressed=false;moved=false;
       timer=setTimeout(function(){
         longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
-        card.style.transition='none';
+        
+        // 🌟 拿起的瞬间：附加阻尼动画、放大 1.05 倍、加深悬浮阴影、并触发灵魂摇晃！
+        card.classList.add('is-grabbed'); 
+        card.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
+        card.style.transform='translate('+origX+'px,'+origY+'px) scale(1.05)';
+        card.style.zIndex='999';
+        card.style.boxShadow='0 25px 50px rgba(0,0,0,0.18)'; 
         if(navigator.vibrate)navigator.vibrate(15);
       },DELAY);
     },{passive:true});
+
     card.addEventListener('touchmove',function(e){
       var t=e.touches[0];
       if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
       if(!longPressed)return;
       moved=true;e.preventDefault();e.stopPropagation();
       Cal._dragX=origX+(t.clientX-startX);Cal._dragY=origY+(t.clientY-startY);
-      card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px)';
+      
+      // 🌟 移动时：关掉动画保证绝对跟手，但保持放大状态
+      card.style.transition='none';
+      card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1.05)';
     },{passive:false});
+
     card.addEventListener('touchend',function(){
-      clearTimeout(timer);timer=null;card.style.transition='';
-      if(longPressed&&moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
+      clearTimeout(timer);timer=null;
+      
+      // 🌟 落地松手时：清理摇晃状态和阴影
+      card.classList.remove('is-grabbed');
+      card.style.boxShadow='';
+      
+      if(longPressed){
+        if(moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
+        
+        // 🌟 落地松手：开启果冻回弹动画，缩回原比例
+        card.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        card.style.transform='translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1)';
+        card.style.zIndex=''; 
+        
+        setTimeout(function(){ card.style.transition=''; }, 350);
+      } else {
+        card.style.zIndex='';
+      }
       longPressed=false;moved=false;
     });
   },
