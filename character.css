@@ -197,9 +197,7 @@
 .cl-mgr-menu {
   position: fixed;
   z-index: 10100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,1);
   border: 2px solid #111;
   border-radius: 8px;
   padding: 6px 0;
@@ -713,9 +711,7 @@
 }
 
 .cl-modal {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,1);
   border-radius: 14px;
   width: 250px;
   max-height: 70vh;
@@ -725,7 +721,7 @@
 }
 .cl-modal-title {
   padding: 16px 18px 12px;
-  border-bottom: 1.5px solid #eee;
+  border-bottom: 1px solid #eee;
   font-size: 16px;
   font-weight: 800;
   color: #111;
@@ -745,7 +741,7 @@
 }
 .cl-modal-btn {
   flex: 1;
-  padding: 6px;
+  padding: 7px;
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -783,7 +779,7 @@
 
 /* 绑定用户弹窗 */
 .cl-bind-modal {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.55);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   border-radius: 12px; /* 圆角稍微调大一点点，更可爱 */
@@ -863,7 +859,7 @@
 /* 底部取消按钮 */
 .cl-bind-cancel {
   padding: 10px 16px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(0,0,0,0.03);
   text-align: center;
 }
 .cl-bind-cancel button {
@@ -882,7 +878,7 @@
 
 /* 移动分组弹窗 */
 .cl-move-modal {
-  background: rgba(255,255,255);
+  background: rgba(255,255,255,1);
   border: 2px solid #111;
   border-radius: 8px;
   min-width: 180px;
