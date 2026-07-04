@@ -223,7 +223,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
             '<div class="cm-field"><div class="cm-field-label">「对方正在输入」</div><select class="cm-select" id="cmShowTyping"><option' + (cfg.showTyping?' selected':'') + '>显示</option><option' + (!cfg.showTyping?' selected':'') + '>不显示</option></select></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 社交功能 ==========
+                    // ========== 社交功能 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-purple">社交功能</div></div><div class="cm-section-body">' +
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
@@ -234,6 +234,16 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
+            
+            // 🌟 哥哥把你要求挪动的代码完美嵌进来了！
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
+            '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
+            '<div class="cm-tip" style="margin-bottom:12px;"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
+            '<div class="cm-sep"></div>' +
+
+            // 这里继续接上朋友圈
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">朋友圈生成</span><span class="cm-sw-desc">角色自动发朋友圈动态</span></div><label class="cm-sw"><input type="checkbox" id="cmMomToggle"' + ck('moments') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.moments ? ' cm-open' : '') + '" id="cmMomSub">' +
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">每日最多发布</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMomMax" value="' + cfg.momentsMax + '" min="0" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条/天</span></div></div></div>' +
@@ -254,12 +264,6 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
 
           // ========== 高级设定 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">高级设定</div><div class="cm-section-badge">ADVANCED</div></div><div class="cm-section-body">' +
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-            '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
-            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
-            '<div class="cm-sep"></div>' +
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度。</div></div>' +
             '<div id="cmAdvancedSub" style="' + (isIndividual ? '' : 'display:none;') + '">' +
@@ -392,6 +396,17 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
     if (ta) CharMgr.openExpand(ta, f === 'dialogExamples');
   });
 });
+
+      // 🌟 点击空白处，自动收起模型列表
+      page.addEventListener('click', function(e) {
+        var list = page.querySelector('#cmImgModelList');
+        var btn = page.querySelector('#cmImgFetchModels');
+        if (list && list.style.display === 'block') {
+          if (!list.contains(e.target) && (!btn || !btn.contains(e.target))) {
+            list.style.display = 'none';
+          }
+        }
+      });
 
       // 保存
       page.querySelector('#cmSaveBtn').addEventListener('click', function() { CharMgr.doSave(page); });
