@@ -975,7 +975,8 @@ input[type="range"] {
   100% { transform: rotate(0deg); }
 }
 
-/* 赋予拖拽状态下持续的灵魂小摇晃 */
+/* 赋予拖拽状态下拿起的瞬间摇晃（单次） */
 .is-grabbed {
-  animation: dragWiggle 0.35s linear infinite; /* 🌟 加上 infinite，只要没松手它就一直晃！ */
+  animation: dragWiggle 0.4s ease-out; /* 🌟 恢复单次！干脆利落！ */
 }
+
