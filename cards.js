@@ -4,8 +4,8 @@
 var App=window.App;if(!App)return;
 
 var EMPTY={sub:'',avatar:'',tag1:'',tag2:'',colors:null};
-var DEF_SUB_L='';
-var DEF_SUB_R='';
+var DEF_SUB_L='一句话签名';
+var DEF_SUB_R='一句话签名';
 
 var DEF_COLORS_L = {
   bg: 'linear-gradient(187deg,#ffffff,#d1d5db)',
@@ -212,7 +212,7 @@ var Cards={
 
     var pcL=App.$('#profileCard-L');
     if(pcL){
-      var lt1=L.tag1||'',lt2=L.tag2||'';
+      var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
       var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
       var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
       var lSub=L.sub||DEF_SUB_L;
@@ -226,7 +226,7 @@ var Cards={
 
     var pcR=App.$('#profileCard-R');
     if(pcR){
-      var rt1=R.tag1||'',rt2=R.tag2||'';
+      var rt1=R.tag1||'标签',rt2=R.tag2||'标签';
       var rt1C=R.tag1?'':' bx-ribbon-placeholder',rt2C=R.tag2?'':' bx-ribbon-placeholder';
       var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
       var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
