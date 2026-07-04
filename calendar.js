@@ -149,17 +149,28 @@ var Cal={
     var n=App.LS.get('tkMsgName');
     var s=App.LS.get('tkMsgSign');
     var l=App.LS.get('tkMsgLoc');
-    var color = App.LS.get('tkColor') || '#111111';
-    var avatar = App.LS.get('tkAvatar') || 'https://iili.io/qBx7PwB.md.jpg';
+    var color = App.LS.get('tkColor'); // 彻底去掉内联默认色
+    var avatar = App.LS.get('tkAvatar'); // 彻底去掉内联默认图！！！
 
     if(nameEl&&n)nameEl.textContent=n;
     if(signEl&&s)signEl.textContent=s;
     if(locEl&&l)locEl.textContent=l;
 
-    document.documentElement.style.setProperty('--tk-color', color);
+    if(color) {
+      document.documentElement.style.setProperty('--tk-color', color);
+    } else {
+      document.documentElement.style.removeProperty('--tk-color');
+    }
 
+    // 只有用户真的上传了头像才覆盖，否则置空让 CSS 掌管
     var avEl = App.$('#tkAvatarBg');
-    if(avEl) avEl.style.backgroundImage = 'url('+avatar+')';
+    if(avEl) {
+       if (avatar) {
+          avEl.style.backgroundImage = 'url('+avatar+')';
+       } else {
+          avEl.style.backgroundImage = '';
+       }
+    }
   },
 
   applyBgImg:function(){
@@ -197,21 +208,24 @@ var Cal={
   openEditPanel:function(){
     if(Cal._editPanel){Cal._editPanel.remove();Cal._editPanel=null;return;}
 
-    var card=App.$('#wtCard');if(!card)return;
+    var hasBgImg=!!App.LS.get('calBgImg');
+    var currentColor = App.LS.get('tkColor') || '#111111';
+
     var overlay=document.createElement('div');
     overlay.className='pc-edit-overlay';
     overlay.style.zIndex='100020';
     Cal._editPanel=overlay;
 
-    var hasBgImg=!!App.LS.get('calBgImg');
-    var currentColor = App.LS.get('tkColor') || '#111111';
-
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
+    // 强制固定到底部，取消 top 的跟随计算
+    panel.style.cssText = 'position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); top: auto; max-height: 60vh; width: 280px; display: flex; flex-direction: column;';
+    
+    // 拆分出固定的 footer 区域
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
-      '<div class="pc-body">'+
-        // 1. 头像模块挪到最前，样式使用 pc-av-row 和 pc-icon-btn 统一
+      
+      '<div class="pc-body" style="flex:1; overflow-y:auto; padding-bottom:10px;">'+
         '<div class="pc-group">'+
           '<span class="pc-label">左侧头像</span>'+
           '<div class="pc-av-row">'+
@@ -220,7 +234,6 @@ var Cal={
           '</div>'+
         '</div>'+
 
-        // 2. 票券背景图
         '<div class="pc-group">'+
           '<span class="pc-label">背景图片</span>'+
           '<div class="pc-av-row">'+
@@ -231,7 +244,6 @@ var Cal={
           '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
         '</div>'+
 
-        // 3. 文本设置区
         '<div class="pc-group">'+
           '<span class="pc-label">城市（获取天气）</span>'+
           '<div class="pc-av-row">'+
@@ -261,7 +273,6 @@ var Cal={
           '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
         '</div>'+
 
-        // 4. 字体与颜色合为一行！避免占用多余空间
         '<div class="pc-group">'+
           '<span class="pc-label">字体 & 颜色</span>'+
           '<div class="pc-av-row">'+
@@ -269,24 +280,15 @@ var Cal={
             '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
           '</div>'+
         '</div>'+
-
-        '<div class="pc-group" style="margin-top:10px;">'+
-          '<button class="pc-btn pc-btn-save" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
-        '</div>'+
+      '</div>'+
+      
+      // 独立出来的固定底栏
+      '<div class="pc-footer" style="padding:10px 16px; border-top:1px solid rgba(0,0,0,0.06); flex-shrink:0;">'+
+        '<button class="pc-btn pc-btn-save" id="wtEditSave" style="width:100%;padding:10px;font-size:13px;font-weight:700;border-radius:10px;">保存</button>'+
       '</div>';
 
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
-
-    var rect=card.getBoundingClientRect();
-    var left=rect.left+20;
-    var top=rect.bottom+8;
-    if(left+270>window.innerWidth-8)left=window.innerWidth-278;
-    if(left<8)left=8;
-    if(top+450>window.innerHeight-10)top=rect.top-460;
-    if(top<10)top=10;
-    panel.style.left=left+'px';
-    panel.style.top=top+'px';
 
     panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
@@ -302,7 +304,6 @@ var Cal={
           App.LS.set('calBgImg',src);
           Cal.applyBgImg();
           App.showToast('背景已设置');
-          Cal.openEditPanel(); 
         };
         if(App.cropImage)App.cropImage(ev.target.result,process);
         else process(ev.target.result);
@@ -337,7 +338,7 @@ var Cal={
       App.showToast('已恢复默认头像');
     });
 
-    // --- 唤起颜色面板 (只占小方块位置) ---
+    // --- 颜色面板 ---
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
@@ -376,13 +377,13 @@ var Cal={
       var sign=panel.querySelector('#wtSignInput').value.trim();
       var loc=panel.querySelector('#wtLocInput').value.trim();
       var font=panel.querySelector('#wtFontSelect').value;
-      var newColor = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
+      var newColor = panel.dataset.pickedColor; 
       
       App.LS.set('tkMsgName',name);
       App.LS.set('tkMsgSign',sign);
       App.LS.set('tkMsgLoc',loc);
       App.LS.set('tkFontFamily',font);
-      App.LS.set('tkColor', newColor);
+      if(newColor) App.LS.set('tkColor', newColor);
       
       Cal.applyTexts();
       Cal.applyFont();
