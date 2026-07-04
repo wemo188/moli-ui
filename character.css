@@ -369,22 +369,30 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #111;
+  background: var(--card-border-c); /* 🌟 未加载时的背景色跟着框线走 */
   color: #fff;
-  border: 3px solid #111;
+  border: 3px solid var(--card-border-c); /* 🌟 边框跟着框线走 */
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.5px;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #111;
+  box-shadow: 3px 3px 0 var(--card-border-c); /* 🌟 立体阴影跟着框线走 */
   transition: all 0.3s;
   z-index: 1;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
 }
-.cl-create-btn:active { box-shadow: 1px 1px 0 #111; transform: translate(2px,2px); }
-.cl-create-btn.mounted { background: var(--card-accent); color: #fff; border-color: #111; box-shadow: 3px 3px 0 #111; }
+.cl-create-btn:active { 
+  box-shadow: 1px 1px 0 var(--card-border-c); 
+  transform: translate(2px,2px); 
+}
+.cl-create-btn.mounted { 
+  background: var(--card-accent); 
+  color: #fff; 
+  border-color: var(--card-border-c); /* 🌟 已加载时的边框跟着框线走 */
+  box-shadow: 3px 3px 0 var(--card-border-c); /* 🌟 已加载时的阴影跟着框线走 */
+}
 
 .plus-icon {
   display: inline-flex;
@@ -394,10 +402,18 @@
   height: 20px;
   background: #fff;
   color: #111;
-  border: 2px solid #111;
+  border: 2px solid var(--card-border-c); /* 🌟 小方块的边框跟着框线走 */
   transition: none;
 }
-.plus-icon svg { width: 12px; height: 12px; stroke: #111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.plus-icon svg { 
+  width: 12px; 
+  height: 12px; 
+  stroke: var(--card-border-c); /* 🌟 里面的 SVG 符号颜色也跟着框线走 */
+  fill: none; 
+  stroke-width: 2; 
+  stroke-linecap: round; 
+  stroke-linejoin: round; 
+}
 
 .cl-body { padding: 0; }
 .cl-item { display: flex; align-items: stretch; position: relative; }
