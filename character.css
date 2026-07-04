@@ -360,7 +360,7 @@
   left: -4px;
   bottom: -2px;
   width: calc(100% + 8px);
-  height: var(--card-line);
+  height: 2px;
   background: var(--card-accent);
   transition: all 0.3s;
 }
@@ -369,30 +369,22 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--card-border-c); /* 🌟 未加载时的背景色跟着框线走 */
+  background: #111;
   color: #fff;
-  border: 3px solid var(--card-border-c); /* 🌟 边框跟着框线走 */
+  border: 3px solid #111;
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.5px;
   cursor: pointer;
-  box-shadow: 3px 3px 0 var(--card-border-c); /* 🌟 立体阴影跟着框线走 */
+  box-shadow: 3px 3px 0 #111;
   transition: all 0.3s;
   z-index: 1;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
 }
-.cl-create-btn:active { 
-  box-shadow: 1px 1px 0 var(--card-border-c); 
-  transform: translate(2px,2px); 
-}
-.cl-create-btn.mounted { 
-  background: var(--card-accent); 
-  color: #fff; 
-  border-color: var(--card-border-c); /* 🌟 已加载时的边框跟着框线走 */
-  box-shadow: 3px 3px 0 var(--card-border-c); /* 🌟 已加载时的阴影跟着框线走 */
-}
+.cl-create-btn:active { box-shadow: 1px 1px 0 #111; transform: translate(2px,2px); }
+.cl-create-btn.mounted { background: var(--card-accent); color: #fff; border-color: #111; box-shadow: 3px 3px 0 #111; }
 
 .plus-icon {
   display: inline-flex;
@@ -401,22 +393,11 @@
   width: 20px;
   height: 20px;
   background: #fff;
-  color: var(--card-border-c); /* 🌟 关键在这里！把 #111 换成变量，SVG 里的 currentColor 就会乖乖听话了 */
-  border: 2px solid var(--card-border-c); 
+  color: #111;
+  border: 2px solid #111;
   transition: none;
 }
-.plus-icon svg { 
-  width: 12px; 
-  height: 12px; 
-  fill: none; 
-  stroke-width: 2; 
-  stroke-linecap: round; 
-  stroke-linejoin: round; 
-}
-/* 🌟 哥哥再附赠你一个强制保险，直接让 svg 里面的路径强制跟随颜色 */
-.plus-icon svg path {
-  stroke: var(--card-border-c) !important;
-}
+.plus-icon svg { width: 12px; height: 12px; stroke: #111; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .cl-body { padding: 0; }
 .cl-item { display: flex; align-items: stretch; position: relative; }
