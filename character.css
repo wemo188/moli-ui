@@ -401,18 +401,21 @@
   width: 20px;
   height: 20px;
   background: #fff;
-  color: #111;
-  border: 2px solid var(--card-border-c); /* 🌟 小方块的边框跟着框线走 */
+  color: var(--card-border-c); /* 🌟 关键在这里！把 #111 换成变量，SVG 里的 currentColor 就会乖乖听话了 */
+  border: 2px solid var(--card-border-c); 
   transition: none;
 }
 .plus-icon svg { 
   width: 12px; 
   height: 12px; 
-  stroke: var(--card-border-c); /* 🌟 里面的 SVG 符号颜色也跟着框线走 */
   fill: none; 
   stroke-width: 2; 
   stroke-linecap: round; 
   stroke-linejoin: round; 
+}
+/* 🌟 哥哥再附赠你一个强制保险，直接让 svg 里面的路径强制跟随颜色 */
+.plus-icon svg path {
+  stroke: var(--card-border-c) !important;
 }
 
 .cl-body { padding: 0; }
