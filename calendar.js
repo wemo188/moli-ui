@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -61,7 +60,7 @@ var Cal={
     function tick(){
       var d=new Date();
       if(yearEl)yearEl.textContent=d.getFullYear();
-      if(mdEl)mdEl.textContent=pad(d.getMonth()+1)+'/'+pad(d.getDate());
+      if(mdEl)mdEl.textContent=pad(d.getDate());
       if(wkEl)wkEl.textContent=WEEKDAYS_EN[d.getDay()];
       clockEl.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
     }
@@ -104,6 +103,21 @@ var Cal={
   _renderThunder:function(bg){bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="16" height="30" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="12" height="22" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';Cal._renderRain(bg,8,0.7,1.2,8,14);},
   _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){for(var i=0;i<count;i++){var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('class','wt-snow-item');var size=minSize+Math.random()*(maxSize-minSize);svg.style.left=(5+Math.random()*90)+'%';svg.style.width=size+'px';svg.style.height=size+'px';svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';svg.style.animationDelay=(-Math.random()*6)+'s';var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');path.setAttribute('stroke','rgba(50,50,50,0.7)');path.setAttribute('stroke-width','1.2');path.setAttribute('stroke-linecap','round');path.setAttribute('fill','none');svg.appendChild(path);bg.appendChild(svg);}},
   _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
+
+  // ====== 应用颜色 ======
+  applyColor:function(){
+    var color=App.LS.get('tkColor')||'#111111';
+    document.documentElement.style.setProperty('--tk-color', color);
+    // 直接给所有文字元素设置颜色
+    var els=document.querySelectorAll('.tk17-msg, .tk17-msg-name, .tk17-msg-loc, .tk17-right-info, .tk17-right-year, #calMonthDay, #calWeekday, #calYear, #calClock, .tk17-msg-loc svg');
+    els.forEach(function(el){
+      if(el.tagName === 'SVG' || el.tagName === 'svg'){
+        el.style.fill = color;
+      }else{
+        el.style.color = color;
+      }
+    });
+  },
 
   // ====== 字体选项构建 ======
   _buildFontOptions:function(currentFamily){
@@ -193,6 +207,7 @@ var Cal={
     Cal._editPanel=overlay;
 
     var hasBgImg=!!App.LS.get('calBgImg');
+    var currentColor=App.LS.get('tkColor')||'#111111';
 
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
@@ -237,6 +252,13 @@ var Cal={
         '<div class="pc-group">'+
           '<span class="pc-label">字体</span>'+
           '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
+        '</div>'+
+        '<div class="pc-group">'+
+          '<span class="pc-label">文字颜色</span>'+
+          '<div class="pc-av-row">'+
+            '<input type="color" class="pc-input" id="wtColorPicker" style="width:50px;height:36px;padding:2px;cursor:pointer;" value="'+currentColor+'">'+
+            '<div class="pc-icon-btn" id="wtColorReset" style="width:auto;padding:0 10px;font-size:11px;font-weight:700;">重置黑色</div>'+
+          '</div>'+
         '</div>'+
         '<div class="pc-group">'+
           '<button class="pc-icon-btn" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
@@ -305,6 +327,22 @@ var Cal={
       Cal.renderWeatherEffect();
     });
 
+    // 颜色实时预览
+    var colorPicker=panel.querySelector('#wtColorPicker');
+    colorPicker.addEventListener('input',function(){
+      var color=this.value;
+      App.LS.set('tkColor',color);
+      Cal.applyColor();
+    });
+
+    // 重置黑色
+    panel.querySelector('#wtColorReset').addEventListener('click',function(){
+      colorPicker.value='#111111';
+      App.LS.set('tkColor','#111111');
+      Cal.applyColor();
+      App.showToast('已重置为黑色');
+    });
+
     // 字体实时预览
     panel.querySelector('#wtFontSelect').addEventListener('change',function(){
       var fam=this.value;
@@ -318,12 +356,15 @@ var Cal={
       var sign=panel.querySelector('#wtSignInput').value.trim();
       var loc=panel.querySelector('#wtLocInput').value.trim();
       var font=panel.querySelector('#wtFontSelect').value;
+      var color=panel.querySelector('#wtColorPicker').value;
       App.LS.set('tkMsgName',name);
       App.LS.set('tkMsgSign',sign);
       App.LS.set('tkMsgLoc',loc);
       App.LS.set('tkFontFamily',font);
+      App.LS.set('tkColor',color);
       Cal.applyTexts();
       Cal.applyFont();
+      Cal.applyColor();
       Cal.openEditPanel();
       App.showToast('已保存');
     });
@@ -392,6 +433,7 @@ var Cal={
     Cal.applyBgImg();
     Cal.applyTexts();
     Cal.applyFont();
+    Cal.applyColor();
     Cal.initDrag();
     Cal.bindClicks();
     if(Cal.city&&Cal.weather){
