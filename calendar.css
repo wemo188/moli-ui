@@ -43,19 +43,23 @@
   position: absolute; inset: 0;
   border-radius: 5px; 
   overflow: hidden; z-index: 0;
-  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 114px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 114px) 100%, transparent 14px, black 14.5px);
+  -webkit-mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
+  mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
+  mask-size: 100% 51%; mask-position: top, bottom; mask-repeat: no-repeat;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 
-/* 5. 玻璃质感层：和背景图层一模一样的圆角和遮罩 */
+/* 玻璃质感层：同上同步缩小挖洞 */
 .tk17-glass {
   position: absolute; inset: 0;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-radius: 5px; 
-  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 114px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 114px) 100%, transparent 14px, black 14.5px);
+  -webkit-mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
+  mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
+  mask-size: 100% 51%; mask-position: top, bottom; mask-repeat: no-repeat;
   z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
@@ -99,13 +103,13 @@
 /* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
 .tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
 
-/* 13. 上下半圆实体边框：加了 -1px 防漏白边修正！ */
+/* 13. 上下半圆实体边框 */
 .tk17-notch-top { 
-  position: absolute; top: -1px; left: 0; width: 28px; height: 14px; 
+  position: absolute; top: 0; left: 0; width: 28px; height: 14px; 
   border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 14px 14px; box-sizing: border-box; 
 }
 .tk17-notch-bot { 
-  position: absolute; bottom: -1px; left: 0; width: 28px; height: 14px; 
+  position: absolute; bottom: 0; left: 0; width: 28px; height: 14px; 
   border: 1px solid #d1d5db; border-bottom: none; border-radius: 14px 14px 0 0; box-sizing: border-box; 
 }
 
