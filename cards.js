@@ -207,35 +207,44 @@ var Cards={
     }).join('');
   },
 
-  render:function(){
+    render:function(){
     var L=Cards.data.left,R=Cards.data.right;
 
     var pcL=App.$('#profileCard-L');
     if(pcL){
-      var lt1=L.tag1||'标签',lt2=L.tag2||'标签';
       var lt1C=L.tag1?'':' bx-tag-placeholder',lt2C=L.tag2?'':' bx-tag-placeholder';
+      
+      // 🌟 核心魔法：有填内容就正常显示，没填内容就用透明文字撑起空间！
+      var lt1 = L.tag1 ? App.esc(L.tag1) : '<span style="opacity:0">标签</span>';
+      var lt2 = L.tag2 ? App.esc(L.tag2) : '<span style="opacity:0">标签</span>';
+      var lSub = L.sub ? App.esc(L.sub) : '<span style="opacity:0">一句话签名</span>';
+      
       var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
-      var lSub=L.sub||DEF_SUB_L;
+      
       pcL.innerHTML=
-        '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+App.esc(lt1)+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+App.esc(lt2)+'</div></div>'+
+        '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+lt1+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+lt2+'</div></div>'+
         '<div class="bx-cw"><div class="bx-cd">'+
           '<div class="bx-av-box">'+lFront+'</div>'+
-          '<div class="bx-name-bar"><div class="bx-sub">'+App.esc(lSub)+'</div></div>'+
+          '<div class="bx-name-bar"><div class="bx-sub">'+lSub+'</div></div>'+
         '</div></div>';
     }
 
     var pcR=App.$('#profileCard-R');
     if(pcR){
-      var rt1=R.tag1||'标签',rt2=R.tag2||'标签';
       var rt1C=R.tag1?'':' bx-ribbon-placeholder',rt2C=R.tag2?'':' bx-ribbon-placeholder';
+      
+      // 🌟 右侧卡片同理，套上隐形斗篷
+      var rt1 = R.tag1 ? App.esc(R.tag1) : '<span style="opacity:0">标签</span>';
+      var rt2 = R.tag2 ? App.esc(R.tag2) : '<span style="opacity:0">标签</span>';
+      var rSub = R.sub ? App.esc(R.sub) : '<span style="opacity:0">一句话签名</span>';
+      
       var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
-      var rName=R.name||'角色名',rSub=R.sub||DEF_SUB_R;
-      var rNameC=R.name?'':' bx-name-placeholder';
+      
       pcR.innerHTML=
         '<div class="bx-cw"><div class="bx-cd">'+
-          '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+App.esc(rt1)+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+App.esc(rt2)+'</div></div>'+
+          '<div class="bx-side-ribbon"><div class="bx-ribbon-tab r1'+rt1C+'">'+rt1+'</div><div class="bx-ribbon-tab r2'+rt2C+'">'+rt2+'</div></div>'+
           '<div class="bx-av-box">'+rFront+'</div>'+
-          '<div class="bx-name-bar"><div class="bx-sub">'+App.esc(rSub)+'</div></div>'+
+          '<div class="bx-name-bar"><div class="bx-sub">'+rSub+'</div></div>'+
         '</div></div>';
     }
 
