@@ -146,7 +146,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .pc-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pc-icon-btn.danger { color: #c9706b; border-color: rgba(201,112,107,0.3); background: rgba(201,112,107,0.1); }
+.pc-icon-btn.danger { color: #c9706b; border-color: rgba(201,112,107,0.3); background: rgba(255, 255, 255, 0.5); }
 .pc-icon-btn.danger:active { background: rgba(201,112,107,0.2); }
 
 .pc-palette-grid {
