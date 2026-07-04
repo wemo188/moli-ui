@@ -82,7 +82,7 @@
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
   border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
-  display: flex; flex-direction: column; padding: 8px 20px; box-sizing: border-box; gap: 3px;
+  display: flex; flex-direction: column; padding: 8px 20px; box-sizing: border-box; gap: 1px;
 }
 
 /* 8. 第一行：头像+名字+地点（同行布局） */
@@ -101,11 +101,11 @@
 .tk17-sign { font-size: 14px; padding-left: 2px; margin-top: 2px; }
 
 /* 10. 纯色无渐变的干净分割线 */
-.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 2px 0; width: 100%; }
+.tk17-divider { height: 2px; background: #d1d5db; opacity: 0.6; margin: 2px 0; width: 100%; }
 
 /* 11. 底部日期时间 */
 .tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; }
-.tk17-datetime #calMonthDay { font-size: 20px; font-weight: 700; }
+.tk17-datetime #calMonthDay { font-size: 19px; font-weight: 700; }
 
 /* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
 .tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
@@ -263,29 +263,29 @@
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px; height: 40px;
-  opacity: 0.14;
+  width: 65px; height: 65px; /* 从 40px 放大到了 65px */
+  opacity: 0.2; /* 微微调亮 */
 }
 
+/* 星星坐标全部换成百分比（%），均匀散布在整个夜空！ */
 .wt-star {
   position: absolute;
   animation: wtStarTwinkle ease-in-out infinite alternate;
 }
 .wt-star::before,
 .wt-star::after {
-  content: '';
-  position: absolute;
-  background: rgba(30,30,30,0.6);
-  border-radius: 1px;
+  content: ''; position: absolute; background: rgba(30,30,30,0.6); border-radius: 1px;
 }
 .wt-star::before { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%); }
 .wt-star::after { width: 1px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
-.wt-star:nth-child(2) { top: 8px; left: 6px; width: 4px; height: 4px; animation-duration: 2.5s; }
-.wt-star:nth-child(3) { top: 20px; left: 45px; width: 3px; height: 3px; animation-duration: 3s; animation-delay: -1s; }
-.wt-star:nth-child(4) { top: 40px; left: 8px; width: 3px; height: 3px; animation-duration: 2.8s; animation-delay: -0.5s; }
-.wt-star:nth-child(5) { top: 50px; left: 42px; width: 3px; height: 3px; animation-duration: 3.2s; animation-delay: -2s; }
-.wt-star:nth-child(6) { top: 10px; left: 35px; width: 3px; height: 3px; animation-duration: 2.6s; animation-delay: -1.5s; }
-.wt-star:nth-child(7) { top: 30px; left: 5px; width: 3px; height: 3px; animation-duration: 3.5s; animation-delay: -0.3s; }
+
+.wt-star:nth-child(2) { top: 15%; left: 15%; width: 4px; height: 4px; animation-duration: 2.5s; }
+.wt-star:nth-child(3) { top: 25%; left: 80%; width: 3px; height: 3px; animation-duration: 3s; animation-delay: -1s; }
+.wt-star:nth-child(4) { top: 70%; left: 20%; width: 3px; height: 3px; animation-duration: 2.8s; animation-delay: -0.5s; }
+.wt-star:nth-child(5) { top: 80%; left: 75%; width: 3px; height: 3px; animation-duration: 3.2s; animation-delay: -2s; }
+.wt-star:nth-child(6) { top: 12%; left: 55%; width: 3px; height: 3px; animation-duration: 2.6s; animation-delay: -1.5s; }
+.wt-star:nth-child(7) { top: 85%; left: 40%; width: 3px; height: 3px; animation-duration: 3.5s; animation-delay: -0.3s; }
+
 .wt-static .wt-star { animation: none; opacity: 0.5; }
 @keyframes wtStarTwinkle { 
   0%{opacity:0.2;transform:scale(0.7);} 
