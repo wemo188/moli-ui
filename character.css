@@ -1020,35 +1020,24 @@
 }
 
 /* ============================
-   极致体验：隐藏滚动条 & 吸顶导航栏
+   极致体验：隐藏滚动条 & 纯净吸顶
    ============================ */
 
-/* 🌟 1. 彻底隐藏丑陋的右侧滚动条 */
+/* 1. 彻底隐藏丑陋的右侧滚动条 */
 #clPageInner {
-  scrollbar-width: none; /* Firefox 隐藏 */
-  padding-top: 0 !important; /* 顶部间距交给吸顶栏处理 */
+  scrollbar-width: none; 
+  padding-top: 0 !important; 
 }
 #clPageInner::-webkit-scrollbar {
-  display: none; /* Chrome/Safari 隐藏 */
+  display: none; 
 }
 
-/* 🌟 2. 磨砂玻璃质感的吸顶导航栏 */
+/* 2. 纯净吸顶，没有任何背景和磨砂特效 */
 .cl-sticky-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  margin: 0 -10px; /* 抵消外层左右的 10px 间距，充满屏幕 */
+  margin: 0 -10px; 
   padding: 8px 10px 0; 
-  background: rgba(255, 255, 255, 0.85); /* 半透明纯白底色 */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* 滑动时极其微弱的阴影分割 */
-  transition: background 0.3s ease;
+  /* 仅仅让它停在顶部，不加任何视觉干扰 */
 }
-
-/* 🌟 3. 智能适配你的自定义背景与暗黑模式，保持通透感 */
-.has-custom-bg .cl-sticky-header { background: rgba(255, 255, 255, 0.65); }
-.mode-frost .cl-sticky-header { background: rgba(243, 244, 246, 0.85); }
-.mode-frost.has-custom-bg .cl-sticky-header { background: rgba(243, 244, 246, 0.65); }
-.mode-mono .cl-sticky-header { background: rgba(255, 255, 255, 0.95); }
-.mode-mono.has-custom-bg .cl-sticky-header { background: rgba(255, 255, 255, 0.75); }
