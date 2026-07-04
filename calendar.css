@@ -75,7 +75,7 @@
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
   border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
-  display: flex; flex-direction: column; padding: 10px 20px; box-sizing: border-box; gap: 4px;
+  display: flex; flex-direction: column; padding: 8px 20px; box-sizing: border-box; gap: 3px;
 }
 
 /* 8. 第一行：头像+名字+地点（同行布局） */
@@ -94,11 +94,11 @@
 .tk17-sign { font-size: 14px; padding-left: 2px; margin-top: 2px; }
 
 /* 10. 纯色无渐变的干净分割线 */
-.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 4px 0; width: 100%; }
+.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 2px 0; width: 100%; }
 
 /* 11. 底部日期时间 */
 .tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; }
-.tk17-datetime #calMonthDay { font-size: 19px; font-weight: 700; }
+.tk17-datetime #calMonthDay { font-size: 20px; font-weight: 700; }
 
 /* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
 .tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
