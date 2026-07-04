@@ -779,9 +779,9 @@
 
 /* 绑定用户弹窗 */
 .cl-bind-modal {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   border-radius: 12px; /* 圆角稍微调大一点点，更可爱 */
   width: 250px; /* 🌟 哥哥把宽度收紧了，右边就不会太空 */
   max-height: 60vh;
