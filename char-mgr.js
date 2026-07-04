@@ -228,19 +228,17 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
+                       '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
+              '<div class="cm-sep"></div>' +
+              '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
+              '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
+              '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
+              '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">表情包生成需要支持图片生成的模型（如 gpt-image-1、dall-e-3 等）。普通文字模型无法生成图片。留空则表情包以文字标记显示。</div></div>' +
             '</div>' +
-            '<div class="cm-sep"></div>' +
-            
-            // 🌟 哥哥把你要求挪动的代码完美嵌进来了！
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-            '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
-           '<div class="cm-tip" style="margin-bottom:12px;"><div class="cm-tip-icon">!</div><div class="cm-tip-text">表情包生成需要支持图片生成的模型（如 gpt-image-1、dall-e-3 等）。普通文字模型无法生成图片。留空则表情包以文字标记显示。</div></div>' +
             '<div class="cm-sep"></div>' +
 
             // 这里继续接上朋友圈
@@ -467,7 +465,10 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         moments: gc('cmMomToggle'), momentsMax: parseInt(gv('cmMomMax') || 2),
         momentsTypes: momTypes, momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'), charCity: gv('cmCharCity'), charRealCity: gv('cmCharRealCity'),
-        imgApiUrl: gv('cmImgApiUrl'), imgApiKey: gv('cmImgApiKey'), imgModel: gv('cmImgModel') || 'gpt-image-1',
+                // 🌟 表情包关闭时，图片API配置清空，确保AI不会误调用生图模型
+        imgApiUrl: gc('cmStkToggle') ? gv('cmImgApiUrl') : '',
+        imgApiKey: gc('cmStkToggle') ? gv('cmImgApiKey') : '',
+        imgModel: gc('cmStkToggle') ? (gv('cmImgModel') || 'gpt-image-1') : '',
         apiMode: gv('cmApiMode') || 'global', apiSelect: gv('cmApiSelect') || '',
         temperature: parseFloat(gv('cmTemp') || 0.8), freqPenalty: parseFloat(gv('cmFreq') || 0.3),
         presPenalty: parseFloat(gv('cmPres') || 0.3)
