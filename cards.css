@@ -507,8 +507,8 @@
   position: absolute;
   top: 100%;
   right: 100%;
-  margin-top: -83px;
-  margin-left: 10px;
+  margin-top: -78px;
+  margin-left: 15px;
   direction: ltr;
   border-radius: 18px 18px 4px 18px;
 }
@@ -517,8 +517,8 @@
   position: absolute;
   top: 100%;
   left: 100%;
-  margin-top: -20px;
-  margin-right: 5px;
+  margin-top: -25px;
+  margin-right: 10px;
   border-radius: 4px 18px 18px 18px;
   direction: ltr;
 }
