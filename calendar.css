@@ -88,7 +88,7 @@
 /* 8. 第一行：头像+名字+地点（同行布局） */
 .tk17-profile-area { display: flex; align-items: center; gap: 12px; }
 .tk17-avatar {
-  width: 55px; height: 55px; border-radius: 50%;
+  width: 55px; height: 55px; border-radius: 15%;
   background-size: cover; background-position: center;
   border: 1px solid #d1d5db; flex-shrink: 0;
 }
