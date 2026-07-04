@@ -29,6 +29,13 @@
   opacity: 1 !important; 
 }
 
+/* 强制浏览器保留输入的多个空格 */
+.tk17-msg-name,
+.tk17-sign,
+#tkMsgLoc {
+  white-space: pre-wrap; /* 核心魔法：保留空格，且文字过长时自动换行 */
+}
+
 /* 3. 票券整体大容器 */
 .tk17 {
   width: 100%;
@@ -203,7 +210,10 @@
 }
 .wt-lightning:nth-child(1) { top: 8%; left: 15%; animation: wtFlash1 5s ease-in-out infinite; }
 .wt-lightning:nth-child(2) { top: 12%; left: 45%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
-.wt-static .wt-lightning { animation: none; opacity: 0.3; }
+.wt-static .wt-lightning { 
+  animation: none; 
+  display: none !important; 
+}
 @keyframes wtFlash1 { 0%,84%,100%{opacity:0} 85%{opacity:0.9} 87%{opacity:0} 89%{opacity:0.7} 91%{opacity:0} }
 @keyframes wtFlash2 { 0%,78%,100%{opacity:0} 79%{opacity:0.8} 81%{opacity:0} 83%{opacity:0.6} 85%{opacity:0} }
 
