@@ -104,7 +104,7 @@
 .tk17-divider { height: 1.5px; background: #d1d5db; opacity: 0.6; margin: 2px 0; width: 100%; }
 
 /* 11. 底部日期时间 */
-.tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; }
+.tk17-datetime { display: flex; align-items: center; gap: 20px; font-size: 18px; font-weight: 600; }
 .tk17-datetime #calMonthDay { font-size: 19px; font-weight: 700; }
 
 /* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
