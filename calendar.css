@@ -1,16 +1,13 @@
 /* =========================
-   票券日历 tk17 (圆角修复 & 颜色锁定)
+   票券日历 tk17 (最终完整版)
 ========================= */
-.tk17 {
-  --tk-color: #111111; /* 把变量直接绑在卡片本身上，最稳妥！ */
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
+
+/* 1. 颜色变量 - 所有文字继承 */
+:root {
+  --tk-color: #111111;
 }
 
-/* 强制所有文字颜色统一，干掉所有的透明度干扰！ */
+/* 2. 强制所有文字和图标颜色统一，彻底干掉所有的透明度干扰！ */
 .tk17-msg-name,
 .tk17-msg-loc,
 .tk17-msg-loc span,
@@ -32,89 +29,102 @@
   opacity: 1 !important; 
 }
 
-/* =========================
-   票券背景与玻璃质感 (修改了遮罩大缺口)
-========================= */
+/* 3. 票券整体大容器 */
+.tk17 {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
+}
+
+/* 4. 背景图层：5px统一小圆角，14.5px大缺口，缺口定位在距离右边 104px 处 */
 .tk17-bgimg {
   position: absolute; inset: 0;
-  border-radius: 5px; /* 左右统一小圆角 */
+  border-radius: 20px; 
   overflow: hidden; z-index: 0;
-  /* 这里的 14.5px 和 104px 就是放大后的半圆缺口算法 */
   -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 
+/* 5. 玻璃质感层：和背景图层一模一样的圆角和遮罩 */
 .tk17-glass {
   position: absolute; inset: 0;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: 5px;
+  border-radius: 20px; 
   -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
 
+/* 6. 右侧斜纹装饰：也是5px圆角，宽度104px对齐缺口 */
 .tk17-stripes {
   position: absolute; top: 0; bottom: 0; right: 0; width: 104px;
   background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.045) 3px, rgba(0,0,0,0.045) 4px);
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 20px 20px 0;
 }
 
-/* 左侧主信息区 */
+/* 7. 左侧主信息区：左边5px圆角，右边直角对接缝隙，flex纵向布局 */
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
-  display: flex; flex-direction: column; padding: 12px 18px; box-sizing: border-box; gap: 6px;
+  border: 1px solid #d1d5db; border-right: none; border-radius: 20px 0 0 20px;
+  display: flex; flex-direction: column; padding: 10px 20px; box-sizing: border-box; gap: 5px;
 }
 
+/* 8. 第一行：头像+名字+地点（同行布局） */
 .tk17-profile-area { display: flex; align-items: center; gap: 12px; }
 .tk17-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 55px; height: 55px; border-radius: 50%;
   background-size: cover; background-position: center;
   border: 1px solid #d1d5db; flex-shrink: 0;
 }
 .tk17-name-loc { display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.tk17-msg-name { font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
+.tk17-msg-name { font-weight: 600; font-size: 15px; letter-spacing: 0.5px; }
 .tk17-msg-loc { display: flex; align-items: center; gap: 4px; font-size: 12px; }
 .tk17-msg-loc svg { width: 11px; height: 11px; flex-shrink: 0; }
 
-.tk17-sign { font-size: 13px; padding-left: 2px; margin-top: 2px; }
-.tk17-divider { height: 1px; background: rgba(209,213,219,0.7); margin: 4px 0; width: 100%; }
+/* 9. 签名挪到了这里 */
+.tk17-sign { font-size: 14px; padding-left: 2px; margin-top: 2px; }
 
-.tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
-.tk17-datetime #calMonthDay { font-size: 15px; font-weight: 700; }
+/* 10. 纯色无渐变的干净分割线 */
+.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 6px 0; width: 100%; }
 
-/* =========================
-   中间缺口区 (放大版)
-========================= */
-.tk17-sep { 
-  width: 28px; /* 缝隙变宽，容纳更大的半圆 */
-  flex-shrink: 0; position: relative; z-index: 3; 
-}
+/* 11. 底部日期时间 */
+.tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
+.tk17-datetime #calMonthDay { font-size: 16px; font-weight: 700; }
+
+/* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
+.tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
+
+/* 13. 上下半圆实体边框：加了 -1px 防漏白边修正！ */
 .tk17-notch-top { 
-  position: absolute; top: 0; left: 0; width: 28px; height: 14px; 
+  position: absolute; top: -1px; left: 0; width: 28px; height: 14px; 
   border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 14px 14px; box-sizing: border-box; 
 }
 .tk17-notch-bot { 
-  position: absolute; bottom: 0; left: 0; width: 28px; height: 14px; 
+  position: absolute; bottom: -1px; left: 0; width: 28px; height: 14px; 
   border: 1px solid #d1d5db; border-bottom: none; border-radius: 14px 14px 0 0; box-sizing: border-box; 
 }
 
-/* 右侧天气专属区 */
+/* 14. 右侧天气专属区：右边5px小圆角，左边直角对接缝隙 */
 .tk17-right {
-  width: 90px; flex-shrink: 0; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-left: none; border-radius: 0 5px 5px 0; 
+  width: 100px; flex-shrink: 0; position: relative; z-index: 2;
+  border: 1px solid #d1d5db; border-left: none; border-radius: 0 20px 20px 0; 
   display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
 }
 
-.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 5px 5px 0; }
+/* 15. 天气动画层 */
+.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 20px 20px 0; }
+
+/* 16. 天气文字数据 */
 .tk17-right-info { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .tk17-wt-temp { font-size: 20px; font-weight: 700; }
 .tk17-wt-desc { font-size: 13px; font-weight: 600; }
 
-/* 虚线的位置也跟着大缺口挪动 */
+/* 17. 穿过半圆中心的虚线，定在右侧 104px 处配合大缺口 */
 .tk17-dashed { 
   position: absolute; top: 12px; bottom: 12px; right: 104px; width: 0; 
   border-left: 1px dashed rgba(209,213,219,0.7); z-index: 5; 
