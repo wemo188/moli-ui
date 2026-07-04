@@ -783,11 +783,11 @@
 
 /* 绑定用户弹窗 */
 .cl-bind-modal {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   border-radius: 12px; /* 圆角稍微调大一点点，更可爱 */
-  width: 245px; /* 🌟 哥哥把宽度收紧了，右边就不会太空 */
+  width: 250px; /* 🌟 哥哥把宽度收紧了，右边就不会太空 */
   max-height: 60vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12); /* 阴影调得更柔和高级 */
@@ -854,7 +854,7 @@
   font-size: 10px; 
   color: #fff; 
   background: #1a1a1a; /* 🌟 哥哥给你加了个小色块背景，这样右边就不会显得空了 */
-  padding: 5px 8px;
+  padding: 5px 10px;
   border-radius: 30px;
   font-weight: 700; 
   letter-spacing: 0.5px;
@@ -863,7 +863,7 @@
 /* 底部取消按钮 */
 .cl-bind-cancel {
   padding: 10px 16px;
-  border-top: 1.5px solid #eee;
+  border-top: 1px solid #eee;
   text-align: center;
 }
 .cl-bind-cancel button {
@@ -882,13 +882,10 @@
 
 /* 移动分组弹窗 */
 .cl-move-modal {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255);
   border: 2px solid #111;
   border-radius: 8px;
   min-width: 180px;
-  box-shadow: 4px 4px 0 #111;
 }
 .cl-move-title {
   padding: 12px 18px;
