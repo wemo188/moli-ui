@@ -232,8 +232,8 @@
 
 .gip-modal {
   background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
   border-radius: 16px;
   padding: 22px 20px;
   width: 260px;
