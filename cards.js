@@ -322,11 +322,14 @@ var Cards={
       if(avatarInside)avatarInside._dragMoved=true;
     },{passive:false});
 
-    el.addEventListener('touchend',function(e){
+        el.addEventListener('touchend',function(e){
       clearTimeout(timer);timer=null;
       el.classList.remove('hl-dragging');
-      el.classList.remove('is-grabbed'); // 👈 落地松手时删掉它
+      el.classList.remove('is-grabbed');
       if(longPressed){
+        // 🌟 落地瞬间：同样补一个 10毫秒 的轻微震动！
+        if(navigator.vibrate) navigator.vibrate(10);
+        
         if(moved){Cards.saveDrag();e.stopPropagation();}
         
         // 🌟 落地松手：果冻回弹到原比例
@@ -421,10 +424,13 @@ var Cards={
 
       avBox.addEventListener('touchend',function(e){
         clearTimeout(timer);timer=null;
-        el.classList.remove('is-grabbed'); // 👈 落地松手时删掉它
+        el.classList.remove('is-grabbed');
         el.style.opacity='';
-        el.style.boxShadow=''; // 恢复原阴影
+        el.style.boxShadow=''; 
         if(longPressed){
+          // 🌟 落地瞬间：补一个 10毫秒 的轻微震动！
+          if(navigator.vibrate) navigator.vibrate(10); 
+          
           if(moved){Cards._dragOffsets._topCard=id;Cards.saveDrag();e.stopPropagation();}
           
           // 🌟 落地松手：开启回弹动画，缩回原比例 scale(1)
