@@ -360,7 +360,7 @@
               ? '<img class="cl-bind-avatar" src="' + App.escAttr(u.avatar) + '">' 
               : '<div class="cl-bind-avatar-empty"></div>';
             return '<div class="cl-bind-item" data-uid="' + u.id + '">' +
-                     '<div class="cl-bind-left">' + avHtml + '<span class="cl-bind-name">' + App.esc(u.nickname || u.realName || '未命名') + '</span></div>' + 
+                     '<div class="cl-bind-left">' + avHtml + '<span class="cl-bind-name">' + App.esc(u.realName || '未命名') + '</span></div>' + 
                      (isBound ? '<span class="cl-bind-current">当前绑定</span>' : '') + 
                    '</div>';
           }).join('');
