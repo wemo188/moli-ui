@@ -195,7 +195,7 @@
   animation: wtRainFall linear infinite;
   transform: rotate(12deg);
 }
-.wt-static .wt-raindrop { animation: none; top: 30%; opacity: 0.4; }
+
 @keyframes wtRainFall {
   0% { transform:rotate(12deg) translateY(-10px); opacity:0; }
   10% { opacity:1; }
@@ -236,13 +236,32 @@
   opacity: 0;
   animation: wtSnowFall linear infinite;
 }
-.wt-static .wt-snow-item { animation: none; top: 30%; opacity: 0.4; }
+
 @keyframes wtSnowFall {
   0% { transform:translateY(-6px) rotate(0deg); opacity:0; }
   10% { opacity:0.7; }
   85% { opacity:0.7; }
   100% { transform:translateY(250px) rotate(360deg); opacity:0; }
 }
+
+/* 🌟 核心修正：静态雨雪高低错落散开！不再排成一条线 */
+.wt-static .wt-raindrop, 
+.wt-static .wt-snow-item { 
+  animation: none; 
+}
+.wt-static .wt-raindrop:nth-child(1), .wt-static .wt-snow-item:nth-child(1) { top: 15%; opacity: 0.6; }
+.wt-static .wt-raindrop:nth-child(2), .wt-static .wt-snow-item:nth-child(2) { top: 40%; opacity: 0.4; }
+.wt-static .wt-raindrop:nth-child(3), .wt-static .wt-snow-item:nth-child(3) { top: 75%; opacity: 0.7; }
+.wt-static .wt-raindrop:nth-child(4), .wt-static .wt-snow-item:nth-child(4) { top: 20%; opacity: 0.3; }
+.wt-static .wt-raindrop:nth-child(5), .wt-static .wt-snow-item:nth-child(5) { top: 85%; opacity: 0.5; }
+.wt-static .wt-raindrop:nth-child(6), .wt-static .wt-snow-item:nth-child(6) { top: 50%; opacity: 0.8; }
+.wt-static .wt-raindrop:nth-child(7), .wt-static .wt-snow-item:nth-child(7) { top: 10%; opacity: 0.4; }
+.wt-static .wt-raindrop:nth-child(8), .wt-static .wt-snow-item:nth-child(8) { top: 60%; opacity: 0.6; }
+.wt-static .wt-raindrop:nth-child(9), .wt-static .wt-snow-item:nth-child(9) { top: 30%; opacity: 0.5; }
+.wt-static .wt-raindrop:nth-child(10), .wt-static .wt-snow-item:nth-child(10){ top: 80%; opacity: 0.3; }
+.wt-static .wt-raindrop:nth-child(11), .wt-static .wt-snow-item:nth-child(11){ top: 25%; opacity: 0.7; }
+.wt-static .wt-raindrop:nth-child(12), .wt-static .wt-snow-item:nth-child(12){ top: 65%; opacity: 0.4; }
+.wt-static .wt-raindrop:nth-child(n+13), .wt-static .wt-snow-item:nth-child(n+13){ top: 45%; opacity: 0.5; }
 
 .wt-fog-layer {
   position: absolute;
