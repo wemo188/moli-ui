@@ -157,7 +157,7 @@
       }).join('');
 
       var popupHtml = '<div class="cl-color-popup" id="clColorPopup">' +
-        '<div class="cl-color-popup-title">自定义配色</div>' +
+        '<div class="cl-color-popup-title">编辑配色</div>' +
         '<div class="cl-color-custom" id="clPopupColors">' + popupColorsHtml + '</div>' +
         '<div class="cl-line-row"><label>内线</label><input type="range" min="1" max="5" step="0.5" value="' + cfg.defaults.line + '" class="cl-cc-line"><span class="cl-line-val">' + cfg.defaults.line + 'px</span></div>' +
         '<div class="cl-line-row"><label>外框</label><input type="range" min="0" max="6" step="0.5" value="' + cfg.defaults.outer + '" class="cl-cc-outer"><span class="cl-outer-val">' + cfg.defaults.outer + 'px</span></div>' +
