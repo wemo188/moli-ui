@@ -1,3 +1,26 @@
+/* 颜色变量 - 所有文字继承 */
+:root {
+  --tk-color: #111111;
+}
+
+/* 所有文字统一颜色 */
+.tk17-msg,
+.tk17-msg-name,
+.tk17-msg-loc,
+.tk17-right-info,
+.tk17-right-year,
+#calMonthDay,
+#calWeekday,
+#calYear,
+#calClock {
+  color: var(--tk-color) !important;
+}
+
+/* SVG 图标也变色 */
+.tk17-msg-loc svg {
+  fill: var(--tk-color) !important;
+}
+
 /* =========================
    票券日历 tk17
 ========================= */
