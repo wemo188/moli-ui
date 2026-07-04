@@ -365,7 +365,7 @@ img.img-fill { transform: none !important; }
 #hlAvatarsRow {
   display: flex;
   flex-direction: column; /* 🌟 变成上下垂直排列 */
-  gap: 25px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
+  gap: 10px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
   padding: 0 5px;
   margin-top: 25px;
 }
@@ -385,7 +385,7 @@ img.img-fill { transform: none !important; }
 #edenCard {
   margin-top: auto;
   padding: 0 1px;
-  margin-bottom: 150px;
+  margin-bottom: 120px;
 }
 
 #edenText {
