@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -13,7 +14,7 @@ var Cal={
   _dragY:0,
 
   _weatherMap:{
-    '113':'晴','116':'多云','119':'阴','122':'阴','143':'薄雾',
+    '113':'晴','116':'多云','119':'阴','122':'阴','143':'雾',
     '176':'小雨','179':'小雪','182':'冻雨','185':'冻雾雨',
     '200':'雷阵雨','227':'小雪','230':'暴雪',
     '248':'雾','260':'冻雾','263':'小雨','266':'小雨','281':'冻雨',
@@ -68,7 +69,6 @@ var Cal={
     Cal._clockTimer=setInterval(tick,1000);
   },
 
-  // 渲染右侧的天气和温度数值
   applyWeatherText: function() {
     var tEl = App.$('#calTemp');
     var dEl = App.$('#calWeatherDesc');
@@ -84,7 +84,7 @@ var Cal={
   renderWeatherEffect:function(){
     var bg=App.$('#wtWeatherBg');if(!bg)return;
     bg.innerHTML='';
-    Cal.applyWeatherText(); // 同步渲染文字
+    Cal.applyWeatherText();
     var card=App.$('#wtCard');
     if(card){card.classList.remove('wt-static');if(!Cal._weatherAnimate)card.classList.add('wt-static');}
     if(!Cal.weather||!Cal.weather.code){
@@ -141,7 +141,6 @@ var Cal={
     if(fam){ card.style.fontFamily=fam; }else{ card.style.fontFamily=''; }
   },
 
-  // ====== 应用文字、颜色和头像 ======
   applyTexts:function(){
     var nameEl=App.$('#tkMsgName');
     var signEl=App.$('#tkMsgSign');
@@ -157,10 +156,8 @@ var Cal={
     if(signEl&&s)signEl.textContent=s;
     if(locEl&&l)locEl.textContent=l;
 
-    // 动态应用你选的字体颜色
     document.documentElement.style.setProperty('--tk-color', color);
 
-    // 渲染你设置的头像
     var avEl = App.$('#tkAvatarBg');
     if(avEl) avEl.style.backgroundImage = 'url('+avatar+')';
   },
@@ -211,27 +208,30 @@ var Cal={
 
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
-    // 新增了 头像上传 和 字体颜色 选项块
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
-        '<div class="pc-group">'+
-          '<span class="pc-label">背景图片</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtBgUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
-            '<div class="pc-icon-btn danger" id="wtBgClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
-            (hasBgImg?'<span style="font-size:10px;color:#999;font-weight:600;">已设置</span>':'')+
-          '</div>'+
-          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
-        '</div>'+
-        
+        // 1. 头像模块挪到最前，样式使用 pc-av-row 和 pc-icon-btn 统一
         '<div class="pc-group">'+
           '<span class="pc-label">左侧头像</span>'+
           '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtAvUploadBtn" style="width:100%;">更换头像</div>'+
+            '<div class="pc-icon-btn" id="wtAvUploadBtn" title="更换头像"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+            '<div class="pc-icon-btn danger" id="wtAvClearBtn" title="恢复默认"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
           '</div>'+
         '</div>'+
 
+        // 2. 票券背景图
+        '<div class="pc-group">'+
+          '<span class="pc-label">背景图片</span>'+
+          '<div class="pc-av-row">'+
+            '<div class="pc-icon-btn" id="wtBgUploadBtn" title="上传背景"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+            '<div class="pc-icon-btn danger" id="wtBgClearBtn" title="清除背景"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+            (hasBgImg?'<span style="font-size:10px;color:#999;font-weight:600;display:flex;align-items:center;">已设置</span>':'')+
+          '</div>'+
+          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
+        '</div>'+
+
+        // 3. 文本设置区
         '<div class="pc-group">'+
           '<span class="pc-label">城市（获取天气）</span>'+
           '<div class="pc-av-row">'+
@@ -247,6 +247,7 @@ var Cal={
             '<div class="pc-icon-btn" id="wtAnimToggle" style="width:auto;padding:0 10px;font-size:11px;font-weight:700;">'+(Cal._weatherAnimate?'开':'关')+'</div>'+
           '</div>'+
         '</div>'+
+
         '<div class="pc-group">'+
           '<span class="pc-label">昵称</span>'+
           '<input type="text" class="pc-input" id="wtNameInput" placeholder="昵称..." value="'+App.esc(App.LS.get('tkMsgName')||'')+'">'+
@@ -259,18 +260,18 @@ var Cal={
           '<span class="pc-label">地点</span>'+
           '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
         '</div>'+
-        '<div class="pc-group">'+
-          '<span class="pc-label">字体</span>'+
-          '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
-        '</div>'+
 
+        // 4. 字体与颜色合为一行！避免占用多余空间
         '<div class="pc-group">'+
-          '<span class="pc-label">字体颜色</span>'+
-          '<div class="pc-color-block" id="wtColorBtn" style="height:32px;border-radius:8px;background:'+App.escAttr(currentColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
+          '<span class="pc-label">字体 & 颜色</span>'+
+          '<div class="pc-av-row">'+
+            '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
+            '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
+          '</div>'+
         '</div>'+
 
         '<div class="pc-group" style="margin-top:10px;">'+
-          '<button class="pc-icon-btn" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
+          '<button class="pc-btn pc-btn-save" id="wtEditSave" style="width:100%;padding:10px;font-size:12px;font-weight:700;">保存</button>'+
         '</div>'+
       '</div>';
 
@@ -282,7 +283,7 @@ var Cal={
     var top=rect.bottom+8;
     if(left+270>window.innerWidth-8)left=window.innerWidth-278;
     if(left<8)left=8;
-    if(top+500>window.innerHeight-10)top=rect.top-510;
+    if(top+450>window.innerHeight-10)top=rect.top-460;
     if(top<10)top=10;
     panel.style.left=left+'px';
     panel.style.top=top+'px';
@@ -291,7 +292,7 @@ var Cal={
     overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
-    // 背景上传
+    // --- 背景图片逻辑 ---
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){ panel.querySelector('#wtBgFileInput').click(); });
     panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
@@ -301,6 +302,7 @@ var Cal={
           App.LS.set('calBgImg',src);
           Cal.applyBgImg();
           App.showToast('背景已设置');
+          Cal.openEditPanel(); 
         };
         if(App.cropImage)App.cropImage(ev.target.result,process);
         else process(ev.target.result);
@@ -314,7 +316,7 @@ var Cal={
       App.showToast('背景已清除');
     });
 
-    // 头像上传
+    // --- 头像逻辑 ---
     panel.querySelector('#wtAvUploadBtn').addEventListener('click',function(){
       if(App.showImagePicker) {
          App.showImagePicker({
@@ -327,12 +329,15 @@ var Cal={
                }
             }
          });
-      } else {
-         App.showToast('图片选择器未加载');
       }
     });
+    panel.querySelector('#wtAvClearBtn').addEventListener('click',function(){
+      App.LS.remove('tkAvatar');
+      Cal.applyTexts();
+      App.showToast('已恢复默认头像');
+    });
 
-    // 唤起颜色面板
+    // --- 唤起颜色面板 (只占小方块位置) ---
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
@@ -341,7 +346,7 @@ var Cal={
       });
     });
 
-    // 城市搜索
+    // --- 其他功能 ---
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
       var name=panel.querySelector('#wtCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
@@ -353,7 +358,6 @@ var Cal={
       });
     });
 
-    // 动态开关
     panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
       Cal._weatherAnimate=!Cal._weatherAnimate;
       App.LS.set('calWeatherAnimate',Cal._weatherAnimate);
@@ -361,14 +365,12 @@ var Cal={
       Cal.renderWeatherEffect();
     });
 
-    // 字体实时预览
     panel.querySelector('#wtFontSelect').addEventListener('change',function(){
       var fam=this.value;
       App.LS.set('tkFontFamily',fam);
       Cal.applyFont();
     });
 
-    // 保存
     panel.querySelector('#wtEditSave').addEventListener('click',function(){
       var name=panel.querySelector('#wtNameInput').value.trim();
       var sign=panel.querySelector('#wtSignInput').value.trim();
