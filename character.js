@@ -170,14 +170,21 @@
       panel.innerHTML =
         bgHtml +
         '<div class="cl-page' + (modeClass ? ' ' + modeClass : '') + (savedBg ? ' has-custom-bg' : '') + '" id="clPageInner">' +
-        '<div class="cl-topbar-wrap">' +
-        '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
-        '<div class="cl-mode-center" id="clModeCenter"><span class="cl-mode-label" id="clModeLabel">' + MODE_LABELS[mi] + '</span><span class="cl-paw-toggle" id="clPawToggle">🐾</span></div>' +
-        '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
-        '</div>' +
-        '<div class="cl-topbar-divider"></div>' +
-        '<div id="clMultiBar"></div>' +
-        catNavHtml + cardsHtml + '</div>' + popupHtml;
+        
+        // 🌟 从这里开始包裹：高级磨砂吸顶层
+        '<div class="cl-sticky-header">' + 
+          '<div class="cl-topbar-wrap">' +
+            '<div class="cl-esc" id="clEsc">' + UNIFIED_BACK + '</div>' +
+            '<div class="cl-mode-center" id="clModeCenter"><span class="cl-mode-label" id="clModeLabel">' + MODE_LABELS[mi] + '</span><span class="cl-paw-toggle" id="clPawToggle">🐾</span></div>' +
+            '<div class="cl-new-btn" id="clNewBtn">+ 创建</div>' +
+          '</div>' +
+          '<div class="cl-topbar-divider"></div>' +
+          '<div id="clMultiBar"></div>' +
+          catNavHtml + 
+        '</div>' + 
+        // 🌟 包裹层结束，下面是正常的卡片列表
+        
+        cardsHtml + '</div>' + popupHtml;
 
       var pageEl = panel.querySelector('#clPageInner');
       var popup = panel.querySelector('#clColorPopup');
