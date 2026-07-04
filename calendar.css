@@ -41,9 +41,9 @@
 /* 4. 背景图层：5px统一小圆角，14.5px大缺口，缺口定位在距离右边 104px 处 */
 .tk17-bgimg {
   position: absolute; inset: 0;
-  border-radius: 20px; 
+  border-radius: 5px; 
   overflow: hidden; z-index: 0;
-  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
+  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 114px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 114px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
@@ -53,8 +53,8 @@
   position: absolute; inset: 0;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px; 
-  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 104px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 104px) 100%, transparent 14px, black 14.5px);
+  border-radius: 5px; 
+  -webkit-mask-image: radial-gradient(circle 14.5px at calc(100% - 114px) 0, transparent 14px, black 14.5px), radial-gradient(circle 14.5px at calc(100% - 114px) 100%, transparent 14px, black 14.5px);
   -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
   z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
 }
@@ -62,15 +62,15 @@
 
 /* 6. 右侧斜纹装饰：也是5px圆角，宽度104px对齐缺口 */
 .tk17-stripes {
-  position: absolute; top: 0; bottom: 0; right: 0; width: 104px;
+  position: absolute; top: 0; bottom: 0; right: 0; width: 114px;
   background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.045) 3px, rgba(0,0,0,0.045) 4px);
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 5px 5px 0;
 }
 
 /* 7. 左侧主信息区：左边5px圆角，右边直角对接缝隙，flex纵向布局 */
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-right: none; border-radius: 20px 0 0 20px;
+  border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
   display: flex; flex-direction: column; padding: 10px 20px; box-sizing: border-box; gap: 5px;
 }
 
@@ -90,11 +90,11 @@
 .tk17-sign { font-size: 14px; padding-left: 2px; margin-top: 2px; }
 
 /* 10. 纯色无渐变的干净分割线 */
-.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 6px 0; width: 100%; }
+.tk17-divider { height: 1px; background: #d1d5db; opacity: 0.6; margin: 4px 0; width: 100%; }
 
 /* 11. 底部日期时间 */
-.tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
-.tk17-datetime #calMonthDay { font-size: 16px; font-weight: 700; }
+.tk17-datetime { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; }
+.tk17-datetime #calMonthDay { font-size: 17px; font-weight: 700; }
 
 /* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
 .tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
@@ -112,12 +112,12 @@
 /* 14. 右侧天气专属区：右边5px小圆角，左边直角对接缝隙 */
 .tk17-right {
   width: 100px; flex-shrink: 0; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-left: none; border-radius: 0 20px 20px 0; 
+  border: 1px solid #d1d5db; border-left: none; border-radius: 0 5px 5px 0; 
   display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
 }
 
 /* 15. 天气动画层 */
-.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 20px 20px 0; }
+.tk17-weather-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 0 5px 5px 0; }
 
 /* 16. 天气文字数据 */
 .tk17-right-info { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
@@ -126,7 +126,7 @@
 
 /* 17. 穿过半圆中心的虚线，定在右侧 104px 处配合大缺口 */
 .tk17-dashed { 
-  position: absolute; top: 12px; bottom: 12px; right: 104px; width: 0; 
+  position: absolute; top: 12px; bottom: 12px; right: 114px; width: 0; 
   border-left: 1px dashed rgba(209,213,219,0.7); z-index: 5; 
 }
 
