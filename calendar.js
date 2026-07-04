@@ -29,16 +29,25 @@ var Cal={
 
   _codeToEffect:function(code){
     var c=parseInt(code)||0;
-    if(c===113){var h=new Date().getHours();return(h>=19||h<6)?'night':'sunny';}
-    if(c===116)return'cloudy';
-    if(c===119||c===122)return'overcast';
-    if(c===143||c===248||c===260)return'fog';
-    if([176,263,266,281,284,293,296].indexOf(c)!==-1)return'lightrain';
-    if([299,302,305,308,311,314,353,356,359,362,365].indexOf(c)!==-1)return'heavyrain';
-    if([200,386,389].indexOf(c)!==-1)return'thunder';
-    if([179,182,185,227,317,320,323,326,368].indexOf(c)!==-1)return'lightsnow';
-    if([230,329,332,335,338,371,374,377,392,395].indexOf(c)!==-1)return'heavysnow';
-    return'cloudy';
+    var h=new Date().getHours();
+    var isNight = (h>=19 || h<6); // 判断是不是晚上7点到早上6点
+
+    // 晴天(113) 和 多云(116)：晚上一律显示唯美的月亮星空！
+    if(c===113 || c===116){
+      return isNight ? 'night' : (c===113 ? 'sunny' : 'cloudy');
+    }
+    
+    // 其他天气保持原样
+    if(c===119||c===122)return 'overcast'; // 阴天
+    if(c===143||c===248||c===260)return 'fog'; // 雾
+    if([176,263,266,281,284,293,296].indexOf(c)!==-1)return 'lightrain';
+    if([299,302,305,308,311,314,353,356,359,362,365].indexOf(c)!==-1)return 'heavyrain';
+    if([200,386,389].indexOf(c)!==-1)return 'thunder';
+    if([179,182,185,227,317,320,323,326,368].indexOf(c)!==-1)return 'lightsnow';
+    if([230,329,332,335,338,371,374,377,392,395].indexOf(c)!==-1)return 'heavysnow';
+    
+    // 兜底选项，万一遇到不认识的，晚上也给个月亮
+    return isNight ? 'night' : 'cloudy';
   },
 
   load:function(){
