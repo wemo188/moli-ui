@@ -946,7 +946,7 @@ var Bg = {
     Bg.bindIconDrag();
   },
 
-  bindIconDrag: function() {
+      bindIconDrag: function() {
     var DELAY = 500;
     var SNAP = 12;
     var ALL_ICONS = ['iconUser','iconChar','iconTheme','iconSettings'];
@@ -961,7 +961,15 @@ var Bg = {
         timer = setTimeout(function() {
           longPressed = true;
           var off = Bg._getIconOffset(id); origX = off.x; origY = off.y;
-          el.style.transition = 'none'; el.style.zIndex = '999';
+          
+          el.classList.add('is-grabbed');
+          el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          // 🌟 核心：注入变量 --t
+          var tf = 'translate('+origX+'px,'+origY+'px) scale(1.1)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
+          
+          el.style.zIndex = '999';
           if(navigator.vibrate) navigator.vibrate(15);
         }, DELAY);
       }, {passive:true});
@@ -982,13 +990,37 @@ var Bg = {
           if(Math.abs(ny - otherOff.y) < SNAP) ny = otherOff.y;
           if(Math.abs(nx - otherOff.x) < SNAP) nx = otherOff.x;
         });
-        el.style.transform = 'translate('+nx+'px,'+ny+'px)';
+        
+        el.style.transition = 'none';
+        // 🌟 核心：注入变量 --t
+        var tf = 'translate('+nx+'px,'+ny+'px) scale(1.1)';
+        el.style.setProperty('--t', tf);
+        el.style.transform = tf;
       }, {passive:false});
 
       el.addEventListener('touchend', function(e) {
         clearTimeout(timer); timer=null;
-        el.style.transition=''; el.style.zIndex='';
-        if(longPressed && moved) { Bg._saveIconOffset(id, el); e.stopPropagation(); }
+        
+        el.classList.remove('is-grabbed'); 
+        
+        if(longPressed) {
+          if(moved) { Bg._saveIconOffset(id, el); e.stopPropagation(); }
+          
+          el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          var curOff = Bg._getIconOffset(id);
+          // 🌟 核心：注入变量 --t
+          var tf = 'translate('+curOff.x+'px,'+curOff.y+'px) scale(1)';
+          el.style.setProperty('--t', tf);
+          el.style.transform = tf;
+          
+          setTimeout(function(){ 
+            el.style.transition=''; 
+            el.style.zIndex=''; 
+          }, 350);
+        } else {
+          el.style.transition=''; 
+          el.style.zIndex='';
+        }
         longPressed=false; moved=false;
       });
     });
@@ -1000,11 +1032,17 @@ var Bg = {
     var match = el.style.transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
     if(match) { offsets[id] = {x:parseFloat(match[1]), y:parseFloat(match[2])}; App.LS.set('appIconOffsets', offsets); }
   },
-  restoreIconPositions: function() {
+    restoreIconPositions: function() {
     var offsets = App.LS.get('appIconOffsets') || {};
     ['iconUser','iconChar','iconTheme','iconSettings'].forEach(function(id) {
       var el = document.getElementById(id); if(!el) return;
-      var off = offsets[id]; if(off) el.style.transform = 'translate('+off.x+'px,'+off.y+'px)';
+      var off = offsets[id]; 
+      if(off) {
+        // 🌟 注入 --t 变量，防止下次摇晃时闪现
+        var tf = 'translate('+off.x+'px,'+off.y+'px)';
+        el.style.setProperty('--t', tf);
+        el.style.transform = tf;
+      }
     });
   },
 
