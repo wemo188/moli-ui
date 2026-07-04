@@ -963,3 +963,19 @@ input[type="range"] {
 .app-header-safe {
   padding-top: var(--app-header-top) !important;
 }
+
+/* ============================
+   极致交互：长按抓起时的悬浮摇晃动画
+   ============================ */
+@keyframes dragWiggle {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-1.5deg); }
+  50%  { transform: rotate(1.5deg); }
+  75%  { transform: rotate(-0.8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* 赋予拖拽状态下的小摇晃 */
+.is-grabbed {
+  animation: dragWiggle 0.4s ease-out;
+}
