@@ -361,11 +361,25 @@ img.img-fill { transform: none !important; }
   gap: 25px;
 }
 
+/* 第三行：圆头像错层排版 */
 #hlAvatarsRow {
-  justify-content: space-between;
-  gap: 0;
+  display: flex;
+  flex-direction: column; /* 🌟 变成上下垂直排列 */
+  gap: 25px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
   padding: 0 5px;
   margin-top: 25px;
+}
+
+/* 右边头像：靠右，且强行排在第一行 */
+#hlAvatarWrapRight {
+  align-self: flex-end; 
+  order: 1; 
+}
+
+/* 左边头像：靠左，排在第二行 */
+#hlAvatarWrapLeft {
+  align-self: flex-start;
+  order: 2; 
 }
 
 #edenCard {
