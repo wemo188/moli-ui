@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -156,10 +155,13 @@ var Cal={
     if(signEl&&s)signEl.textContent=s;
     if(locEl&&l)locEl.textContent=l;
 
-    if(color) {
-      document.documentElement.style.setProperty('--tk-color', color);
-    } else {
-      document.documentElement.style.removeProperty('--tk-color');
+    var card = App.$('#wtCard');
+    if (card) {
+      if(color) {
+        card.style.setProperty('--tk-color', color);
+      } else {
+        card.style.removeProperty('--tk-color');
+      }
     }
 
     var avEl = App.$('#tkAvatarBg');
@@ -205,8 +207,12 @@ var Cal={
   _editPanel:null,
 
   openEditPanel:function(){
-    if(Cal._editPanel){Cal._editPanel.remove();Cal._editPanel=null;return;}
+    if(Cal._editPanel){
+      if (Cal._closePanelFn) Cal._closePanelFn();
+      return;
+    }
 
+    var hasBgImg=!!App.LS.get('calBgImg');
     var currentColor = App.LS.get('tkColor') || '#111111';
 
     var overlay=document.createElement('div');
@@ -216,12 +222,12 @@ var Cal={
 
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
+    // 不再用 CSS 锁死坐标，留给拖拽 JS 处理
     
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       
       '<div class="pc-body">'+
-        // 1. 头像和背景放同一行
         '<div style="display:flex; gap:12px;">'+
           '<div class="pc-group" style="flex:1;">'+
             '<span class="pc-label">左侧头像</span>'+
@@ -240,7 +246,6 @@ var Cal={
           '</div>'+
         '</div>'+
 
-        // 2. 城市和动态开关放同一行 (去掉了多余的天气文本)
         '<div style="display:flex; gap:12px;">'+
           '<div class="pc-group" style="flex:1;">'+
             '<span class="pc-label">城市（获取天气）</span>'+
@@ -255,7 +260,6 @@ var Cal={
           '</div>'+
         '</div>'+
 
-        // 3. 地点提到了签名上方
         '<div class="pc-group">'+
           '<span class="pc-label">昵称</span>'+
           '<input type="text" class="pc-input" id="wtNameInput" placeholder="昵称..." value="'+App.esc(App.LS.get('tkMsgName')||'')+'">'+
@@ -285,17 +289,67 @@ var Cal={
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    // 动态计算初始坐标，停留在底部，但不使用死板的 CSS 强制锁定，保留组件原有的顺滑拖拽
+    // ★ 关键1：用 JS 赋予初始“底部居中”坐标，不影响后续拖拽
     var pRect = panel.getBoundingClientRect();
     var startLeft = (window.innerWidth - pRect.width) / 2;
-    var startTop = window.innerHeight - pRect.height - 40;
+    var startTop = window.innerHeight - pRect.height - 40; // 距离底部40px
     if (startTop < 10) startTop = 10;
     
     panel.style.left = startLeft + 'px';
     panel.style.top = startTop + 'px';
+    panel.style.margin = '0'; // 必须清空以防止居中冲突
 
-    panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
-    overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
+    // ★ 关键2：专门给这块卡片绑定拖拽逻辑！
+    var header = panel.querySelector('.pc-header');
+    var isDragging = false;
+    var dragStartX = 0, dragStartY = 0;
+    var panelStartLeft = 0, panelStartTop = 0;
+
+    function onDragStart(e) {
+      if (e.target.closest('.pc-close-btn')) return;
+      isDragging = true;
+      var t = e.touches ? e.touches[0] : e;
+      dragStartX = t.clientX;
+      dragStartY = t.clientY;
+      var rect = panel.getBoundingClientRect();
+      panelStartLeft = rect.left;
+      panelStartTop = rect.top;
+      
+      panel.style.transform = 'none'; // 彻底释放位移束缚
+      panel.style.bottom = 'auto';
+      panel.style.right = 'auto';
+    }
+
+    function onDragMove(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      var t = e.touches ? e.touches[0] : e;
+      var dx = t.clientX - dragStartX;
+      var dy = t.clientY - dragStartY;
+      panel.style.left = (panelStartLeft + dx) + 'px';
+      panel.style.top = (panelStartTop + dy) + 'px';
+    }
+
+    function onDragEnd() {
+      isDragging = false;
+    }
+
+    header.addEventListener('touchstart', onDragStart, {passive: true});
+    document.addEventListener('touchmove', onDragMove, {passive: false});
+    document.addEventListener('touchend', onDragEnd);
+
+    // 清理事件，防止残留
+    var closePanel = function() {
+      document.removeEventListener('touchmove', onDragMove);
+      document.removeEventListener('touchend', onDragEnd);
+      Cal._editPanel.remove();
+      Cal._editPanel = null;
+      Cal._closePanelFn = null;
+    };
+    Cal._closePanelFn = closePanel;
+
+    panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation(); closePanel();});
+    overlay.addEventListener('click',function(e){if(e.target===overlay) closePanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){ panel.querySelector('#wtBgFileInput').click(); });
@@ -340,11 +394,19 @@ var Cal={
       App.showToast('已恢复默认头像');
     });
 
+    // ★ 关键3：不仅选色能保存，在调色盘滑动时也会实时改变票券颜色！
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
+         // 确定保存时的逻辑
          panel.querySelector('#wtColorBtn').style.background = color;
          panel.dataset.pickedColor = color;
+         var card = App.$('#wtCard');
+         if(card) card.style.setProperty('--tk-color', color);
+      }, function(color){
+         // 滑动实时预览的逻辑！
+         var card = App.$('#wtCard');
+         if(card) card.style.setProperty('--tk-color', color);
       });
     });
 
@@ -354,7 +416,7 @@ var Cal={
       App.showToast('获取天气中...');
       Cal.city=name;Cal.save();
       Cal.fetchWeather(name,function(w){
-        if(w){Cal.openEditPanel();Cal.openEditPanel();App.showToast(w.desc+' '+w.temp+'°C');}
+        if(w){ closePanel(); Cal.openEditPanel(); App.showToast(w.desc+' '+w.temp+'°C');}
         else App.showToast('获取失败');
       });
     });
@@ -387,7 +449,7 @@ var Cal={
       
       Cal.applyTexts();
       Cal.applyFont();
-      Cal.openEditPanel();
+      closePanel();
       App.showToast('已保存');
     });
   },
