@@ -219,7 +219,7 @@ var Cards={
       var lt2 = L.tag2 ? App.esc(L.tag2) : '<span style="opacity:0">标签</span>';
       var lSub = L.sub ? App.esc(L.sub) : '<span style="opacity:0">一句话签名</span>';
       
-      var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
+      var lFront=L.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(L.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击卡片进行编辑</span></div></div>';
       
       pcL.innerHTML=
         '<div class="bx-tag-wrap"><div class="bx-tag bx-tag1'+lt1C+'">'+lt1+'</div><div class="bx-tag bx-tag2'+lt2C+'">'+lt2+'</div></div>'+
@@ -238,7 +238,7 @@ var Cards={
       var rt2 = R.tag2 ? App.esc(R.tag2) : '<span style="opacity:0">标签</span>';
       var rSub = R.sub ? App.esc(R.sub) : '<span style="opacity:0">一句话签名</span>';
       
-      var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div></div>';
+      var rFront=R.avatar?'<div class="bx-av-front" style="background-image:url(\''+App.esc(R.avatar)+'\')"></div>':'<div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击卡片进行编辑</span></div></div>';
       
       pcR.innerHTML=
         '<div class="bx-cw"><div class="bx-cd">'+
@@ -325,18 +325,23 @@ var Cards={
     if(off)el.style.transform='translate('+off.x+'px,'+off.y+'px)';
   },
 
-  bindEdit:function(){
+    bindEdit:function(){
+    // 🌟 哥哥把监听器直接绑在了整张卡片（.bx-w）上！
     document.querySelectorAll('.bx-w').forEach(function(card){
-      var sub=card.querySelector('.bx-sub');
-      if(sub&&!sub._dblBound){
-        sub._dblBound=true;
+      if(!card._dblBound){
+        card._dblBound=true;
         var tapCount=0,tapTimer=null;
-        sub.addEventListener('click',function(e){
-          e.preventDefault();e.stopPropagation();
+        card.addEventListener('click',function(e){
+          // e.preventDefault(); 这里去掉，防止影响拖拽
+          e.stopPropagation();
           tapCount++;
           clearTimeout(tapTimer);
           tapTimer=setTimeout(function(){tapCount=0;},350);
-          if(tapCount>=2){tapCount=0;clearTimeout(tapTimer);Cards.openEdit(card.dataset.side,card);}
+          if(tapCount>=2){
+            tapCount=0;
+            clearTimeout(tapTimer);
+            Cards.openEdit(card.dataset.side, card);
+          }
         });
       }
     });
@@ -618,7 +623,7 @@ var Cards={
       var cardId=side==='left'?'#profileCard-L':'#profileCard-R';
       var avFront=document.querySelector(cardId+' .bx-av-front');if(!avFront)return;
       if(tempAvatar){avFront.innerHTML='';avFront.style.backgroundImage='url(\''+tempAvatar+'\')';}
-      else{avFront.style.backgroundImage='';avFront.innerHTML='<div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击签名进行编辑</span></div>';}
+      else{avFront.style.backgroundImage='';avFront.innerHTML='<div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>双击卡片进行编辑</span></div>';}
     }
 
     panel.querySelector('#pcUploadBtn').addEventListener('click',function(e){
