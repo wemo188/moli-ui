@@ -149,8 +149,8 @@ var Cal={
     var n=App.LS.get('tkMsgName');
     var s=App.LS.get('tkMsgSign');
     var l=App.LS.get('tkMsgLoc');
-    var color = App.LS.get('tkColor'); // 彻底去掉内联默认色
-    var avatar = App.LS.get('tkAvatar'); // 彻底去掉内联默认图！！！
+    var color = App.LS.get('tkColor');
+    var avatar = App.LS.get('tkAvatar');
 
     if(nameEl&&n)nameEl.textContent=n;
     if(signEl&&s)signEl.textContent=s;
@@ -162,7 +162,6 @@ var Cal={
       document.documentElement.style.removeProperty('--tk-color');
     }
 
-    // 只有用户真的上传了头像才覆盖，否则置空让 CSS 掌管
     var avEl = App.$('#tkAvatarBg');
     if(avEl) {
        if (avatar) {
@@ -217,15 +216,12 @@ var Cal={
     Cal._editPanel=overlay;
 
     var panel=document.createElement('div');
-    panel.className='pc-edit-panel';
-    // 强制固定到底部，取消 top 的跟随计算
-    panel.style.cssText = 'position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); top: auto; max-height: 60vh; width: 280px; display: flex; flex-direction: column;';
+    panel.className='pc-edit-panel'; // 完全遵循你的公共 CSS
     
-    // 拆分出固定的 footer 区域
     panel.innerHTML=
       '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       
-      '<div class="pc-body" style="flex:1; overflow-y:auto; padding-bottom:10px;">'+
+      '<div class="pc-body">'+
         '<div class="pc-group">'+
           '<span class="pc-label">左侧头像</span>'+
           '<div class="pc-av-row">'+
@@ -282,19 +278,26 @@ var Cal={
         '</div>'+
       '</div>'+
       
-      // 独立出来的固定底栏
-      '<div class="pc-footer" style="padding:10px 16px; border-top:1px solid rgba(0,0,0,0.06); flex-shrink:0;">'+
-        '<button class="pc-btn pc-btn-save" id="wtEditSave" style="width:100%;padding:10px;font-size:13px;font-weight:700;border-radius:10px;">保存</button>'+
+      '<div class="pc-footer">'+
+        '<button class="pc-btn pc-btn-save" id="wtEditSave">保存</button>'+
       '</div>';
 
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
+    // 关键修正：用 JS 计算 left 和 top 让它刚好停在底部居中，且不加任何锁死 CSS！拖拽逻辑丝滑保留！
+    var pRect = panel.getBoundingClientRect();
+    var left = (window.innerWidth - pRect.width) / 2;
+    var top = window.innerHeight - pRect.height - 40; // 距离底部留点安全边距
+    if (top < 10) top = 10;
+    
+    panel.style.left = left + 'px';
+    panel.style.top = top + 'px';
+
     panel.querySelector('#wtEditClose').addEventListener('click',function(e){e.stopPropagation();Cal.openEditPanel();});
     overlay.addEventListener('click',function(e){if(e.target===overlay)Cal.openEditPanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
-    // --- 背景图片逻辑 ---
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){ panel.querySelector('#wtBgFileInput').click(); });
     panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
@@ -317,7 +320,6 @@ var Cal={
       App.showToast('背景已清除');
     });
 
-    // --- 头像逻辑 ---
     panel.querySelector('#wtAvUploadBtn').addEventListener('click',function(){
       if(App.showImagePicker) {
          App.showImagePicker({
@@ -338,7 +340,6 @@ var Cal={
       App.showToast('已恢复默认头像');
     });
 
-    // --- 颜色面板 ---
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
@@ -347,7 +348,6 @@ var Cal={
       });
     });
 
-    // --- 其他功能 ---
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
       var name=panel.querySelector('#wtCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
