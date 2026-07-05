@@ -153,10 +153,12 @@
         }).join('');
       }
 
+                  // 🌟 获取背景
       var savedBg = App.LS.get('userPageBg') || '';
       var bgHtml = savedBg ? '<div class="up-custom-bg" style="background-image: url(\'' + App.escAttr(savedBg) + '\');"></div>' : '';
 
-            panel.style.background = '#fff';
+      // 🌟 动态控制底层面板的颜色，有背景图时变透明
+           panel.style.background = '#fff';
 
       // ★ 这里保留了你的 5 个圆圈均匀分布的设计！
       panel.innerHTML =
@@ -172,6 +174,7 @@
         '<div class="p14-list-wrap">' + cardsHtml + '</div>';
   
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
+            // 🌟 右上角加号的弹出菜单逻辑
       panel.querySelector('#upListAdd').addEventListener('click', function(e) { 
         e.stopPropagation();
         var old = document.querySelector('.up-mgr-menu');
@@ -433,10 +436,20 @@
 
       document.body.appendChild(pp);
 
-            App.bindSwipeBack(pp, function() {
+      App.bindSwipeBack(pp, function() {
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
       });
+
+      if (User._skipAnimation) {
+        pp.classList.add('up-panel-no-anim');
+        pp.classList.add('up-panel-in');
+        User._skipAnimation = false;
+      } else {
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+          pp.classList.add('up-panel-in');
+        }); });
+      }
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         pp.classList.remove('up-panel-in');
@@ -524,7 +537,7 @@
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
-        saveProfile: function(pp) {
+    saveProfile: function(pp) {
       var card = pp.querySelector('#upCard');
       if (!card) return;
       var editId = card.dataset.editId || '';
