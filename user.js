@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -153,16 +152,13 @@
         }).join('');
       }
 
-            // 🌟 获取背景
       var savedBg = App.LS.get('userPageBg') || '';
       var bgHtml = savedBg ? '<div class="up-custom-bg" style="background-image: url(\'' + App.escAttr(savedBg) + '\');"></div>' : '';
 
-      // 🌟 动态控制底层面板的颜色，有背景图时变透明
-           panel.style.background = '#fff';
+      panel.style.background = '#fff';
 
-      // ★ 这里保留了你的 5 个圆圈均匀分布的设计！
       panel.innerHTML =
-        bgHtml + // 🌟 注入背景层
+        bgHtml + 
         '<div class="up-list-header">' +
           '<div class="up-header-circle up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
           '<div class="up-header-circle up-list-char">此</div>' +
@@ -187,7 +183,6 @@
 
         document.body.appendChild(menu);
 
-        // 🌟 让菜单完美定位在加号下方偏左
         var rect = this.getBoundingClientRect();
         menu.style.top = (rect.bottom + 12) + 'px';
         menu.style.right = '16px'; 
@@ -205,21 +200,19 @@
             if (act === 'adduser') {
               User.renderProfile(null);
             } else if (act === 'bg') {
-              // 🌟 完美复用我们刚才写好的全局图片选择器！
-              App.showImagePicker({
-                title: '设置页面背景',
-                deleteText: '清除背景',
-                callback: function(src) {
-                  if (src) {
-                    App.LS.set('userPageBg', src);
-                    App.showToast('背景已设置');
-                  } else {
-                    App.LS.remove('userPageBg');
-                    App.showToast('背景已清除');
+              if(App.showImagePicker) {
+                App.showImagePicker({
+                  title: '设置页面背景',
+                  deleteText: '清除背景',
+                  callback: function(src) {
+                    if (src) { App.LS.set('userPageBg', src); App.showToast('背景已设置'); } 
+                    else { App.LS.remove('userPageBg'); App.showToast('背景已清除'); }
+                    User.renderList(); 
                   }
-                  User.renderList(); // 重新渲染页面
-                }
-              });
+                });
+              } else {
+                App.showToast('图片选择器未加载');
+              }
             }
           });
         });
@@ -228,7 +221,6 @@
     },
 
     _bindListEvents: function(panel) {
-      // ★ 独立的猫爪切换，互不干扰
       panel.querySelectorAll('.p14-paw-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -397,9 +389,10 @@
       pp.id = 'userProfilePanel';
       pp.className = 'up-panel' + sealedClass;
 
+      // 🌟 这里帮你换成了极致干净的折角返回符号
       pp.innerHTML =
         '<div class="profile-header app-header-safe">' +
-         '<div id="upProfileBack" class="up-header-btn"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="#999" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="#999" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+         '<div id="upProfileBack" class="up-header-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
           '<div class="up-header-title">PROFILE</div>' +
           '<div id="upRebuild" class="up-header-rebuild' + (User.sealed ? '' : ' up-hidden') + '" data-edit-id="' + (editId || '') + '">重建</div>' +
         '</div>' +
@@ -435,14 +428,13 @@
 
       document.body.appendChild(pp);
 
-            App.bindSwipeBack(pp, function() {
-        User.saveProfile(pp, true); // true 表示静默，不弹土气的提示
+      App.bindSwipeBack(pp, function() {
+        User.saveProfile(pp, true); 
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-        User.renderList(); // 🌟 实时刷新
+        User.renderList(); 
       });
 
-      // 🌟 点击左上角返回时：执行静默保存，并立刻刷新列表！
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         User.saveProfile(pp, true); 
         pp.classList.remove('up-panel-in');
@@ -451,7 +443,7 @@
         if (!User.list.length) {
           setTimeout(function() { User.close(); }, 100);
         } else {
-          User.renderList(); // 🌟 实时刷新
+          User.renderList(); 
         }
       });
 
@@ -495,10 +487,11 @@
       var editor = document.createElement('div');
       editor.id = 'upExpandEditor';
       editor.className = 'up-expand-panel';
+      // 🌟 这里也帮你统一了折角返回符号
       editor.innerHTML =
         '<div class="expand-header app-header-safe">' +
           '<button id="upExpBack" class="up-expand-header-btn" type="button">' +
-            '<svg viewBox="0 0 24 24" class="up-expand-header-svg"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>' +
+            '<svg viewBox="0 0 24 24" class="up-expand-header-svg"><path d="M15 18l-6-6 6-6"/></svg>' +
           '</button>' +
           '<div class="up-expand-header-title">' + App.esc(title) + '</div>' +
           '<button id="upExpDone" class="up-expand-header-btn" type="button">' +
@@ -530,7 +523,7 @@
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
-        saveProfile: function(pp, isSilent) {
+    saveProfile: function(pp, isSilent) {
       var card = pp.querySelector('#upCard');
       if (!card) return;
       var editId = card.dataset.editId || '';
@@ -553,7 +546,6 @@
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       if (!data.wechatId) data.wechatId = randomWxId();
       
-      // 🌟 防呆设计：就算你什么都不填直接退，哥哥也帮你兜底填个名字，保证不丢数据
       if (!data.realName) data.realName = '未命名'; 
 
       if (editId) {
@@ -562,15 +554,12 @@
       } else {
         data.id = 'user-' + Date.now();
         data.cardHue = DEFAULT_CARD.hue; data.cardSat = DEFAULT_CARD.sat; data.cardLit = DEFAULT_CARD.lit; data.cardRadius = DEFAULT_CARD.radius;
-        
-        // 🌟 核心魔法：从 push 改成 unshift，新建的用户永远在第一名！
         User.list.unshift(data);
         User.save();
       }
 
       pp.classList.add('up-sealed');
 
-      // 更新卡片上的显示文本
       card.querySelectorAll('.up-field-input[data-key]').forEach(function(el) {
         var display = el.parentNode.querySelector('.up-field-display');
         if (display) display.textContent = el.value.trim() || '—';
@@ -589,7 +578,6 @@
       var rebuild = pp.querySelector('#upRebuild');
       if (rebuild) rebuild.classList.remove('up-hidden');
 
-      // 🌟 只有手动点击羽毛笔的时候才弹窗，划走时绝对安静
       if (!isSilent) {
         App.showToast('档案已封存');
       }
@@ -702,4 +690,3 @@
 
   App.register('user', User);
 })();
-
