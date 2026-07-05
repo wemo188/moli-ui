@@ -455,10 +455,16 @@
         });
       });
 
-      popup.querySelectorAll('.cl-cc').forEach(function(el) {
+            popup.querySelectorAll('.cl-cc').forEach(function(el) {
         el.addEventListener('click', function(e) {
-          e.stopPropagation(); if (!App.openColorPicker) return;
-          App.openColorPicker(el.dataset.value, function(hex) { el.dataset.value = hex; el.style.background = hex; readAndApply(); }, function(hex) { el.dataset.value = hex; el.style.background = hex; previewOnly(); });
+          e.stopPropagation(); 
+          if (!App.openColorPicker) return;
+          App.openColorPicker(
+            el.dataset.value, 
+            function(hex) { el.dataset.value = hex; el.style.background = hex; readAndApply(); }, 
+            function(hex) { el.dataset.value = hex; el.style.background = hex; previewOnly(); },
+            'char_color_' + el.dataset.key // 🌟 核心魔法：补上独一无二的身份证号！
+          );
         });
       });
 
