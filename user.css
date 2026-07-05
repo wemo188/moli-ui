@@ -929,16 +929,20 @@
   right: 0;
   height: 40%;
   background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
-  border-radius: 50px 50px 0 0;
+  border-top-left-radius: inherit;  /* 🌟 核心魔法：跟随机身变化 */
+  border-top-right-radius: inherit; /* 🌟 核心魔法：跟随机身变化 */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
   z-index: 1;
   pointer-events: none;
 }
 
+/* 🌟 修复后的背景图层：完全继承机身圆角 */
 .p14-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  border-radius: 50px;
+  border-radius: inherit; /* 🌟 核心魔法：不再写死 50px，完全跟随外壳 */
   overflow: hidden;
 }
 
