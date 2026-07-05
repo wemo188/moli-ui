@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -153,7 +152,7 @@
         }).join('');
       }
 
-                  // 🌟 获取背景
+            // 🌟 获取背景
       var savedBg = App.LS.get('userPageBg') || '';
       var bgHtml = savedBg ? '<div class="up-custom-bg" style="background-image: url(\'' + App.escAttr(savedBg) + '\');"></div>' : '';
 
@@ -174,7 +173,6 @@
         '<div class="p14-list-wrap">' + cardsHtml + '</div>';
   
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
-            // 🌟 右上角加号的弹出菜单逻辑
       panel.querySelector('#upListAdd').addEventListener('click', function(e) { 
         e.stopPropagation();
         var old = document.querySelector('.up-mgr-menu');
@@ -436,29 +434,23 @@
 
       document.body.appendChild(pp);
 
-      App.bindSwipeBack(pp, function() {
+            App.bindSwipeBack(pp, function() {
+        User.saveProfile(pp, true); // true 表示静默，不弹土气的提示
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+        User.renderList(); // 🌟 实时刷新
       });
 
-      if (User._skipAnimation) {
-        pp.classList.add('up-panel-no-anim');
-        pp.classList.add('up-panel-in');
-        User._skipAnimation = false;
-      } else {
-        requestAnimationFrame(function() { requestAnimationFrame(function() {
-          pp.classList.add('up-panel-in');
-        }); });
-      }
-
+      // 🌟 点击左上角返回时：执行静默保存，并立刻刷新列表！
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
+        User.saveProfile(pp, true); 
         pp.classList.remove('up-panel-in');
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
         if (!User.list.length) {
           setTimeout(function() { User.close(); }, 100);
         } else {
-          User.renderList();
+          User.renderList(); // 🌟 实时刷新
         }
       });
 
@@ -537,7 +529,7 @@
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
-    saveProfile: function(pp) {
+        saveProfile: function(pp, isSilent) {
       var card = pp.querySelector('#upCard');
       if (!card) return;
       var editId = card.dataset.editId || '';
@@ -559,7 +551,9 @@
 
       if (!data.phone) data.phone = '1' + Math.floor(100000000 + Math.random() * 900000000);
       if (!data.wechatId) data.wechatId = randomWxId();
-      if (!data.realName) { App.showToast('请输入姓名'); return; }
+      
+      // 🌟 防呆设计：就算你什么都不填直接退，哥哥也帮你兜底填个名字，保证不丢数据
+      if (!data.realName) data.realName = '未命名'; 
 
       if (editId) {
         var existing = User.getById(editId);
@@ -567,18 +561,18 @@
       } else {
         data.id = 'user-' + Date.now();
         data.cardHue = DEFAULT_CARD.hue; data.cardSat = DEFAULT_CARD.sat; data.cardLit = DEFAULT_CARD.lit; data.cardRadius = DEFAULT_CARD.radius;
-        User.list.push(data);
+        
+        // 🌟 核心魔法：从 push 改成 unshift，新建的用户永远在第一名！
+        User.list.unshift(data);
         User.save();
       }
 
       pp.classList.add('up-sealed');
 
+      // 更新卡片上的显示文本
       card.querySelectorAll('.up-field-input[data-key]').forEach(function(el) {
         var display = el.parentNode.querySelector('.up-field-display');
-        if (display) {
-          var val = el.value.trim();
-          display.textContent = val || '—';
-        }
+        if (display) display.textContent = el.value.trim() || '—';
       });
       card.querySelectorAll('.up-field-textarea[data-key]').forEach(function(el) {
         var display = el.parentNode.querySelector('.up-field-display');
@@ -594,7 +588,10 @@
       var rebuild = pp.querySelector('#upRebuild');
       if (rebuild) rebuild.classList.remove('up-hidden');
 
-      App.showToast('档案已封存');
+      // 🌟 只有手动点击羽毛笔的时候才弹窗，划走时绝对安静
+      if (!isSilent) {
+        App.showToast('档案已封存');
+      }
     },
 
     showImgMenu: function(uid, field, callback) {
