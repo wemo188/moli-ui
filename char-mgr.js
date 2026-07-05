@@ -8,6 +8,30 @@
   var STK_STYLES = ['可爱卡通','写实','像素风','手绘','表情包梗图'];
   var PRO_LEVEL_NAMES = ['佛系','偶尔','适中','频繁','粘人'];
   var STK_FREQ_NAMES = ['极少','偶尔','适中','经常','频繁'];
+  var BOOK_SVG = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var UNIFIED_BACK = '<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5" fill="none"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var MODE_LABELS = ['样式一', '样式二', '样式三'];
+  var MODES = ['', 'mode-frost', 'mode-mono'];
+
+  var MODE_CFG = [
+    {
+      defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
+      controls: [
+        { key: 'border', label: '框', cssVar: '--card-border-c' },
+        { key: 'accent', label: '中', cssVar: '--card-accent' },
+        { key: 'bg',     label: '底', cssVar: '--card-bg' },
+        { key: 'left',   label: '左', cssVar: '--card-left' }
+      ]
+    },
+    {
+      defaults: { accent: '#9ca3af', line: 2, outer: 2 },
+      controls: [{ key: 'accent', label: '中', cssVar: '--card-accent' }]
+    },
+    {
+      defaults: { border: '#1a1a1a', line: 1.5, outer: 1.5 },
+      controls: [{ key: 'border', label: '线', cssVar: '--card-border-c' }]
+    }
+  ];
 
   var DEFAULTS = {
     mainLang: '简体中文', bilingual: false, biLang: 'English', biStyle: 'bracket',
@@ -19,7 +43,7 @@
     stickerGen: false, stickerStyles: ['可爱卡通'], stickerFreq: 2,
     moments: false, momentsMax: 2, momentsTypes: ['纯文字','图文'], momentsImg: 'AI 生成',
     timeWeather: true, charCity: '', charRealCity: '',
-    imgApiUrl: '', imgApiKey: '', imgModel: 'gpt-image-1',
+    imgApiSelect: '', imgApiUrl: '', imgApiKey: '', imgModel: 'gpt-image-1',
     apiMode: 'global', apiSelect: '', temperature: 0.8, freqPenalty: 0.3, presPenalty: 0.3
   };
 
@@ -37,36 +61,34 @@
       if (CharMgr.charConfigs && CharMgr.charConfigs[charId]) return CharMgr.charConfigs[charId];
       return JSON.parse(JSON.stringify(DEFAULTS));
     },
-    hasCustom: function(charId) { return !!CharMgr.charConfigs[charId]; },
-    get globalConfig() { return JSON.parse(JSON.stringify(DEFAULTS)); },
 
     open: function(charId) {
-  if (App.character) App.character.load();
-  CharMgr.load();
-  CharMgr.editingCharId = charId || null;
-  CharMgr.tempAvatar = '';
+      if (App.character) App.character.load();
+      CharMgr.load();
+      CharMgr.editingCharId = charId || null;
+      CharMgr.tempAvatar = '';
 
-  var existing = null;
-  if (charId && App.character) existing = App.character.getById(charId);
-  if (existing) CharMgr.tempAvatar = existing.avatar || '';
-  
+      var existing = null;
+      if (charId && App.character) existing = App.character.getById(charId);
+      if (existing) CharMgr.tempAvatar = existing.avatar || '';
+      
       var old = App.$('#charMgrPage');
       if (old) old.remove();
 
       var page = document.createElement('div');
       page.id = 'charMgrPage';
-      page.className = 'cm-main-panel'; // 🌟 换成干净的类名
+      page.className = 'cm-main-panel';
       document.body.appendChild(page);
       CharMgr._pageEl = page;
 
       CharMgr.render(page, existing);
 
-        requestAnimationFrame(function() { requestAnimationFrame(function() {
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
         page.style.transform = 'translateX(0)';
         page.style.opacity = '1';
       }); });
 
-            // 🌟 滑动返回时，执行静默保存
+      // 🌟 滑动返回时静默保存
       App.bindSwipeBack(page, function() { CharMgr.doSave(page, true); });
     },
 
@@ -90,7 +112,7 @@
       var sv = function(key, val) { return cfg[key] === val ? ' selected' : ''; };
 
       CharMgr.tempAvatar = e.avatar || '';
-var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
+      var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
 
       var proManual = cfg.proMode !== 'auto';
       var isAllDay = cfg.proActiveStart === '00:00' && cfg.proActiveEnd === '23:59';
@@ -119,59 +141,60 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       });
 
       page.innerHTML =
-               '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-                '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
+          // 🌟 统一使用无尾折角返回
+          '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (isNew ? '添加角色' : '编辑角色') + '</span>' +
           '<div style="width:36px;"></div>' +
         '</div>' +
         '<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;">' +
 
           // ========== 基础信息 ==========
-'<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
-  '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
-    '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
-    '<div style="flex:1;">' +
-      '<div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div>' +
-    '</div>' +
-  '</div>' +
-  '<div class="cm-field-grid">' +
-    '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
-    '<div class="cm-field"><div class="cm-field-label">年龄 AGE</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
-    '<div class="cm-field"><div class="cm-field-label">生日 BIRTHDAY</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
-    '<div class="cm-field"><div class="cm-field-label">对你的称呼 CALL</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
-  '</div>' +
-  '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系 RELATION</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
-  '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
-  '<div class="cm-field-grid">' +
-    '<div class="cm-field"><div class="cm-field-label">手机号 PHONE</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + v('charPhone') + '"></div>' +
-    '<div class="cm-field"><div class="cm-field-label">微信号 WECHAT</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + v('charWechat') + '"></div>' +
-  '</div>' +
-  '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
-  '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录 CONTACT</div>' +
-  '<div class="cm-radio-row">' +
-    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC1" value="direct"' + rc('direct') + '><label class="cm-radio-label" for="cmC1">直接添加</label></div>' +
-    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待对方来加</label></div>' +
-    '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">由你主动添加</label></div>' +
-  '</div>' +
-  '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
-'</div></div><div class="cm-comic-bar-bot"></div></div>' +
+          '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-body" style="padding-top:16px;">' +
+            '<div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;">' +
+              '<div class="cc-avatar-box" id="cmAvatarBox">' + av + '</div>' +
+              '<div style="flex:1;">' +
+                '<div class="cm-field"><div class="cm-field-label">角色名</div><input type="text" class="cm-field-input" id="cmNameInput" placeholder="输入角色名..." value="' + v('name') + '"></div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="cm-field-grid">' +
+              '<div class="cm-field"><div class="cm-field-label">性别 GENDER</div><input type="text" class="cm-field-input" data-key="gender" value="' + v('gender') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">年龄 AGE</div><input type="text" class="cm-field-input" data-key="age" value="' + v('age') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">生日 BIRTHDAY</div><input type="text" class="cm-field-input" data-key="birthday" value="' + v('birthday') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">对你的称呼 CALL</div><input type="text" class="cm-field-input" data-key="callName" value="' + v('callName') + '"></div>' +
+            '</div>' +
+            '<div class="cm-field" style="margin-top:8px"><div class="cm-field-label">与你的关系 RELATION</div><input type="text" class="cm-field-input" data-key="relation" value="' + v('relation') + '"></div>' +
+            '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
+            '<div class="cm-field-grid">' +
+              '<div class="cm-field"><div class="cm-field-label">手机号 PHONE</div><input type="text" class="cm-field-input" data-key="charPhone" placeholder="留空随机生成" value="' + v('charPhone') + '"></div>' +
+              '<div class="cm-field"><div class="cm-field-label">微信号 WECHAT</div><input type="text" class="cm-field-input" data-key="charWechat" placeholder="留空随机生成" value="' + v('charWechat') + '"></div>' +
+            '</div>' +
+            '<div class="cm-sep" style="margin:14px 0 10px;"></div>' +
+            '<div class="cm-field-label" style="margin-bottom:6px">微信通讯录 CONTACT</div>' +
+            '<div class="cm-radio-row">' +
+              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC1" value="direct"' + rc('direct') + '><label class="cm-radio-label" for="cmC1">直接添加</label></div>' +
+              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC2" value="wait"' + rc('wait') + '><label class="cm-radio-label" for="cmC2">等待对方来加</label></div>' +
+              '<div class="cm-radio-item"><input type="radio" name="cmContact" id="cmC3" value="manual"' + rc('manual') + '><label class="cm-radio-label" for="cmC3">由你主动添加</label></div>' +
+            '</div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">「直接添加」会立即出现在微信通讯录和聊天列表中；「等待对方来加」则由角色在合适的时机主动发起好友请求；「由你主动添加角色」需要你在微信中手动搜索添加。</div></div>' +
+          '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
           // ========== 角色档案 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-blue">角色档案</div></div><div class="cm-section-body">' +
             '<div class="cm-ta-wrap"><button class="cm-expand-btn" data-field="profile" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmProfile" placeholder="角色性格、背景、习惯...">' + v('profile') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 示例对话（黑色标题） ==========
+          // ========== 示例对话 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">示例对话</div></div><div class="cm-section-body">' +
             '<div class="cm-ta-wrap cm-ta-dialogue"><button class="cm-expand-btn" data-field="dialogExamples" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmDialog" placeholder="示例对话...">' + v('dialogExamples') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 后置指令（蓝色标题） ==========
+          // ========== 后置指令 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-blue">后置指令</div></div><div class="cm-section-body">' +
             '<div class="cm-ta-wrap"><button class="cm-expand-btn" data-field="postInstruction" type="button"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><textarea class="cm-textarea" id="cmPost" placeholder="每轮必须遵守的指令...">' + v('postInstruction') + '</textarea></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-          // ========== 语言与语音（删掉了备用TTS） ==========
+          // ========== 语言与语音 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-green">语言与语音</div></div><div class="cm-section-body">' +
             '<div class="cm-field" style="margin-bottom:12px"><div class="cm-field-label">主要语言</div><select class="cm-select" id="cmMainLang"><option' + sv('mainLang','简体中文') + '>简体中文</option><option' + sv('mainLang','繁體中文') + '>繁體中文</option><option' + sv('mainLang','粤语') + '>粤语</option><option' + sv('mainLang','English') + '>English</option><option' + sv('mainLang','日本語') + '>日本語</option><option' + sv('mainLang','한국어') + '>한국어</option></select></div>' +
             '<div class="cm-sep"></div>' +
@@ -223,25 +246,17 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
             '<div class="cm-field"><div class="cm-field-label">「对方正在输入」</div><select class="cm-select" id="cmShowTyping"><option' + (cfg.showTyping?' selected':'') + '>显示</option><option' + (!cfg.showTyping?' selected':'') + '>不显示</option></select></div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
 
-                    // ========== 社交功能 ==========
+          // ========== 社交功能 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title cm-purple">社交功能</div></div><div class="cm-section-body">' +
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
             '<div class="cm-sep"></div>' +
-                       '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
-              '<div class="cm-sep"></div>' +
-              '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
-              '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API 地址</div><input type="text" class="cm-field-input" id="cmImgApiUrl" placeholder="https://api.openai.com/v1" value="' + App.escAttr(cfg.imgApiUrl||'') + '"></div>' +
-              '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">API Key</div><input type="text" class="cm-field-input" id="cmImgApiKey" value="' + App.escAttr(cfg.imgApiKey||'') + '"></div>' +
-              '<div class="cm-field"><div class="cm-field-label">模型</div><div class="cm-model-row"><input type="text" class="cm-field-input cm-model-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '"><button type="button" id="cmImgFetchModels" class="cm-model-btn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList"></div></div>' +
-              '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">表情包生成需要支持图片生成的模型（如 gpt-image-1、dall-e-3 等）。普通文字模型无法生成图片。留空则表情包以文字标记显示。</div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
-
-            // 这里继续接上朋友圈
             '<div class="cm-sw-row" style="border-bottom:none"><div class="cm-sw-left"><span class="cm-sw-name">朋友圈生成</span><span class="cm-sw-desc">角色自动发朋友圈动态</span></div><label class="cm-sw"><input type="checkbox" id="cmMomToggle"' + ck('moments') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.moments ? ' cm-open' : '') + '" id="cmMomSub">' +
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">每日最多发布</div><div style="display:flex;align-items:center;gap:6px;margin-top:4px"><input type="number" class="cm-field-input" id="cmMomMax" value="' + cfg.momentsMax + '" min="0" max="10" style="width:60px;text-align:center;"><span style="font-size:10px;color:#888">条/天</span></div></div></div>' +
@@ -262,6 +277,18 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
 
           // ========== 高级设定 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">高级设定</div><div class="cm-section-badge">ADVANCED</div></div><div class="cm-section-body">' +
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
+            // 🌟 极简下拉框，直接读取存储的 API 列表
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">选择已配置的 API</div><select class="cm-select" id="cmImgApiSelect">' + 
+              '<option value="">跟随全局对话 API</option>' + 
+              (App.LS.get('apiConfigs') || []).map(function(a) {
+                var sel = cfg.imgApiSelect === a.name ? ' selected' : '';
+                return '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + '</option>';
+              }).join('') + 
+            '</select></div>' +
+            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div>' +
+            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
+            '<div class="cm-sep"></div>' +
             '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度。</div></div>' +
             '<div id="cmAdvancedSub" style="' + (isIndividual ? '' : 'display:none;') + '">' +
@@ -275,14 +302,13 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
 
           // ========== 保存 ==========
           '<div class="cm-save-row"><button class="cm-save-btn" id="cmSaveBtn" type="button">保 存</button></div>' +
-
         '</div>';
 
       CharMgr.bindEvents(page);
     },
 
     bindEvents: function(page) {
-      // 🌟 点击左上角返回时，执行静默保存
+      // 🌟 左上角点击返回，执行静默保存
       page.querySelector('#cmBackBtn').addEventListener('click', function() { CharMgr.doSave(page, true); });
 
       // 头像
@@ -329,16 +355,24 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       bindRange('cmFreq', 'cmFreqVal', function(v) { return v; });
       bindRange('cmPres', 'cmPresVal', function(v) { return v; });
 
-      // 图片模型获取
+      // 图片模型获取 (智能匹配选中API的密钥)
       var imgFetchBtn = page.querySelector('#cmImgFetchModels');
       if (imgFetchBtn) {
         imgFetchBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var url = (page.querySelector('#cmImgApiUrl') || {}).value || '';
-          var key = (page.querySelector('#cmImgApiKey') || {}).value || '';
+          
+          var selectedApiName = (page.querySelector('#cmImgApiSelect') || {}).value || '';
+          var url = '', key = '';
+          
+          if (selectedApiName) {
+            var apiList = App.LS.get('apiConfigs') || [];
+            var matchApi = apiList.find(function(a) { return a.name === selectedApiName; });
+            if (matchApi) { url = matchApi.url; key = matchApi.key; }
+          }
+          
           if (!url) { var gApi = App.api ? App.api.getActiveConfig() : null; if (gApi) { url = gApi.url; if (!key) key = gApi.key; } }
           if (!key) { var gApi2 = App.api ? App.api.getActiveConfig() : null; if (gApi2) key = gApi2.key; }
-          if (!url || !key) { App.showToast('请先填写图片API地址和Key，或配置全局API'); return; }
+          if (!url || !key) { App.showToast('请先配置图片API或全局API'); return; }
           App.showToast('获取模型列表...');
           fetch(url.replace(/\/+$/, '') + '/models', { headers: { 'Authorization': 'Bearer ' + key } })
             .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -348,10 +382,10 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
               if (!models.length) { App.showToast('未找到模型'); return; }
               var list = page.querySelector('#cmImgModelList'); if (!list) return;
               var currentVal = (page.querySelector('#cmImgModel') || {}).value || '';
-              var searchHtml = '<input type="text" id="cmImgModelSearch" class="cm-model-search" placeholder="搜索模型...">';
+              var searchHtml = '<input type="text" id="cmImgModelSearch" placeholder="搜索模型..." style="width:calc(100% - 16px);margin:6px 8px;padding:6px 10px;border:1px solid #eee;border-radius:6px;font-size:12px;outline:none;font-family:inherit;color:#333;box-sizing:border-box;">';
               var itemsHtml = models.map(function(m) {
-                var selClass = m === currentVal ? ' is-active' : '';
-                return '<div class="cm-img-model-item' + selClass + '" data-model="' + App.escAttr(m) + '">' + App.esc(m) + '</div>';
+                var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : '';
+                return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>';
               }).join('');
               list.innerHTML = searchHtml + '<div id="cmImgModelResults">' + itemsHtml + '</div>';
               list.style.display = 'block';
@@ -362,19 +396,12 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
               }
               bindClicks();
               var searchInput = list.querySelector('#cmImgModelSearch');
-                            if (searchInput) {
+              if (searchInput) {
                 searchInput.addEventListener('input', function() {
                   var kw = this.value.trim().toLowerCase();
                   var filtered = kw ? models.filter(function(m) { return m.toLowerCase().indexOf(kw) >= 0; }) : models;
                   var results = list.querySelector('#cmImgModelResults');
-                  if (results) { 
-                    // 🌟 这里就是哥哥刚才没说清楚的地方，换成纯净的类名
-                    results.innerHTML = filtered.map(function(m) { 
-                      var selClass = m === currentVal ? ' is-active' : ''; 
-                      return '<div class="cm-img-model-item' + selClass + '" data-model="' + App.escAttr(m) + '">' + App.esc(m) + '</div>'; 
-                    }).join(''); 
-                    bindClicks(); 
-                  }
+                  if (results) { results.innerHTML = filtered.map(function(m) { var sel = m === currentVal ? 'background:rgba(126,163,201,.12);font-weight:700;' : ''; return '<div class="cm-img-model-item" data-model="' + App.escAttr(m) + '" style="padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:1px solid #f5f5f5;' + sel + '-webkit-tap-highlight-color:transparent;">' + App.esc(m) + '</div>'; }).join(''); bindClicks(); }
                 });
                 searchInput.addEventListener('click', function(e) { e.stopPropagation(); });
               }
@@ -385,36 +412,24 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
 
       // 展开按钮
       page.querySelectorAll('.cm-expand-btn').forEach(function(btn) {
-  btn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    var f = btn.dataset.field;
-    var map = { profile: '#cmProfile', dialogExamples: '#cmDialog', postInstruction: '#cmPost' };
-    var names = { profile: '角色档案', dialogExamples: '示例对话', postInstruction: '后置指令' };
-    var ta = page.querySelector(map[f]);
-    if (ta) CharMgr.openExpand(ta, f === 'dialogExamples');
-  });
-});
-
-      // 🌟 点击空白处，自动收起模型列表
-      page.addEventListener('click', function(e) {
-        var list = page.querySelector('#cmImgModelList');
-        var btn = page.querySelector('#cmImgFetchModels');
-        if (list && list.style.display === 'block') {
-          if (!list.contains(e.target) && (!btn || !btn.contains(e.target))) {
-            list.style.display = 'none';
-          }
-        }
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var f = btn.dataset.field;
+          var map = { profile: '#cmProfile', dialogExamples: '#cmDialog', postInstruction: '#cmPost' };
+          var ta = page.querySelector(map[f]);
+          if (ta) CharMgr.openExpand(ta, f === 'dialogExamples');
+        });
       });
 
-      // 保存
-      page.querySelector('#cmSaveBtn').addEventListener('click', function() { CharMgr.doSave(page); });
+      // 🌟 底部保存按钮，点击时才弹窗提示
+      page.querySelector('#cmSaveBtn').addEventListener('click', function() { CharMgr.doSave(page, false); });
     },
 
-        doSave: function(page, isSilent) {
+    doSave: function(page, isSilent) {
       var name = (page.querySelector('#cmNameInput') || {}).value || '';
       name = name.trim();
       
-      // 🌟 如果退出时名字是空的，自动给个名字，防止无法退出
+      // 🌟 无感保存兜底：如果没有名字，自动赋默认值，防止卡死
       if (!name) name = '未命名'; 
       if (!App.character) return;
 
@@ -447,6 +462,15 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       var momTypes = []; page.querySelectorAll('#cmMomTypes input:checked').forEach(function(cb) { momTypes.push(cb.dataset.mtype); });
       var stkStyles = []; page.querySelectorAll('#cmStkStyles input:checked').forEach(function(cb) { stkStyles.push(cb.dataset.sty); });
 
+      // 🌟 提取已选图片 API 的真实 URL 和 Key
+      var imgApiSel = gv('cmImgApiSelect') || '';
+      var imgUrl = '', imgKey = '';
+      if (imgApiSel) {
+        var apiList = App.LS.get('apiConfigs') || [];
+        var matchApi = apiList.find(function(a) { return a.name === imgApiSel; });
+        if (matchApi) { imgUrl = matchApi.url; imgKey = matchApi.key; }
+      }
+
       var cfgObj = {
         mainLang: gv('cmMainLang') || '简体中文',
         bilingual: gc('cmBiToggle'), biLang: gv('cmBiLang') || 'English',
@@ -465,10 +489,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         moments: gc('cmMomToggle'), momentsMax: parseInt(gv('cmMomMax') || 2),
         momentsTypes: momTypes, momentsImg: gv('cmMomImg') || 'AI 生成',
         timeWeather: gc('cmTwToggle'), charCity: gv('cmCharCity'), charRealCity: gv('cmCharRealCity'),
-                // 🌟 表情包关闭时，图片API配置清空，确保AI不会误调用生图模型
-        imgApiUrl: gc('cmStkToggle') ? gv('cmImgApiUrl') : '',
-        imgApiKey: gc('cmStkToggle') ? gv('cmImgApiKey') : '',
-        imgModel: gc('cmStkToggle') ? (gv('cmImgModel') || 'gpt-image-1') : '',
+        imgApiSelect: imgApiSel, imgApiUrl: imgUrl, imgApiKey: imgKey, imgModel: gv('cmImgModel') || 'gpt-image-1',
         apiMode: gv('cmApiMode') || 'global', apiSelect: gv('cmApiSelect') || '',
         temperature: parseFloat(gv('cmTemp') || 0.8), freqPenalty: parseFloat(gv('cmFreq') || 0.3),
         presPenalty: parseFloat(gv('cmPres') || 0.3)
@@ -490,7 +511,7 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
         charObj.cover = charObj.avatar; 
         charObj.worldbookMounted = false;
         charObj.modeColors = [{}, {}, {}];
-        App.character.list.unshift(charObj); // 🌟 换成 unshift，新角色就会永远在第一个！
+        App.character.list.unshift(charObj); // 🌟 使用 unshift 插到最前面
         App.character.save();
         CharMgr.editingCharId = charObj.id;
       }
@@ -501,21 +522,26 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       CharMgr.close();
       if (App.character) App.character.renderList();
       
+      // 🌟 只有非静默状态下才弹出提示
       if (!isSilent) {
         App.showToast('角色已保存');
       }
     },
 
-      _showAvatarMenu: function(box) {
-      App.showImagePicker({
-        title: '设置角色头像',
-        deleteText: '删除头像',
-        callback: function(src) {
-          CharMgr.tempAvatar = src;
-          box.innerHTML = src ? '<img src="' + App.escAttr(src) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
-          App.showToast(src ? '头像已设置' : '头像已删除');
-        }
-      });
+    _showAvatarMenu: function(box) {
+      if (App.showImagePicker) {
+        App.showImagePicker({
+          title: '设置角色头像',
+          deleteText: '删除头像',
+          callback: function(src) {
+            CharMgr.tempAvatar = src;
+            box.innerHTML = src ? '<img src="' + App.escAttr(src) + '">' : '<span class="cc-avatar-empty">PHOTO</span>';
+            App.showToast(src ? '头像已设置' : '头像已删除');
+          }
+        });
+      } else {
+        App.showToast('图片选择器未加载');
+      }
     },
     
     openExpand: function(textarea, isDialogue) {
@@ -523,13 +549,12 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       var ed = document.createElement('div'); 
       CharMgr._expandEl = ed;
       
-      // 🌟 只留一个干净的类名，样式全交出去
       ed.className = 'cc-expand-panel';
       
       ed.innerHTML =
         '<div class="cc-expand-header">' +
-          /* 🌟 换回了你想要的带尾巴的箭头 */
-          '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>' +
+          // 🌟 无尾巴的折角返回
+          '<button class="cc-top-btn" id="cmExpBack" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>' +
           '<div class="cc-expand-title-tag' + (isDialogue ? '' : ' blue') + '">' + (isDialogue ? '示例对话' : '编辑内容') + '</div>' +
           '<button class="cc-top-btn" id="cmExpDone" type="button"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>' +
         '</div>' +
@@ -547,37 +572,34 @@ var av = CharMgr.tempAvatar ? '<img src="' + App.escAttr(CharMgr.tempAvatar) + '
       
       document.body.appendChild(ed);
 
-      // 🌟 动画升起 (Slide Up)
+      // 动画升起
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         ed.classList.add('cc-expand-panel-in');
       }); });
 
       var ta = ed.querySelector('#cmExpTA'); 
       if (ta) ta.focus();
-      
-      var initialValue = textarea.value; 
 
-      // 强制关闭 (分点击下降和滑动消失)
       function forceClose(isSwipe) {
         if (isSwipe) {
           if (ed.parentNode) ed.remove(); CharMgr._expandEl = null;
         } else {
           ed.classList.remove('cc-expand-panel-in');
-          ed.classList.add('cc-expand-panel-out-down'); // 🌟 点击时，向下降落
+          ed.classList.add('cc-expand-panel-out-down'); 
           setTimeout(function() { if (ed.parentNode) ed.remove(); CharMgr._expandEl = null; }, 350);
         }
       }
 
-            function saveAndClose(isSwipe) {
+      function saveAndClose(isSwipe) {
         textarea.value = ed.querySelector('#cmExpTA').value;
         forceClose(isSwipe);
       }
 
-      // 🌟 无论是点击返回、完成，还是滑动返回，全部一键保存！
+      // 🌟 无论怎么退，直接静默保存关闭，没有任何弹窗
       ed.querySelector('#cmExpBack').addEventListener('click', function() { saveAndClose(false); });
       ed.querySelector('#cmExpDone').addEventListener('click', function() { saveAndClose(false); });
       App.bindSwipeBack(ed, function() { saveAndClose(true); });
-    }, // openExpand 结束
+    },
 
     init: function() {
       CharMgr.load();
