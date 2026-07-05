@@ -153,8 +153,16 @@
         }).join('');
       }
 
-      // ★ 这里改成了 5 个圆圈均匀分布的设计！
+            // 🌟 获取背景
+      var savedBg = App.LS.get('userPageBg') || '';
+      var bgHtml = savedBg ? '<div class="up-custom-bg" style="background-image: url(\'' + App.escAttr(savedBg) + '\');"></div>' : '';
+
+      // 🌟 动态控制底层面板的颜色，有背景图时变透明
+      panel.style.background = savedBg ? 'transparent' : '#fff';
+
+      // ★ 这里保留了你的 5 个圆圈均匀分布的设计！
       panel.innerHTML =
+        bgHtml + // 🌟 注入背景层
         '<div class="up-list-header">' +
           '<div class="up-header-circle up-list-back" id="upListBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
           '<div class="up-header-circle up-list-char">此</div>' +
@@ -166,7 +174,56 @@
         '<div class="p14-list-wrap">' + cardsHtml + '</div>';
   
       panel.querySelector('#upListBack').addEventListener('click', function() { User.close(); });
-      panel.querySelector('#upListAdd').addEventListener('click', function() { User.renderProfile(null); });
+      panel.querySelector('#upListAdd').addEventListener('click', function(e) { 
+        e.stopPropagation();
+        var old = document.querySelector('.up-mgr-menu');
+        if (old) { old.remove(); return; }
+
+        var menu = document.createElement('div');
+        menu.className = 'up-mgr-menu';
+        menu.innerHTML =
+          '<div class="up-mgr-item" data-act="adduser">添加用户</div>' +
+          '<div class="up-mgr-item" data-act="bg">页面背景</div>';
+
+        document.body.appendChild(menu);
+
+        // 🌟 让菜单完美定位在加号下方偏左
+        var rect = this.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 12) + 'px';
+        menu.style.right = '16px'; 
+
+        function closeMenu() { if (menu.parentNode) menu.remove(); document.removeEventListener('click', closeMenu); }
+        setTimeout(function() { document.addEventListener('click', closeMenu); }, 10);
+
+        menu.querySelectorAll('.up-mgr-item').forEach(function(item) {
+          item.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            menu.remove();
+            document.removeEventListener('click', closeMenu);
+            var act = item.dataset.act;
+            
+            if (act === 'adduser') {
+              User.renderProfile(null);
+            } else if (act === 'bg') {
+              // 🌟 完美复用我们刚才写好的全局图片选择器！
+              App.showImagePicker({
+                title: '设置页面背景',
+                deleteText: '清除背景',
+                callback: function(src) {
+                  if (src) {
+                    App.LS.set('userPageBg', src);
+                    App.showToast('背景已设置');
+                  } else {
+                    App.LS.remove('userPageBg');
+                    App.showToast('背景已清除');
+                  }
+                  User.renderList(); // 重新渲染页面
+                }
+              });
+            }
+          });
+        });
+      });
       User._bindListEvents(panel);
     },
 
