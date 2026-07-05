@@ -428,6 +428,16 @@
         '</div>';
 
       document.body.appendChild(pp);
+      
+            if (User._skipAnimation) {
+        pp.classList.add('up-panel-no-anim');
+        pp.classList.add('up-panel-in');
+        User._skipAnimation = false;
+      } else {
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+          pp.classList.add('up-panel-in');
+        }); });
+      }
 
             App.bindSwipeBack(pp, function() {
         User.saveProfile(pp, true); 
