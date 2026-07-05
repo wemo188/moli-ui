@@ -251,9 +251,19 @@
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
             '<div class="cm-sep"></div>' +
-            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
+            <div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
-              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
+              // 🌟 API 下拉框和拉取模型搬家到了这里！
+              '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">绘图 API</div><select class="cm-select" id="cmImgApiSelect">' + 
+                '<option value="">跟随全局对话 API</option>' + 
+                (App.LS.get('apiConfigs') || []).map(function(a) {
+                  var sel = cfg.imgApiSelect === a.name ? ' selected' : '';
+                  return '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + '</option>';
+                }).join('') + 
+              '</select></div></div>' +
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">绘图模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" title="拉取模型"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div></div>' +
+              // 原来的风格和频率
+              '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
             '</div>' +
             '<div class="cm-sep"></div>' +
@@ -277,19 +287,7 @@
 
           // ========== 高级设定 ==========
           '<div class="cm-comic"><div class="cm-comic-bar"></div><div class="cm-section"><div class="cm-section-head"><div class="cm-section-title">高级设定</div><div class="cm-section-badge">ADVANCED</div></div><div class="cm-section-body">' +
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">图片生成 API <span class="cm-opt">(表情包/图片消息)</span></div></div>' +
-            // 🌟 极简下拉框，直接读取存储的 API 列表
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">选择已配置的 API</div><select class="cm-select" id="cmImgApiSelect">' + 
-              '<option value="">跟随全局对话 API</option>' + 
-              (App.LS.get('apiConfigs') || []).map(function(a) {
-                var sel = cfg.imgApiSelect === a.name ? ' selected' : '';
-                return '<option value="' + App.escAttr(a.name) + '"' + sel + '>' + App.esc(a.name) + '</option>';
-              }).join('') + 
-            '</select></div>' +
-            '<div class="cm-field" style="margin-bottom:8px"><div class="cm-field-label">模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div>' +
-            '<div class="cm-tip"><div class="cm-tip-icon">i</div><div class="cm-tip-text">用于生成表情包和图片消息。仅支持 OpenAI 图片接口。留空则表情包以文字标记显示。</div></div>' +
-            '<div class="cm-sep"></div>' +
-            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
+            '<div class="cm-field" style="margin-bottom:6px"><div class="cm-field-label">对话 API 配置</div><select class="cm-select" id="cmApiMode"><option value="global"' + (cfg.apiMode==='global'?' selected':'') + '>使用全局 API</option><option value="individual"' + (isIndividual?' selected':'') + '>为该角色单独配置</option></select></div>' +
             '<div class="cm-tip"><div class="cm-tip-icon">!</div><div class="cm-tip-text">若为每个角色单独匹配 API，在进行群聊时将会同时消耗多个 API 额度。</div></div>' +
             '<div id="cmAdvancedSub" style="' + (isIndividual ? '' : 'display:none;') + '">' +
               '<div class="cm-field" style="margin-bottom:10px"><div class="cm-field-label">选择已保存的 API</div><select class="cm-select" id="cmApiSelect">' + apiOptionsHtml + '</select></div>' +
@@ -299,7 +297,7 @@
               '<div class="cm-param"><div class="cm-param-title">Presence Penalty</div><div class="cm-param-desc">鼓励新词汇</div><div class="cm-param-slider"><div class="cm-range-wrap"><span class="cm-range-hint">保守</span><input type="range" class="cm-range" id="cmPres" min="0" max="2" step="0.1" value="' + cfg.presPenalty + '"><span class="cm-range-val" id="cmPresVal">' + cfg.presPenalty + '</span><span class="cm-range-hint">创新</span></div></div></div>' +
             '</div>' +
           '</div></div><div class="cm-comic-bar-bot"></div></div>' +
-
+          
           // ========== 保存 ==========
           '<div class="cm-save-row"><button class="cm-save-btn" id="cmSaveBtn" type="button">保 存</button></div>' +
         '</div>';
@@ -364,10 +362,14 @@
           var selectedApiName = (page.querySelector('#cmImgApiSelect') || {}).value || '';
           var url = '', key = '';
           
-          if (selectedApiName) {
+                    if (selectedApiName) {
             var apiList = App.LS.get('apiConfigs') || [];
-            var matchApi = apiList.find(function(a) { return a.name === selectedApiName; });
-            if (matchApi) { url = matchApi.url; key = matchApi.key; }
+            // 🌟 换成最安全的 for 循环，确保 100% 能拉到数据
+            for (var i = 0; i < apiList.length; i++) {
+              if (apiList[i].name === selectedApiName) {
+                url = apiList[i].url; key = apiList[i].key; break;
+              }
+            }
           }
           
           if (!url) { var gApi = App.api ? App.api.getActiveConfig() : null; if (gApi) { url = gApi.url; if (!key) key = gApi.key; } }
