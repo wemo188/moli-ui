@@ -13,8 +13,8 @@
 
 /* 🌟 核心：统一的银白金属底座（应用于返回、加号，以及"此""间""相"三个字） */
 .up-header-circle {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 3342px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,8 +40,8 @@
 
 /* 🌟 复刻你最新设计的图标颜色与粗细 */
 .up-list-back svg, .up-list-add svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   stroke: #7c8693;
   fill: none;
   stroke-width: 2.2;
