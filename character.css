@@ -24,14 +24,18 @@
 /* ============================
    顶部栏
    ============================ */
+/* 3. 顶栏：强行铺满屏幕，吸顶 + 纯白底色 + 向上穿透刘海屏 */
 .cl-topbar-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
-  background: #fff; /* 只有这里是白的！ */
-  height: auto;
-  margin: 0; /* 清除默认外边距 */
+  width: 100%;
+  max-width: none !important; /* 🌟 砸掉原本的 400px 宽度限制，铺满屏幕 */
+  /* 🌟 核心魔法：用负外边距向上怼进刘海屏，再用内边距把按钮挤下来，实现白底穿透 */
+  margin: calc(-1 * env(safe-area-inset-top, 0px)) 0 0 0 !important;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px !important;
+  height: auto !important;
+  background: #fff !important; /* 🌟 整个区域只有这里是实心白底！ */
 }
 
 .cl-esc {
@@ -101,7 +105,7 @@
   height: 2px;
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
   border-radius: 999px;
-  margin: 0 16px 0; /* 贴紧白边 */
+  margin: 0 16px 0 !important; /* 贴紧白边，不留一丝缝隙 */
   box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
@@ -228,7 +232,8 @@
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: 10px 10px 16px;
+  padding: 10px 16px 16px !important;
+  background: transparent !important;
 }
 .cl-cat-nav::-webkit-scrollbar { display: none; }
 
@@ -1019,10 +1024,10 @@
 }
 
 /* ============================
-   极致体验：隐藏滚动条 & 上下羽化消失特效
+   极致体验：隐藏滚动条 & 完美的白底与透明分区
    ============================ */
 
-/* 1. 改变外层布局：页面本身锁死不滚动，把滚动权交给内部 */
+/* 1. 页面本体透明，让自定义背景能透出来 */
 #clPageInner {
   display: flex;
   flex-direction: column;
@@ -1031,11 +1036,14 @@
   background: transparent !important; 
 }
 
-/* 🌟 2. 吸顶容器本身不带背景色，避免糊住分类徽章 */
+/* 2. 吸顶容器本身绝对透明，去掉所有内边距 */
 .cl-sticky-header {
-  flex-shrink: 0;
-  padding: 0; /* 去掉 padding，让内部的白底顶满屏幕 */
+  position: sticky;
+  top: 0;
   z-index: 100;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important; /* 强行剥夺它的白色背景，解放分类徽章 */
 }
 
 /* 3. 专属滚动区 & 上下渐变消失特效 */
@@ -1046,8 +1054,7 @@
   scrollbar-width: none;
   padding: 10px 0 60px; 
 }
-
-/* 彻底隐藏 Chrome/Safari 的滚动条 */
 .cl-scroll-area::-webkit-scrollbar {
   display: none;
 }
+
