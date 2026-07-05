@@ -6,9 +6,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--app-header-top, 10px) 16px 10px;
+  padding: calc(10px + env(safe-area-inset-top, 0)) 16px 10px;
   border-bottom: none;
   flex-shrink: 0;
+  background: #fff;
+  z-index: 10;
 }
 
 /* 🌟 核心：统一的银白金属底座（应用于返回、加号，以及"此""间""相"三个字） */
