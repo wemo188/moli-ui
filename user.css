@@ -56,7 +56,7 @@
   font-size: 17px;
   font-weight: 800;
   /* 使用你最新设计的冷灰蓝色 */
-  color: #5f6977; 
+  color: #1a1a1a; 
   letter-spacing: 0;
   /* 绝美的白色文字高光倒影 */
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
@@ -138,7 +138,7 @@
   font-size: 13.5px;
   font-weight: 800;
   /* 🌟 文字换成高级冷灰蓝色，搭配银白底色绝配 */
-  color: #5c6777; 
+  color: #1a1a1a; 
   cursor: pointer;
   letter-spacing: 1px;
   -webkit-tap-highlight-color: transparent;
