@@ -9,12 +9,13 @@
 /* ============================
    角色列表页容器
    ============================ */
+/* 2. 页面本体透明，让自定义背景能透出来 */
 #clPageInner {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 8px 10px 40px;
-  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important; 
 }
 
 .cl-page { --page-dark:#111; --page-accent:#88abda; --page-light:#fff; }
@@ -24,18 +25,25 @@
 /* ============================
    顶部栏
    ============================ */
+  /* 🌟 1. 强行干掉外层容器的刘海避让，把屏幕顶部还给顶栏！ */
+#charPanel {
+  padding-top: 0 !important;
+}
+
 /* 3. 顶栏：强行铺满屏幕，吸顶 + 纯白底色 + 向上穿透刘海屏 */
 .cl-topbar-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: none !important; /* 🌟 砸掉原本的 400px 宽度限制，铺满屏幕 */
-  /* 🌟 核心魔法：用负外边距向上怼进刘海屏，再用内边距把按钮挤下来，实现白底穿透 */
-  margin: calc(-1 * env(safe-area-inset-top, 0px)) 0 0 0 !important;
+  max-width: none !important; 
+  margin: 0 !important; 
+  /* 核心：用 padding 撑满刘海屏区域 */
   padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px !important;
   height: auto !important;
-  background: #fff !important; /* 🌟 整个区域只有这里是实心白底！ */
+  background: #fff !important; /* 实心纯白！ */
+  position: relative;
+  z-index: 10;
 }
 
 .cl-esc {
@@ -1043,7 +1051,7 @@
   z-index: 100;
   padding: 0 !important;
   margin: 0 !important;
-  background: transparent !important; /* 强行剥夺它的白色背景，解放分类徽章 */
+  background: transparent !important; 
 }
 
 /* 3. 专属滚动区 & 上下渐变消失特效 */
