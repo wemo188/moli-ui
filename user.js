@@ -433,20 +433,10 @@
 
       document.body.appendChild(pp);
 
-      App.bindSwipeBack(pp, function() {
+            App.bindSwipeBack(pp, function() {
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
       });
-
-      if (User._skipAnimation) {
-        pp.classList.add('up-panel-no-anim');
-        pp.classList.add('up-panel-in');
-        User._skipAnimation = false;
-      } else {
-        requestAnimationFrame(function() { requestAnimationFrame(function() {
-          pp.classList.add('up-panel-in');
-        }); });
-      }
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
         pp.classList.remove('up-panel-in');
@@ -534,7 +524,7 @@
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
     },
 
-    saveProfile: function(pp) {
+        saveProfile: function(pp) {
       var card = pp.querySelector('#upCard');
       if (!card) return;
       var editId = card.dataset.editId || '';
