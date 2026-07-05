@@ -451,19 +451,35 @@
 
       document.body.appendChild(pp);
 
-                  App.bindSwipeBack(pp, function() {
-        User.saveProfile(pp, true); 
+                        App.bindSwipeBack(pp, function() {
+        User.saveProfile(pp, true);
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-        User._showListAfterProfile();
+        // 只在面板已经可见时才刷新，否则走 open 的正常流程
+        setTimeout(function() {
+          User.load();
+          if (!User.list.length) {
+            User.close();
+          } else {
+            User.open();
+          }
+        }, 380);
       });
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
-        User.saveProfile(pp, true); 
+        User.saveProfile(pp, true);
         pp.classList.remove('up-panel-in');
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-        User._showListAfterProfile();
+        // 同样，等编辑面板彻底消失后，再重新走 open 流程
+        setTimeout(function() {
+          User.load();
+          if (!User.list.length) {
+            User.close();
+          } else {
+            User.open();
+          }
+        }, 380);
       });
         
         // 🌟 同样的修复逻辑
