@@ -107,30 +107,35 @@
   z-index: 1;
 }
 
-/* 🌟 右上角弹出菜单的极简玻璃质感 */
+/* 🌟 右上角弹出菜单：高级银白金属质感 */
 .up-mgr-menu {
   position: fixed;
   z-index: 10100;
-  background: rgba(255,255,255,0.95);
+  /* 🌟 核心：银白金属渐变底色 */
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(232,236,241,0.95));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  /* 🌟 金属边框与内侧高光 */
+  border: 1.5px solid rgba(213,218,225,0.8);
   border-radius: 14px;
   padding: 6px 0;
   min-width: 140px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-  animation: gipPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 24px rgba(169,175,184,0.25), inset 0 1px 1px rgba(255,255,255,0.95);
+  animation: gipPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .up-mgr-item {
   padding: 14px 20px;
   font-size: 13.5px;
-  font-weight: 700;
-  color: #333;
+  font-weight: 800;
+  /* 🌟 文字换成高级冷灰蓝色，搭配银白底色绝配 */
+  color: #5c6777; 
   cursor: pointer;
   letter-spacing: 1px;
   -webkit-tap-highlight-color: transparent;
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-  transition: background 0.2s ease;
+  /* 🌟 分割线变成淡淡的金属刻痕 */
+  border-bottom: 1.5px solid rgba(213,218,225,0.4);
+  transition: all 0.2s ease;
 }
 
 .up-mgr-item:last-child { 
@@ -138,8 +143,9 @@
 }
 
 .up-mgr-item:active { 
-  background: rgba(136, 171, 218, 0.1); 
-  color: #111;
+  /* 🌟 点击时出现金属按压的深色质感 */
+  background: rgba(213,218,225,0.4); 
+  color: #3b4554;
 }
 
 /* ===========================
