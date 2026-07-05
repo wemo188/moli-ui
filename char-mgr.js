@@ -15,7 +15,7 @@
 
   var MODE_CFG = [
     {
-      defaults: { border: '#111111', accent: '#88abda', bg: '#ffffff', left: '#111111', line: 3, outer: 3.5 },
+      defaults: { border: '#111111', accent: '#111111', bg: '#ffffff', left: '#111111', line: 1, outer: 3 },
       controls: [
         { key: 'border', label: '框', cssVar: '--card-border-c' },
         { key: 'accent', label: '中', cssVar: '--card-accent' },
