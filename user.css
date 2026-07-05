@@ -6,11 +6,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(10px + env(safe-area-inset-top, 0)) 16px 10px;
-  border-bottom: none;
-  flex-shrink: 0;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
   background: #fff;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 /* 🌟 核心：统一的银白金属底座（应用于返回、加号，以及"此""间""相"三个字） */
@@ -70,8 +69,7 @@
   height: 2px;
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
   border-radius: 999px;
-  /* 把 margin-bottom 变成 0，让滚动区完全贴紧分割线 */
-  margin: 5px 16px 0; 
+  margin: 0 16px 0; /* 把原来的 5px 变成 0 */
   box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
