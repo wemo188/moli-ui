@@ -51,8 +51,8 @@
 
 /* 🌟 "此间相"三个字的专属文字质感 */
 .up-list-char {
-  width: 36px;   
-  height: 36px;  
+  width: 40px;   
+  height: 40px;  
   font-size: 15px;
   font-weight: 800;
   /* 使用你最新设计的冷灰蓝色 */
@@ -121,20 +121,20 @@
   position: fixed;
   z-index: 10100;
   /* 🌟 核心：银白金属渐变底色 */
-  background: linear-gradient(145deg, rgba(255,255,255,0.75), rgba(232,236,241,0.55));
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background: linear-gradient(145deg, rgba(255,255,255,0.45), rgba(232,236,241,0.65));
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
   /* 🌟 金属边框与内侧高光 */
   border: 1.5px solid rgba(213,218,225,0.8);
   border-radius: 14px;
   padding: 6px 0;
-  min-width: 140px;
-  box-shadow: 0 8px 24px rgba(169,175,184,0.25), inset 0 1px 1px rgba(255,255,255,0.75);
+  min-width: 130px;
+  box-shadow: 0 8px 24px rgba(169,175,184,0.25), inset 0 1px 1px rgba(255,255,255,0.45);
   animation: gipPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .up-mgr-item {
-  padding: 14px 20px;
+  padding: 10px 18px;
   font-size: 13.5px;
   font-weight: 800;
   /* 🌟 文字换成高级冷灰蓝色，搭配银白底色绝配 */
