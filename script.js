@@ -1743,6 +1743,65 @@ App.closePanel = function() {
     });
   };
 
+  // =========================
+  // 全局魔法：AI 图片自动拦截与本地化转存
+  // =========================
+  App.autoSaveImages = function(chatContainerSelector) {
+    var container = document.querySelector(chatContainerSelector);
+    if (!container) return;
+
+    // 创建一个隐形监听器，死死盯着聊天框
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mut) {
+        if (mut.addedNodes) {
+          mut.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) { // 如果是元素节点
+              
+              // 找找看新加的消息里面有没有图片
+              var imgs = [];
+              if (node.tagName && node.tagName.toLowerCase() === 'img') imgs.push(node);
+              var children = node.querySelectorAll ? node.querySelectorAll('img') : [];
+              children.forEach(function(img) { imgs.push(img); });
+
+              imgs.forEach(function(img) {
+                var src = img.src || '';
+                // 只要是 http/https 开头的外部链接，就拦截下来（排除掉本来就是 base64 的图）
+                if (src.startsWith('http')) {
+                  
+                  // 打个标记，防止无限循环
+                  if (img.dataset.converted) return;
+                  img.dataset.converted = "true";
+
+                  // 🌟 核心魔法：用 Fetch 把图片强行拉回本地，榨成 Base64 汁
+                  fetch(src)
+                    .then(function(res) { return res.blob(); })
+                    .then(function(blob) {
+                      var reader = new FileReader();
+                      reader.onload = function(e) {
+                        var base64 = e.target.result;
+                        // 🌟 瞬间替换！把外部链接替换成本地长字符串
+                        img.src = base64; 
+                        
+                        // 此时图片已经变成 base64 了，如果你的聊天记录会自动保存 DOM，或者你会定期 save 聊天数据，它就跟着永久保存了！
+                        console.log('图片已成功抓取并转存为本地格式！');
+                      };
+                      reader.readAsDataURL(blob);
+                    })
+                    .catch(function(err) {
+                      console.warn("图片抓取失败 (可能是该图片服务器不允许跨域 CORS):", err);
+                    });
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+
+    // 开始监听！哪怕消息是动态塞进去的，也逃不过它的眼睛
+    observer.observe(container, { childList: true, subtree: true });
+  };
+
     App.init = function() {
     App.state.ball = App.$('#floatingBall');
     if (!App.state.ball) return;
