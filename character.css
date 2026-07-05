@@ -25,14 +25,13 @@
    顶部栏
    ============================ */
 .cl-topbar-wrap {
-  margin: 0 auto 20px;
-  max-width: 400px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0;
-  gap: 8px;
-  height: 36px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+  background: #fff; /* 只有这里是白的！ */
+  height: auto;
+  margin: 0; /* 清除默认外边距 */
 }
 
 .cl-esc {
@@ -102,7 +101,7 @@
   height: 2px;
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
   border-radius: 999px;
-  margin: 5px 16px 0;
+  margin: 0 16px 0; /* 贴紧白边 */
   box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
@@ -1029,23 +1028,14 @@
   flex-direction: column;
   overflow: hidden !important;
   padding: 0 !important;
+  background: transparent !important; 
 }
 
-/* 2. 纯净顶部导航：不加任何底色，死死钉在上方 */
+/* 🌟 2. 吸顶容器本身不带背景色，避免糊住分类徽章 */
 .cl-sticky-header {
   flex-shrink: 0;
-  padding: 8px 10px 0;
+  padding: 0; /* 去掉 padding，让内部的白底顶满屏幕 */
   z-index: 100;
-  background: #fff;
-}
-
-#clPageInner {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden !important;
-  padding: 0 !important;
-  padding-top: env(safe-area-inset-top, 0) !important;
-  background: #fff;
 }
 
 /* 3. 专属滚动区 & 上下渐变消失特效 */
