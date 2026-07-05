@@ -1,5 +1,5 @@
 /* ===========================
-   列表页 - 顶部导航（银白色 5个圆圈均分）
+   列表页 - 顶部导航（极致银白拟物质感）
    =========================== */
 .up-list-header {
   position: relative;
@@ -11,6 +11,7 @@
   flex-shrink: 0;
 }
 
+/* 🌟 核心：统一的银白金属底座（应用于返回、加号，以及"此""间""相"三个字） */
 .up-header-circle {
   width: 36px;
   height: 36px;
@@ -18,6 +19,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  /* 完美复刻你发来的高级银白渐变与内发光 */
   background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(232,236,241,0.92));
   border: 1.5px solid rgba(213,218,225,0.95);
   box-shadow: 0 3px 10px rgba(169,175,184,0.12), inset 0 1px 1px rgba(255,255,255,0.95);
@@ -36,9 +38,10 @@
   box-shadow: 0 1px 4px rgba(169,175,184,0.1);
 }
 
+/* 🌟 复刻你最新设计的图标颜色与粗细 */
 .up-list-back svg, .up-list-add svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke: #7c8693;
   fill: none;
   stroke-width: 2.2;
@@ -46,38 +49,44 @@
   stroke-linejoin: round;
 }
 
+/* 🌟 "此间相"三个字的专属文字质感 */
 .up-list-char {
-  width: 40px;   /* 改这里 */
-  height: 40px;  /* 改这里 */
-  font-size: 17px;
+  width: 36px;   
+  height: 36px;  
+  font-size: 15px;
   font-weight: 800;
-  color: #7c8693;
+  /* 使用你最新设计的冷灰蓝色 */
+  color: #5f6977; 
   letter-spacing: 0;
+  /* 绝美的白色文字高光倒影 */
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
   pointer-events: none;
 }
 
+/* 🌟 分割线也换成你最新的色彩搭配 */
 .up-list-divider {
   height: 2px;
   background: linear-gradient(90deg, rgba(255,255,255,0), rgba(214,220,228,0.36), rgba(245,247,250,0.76), rgba(214,220,228,0.36), rgba(255,255,255,0));
   border-radius: 999px;
-  margin: 5px 16px 20px;
+  /* 把 margin-bottom 变成 0，让滚动区完全贴紧分割线 */
+  margin: 5px 16px 0; 
   box-shadow: 0 0 4px rgba(233,236,241,0.32);
 }
 
-/* 空状态提示 */
-.p14-empty {
-  padding: 60px 20px;
-  text-align: center;
-  color: #bbb;
-  font-size: 14px;
-}
-
+/* 🌟 2. 专属滚动区：隐藏滚动条 & 接收刚刚减掉的间距 */
 .p14-list-wrap {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 4px 40px;
+  /* 顶部加上 20px 的 padding，视觉上和原来一样，但滑动时卡片会滑到分割线才消失 */
+  padding: 20px 4px 40px; 
+  /* 魔法：彻底隐藏火狐和标准浏览器的滚动条 */
+  scrollbar-width: none; 
+}
+
+/* 魔法：彻底隐藏 Chrome 和 Safari 的丑陋滚动条 */
+.p14-list-wrap::-webkit-scrollbar {
+  display: none; 
 }
 
 /* ===========================
@@ -112,15 +121,15 @@
   position: fixed;
   z-index: 10100;
   /* 🌟 核心：银白金属渐变底色 */
-  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(232,236,241,0.95));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(255,255,255,0.75), rgba(232,236,241,0.55));
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   /* 🌟 金属边框与内侧高光 */
   border: 1.5px solid rgba(213,218,225,0.8);
   border-radius: 14px;
   padding: 6px 0;
   min-width: 140px;
-  box-shadow: 0 8px 24px rgba(169,175,184,0.25), inset 0 1px 1px rgba(255,255,255,0.95);
+  box-shadow: 0 8px 24px rgba(169,175,184,0.25), inset 0 1px 1px rgba(255,255,255,0.75);
   animation: gipPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -134,7 +143,7 @@
   letter-spacing: 1px;
   -webkit-tap-highlight-color: transparent;
   /* 🌟 分割线变成淡淡的金属刻痕 */
-  border-bottom: 1.5px solid rgba(213,218,225,0.4);
+  border-bottom: 1px solid rgba(213,218,225,0.4);
   transition: all 0.2s ease;
 }
 
