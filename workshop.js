@@ -84,36 +84,36 @@
     },
 
     bindMenuEvents: function() {
-  var menu = Workshop.menuEl;
+      var menu = Workshop.menuEl;
 
-  menu.querySelectorAll('.bm-tk').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var action = item.dataset.action;
-      if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
-      if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
-      if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
-      if (action === 'memory') { Workshop.close(); setTimeout(function() { Workshop.openMemoryPicker(); }, 220); return; }
-      if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
-      if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
-      if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
-      if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
-    });
-  });
+      menu.querySelectorAll('.bm-tk').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var action = item.dataset.action;
+          if (action === 'api') { Workshop.close(); setTimeout(function() { if (App.api) App.api.open(); }, 220); return; }
+          if (action === 'preset') { Workshop.close(); setTimeout(function() { if (App.preset) App.preset.open(); }, 220); return; }
+          if (action === 'worldbook') { Workshop.close(); setTimeout(function() { if (App.worldbook) App.worldbook.open(); }, 220); return; }
+          if (action === 'memory') { Workshop.close(); setTimeout(function() { Workshop.openMemoryPicker(); }, 220); return; }
+          if (action === 'data') { Workshop.close(); setTimeout(function() { Workshop.openDataPage(); }, 220); return; }
+          if (action === 'console') { Workshop.close(); setTimeout(function() { Workshop.openConsole(); }, 220); return; }
+          if (action === 'promptlog') { Workshop.close(); setTimeout(function() { Workshop.openPromptLog(); }, 220); return; }
+          if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
+        });
+      });
 
-  menu.querySelectorAll('.bm-wk').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var action = item.dataset.action;
-      if (action === 'theme') { Workshop.close(); setTimeout(function() { if (App.theme) App.theme.open(); }, 220); return; }
-      if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
-      if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
-      if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
-      if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
-      if (action === 'snapshot') { Workshop.close(); setTimeout(function() { Workshop.openSnapshot(); }, 220); return; }
-    });
-  });
-},
+      menu.querySelectorAll('.bm-wk').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var action = item.dataset.action;
+          if (action === 'theme') { Workshop.close(); setTimeout(function() { if (App.theme) App.theme.open(); }, 220); return; }
+          if (action === 'font') { Workshop.close(); setTimeout(function() { if (App.font) App.font.open(); }, 220); return; }
+          if (action === 'bg') { Workshop.close(); setTimeout(function() { if (App.bg) App.bg.open(); }, 220); return; }
+          if (action === 'ballset') { Workshop.close(); setTimeout(function() { App.openBallSettings(); }, 220); return; }
+          if (action === 'resetLayout') { Workshop.close(); setTimeout(function() { Workshop.resetAllLayout(); }, 220); return; }
+          if (action === 'snapshot') { Workshop.close(); setTimeout(function() { Workshop.openSnapshot(); }, 220); return; }
+        });
+      });
+    },
 
     openMemoryPicker: function() {
       var chars = App.character ? App.character.list : [];
@@ -369,57 +369,56 @@
       panel.querySelector('#wsImportBtn').addEventListener('click', function() { panel.querySelector('#wsImportFile').click(); });
 
       panel.querySelector('#wsImportFile').addEventListener('change', function(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      var data = JSON.parse(ev.target.result);
+        var file = e.target.files[0];
+        if (!file) return;
+        if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          try {
+            var data = JSON.parse(ev.target.result);
 
-      // ★ 如果有字体文件数据，先导入到 GlobalFontDB
-      var fontFiles = data.__fontFiles__;
-      delete data.__fontFiles__;
+            var fontFiles = data.__fontFiles__;
+            delete data.__fontFiles__;
 
-      Object.keys(data).forEach(function(key) { App.LS.set(key, data[key]); });
+            Object.keys(data).forEach(function(key) { App.LS.set(key, data[key]); });
 
-      if (fontFiles && fontFiles.length > 0) {
-        try {
-          var req = indexedDB.open('GlobalFontDB', 1);
-          req.onupgradeneeded = function(e2) {
-            var db = e2.target.result;
-            if (!db.objectStoreNames.contains('fontFiles')) db.createObjectStore('fontFiles', { keyPath: 'name' });
-          };
-          req.onsuccess = function(e2) {
-            var db = e2.target.result;
-            var tx = db.transaction('fontFiles', 'readwrite');
-            var store = tx.objectStore('fontFiles');
-            fontFiles.forEach(function(f) { store.put(f); });
-            tx.oncomplete = function() {
-              App.showToast('导入成功（含字体），即将刷新');
+            if (fontFiles && fontFiles.length > 0) {
+              try {
+                var req = indexedDB.open('GlobalFontDB', 1);
+                req.onupgradeneeded = function(e2) {
+                  var db = e2.target.result;
+                  if (!db.objectStoreNames.contains('fontFiles')) db.createObjectStore('fontFiles', { keyPath: 'name' });
+                };
+                req.onsuccess = function(e2) {
+                  var db = e2.target.result;
+                  var tx = db.transaction('fontFiles', 'readwrite');
+                  var store = tx.objectStore('fontFiles');
+                  fontFiles.forEach(function(f) { store.put(f); });
+                  tx.oncomplete = function() {
+                    App.showToast('导入成功（含字体），即将刷新');
+                    setTimeout(function() { location.reload(); }, 1000);
+                  };
+                  tx.onerror = function() {
+                    App.showToast('导入成功（字体写入失败），即将刷新');
+                    setTimeout(function() { location.reload(); }, 1000);
+                  };
+                };
+                req.onerror = function() {
+                  App.showToast('导入成功（字体库打开失败），即将刷新');
+                  setTimeout(function() { location.reload(); }, 1000);
+                };
+              } catch(ex) {
+                App.showToast('导入成功，即将刷新');
+                setTimeout(function() { location.reload(); }, 1000);
+              }
+            } else {
+              App.showToast('导入成功，即将刷新');
               setTimeout(function() { location.reload(); }, 1000);
-            };
-            tx.onerror = function() {
-              App.showToast('导入成功（字体写入失败），即将刷新');
-              setTimeout(function() { location.reload(); }, 1000);
-            };
-          };
-          req.onerror = function() {
-            App.showToast('导入成功（字体库打开失败），即将刷新');
-            setTimeout(function() { location.reload(); }, 1000);
-          };
-        } catch(ex) {
-          App.showToast('导入成功，即将刷新');
-          setTimeout(function() { location.reload(); }, 1000);
-        }
-      } else {
-        App.showToast('导入成功，即将刷新');
-        setTimeout(function() { location.reload(); }, 1000);
-      }
-    } catch(err) { App.showToast('导入失败：文件格式错误'); }
-  };
-  reader.readAsText(file);
-});
+            }
+          } catch(err) { App.showToast('导入失败：文件格式错误'); }
+        };
+        reader.readAsText(file);
+      });
 
       panel.querySelector('#wsOpenStorage').addEventListener('click', function() { Workshop.openStorage(); });
 
@@ -435,105 +434,104 @@
     },
 
     exportData: function() {
-  var data = {};
-  var keys = Object.keys(App.LS._cache || {});
-  keys.forEach(function(key) {
-    // ★ 字体列表：只保留 URL/CSS 字体
-    if(key === 'fontCustomList') {
-      var list = App.LS.get(key) || [];
-      var filtered = list.filter(function(f) { return f.url || f.cssUrl; });
-      if(filtered.length > 0) data[key] = filtered;
-      return;
-    }
-    // ★ 字体配置：如果选中的是文件字体，重置为系统默认
-    if(key === 'fontConfig') {
-      var cfg = JSON.parse(JSON.stringify(App.LS.get(key) || {}));
-      var urlNames = {};
-      (App.LS.get('fontCustomList') || []).forEach(function(f) {
-        if(f.url || f.cssUrl) urlNames[f.name] = true;
+      var data = {};
+      var keys = Object.keys(App.LS._cache || {});
+      keys.forEach(function(key) {
+        if(key === 'fontCustomList') {
+          var list = App.LS.get(key) || [];
+          var filtered = list.filter(function(f) { return f.url || f.cssUrl; });
+          if(filtered.length > 0) data[key] = filtered;
+          return;
+        }
+        if(key === 'fontConfig') {
+          var cfg = JSON.parse(JSON.stringify(App.LS.get(key) || {}));
+          var urlNames = {};
+          (App.LS.get('fontCustomList') || []).forEach(function(f) {
+            if(f.url || f.cssUrl) urlNames[f.name] = true;
+          });
+          if(cfg.selectedZh && !urlNames[cfg.selectedZh]) cfg.selectedZh = '系统默认';
+          if(cfg.selectedEn && !urlNames[cfg.selectedEn]) cfg.selectedEn = '';
+          if(cfg.selected && !urlNames[cfg.selected]) cfg.selected = '系统默认';
+          data[key] = cfg;
+          return;
+        }
+        data[key] = App.LS.get(key);
       });
-      if(cfg.selectedZh && !urlNames[cfg.selectedZh]) cfg.selectedZh = '系统默认';
-      if(cfg.selectedEn && !urlNames[cfg.selectedEn]) cfg.selectedEn = '';
-      if(cfg.selected && !urlNames[cfg.selected]) cfg.selected = '系统默认';
-      data[key] = cfg;
-      return;
-    }
-    data[key] = App.LS.get(key);
-  });
-  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  App.showToast('数据已导出');
-},
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'mono-space-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      App.showToast('数据已导出');
+    },
 
+    // 🌟 这里是完全静默无感、没有刷新的终极重置版！
     resetAllLayout: function() {
-  var old = App.$('#resetLayoutConfirm');
-  if (old) old.remove();
+      var old = App.$('#resetLayoutConfirm');
+      if (old) old.remove();
 
-  var overlay = document.createElement('div');
-  overlay.id = 'resetLayoutConfirm';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:200010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
+      var overlay = document.createElement('div');
+      overlay.id = 'resetLayoutConfirm';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:200010;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);';
 
-  overlay.innerHTML =
-    '<div style="background:#fff;border-radius:16px;padding:28px 24px 20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);text-align:center;">' +
-      '<div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">恢复默认布局</div>' +
-      '<div style="font-size:12px;color:#999;margin-bottom:20px;line-height:1.5;">所有组件将回到初始位置，<br>此操作不可撤销。</div>' +
-      '<div style="display:flex;gap:10px;">' +
-        '<button id="resetLayoutCancel" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#ebecee;color:#666;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">取消</button>' +
-        '<button id="resetLayoutOk" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">确定</button>' +
-      '</div>' +
-    '</div>';
+      overlay.innerHTML =
+        '<div style="background:#fff;border-radius:16px;padding:28px 24px 20px;width:260px;box-shadow:0 8px 30px rgba(0,0,0,.15);text-align:center;">' +
+          '<div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">恢复默认布局</div>' +
+          '<div style="font-size:12px;color:#999;margin-bottom:20px;line-height:1.5;">所有组件将回到初始位置，<br>此操作不可撤销。</div>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button id="resetLayoutCancel" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#ebecee;color:#666;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">取消</button>' +
+            '<button id="resetLayoutOk" type="button" style="flex:1;padding:12px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;">确定</button>' +
+          '</div>' +
+        '</div>';
 
-  document.body.appendChild(overlay);
+      document.body.appendChild(overlay);
 
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) overlay.remove();
-  });
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+      });
 
-  overlay.querySelector('#resetLayoutCancel').addEventListener('click', function() {
-    overlay.remove();
-  });
+      overlay.querySelector('#resetLayoutCancel').addEventListener('click', function() {
+        overlay.remove();
+      });
 
-    overlay.querySelector('#resetLayoutOk').addEventListener('click', function() {
-    overlay.remove();
-    
-    App.LS.remove('wtCardPos');
-    App.LS.remove('appIconOffsets');
-    App.LS.remove('calTimeOffset');
-    App.LS.remove('cardDragOffsets'); 
-    App.LS.remove('floatingBallPos'); 
-    
-    if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
-    
-    var wtCard = App.$('#wtCard');
-    if (wtCard) wtCard.style.transform = '';
-    
-    var calRow = App.$('#calTimeRow');
-    if (calRow) calRow.style.transform = '';
-    
-    document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ el.style.transform = ''; });
-    
-    if (App.modules.cards) App.modules.cards.resetAllPositions();
-    
-    var edenData = App.LS.get('edenCard');
-    if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
-    var edenCard = App.$('#edenCard');
-    if (edenCard) edenCard.style.transform = '';
+      overlay.querySelector('#resetLayoutOk').addEventListener('click', function() {
+        overlay.remove();
+        
+        App.LS.remove('wtCardPos');
+        App.LS.remove('appIconOffsets');
+        App.LS.remove('calTimeOffset');
+        App.LS.remove('cardDragOffsets'); 
+        App.LS.remove('floatingBallPos'); 
+        
+        if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
+        
+        var wtCard = App.$('#wtCard');
+        if (wtCard) wtCard.style.transform = '';
+        
+        var calRow = App.$('#calTimeRow');
+        if (calRow) calRow.style.transform = '';
+        
+        document.querySelectorAll('#iconUser,#iconChar,#iconTheme,#iconSettings').forEach(function(el){ el.style.transform = ''; });
+        
+        if (App.modules && App.modules.cards) App.modules.cards.resetAllPositions();
+        
+        var edenData = App.LS.get('edenCard');
+        if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
+        var edenCard = App.$('#edenCard');
+        if (edenCard) edenCard.style.transform = '';
 
-    var ball = App.$('#floatingBall');
-    if (ball) {
-      ball.style.left = '';
-      ball.style.top = '';
-      ball.style.right = '';
-      ball.style.bottom = '';
-    }
-    
-    App.showToast('布局已完美重置');
-  });
-},
+        var ball = App.$('#floatingBall');
+        if (ball) {
+          ball.style.left = '';
+          ball.style.top = '';
+          ball.style.right = '';
+          ball.style.bottom = '';
+        }
+        
+        App.showToast('布局已完美重置');
+      });
+    },
 
     openSnapshot: function() {
       var old = App.$('#wsSnapshot');
@@ -723,78 +721,77 @@
       if (old) { old.remove(); return; }
 
       var labelMap = {
-  'userList': '用户档案',
-  'characterList': '角色列表',
-  'bgData': '第一页背景图',
-  'bgData_1': '第二页背景图',
-  'profileCards': '角色卡片配置',
-  'cmGlobal': '角色管理-全局设置',
-  'cmChars': '角色管理-个别设置',
-  'activeApi': '当前使用的API',
-  'apiConfigs': 'API配置列表',
-  'apiParams': 'API参数设置',
-  'calCity': '天气-城市',
-  'calWeather': '天气-数据缓存',
-  'calSchedules': '日历-日程数据',
-  'wtCardConfig': '时间卡片-调色配置',
-  'wtCardPos': '时间卡片-拖拽位置',
-  'floatingBallPos': '悬浮球-位置',
-  'ballConfig': '悬浮球-模式设置',
-  'charCardMode': '角色卡片显示模式',
-  'activeUserId': '当前用户ID',
-  'wxAliases': '微信-备注名',
-  'wxPins': '微信-置顶列表',
-  'wxFullScreen': '微信-全屏模式',
-  'chatFavorites': '聊天-收藏消息',
-  'cpPresets': '调色板-预设颜色',
-  'worldbookEntries': '世界书-条目',
-  'worldbooks': '世界书-列表',
-  'presetList': '预设-列表',
-  'presetConfig': '预设-当前配置',
-  'fontConfig': '字体-全局配置',
-  'fontCustomList': '字体-自定义列表',
-  'topIconConfig': '主页图标-样式配置',
-  'appIconOffsets': '主页图标-拖拽位置',
-  'calTimeOffset': '时间栏-拖拽位置',
-  'layoutSnapshots': '排版存档列表',
-  'dockConfig': 'Dock栏-配置',
-  'edenCard': '文字卡片-配置',
-  'cardDragOffsets': '卡片-拖拽位置',
-  'searchText_left': '左圆头像-对话文字',
-  'searchText_right': '右圆头像-对话文字',
-  'searchText_left_manual': '左圆头像-手动文字',
-  'searchText_right_manual': '右圆头像-手动文字',
-  'avatar_search1': '左圆头像-头像图片',
-  'avatar_search2': '右圆头像-头像图片'
-};
+        'userList': '用户档案',
+        'characterList': '角色列表',
+        'bgData': '第一页背景图',
+        'bgData_1': '第二页背景图',
+        'profileCards': '角色卡片配置',
+        'cmGlobal': '角色管理-全局设置',
+        'cmChars': '角色管理-个别设置',
+        'activeApi': '当前使用的API',
+        'apiConfigs': 'API配置列表',
+        'apiParams': 'API参数设置',
+        'calCity': '天气-城市',
+        'calWeather': '天气-数据缓存',
+        'calSchedules': '日历-日程数据',
+        'wtCardConfig': '时间卡片-调色配置',
+        'wtCardPos': '时间卡片-拖拽位置',
+        'floatingBallPos': '悬浮球-位置',
+        'ballConfig': '悬浮球-模式设置',
+        'charCardMode': '角色卡片显示模式',
+        'activeUserId': '当前用户ID',
+        'wxAliases': '微信-备注名',
+        'wxPins': '微信-置顶列表',
+        'wxFullScreen': '微信-全屏模式',
+        'chatFavorites': '聊天-收藏消息',
+        'cpPresets': '调色板-预设颜色',
+        'worldbookEntries': '世界书-条目',
+        'worldbooks': '世界书-列表',
+        'presetList': '预设-列表',
+        'presetConfig': '预设-当前配置',
+        'fontConfig': '字体-全局配置',
+        'fontCustomList': '字体-自定义列表',
+        'topIconConfig': '主页图标-样式配置',
+        'appIconOffsets': '主页图标-拖拽位置',
+        'calTimeOffset': '时间栏-拖拽位置',
+        'layoutSnapshots': '排版存档列表',
+        'dockConfig': 'Dock栏-配置',
+        'edenCard': '文字卡片-配置',
+        'cardDragOffsets': '卡片-拖拽位置',
+        'searchText_left': '左圆头像-对话文字',
+        'searchText_right': '右圆头像-对话文字',
+        'searchText_left_manual': '左圆头像-手动文字',
+        'searchText_right_manual': '右圆头像-手动文字',
+        'avatar_search1': '左圆头像-头像图片',
+        'avatar_search2': '右圆头像-头像图片'
+      };
 
-function getLabel(key) {
-  if (labelMap[key]) return labelMap[key];
-  if (key.startsWith('chatBg_')) return '聊天背景图（' + key.replace('chatBg_','') + '）';
-  if (key.startsWith('chatMsgs_')) return '聊天记录（' + key.replace('chatMsgs_','') + '）';
-  if (key.startsWith('chatTint_')) return '聊天晕染（' + key.replace('chatTint_','') + '）';
-  if (key.startsWith('chatScene_')) return '聊天场景（' + key.replace('chatScene_','') + '）';
-  if (key.startsWith('chatPalette_')) return '聊天调色板（' + key.replace('chatPalette_','') + '）';
-  if (key.startsWith('chatAvShape_')) return '聊天头像形状（' + key.replace('chatAvShape_','') + '）';
-  if (key.startsWith('chatAvHide_')) return '聊天头像隐藏（' + key.replace('chatAvHide_','') + '）';
-  if (key.startsWith('chatUnread_')) return '未读消息数（' + key.replace('chatUnread_','') + '）';
-  if (key.startsWith('stickerCache_')) return '表情包缓存（' + key.replace('stickerCache_','') + '）';
-  if (key.startsWith('iconImg_')) return '自定义图标图片';
-  if (key.startsWith('customIcon_')) return '自定义图标（' + key.replace('customIcon_','') + '）';
-  if (key.startsWith('font_')) return '字体文件数据';
-  if (key.startsWith('edenCard')) return '文字卡片';
-  if (key.startsWith('searchText_')) return '圆头像-文字';
-  if (key.startsWith('avatar_search')) return '圆头像-头像';
-  if (key.startsWith('cardDragOffsets')) return '卡片拖拽位置';
-  if (key.startsWith('memories_')) return '角色记忆（' + key.replace('memories_','') + '）';
-  if (key.startsWith('memorySendConfig_')) return '记忆发送设置（' + key.replace('memorySendConfig_','') + '）';
-  if (key.startsWith('hlText_')) return '圆头像-气泡文字';
-  if (key.startsWith('hlChat_')) return '圆头像-对话条文字';
-  if (key.startsWith('hlImg_')) return '圆头像-图片';
-  if (key.startsWith('profileCard')) return '角色卡片（' + key + '）';
-  // 最后兜底：显示原始key名
-  return '数据：' + key;
-}
+      function getLabel(key) {
+        if (labelMap[key]) return labelMap[key];
+        if (key.startsWith('chatBg_')) return '聊天背景图（' + key.replace('chatBg_','') + '）';
+        if (key.startsWith('chatMsgs_')) return '聊天记录（' + key.replace('chatMsgs_','') + '）';
+        if (key.startsWith('chatTint_')) return '聊天晕染（' + key.replace('chatTint_','') + '）';
+        if (key.startsWith('chatScene_')) return '聊天场景（' + key.replace('chatScene_','') + '）';
+        if (key.startsWith('chatPalette_')) return '聊天调色板（' + key.replace('chatPalette_','') + '）';
+        if (key.startsWith('chatAvShape_')) return '聊天头像形状（' + key.replace('chatAvShape_','') + '）';
+        if (key.startsWith('chatAvHide_')) return '聊天头像隐藏（' + key.replace('chatAvHide_','') + '）';
+        if (key.startsWith('chatUnread_')) return '未读消息数（' + key.replace('chatUnread_','') + '）';
+        if (key.startsWith('stickerCache_')) return '表情包缓存（' + key.replace('stickerCache_','') + '）';
+        if (key.startsWith('iconImg_')) return '自定义图标图片';
+        if (key.startsWith('customIcon_')) return '自定义图标（' + key.replace('customIcon_','') + '）';
+        if (key.startsWith('font_')) return '字体文件数据';
+        if (key.startsWith('edenCard')) return '文字卡片';
+        if (key.startsWith('searchText_')) return '圆头像-文字';
+        if (key.startsWith('avatar_search')) return '圆头像-头像';
+        if (key.startsWith('cardDragOffsets')) return '卡片拖拽位置';
+        if (key.startsWith('memories_')) return '角色记忆（' + key.replace('memories_','') + '）';
+        if (key.startsWith('memorySendConfig_')) return '记忆发送设置（' + key.replace('memorySendConfig_','') + '）';
+        if (key.startsWith('hlText_')) return '圆头像-气泡文字';
+        if (key.startsWith('hlChat_')) return '圆头像-对话条文字';
+        if (key.startsWith('hlImg_')) return '圆头像-图片';
+        if (key.startsWith('profileCard')) return '角色卡片（' + key + '）';
+        return '数据：' + key;
+      }
 
       var cacheKeys = Object.keys(App.LS._cache || {});
       var items = [];
