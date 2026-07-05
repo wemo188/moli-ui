@@ -465,12 +465,16 @@
       var stkStyles = []; page.querySelectorAll('#cmStkStyles input:checked').forEach(function(cb) { stkStyles.push(cb.dataset.sty); });
 
       // 🌟 提取已选图片 API 的真实 URL 和 Key
-      var imgApiSel = gv('cmImgApiSelect') || '';
+            var imgApiSel = gv('cmImgApiSelect') || '';
       var imgUrl = '', imgKey = '';
       if (imgApiSel) {
         var apiList = App.LS.get('apiConfigs') || [];
-        var matchApi = apiList.find(function(a) { return a.name === imgApiSel; });
-        if (matchApi) { imgUrl = matchApi.url; imgKey = matchApi.key; }
+        // 🌟 同样换成最安全的 for 循环
+        for (var j = 0; j < apiList.length; j++) {
+          if (apiList[j].name === imgApiSel) {
+            imgUrl = apiList[j].url; imgKey = apiList[j].key; break;
+          }
+        }
       }
 
       var cfgObj = {
