@@ -1036,6 +1036,16 @@
   flex-shrink: 0;
   padding: 8px 10px 0;
   z-index: 100;
+  background: #fff;
+}
+
+#clPageInner {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  padding: 0 !important;
+  padding-top: env(safe-area-inset-top, 0) !important;
+  background: #fff;
 }
 
 /* 3. 专属滚动区 & 上下渐变消失特效 */
