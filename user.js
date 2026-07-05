@@ -342,6 +342,29 @@
       });
     },
 
+    _showListAfterProfile: function() {
+      User.load();
+      if (!User.list.length) {
+        setTimeout(function() { User.close(); }, 100);
+        return;
+      }
+      var panel = App.$('#userPanel');
+      if (!panel) return;
+      // 如果面板已经可见，直接刷新内容
+      if (panel.style.display !== 'none' && panel.style.opacity !== '0') {
+        User.renderList();
+      } else {
+        // 第一次创建用户后，面板还没显示过，需要先把它拉出来
+        panel.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:#fff;display:flex;flex-direction:column;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1),opacity 0.3s;transform:translateX(100%);opacity:0;';
+        User.renderList();
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+          panel.style.transform = 'translateX(0)';
+          panel.style.opacity = '1';
+        }); });
+        App.bindSwipeBack(panel, function() { User.close(); });
+      }
+    },
+    
     renderProfile: function(editId) {
       User.load();
       var existing = editId ? User.getById(editId) : null;
@@ -428,10 +451,20 @@
 
       document.body.appendChild(pp);
 
-            App.bindSwipeBack(pp, function() {
+                  App.bindSwipeBack(pp, function() {
         User.saveProfile(pp, true); 
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+        User._showListAfterProfile();
+      });
+
+      pp.querySelector('#upProfileBack').addEventListener('click', function() {
+        User.saveProfile(pp, true); 
+        pp.classList.remove('up-panel-in');
+        pp.classList.add('up-panel-out');
+        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+        User._showListAfterProfile();
+      });
         
         // 🌟 同样的修复逻辑
         User.load();
