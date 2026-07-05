@@ -1,5 +1,6 @@
+
 /* =========================
-   票券日历 tk17 (最终完整版)
+   票券日历 tk17 
 ========================= */
 
 /* 1. 颜色变量 - 所有文字继承 */
@@ -33,7 +34,7 @@
 .tk17-msg-name,
 .tk17-sign,
 #tkMsgLoc {
-  white-space: pre-wrap; /* 核心魔法：保留空格，且文字过长时自动换行 */
+  white-space: pre-wrap;
 }
 
 /* 3. 票券整体大容器 */
@@ -45,43 +46,40 @@
   filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
 }
 
-/* 4. 背景图层：5px统一小圆角，14.5px大缺口，缺口定位在距离右边 104px 处 */
+/* 4. 背景图层：5px统一小圆角 */
 .tk17-bgimg {
   position: absolute; inset: 0;
   border-radius: 5px; 
   overflow: hidden; z-index: 0;
-  -webkit-mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
-  -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
-  mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
-  mask-size: 100% 51%; mask-position: top, bottom; mask-repeat: no-repeat;
+  /* 🌟 改用线性渐变遮罩，完美切出 10px 宽的垂直物理缝隙，分离左右两页 */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 110px), transparent calc(100% - 110px), transparent calc(100% - 100px), #000 calc(100% - 100px));
+  mask-image: linear-gradient(to right, #000 calc(100% - 110px), transparent calc(100% - 110px), transparent calc(100% - 100px), #000 calc(100% - 100px));
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 
-/* 玻璃质感层：同上同步缩小挖洞 */
+/* 5. 玻璃质感层：同上同步裁切缝隙 */
 .tk17-glass {
   position: absolute; inset: 0;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-radius: 5px; 
-  -webkit-mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
-  -webkit-mask-size: 100% 51%; -webkit-mask-position: top, bottom; -webkit-mask-repeat: no-repeat;
-  mask-image: radial-gradient(circle at calc(100% - 114px) 0, transparent 13px, black 13.5px), radial-gradient(circle at calc(100% - 114px) 100%, transparent 13px, black 13.5px);
-  mask-size: 100% 51%; mask-position: top, bottom; mask-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 110px), transparent calc(100% - 110px), transparent calc(100% - 100px), #000 calc(100% - 100px));
+  mask-image: linear-gradient(to right, #000 calc(100% - 110px), transparent calc(100% - 110px), transparent calc(100% - 100px), #000 calc(100% - 100px));
   z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
 
-/* 6. 右侧斜纹装饰：也是5px圆角，宽度104px对齐缺口 */
+/* 6. 右侧斜纹装饰：宽度改为100px对齐右侧卡片 */
 .tk17-stripes {
-  position: absolute; top: 0; bottom: 0; right: 0; width: 114px;
+  position: absolute; top: 0; bottom: 0; right: 0; width: 100px;
   background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.045) 3px, rgba(0,0,0,0.045) 4px);
   border-radius: 0 5px 5px 0;
 }
 
-/* 7. 左侧主信息区：左边5px圆角，右边直角对接缝隙，flex纵向布局 */
+/* 7. 左侧主信息区：左边5px圆角，右边直角贴合缝隙 */
 .tk17-left {
   flex: 1; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-right: none; border-radius: 5px 0 0 5px;
+  border: 1px solid #d1d5db; border-radius: 5px 0 0 5px;
   display: flex; flex-direction: column; padding: 8px 5px 6px 20px; box-sizing: border-box; gap: 1px;
 }
 
@@ -107,23 +105,29 @@
 .tk17-datetime { display: flex; align-items: center; gap: 20px; font-size: 18px; font-weight: 400; }
 .tk17-datetime #calMonthDay { font-size: 19px; font-weight: 400; }
 
-/* 12. 中间大缺口缝隙区：28px宽，容纳14px的大半圆 */
-.tk17-sep { width: 28px; flex-shrink: 0; position: relative; z-index: 3; }
-
-/* 13. 上下半圆实体边框 */
-.tk17-notch-top { 
-  position: absolute; top: 0; left: 0; width: 28px; height: 14px; 
-  border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 14px 14px; box-sizing: border-box; 
-}
-.tk17-notch-bot { 
-  position: absolute; bottom: 0; left: 0; width: 28px; height: 14px; 
-  border: 1px solid #d1d5db; border-bottom: none; border-radius: 14px 14px 0 0; box-sizing: border-box; 
+/* 12. 中间手账金属环连接区 (完美桥接10px缝隙) */
+.tk17-rings-gap {
+  width: 10px; flex-shrink: 0; position: relative; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+  padding: 12px 0;
 }
 
-/* 14. 右侧天气专属区：右边5px小圆角，左边直角对接缝隙 */
+.tk17-ring {
+  width: 22px; height: 6px; border-radius: 4px;
+  /* 剔透的半透明渐变 */
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.15) 100%);
+  /* 灵魂毛玻璃效果 */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  /* 柔和的边缘发光与极弱的底阴影，去掉生硬的边框 */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04), inset 0 1px 4px rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* 14. 右侧天气专属区：左边直角贴合缝隙，右边5px圆角 */
 .tk17-right {
   width: 100px; flex-shrink: 0; position: relative; z-index: 2;
-  border: 1px solid #d1d5db; border-left: none; border-radius: 0 5px 5px 0; 
+  border: 1px solid #d1d5db; border-radius: 0 5px 5px 0; 
   display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
 }
 
@@ -135,14 +139,9 @@
 .tk17-wt-temp { font-size: 25px; font-weight: 700; }
 .tk17-wt-desc { font-size: 13px; font-weight: 600; }
 
-/* 17. 穿过半圆中心的虚线，定在右侧 104px 处配合大缺口 */
-.tk17-dashed { 
-  position: absolute; top: 12px; bottom: 12px; right: 114px; width: 0; 
-  border-left: 1px dashed rgba(209,213,219,0.7); z-index: 5; 
-}
 
 /* ================================================
-   天气动效
+   天气动效 (保留不动)
    ================================================ */
 .wt-sun-svg {
   position: absolute;
@@ -244,7 +243,7 @@
   100% { transform:translateY(250px) rotate(360deg); opacity:0; }
 }
 
-/* 🌟 核心修正：静态雨雪高低错落散开！不再排成一条线 */
+/* 🌟 核心修正：静态雨雪高低错落散开！ */
 .wt-static .wt-raindrop, 
 .wt-static .wt-snow-item { 
   animation: none; 
@@ -282,8 +281,8 @@
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 65px; height: 65px; /* 从 40px 放大到了 65px */
-  opacity: 0.2; /* 微微调亮 */
+  width: 65px; height: 65px; 
+  opacity: 0.2; 
 }
 
 /* 星星坐标全部换成百分比（%），均匀散布在整个夜空！ */
@@ -310,3 +309,4 @@
   0%{opacity:0.2;transform:scale(0.7);} 
   100%{opacity:0.75;transform:scale(1.3);} 
 }
+
