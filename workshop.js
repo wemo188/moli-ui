@@ -497,15 +497,14 @@
     overlay.remove();
   });
 
-  overlay.querySelector('#resetLayoutOk').addEventListener('click', function() {
+    overlay.querySelector('#resetLayoutOk').addEventListener('click', function() {
     overlay.remove();
     
-    // 🌟 1. 连根拔起所有可能记录位置的缓存
     App.LS.remove('wtCardPos');
     App.LS.remove('appIconOffsets');
     App.LS.remove('calTimeOffset');
-    App.LS.remove('cardDragOffsets'); // 👈 包括卡片和圆头像的位移记忆，彻底抹除！
-    App.LS.remove('floatingBallPos'); // 👈 顺手把悬浮球也归位
+    App.LS.remove('cardDragOffsets'); 
+    App.LS.remove('floatingBallPos'); 
     
     if (App.calendar) { App.calendar._dragOffsetX = 0; App.calendar._dragOffsetY = 0; }
     
@@ -523,12 +522,16 @@
     if (edenData) { edenData.posX = 0; edenData.posY = 0; App.LS.set('edenCard', edenData); }
     var edenCard = App.$('#edenCard');
     if (edenCard) edenCard.style.transform = '';
+
+    var ball = App.$('#floatingBall');
+    if (ball) {
+      ball.style.left = '';
+      ball.style.top = '';
+      ball.style.right = '';
+      ball.style.bottom = '';
+    }
     
-    // 🌟 2. 提示并强制刷新页面，让你的 10gap 完美生效！
-    App.showToast('布局已重置，即将刷新...');
-    setTimeout(function() {
-      location.reload();
-    }, 600);
+    App.showToast('布局已完美重置');
   });
 },
 
