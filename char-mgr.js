@@ -142,7 +142,7 @@
 
       page.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:56px 16px 12px;flex-shrink:0;background:#fff;">' +
-          // 🌟 统一使用无尾折角返回
+          // 🌟 统一使用极简折角返回
           '<button class="cc-top-btn" id="cmBackBtn" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>' +
           '<span style="font-size:16px;font-weight:700;color:#2e4258;letter-spacing:1px;">' + (isNew ? '添加角色' : '编辑角色') + '</span>' +
           '<div style="width:36px;"></div>' +
@@ -251,9 +251,9 @@
             '<div class="cm-sub-label" style="margin-bottom:8px">允许的消息类型</div>' +
             '<div class="cm-tag-row" id="cmMsgTypes">' + msgTagsHtml + '</div>' +
             '<div class="cm-sep"></div>' +
-            <div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
+            '<div class="cm-sw-row"><div class="cm-sw-left"><span class="cm-sw-name">表情包生成</span><span class="cm-sw-desc">AI 生成自定义表情包图片</span></div><label class="cm-sw"><input type="checkbox" id="cmStkToggle"' + ck('stickerGen') + '><div class="cm-sw-track"></div></label></div>' +
             '<div class="cm-sub' + (cfg.stickerGen ? ' cm-open' : '') + '" id="cmStkSub">' +
-              // 🌟 API 下拉框和拉取模型搬家到了这里！
+              // 🌟 API 下拉框和拉取模型
               '<div class="cm-sub-row"><div class="cm-field"><div class="cm-field-label">绘图 API</div><select class="cm-select" id="cmImgApiSelect">' + 
                 '<option value="">跟随全局对话 API</option>' + 
                 (App.LS.get('apiConfigs') || []).map(function(a) {
@@ -262,7 +262,6 @@
                 }).join('') + 
               '</select></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">绘图模型</div><div style="display:flex;gap:6px;"><input type="text" class="cm-field-input" id="cmImgModel" placeholder="gpt-image-1" value="' + App.escAttr(cfg.imgModel||'gpt-image-1') + '" style="flex:1;"><button type="button" id="cmImgFetchModels" class="cm-field-input" style="width:40px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;" title="拉取模型"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg></button></div><div class="cm-img-model-list" id="cmImgModelList" style="display:none;margin-top:4px;max-height:200px;overflow-y:auto;border:1.5px solid #ddd;border-radius:8px;background:#fff;"></div></div></div>' +
-              // 原来的风格和频率
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-field"><div class="cm-field-label">风格（可多选）</div><div class="cm-tag-row" id="cmStkStyles">' + stkStylesHtml + '</div></div></div>' +
               '<div class="cm-sub-row" style="margin-top:8px"><div class="cm-sub-label">发送频率</div><div class="cm-range-wrap"><span class="cm-range-hint">少</span><input type="range" class="cm-range" id="cmStkFreq" min="1" max="5" step="1" value="' + cfg.stickerFreq + '"><span class="cm-range-val" id="cmStkFreqVal">' + STK_FREQ_NAMES[cfg.stickerFreq-1] + '</span><span class="cm-range-hint">多</span></div></div>' +
             '</div>' +
@@ -362,9 +361,9 @@
           var selectedApiName = (page.querySelector('#cmImgApiSelect') || {}).value || '';
           var url = '', key = '';
           
-                    if (selectedApiName) {
+          if (selectedApiName) {
             var apiList = App.LS.get('apiConfigs') || [];
-            // 🌟 换成最安全的 for 循环，确保 100% 能拉到数据
+            // 🌟 最安全的 for 循环，确保 100% 能拉到数据
             for (var i = 0; i < apiList.length; i++) {
               if (apiList[i].name === selectedApiName) {
                 url = apiList[i].url; key = apiList[i].key; break;
@@ -465,11 +464,11 @@
       var stkStyles = []; page.querySelectorAll('#cmStkStyles input:checked').forEach(function(cb) { stkStyles.push(cb.dataset.sty); });
 
       // 🌟 提取已选图片 API 的真实 URL 和 Key
-            var imgApiSel = gv('cmImgApiSelect') || '';
+      var imgApiSel = gv('cmImgApiSelect') || '';
       var imgUrl = '', imgKey = '';
       if (imgApiSel) {
         var apiList = App.LS.get('apiConfigs') || [];
-        // 🌟 同样换成最安全的 for 循环
+        // 🌟 最安全的 for 循环
         for (var j = 0; j < apiList.length; j++) {
           if (apiList[j].name === imgApiSel) {
             imgUrl = apiList[j].url; imgKey = apiList[j].key; break;
