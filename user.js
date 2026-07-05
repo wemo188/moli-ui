@@ -158,7 +158,7 @@
       var bgHtml = savedBg ? '<div class="up-custom-bg" style="background-image: url(\'' + App.escAttr(savedBg) + '\');"></div>' : '';
 
       // 🌟 动态控制底层面板的颜色，有背景图时变透明
-      panel.style.background = savedBg ? 'transparent' : '#fff';
+           panel.style.background = '#fff';
 
       // ★ 这里保留了你的 5 个圆圈均匀分布的设计！
       panel.innerHTML =
