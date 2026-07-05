@@ -451,19 +451,30 @@
 
       document.body.appendChild(pp);
 
-                        App.bindSwipeBack(pp, function() {
-        User.saveProfile(pp, true);
+                        if (User._skipAnimation) {
+        pp.classList.add('up-panel-no-anim');
+        pp.classList.add('up-panel-in');
+        User._skipAnimation = false;
+      } else {
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+          pp.classList.add('up-panel-in');
+        }); });
+      }
+
+      App.bindSwipeBack(pp, function() {
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-        // 只在面板已经可见时才刷新，否则走 open 的正常流程
-        setTimeout(function() {
-          User.load();
-          if (!User.list.length) {
-            User.close();
-          } else {
-            User.open();
-          }
-        }, 380);
+      });
+
+      pp.querySelector('#upProfileBack').addEventListener('click', function() {
+        pp.classList.remove('up-panel-in');
+        pp.classList.add('up-panel-out');
+        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+        if (!User.list.length) {
+          setTimeout(function() { User.close(); }, 100);
+        } else {
+          User.renderList();
+        }
       });
 
       pp.querySelector('#upProfileBack').addEventListener('click', function() {
