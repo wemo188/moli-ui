@@ -6,7 +6,10 @@
   display: flex; 
   align-items: center; 
   gap: 12px; 
-  margin: 10px 5px 20px; 
+  width: 100%;
+  padding: 0 5px;        /* 换成内部边距，左右各防守 5px */
+  margin: 10px 0 20px; 
+  box-sizing: border-box;
 }
 
 /* 灰色单线头像框 */
@@ -47,8 +50,11 @@
 .alex-photo-row { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
-  gap: 10px; 
-  margin: 0 5px 25px; 
+  gap: 14px;            /* 照片之间的间距我也稍微调宽了点，看起来会更呼吸透气 */
+  width: 100%;
+  padding: 0 5px;        /* 同步左右安全距离 */
+  margin: 0 0 25px; 
+  box-sizing: border-box;
 }
 .alex-photo-slot { 
   aspect-ratio: 1; 
@@ -69,7 +75,15 @@
 }
 
 /* 留白与图标阵列 */
-.alex-icon-grid { display: flex; align-items: center; margin: 0 5px 25px; }
+.alex-icon-grid { 
+  display: flex; 
+  align-items: center; 
+  width: 100%;
+  padding: 0 5px;
+  margin: 0 0 25px; 
+  box-sizing: border-box;
+}
+
 .alex-empty-half { flex: 1; } 
 .alex-icon-half { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px 0; justify-items: center; }
 
