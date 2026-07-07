@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Starlet</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +15,7 @@
 (function(){
   var v = Date.now();
   var css = [
-    'base.css','panels.css','frost.css','character.css','worldbook.css',
+    'base.css','panels.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
     'cards.css','workshop.css','user.css','memory.css',
     'wechat.css','char-mgr.css','api.css','offline.css','bg.css'
@@ -42,115 +41,52 @@
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-    <!-- 第一页 -->
-    <section class="screen-page screen-page-1">
+   <!-- 🌟 第一页 🌟 -->
+   <section class="screen-page screen-page-1">
       <div class="screen-page-inner">
 
-        <!-- 第一行：左组 + 右组 -->
-        <div id="row1">
-          <div class="card-group card-group-left">
-            <div class="bx-w" id="profileCard-L" data-side="left">
-              <div class="bx-tag-wrap">
-                <!-- 🌟 标签掏空 -->
-                <div class="bx-tag bx-tag1 bx-tag-placeholder"></div>
-                <div class="bx-tag bx-tag2 bx-tag-placeholder"></div>
-              </div>
-              <div class="bx-cw"><div class="bx-cd">
-                <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-                <div class="bx-name-bar">
-                  <!-- 🌟 角色名彻底删除了，只留下干干净净的空签名框 -->
-                  <div class="bx-sub"></div>
-                </div>
-              </div></div>
-            </div>
-            <div class="card-group-icons">
-              <div id="iconChar">
-                <div id="iconCharImg"></div>
-                <div id="iconCharLabel">Char</div>
-              </div>
-              <div id="iconUser">
-                <div id="iconUserImg"></div>
-                <div id="iconUserLabel">User</div>
-              </div>
-            </div>
+        <!-- 新增顶部：灰线圆头像 + 右侧无边框文字框 -->
+        <div class="alex-new-top">
+          <div class="alex-avatar-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           </div>
-
-          <div class="card-group card-group-right">
-            <div class="card-group-icons">
-              <div id="iconTheme">
-                <div id="iconThemeImg"></div>
-                <div id="iconThemeLabel">美化</div>
-              </div>
-              <div id="iconSettings">
-                <div id="iconSettingsImg"></div>
-                <div id="iconSettingsLabel">设置</div>
-              </div>
-            </div>
-            <div class="bx-w" id="profileCard-R" data-side="right">
-              <div class="bx-cw"><div class="bx-cd">
-                <div class="bx-side-ribbon">
-                  <!-- 🌟 标签掏空 -->
-                  <div class="bx-ribbon-tab r1 bx-ribbon-placeholder"></div>
-                  <div class="bx-ribbon-tab r2 bx-ribbon-placeholder"></div>
-                </div>
-                <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
-                <div class="bx-name-bar">
-                  <!-- 🌟 角色名彻底删除了，只留下干干净净的空签名框 -->
-                  <div class="bx-sub"></div>
-                </div>
-              </div></div>
-            </div>
+          <div class="alex-top-inputs">
+            <input type="text" class="alex-input" placeholder="设定一个昵称">
+            <input type="text" class="alex-input" placeholder="随便写点什么...">
           </div>
         </div>
 
-        <!-- 票券日历 -->
-        <div id="row0">
-          <div class="tk17" id="wtCard">
-            <div class="tk17-bgimg" id="tkBgArea"></div>
-            <div class="tk17-glass" id="tkGlass">
-              <div class="tk17-stripes"></div>
-            </div>
+        <!-- 照片墙：同色系虚线框 -->
+        <div class="alex-photo-row">
+          <div class="alex-photo-slot">+</div>
+          <div class="alex-photo-slot">+</div>
+          <div class="alex-photo-slot">+</div>
+        </div>
 
-            <div class="tk17-left">
-              <div class="tk17-profile-area">
-                <div class="tk17-avatar" id="tkAvatarBg"></div>
-                <div class="tk17-name-loc">
-                  <div class="tk17-msg-name" id="tkMsgName">昵称</div>
-                  <div class="tk17-msg-loc">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
-                    <span id="tkMsgLoc">地点</span>
-                  </div>
-                </div>
-              </div>
-              <div class="tk17-sign" id="tkMsgSign">签名</div>
-              <div class="tk17-divider"></div>
-              <div class="tk17-datetime">
-                <span id="calMonthDay">06/10</span>
-                <span id="calWeekday">Wednesday</span>
-                <span id="calClock">00:00:00</span>
-              </div>
+        <!-- 2x2 图标 -->
+        <div class="alex-icon-grid">
+          <div class="alex-empty-half"></div>
+          <div class="alex-icon-half card-group-icons" style="margin: 0; padding: 0;">
+            <div id="iconChar">
+              <div id="iconCharImg"></div>
+              <div id="iconCharLabel">Char</div>
             </div>
-
-            <!-- 🌟 重新设计的：白色符文丝线绑带 -->
-            <div class="tk17-rings-gap">
-              <div class="tk17-thread">𓏵</div>
-              <div class="tk17-thread">𓏵</div>
+            <div id="iconUser">
+              <div id="iconUserImg"></div>
+              <div id="iconUserLabel">User</div>
             </div>
-
-            <!-- 右侧改为专属天气温度 -->
-            <div class="tk17-right">
-              <div id="wtWeatherBg" class="tk17-weather-layer"></div>
-              <div class="tk17-right-info">
-                <div class="tk17-wt-temp" id="calTemp">--°C</div>
-                <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
-              </div>
+            <div id="iconTheme">
+              <div id="iconThemeImg"></div>
+              <div id="iconThemeLabel">美化</div>
             </div>
-
-            <div class="tk17-dashed" style="display:none;"></div>
+            <div id="iconSettings">
+              <div id="iconSettingsImg"></div>
+              <div id="iconSettingsLabel">设置</div>
+            </div>
           </div>
         </div>
         
-        <!-- 第三行：圆头像 -->
+        <!-- 双头像气泡聊天区域 -->
         <div id="hlAvatarsRow" class="hl-avatars-row">
           <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
             <div class="hl-bubble hl-bubble-right">
@@ -158,12 +94,9 @@
               <div class="hl-bubble-arrow-inner"></div>
               <span class="hl-bubble-display" id="hlInputLeft"></span>
             </div>
-             <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
+            <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
               <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
+                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/><path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
                 <div class="hl-avatar-bg" id="hlImgLeft"></div>
               </div>
             </div>
@@ -178,12 +111,9 @@
               <div class="hl-bubble-arrow-inner"></div>
               <span class="hl-bubble-display" id="hlInputRight"></span>
             </div>
-                 <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
+            <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
               <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
+                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/><path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
                 <div class="hl-avatar-bg" id="hlImgRight"></div>
               </div>
             </div>
@@ -193,41 +123,120 @@
           </div>
         </div>
 
-        <!-- 第四行：文字卡片 -->
+        <!-- 文本框 -->
         <div id="edenCard">
           <div id="edenText">文字填写区域，可以多行</div>
         </div>
 
       </div>
-    </section>
-    
-    <!-- 第二页 -->
-    <section class="screen-page screen-page-2">
-      <div class="screen-page-inner" style="position:relative;height:100%;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
-        <div id="puzzleCard"></div>
-        <div class="pixel-dialog" id="hlTextCard" style="max-width:320px;width:100%;">
-          <div class="pixel-header">
-            <div class="pixel-hearts">
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-              <div class="pixel-heart"><div class="ph-core"></div></div>
-            </div>
-            <div class="pixel-btns">
-              <div class="pixel-btn minimize"></div>
-              <div class="pixel-btn maximize"></div>
-              <div class="pixel-btn close"></div>
+   </section>
+
+   <!-- 🌟 第二页 🌟 -->
+   <section class="screen-page screen-page-2">
+      <div class="screen-page-inner" style="position:relative; height:100%; padding:0;">
+        <div class="page2-scroll-wrapper">
+
+          <!-- 日历票券 -->
+          <div id="row0" style="margin-top: 10px; width: calc(100% + 36px); margin-left: -18px;">
+            <div class="tk17" id="wtCard">
+              <div class="tk17-bgimg" id="tkBgArea"></div>
+              <div class="tk17-glass" id="tkGlass">
+                <div class="tk17-stripes"></div>
+              </div>
+              <div class="tk17-left">
+                <div class="tk17-profile-area">
+                  <div class="tk17-avatar" id="tkAvatarBg"></div>
+                  <div class="tk17-name-loc">
+                    <div class="tk17-msg-name" id="tkMsgName">昵称</div>
+                    <div class="tk17-msg-loc">
+                      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+                      <span id="tkMsgLoc">地点</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="tk17-sign" id="tkMsgSign">签名</div>
+                <div class="tk17-divider"></div>
+                <div class="tk17-datetime">
+                  <span id="calMonthDay">06/10</span>
+                  <span id="calWeekday">Wednesday</span>
+                  <span id="calClock">00:00:00</span>
+                </div>
+              </div>
+              <div class="tk17-sep">
+                <div class="tk17-notch-top"></div>
+                <div class="tk17-notch-bot"></div>
+              </div>
+              <div class="tk17-right">
+                <div id="wtWeatherBg" class="tk17-weather-layer"></div>
+                <div class="tk17-right-info">
+                  <div class="tk17-wt-temp" id="calTemp">--°C</div>
+                  <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
+                </div>
+              </div>
+              <div class="tk17-dashed"></div>
             </div>
           </div>
-          <div class="pixel-body">
-            <div class="pixel-text-area">
-              <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
-              <div class="pixel-text-divider"></div>
-              <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
+
+          <!-- 双卡片 -->
+          <div id="row1" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+            <div class="card-group card-group-left">
+              <div class="bx-w" id="profileCard-L" data-side="left">
+                <div class="bx-tag-wrap">
+                  <div class="bx-tag bx-tag1 bx-tag-placeholder"></div>
+                  <div class="bx-tag bx-tag2 bx-tag-placeholder"></div>
+                </div>
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-sub"></div>
+                  </div>
+                </div></div>
+              </div>
+            </div>
+
+            <div class="card-group card-group-right">
+              <div class="bx-w" id="profileCard-R" data-side="right">
+                <div class="bx-cw"><div class="bx-cd">
+                  <div class="bx-side-ribbon">
+                    <div class="bx-ribbon-tab r1 bx-ribbon-placeholder"></div>
+                    <div class="bx-ribbon-tab r2 bx-ribbon-placeholder"></div>
+                  </div>
+                  <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                  <div class="bx-name-bar">
+                    <div class="bx-sub"></div>
+                  </div>
+                </div></div>
+              </div>
             </div>
           </div>
+
+          <!-- 保留物件 -->
+          <div id="puzzleCard" style="margin-top:10px;"></div>
+          <div class="pixel-dialog" id="hlTextCard" style="max-width:320px;width:100%;">
+            <div class="pixel-header">
+              <div class="pixel-hearts">
+                <div class="pixel-heart"><div class="ph-core"></div></div>
+                <div class="pixel-heart"><div class="ph-core"></div></div>
+                <div class="pixel-heart"><div class="ph-core"></div></div>
+              </div>
+              <div class="pixel-btns">
+                <div class="pixel-btn minimize"></div>
+                <div class="pixel-btn maximize"></div>
+                <div class="pixel-btn close"></div>
+              </div>
+            </div>
+            <div class="pixel-body">
+              <div class="pixel-text-area">
+                <span class="pixel-text-display" id="hlTextTop" data-placeholder="第一行..."></span>
+                <div class="pixel-text-divider"></div>
+                <span class="pixel-text-display" id="hlTextMid" data-placeholder="第二行..."></span>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
-    </section>
+   </section>
 
   </div>
   <div class="screen-indicators">
@@ -264,56 +273,32 @@
 <!-- ====== Toast ====== -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- ====== JS ====== -->
+<!-- ====== JS 部分 ====== -->
 <script>
-// ========== PWA 底部适配 ==========
 (function() {
   function adjustPWABottomBar() {
-    var isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                window.navigator.standalone === true;
-    
-    // 非 PWA 模式不需要调整
+    var isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     if (!isPWA) return;
-    
-    // 获取 safe-area-inset-bottom 实际值
     var div = document.createElement('div');
     div.style.cssText = 'position: fixed; bottom: env(safe-area-inset-bottom, 0px); visibility: hidden; height: 0;';
     document.body.appendChild(div);
     var bottomGap = parseFloat(getComputedStyle(div).bottom) || 0;
     document.body.removeChild(div);
-    
-    // 根据实际距离动态调整页面指示器和 Dock 栏
     var indicator = document.querySelector('.screen-indicators');
     var dock = document.querySelector('.dock');
-    
     if (bottomGap > 30) {
-      // 带 Home Bar 的 PWA
       if (indicator) indicator.style.bottom = '10px';
       if (dock) dock.style.bottom = '20px';
     } else if (bottomGap > 15) {
-      // 不带 Home Bar 的 PWA
       if (indicator) indicator.style.bottom = '6px';
       if (dock) dock.style.bottom = '15px';
     } else {
-      // 普通模式兜底
       if (indicator) indicator.style.bottom = '4px';
       if (dock) dock.style.bottom = '25px';
     }
-    
-    // 同时调整内容区底部距离
-    var screenPages = document.querySelectorAll('.screen-page');
-    if (screenPages.length && bottomGap > 30) {
-      for (var i = 0; i < screenPages.length; i++) {
-        screenPages[i].style.paddingBottom = '20px';
-      }
-    }
   }
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', adjustPWABottomBar);
-  } else {
-    adjustPWABottomBar();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', adjustPWABottomBar);
+  else adjustPWABottomBar();
   window.addEventListener('resize', adjustPWABottomBar);
 })();
 </script>
@@ -333,9 +318,7 @@
       if(document.readyState === 'complete' || document.readyState === 'interactive'){
         App.LS.onReady(function(){ App.init(); });
       } else {
-        window.addEventListener('DOMContentLoaded', function(){
-          App.LS.onReady(function(){ App.init(); });
-        });
+        window.addEventListener('DOMContentLoaded', function(){ App.LS.onReady(function(){ App.init(); }); });
       }
       return;
     }
@@ -350,5 +333,3 @@
 </script>
 </body>
 </html>
-
-  
