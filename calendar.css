@@ -105,23 +105,24 @@
 .tk17-datetime { display: flex; align-items: center; gap: 20px; font-size: 18px; font-weight: 400; }
 .tk17-datetime #calMonthDay { font-size: 19px; font-weight: 400; }
 
-/* 12. 中间手账金属环连接区 (完美桥接10px缝隙) */
+/* 12. 中间缝隙与连接符号容器 */
 .tk17-rings-gap {
-  width: 10px; flex-shrink: 0; position: relative; z-index: 5;
+  width: 14px; /* 稍微撑开一点，让丝线刚好搭在左右两边 */
+  flex-shrink: 0; position: relative; z-index: 5;
   display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
   padding: 12px 0;
 }
 
-.tk17-ring {
-  width: 22px; height: 6px; border-radius: 4px;
-  /* 剔透的半透明渐变 */
-  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.15) 100%);
-  /* 灵魂毛玻璃效果 */
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  /* 柔和的边缘发光与极弱的底阴影，去掉生硬的边框 */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04), inset 0 1px 4px rgba(255,255,255,0.9);
-  border: 1px solid rgba(255,255,255,0.4);
+/* 13. 白色符文丝线连接 (朦胧微光) */
+.tk17-thread {
+  color: #ffffff !important;
+  font-size: 16px; /* 控制符号大小 */
+  line-height: 1;
+  opacity: 0.95;
+  /* 加一层极温柔的发光，以及微弱阴影保证在亮色背景下也不隐形 */
+  text-shadow: 0 0 5px rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.1); 
+  user-select: none;
+  transform: scaleX(1.4); /* 横向稍微拉伸一点，像丝带绑得更牢的质感 */
 }
 
 /* 14. 右侧天气专属区：左边直角贴合缝隙，右边5px圆角 */
