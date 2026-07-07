@@ -980,37 +980,17 @@ input[type="range"] {
 }
 
 /* =========================
-   终极修复版：彻底锁死屏幕，绝不溢出、绝不自动放大！
+   一劳永逸：防溢出 + 防缩放
 ========================= */
-
-/* 1. 修复防输入框点击自动放大 (iOS的流氓机制，必须 >= 16px) */
-.alex-input {
-  font-size: 16px !important; 
+.page-slider {
+  overflow: hidden;
 }
 
-/* 2. 修复宽度撑爆的问题 */
-.alex-full-page {
-  padding: 0 !important; 
-  width: 100vw !important; 
-  overflow: hidden !important; /* 强制切断所有溢出，超出屏幕的直接杀掉 */
-}
-
-/* 必须是 100%，绝不能用 100vw，否则会突破父级容器 */
-.alex-full-page .screen-page-inner {
-  width: 100% !important;
-  max-width: 100% !important; 
-  padding: 0 !important;
-  box-sizing: border-box;
-}
-
-.alex-page2-scroll {
-  padding-top: calc(20px + env(safe-area-inset-top, 20px));
-  box-sizing: border-box;
-  width: 100%;
-}
-
-/* 第一页的横向也锁一下，防侧漏 */
-.screen-page-1 .screen-page-inner {
-  max-width: 100% !important;
+.screen-page-inner {
   overflow-x: hidden;
+}
+
+/* iOS 输入框点击防自动放大 */
+.alex-input {
+  font-size: 16px !important;
 }
