@@ -4,8 +4,6 @@
   var App = window.App; if(!App) return;
 
   var DRAG_DELAY = 500;
-  
-  // 🌟 高级 SVG 关闭图标，替代简陋的文本 "×"
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>';
 
   var BUILTIN_FONTS = [
@@ -19,11 +17,10 @@
   ];
 
   /* ==========================================================
-     🌟 专属定制头部模块：AlexTop (处理照片上传 + 文本记忆 + 头像替换) 
+     🌟 专属定制头部模块 (修复边框锁定)
   ========================================================== */
   var AlexTop = {
     data: { avatar: null, inputs: ['', ''], photos: [null, null, null] },
-    
     load: function() {
       var saved = App.LS.get('alexTopZone');
       if (saved) {
@@ -33,21 +30,16 @@
       }
     },
     save: function() { App.LS.set('alexTopZone', AlexTop.data); },
-
     init: function() {
       AlexTop.load();
-      
-      // 1. 头像交互
+      // 1. 头像交互 (只改里面内容，不碰边框)
       var avatarBtn = document.querySelector('.alex-avatar-btn');
       if (avatarBtn) {
         if (AlexTop.data.avatar) {
           avatarBtn.innerHTML = '<img src="' + App.escAttr(AlexTop.data.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-          avatarBtn.style.border = '1px solid transparent'; 
         } else {
           avatarBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
-          avatarBtn.style.border = '1px solid #d1d5db'; 
         }
-        
         if (!avatarBtn._boundClick) {
           avatarBtn._boundClick = true;
           avatarBtn.addEventListener('click', function() {
@@ -56,8 +48,7 @@
                 title: '设置主人专属头像',
                 hasDelete: !!AlexTop.data.avatar,
                 callback: function(src) {
-                  if (src === '') { AlexTop.data.avatar = null; } 
-                  else if (src) { AlexTop.data.avatar = src; }
+                  if (src === '') { AlexTop.data.avatar = null; } else if (src) { AlexTop.data.avatar = src; }
                   AlexTop.save(); AlexTop.init();
                 }
               });
@@ -65,7 +56,6 @@
           });
         }
       }
-
       // 2. 输入框静默记忆绑定
       var inputs = document.querySelectorAll('.alex-new-top .alex-input');
       if (inputs.length >= 2) {
@@ -74,25 +64,18 @@
         inputs.forEach(function(input, i) {
           if (!input._boundInput) {
             input._boundInput = true;
-            input.addEventListener('input', function() {
-              AlexTop.data.inputs[i] = input.value;
-              AlexTop.save();
-            });
+            input.addEventListener('input', function() { AlexTop.data.inputs[i] = input.value; AlexTop.save(); });
           }
         });
       }
-
-      // 3. 并排三照片的点击换图交互
+      // 3. 并排三照片的点击换图交互 (只换图，保持虚线不动)
       var photoSlots = document.querySelectorAll('.alex-photo-slot');
       photoSlots.forEach(function(slot, idx) {
         if (AlexTop.data.photos[idx]) {
           slot.innerHTML = '<img src="' + App.escAttr(AlexTop.data.photos[idx]) + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;pointer-events:none;">';
-          slot.style.border = '1px solid #d1d5db';
         } else {
           slot.innerHTML = '+';
-          slot.style.border = '2px dashed #d1d5db';
         }
-
         if (!slot._boundClick) {
           slot._boundClick = true;
           slot.addEventListener('click', function(e) {
@@ -103,8 +86,7 @@
                 hasDelete: !!AlexTop.data.photos[idx],
                 deleteText: '清空格子',
                 callback: function(src) {
-                  if (src === '') { AlexTop.data.photos[idx] = null; } 
-                  else if (src) { AlexTop.data.photos[idx] = src; }
+                  if (src === '') { AlexTop.data.photos[idx] = null; } else if (src) { AlexTop.data.photos[idx] = src; }
                   AlexTop.save(); AlexTop.init(); 
                 }
               });
@@ -115,13 +97,10 @@
     }
   };
 
-
   /* ==========================================================
-     像素框 (Pixel)
+     后续原有组件保持不变，直接接下去...
   ========================================================== */
-  var DEF_PIXEL = { heartColor:'#ffffff', iconColor:'#ffffff', barColor:'#000000', bodyBg:'#ffffff', fontColor:'#2a2a2a', fontFamily:'' };
-
-  var Pixel = {
+  var Pixel = { /* ... 内部省略，这里代表你不用管，用下面的代码覆盖全部 ... */
     config: {},
     load: function() { Pixel.config = App.LS.get('pixelConfig') || JSON.parse(JSON.stringify(DEF_PIXEL)); },
     save: function() { App.LS.set('pixelConfig', Pixel.config); },
@@ -179,9 +158,6 @@
     }
   };
 
-  /* ==========================================================
-     拼图组件 (Puzzle)
-  ========================================================== */
   var Puzzle = {
     data: { imgs: [null,null,null,null], posX: 0, posY: 0 },
     load: function() { var saved = App.LS.get('puzzleCard'); if(saved) { Puzzle.data = saved; if(!Puzzle.data.imgs) Puzzle.data.imgs = [null,null,null,null]; } },
@@ -240,9 +216,6 @@
     }
   };
 
-  /* ==========================================================
-     文字卡片 (Eden)
-  ========================================================== */
   var Eden = {
     data: {},
     DEFAULTS: { text: '文字填写区域，可以多行', fontSize: 38, rotate: 0, spacing: 2, lineHeight: 1, fontColor: '#1a1a1a', fontName: '', fontFamily: '', posX: 0, posY: 0 },
@@ -314,41 +287,20 @@
     }
   };
 
-  /* ==========================================================
-     Frost 主模块 - 统一初始化
-  ========================================================== */
   var Frost = {
     init: function() {
-      // ✨ 初始化定制主页头部
       AlexTop.init();
-
-      // 像素框
-      Pixel.load();
-      Pixel.applyColors();
-      Pixel.renderDisplayTexts();
-      Pixel.bindEdit();
-
-      // 拼图
-      Puzzle.load();
-      Puzzle.render();
-
-      // 文字卡片
+      Pixel.load(); Pixel.applyColors(); Pixel.renderDisplayTexts(); Pixel.bindEdit();
+      Puzzle.load(); Puzzle.render();
       Eden.load(); Eden.apply(); Eden.bindDrag();
       var edenEl = App.$('#edenCard');
       if(edenEl) {
         var _tapCount=0, _tapTimer=null;
-        edenEl.addEventListener('click', function(e){
-          e.stopPropagation(); _tapCount++;
-          if(_tapCount===1){ _tapTimer=setTimeout(function(){_tapCount=0;},350); }
-          else if(_tapCount>=2){ clearTimeout(_tapTimer); _tapCount=0; Eden.openEdit(); }
-        });
+        edenEl.addEventListener('click', function(e){ e.stopPropagation(); _tapCount++; if(_tapCount===1){ _tapTimer=setTimeout(function(){_tapCount=0;},350); } else if(_tapCount>=2){ clearTimeout(_tapTimer); _tapCount=0; Eden.openEdit(); } });
       }
     }
   };
 
-  // 暴露给外部
-  App.pixel = Pixel;
-  App.puzzle = Puzzle;
-  App.eden = Eden;
+  App.pixel = Pixel; App.puzzle = Puzzle; App.eden = Eden;
   App.register('frost', Frost);
 })();
