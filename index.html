@@ -45,42 +45,36 @@
     <section class="screen-page screen-page-1">
       <div class="screen-page-inner">
 
-        <!-- ★ 新家：票券日历 (重构拉通宽版，直接镇场顶端) -->
+               <!-- ★ 票券日历 (头像左侧独立，天气与信息独立框在右侧) -->
         <div id="row0">
           <div class="tk17" id="wtCard">
-            <!-- 底图与磨砂遮罩 -->
-            <div class="tk17-bgimg" id="tkBgArea"></div>
-            <div class="tk17-glass" id="tkGlass"></div>
             
-            <!-- 天气特效全覆盖层 (已扩大至整个框体) -->
-            <div id="wtWeatherBg" class="tk17-weather-layer"></div>
+            <!-- 【左侧】纯独立的悬浮头像区，无任何拘束 -->
+            <div class="tk17-avatar-wrapper">
+              <div class="tk17-avatar" id="tkAvatarBg"></div>
+            </div>
 
-            <!-- 卡片内容交互包裹区 -->
-            <div class="tk17-inner">
-              
-              <!-- 左：干净剔透的独立头像区 -->
-              <div class="tk17-left-part">
-                <div class="tk17-avatar" id="tkAvatarBg"></div>
-              </div>
+            <!-- 【右侧】独立的长形画框：背景、玻璃遮罩、天气、文字全部框在这里面 -->
+            <div class="tk17-right-card">
+              <!-- 卡片的底层：背景图、磨砂遮罩、和填满整个右框的天气动效 -->
+              <div class="tk17-bgimg" id="tkBgArea"></div>
+              <div class="tk17-glass" id="tkGlass"></div>
+              <div id="wtWeatherBg" class="tk17-weather-layer"></div>
 
-              <!-- 右：微透玻璃板把【昵称+签名+天气】完全框住 -->
-              <div class="tk17-right-part">
-                <!-- 姓名与签名 -->
+              <!-- 卡片的上层：昵称、签名与天气数据 -->
+              <div class="tk17-info-inner">
                 <div class="tk17-text-col">
                   <div class="tk17-msg-name" id="tkMsgName">昵称</div>
                   <div class="tk17-sign" id="tkMsgSign">签名</div>
                 </div>
                 
-                <!-- 天气及触控绑定的交互点 -->
-                <div class="tk17-right">
-                  <div class="tk17-right-info">
-                    <div class="tk17-wt-temp" id="calTemp">--°C</div>
-                    <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
-                  </div>
+                <div class="tk17-wt-col">
+                  <div class="tk17-wt-temp" id="calTemp">--°C</div>
+                  <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
                 </div>
               </div>
-
             </div>
+
           </div>
         </div>
 
