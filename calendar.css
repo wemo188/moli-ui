@@ -44,8 +44,8 @@
 .tk17-right-card {
   position: relative;
   flex: 1; /* 撑满剩下的横向空间 */
-  min-height: 80px;
-  border-radius: 10px; /* 右边独立大圆角框 */
+  min-height: 90px;
+  border-radius: 16px; /* 右边独立大圆角框 */
   overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
   background: rgba(255, 255, 255, 0.2); 
   border: 1.5px solid #d1d5db;
@@ -73,7 +73,7 @@
 .tk17-info-inner {
   position: relative; z-index: 3;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px;
+  padding: 14px 18px;
   box-sizing: border-box;
 }
 
