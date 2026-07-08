@@ -513,23 +513,26 @@ img.img-fill { transform: none !important; }
 .cp-panel {
   pointer-events: auto;
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: env(safe-area-inset-bottom, 20px); /* 悬浮起来一点点，不要死死贴着底下 */
+  left: 0; right: 0;
   max-width: 400px; margin: 0 auto;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 20px 20px 0 0;
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 10px));
-  box-shadow: 0 -2px 20px rgba(0,0,0,0.12);
+  
+  height: 480px; /* 👉 直接锁死高度！再也不会随内容忽长忽短！ */
+  max-height: 70vh; /* 如果手机屏幕太小，最高只占70% */
+  
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-radius: 20px; /* 四边都变圆角，变成真正高级的悬浮窗 */
+  padding: 16px 16px 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
   display: flex; flex-direction: column; gap: 10px;
   
-  /* 👉 死死限制住它最高只能 65%屏幕高度，多了必须内部滚动！ */
-  max-height: 65vh; 
-  height: fit-content; 
   overflow-y: auto !important; 
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y pinch-zoom;
-  transform-origin: center center; /* 从面板中心放大缩小，手感最好 */
+  transform-origin: center center;
   will-change: transform;
 }
 
