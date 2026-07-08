@@ -45,7 +45,7 @@
   position: relative;
   flex: 1; /* 撑满剩下的横向空间 */
   min-height: 110px;
-  border-radius: 5px; /* 右边独立大圆角框 */
+  border-radius: 10px; /* 右边独立大圆角框 */
   overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
   background: rgba(255, 255, 255, 0.2); 
   border: 0.5px solid #d1d5db;
@@ -76,12 +76,12 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px;
   box-sizing: border-box;
-  min-height: 70px;
+  min-height: 110px;
 }
 
 .tk17-text-col {
   display: flex; flex-direction: column; justify-content: center; gap: 3px;
-  min-height: 70px;
+  min-height: 110px;
 }
 .tk17-msg-name { font-weight: 700; font-size: 16px; letter-spacing: 1px; }
 .tk17-sign { font-weight: 600; font-size: 14px; opacity: 0.85; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -90,7 +90,7 @@
 .tk17-wt-col {
   display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; gap: 5px;
   padding-left: 14px;
-  padding-top: 5px;
+  padding-top: 2px;
 }
 .tk17-wt-temp { font-size: 22px; font-weight: 800; line-height: 1; }
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
