@@ -541,15 +541,25 @@ var Cal={
     });
   },
 
-  bindClicks:function(){
-    var rightEl=App.$('.tk17-right');if(!rightEl)return;
-    var lastTap=0;
-    rightEl.addEventListener('click',function(e){
-      e.stopPropagation();
-      var now=Date.now();
-      if(now-lastTap<350){Cal.openEditPanel();}
-      lastTap=now;
-    });
+  bindClicks: function() {
+    // 获取新排版里的头像区和右侧天气框
+    var avatarEl = App.$('.tk17-avatar');
+    var rightCardEl = App.$('.tk17-right-card');
+    
+    var lastTapAv = 0;
+    var lastTapCard = 0;
+
+    // 【1】给左侧独立出来的头像加上双击感应
+    if (avatarEl) {
+      avatarEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var now = Date.now();
+        // 两次点击间隔小于 350 毫秒即视为双击，弹出设置卡片
+        if (now - lastTapAv < 350) {
+          Cal.openEditPanel();
+        }
+        lastTapAv = now;
+      });
   },
 
   startAutoRefresh:function(){
