@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -8,7 +9,10 @@ var Cal={
   city:'',
   _clockTimer:null,
   _refreshTimer:null,
-  _weatherAnimate:true,
+  
+  /* 🌟 全新三挡状态：'animated'(动态), 'static'(静态), 'none'(彻底关闭) */
+  _weatherMode: 'animated', 
+  
   _dragX:0,
   _dragY:0,
 
@@ -30,31 +34,32 @@ var Cal={
   _codeToEffect:function(code){
     var c=parseInt(code)||0;
     var h=new Date().getHours();
-    var isNight = (h>=19 || h<6); // 判断是不是晚上7点到早上6点
-
-    // 晴天(113) 和 多云(116)：晚上一律显示唯美的月亮星空！
+    var isNight = (h>=19 || h<6);
     if(c===113 || c===116){
       return isNight ? 'night' : (c===113 ? 'sunny' : 'cloudy');
     }
-    
-    // 其他天气保持原样
-    if(c===119||c===122)return 'overcast'; // 阴天
-    if(c===143||c===248||c===260)return 'fog'; // 雾
+    if(c===119||c===122)return 'overcast';
+    if(c===143||c===248||c===260)return 'fog';
     if([176,263,266,281,284,293,296].indexOf(c)!==-1)return 'lightrain';
     if([299,302,305,308,311,314,353,356,359,362,365].indexOf(c)!==-1)return 'heavyrain';
     if([200,386,389].indexOf(c)!==-1)return 'thunder';
     if([179,182,185,227,317,320,323,326,368].indexOf(c)!==-1)return 'lightsnow';
     if([230,329,332,335,338,371,374,377,392,395].indexOf(c)!==-1)return 'heavysnow';
-    
-    // 兜底选项，万一遇到不认识的，晚上也给个月亮
     return isNight ? 'night' : 'cloudy';
   },
 
   load:function(){
     Cal.city=App.LS.get('calCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
-    var anim=App.LS.get('calWeatherAnimate');
-    Cal._weatherAnimate=anim!==false;
+    
+    // 🌟 获取存档里的模式，如果没有就兼容以前的数据
+    var savedMode = App.LS.get('calWeatherMode');
+    if (savedMode === undefined || savedMode === null) {
+       var legacy = App.LS.get('calWeatherAnimate');
+       Cal._weatherMode = (legacy !== false) ? 'animated' : 'static';
+    } else {
+       Cal._weatherMode = savedMode;
+    }
   },
 
   save:function(){
@@ -94,7 +99,16 @@ var Cal={
     bg.innerHTML='';
     Cal.applyWeatherText();
     var card=App.$('#wtCard');
-    if(card){card.classList.remove('wt-static');if(!Cal._weatherAnimate)card.classList.add('wt-static');}
+    
+    // 处理冻结特效的逻辑
+    if(card) {
+       card.classList.remove('wt-static');
+       if(Cal._weatherMode === 'static') card.classList.add('wt-static');
+    }
+
+    // 🌟 终极关停术！如果选了关闭视觉特效，连任何元素都不塞入背景！干干净净！
+    if(Cal._weatherMode === 'none') return; 
+
     if(!Cal.weather||!Cal.weather.code){
       var h=new Date().getHours();
       if(h>=19||h<6)Cal._renderNight(bg);
@@ -152,17 +166,14 @@ var Cal={
   applyTexts:function(){
     var nameEl=App.$('#tkMsgName');
     var signEl=App.$('#tkMsgSign');
-    var locEl=App.$('#tkMsgLoc');
     
     var n=App.LS.get('tkMsgName');
     var s=App.LS.get('tkMsgSign');
-    var l=App.LS.get('tkMsgLoc');
     var color = App.LS.get('tkColor');
     var avatar = App.LS.get('tkAvatar');
 
     if(nameEl&&n)nameEl.textContent=n;
     if(signEl&&s)signEl.textContent=s;
-    if(locEl&&l)locEl.textContent=l;
 
     var card = App.$('#wtCard');
     if (card) {
@@ -221,8 +232,12 @@ var Cal={
       return;
     }
 
-    var hasBgImg=!!App.LS.get('calBgImg');
     var currentColor = App.LS.get('tkColor') || '#111111';
+
+    // 🌟 读取模式以准备展示状态名字
+    var modeName = '动态';
+    if(Cal._weatherMode === 'static') modeName = '静态';
+    else if(Cal._weatherMode === 'none') modeName = '关闭';
 
     var overlay=document.createElement('div');
     overlay.className='pc-edit-overlay';
@@ -231,10 +246,9 @@ var Cal={
 
     var panel=document.createElement('div');
     panel.className='pc-edit-panel';
-    // 不再用 CSS 锁死坐标，留给拖拽 JS 处理
     
     panel.innerHTML=
-      '<div class="pc-header">票券设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
+      '<div class="pc-header">日历排版设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       
       '<div class="pc-body">'+
         '<div style="display:flex; gap:12px;">'+
@@ -264,18 +278,14 @@ var Cal={
             '</div>'+
           '</div>'+
           '<div class="pc-group" style="width:70px; flex-shrink:0;">'+
-            '<span class="pc-label">动态特效</span>'+
-            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:100%;font-size:11px;font-weight:700;">'+(Cal._weatherAnimate?'开':'关')+'</div>'+
+            '<span class="pc-label">视觉特效</span>'+
+            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:100%;font-size:11px;font-weight:700;">'+ modeName +'</div>'+
           '</div>'+
         '</div>'+
 
         '<div class="pc-group">'+
           '<span class="pc-label">昵称</span>'+
           '<input type="text" class="pc-input" id="wtNameInput" placeholder="昵称..." value="'+App.esc(App.LS.get('tkMsgName')||'')+'">'+
-        '</div>'+
-        '<div class="pc-group">'+
-          '<span class="pc-label">地点</span>'+
-          '<input type="text" class="pc-input" id="wtLocInput" placeholder="地点..." value="'+App.esc(App.LS.get('tkMsgLoc')||'')+'">'+
         '</div>'+
         '<div class="pc-group">'+
           '<span class="pc-label">签名</span>'+
@@ -298,17 +308,15 @@ var Cal={
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 
-    // ★ 关键1：用 JS 赋予初始“底部居中”坐标，不影响后续拖拽
     var pRect = panel.getBoundingClientRect();
     var startLeft = (window.innerWidth - pRect.width) / 2;
-    var startTop = window.innerHeight - pRect.height - 40; // 距离底部40px
+    var startTop = window.innerHeight - pRect.height - 40;
     if (startTop < 10) startTop = 10;
     
     panel.style.left = startLeft + 'px';
     panel.style.top = startTop + 'px';
-    panel.style.margin = '0'; // 必须清空以防止居中冲突
+    panel.style.margin = '0';
 
-    // ★ 关键2：专门给这块卡片绑定拖拽逻辑！
     var header = panel.querySelector('.pc-header');
     var isDragging = false;
     var dragStartX = 0, dragStartY = 0;
@@ -324,7 +332,7 @@ var Cal={
       panelStartLeft = rect.left;
       panelStartTop = rect.top;
       
-      panel.style.transform = 'none'; // 彻底释放位移束缚
+      panel.style.transform = 'none';
       panel.style.bottom = 'auto';
       panel.style.right = 'auto';
     }
@@ -339,15 +347,12 @@ var Cal={
       panel.style.top = (panelStartTop + dy) + 'px';
     }
 
-    function onDragEnd() {
-      isDragging = false;
-    }
+    function onDragEnd() { isDragging = false; }
 
     header.addEventListener('touchstart', onDragStart, {passive: true});
     document.addEventListener('touchmove', onDragMove, {passive: false});
     document.addEventListener('touchend', onDragEnd);
 
-    // 清理事件，防止残留
     var closePanel = function() {
       document.removeEventListener('touchmove', onDragMove);
       document.removeEventListener('touchend', onDragEnd);
@@ -403,17 +408,14 @@ var Cal={
       App.showToast('已恢复默认头像');
     });
 
-    // ★ 关键3：不仅选色能保存，在调色盘滑动时也会实时改变票券颜色！
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
-         // 确定保存时的逻辑
          panel.querySelector('#wtColorBtn').style.background = color;
          panel.dataset.pickedColor = color;
          var card = App.$('#wtCard');
          if(card) card.style.setProperty('--tk-color', color);
       }, function(color){
-         // 滑动实时预览的逻辑！
          var card = App.$('#wtCard');
          if(card) card.style.setProperty('--tk-color', color);
       });
@@ -430,11 +432,24 @@ var Cal={
       });
     });
 
+    /* 🌟 全新的三挡控制事件核心 */
     panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
-      Cal._weatherAnimate=!Cal._weatherAnimate;
-      App.LS.set('calWeatherAnimate',Cal._weatherAnimate);
-      this.textContent=Cal._weatherAnimate?'开':'关';
-      Cal.renderWeatherEffect();
+      if(Cal._weatherMode === 'animated') {
+         Cal._weatherMode = 'static';
+      } else if (Cal._weatherMode === 'static') {
+         Cal._weatherMode = 'none';
+      } else {
+         Cal._weatherMode = 'animated';
+      }
+
+      App.LS.set('calWeatherMode', Cal._weatherMode);
+
+      var txt = '关闭';
+      if (Cal._weatherMode === 'animated') txt = '动态';
+      else if (Cal._weatherMode === 'static') txt = '静态';
+      
+      this.textContent = txt;
+      Cal.renderWeatherEffect(); // 点击立即实时预览
     });
 
     panel.querySelector('#wtFontSelect').addEventListener('change',function(){
@@ -446,13 +461,11 @@ var Cal={
     panel.querySelector('#wtEditSave').addEventListener('click',function(){
       var name=panel.querySelector('#wtNameInput').value.trim();
       var sign=panel.querySelector('#wtSignInput').value.trim();
-      var loc=panel.querySelector('#wtLocInput').value.trim();
       var font=panel.querySelector('#wtFontSelect').value;
       var newColor = panel.dataset.pickedColor; 
       
       App.LS.set('tkMsgName',name);
       App.LS.set('tkMsgSign',sign);
-      App.LS.set('tkMsgLoc',loc);
       App.LS.set('tkFontFamily',font);
       if(newColor) App.LS.set('tkColor', newColor);
       
@@ -463,7 +476,7 @@ var Cal={
     });
   },
 
-      initDrag:function(){
+  initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
     var DELAY=500;
@@ -472,7 +485,6 @@ var Cal={
     
     if(saved){
       Cal._dragX=saved.x||0;Cal._dragY=saved.y||0;
-      // 🌟 初始位置：注入变量 --t
       var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px)';
       card.style.setProperty('--t', tf);
       card.style.transform = tf;
@@ -483,16 +495,11 @@ var Cal={
       longPressed=false;moved=false;
       timer=setTimeout(function(){
         longPressed=true;origX=Cal._dragX;origY=Cal._dragY;
-        
-        // 🌟 拿起的瞬间：附加阻尼动画、放大 1.05 倍、触发灵魂摇晃！
         card.classList.add('is-grabbed'); 
         card.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
-        
-        // 🌟 核心修复：把坐标存进变量 --t，防止被摇晃动画闪现覆盖
         var tf = 'translate('+origX+'px,'+origY+'px) scale(1.05)';
         card.style.setProperty('--t', tf);
         card.style.transform = tf;
-        
         card.style.zIndex='999';
         card.style.boxShadow='0 25px 50px rgba(0,0,0,0.18)'; 
         if(navigator.vibrate)navigator.vibrate(15);
@@ -505,10 +512,7 @@ var Cal={
       if(!longPressed)return;
       moved=true;e.preventDefault();e.stopPropagation();
       Cal._dragX=origX+(t.clientX-startX);Cal._dragY=origY+(t.clientY-startY);
-      
       card.style.transition='none';
-      
-      // 🌟 移动时：注入变量 --t
       var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1.05)';
       card.style.setProperty('--t', tf);
       card.style.transform = tf;
@@ -516,22 +520,14 @@ var Cal={
 
     card.addEventListener('touchend',function(){
       clearTimeout(timer);timer=null;
-      
-      // 🌟 落地松手时：清理摇晃状态和阴影
       card.classList.remove('is-grabbed');
       card.style.boxShadow='';
-      
       if(longPressed){
         if(moved)App.LS.set('wtCardPos',{x:Cal._dragX,y:Cal._dragY});
-        
-        // 🌟 落地松手：果冻回弹
         card.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        
-        // 🌟 落地时：注入变量 --t
         var tf = 'translate('+Cal._dragX+'px,'+Cal._dragY+'px) scale(1)';
         card.style.setProperty('--t', tf);
         card.style.transform = tf;
-        
         card.style.zIndex=''; 
         setTimeout(function(){ card.style.transition=''; }, 350);
       } else {
@@ -542,27 +538,23 @@ var Cal={
   },
 
   bindClicks: function() {
-    // 获取新排版里的头像区和右侧天气框
     var avatarEl = App.$('.tk17-avatar');
     var rightCardEl = App.$('.tk17-right-card');
     
     var lastTapAv = 0;
     var lastTapCard = 0;
 
-    // 【1】给左侧独立出来的头像加上双击感应
     if (avatarEl) {
       avatarEl.addEventListener('click', function(e) {
         e.stopPropagation();
         var now = Date.now();
-        // 两次点击间隔小于 350 毫秒即视为双击，弹出设置卡片
         if (now - lastTapAv < 350) {
           Cal.openEditPanel();
         }
         lastTapAv = now;
       });
-      }
+    }
 
-    // 【2】给右边的长条卡片也配上双击感应，双重保障
     if (rightCardEl) {
       rightCardEl.addEventListener('click', function(e) {
         e.stopPropagation();
