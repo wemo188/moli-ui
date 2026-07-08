@@ -367,7 +367,7 @@ img.img-fill { transform: none !important; }
   flex-direction: column; /* 🌟 变成上下垂直排列 */
   gap: 10px; /* 🌟 两个头像的上下间距，觉得挤或空可以自己改数字 */
   padding: 0 5px;
-  margin-top: 15px;
+  margin-top: 35px;
 }
 
 /* 右边头像：靠右，且强行排在第一行 */
