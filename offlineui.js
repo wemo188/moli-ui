@@ -14,7 +14,7 @@ var CLOUD_SVG='<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="1
 var ROBOT_SVG='<svg viewBox="0 0 64 64" fill="none"><line x1="32" y1="14" x2="32" y2="10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="6.5" rx="4.5" ry="5.5" fill="currentColor"/><rect x="7" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="51" y="22" width="6" height="12" rx="3" fill="currentColor"/><rect x="12" y="14" width="40" height="32" rx="8" fill="currentColor"/><line x1="26" y1="27" x2="26" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="27" x2="38" y2="33" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
 var STOP_SVG='';
 
-var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,streamOn:true,pageBg:'#ffffff',topBgColor:'transparent',topBgImg:'',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',cardBg:'#ffffff',cardTextColor:'#7ea3c9',cardT1:'',cardT2:'',cardT3:'',cardT4:'',cardFont:'',mode:'bubble',cAvShow:true,cAvNameShow:true,cAvSize:60,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:1,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:60,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:1,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:90,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
+var DEF_AP={chatFont:'',bgBlur:0,bgDark:0,povOn:true,povUser:'second',povChar:'third',wordCount:0,streamOn:true,pageBg:'#ffffff',barBg:'linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%)',barBgImg:'',barBorderColor:'rgba(255,255,255,0.9)',barBorderW:1,barRadius:0,barIconColor:'#adcdea',inputTextColor:'#adcdea',placeholder:'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚',mode:'bubble',cAvShow:true,cAvNameShow:true,cAvSize:60,cAvRadius:50,cAvFrameColor:'#9ca3af',cAvFrameW:1,cAvNameSize:18,cBubbleBg:'linear-gradient(135deg, #ffffff 0%, #edf1f5 40%, #e2e8f0 70%, #f4f7f9 100%)',cBubbleRadius:14,cBubbleBorderColor:'rgba(255,255,255,0.9)',cBubbleBorderW:0,cBubbleWidth:95,cBubbleOpacity:100,cBubbleBlur:0,cTextSize:17,cTextWeight:400,cTextLH:1.85,cTextColor:'#2e4258',cParaGap:8,cLetterGap:0,cQuoteOn:false,cQuoteRec:['curly','straight'],cQuoteDis:'curly',cQuoteColor:'#6b7280',cQuoteSize:17,cQuoteWeight:400,cQuoteItalic:true,cParenOn:false,cParenRec:['full','half'],cParenDis:'full',cParenHide:false,cParenColor:'#6b7280',cParenSize:17,cParenWeight:400,cParenItalic:true,cStarOn:false,cStarHide:true,cStarColor:'#6b7280',cStarSize:17,cStarWeight:400,cStarItalic:true,uAvShow:true,uAvNameShow:true,uAvSize:60,uAvRadius:50,uAvFrameColor:'#7ea3c9',uAvFrameW:1,uAvNameSize:18,uBubbleBg:'linear-gradient(135deg, #ffffff 0%, #f0f7fc 40%, #e0f0fa 70%, #f4f9fd 100%)',uBubbleRadius:14,uBubbleBorderColor:'rgba(255,255,255,0.9)',uBubbleBorderW:0,uBubbleWidth:90,uBubbleOpacity:100,uBubbleBlur:0,uTextSize:17,uTextWeight:400,uTextLH:1.85,uTextColor:'#2e4258',uParaGap:8,uLetterGap:0,quoteOn:false,quoteRec:['curly','straight'],quoteDis:'curly',quoteColor:'#7ea3c9',quoteSize:17,quoteWeight:400,quoteItalic:false,parenOn:false,parenRec:['full','half'],parenDis:'full',parenHide:false,parenColor:'#7ea3c9',parenSize:17,parenWeight:400,parenItalic:true,starOn:false,starHide:true,starColor:'#7ea3c9',starSize:17,starWeight:400,starItalic:true};
 
 function gAp(c){var s=App.LS.get('olAp_'+c);if(!s)return JSON.parse(JSON.stringify(DEF_AP));var r=JSON.parse(JSON.stringify(DEF_AP));Object.keys(s).forEach(function(k){if(r[k]!==undefined)r[k]=s[k];});return r;}
 function sAp(c,a){App.LS.set('olAp_'+c,a);}
@@ -22,7 +22,6 @@ function sw(id,on){return '<div class="ol-sw" id="'+id+'"><div class="ol-sw-trac
 function tg(cls,val,label,sel){return '<div class="ol-tag '+cls+(sel?' active':'')+'" data-val="'+val+'">'+label+'</div>';}
 function fold(id,t,b){return '<div class="ol-fold" id="'+id+'"><div class="ol-fold-head">'+t+'</div><div class="ol-fold-body">'+b+'</div></div>';}
 function eR(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-function h2r(h,a){if(!h)return 'rgba(255,255,255,'+a+')';if(h.indexOf('rgba')>=0)return h.replace(/,\s*[\d.]+\s*\)/,','+a+')');if(h.indexOf('rgb')>=0)return h.replace('rgb','rgba').replace(')',','+a+')');h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];if(h.length!==6)return 'rgba(255,255,255,'+a+')';return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';}
 
 function fmtUI(p,ap){var h='';
 if(p==='cQuote'||p==='quote'){var r=ap[p+'Rec']||[],d=ap[p+'Dis']||'curly';h+='<div class="ol-hint">开启后识别双引号并转换显示，模型都喜欢偷用英文引号，防不住</div><div class="ol-inline-tag-row"><span class="ol-sub-label">识别</span><div class="ol-tag-group">'+tg('ol-'+p+'-qrec','curly','\u201C\u201D',r.indexOf('curly')>=0)+tg('ol-'+p+'-qrec','straight','&quot;&quot;',r.indexOf('straight')>=0)+tg('ol-'+p+'-qrec','corner','「」',r.indexOf('corner')>=0)+'</div></div><div class="ol-inline-tag-row"><span class="ol-sub-label">显示</span><div class="ol-tag-group">'+tg('ol-'+p+'-qdis','curly','\u201C\u201D',d==='curly')+tg('ol-'+p+'-qdis','straight','&quot;&quot;',d==='straight')+tg('ol-'+p+'-qdis','corner','「」',d==='corner')+'</div></div>';}
@@ -41,20 +40,14 @@ var uFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-co
 
 con.innerHTML=
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg"></div>' +
-'<div class="ol-top-bg"></div>' +
-
-/* ★ 回收老机制里的绝妙布局，填入名字和书写状态 */
 '<div class="ol-hd-top" id="olHdTop"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div><div class="ol-hd-typing" id="olTyping"></div></div>' +
-
 '<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
-
 '<div class="ol-nav-fab" id="olNavFab">' +
   '<button class="ol-nav-btn" id="olNavTop" title="页面顶部"><svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>' +
   '<button class="ol-nav-btn" id="olNavBubTop" title="气泡顶部"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>' +
   '<button class="ol-nav-btn" id="olNavBubBot" title="气泡底部"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
   '<button class="ol-nav-btn" id="olNavBot" title="页面底部"><svg viewBox="0 0 24 24"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>' +
 '</div>' +
-
 '<div class="ol-input-wrap" id="olInputWrap">' +
   '<button class="ol-btn-menu" id="olPanelBtn" type="button">'+MENU_SVG+'</button>' +
   '<div class="ol-input-box" id="olInputBox">' +
@@ -65,13 +58,11 @@ con.innerHTML=
 '</div>' +
 
 '<div id="olSettingsPanel" class="half-panel hidden"><div class="hp-handle"></div><div class="hp-header"><button class="hp-close" id="olPanelClose" type="button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="hp-body">' +
-
 '<div class="hp-section-label">聊天设置</div>' +
 '<div class="hp-upload" id="olSbScene"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑场景/时间线</div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">人称称呼 '+sw('olPovOn',ap.povOn)+'</div><div id="olPovSub" style="'+(ap.povOn?'':'display:none;')+'"><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼用户</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povu-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povu-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povu-btn" data-pov="third">第三人称</button></div></div><div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">称呼角色</span><div style="display:flex;gap:12px;flex:1;"><button class="hp-btn ol-povc-btn" data-pov="first">第一人称</button><button class="hp-btn ol-povc-btn" data-pov="second">第二人称</button><button class="hp-btn ol-povc-btn" data-pov="third">第三人称</button></div></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">期望字数</span><input type="number" id="olWordCount" placeholder="留空则由模型自己决定" value="'+(ap.wordCount||'')+'" style="flex:1;min-width:0;height:48px;padding:0 12px;box-sizing:border-box;border:1.5px solid #adcdea;border-radius:8px;font-size:14px;background:#fff;box-shadow:none;outline:none;"></div>' +
 '<div class="ol-sw-row" style="margin-bottom:12px;">流式 '+sw('olStreamOn',ap.streamOn!==false)+'</div>' +
-
 '<div class="hp-section-label" style="margin-top:36px;">美化渲染</div>' +
 '<div class="ol-area-label">全局</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olPageBg"></div><span>页面背景</span></div></div>' +
@@ -82,11 +73,6 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">正文字体</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏沉浸</button></div>' +
 
-'<div class="ol-area-label">顶部背景设定</div>' +
-'<div class="ol-color-grid" style="grid-template-columns:repeat(1,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>底色</span></div></div>' +
-'<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">填充顶部图片</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图片</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
-'<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olCardReset">恢复顶部默认</button></div>' +
-
 '<div class="ol-area-label">底部区域</div>' +
 '<div class="ol-color-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olBarBg"></div><span>底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarBorderColor"></div><span>边框</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olBarIconColor"></div><span>图标</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olInputTextColor"></div><span>文字</span></div></div>' +
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">边框粗细</span><input type="range" id="olBarBorderW" min="0" max="5" step="0.5" value="'+ap.barBorderW+'"><span class="hp-slider-val" id="olBarBorderWVal">'+ap.barBorderW+'px</span></div>' +
@@ -94,20 +80,16 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">装饰文字</span><input type="text" id="olPlaceholderInput" class="pc-edit-input" value="'+App.escAttr(ap.placeholder||'宇宙带着星轨在私奔✮ ࣪ ⊹⋆˚')+'" style="flex:1; height:48px; padding:0 12px; box-sizing:border-box; border:1.5px solid #adcdea; border-radius:8px; font-size:14px; color:#1a1a1a; background-color:#fff; outline:none; font-family:inherit;"></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbBarBgBtn">填充底栏图片</button><button class="hp-btn hp-btn-danger" id="olSbBarBgDel">清除底栏图片</button></div><input type="file" id="olBarBgInput" accept="image/*" hidden>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olBarReset">恢复底部默认</button></div>' +
-
 '<div class="ol-area-label">角色板块</div>' +
 fold('olFCav','角色头像',cAv)+fold('olFCbub','角色气泡',cBub)+fold('olFCfont','角色字体',cFont)+
-
 '<div class="ol-area-label">用户板块</div>' +
 fold('olFUav','用户头像',uAv)+fold('olFUbub','用户气泡',uBub)+fold('olFUfont','用户字体',uFont)+
-
 '<div class="hp-divider"></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olStyleReset" style="height:48px;">重置全部渲染</button></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olThemeSave" style="height:48px;">存储为新主题</button></div>' +
 '<div id="olThemeList"></div>' +
 '<div class="hp-divider"></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-outline" id="olSbCode" style="height:48px;">自定义UI</button></div>' +
-
 '<div class="hp-bottom-spacer"></div></div></div></div>';
 
 if(App.initHalfPanelControls) App.initHalfPanelControls();
@@ -115,8 +97,6 @@ O.applyAppearance(c.id);O.applyCustomCode(c.id);},
 
 applyAppearance:function(cid){var ap=gAp(cid),r=App.$('#olRoot');if(!r)return;
 r.style.setProperty('--ol-bg-color',ap.pageBg);
-r.style.setProperty('--ol-top-bg-color',ap.topBgColor||'transparent');
-r.style.setProperty('--ol-top-bg-img',ap.topBgImg?"url('"+ap.topBgImg+"')":'none');
 r.style.setProperty('--ol-c-av-size',ap.cAvSize+'px');r.style.setProperty('--ol-c-av-radius',ap.cAvRadius+'%');r.style.setProperty('--ol-c-av-frame-color',ap.cAvFrameColor);r.style.setProperty('--ol-c-av-frame-w',ap.cAvFrameW+'px');r.style.setProperty('--ol-c-av-name-size',ap.cAvNameSize+'px');r.style.setProperty('--ol-c-av-show',ap.cAvShow?'flex':'none');r.style.setProperty('--ol-c-av-name-show',ap.cAvNameShow?'block':'none');
 r.style.setProperty('--ol-c-bubble-radius',ap.cBubbleRadius+'px');r.style.setProperty('--ol-c-bubble-width',ap.cBubbleWidth+'%');
 r.style.setProperty('--ol-c-bubble-border-w',ap.cBubbleBorderW+'px');r.style.setProperty('--ol-c-bubble-border-color',ap.cBubbleBorderColor);
@@ -132,8 +112,7 @@ r.style.setProperty('--ol-u-bubble-bg',ap.uBubbleBg);
 r.style.setProperty('--ol-u-bubble-opacity',(ap.uBubbleOpacity!=null?ap.uBubbleOpacity:100)/100);
 r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
-r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.12));
-r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
+
 var wrap=App.$('#olInputWrap');
 if(wrap){
   r.style.setProperty('--ol-bar-bg', ap.barBg);
@@ -296,14 +275,6 @@ App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#o
 App.safeOn('#olPiPhoto','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('图片 · 开发中');});
 App.$$('.ol-fold-head').forEach(function(h){h.addEventListener('click',function(){h.parentElement.classList.toggle('open');});});
 
-App.safeOn('#olCardReset','click',function(){
-  ap.topBgColor='transparent'; ap.topBgImg='';
-  sAp(cid,ap); O.applyAppearance(cid);
-  var dtbg=App.$('#olTopBgColor');
-  if(dtbg) dtbg.style.background=ap.topBgColor;
-  App.showToast('顶部区域已重置');
-});
-
 function bindGrad(id, key, tpl) {
   var dot = App.$('#'+id); if(!dot) return;
   dot.style.background = ap[key] || '#fff';
@@ -326,12 +297,6 @@ bc('olPageBg','pageBg'); bc('olInputTextColor','inputTextColor');
 bc('olBarBorderColor','barBorderColor'); bc('olBarIconColor','barIconColor');
 bc('olcAvFrameColor','cAvFrameColor'); bc('olcBubbleBorderColor','cBubbleBorderColor'); bc('olcTextColor','cTextColor');
 bc('oluAvFrameColor','uAvFrameColor'); bc('oluBubbleBorderColor','uBubbleBorderColor'); bc('oluTextColor','uTextColor');
-bc('olTopBgColor', 'topBgColor');
-
-var topBgInp=App.$('#olTopBgInput');
-App.safeOn('#olSbTopBgBtn','click',function(){if(topBgInp)topBgInp.click();});
-if(topBgInp){topBgInp.addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(ev){var process=function(c){ap.topBgImg=c;sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部图已更新');};if(App.cropImage)App.cropImage(ev.target.result,process);else process(ev.target.result);};reader.readAsDataURL(f);e.target.value='';});}
-App.safeOn('#olSbTopBgDel','click',function(){ap.topBgImg='';sAp(cid,ap);O.applyAppearance(cid);App.showToast('顶部图已清除');});
 
 var barBgInp=App.$('#olBarBgInput');
 App.safeOn('#olSbBarBgBtn','click',function(){if(barBgInp)barBgInp.click();});
@@ -541,3 +506,4 @@ applyCustomCode:function(cid){var oldS=document.getElementById('olCustomStyle');
 init:function(){App.offlineUI=O;}};
 App.register('offlineUI',O);
 })();
+
