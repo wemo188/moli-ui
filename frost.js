@@ -1,11 +1,10 @@
-
 (function() {
   'use strict';
   var App = window.App; if(!App) return;
 
   var DRAG_DELAY = 500;
   
-  // 🌟 高级 SVG 关闭图标
+  // 🌟 高级 SVG 关闭图标，替代简陋的文本 "×"
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>';
 
   var BUILTIN_FONTS = [
@@ -19,100 +18,7 @@
   ];
 
   /* ==========================================================
-     🌟 专属定制头部模块：AlexTop (处理照片上传 + 文本记忆) 
-  ========================================================== */
-  var AlexTop = {
-    data: { avatar: null, inputs: ['', ''], photos: [null, null, null] },
-    
-    load: function() {
-      var saved = App.LS.get('alexTopZone');
-      if (saved) {
-        AlexTop.data.avatar = saved.avatar || null;
-        AlexTop.data.inputs = saved.inputs || ['', ''];
-        AlexTop.data.photos = saved.photos || [null, null, null];
-      }
-    },
-    save: function() { App.LS.set('alexTopZone', AlexTop.data); },
-
-    init: function() {
-      AlexTop.load();
-      
-      // 1. 头像交互
-      var avatarBtn = document.querySelector('.alex-avatar-btn');
-      if (avatarBtn) {
-        if (AlexTop.data.avatar) {
-          avatarBtn.innerHTML = '<img src="' + App.escAttr(AlexTop.data.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-        } else {
-          avatarBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
-        }
-        
-        if (!avatarBtn._boundClick) {
-          avatarBtn._boundClick = true;
-          avatarBtn.addEventListener('click', function() {
-            if (App.showImagePicker) {
-              App.showImagePicker({
-                title: '设置主人专属头像',
-                hasDelete: !!AlexTop.data.avatar,
-                callback: function(src) {
-                  if (src === '') { AlexTop.data.avatar = null; } 
-                  else if (src) { AlexTop.data.avatar = src; }
-                  AlexTop.save(); AlexTop.init();
-                }
-              });
-            }
-          });
-        }
-      }
-
-      // 2. 输入框静默记忆绑定
-      var inputs = document.querySelectorAll('.alex-new-top .alex-input');
-      if (inputs.length >= 2) {
-        inputs[0].value = AlexTop.data.inputs[0] || '';
-        inputs[1].value = AlexTop.data.inputs[1] || '';
-        inputs.forEach(function(input, i) {
-          if (!input._boundInput) {
-            input._boundInput = true;
-            input.addEventListener('input', function() {
-              AlexTop.data.inputs[i] = input.value;
-              AlexTop.save();
-            });
-          }
-        });
-      }
-
-      // 3. 照片墙交互 (虚线一直保持不动)
-      var photoSlots = document.querySelectorAll('.alex-photo-slot');
-      photoSlots.forEach(function(slot, idx) {
-        if (AlexTop.data.photos[idx]) {
-          slot.innerHTML = '<img src="' + App.escAttr(AlexTop.data.photos[idx]) + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;pointer-events:none;">';
-        } else {
-          slot.innerHTML = '+';
-        }
-
-        if (!slot._boundClick) {
-          slot._boundClick = true;
-          slot.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (App.showImagePicker) {
-              App.showImagePicker({
-                title: '设置照片墙第 ' + (idx + 1) + ' 格',
-                hasDelete: !!AlexTop.data.photos[idx],
-                deleteText: '清空格子',
-                callback: function(src) {
-                  if (src === '') { AlexTop.data.photos[idx] = null; } 
-                  else if (src) { AlexTop.data.photos[idx] = src; }
-                  AlexTop.save(); AlexTop.init(); 
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-  };
-
-  /* ==========================================================
-     像素框 (Pixel) - 原汁原味恢复
+     像素框 (Pixel)
   ========================================================== */
   var DEF_PIXEL = { heartColor:'#ffffff', iconColor:'#ffffff', barColor:'#000000', bodyBg:'#ffffff', fontColor:'#2a2a2a', fontFamily:'' };
 
@@ -198,13 +104,10 @@
       overlay.appendChild(panel); document.body.appendChild(overlay);
 
       var pixelEl = App.$('#hlTextCard');
-      if(pixelEl){ 
-        var rect=pixelEl.getBoundingClientRect(); 
-        var left=rect.left; var top=rect.bottom+8;
+      if(pixelEl){ var rect=pixelEl.getBoundingClientRect(); var left=rect.left; var top=rect.bottom+8;
         if(left<8)left=8; if(left+270>window.innerWidth)left=window.innerWidth-278;
         if(top+350>window.innerHeight)top=Math.max(10,window.innerHeight-360);
-        panel.style.left=left+'px'; panel.style.top=top+'px'; 
-      }
+        panel.style.left=left+'px'; panel.style.top=top+'px'; }
 
       if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
 
@@ -218,6 +121,7 @@
 
       panel.querySelector('#pxFontSelect').addEventListener('change', function(){ pc.fontFamily=this.value; Pixel.config=pc; Pixel.applyColors(); });
 
+      // 🌟 统一无感自动保存逻辑
       function saveAndClose(showToast) {
         Pixel.config=pc; Pixel.save(); Pixel.applyColors();
         App.LS.set('hlText_top', panel.querySelector('#pxTextTop').value);
@@ -238,7 +142,7 @@
   };
 
   /* ==========================================================
-     拼图组件 (Puzzle) - 原汁原味恢复
+     拼图组件 (Puzzle)
   ========================================================== */
   var Puzzle = {
     data: { imgs: [null,null,null,null], posX: 0, posY: 0 },
@@ -252,7 +156,7 @@
     },
     save: function() { App.LS.set('puzzleCard', Puzzle.data); },
 
-    render: function() {
+        render: function() {
       var container = document.getElementById('puzzleCard');
       if(!container) return;
 
@@ -286,6 +190,7 @@
       });
 
       if(Puzzle.data.posX || Puzzle.data.posY) {
+        // 🌟 注入 --t 变量，防止闪现 Bug
         var tf = 'translate(' + Puzzle.data.posX + 'px,' + Puzzle.data.posY + 'px)';
         container.style.setProperty('--t', tf);
         container.style.transform = tf;
@@ -324,6 +229,7 @@
           origX = Puzzle.data.posX || 0;
           origY = Puzzle.data.posY || 0;
           
+          // 🌟 拿起：放大 + 摇晃
           container.classList.add('is-grabbed');
           container.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
           var tf = 'translate(' + origX + 'px,' + origY + 'px) scale(1.05)';
@@ -346,6 +252,7 @@
         var nx = origX + (t.clientX - startX);
         var ny = origY + (t.clientY - startY);
         
+        // 🌟 移动：无延迟跟手
         container.style.transition = 'none';
         var tf = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
         container.style.setProperty('--t', tf);
@@ -357,10 +264,11 @@
 
       cardEl.addEventListener('touchend', function(e) {
         clearTimeout(timer); timer = null;
-        container.classList.remove('is-grabbed'); 
+        container.classList.remove('is-grabbed'); // 🌟 放下
         if(longPressed) { 
           if(moved) { Puzzle.save(); e.stopPropagation(); }
           
+          // 🌟 回弹缩小
           container.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
           var tf = 'translate(' + Puzzle.data.posX + 'px,' + Puzzle.data.posY + 'px) scale(1)';
           container.style.setProperty('--t', tf);
@@ -373,116 +281,118 @@
       });
     },
 
-    openEdit: function() {
-      var old = App.$('#pzEditOverlay'); if(old) old.remove();
+  openEdit: function() {
+    var old = App.$('#pzEditOverlay'); if(old) old.remove();
 
-      var d = Puzzle.data;
+    var d = Puzzle.data;
 
-      var overlay = document.createElement('div');
-      overlay.id = 'pzEditOverlay';
-      overlay.className = 'pc-edit-overlay';
+    var overlay = document.createElement('div');
+    overlay.id = 'pzEditOverlay';
+    overlay.className = 'pc-edit-overlay';
 
-      var panel = document.createElement('div');
-      panel.className = 'pc-edit-panel';
+    var panel = document.createElement('div');
+    panel.className = 'pc-edit-panel';
 
-      var slotsHtml = '';
-      for(var i = 0; i < 4; i++) {
-        var thumbContent = d.imgs[i]
-          ? '<img src="'+App.escAttr(d.imgs[i])+'"><div class="pz-edit-thumb-del" data-idx="'+i+'">×</div>'
-          : '<span class="pz-edit-thumb-placeholder">+</span>';
-        slotsHtml += '<div class="pz-edit-slot"><div class="pz-edit-thumb" data-idx="'+i+'">'+thumbContent+'</div><span class="pz-edit-slot-label">第'+(i+1)+'块</span></div>';
-      }
-
-      panel.innerHTML =
-        '<div class="pc-header">编辑拼图<div class="pc-close-btn" id="pzCloseBtn">' + CLOSE_SVG + '</div></div>' +
-        '<div class="pc-body">' +
-          '<div class="pc-group"><span class="pc-label">点击区块上传</span></div>' +
-          '<div class="pz-edit-slots">' + slotsHtml + '</div>' +
-        '</div>' +
-        '<div class="pc-footer">' +
-          '<button class="pc-btn pc-btn-save" id="pzSaveBtn" type="button">保 存</button>' +
-          '<button class="pc-btn pc-btn-cancel" id="pzResetBtn" type="button">重 置</button>' +
-        '</div>';
-
-      overlay.appendChild(panel);
-      document.body.appendChild(overlay);
-
-      var pzContainer = document.getElementById('puzzleCard');
-      if(pzContainer) {
-        var rect = pzContainer.getBoundingClientRect();
-        var left = rect.left + rect.width/2 - 135;
-        if(left < 8) left = 8;
-        if(left + 270 > window.innerWidth) left = window.innerWidth - 278;
-        var top = rect.bottom + 8;
-        if(top + 350 > window.innerHeight) top = Math.max(10, window.innerHeight - 360);
-        panel.style.left = left + 'px';
-        panel.style.top = top + 'px';
-      }
-
-      if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
-
-      panel.querySelectorAll('.pz-edit-thumb').forEach(function(thumb) {
-        thumb.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var idx = parseInt(thumb.dataset.idx);
-          if(e.target.classList.contains('pz-edit-thumb-del')) {
-            d.imgs[idx] = null;
-            thumb.innerHTML = '<span class="pz-edit-thumb-placeholder">+</span>';
-            var svgImg = document.getElementById('pzImg' + idx);
-            if(svgImg) svgImg.setAttribute('href', '');
-            return;
-          }
-          
-          if(App.showImagePicker) {
-            App.showImagePicker({
-              title: '设置第 ' + (idx + 1) + ' 块拼图',
-              callback: function(src) {
-                if(!src) return; 
-                var compress = new Image();
-                compress.onload = function() {
-                  var canvas = document.createElement('canvas');
-                  var max = 300, w = compress.width, h = compress.height;
-                  if(w > h) { if(w > max){ h = h*max/w; w = max; } } else { if(h > max){ w = w*max/h; h = max; } }
-                  canvas.width = w; canvas.height = h;
-                  canvas.getContext('2d').drawImage(compress, 0, 0, w, h);
-                  var result = canvas.toDataURL('image/jpeg', 0.85);
-                  thumb.innerHTML = '<img src="'+result+'"><div class="pz-edit-thumb-del" data-idx="'+idx+'">×</div>';
-                  var svgImg = document.getElementById('pzImg' + idx);
-                  if(svgImg) svgImg.setAttribute('href', result);
-                  d.imgs[idx] = result;
-                };
-                compress.src = src;
-              }
-            });
-          }
-        });
-      });
-
-      function saveAndClose(showToast) {
-        Puzzle.save();
-        overlay.remove();
-        if(showToast) App.showToast('已保存');
-      }
-
-      panel.querySelector('#pzSaveBtn').addEventListener('click', function(e) { e.stopPropagation(); saveAndClose(true); });
-      panel.querySelector('#pzCloseBtn').addEventListener('click', function(e) { e.stopPropagation(); saveAndClose(false); });
-      overlay.addEventListener('click', function(e) { if(e.target === overlay && !document.querySelector('.gip-overlay')) saveAndClose(false); });
-
-      panel.querySelector('#pzResetBtn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        Puzzle.data = { imgs: [null,null,null,null], posX: 0, posY: 0 };
-        Puzzle.save();
-        var container = document.getElementById('puzzleCard');
-        if(container) container.style.transform = '';
-        Puzzle.render();
-        overlay.remove();
-        App.showToast('已重置');
-      });
+    var slotsHtml = '';
+    for(var i = 0; i < 4; i++) {
+      var thumbContent = d.imgs[i]
+        ? '<img src="'+App.escAttr(d.imgs[i])+'"><div class="pz-edit-thumb-del" data-idx="'+i+'">×</div>'
+        : '<span class="pz-edit-thumb-placeholder">+</span>';
+      slotsHtml += '<div class="pz-edit-slot"><div class="pz-edit-thumb" data-idx="'+i+'">'+thumbContent+'</div><span class="pz-edit-slot-label">第'+(i+1)+'块</span></div>';
     }
-  };
+
+    panel.innerHTML =
+      '<div class="pc-header">编辑拼图<div class="pc-close-btn" id="pzCloseBtn">' + CLOSE_SVG + '</div></div>' +
+      '<div class="pc-body">' +
+        '<div class="pc-group"><span class="pc-label">点击区块上传</span></div>' +
+        '<div class="pz-edit-slots">' + slotsHtml + '</div>' +
+      '</div>' +
+      '<div class="pc-footer">' +
+        '<button class="pc-btn pc-btn-save" id="pzSaveBtn" type="button">保 存</button>' +
+        '<button class="pc-btn pc-btn-cancel" id="pzResetBtn" type="button">重 置</button>' +
+      '</div>';
+
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    var pzContainer = document.getElementById('puzzleCard');
+    if(pzContainer) {
+      var rect = pzContainer.getBoundingClientRect();
+      var left = rect.left + rect.width/2 - 135;
+      if(left < 8) left = 8;
+      if(left + 270 > window.innerWidth) left = window.innerWidth - 278;
+      var top = rect.bottom + 8;
+      if(top + 350 > window.innerHeight) top = Math.max(10, window.innerHeight - 360);
+      panel.style.left = left + 'px';
+      panel.style.top = top + 'px';
+    }
+
+    if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
+
+    panel.querySelectorAll('.pz-edit-thumb').forEach(function(thumb) {
+      thumb.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var idx = parseInt(thumb.dataset.idx);
+        if(e.target.classList.contains('pz-edit-thumb-del')) {
+          d.imgs[idx] = null;
+          thumb.innerHTML = '<span class="pz-edit-thumb-placeholder">+</span>';
+          var svgImg = document.getElementById('pzImg' + idx);
+          if(svgImg) svgImg.setAttribute('href', '');
+          return;
+        }
+        
+        // 🌟 核心优化：接入全局相册组件，完美取代繁琐的 Input File！
+        if(App.showImagePicker) {
+          App.showImagePicker({
+            title: '设置第 ' + (idx + 1) + ' 块拼图',
+            callback: function(src) {
+              if(!src) return; // 取消
+              var compress = new Image();
+              compress.onload = function() {
+                var canvas = document.createElement('canvas');
+                var max = 300, w = compress.width, h = compress.height;
+                if(w > h) { if(w > max){ h = h*max/w; w = max; } } else { if(h > max){ w = w*max/h; h = max; } }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(compress, 0, 0, w, h);
+                var result = canvas.toDataURL('image/jpeg', 0.85);
+                thumb.innerHTML = '<img src="'+result+'"><div class="pz-edit-thumb-del" data-idx="'+idx+'">×</div>';
+                var svgImg = document.getElementById('pzImg' + idx);
+                if(svgImg) svgImg.setAttribute('href', result);
+                d.imgs[idx] = result;
+              };
+              compress.src = src;
+            }
+          });
+        }
+      });
+    });
+
+    // 🌟 统一无感自动保存逻辑
+    function saveAndClose(showToast) {
+      Puzzle.save();
+      overlay.remove();
+      if(showToast) App.showToast('已保存');
+    }
+
+    panel.querySelector('#pzSaveBtn').addEventListener('click', function(e) { e.stopPropagation(); saveAndClose(true); });
+    panel.querySelector('#pzCloseBtn').addEventListener('click', function(e) { e.stopPropagation(); saveAndClose(false); });
+    overlay.addEventListener('click', function(e) { if(e.target === overlay && !document.querySelector('.gip-overlay')) saveAndClose(false); });
+
+    panel.querySelector('#pzResetBtn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      Puzzle.data = { imgs: [null,null,null,null], posX: 0, posY: 0 };
+      Puzzle.save();
+      var container = document.getElementById('puzzleCard');
+      if(container) container.style.transform = '';
+      Puzzle.render();
+      overlay.remove();
+      App.showToast('已重置');
+    });
+  }
+};
 
   /* ==========================================================
-     文字卡片 (Eden) - 原汁原味恢复
+     文字卡片 (Eden)
   ========================================================== */
   var Eden = {
     data: {},
@@ -534,7 +444,7 @@
       return 1;
     },
 
-    apply: function() {
+        apply: function() {
       var el = App.$('#edenText'); if(!el) return;
       var d = Eden.data;
       var scale = Eden.getSelectedScale();
@@ -564,6 +474,7 @@
       el.style.wordBreak = 'break-word';
       var card = App.$('#edenCard');
       if(card && (d.posX || d.posY)) { 
+        // 🌟 注入 --t 变量防闪现
         var tf = 'translate(' + d.posX + 'px, ' + d.posY + 'px)';
         card.style.setProperty('--t', tf);
         card.style.transform = tf; 
@@ -604,6 +515,8 @@
         
         timer = setTimeout(function() { 
           longPressed=true; 
+          
+          // 🌟 拿起：摇晃 + 放大 + 变淡一点点
           card.classList.add('is-grabbed');
           card.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease';
           var tf = 'translate(' + startPosX + 'px,' + startPosY + 'px) scale(1.05)';
@@ -624,6 +537,7 @@
         Eden.data.posX = startPosX + touch.clientX - startX;
         Eden.data.posY = startPosY + touch.clientY - startY;
         
+        // 🌟 移动跟手
         card.style.transition = 'none';
         var tf = 'translate(' + Eden.data.posX + 'px, ' + Eden.data.posY + 'px) scale(1.05)';
         card.style.setProperty('--t', tf);
@@ -637,6 +551,7 @@
         if(longPressed) { 
           if(moved) { Eden.save(); e.stopPropagation(); }
           
+          // 🌟 落下回弹
           card.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
           var tf = 'translate(' + Eden.data.posX + 'px, ' + Eden.data.posY + 'px) scale(1)';
           card.style.setProperty('--t', tf);
@@ -667,6 +582,7 @@
       var overlay = document.createElement('div'); overlay.id='edenEditOverlay'; overlay.className='pc-edit-overlay';
       var panel = document.createElement('div'); panel.className='pc-edit-panel';
       
+      // 🌟 内联 CSS 清理，接入全局样式 pc-input 和 CLOSE_SVG
       panel.innerHTML =
         '<div class="pc-header">文字卡片<div class="pc-close-btn" id="edenCloseBtn">' + CLOSE_SVG + '</div></div>'+
         '<div class="pc-body" style="gap:8px;">'+
@@ -715,16 +631,16 @@
         el.style.letterSpacing = panel.querySelector('#edenSpacing').value+'px';
         el.style.lineHeight = panel.querySelector('#edenLineHeight').value;
         if (currentFontColor && currentFontColor.indexOf('linear-gradient') === 0) {
-          el.style.background = currentFontColor;
-          el.style.backgroundClip = 'text';
-          el.style.webkitBackgroundClip = 'text';
-          el.style.color = 'transparent';
-        } else {
-          el.style.background = '';
-          el.style.backgroundClip = '';
-          el.style.webkitBackgroundClip = '';
-          el.style.color = currentFontColor;
-        }
+    el.style.background = currentFontColor;
+    el.style.backgroundClip = 'text';
+    el.style.webkitBackgroundClip = 'text';
+    el.style.color = 'transparent';
+  } else {
+    el.style.background = '';
+    el.style.backgroundClip = '';
+    el.style.webkitBackgroundClip = '';
+    el.style.color = currentFontColor;
+  }
         el.style.fontFamily = family||'';
         el.style.whiteSpace = 'pre-wrap'; el.style.wordBreak = 'break-word';
       }
@@ -733,15 +649,15 @@
         var el = panel.querySelector('#'+id); if(el) el.addEventListener('input', preview);
       });
       panel.querySelector('#edenFontSelect').addEventListener('change', function(){
-        var selOpt = panel.querySelector('#edenFontSelect');
-        var selIdx = selOpt.selectedIndex;
-        var family = selOpt.options[selIdx] ? selOpt.options[selIdx].dataset.family : '';
-        if(family && App.font && App.font.loadByFamily){
-          App.font.loadByFamily(family, function(){ preview(); });
-        } else {
-          preview();
-        }
-      });
+    var selOpt = panel.querySelector('#edenFontSelect');
+    var selIdx = selOpt.selectedIndex;
+    var family = selOpt.options[selIdx] ? selOpt.options[selIdx].dataset.family : '';
+    if(family && App.font && App.font.loadByFamily){
+      App.font.loadByFamily(family, function(){ preview(); });
+    } else {
+      preview();
+    }
+  });
 
       panel.querySelector('#edenColorDot').addEventListener('click', function(e){
         e.stopPropagation(); if(!App.openColorPicker) return;
@@ -749,6 +665,7 @@
         function(hex){ currentFontColor=hex; panel.querySelector('#edenColorDot').style.background=hex; preview(); }, 'eden_fontColor');
       });
 
+      // 🌟 统一无感自动保存逻辑
       function saveAndClose(showToast) {
         var selOpt = panel.querySelector('#edenFontSelect'); var selIdx = selOpt.selectedIndex;
         Eden.data.fontName = selOpt.value;
@@ -778,9 +695,6 @@
   ========================================================== */
   var Frost = {
     init: function() {
-      // ✨ 初始化定制主页头部
-      AlexTop.init();
-
       // 像素框
       Pixel.load();
       Pixel.applyColors();
