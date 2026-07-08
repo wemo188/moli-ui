@@ -12,6 +12,8 @@ var Cal={
   
   /* 🌟 全新三挡状态：'animated'(动态), 'static'(静态), 'none'(彻底关闭) */
   _weatherMode: 'animated', 
+  /* 🌟 双生排版状态：'outside'(头像分离独立), 'inside'(头卡内嵌卡片) */
+  _layoutMode: 'outside',
   
   _dragX:0,
   _dragY:0,
@@ -51,8 +53,9 @@ var Cal={
   load:function(){
     Cal.city=App.LS.get('calCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
+    Cal._layoutMode = App.LS.get('tkLayoutMode') || 'outside'; // 读取排版模式
     
-    // 🌟 获取存档里的模式，如果没有就兼容以前的数据
+    // 🌟 获取存档里的模式
     var savedMode = App.LS.get('calWeatherMode');
     if (savedMode === undefined || savedMode === null) {
        var legacy = App.LS.get('calWeatherAnimate');
@@ -65,6 +68,17 @@ var Cal={
   save:function(){
     App.LS.set('calCity',Cal.city);
     App.LS.set('calWeather',Cal.weather);
+  },
+
+  // 魔法切开：给大外壳加盖章控制内部CSS变化
+  applyLayout: function() {
+    var card = App.$('#wtCard');
+    if(!card) return;
+    if(Cal._layoutMode === 'inside') {
+       card.classList.add('tk17-inside-mode');
+    } else {
+       card.classList.remove('tk17-inside-mode');
+    }
   },
 
   startClock:function(){
@@ -106,7 +120,6 @@ var Cal={
        if(Cal._weatherMode === 'static') card.classList.add('wt-static');
     }
 
-    // 🌟 终极关停术！如果选了关闭视觉特效，连任何元素都不塞入背景！干干净净！
     if(Cal._weatherMode === 'none') return; 
 
     if(!Cal.weather||!Cal.weather.code){
@@ -234,7 +247,7 @@ var Cal={
 
     var currentColor = App.LS.get('tkColor') || '#111111';
 
-    // 🌟 读取模式以准备展示状态名字
+    // 🌟 读取模式名字准备渲染
     var modeName = '动态';
     if(Cal._weatherMode === 'static') modeName = '静态';
     else if(Cal._weatherMode === 'none') modeName = '关闭';
@@ -269,7 +282,7 @@ var Cal={
           '</div>'+
         '</div>'+
 
-        '<div style="display:flex; gap:12px;">'+
+        '<div style="display:flex; gap:8px;">'+
           '<div class="pc-group" style="flex:1;">'+
             '<span class="pc-label">城市（获取天气）</span>'+
             '<div class="pc-av-row">'+
@@ -277,7 +290,11 @@ var Cal={
               '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
             '</div>'+
           '</div>'+
-          '<div class="pc-group" style="width:70px; flex-shrink:0;">'+
+          '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
+            '<span class="pc-label">排版模式</span>'+
+            '<div class="pc-icon-btn" id="wtLayoutToggle" style="width:100%;font-size:11px;font-weight:700;">'+ (Cal._layoutMode==='inside'?'内嵌':'分离') +'</div>'+
+          '</div>'+
+          '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
             '<span class="pc-label">视觉特效</span>'+
             '<div class="pc-icon-btn" id="wtAnimToggle" style="width:100%;font-size:11px;font-weight:700;">'+ modeName +'</div>'+
           '</div>'+
@@ -432,7 +449,14 @@ var Cal={
       });
     });
 
-    /* 🌟 全新的三挡控制事件核心 */
+    /* 🌟 新增的排版切换：内嵌与分离的魔法开关 */
+    panel.querySelector('#wtLayoutToggle').addEventListener('click',function(){
+      Cal._layoutMode = (Cal._layoutMode === 'inside') ? 'outside' : 'inside';
+      App.LS.set('tkLayoutMode', Cal._layoutMode);
+      this.textContent = (Cal._layoutMode === 'inside') ? '内嵌' : '分离';
+      Cal.applyLayout(); // 立刻预览
+    });
+
     panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
       if(Cal._weatherMode === 'animated') {
          Cal._weatherMode = 'static';
@@ -441,7 +465,6 @@ var Cal={
       } else {
          Cal._weatherMode = 'animated';
       }
-
       App.LS.set('calWeatherMode', Cal._weatherMode);
 
       var txt = '关闭';
@@ -449,7 +472,7 @@ var Cal={
       else if (Cal._weatherMode === 'static') txt = '静态';
       
       this.textContent = txt;
-      Cal.renderWeatherEffect(); // 点击立即实时预览
+      Cal.renderWeatherEffect(); 
     });
 
     panel.querySelector('#wtFontSelect').addEventListener('change',function(){
@@ -574,6 +597,7 @@ var Cal={
 
   init:function(){
     Cal.load();
+    Cal.applyLayout(); // 初始化时自动挂载上次记录的排版！
     Cal.startClock();
     Cal.renderWeatherEffect();
     Cal.applyBgImg();
