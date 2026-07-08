@@ -1,3 +1,4 @@
+
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -38,12 +39,13 @@ var uAv='<div class="ol-sw-row">头像 '+sw('oluAvShow',ap.uAvShow)+'</div><div 
 var uBub='<div class="hp-slider-row"><span class="hp-slider-label">宽度</span><input type="range" id="oluBubbleWidth" min="50" max="100" value="'+ap.uBubbleWidth+'"><span class="hp-slider-val" id="oluBubbleWidthVal">'+ap.uBubbleWidth+'%</span></div><div class="hp-slider-row"><span class="hp-slider-label">圆角</span><input type="range" id="oluBubbleRadius" min="0" max="24" value="'+ap.uBubbleRadius+'"><span class="hp-slider-val" id="oluBubbleRadiusVal">'+ap.uBubbleRadius+'px</span></div><div class="ol-inline-row"><span>背景色</span><div class="hp-color-dot" id="oluBubbleBg"></div></div><div class="hp-slider-row"><span class="hp-slider-label">背景透明</span><input type="range" id="oluBubbleOpacity" min="0" max="100" value="'+ap.uBubbleOpacity+'"><span class="hp-slider-val" id="oluBubbleOpacityVal">'+ap.uBubbleOpacity+'%</span></div><div class="hp-slider-row"><span class="hp-slider-label">毛玻璃</span><input type="range" id="oluBubbleBlur" min="0" max="30" value="'+ap.uBubbleBlur+'"><span class="hp-slider-val" id="oluBubbleBlurVal">'+ap.uBubbleBlur+'px</span></div><div class="ol-inline-row"><span>边框色</span><div class="hp-color-dot" id="oluBubbleBorderColor"></div></div><div class="hp-slider-row"><span class="hp-slider-label">边框粗</span><input type="range" id="oluBubbleBorderW" min="0" max="5" step="0.5" value="'+ap.uBubbleBorderW+'"><span class="hp-slider-val" id="oluBubbleBorderWVal">'+ap.uBubbleBorderW+'px</span></div>';
 var uFont='<div class="ol-inline-row"><span>字体颜色</span><div class="hp-color-dot" id="oluTextColor"></div></div><div class="hp-slider-row"><span class="hp-slider-label">字号</span><input type="range" id="oluTextSize" min="10" max="24" step="0.5" value="'+(ap.uTextSize||17)+'"><span class="hp-slider-val" id="oluTextSizeVal">'+(ap.uTextSize||17)+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字重</span><input type="range" id="oluTextWeight" min="100" max="900" step="100" value="'+(ap.uTextWeight||400)+'"><span class="hp-slider-val" id="oluTextWeightVal">'+(ap.uTextWeight||400)+'</span></div><div class="hp-slider-row"><span class="hp-slider-label">行高</span><input type="range" id="oluTextLH" min="1.2" max="2.5" step="0.05" value="'+(ap.uTextLH||1.85)+'"><span class="hp-slider-val" id="oluTextLHVal">'+(ap.uTextLH||1.85)+'</span></div><div class="hp-slider-row"><span class="hp-slider-label">段落间距</span><input type="range" id="oluParaGap" min="0" max="30" value="'+ap.uParaGap+'"><span class="hp-slider-val" id="oluParaGapVal">'+ap.uParaGap+'px</span></div><div class="hp-slider-row"><span class="hp-slider-label">字间距</span><input type="range" id="oluLetterGap" min="0" max="10" step="0.5" value="'+ap.uLetterGap+'"><span class="hp-slider-val" id="oluLetterGapVal">'+ap.uLetterGap+'px</span></div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">双引号 '+sw('olquoteOn',ap.quoteOn)+'</div>'+fmtUI('quote',ap)+'</div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">括号 '+sw('olparenOn',ap.parenOn)+'</div>'+fmtUI('paren',ap)+'</div><div class="hp-divider"></div><div class="ol-fmt-section"><div class="ol-sub-title">星号 '+sw('olstarOn',ap.starOn)+'</div>'+fmtUI('star',ap)+'</div>';
 
-var p1=App.LS.get('ol_photo_'+c.id+'_1')||'', p2=App.LS.get('ol_photo_'+c.id+'_2')||'', p3=App.LS.get('ol_photo_'+c.id+'_3')||'', p4=App.LS.get('ol_photo_'+c.id+'_4')||'';
-
 con.innerHTML=
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg"></div>' +
 '<div class="ol-top-bg"></div>' +
+
+/* ★ 你的结界穹顶：只剩最纯粹的角色名和书写状态 */
 '<div class="ol-hd-top" id="olHdTop"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div><div class="ol-hd-typing" id="olTyping"></div></div>' +
+
 '<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
 
 '<div class="ol-nav-fab" id="olNavFab">' +
@@ -80,12 +82,9 @@ con.innerHTML=
 '<div class="hp-slider-row" style="margin-bottom:18px;"><span class="hp-slider-label" style="width:60px">正文字体</span><select id="olChatFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn ol-mode-btn" data-mode="bubble">气泡模式</button><button class="hp-btn ol-mode-btn" data-mode="parallel">全屏沉浸</button></div>' +
 
-'<div class="ol-area-label">顶部区域</div>' +
-'<div class="ol-color-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>底色</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardBg"></div><span>册卡</span></div><div class="ol-color-item"><div class="hp-color-dot" id="olCardTextColor"></div><span>文字</span></div></div>' +
+'<div class="ol-area-label">顶部背景设定</div>' +
+'<div class="ol-color-grid" style="grid-template-columns:repeat(1,1fr);margin-bottom:12px;"><div class="ol-color-item"><div class="hp-color-dot" id="olTopBgColor"></div><span>底色</span></div></div>' +
 '<div class="hp-btn-row" style="margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olSbTopBgBtn">填充顶部图片</button><button class="hp-btn hp-btn-danger" id="olSbTopBgDel">清除顶部图片</button></div><input type="file" id="olTopBgInput" accept="image/*" hidden>' +
-'<div style="display:flex;gap:8px;margin-bottom:12px;"><button class="hp-btn hp-btn-outline" id="olBtnUp1">图1</button><button class="hp-btn hp-btn-outline" id="olBtnUp2">图2</button><button class="hp-btn hp-btn-outline" id="olBtnUp3">图3</button><button class="hp-btn hp-btn-outline" id="olBtnUp4">图4</button></div><input type="file" id="olCardUpInput" accept="image/*" hidden>' +
-'<div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="olCardT1" class="pc-edit-input" placeholder="银河歌颂" value="'+App.escAttr(ap.cardT1)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT2" class="pc-edit-input" placeholder="梦想在冒险" value="'+App.escAttr(ap.cardT2)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div><div style="display:flex;gap:8px;margin-bottom:12px;"><input type="text" id="olCardT3" class="pc-edit-input" placeholder="星星怀抱月夜" value="'+App.escAttr(ap.cardT3)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"><input type="text" id="olCardT4" class="pc-edit-input" placeholder="明天想见你" value="'+App.escAttr(ap.cardT4)+'" style="height:48px; border:1.5px solid #adcdea; border-radius:8px; padding:0 12px; box-sizing:border-box;"></div>' +
-'<div class="hp-slider-row" style="margin-bottom:12px;"><span class="hp-slider-label" style="width:60px">册卡字体</span><select id="olCardFont" class="ol-select-arrow" style="width:110px;height:42px;padding:0 30px 0 12px;box-sizing:border-box;border:none;border-radius:8px;font-size:14px;color:#1a1a1a;background-color:#fff;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;box-shadow:0 1px 4px rgba(0,0,0,0.05);"></select></div>' +
 '<div class="hp-btn-row"><button class="hp-btn hp-btn-danger" id="olCardReset">恢复顶部默认</button></div>' +
 
 '<div class="ol-area-label">底部区域</div>' +
@@ -135,9 +134,6 @@ r.style.setProperty('--ol-u-bubble-blur',(ap.uBubbleBlur||0)+'px');
 if(ap.mode==='parallel')r.classList.add('ol-parallel');else r.classList.remove('ol-parallel');
 r.style.setProperty('--ol-hd-bg',h2r(ap.pageBg,0.12));
 r.style.setProperty('--ol-hd-fade',h2r(ap.pageBg,0.08));
-r.style.setProperty('--ol-card-bg', ap.cardBg || '#ffffff');
-r.style.setProperty('--ol-card-text', ap.cardTextColor || '#7ea3c9');
-r.style.setProperty('--ol-top-fade', ap.topBgColor === 'transparent' ? 'transparent' : ap.topBgColor);
 var wrap=App.$('#olInputWrap');
 if(wrap){
   r.style.setProperty('--ol-bar-bg', ap.barBg);
@@ -166,18 +162,6 @@ if(msgs){
   if(ap.chatFont){msgs.style.fontFamily=ap.chatFont;msgs.classList.add('font-custom');}
   else{msgs.style.fontFamily='';msgs.classList.remove('font-custom');}
 }
-var cards=App.$('#olCardsWrap');
-var _cardF=ap.cardFont||ap.chatFont||'';
-if(cards){
-  if(_cardF){
-    cards.style.fontFamily=_cardF;
-    cards.classList.add('font-custom');
-    if(App.font&&App.font.loadByFamily)App.font.loadByFamily(_cardF);
-  }else{
-    cards.style.fontFamily='';
-    cards.classList.remove('font-custom');
-  }
-}
 },
 
 formatProse:function(raw,cid,isU){var ap=cid?gAp(cid):JSON.parse(JSON.stringify(DEF_AP)),text=raw||'',tokens=[];
@@ -190,7 +174,6 @@ if(isU){doS('star');doQ('quote');doP('paren');}else{doS('cStar');doQ('cQuote');d
 var parts=text.split(/\x00P(\d+)P\x00/),result='';for(var i=0;i<parts.length;i++){if(i%2===0)result+=App.esc(parts[i]);else result+=tokens[parseInt(parts[i])];}return result;},
 
 renderMessages:function(){var OL=App.offline;if(!OL)return;var con=App.$('#olMsgs');if(!con)return;
-/* 清理空消息和残留标记 */
 OL.messages=OL.messages.filter(function(m){return m&&m.role&&(m.content||'').trim();});
 var c=OL.charData,user=App.user?App.user.getActiveUser():null,ap=gAp(OL.charId);
 var cAvI=c&&c.avatar?'<img src="'+App.escAttr(c.avatar)+'">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
@@ -201,8 +184,6 @@ var regenIdx=(OL._regenIdx!==null&&OL._regenIdx!==undefined)?OL._regenIdx:-1;
 var html='',floor=0;
 
 OL.messages.forEach(function(msg,idx){if(msg.role==='system')return;
-
-/* 重写模式：原消息隐藏保留数据，流式气泡替代位置 */
 if(OL.isStreaming&&!OL._backgroundMode&&idx===regenIdx){
   html+='<div class="ol-block is-char" data-msg-idx="'+idx+'" style="display:none;"></div>';
   var sAvN=App.esc(c.name||'');
@@ -256,7 +237,6 @@ actHtml+='</div>';
 html+='<div class="ol-block'+(isU?' is-user':' is-char')+'" data-msg-idx="'+idx+'" style="margin-bottom:20px;">'+headerHtml+'<div class="ol-frame-mid"><div class="ol-bub-bg"></div><div class="ol-bubble-inner">'+thH+'<div class="ol-bubble-text" style="letter-spacing:'+lg+'px;">'+fmt+'</div></div></div>'+actHtml+'</div>';
 });
 
-/* 非重写模式的流式气泡 */
 if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
   floor++;
   var sAvN2=App.esc(c.name||'');
@@ -269,7 +249,6 @@ if(OL.isStreaming&&!OL._backgroundMode&&regenIdx===-1){
 con.innerHTML=html;if(!O._noScroll)O.scrollBottom(false);O._noScroll=false;},
 parseThinking:function(t){var th='',m=t,r=t.match(/<think>([\s\S]*?)<\/think>/i);if(r){th=r[1].trim();m=t.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();}if(!r){var o=t.match(/<think>([\s\S]*)$/i);if(o){th=o[1].trim();m=t.replace(/<think>[\s\S]*$/i,'').trim();}}return{think:th,main:m};},
 formatThinkText:function(escaped){
-  /* 处理 Gemini 的双星号粗体和单星号斜体，并处理换行 */
   escaped=escaped.replace(/\*\*([^*]+)\*\*/g,'<strong style="font-weight:700;color:#666;">$1</strong>');
   escaped=escaped.replace(/\*([^*]+)\*/g,'<em style="font-style:italic;">$1</em>');
   escaped=escaped.replace(/\n/g,'<br>');
@@ -287,8 +266,8 @@ updateAiBtn:function(){var OL=App.offline;if(!OL)return;var btn=App.$('#olAiBtn'
 updateTyping:function(show){
   var el=App.$('#olTyping');
   if(!el)return;
-  el.textContent = show ? '正在书写...' : '';
-  el.style.display = show ? 'block' : 'none';
+  if(show){el.style.display='block';el.textContent='正在书写...';}
+  else{el.style.display='none';el.textContent='';}
 },
 _closePanel:function(){var p=App.$('#olSettingsPanel');if(p){p.classList.remove('show');setTimeout(function(){p.classList.add('hidden');},350);}},
 
@@ -317,87 +296,10 @@ App.safeOn('#olPlusBtn','click',function(e){e.stopPropagation();var pp=App.$('#o
 App.safeOn('#olPiPhoto','click',function(e){e.stopPropagation();var pp=App.$('#olPlusPanel');if(pp){pp.classList.remove('show');OL._plusOpen=false;}App.showToast('图片 · 开发中');});
 App.$$('.ol-fold-head').forEach(function(h){h.addEventListener('click',function(){h.parentElement.classList.toggle('open');});});
 
-var cUpIpt = App.$('#olCardUpInput');
-[1,2,3,4].forEach(function(i){
-  App.safeOn('#olBtnUp'+i,'click',function(){
-    if(!cUpIpt)return;
-    cUpIpt.dataset.idx=i;
-    cUpIpt.click();
-  });
-});
-if(cUpIpt){
-  cUpIpt.addEventListener('change',function(e){
-    var f=e.target.files[0];if(!f)return;
-    var idx=this.dataset.idx;
-    var r=new FileReader();
-    r.onload=function(ev){
-      var process=function(src){
-        var card=App.$('.mm-ec-'+idx);
-        if(card){
-          var img=card.querySelector('.mm-env-img');
-          var pl=card.querySelector('.mm-env-placeholder');
-          if(img){img.src=src;img.style.display='block';}
-          if(pl)pl.style.display='none';
-        }
-        try{App.LS.set('ol_photo_'+cid+'_'+idx,src);App.showToast('卡片'+idx+'已更新');}catch(err){App.showToast('图片过大');}
-      };
-      if(App.cropImage) App.cropImage(ev.target.result, process); else process(ev.target.result);
-    };
-    r.readAsDataURL(f);
-    e.target.value='';
-  });
-}
-
-var cardFontSel=App.$('#olCardFont');
-if(cardFontSel){
-  var cOpts='<option value="">跟随全局</option>';
-  var cBT=[{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];
-  cBT.forEach(function(f){cOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.cardFont===f.family?' selected':'')+'>'+App.esc(f.name)+'</option>';});
-  var cList=App.LS.get('fontCustomList')||[];
-  cList.forEach(function(f){cOpts+='<option value="'+App.escAttr(f.family)+'"'+(ap.cardFont===f.family?' selected':'')+'>'+App.esc(f.fileName||f.name)+'</option>';});
-  cardFontSel.innerHTML=cOpts;
-  cardFontSel.addEventListener('change',function(){ap.cardFont=this.value;if(this.value&&App.font&&App.font.loadByFamily){App.font.loadByFamily(this.value,function(){sAp(cid,ap);O.applyAppearance(cid);});}else{sAp(cid,ap);O.applyAppearance(cid);}});
-}
-
-var defCardT = ['银河歌颂', '梦想在冒险', '星星怀抱月夜', '明天想见你'];
-[1,2,3,4].forEach(function(i){
-  var ipt = App.$('#olCardT'+i);
-  if(ipt){
-    ipt.addEventListener('input',function(){
-      ap['cardT'+i] = this.value;
-      sAp(cid,ap);
-      var card=App.$('.mm-ec-'+i);
-      if(card){
-        var cap=card.querySelector('.mm-env-caption');
-        if(cap) cap.textContent = this.value || defCardT[i-1];
-      }
-    });
-  }
-});
-
 App.safeOn('#olCardReset','click',function(){
-  ap.cardBg = '#ffffff'; ap.cardTextColor = '#7ea3c9'; ap.cardFont='';
-  ap.cardT1=''; ap.cardT2=''; ap.cardT3=''; ap.cardT4='';
   ap.topBgColor='transparent'; ap.topBgImg='';
-  for(var i=1;i<=4;i++){
-    App.LS.remove('ol_photo_'+cid+'_'+i);
-    var ipt=App.$('#olCardT'+i); if(ipt) ipt.value='';
-    var card=App.$('.mm-ec-'+i);
-    if(card){
-      var img=card.querySelector('.mm-env-img');
-      var pl=card.querySelector('.mm-env-placeholder');
-      var cap=card.querySelector('.mm-env-caption');
-      if(img){img.src='';img.style.display='none';}
-      if(pl)pl.style.display='flex';
-      if(cap)cap.textContent = defCardT[i-1];
-    }
-  }
-
-  var cfSel=App.$('#olCardFont'); if(cfSel)cfSel.value='';
   sAp(cid,ap); O.applyAppearance(cid);
-  var dbg=App.$('#olCardBg'), dtc=App.$('#olCardTextColor'), dtbg=App.$('#olTopBgColor');
-  if(dbg) dbg.style.background=ap.cardBg;
-  if(dtc) dtc.style.background=ap.cardTextColor;
+  var dtbg=App.$('#olTopBgColor');
   if(dtbg) dtbg.style.background=ap.topBgColor;
   App.showToast('顶部区域已重置');
 });
@@ -422,7 +324,6 @@ function bc(id,key){var dot=App.$('#'+id);if(!dot)return;dot.style.background=ap
 bc('olcBubbleBg','cBubbleBg'); bc('oluBubbleBg','uBubbleBg');
 bc('olPageBg','pageBg'); bc('olInputTextColor','inputTextColor');
 bc('olBarBorderColor','barBorderColor'); bc('olBarIconColor','barIconColor');
-bc('olCardBg','cardBg'); bc('olCardTextColor','cardTextColor');
 bc('olcAvFrameColor','cAvFrameColor'); bc('olcBubbleBorderColor','cBubbleBorderColor'); bc('olcTextColor','cTextColor');
 bc('oluAvFrameColor','uAvFrameColor'); bc('oluBubbleBorderColor','uBubbleBorderColor'); bc('oluTextColor','uTextColor');
 bc('olTopBgColor', 'topBgColor');
@@ -461,13 +362,6 @@ App.safeOn('#olBarReset','click',function(){
 
 App.safeOn('#olStyleReset','click',function(){
   App.LS.remove('olAp_'+cid);ap=JSON.parse(JSON.stringify(DEF_AP));
-  for(var i=1;i<=4;i++){App.LS.remove('ol_photo_'+cid+'_'+i);
-    var ipt=App.$('#olCardT'+i);if(ipt)ipt.value='';
-    var card=App.$('.mm-ec-'+i);
-    if(card){var img=card.querySelector('.mm-env-img'),pl=card.querySelector('.mm-env-placeholder'),cap=card.querySelector('.mm-env-caption');
-    if(img){img.src='';img.style.display='none';}if(pl)pl.style.display='flex';
-    if(cap)cap.textContent=['银河歌颂','梦想在冒险','星星怀抱月夜','明天想见你'][i-1];}
-  }
   App.LS.remove('olBg_'+cid);
   sAp(cid,ap);O.applyAppearance(cid);O._noScroll=true;O.renderMessages();
   App.showToast('已重置全部渲染');
@@ -582,7 +476,6 @@ if(mc){
         OL.saveMsgs(); O._noScroll=true; O.renderMessages();
       }
     } else if(act === 'regen') {
-      /* 先清除所有残留的旧标记 */
       OL.messages.forEach(function(m){ delete m._regen; });
       OL._regenIdx = null;
       if(!msg.swipes) msg.swipes = [msg.content];
@@ -600,7 +493,6 @@ if(mc){
     } else if(act === 'edit') {
       O.showEditDialog(idx);
         } else if(act === 'continue') {
-      /* 清除所有残留的 _regen 标记 */
       OL.messages.forEach(function(m){ delete m._regen; });
       OL._regenIdx = null;
       OL.messages.splice(idx + 1);
