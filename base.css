@@ -373,13 +373,13 @@ img.img-fill { transform: none !important; }
 /* 右边头像：靠右，且强行排在第一行 */
 #hlAvatarWrapRight {
   align-self: flex-end; 
-  order: 1; 
+  order: 2; 
 }
 
 /* 左边头像：靠左，排在第二行 */
 #hlAvatarWrapLeft {
   align-self: flex-start;
-  order: 2; 
+  order: 1; 
 }
 
 #edenCard {
