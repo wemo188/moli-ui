@@ -7,7 +7,6 @@
   align-items: center; 
   gap: 12px; 
   margin: 10px 0 20px;
-  padding: 0 2px;
   box-sizing: border-box;
   max-width: 100%;
 }
@@ -16,7 +15,7 @@
   width: 65px; 
   height: 65px; 
   border-radius: 50%; 
-  border: 1px solid #d1d5db; 
+  border: 2px solid #d1d5db; 
   background: rgba(255,255,255,0.4); 
   display: flex; 
   align-items: center; 
@@ -31,7 +30,7 @@
   min-width: 0;
   display: flex; 
   flex-direction: column; 
-  gap: 4px; 
+  gap: 3px; 
 }
 .alex-input { 
   width: 100%; 
@@ -50,9 +49,8 @@
 .alex-photo-row { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
-  gap: 10px; 
+  gap: 5px; 
   margin: 0 0 25px;
-  padding: 0 2px;
   box-sizing: border-box;
   max-width: 100%;
 }
@@ -78,7 +76,6 @@
   display: flex; 
   align-items: center; 
   margin: 0 0 25px;
-  padding: 0 2px;
   box-sizing: border-box;
   max-width: 100%;
 }
