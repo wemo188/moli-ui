@@ -253,14 +253,14 @@ img.img-fill { transform: none !important; }
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: calc(20px + env(safe-area-inset-top, 20px)) 0px calc(34px + env(safe-area-inset-bottom, 20px));
+  padding: calc(20px + env(safe-area-inset-top, 20px)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
 }
 
 /* 手机端 */
 @media (max-width: 640px) {
   .screen-page {
-    padding: calc(20px + env(safe-area-inset-top, 20px)) 0px calc(30px + env(safe-area-inset-bottom, 20px));
+    padding: calc(20px + env(safe-area-inset-top, 20px)) 16px calc(30px + env(safe-area-inset-bottom, 20px));
   }
 }
 
@@ -977,20 +977,4 @@ input[type="range"] {
 
 .is-grabbed {
   animation: dragWiggle 0.4s ease-out;
-}
-
-/* =========================
-   一劳永逸：防溢出 + 防缩放
-========================= */
-.page-slider {
-  overflow: hidden;
-}
-
-.screen-page-inner {
-  overflow-x: hidden;
-}
-
-/* iOS 输入框点击防自动放大 */
-.alex-input {
-  font-size: 16px !important;
 }
