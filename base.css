@@ -515,20 +515,22 @@ img.img-fill { transform: none !important; }
   position: fixed;
   bottom: 0; left: 0; right: 0;
   max-width: 400px; margin: 0 auto;
-  background: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: 20px 20px 0 0;
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 10px));
   box-shadow: 0 -2px 20px rgba(0,0,0,0.12);
   display: flex; flex-direction: column; gap: 10px;
-  max-height: 65vh; /* 严格限制最大高度 */
-  overflow-y: auto; /* 超出自动丝滑滚动 */
-  overscroll-behavior: contain;
+  
+  /* 👉 死死限制住它最高只能 65%屏幕高度，多了必须内部滚动！ */
+  max-height: 65vh; 
+  height: fit-content; 
+  overflow-y: auto !important; 
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y pinch-zoom; /* 允许滚动与双指捏合缩放！ */
-  transform-origin: bottom center; /* 从底部放大缩小 */
-  will-change: transform, left, top;
+  touch-action: pan-y pinch-zoom;
+  transform-origin: center center; /* 从面板中心放大缩小，手感最好 */
+  will-change: transform;
 }
 
 @keyframes cpSlideUp {
@@ -726,9 +728,8 @@ img.img-fill { transform: none !important; }
   display: flex; gap: 6px; justify-content: center;
   margin-bottom: 8px; width: 100%;
 }
-
 .cp-grad-stop {
-  flex: 1; /* 等宽排版，优雅好看 */
+  flex: 1; /* 等宽均分！*/
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 8px 4px; border-radius: 8px;
   cursor: pointer; border: 1.5px solid transparent;
@@ -737,7 +738,6 @@ img.img-fill { transform: none !important; }
   transition: all .15s ease;
   background: rgba(0,0,0,0.02);
 }
-
 .cp-grad-stop.active {
   border-color: #7a9ab8; color: #2e4258;
   background: rgba(126,163,201,.1);
