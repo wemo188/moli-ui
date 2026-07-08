@@ -45,7 +45,7 @@
   position: relative;
   flex: 1; /* 撑满剩下的横向空间 */
   min-height: 110px;
-  border-radius: 10px; /* 右边独立大圆角框 */
+  border-radius: 12px; /* 右边独立大圆角框 */
   overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
   background: rgba(255, 255, 255, 0.2); 
   border: 0.5px solid #d1d5db;
@@ -62,7 +62,7 @@
 .tk17-glass {
   position: absolute; inset: 0; z-index: 1;
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
   transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
