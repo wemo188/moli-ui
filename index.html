@@ -41,52 +41,107 @@
 <main id="mainContent" class="main-content page-slider-main">
   <div id="pageSlider" class="page-slider">
 
-   <!-- 🌟 第一页 🌟 -->
-   <section class="screen-page screen-page-1">
+    <!-- 第一页 -->
+    <section class="screen-page screen-page-1">
       <div class="screen-page-inner">
 
-        <!-- 新增顶部：灰线圆头像 + 右侧无边框文字框 -->
-        <div class="alex-new-top">
-          <div class="alex-avatar-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          </div>
-          <div class="alex-top-inputs">
-            <input type="text" class="alex-input" placeholder="设定一个昵称">
-            <input type="text" class="alex-input" placeholder="随便写点什么...">
+        <!-- ★ 新家：票券日历 (重构拉通宽版，直接镇场顶端) -->
+        <div id="row0">
+          <div class="tk17" id="wtCard">
+            <!-- 底图与磨砂遮罩 -->
+            <div class="tk17-bgimg" id="tkBgArea"></div>
+            <div class="tk17-glass" id="tkGlass"></div>
+            
+            <!-- 天气特效全覆盖层 (已扩大至整个框体) -->
+            <div id="wtWeatherBg" class="tk17-weather-layer"></div>
+
+            <!-- 卡片内容交互包裹区 -->
+            <div class="tk17-inner">
+              
+              <!-- 左：干净剔透的独立头像区 -->
+              <div class="tk17-left-part">
+                <div class="tk17-avatar" id="tkAvatarBg"></div>
+              </div>
+
+              <!-- 右：微透玻璃板把【昵称+签名+天气】完全框住 -->
+              <div class="tk17-right-part">
+                <!-- 姓名与签名 -->
+                <div class="tk17-text-col">
+                  <div class="tk17-msg-name" id="tkMsgName">昵称</div>
+                  <div class="tk17-sign" id="tkMsgSign">签名</div>
+                </div>
+                
+                <!-- 天气及触控绑定的交互点 -->
+                <div class="tk17-right">
+                  <div class="tk17-right-info">
+                    <div class="tk17-wt-temp" id="calTemp">--°C</div>
+                    <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
 
-        <!-- 照片墙：同色系虚线框 -->
-        <div class="alex-photo-row">
-          <div class="alex-photo-slot">+</div>
-          <div class="alex-photo-slot">+</div>
-          <div class="alex-photo-slot">+</div>
-        </div>
+        <!-- ★ 第一行：左组 + 右组 (乖乖挪到下方) -->
+        <div id="row1">
+          <div class="card-group card-group-left">
+            <div class="bx-w" id="profileCard-L" data-side="left">
+              <div class="bx-tag-wrap">
+                <!-- 标签掏空 -->
+                <div class="bx-tag bx-tag1 bx-tag-placeholder"></div>
+                <div class="bx-tag bx-tag2 bx-tag-placeholder"></div>
+              </div>
+              <div class="bx-cw"><div class="bx-cd">
+                <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                <div class="bx-name-bar">
+                  <!-- 角色名彻底删除了，只留下干干净净的空签名框 -->
+                  <div class="bx-sub"></div>
+                </div>
+              </div></div>
+            </div>
+            <div class="card-group-icons">
+              <div id="iconChar">
+                <div id="iconCharImg"></div>
+                <div id="iconCharLabel">Char</div>
+              </div>
+              <div id="iconUser">
+                <div id="iconUserImg"></div>
+                <div id="iconUserLabel">User</div>
+              </div>
+            </div>
+          </div>
 
-        <!-- 2x2 图标 -->
-        <div class="alex-icon-grid">
-          <div class="alex-empty-half"></div>
-          <div class="alex-icon-half card-group-icons" style="margin: 0; padding: 0;">
-            <div id="iconChar">
-              <div id="iconCharImg"></div>
-              <div id="iconCharLabel">Char</div>
+          <div class="card-group card-group-right">
+            <div class="card-group-icons">
+              <div id="iconTheme">
+                <div id="iconThemeImg"></div>
+                <div id="iconThemeLabel">美化</div>
+              </div>
+              <div id="iconSettings">
+                <div id="iconSettingsImg"></div>
+                <div id="iconSettingsLabel">设置</div>
+              </div>
             </div>
-            <div id="iconUser">
-              <div id="iconUserImg"></div>
-              <div id="iconUserLabel">User</div>
-            </div>
-            <div id="iconTheme">
-              <div id="iconThemeImg"></div>
-              <div id="iconThemeLabel">美化</div>
-            </div>
-            <div id="iconSettings">
-              <div id="iconSettingsImg"></div>
-              <div id="iconSettingsLabel">设置</div>
+            <div class="bx-w" id="profileCard-R" data-side="right">
+              <div class="bx-cw"><div class="bx-cd">
+                <div class="bx-side-ribbon">
+                  <!-- 标签掏空 -->
+                  <div class="bx-ribbon-tab r1 bx-ribbon-placeholder"></div>
+                  <div class="bx-ribbon-tab r2 bx-ribbon-placeholder"></div>
+                </div>
+                <div class="bx-av-box"><div class="bx-av-front"><div class="bx-av-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>点击设置</span></div></div></div>
+                <div class="bx-name-bar">
+                  <!-- 角色名彻底删除了，只留下干干净净的空签名框 -->
+                  <div class="bx-sub"></div>
+                </div>
+              </div></div>
             </div>
           </div>
         </div>
         
-        <!-- 双头像气泡聊天区域 -->
+        <!-- ★ 第三行：圆头像错层排版 -->
         <div id="hlAvatarsRow" class="hl-avatars-row">
           <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
             <div class="hl-bubble hl-bubble-right">
@@ -94,9 +149,12 @@
               <div class="hl-bubble-arrow-inner"></div>
               <span class="hl-bubble-display" id="hlInputLeft"></span>
             </div>
-            <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
+             <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
               <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/><path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
+                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
                 <div class="hl-avatar-bg" id="hlImgLeft"></div>
               </div>
             </div>
@@ -111,9 +169,12 @@
               <div class="hl-bubble-arrow-inner"></div>
               <span class="hl-bubble-display" id="hlInputRight"></span>
             </div>
-            <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
+                 <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
               <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/><path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
+                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
                 <div class="hl-avatar-bg" id="hlImgRight"></div>
               </div>
             </div>
@@ -123,13 +184,13 @@
           </div>
         </div>
 
-        <!-- 文本框 -->
+        <!-- ★ 第四行：底部长长宽宽的文字填写区域 -->
         <div id="edenCard">
           <div id="edenText">文字填写区域，可以多行</div>
         </div>
 
       </div>
-   </section>
+    </section>
 
    <!-- 🌟 第二页 🌟 -->
     <section class="screen-page screen-page-2">
