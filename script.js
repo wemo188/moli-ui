@@ -691,20 +691,20 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     function rgbToHsl(r,g,b){var max=Math.max(r,g,b),min=Math.min(r,g,b);var h=0,s=0,l=(max+min)/2;if(max!==min){var d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);if(max===r)h=((g-b)/d+(g<b?6:0))/6;else if(max===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6;}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};}
     function hslToHex(h,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}r=Math.round((r+m)*255);g=Math.round((g+m)*255);b=Math.round((b+m)*255);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
     function hslToRgb(h,s,l){var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;var r=0,g=0,b=0;if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];}
-
     function parseToStop(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1]),g=parseInt(rm[2]),b=parseInt(rm[3]);var hex='#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);return{color:hex};}return{color:str||'#111111'};}
-
     function parseColor(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1])/255,g=parseInt(rm[2])/255,b=parseInt(rm[3])/255;var hsl=rgbToHsl(r,g,b);return{h:hsl.h,s:hsl.s,l:hsl.l};}var hex=str.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length===8)hex=hex.substr(0,6);if(hex.length!==6)return{h:0,s:0,l:0};var rr=parseInt(hex.substr(0,2),16)/255,gg=parseInt(hex.substr(2,2),16)/255,bb=parseInt(hex.substr(4,2),16)/255;var hsl2=rgbToHsl(rr,gg,bb);return{h:hsl2.h,s:hsl2.s,l:hsl2.l};}
 
     var initGrad=false,initAngle=180;
-    var initStops=[{color:'#111111'},{color:'#888888'},{color:'#ffffff'}];
+    var initStops=[{color:'#111111'},{color:'#666666'},{color:'#bbbbbb'},{color:'#ffffff'}]; // 支持四个槽位！
     var initGradCount=2;
     if(currentColor&&currentColor.indexOf('linear-gradient')>=0){
       initGrad=true;
       var gm=currentColor.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
-      if(gm){initAngle=parseInt(gm[1])||180;var cp=gm[2].split(/,(?![^(]*\))/);
-        if(cp.length>=3){initStops[0]=parseToStop(cp[0].trim());initStops[1]=parseToStop(cp[1].trim());initStops[2]=parseToStop(cp[2].trim());initGradCount=3;}
-        else if(cp.length>=2){initStops[0]=parseToStop(cp[0].trim());initStops[1]=parseToStop(cp[1].trim());initStops[2]=parseToStop(cp[1].trim());initGradCount=2;}
+      if(gm){
+          initAngle=parseInt(gm[1])||180;var cp=gm[2].split(/,(?![^(]*\))/);
+          if(cp.length>=4){initStops[0]=parseToStop(cp[0]);initStops[1]=parseToStop(cp[1]);initStops[2]=parseToStop(cp[2]);initStops[3]=parseToStop(cp[3]);initGradCount=4;}
+          else if(cp.length>=3){initStops[0]=parseToStop(cp[0]);initStops[1]=parseToStop(cp[1]);initStops[2]=parseToStop(cp[2]);initGradCount=3;}
+          else if(cp.length>=2){initStops[0]=parseToStop(cp[0]);initStops[1]=parseToStop(cp[1]);initGradCount=2;}
       }
       currentColor=initStops[0].color;
     }
@@ -714,32 +714,42 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     var currentHue=0,currentSat=100,currentLight=50;
     var selectedHex=currentColor||'#111111';
-    var editing=false;
-    var gradMode=initGrad;
-    var gradStops=[{color:initStops[0].color},{color:initStops[1].color},{color:initStops[2].color}];
-    var gradAngle=initAngle;
-    var activeStop=0;
-    var gradColorCount=initGradCount;
+    var editing=false, gradMode=initGrad;
+    var gradStops=[{color:initStops[0].color},{color:initStops[1].color},{color:initStops[2].color},{color:initStops[3].color}];
+    var gradAngle=initAngle, activeStop=0, gradColorCount=initGradCount;
+    // 双指缩放核心
+    var cpScale=1, initCpScale=1, initCpDist=0, isCpZooming=false;
 
     function getSolidOutput(){return hslToHex(currentHue,currentSat,currentLight);}
-    function getGradOutput(){if(gradColorCount===3)return 'linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+','+gradStops[2].color+')';return 'linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+')';}
+    function getGradOutput(){
+      var cols = [];
+      for(var i=0; i<gradColorCount; i++) cols.push(gradStops[i].color);
+      return 'linear-gradient('+gradAngle+'deg,'+cols.join(',')+')';
+    }
     function getOutput(){return gradMode?getGradOutput():getSolidOutput();}
-    function getDisplayText(){return getOutput();}
 
     function buildPresetsHtml(){return savedPresets.map(function(c,i){var safeC=App.escAttr(c);var bgStyle=c.indexOf('gradient')>=0?c:safeC;return '<div class="cp-preset" data-color="'+safeC+'" data-idx="'+i+'" style="background:'+bgStyle+';"><div class="cp-preset-del">✕</div></div>';}).join('')+'<div class="cp-preset-add">+</div>';}
 
     overlay.innerHTML=
       '<div class="cp-panel">'+
-        '<div class="cp-header"><span class="cp-title">选择颜色</span><button class="cp-close" id="cpClose" type="button">✕</button></div>'+
+        '<div class="cp-header"><span class="cp-title">颜料盘</span><button class="cp-close" id="cpClose" type="button">✕</button></div>'+
         '<div class="cp-preview-row"><div class="cp-preview" id="cpPreview"><div class="cp-pv-inner"></div></div><input type="text" class="cp-hex-input" id="cpHexInput" maxlength="80"></div>'+
         '<div class="cp-mode-row"><button class="cp-mode-btn'+(initGrad?'':' active')+'" data-mode="solid" type="button">纯色</button><button class="cp-mode-btn'+(initGrad?' active':'')+'" data-mode="gradient" type="button">渐变</button></div>'+
         '<div class="cp-spectrum" id="cpSpectrum"><canvas id="cpSpectrumCanvas"></canvas><div class="cp-spectrum-cursor" id="cpSpecCursor"></div></div>'+
         '<span class="cp-bar-label">色相</span>'+
         '<div class="cp-hue-wrap" id="cpHueWrap"><div class="cp-hue-bar"></div><div class="cp-hue-cursor" id="cpHueCursor"></div></div>'+
         '<div class="cp-gradient-area" id="cpGradientArea" style="'+(initGrad?'':'display:none;')+'">'+
-          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;"><button class="cp-grad-mode-btn' + (initGradCount === 2 ? ' active' : '') + '" data-gmode="2" type="button">双色</button>' +
-'<button class="cp-grad-mode-btn' + (initGradCount === 3 ? ' active' : '') + '" data-gmode="3" type="button">三色</button></div>'+
-          '<div class="cp-grad-stops"><div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>起点</span></div><div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>'+(initGradCount===3?'中间':'终点')+'</span></div><div class="cp-grad-stop" id="cpStop2" data-stop="2" style="'+(initGradCount===3?'':'display:none;')+'"><div class="cp-grad-dot" id="cpGradDot2"></div><span>终点</span></div></div>'+
+          '<div class="cp-grad-mode-row" style="display:flex;gap:4px;margin-bottom:8px;">'+
+            '<button class="cp-grad-mode-btn' + (initGradCount===2?' active':'') + '" data-gmode="2" type="button">双色</button>' +
+            '<button class="cp-grad-mode-btn' + (initGradCount===3?' active':'') + '" data-gmode="3" type="button">三色</button>'+
+            '<button class="cp-grad-mode-btn' + (initGradCount===4?' active':'') + '" data-gmode="4" type="button">四色</button>'+
+          '</div>'+
+          '<div class="cp-grad-stops">'+
+            '<div class="cp-grad-stop active" id="cpStop0" data-stop="0"><div class="cp-grad-dot" id="cpGradDot0"></div><span>①起</span></div>'+
+            '<div class="cp-grad-stop" id="cpStop1" data-stop="1"><div class="cp-grad-dot" id="cpGradDot1"></div><span>②中</span></div>'+
+            '<div class="cp-grad-stop" id="cpStop2" data-stop="2" style="'+(initGradCount>=3?'':'display:none;')+'"><div class="cp-grad-dot" id="cpGradDot2"></div><span>③次</span></div>'+
+            '<div class="cp-grad-stop" id="cpStop3" data-stop="3" style="'+(initGradCount>=4?'':'display:none;')+'"><div class="cp-grad-dot" id="cpGradDot3"></div><span>④末</span></div>'+
+          '</div>'+
           '<div class="cp-grad-preview" id="cpGradPreview"><div class="cp-grad-preview-inner" id="cpGradInner"></div></div>'+
           '<div class="cp-grad-dir"><span style="font-size:10px;color:#111;font-weight:600;">方向</span><input type="range" id="cpGradAngle" min="0" max="360" step="1" value="'+initAngle+'"><span id="cpGradAngleVal" style="font-size:10px;color:#111;font-weight:600;width:30px;text-align:right;">'+initAngle+'°</span></div>'+
         '</div>'+
@@ -748,21 +758,39 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       '</div>';
 
     document.body.appendChild(overlay);
-
-    var preview=overlay.querySelector('#cpPreview');
-    var pvInner=preview.querySelector('.cp-pv-inner');
-    var hexInput=overlay.querySelector('#cpHexInput');
-    var specEl=overlay.querySelector('#cpSpectrum');
-    var specCanvas=overlay.querySelector('#cpSpectrumCanvas');
-    var specCtx=specCanvas.getContext('2d');
-    var specCursor=overlay.querySelector('#cpSpecCursor');
-    var hueWrap=overlay.querySelector('#cpHueWrap');
-    var hueCursor=overlay.querySelector('#cpHueCursor');
+    var cpPanel=overlay.querySelector('.cp-panel');
+    var pvInner=overlay.querySelector('.cp-pv-inner'), hexInput=overlay.querySelector('#cpHexInput');
+    var specEl=overlay.querySelector('#cpSpectrum'), specCanvas=overlay.querySelector('#cpSpectrumCanvas');
+    var specCtx=specCanvas.getContext('2d'), specCursor=overlay.querySelector('#cpSpecCursor');
+    var hueWrap=overlay.querySelector('#cpHueWrap'), hueCursor=overlay.querySelector('#cpHueCursor');
     var presetsEl=overlay.querySelector('#cpPresets');
-    var gradArea=overlay.querySelector('#cpGradientArea');
-    var gradInner=overlay.querySelector('#cpGradInner');
-    var gradAngleInput=overlay.querySelector('#cpGradAngle');
-    var gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
+    var gradArea=overlay.querySelector('#cpGradientArea'), gradInner=overlay.querySelector('#cpGradInner');
+    var gradAngleInput=overlay.querySelector('#cpGradAngle'), gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
+
+    /* ✨ 添加面板双指捏合缩放监听！哥哥教你的魔法 ✨ */
+    cpPanel.addEventListener('touchstart', function(e) {
+       if (e.touches.length === 2) {
+          isCpZooming = true;
+          _cpDrag.active = false; // 关闭拖动保护
+          initCpDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          initCpScale = cpScale;
+          e.preventDefault(); // 阻止缩放影响整个页面
+       }
+    }, {passive: false});
+
+    cpPanel.addEventListener('touchmove', function(e) {
+       if (isCpZooming && e.touches.length === 2) {
+          e.preventDefault();
+          var dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          var s = initCpScale * (dist / initCpDist);
+          cpScale = Math.max(0.65, Math.min(s, 2.5)); // 限制范围：不要缩得比核桃小，也别放得大过象！
+          cpPanel.style.transform = 'scale(' + cpScale + ')';
+       }
+    }, {passive: false});
+
+    cpPanel.addEventListener('touchend', function(e) {
+       if (e.touches.length < 2) isCpZooming = false;
+    });
 
     function drawSpectrum(){
       var w=specEl.clientWidth,h=specEl.clientHeight;specCanvas.width=w;specCanvas.height=h;
@@ -774,25 +802,27 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       specCtx.putImageData(imageData,0,0);
     }
 
-    function updateGradPreview(){if(!gradInner)return;if(gradColorCount===3)gradInner.style.background='linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+','+gradStops[2].color+')';else gradInner.style.background='linear-gradient('+gradAngle+'deg,'+gradStops[0].color+','+gradStops[1].color+')';var d0=overlay.querySelector('#cpGradDot0');var d1=overlay.querySelector('#cpGradDot1');var d2=overlay.querySelector('#cpGradDot2');if(d0)d0.style.background=gradStops[0].color;if(d1)d1.style.background=gradStops[1].color;if(d2)d2.style.background=gradStops[2].color;}
+    function updateGradPreview(){
+      if(!gradInner)return;
+      var cArr = [];
+      for(var i=0; i<gradColorCount; i++) {
+        cArr.push(gradStops[i].color);
+        var dot = overlay.querySelector('#cpGradDot'+i);
+        if(dot) dot.style.background = gradStops[i].color;
+      }
+      gradInner.style.background='linear-gradient('+gradAngle+'deg,'+cArr.join(',')+')';
+    }
 
     function updateUI(){
       selectedHex=getOutput();
-      pvInner.style.background=selectedHex;
-      hexInput.value=getDisplayText();
-
+      pvInner.style.background=selectedHex; hexInput.value=selectedHex;
       var sw=specEl.clientWidth,sh=specEl.clientHeight;
       specCursor.style.left=(currentSat/100)*sw+'px';
       specCursor.style.top=((100-currentLight)/100)*sh+'px';
       specCursor.style.background=hslToHex(currentHue,currentSat,currentLight);
       hueCursor.style.left=(currentHue/360)*hueWrap.clientWidth+'px';
       hueCursor.style.background=hslToHex(currentHue,100,50);
-
-      if(gradMode){
-        gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);
-        updateGradPreview();
-      }
-
+      if(gradMode){ gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight); updateGradPreview(); }
       var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);
     }
 
@@ -804,49 +834,40 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     overlay._setColor=function(c){
       if(c&&c.indexOf('linear-gradient')>=0){
         var gm2=c.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
-        if(gm2){gradAngle=parseInt(gm2[1])||180;var parts=gm2[2].split(/,(?![^(]*\))/);
-          if(parts.length>=3){gradStops[0]=parseToStop(parts[0].trim());gradStops[1]=parseToStop(parts[1].trim());gradStops[2]=parseToStop(parts[2].trim());gradColorCount=3;}
-          else if(parts.length>=2){gradStops[0]=parseToStop(parts[0].trim());gradStops[1]=parseToStop(parts[1].trim());gradStops[2]=parseToStop(parts[1].trim());gradColorCount=2;}
+        if(gm2){
+            gradAngle=parseInt(gm2[1])||180;var parts=gm2[2].split(/,(?![^(]*\))/);
+            if(parts.length>=4){gradStops[0]=parseToStop(parts[0]);gradStops[1]=parseToStop(parts[1]);gradStops[2]=parseToStop(parts[2]);gradStops[3]=parseToStop(parts[3]);gradColorCount=4;}
+            else if(parts.length>=3){gradStops[0]=parseToStop(parts[0]);gradStops[1]=parseToStop(parts[1]);gradStops[2]=parseToStop(parts[2]);gradColorCount=3;}
+            else if(parts.length>=2){gradStops[0]=parseToStop(parts[0]);gradStops[1]=parseToStop(parts[1]);gradColorCount=2;}
         }
         gradMode=true;overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='gradient');});
         if(gradArea)gradArea.style.display='';
         if(gradAngleInput){gradAngleInput.value=gradAngle;gradAngleValEl.textContent=gradAngle+'°';}
-        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){
-  b.classList.remove('active');
-  if (parseInt(b.dataset.gmode) === gradColorCount) {
-    b.classList.add('active');
-  }
-});
-        var stop1Label=overlay.querySelector('#cpStop1 span');var stop2El=overlay.querySelector('#cpStop2');
-        if(gradColorCount===3){if(stop1Label)stop1Label.textContent='中间';if(stop2El)stop2El.style.display='';}else{if(stop1Label)stop1Label.textContent='终点';if(stop2El)stop2El.style.display='none';}
-        activeStop=0;setFromColor(gradStops[0].color);updateGradPreview();
+        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){ b.classList.toggle('active', parseInt(b.dataset.gmode)===gradColorCount); });
+        if(gradColorCount>=3) overlay.querySelector('#cpStop2').style.display=''; else overlay.querySelector('#cpStop2').style.display='none';
+        if(gradColorCount===4) overlay.querySelector('#cpStop3').style.display=''; else overlay.querySelector('#cpStop3').style.display='none';
+        activeStop=0; setFromColor(gradStops[0].color); updateGradPreview();
       } else {
         gradMode=false;overlay.querySelectorAll('.cp-mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode==='solid');});
-        if(gradArea)gradArea.style.display='none';setFromColor(c);
+        if(gradArea)gradArea.style.display='none'; setFromColor(c);
       }
     };
 
     var specDrag=false,hueDrag=false;
-
     function specFromPos(e){var rect=specEl.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentSat=Math.max(0,Math.min(100,(t.clientX-rect.left)/rect.width*100));var rawL=100-(t.clientY-rect.top)/rect.height*100;currentLight=Math.max(0,Math.min(100,rawL));updateUI();}
     specEl.addEventListener('mousedown',function(e){e.preventDefault();specDrag=true;specFromPos(e);});
     specEl.addEventListener('touchstart',function(e){e.preventDefault();specDrag=true;specFromPos(e);},{passive:false});
-
     function hueFromPos(e){var rect=hueWrap.getBoundingClientRect();var t=e.touches?e.touches[0]:e;currentHue=Math.max(0,Math.min(360,(t.clientX-rect.left)/rect.width*360));drawSpectrum();updateUI();}
     hueWrap.addEventListener('mousedown',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);});
     hueWrap.addEventListener('touchstart',function(e){e.preventDefault();hueDrag=true;hueFromPos(e);},{passive:false});
-
     function onDocMouseMove(e){if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}
     function onDocMouseUp(){specDrag=false;hueDrag=false;}
     function onDocTouchMove(e){if(specDrag||hueDrag){e.preventDefault();if(specDrag)specFromPos(e);if(hueDrag)hueFromPos(e);}}
     function onDocTouchEnd(){specDrag=false;hueDrag=false;}
-
     document.addEventListener('mousemove',onDocMouseMove);
     document.addEventListener('mouseup',onDocMouseUp);
     document.addEventListener('touchmove',onDocTouchMove,{passive:false});
     document.addEventListener('touchend',onDocTouchEnd);
-
-    hexInput.addEventListener('input',function(){var v=this.value.trim();if(v.indexOf('linear-gradient')>=0){overlay._setColor(v);return;}if(/^#[0-9a-fA-F]{6}$/.test(v)){setFromColor(v);}});
 
     overlay.querySelectorAll('.cp-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();
@@ -858,35 +879,28 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       });
     });
 
-        overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
+    overlay.querySelectorAll('.cp-grad-stop').forEach(function(stop){
       stop.addEventListener('click',function(e){e.stopPropagation();
         gradStops[activeStop].color=hslToHex(currentHue,currentSat,currentLight);
         overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});stop.classList.add('active');
-        activeStop=parseInt(stop.dataset.stop);
-        var parsed=parseColor(gradStops[activeStop].color);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;
-        drawSpectrum();
-        var sw=specEl.clientWidth,sh=specEl.clientHeight;
-        specCursor.style.left=(currentSat/100)*sw+'px';
-        specCursor.style.top=((100-currentLight)/100)*sh+'px';
-        specCursor.style.background=hslToHex(currentHue,currentSat,currentLight);
-        hueCursor.style.left=(currentHue/360)*hueWrap.clientWidth+'px';
-        hueCursor.style.background=hslToHex(currentHue,100,50);
-        selectedHex=getOutput();pvInner.style.background=selectedHex;hexInput.value=getDisplayText();
+        activeStop=parseInt(stop.dataset.stop); setFromColor(gradStops[activeStop].color);
         updateGradPreview();
       });
     });
 
     overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(btn){
       btn.addEventListener('click',function(e){e.stopPropagation();
-        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){
-  b.classList.remove('active');
-});
-btn.classList.add('active');
+        overlay.querySelectorAll('.cp-grad-mode-btn').forEach(function(b){ b.classList.remove('active');}); btn.classList.add('active');
         gradColorCount=parseInt(btn.dataset.gmode);
-        var stop1Label=overlay.querySelector('#cpStop1 span');
-        var stop2=overlay.querySelector('#cpStop2');
-        if(gradColorCount===3){if(stop1Label)stop1Label.textContent='中间';if(stop2)stop2.style.display='';}
-        else{if(stop1Label)stop1Label.textContent='终点';if(stop2)stop2.style.display='none';if(activeStop===2){activeStop=1;overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});overlay.querySelector('#cpStop1').classList.add('active');setFromColor(gradStops[1].color);}}
+        var s2=overlay.querySelector('#cpStop2'), s3=overlay.querySelector('#cpStop3');
+        if(gradColorCount>=3){if(s2)s2.style.display='';}else{if(s2)s2.style.display='none';}
+        if(gradColorCount===4){if(s3)s3.style.display='';}else{if(s3)s3.style.display='none';}
+        if(activeStop>=gradColorCount) {
+          activeStop=gradColorCount-1; 
+          overlay.querySelectorAll('.cp-grad-stop').forEach(function(s){s.classList.remove('active');});
+          overlay.querySelector('#cpStop'+activeStop).classList.add('active');
+          setFromColor(gradStops[activeStop].color);
+        }
         updateGradPreview();updateUI();
       });
     });
@@ -898,8 +912,7 @@ btn.classList.add('active');
       if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');
       presetsEl.querySelectorAll('.cp-preset').forEach(function(p){
           p.addEventListener('click',function(e){e.stopPropagation();if(editing)return;var c=p.dataset.color;
-          if(c.indexOf('linear-gradient')>=0){overlay._setColor(c);}
-          else{if(gradMode){setFromColor(c);}else{setFromColor(c);}}
+          if(c.indexOf('linear-gradient')>=0){overlay._setColor(c);}else{if(gradMode){setFromColor(c);}else{setFromColor(c);}}
         });
         var del=p.querySelector('.cp-preset-del');
         if(del){del.addEventListener('click',function(e){e.stopPropagation();savedPresets.splice(parseInt(p.dataset.idx),1);App.LS.set('cpPresets',savedPresets);rebindPresets();});}
@@ -908,20 +921,19 @@ btn.classList.add('active');
       if(addBtn){addBtn.addEventListener('click',function(e){e.stopPropagation();var sc=getOutput();if(savedPresets.indexOf(sc)===-1){savedPresets.push(sc);App.LS.set('cpPresets',savedPresets);rebindPresets();}});}
     }
     rebindPresets();
-
     overlay.querySelector('#cpEditBtn').addEventListener('click',function(e){e.stopPropagation();editing=!editing;this.textContent=editing?'完成':'编辑';if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');});
 
-    var cpPanel=overlay.querySelector('.cp-panel');
     var cpHead=overlay.querySelector('.cp-header');
     var _cpDrag={active:false,sx:0,sy:0,ox:0,oy:0};
     cpHead.addEventListener('touchstart',function(e){
       if(e.target.closest('button'))return;
       var t=e.touches[0];var rect=cpPanel.getBoundingClientRect();
-      cpPanel.style.bottom='auto';cpPanel.style.left=rect.left+'px';cpPanel.style.top=rect.top+'px';cpPanel.style.right='auto';cpPanel.style.margin='0';cpPanel.style.width=rect.width+'px';cpPanel.style.transform='none';
+      cpPanel.style.bottom='auto';cpPanel.style.left=rect.left+'px';cpPanel.style.top=rect.top+'px';cpPanel.style.right='auto';cpPanel.style.margin='0';cpPanel.style.width=rect.width+'px';
+      cpPanel.style.transform='scale(' + cpScale + ')';
       _cpDrag={active:true,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
     },{passive:true});
 
-    function onCpDragMove(e){if(!_cpDrag.active)return;e.preventDefault();var t=e.touches[0];cpPanel.style.left=(_cpDrag.ox+t.clientX-_cpDrag.sx)+'px';cpPanel.style.top=(_cpDrag.oy+t.clientY-_cpDrag.sy)+'px';}
+    function onCpDragMove(e){if(!_cpDrag.active || isCpZooming)return;e.preventDefault();var t=e.touches[0];cpPanel.style.left=(_cpDrag.ox+t.clientX-_cpDrag.sx)+'px';cpPanel.style.top=(_cpDrag.oy+t.clientY-_cpDrag.sy)+'px';}
     function onCpDragEnd(){_cpDrag.active=false;}
     document.addEventListener('touchmove',onCpDragMove,{passive:false});
     document.addEventListener('touchend',onCpDragEnd);
@@ -933,10 +945,9 @@ btn.classList.add('active');
       App._cpJustClosed=true;setTimeout(function(){App._cpJustClosed=false;},200);overlay.remove();
     }
     overlay._doClose=doClose;
-
     overlay.querySelector('#cpClose').addEventListener('click',function(e){e.stopPropagation();doClose();});
     overlay.querySelector('#cpConfirm').addEventListener('click',function(e){e.stopPropagation();var fn=overlay._onConfirm;if(fn)fn(getOutput());doClose();});
-  };
+};
       
   App.state = {
     ball: null,
