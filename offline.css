@@ -1,3 +1,4 @@
+
 .ol-panel{position:fixed;inset:0;z-index:9990;pointer-events:none;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{pointer-events:none;transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
@@ -56,7 +57,7 @@
 
 .ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);}
 
-/* ★ 你的绝对领域：清爽透亮的名字显示 */
+/* ★ 你的顶部名字容器：保持在 z-index: 10 最上层！ */
 .ol-hd-top {
   position: absolute;
   top: 0;
@@ -79,7 +80,6 @@
   letter-spacing: 0.5px;
   text-align: center;
   pointer-events: auto;
-  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.6); /* 轻度底纹，就算壁纸全白也隐约看得见字 */
 }
 
 .ol-hd-top .ol-hd-typing {
@@ -119,11 +119,12 @@
 
 .ol-bg{position:absolute;top:-1px;bottom:-1px;left:-1px;right:-1px;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;}
 
-/* ★ 无遮掩纯天然留白区：确保第一条消息总是乖乖待在名字下面起始 */
+/* ★ 配合原来的底层，把顶部预留的空间腾出来 */
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   margin-top:0;margin-bottom:106px;
-  padding: calc(75px + env(safe-area-inset-top, 0px)) 16px 20px;
+  /* 填补消失卡册的厚度，改为90px（加上刘海），正好配合底部的::after羽化框！ */
+  padding: calc(90px + env(safe-area-inset-top, 0px)) 16px 20px;
   min-height:0;overscroll-behavior:contain;scrollbar-width:none;
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
@@ -372,6 +373,19 @@
 
 .pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
 .pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
+
+/* ★★★ 原汁原味的顶部消失特效层：终于被我找回来了！ */
+.ol-root::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(to bottom, var(--ol-top-fade, var(--ol-bg-color)) 55%, rgba(255,255,255,0) 100%);
+  z-index: 6; /* 正好压在聊天气泡(z-index:5)上面，但是被名字(z-index:10)踩在脚下！ */
+  pointer-events: none;
+}
 
 #olEdTA {
   caret-color: #1a1a1a;
