@@ -34,7 +34,7 @@
   z-index: 10;
 }
 .tk17-avatar {
-  width: 70px; height: 70px; border-radius: 10%;
+  width: 70px; height: 70px; border-radius: 50%;
   background-size: cover; background-position: center; background-color: rgba(255,255,255,0.4);
   border: 2px solid #d1d5db; 
   box-shadow: 0 4px 10px rgba(0,0,0,0.12);
@@ -44,11 +44,11 @@
 .tk17-right-card {
   position: relative;
   flex: 1; /* 撑满剩下的横向空间 */
-  min-height: 90px;
-  border-radius: 16px; /* 右边独立大圆角框 */
+  min-height: 120px;
+  border-radius: 5px; /* 右边独立大圆角框 */
   overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
   background: rgba(255, 255, 255, 0.2); 
-  border: 1.5px solid #d1d5db;
+  border: 1px solid #d1d5db;
   box-shadow: inset 0 0 10px rgba(255,255,255,0.3); /* 高级内发光 */
   cursor: pointer;
 }
@@ -61,7 +61,7 @@
 .tk17-glass {
   position: absolute; inset: 0; z-index: 1;
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
   transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
@@ -73,7 +73,7 @@
 .tk17-info-inner {
   position: relative; z-index: 3;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px;
+  padding: 16px 18px;
   box-sizing: border-box;
 }
 
@@ -121,10 +121,10 @@
 }
 
 .tk17.tk17-inside-mode .tk17-avatar {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%; /* 内嵌时裁成饱满圆润的形状，更温柔 */
-  border: 2px solid rgba(255, 255, 255, 0.5); /* 琉璃白质感边 */
+  border: 2px solid #d1d5db; /* 琉璃白质感边 */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* 悬浮发光感 */
   background-color: rgba(255, 255, 255, 0.1);
 }
