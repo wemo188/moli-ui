@@ -313,9 +313,11 @@ img.img-fill { transform: none !important; }
 ========================= */
 /* 第零行：票券日历 (已置顶居中满宽) */
 #row0 {
-  width: 100%;
-  margin-top: 5px;       /* 距离顶部刘海一点点呼吸感 */
-  margin-bottom: 25px;   /* 和下方图标拉开绝佳视觉间距 */
+  margin-top: 5px;
+  margin-bottom: 25px;
+  width: auto;           /* 第一步：解开 100% 的死板限制 */
+  margin-left: 10px;     /* 头像离左屏幕的距离（往左冲） */
+  margin-right: 10px;    /* 长卡离右屏幕的距离（往右冲） */
 }
 
 /* 第一行：左组 + 右组 */
