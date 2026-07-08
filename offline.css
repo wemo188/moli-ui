@@ -56,7 +56,7 @@
 
 .ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);}
 
-/* ★ 顶部名字绝对居中区 */
+/* ★ 顶部名字固定区，层级调高 */
 .ol-hd-top {
   position: absolute;
   top: 0;
@@ -136,15 +136,12 @@
   mask-image:linear-gradient(to bottom, black 85%, transparent 100%);
 }
 
-/* ★ 魔法在此：气泡只要滑到名字底下（65px处），直接自动消融，神仙也看不出边界！ */
+/* ★ 退回最优解：干净利落的 padding 控制，没有任何兼容毒瘤代码 */
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   margin-top:0;margin-bottom:106px;
-  padding: calc(65px + env(safe-area-inset-top, 0px)) 16px 20px;
+  padding: calc(90px + env(safe-area-inset-top, 0px)) 16px 20px;
   min-height:0;overscroll-behavior:contain;scrollbar-width:none;
-  
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(30px + env(safe-area-inset-top, 0px)), black calc(65px + env(safe-area-inset-top, 0px)), black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(30px + env(safe-area-inset-top, 0px)), black calc(65px + env(safe-area-inset-top, 0px)), black 100%);
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
 
@@ -392,6 +389,19 @@
 
 .pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
 .pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
+
+/* ★ 把那个坚实可靠的老朋友（物理渐变遮罩）加回来 */
+.ol-root::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(to bottom, var(--ol-top-fade, var(--ol-bg-color)) 65%, rgba(255,255,255,0) 100%);
+  z-index: 6; /* 盖在列表上，保证气泡能在它下面躲起来 */
+  pointer-events: none;
+}
 
 #olEdTA {
   caret-color: #1a1a1a;
