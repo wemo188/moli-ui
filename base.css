@@ -311,13 +311,11 @@ img.img-fill { transform: none !important; }
    ★ 第一页默认布局基准
    恢复布局时以此为准
 ========================= */
-/* 第零行：票券日历 */
+/* 第零行：票券日历 (已置顶居中满宽) */
 #row0 {
-  width: calc(100% + 36px);
-  margin-left: -18px;
-  margin-top: 18px;
-  margin-bottom: 30px;
-  padding-right: 43px;
+  width: 100%;
+  margin-top: 5px;       /* 距离顶部刘海一点点呼吸感 */
+  margin-bottom: 25px;   /* 和下方图标拉开绝佳视觉间距 */
 }
 
 /* 第一行：左组 + 右组 */
