@@ -93,6 +93,43 @@
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
 
 /* ================================================
+   ✨ 排版双生魔法 (内嵌模式 / 分离模式切换)
+   ================================================ */
+
+/* 分离模式保持你原有的完美空气感，不做改变 */
+
+/* 切换为内嵌模式时激活的样式：绝对包裹感 */
+.tk17.tk17-inside-mode {
+  display: block; /* 取消弹性布局拉扯，让绝对定位全权接管 */
+}
+
+.tk17.tk17-inside-mode .tk17-right-card {
+  width: 100%;
+}
+
+.tk17.tk17-inside-mode .tk17-avatar-wrapper {
+  position: absolute;
+  left: 12px; /* 卡片内边缘留白 */
+  top: 50%;
+  transform: translateY(-50%); /* 无论信息多高，永远垂直居中 */
+  z-index: 10; /* 悬浮在任何天气与背景特效之上！ */
+}
+
+.tk17.tk17-inside-mode .tk17-info-inner {
+  padding-left: 92px; /* 文字乖乖给头像让开位置 */
+  min-height: 84px;
+}
+
+.tk17.tk17-inside-mode .tk17-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* 内嵌时裁成饱满圆润的形状，更温柔 */
+  border: 2px solid rgba(255, 255, 255, 0.5); /* 琉璃白质感边 */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* 悬浮发光感 */
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================
    天气动效（只在右边框框内蔓延）
    ================================================ */
 .wt-sun-svg {
