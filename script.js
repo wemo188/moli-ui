@@ -695,7 +695,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     function parseColor(str){str=(str||'').trim();var rm=str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);if(rm){var r=parseInt(rm[1])/255,g=parseInt(rm[2])/255,b=parseInt(rm[3])/255;var hsl=rgbToHsl(r,g,b);return{h:hsl.h,s:hsl.s,l:hsl.l};}var hex=str.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];if(hex.length===8)hex=hex.substr(0,6);if(hex.length!==6)return{h:0,s:0,l:0};var rr=parseInt(hex.substr(0,2),16)/255,gg=parseInt(hex.substr(2,2),16)/255,bb=parseInt(hex.substr(4,2),16)/255;var hsl2=rgbToHsl(rr,gg,bb);return{h:hsl2.h,s:hsl2.s,l:hsl2.l};}
 
     var initGrad=false,initAngle=180;
-    var initStops=[{color:'#111111'},{color:'#666666'},{color:'#bbbbbb'},{color:'#ffffff'}]; // 支持四个槽位！
+    var initStops=[{color:'#111111'},{color:'#666666'},{color:'#bbbbbb'},{color:'#ffffff'}];
     var initGradCount=2;
     if(currentColor&&currentColor.indexOf('linear-gradient')>=0){
       initGrad=true;
@@ -717,8 +717,14 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var editing=false, gradMode=initGrad;
     var gradStops=[{color:initStops[0].color},{color:initStops[1].color},{color:initStops[2].color},{color:initStops[3].color}];
     var gradAngle=initAngle, activeStop=0, gradColorCount=initGradCount;
-    // 双指缩放核心
-    var cpScale=1, initCpScale=1, initCpDist=0, isCpZooming=false;
+
+    // 🔥 全新缩放&平移底层引擎！永远不跳针
+    var cpPanX = 0, cpPanY = 0, cpScale = 1;
+    var initCpScale = 1, initCpDist = 0, isCpZooming = false;
+
+    function applyCpTransform() {
+      cpPanel.style.transform = 'translate3d(' + cpPanX + 'px, ' + cpPanY + 'px, 0) scale(' + cpScale + ')';
+    }
 
     function getSolidOutput(){return hslToHex(currentHue,currentSat,currentLight);}
     function getGradOutput(){
@@ -767,14 +773,14 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     var gradArea=overlay.querySelector('#cpGradientArea'), gradInner=overlay.querySelector('#cpGradInner');
     var gradAngleInput=overlay.querySelector('#cpGradAngle'), gradAngleValEl=overlay.querySelector('#cpGradAngleVal');
 
-    /* ✨ 添加面板双指捏合缩放监听！哥哥教你的魔法 ✨ */
+    /* ✨ 丝滑放大缩小系统接入（解绑了坐标干扰）✨ */
     cpPanel.addEventListener('touchstart', function(e) {
        if (e.touches.length === 2) {
           isCpZooming = true;
-          _cpDrag.active = false; // 关闭拖动保护
+          _cpDrag.active = false;
           initCpDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
           initCpScale = cpScale;
-          e.preventDefault(); // 阻止缩放影响整个页面
+          e.preventDefault(); 
        }
     }, {passive: false});
 
@@ -783,8 +789,8 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
           e.preventDefault();
           var dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
           var s = initCpScale * (dist / initCpDist);
-          cpScale = Math.max(0.65, Math.min(s, 2.5)); // 限制范围：不要缩得比核桃小，也别放得大过象！
-          cpPanel.style.transform = 'scale(' + cpScale + ')';
+          cpScale = Math.max(0.65, Math.min(s, 2.5));
+          applyCpTransform();
        }
     }, {passive: false});
 
@@ -924,17 +930,27 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     overlay.querySelector('#cpEditBtn').addEventListener('click',function(e){e.stopPropagation();editing=!editing;this.textContent=editing?'完成':'编辑';if(editing)presetsEl.classList.add('editing');else presetsEl.classList.remove('editing');});
 
     var cpHead=overlay.querySelector('.cp-header');
-    var _cpDrag={active:false,sx:0,sy:0,ox:0,oy:0};
+    // 🔥 全新平移逻辑（再也不会顶上去死死咬住你的手了）
+    var _cpDrag={active:false, startX:0, startY:0, initPanX:0, initPanY:0};
+    
     cpHead.addEventListener('touchstart',function(e){
       if(e.target.closest('button'))return;
-      var t=e.touches[0];var rect=cpPanel.getBoundingClientRect();
-      cpPanel.style.bottom='auto';cpPanel.style.left=rect.left+'px';cpPanel.style.top=rect.top+'px';cpPanel.style.right='auto';cpPanel.style.margin='0';cpPanel.style.width=rect.width+'px';
-      cpPanel.style.transform='scale(' + cpScale + ')';
-      _cpDrag={active:true,sx:t.clientX,sy:t.clientY,ox:rect.left,oy:rect.top};
+      var t=e.touches[0];
+      _cpDrag.active=true;
+      _cpDrag.startX = t.clientX; _cpDrag.startY = t.clientY;
+      _cpDrag.initPanX = cpPanX; _cpDrag.initPanY = cpPanY;
     },{passive:true});
 
-    function onCpDragMove(e){if(!_cpDrag.active || isCpZooming)return;e.preventDefault();var t=e.touches[0];cpPanel.style.left=(_cpDrag.ox+t.clientX-_cpDrag.sx)+'px';cpPanel.style.top=(_cpDrag.oy+t.clientY-_cpDrag.sy)+'px';}
+    function onCpDragMove(e){
+      if(!_cpDrag.active || isCpZooming) return;
+      e.preventDefault();
+      var t=e.touches[0];
+      cpPanX = _cpDrag.initPanX + (t.clientX - _cpDrag.startX);
+      cpPanY = _cpDrag.initPanY + (t.clientY - _cpDrag.startY);
+      applyCpTransform();
+    }
     function onCpDragEnd(){_cpDrag.active=false;}
+    
     document.addEventListener('touchmove',onCpDragMove,{passive:false});
     document.addEventListener('touchend',onCpDragEnd);
 
