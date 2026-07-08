@@ -43,12 +43,7 @@ var p1=App.LS.get('ol_photo_'+c.id+'_1')||'', p2=App.LS.get('ol_photo_'+c.id+'_2
 con.innerHTML=
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg"></div>' +
 '<div class="ol-top-bg"></div>' +
-'<div class="mm-cards-wrapper" id="olCardsWrap">' +
-  '<div class="mm-env-card mm-ec-1 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p1+'" style="display:'+(p1?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p1?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT1||'银河歌颂')+'</div></div>' +
-  '<div class="mm-env-card mm-ec-2 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p2+'" style="display:'+(p2?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p2?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT2||'梦想在冒险')+'</div></div>' +
-  '<div class="mm-env-card mm-ec-3 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p3+'" style="display:'+(p3?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p3?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT3||'星星怀抱月夜')+'</div></div>' +
-  '<div class="mm-env-card mm-ec-4 mm-photo-wrapper"><div class="mm-env-inner"><img class="mm-env-img" src="'+p4+'" style="display:'+(p4?'block':'none')+'"><div class="mm-env-placeholder" style="display:'+(p4?'none':'flex')+'"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div><div class="mm-env-caption">'+App.esc(ap.cardT4||'明天想见你')+'</div></div>' +
-'</div><div id="olName" style="display:none;">'+App.esc(dn)+'</div>' +
+'<div class="ol-hd-top" id="olHdTop"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div><div class="ol-hd-typing" id="olTyping"></div></div>' +
 '<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
 
 '<div class="ol-nav-fab" id="olNavFab">' +
@@ -289,7 +284,12 @@ fmtTime:function(ts){
 },
 scrollBottom:function(force){var el=App.$('#olMsgs');if(!el)return;var doScroll=function(){var dist=el.scrollHeight-el.scrollTop-el.clientHeight;if(force===true||dist<150)el.scrollTop=el.scrollHeight;};requestAnimationFrame(doScroll);if(force===true){setTimeout(doScroll,100);setTimeout(doScroll,360);}},
 updateAiBtn:function(){var OL=App.offline;if(!OL)return;var btn=App.$('#olAiBtn');if(!btn)return;if(OL.isStreaming){btn.innerHTML=STOP_SVG;btn.classList.add('ol-btn-stop');btn.classList.remove('ol-btn-robot');}else{btn.innerHTML=ROBOT_SVG;btn.classList.remove('ol-btn-stop');btn.classList.add('ol-btn-robot');}},
-updateTyping:function(show){var OL=App.offline;if(!OL)return;var el=App.$('#olName');if(!el)return;var dn=OL.charData?OL.charData.name:'';if(show)el.innerHTML=App.esc(dn)+'<span class="ol-hd-typing">正在书写...</span>';else el.textContent=dn;},
+updateTyping:function(show){
+  var el=App.$('#olTyping');
+  if(!el)return;
+  el.textContent = show ? '正在书写...' : '';
+  el.style.display = show ? 'block' : 'none';
+},
 _closePanel:function(){var p=App.$('#olSettingsPanel');if(p){p.classList.remove('show');setTimeout(function(){p.classList.add('hidden');},350);}},
 
 showConfirm: function(title, desc, onConfirm) {
