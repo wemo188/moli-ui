@@ -738,7 +738,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
 
     overlay.innerHTML=
       '<div class="cp-panel">'+
-        '<div class="cp-header"><span class="cp-title">颜料盘</span><button class="cp-close" id="cpClose" type="button">✕</button></div>'+
+        '<div class="cp-header"><span class="cp-title">调色盘（可缩放大小）</span><button class="cp-close" id="cpClose" type="button">✕</button></div>'+
         '<div class="cp-preview-row"><div class="cp-preview" id="cpPreview"><div class="cp-pv-inner"></div></div><input type="text" class="cp-hex-input" id="cpHexInput" maxlength="80"></div>'+
         '<div class="cp-mode-row"><button class="cp-mode-btn'+(initGrad?'':' active')+'" data-mode="solid" type="button">纯色</button><button class="cp-mode-btn'+(initGrad?' active':'')+'" data-mode="gradient" type="button">渐变</button></div>'+
         '<div class="cp-spectrum" id="cpSpectrum"><canvas id="cpSpectrumCanvas"></canvas><div class="cp-spectrum-cursor" id="cpSpecCursor"></div></div>'+
