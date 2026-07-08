@@ -560,6 +560,19 @@ var Cal={
         }
         lastTapAv = now;
       });
+      }
+
+    // 【2】给右边的长条卡片也配上双击感应，双重保障
+    if (rightCardEl) {
+      rightCardEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var now = Date.now();
+        if (now - lastTapCard < 350) {
+          Cal.openEditPanel();
+        }
+        lastTapCard = now;
+      });
+    }
   },
 
   startAutoRefresh:function(){
