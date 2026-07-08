@@ -1,160 +1,147 @@
+
 /* =========================
-   票券日历 卡片 (拉通重构重绘版)
+   票券卡片 (分离式高定版 - 头像独立，右框聚拢天气)
 ========================= */
 
-/* 1. 颜色变量 - 所有文字继承 */
 :root {
   --tk-color: #111111;
 }
 
-/* 2. 强制颜色，彻底避免任何不正常的透明干扰 */
+/* 强制颜色防止被影响 */
 .tk17-msg-name,
 .tk17-sign,
-.tk17-right-info,
 .tk17-wt-temp,
 .tk17-wt-desc {
   color: var(--tk-color) !important;
   opacity: 1 !important; 
-}
-
-/* 强制浏览器保留输入的多个空格 */
-.tk17-msg-name, .tk17-sign {
   white-space: pre-wrap;
 }
 
-/* 3. 票券整体大容器（一通到底的长框） */
+/* 1. 外层容器：剥除所有背景和边框，只作为Flex布局排列左右两部分 */
 .tk17 {
   width: 100%;
   position: relative;
-  display: block; 
-  border-radius: 16px;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.12));
+  display: flex;
+  align-items: center; /* 左右垂直居中对齐 */
+  gap: 16px;           /* 头像和右边框的完美间距 */
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.08));
 }
 
-/* 4. 底层图像与模糊处理 */
+/* ================== 左侧独立头像 ================== */
+.tk17-avatar-wrapper {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.tk17-avatar {
+  width: 62px; height: 62px; border-radius: 50%;
+  background-size: cover; background-position: center; background-color: rgba(255,255,255,0.4);
+  border: 2px solid #ffffff; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* ================== 右侧独立信息画框 ================== */
+.tk17-right-card {
+  position: relative;
+  flex: 1; /* 撑满剩下的横向空间 */
+  min-height: 70px;
+  border-radius: 18px; /* 右边独立大圆角框 */
+  overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
+  background: rgba(255, 255, 255, 0.45); 
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.3); /* 高级内发光 */
+  cursor: pointer;
+}
+
+/* 右框的三大底层（背景图、玻璃遮罩、天气图层），填满这个画框 */
 .tk17-bgimg {
-  position: absolute; inset: 0;
-  border-radius: 16px; 
-  overflow: hidden; z-index: 0;
+  position: absolute; inset: 0; z-index: 0;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 .tk17-glass {
-  position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px; 
-  z-index: 1; overflow: hidden; pointer-events: none; transition: opacity .3s;
+  position: absolute; inset: 0; z-index: 1;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
-
-/* 5. 全屏幕压迫的灵动天气特效覆盖层 */
 .tk17-weather-layer {
-  position: absolute; inset: 0; border-radius: 16px; overflow: hidden; pointer-events: none; z-index: 2;
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
 }
 
-/* 6. 最上层包裹框架 */
-.tk17-inner {
+/* 画框最上层的文字区包裹 */
+.tk17-info-inner {
   position: relative; z-index: 3;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px; box-sizing: border-box;
-}
-
-/* 7. 左部独立圆头像 */
-.tk17-left-part { flex-shrink: 0; }
-.tk17-avatar {
-  width: 64px; height: 64px; border-radius: 50%;
-  background-size: cover; background-position: center; background-color: rgba(255,255,255,0.4);
-  border: 2.5px solid rgba(255,255,255,0.7); 
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* 8. 右部聚合毛玻璃磨砂面板：“一起框起来”的设计 */
-.tk17-right-part {
-  flex: 1; margin-left: 18px;
-  background: rgba(255, 255, 255, 0.01); 
-  padding: 10px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  padding: 12px 18px;
+  box-sizing: border-box;
 }
 
 .tk17-text-col {
-  display: flex; flex-direction: column; justify-content: center; gap: 4px; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
 }
-.tk17-msg-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
-.tk17-sign { font-weight: 600; font-size: 13px; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tk17-msg-name { font-weight: 800; font-size: 16px; letter-spacing: 1px; }
+.tk17-sign { font-weight: 600; font-size: 13px; opacity: 0.85; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* 点击感应区域保留原来的类名称 */
-.tk17-right {
-  display: flex; align-items: center; flex-shrink: 0;
-  cursor: pointer;
-  padding-left: 14px; margin-left: 6px;
-  border-left: 1.5px dashed rgba(0,0,0,0.12); /* 虚线切分 */
+/* 专门展示天气的小盒子区 */
+.tk17-wt-col {
+  display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px;
+  padding-left: 14px; 
+  border-left: 1.5px dashed rgba(0,0,0,0.12); /* 一条漂亮的虚线分开名字和温度 */
 }
-
-.tk17-right-info {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-}
-.tk17-wt-temp { font-size: 22px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+.tk17-wt-temp { font-size: 22px; font-weight: 900; line-height: 1; }
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
 
 /* ================================================
-   重构匹配：超宽幕布的华丽天气动效 （由窄条扩展到整个组件框内飘动）
+   天气动效（只在右边框框内蔓延）
    ================================================ */
 .wt-sun-svg {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px; height: 60px; opacity: 0.12;
-  animation: wtSunSpin 25s linear infinite;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 50px; height: 50px; opacity: 0.12; animation: wtSunSpin 25s linear infinite;
 }
 .wt-static .wt-sun-svg { animation: none; }
 @keyframes wtSunSpin { 0%{transform:translate(-50%,-50%) rotate(0deg)} 100%{transform:translate(-50%,-50%) rotate(360deg)} }
 
-.wt-cloud-item {
-  position: absolute; opacity: 0.18; animation: wtCloudDrift linear infinite;
-}
-.wt-cloud-item:nth-child(1) { top: 8%; left: -30px; width: 34px; animation-duration: 9s; }
-.wt-cloud-item:nth-child(2) { top: 40%; left: -40px; width: 28px; animation-duration: 12s; animation-delay: -2s; opacity: 0.15; }
-.wt-cloud-item:nth-child(3) { top: 65%; left: -35px; width: 30px; animation-duration: 15s; animation-delay: -5s; opacity: 0.14; }
-.wt-static .wt-cloud-item { animation: none; left: 25%; opacity: 0.15; }
-@keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(450px)} }
+.wt-cloud-item { position: absolute; opacity: 0.18; animation: wtCloudDrift linear infinite; }
+.wt-cloud-item:nth-child(1) { top: 10%; left: -20%; width: 34px; animation-duration: 9s; }
+.wt-cloud-item:nth-child(2) { top: 45%; left: -30%; width: 28px; animation-duration: 12s; animation-delay: -2s; opacity: 0.15; }
+.wt-cloud-item:nth-child(3) { top: 70%; left: -25%; width: 30px; animation-duration: 15s; animation-delay: -5s; opacity: 0.14; }
+.wt-static .wt-cloud-item { animation: none; left: 30%; opacity: 0.15; }
+@keyframes wtCloudDrift { 0%{transform:translateX(0)} 100%{transform:translateX(350px)} }
 
-.wt-overcast-item {
-  position: absolute; opacity: 0.22; animation: wtOvercastDrift linear infinite;
-}
-.wt-overcast-item:nth-child(1) { top: 5%; left: -40px; width: 45px; animation-duration: 14s; }
-.wt-overcast-item:nth-child(2) { top: 42%; left: -30px; width: 38px; animation-duration: 17s; animation-delay: -4s; opacity: 0.18; }
-.wt-overcast-item:nth-child(3) { top: 58%; left: -40px; width: 35px; animation-duration: 20s; animation-delay: -8s; opacity: 0.19; }
-.wt-static .wt-overcast-item { animation: none; left: 18%; opacity: 0.15; }
-@keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(450px)} }
+.wt-overcast-item { position: absolute; opacity: 0.22; animation: wtOvercastDrift linear infinite; }
+.wt-overcast-item:nth-child(1) { top: 8%; left: -30%; width: 45px; animation-duration: 14s; }
+.wt-overcast-item:nth-child(2) { top: 48%; left: -20%; width: 38px; animation-duration: 17s; animation-delay: -4s; opacity: 0.18; }
+.wt-overcast-item:nth-child(3) { top: 62%; left: -35%; width: 35px; animation-duration: 20s; animation-delay: -8s; opacity: 0.19; }
+.wt-static .wt-overcast-item { animation: none; left: 20%; opacity: 0.15; }
+@keyframes wtOvercastDrift { 0%{transform:translateX(0)} 100%{transform:translateX(350px)} }
 
 .wt-raindrop {
   position: absolute; top: -15px; width: 1.5px;
   background: linear-gradient(to bottom, transparent, rgba(60,60,60,0.6)); border-radius: 0 0 2px 2px;
   animation: wtRainFall linear infinite; transform: rotate(12deg);
 }
-@keyframes wtRainFall { 0% { transform:rotate(12deg) translateY(-15px); opacity:0; } 10% { opacity:1; } 85% { opacity:1; } 100% { transform:rotate(12deg) translateY(200px); opacity:0; } }
+@keyframes wtRainFall { 0% { transform:rotate(12deg) translateY(-15px); opacity:0; } 10% { opacity:1; } 85% { opacity:1; } 100% { transform:rotate(12deg) translateY(180px); opacity:0; } }
 
 .wt-lightning { position: absolute; opacity: 0; z-index: 3; }
-.wt-lightning:nth-child(1) { top: 5%; left: 30%; animation: wtFlash1 5s ease-in-out infinite; }
-.wt-lightning:nth-child(2) { top: 12%; left: 70%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
+.wt-lightning:nth-child(1) { top: 8%; left: 30%; animation: wtFlash1 5s ease-in-out infinite; }
+.wt-lightning:nth-child(2) { top: 15%; left: 65%; animation: wtFlash2 7s ease-in-out infinite; animation-delay: -2.5s; }
 .wt-static .wt-lightning { animation: none; display: none !important; }
 @keyframes wtFlash1 { 0%,84%,100%{opacity:0} 85%{opacity:0.9} 87%{opacity:0} 89%{opacity:0.7} 91%{opacity:0} }
 @keyframes wtFlash2 { 0%,78%,100%{opacity:0} 79%{opacity:0.8} 81%{opacity:0} 83%{opacity:0.6} 85%{opacity:0} }
 
 .wt-flash-overlay {
   position: absolute; inset: 0; background: rgba(0,0,0,0.18);
-  border-radius: 16px; opacity: 0;
-  animation: wtFlashOverlay 5s ease-in-out infinite; pointer-events: none; z-index: 2;
+  opacity: 0; animation: wtFlashOverlay 5s ease-in-out infinite; pointer-events: none; z-index: 2;
 }
 .wt-static .wt-flash-overlay { animation: none; opacity: 0; }
 @keyframes wtFlashOverlay { 0%,84%,100%{opacity:0} 85%{opacity:0.3} 86%{opacity:0} 89%{opacity:0.15} 90%{opacity:0} }
 
 .wt-snow-item {
-  position: absolute; top: -8px; opacity: 0; animation: wtSnowFall linear infinite;
+  position: absolute; top: -10px; opacity: 0; animation: wtSnowFall linear infinite;
 }
-@keyframes wtSnowFall { 0% { transform:translateY(-8px) rotate(0deg); opacity:0; } 10% { opacity:0.7; } 85% { opacity:0.7; } 100% { transform:translateY(220px) rotate(360deg); opacity:0; } }
+@keyframes wtSnowFall { 0% { transform:translateY(-10px) rotate(0deg); opacity:0; } 10% { opacity:0.7; } 85% { opacity:0.7; } 100% { transform:translateY(180px) rotate(360deg); opacity:0; } }
 
-/* 扩大后的随机错层分布，更加生动写实 */
 .wt-static .wt-raindrop, .wt-static .wt-snow-item { animation: none; }
 .wt-static .wt-raindrop:nth-child(1), .wt-static .wt-snow-item:nth-child(1) { top: 15%; opacity: 0.6; }
 .wt-static .wt-raindrop:nth-child(2), .wt-static .wt-snow-item:nth-child(2) { top: 40%; opacity: 0.4; }
@@ -179,9 +166,8 @@
 @keyframes wtFogBreath { 0%{transform:translateX(-5%);opacity:0.12;} 100%{transform:translateX(5%);opacity:0.2;} }
 
 .wt-moon {
-  position: absolute; top: 50%; left: 80%;
-  transform: translate(-50%, -50%);
-  width: 75px; height: 75px; opacity: 0.25; 
+  position: absolute; top: 50%; left: 78%;
+  transform: translate(-50%, -50%); width: 65px; height: 65px; opacity: 0.25; 
 }
 .wt-star {
   position: absolute; animation: wtStarTwinkle ease-in-out infinite alternate;
@@ -193,9 +179,10 @@
 .wt-star::after { width: 1.5px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
 .wt-star:nth-child(2) { top: 15%; left: 15%; width: 5px; height: 5px; animation-duration: 2.5s; }
 .wt-star:nth-child(3) { top: 25%; left: 85%; width: 4px; height: 4px; animation-duration: 3s; animation-delay: -1s; }
-.wt-star:nth-child(4) { top: 65%; left: 25%; width: 3.5px; height: 3.5px; animation-duration: 2.8s; animation-delay: -0.5s; }
+.wt-star:nth-child(4) { top: 65%; left: 20%; width: 3.5px; height: 3.5px; animation-duration: 2.8s; animation-delay: -0.5s; }
 .wt-star:nth-child(5) { top: 80%; left: 75%; width: 4.5px; height: 4.5px; animation-duration: 3.2s; animation-delay: -2s; }
-.wt-star:nth-child(6) { top: 15%; left: 50%; width: 4px; height: 4px; animation-duration: 2.6s; animation-delay: -1.5s; }
-.wt-star:nth-child(7) { top: 85%; left: 45%; width: 3px; height: 3px; animation-duration: 3.5s; animation-delay: -0.3s; }
+.wt-star:nth-child(6) { top: 20%; left: 55%; width: 4px; height: 4px; animation-duration: 2.6s; animation-delay: -1.5s; }
+.wt-star:nth-child(7) { top: 75%; left: 45%; width: 3px; height: 3px; animation-duration: 3.5s; animation-delay: -0.3s; }
 .wt-static .wt-star { animation: none; opacity: 0.5; }
 @keyframes wtStarTwinkle { 0%{opacity:0.2;transform:scale(0.7);} 100%{opacity:0.85;transform:scale(1.4);} }
+
