@@ -56,7 +56,12 @@
 .tk17-bgimg {
   position: absolute; inset: 0; z-index: 0;
   background-size: cover; background-position: center; background-repeat: no-repeat;
-  filter: blur(1px);
+}
+.tk17-bgimg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 .tk17-glass {
   position: absolute; inset: 0; z-index: 1;
