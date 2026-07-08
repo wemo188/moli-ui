@@ -44,7 +44,7 @@
 .tk17-right-card {
   position: relative;
   flex: 1; /* 撑满剩下的横向空间 */
-  min-height: 70px;
+  min-height: 80px;
   border-radius: 10px; /* 右边独立大圆角框 */
   overflow: hidden;    /* ★ 核心！将天气动画死死锁在这个框内 */
   background: rgba(255, 255, 255, 0.25); 
@@ -80,8 +80,8 @@
 .tk17-text-col {
   display: flex; flex-direction: column; justify-content: center; gap: 2px;
 }
-.tk17-msg-name { font-weight: 800; font-size: 18px; letter-spacing: 1px; }
-.tk17-sign { font-weight: 600; font-size: 15px; opacity: 0.85; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tk17-msg-name { font-weight: 700; font-size: 16px; letter-spacing: 1px; }
+.tk17-sign { font-weight: 600; font-size: 14px; opacity: 0.85; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* 专门展示天气的小盒子区 */
 .tk17-wt-col {
@@ -89,7 +89,7 @@
   padding-left: 14px; 
   border-left: 1.5px dashed rgba(0,0,0,0.12); /* 一条漂亮的虚线分开名字和温度 */
 }
-.tk17-wt-temp { font-size: 22px; font-weight: 900; line-height: 1; }
+.tk17-wt-temp { font-size: 22px; font-weight: 800; line-height: 1; }
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
 
 /* ================================================
