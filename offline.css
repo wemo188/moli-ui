@@ -57,7 +57,7 @@
 
 .ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);}
 
-/* ★ 顶部角色名区域 */
+/* ★ 顶部名字固定区，安全背部不会让名字叠起来 */
 .ol-hd-top {
   position: absolute;
   top: 0;
@@ -68,8 +68,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: calc(12px + env(safe-area-inset-top, 0px));
-  padding-bottom: 10px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  padding-bottom: 8px;
   pointer-events: none;
 }
 
@@ -80,20 +80,21 @@
   letter-spacing: 0.5px;
   text-align: center;
   pointer-events: auto;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.4);
 }
 
 .ol-hd-top .ol-hd-typing {
   display: none;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--ol-c-av-frame-color, #9ca3af);
-  margin-top: 2px;
+  margin-top: 4px;
   letter-spacing: 0.5px;
 }
 
 .ol-root{
   --ol-bg-color:#ffffff;--ol-text-color:#2e4258;--ol-text-size:17px;--ol-text-line-height:1.85;--ol-text-weight:400;--ol-accent:#1a1a1a;
-  --ol-hd-text:#1a1a1a;--ol-hd-size:18px;
+  --ol-hd-text:#1a1a1a;--ol-hd-size:22px;
   --ol-prose-padding:14px 16px;
   --ol-bar-bg:linear-gradient(135deg, #ffffff 0%, #e9f6ff 25%, #d9ecfc 55%, #e1f2ff 75%, #ffffff 100%);--ol-bar-bg-img:none;
   --ol-bar-border-color:rgba(255,255,255,0.9); --ol-bar-border-w:1px; --ol-bar-radius:0px; --ol-bar-icon-color:#adcdea; --ol-input-text:#adcdea;
@@ -138,7 +139,10 @@
 
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  margin-top:0;margin-bottom:106px;padding:70px 16px 20px;min-height:0;overscroll-behavior:contain;scrollbar-width:none;
+  margin-top:0;margin-bottom:106px;
+  /* ★ 刘海高度感知：上方留下足够的空袭，别把头顶挤破 */
+  padding: calc(65px + env(safe-area-inset-top, 0px)) 16px 20px;
+  min-height:0;overscroll-behavior:contain;scrollbar-width:none;
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
 
@@ -345,7 +349,6 @@
 .ol-css-hd-title{font-size:15px;font-weight:700;letter-spacing:1px;color:#1a1a1a;}
 .ol-css-textarea{flex:1;width:100%;padding:14px;background:transparent;border:none;color:#1a1a1a;font-size:14px;font-family:'SF Mono','Menlo','Consolas',monospace;line-height:1.6;outline:none;resize:none;-webkit-user-select:text;user-select:text;overflow-y:auto;-webkit-overflow-scrolling:touch;tab-size:2;}
 
-/* ★ 珍珠开关与思维链样式 */
 .ol-pearl-btn {
   width: 15px; height: 15px; border-radius: 50%; cursor: pointer; display: inline-block; margin-left: 6px; position:relative; top:-0.5px;
   background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #64748b 100%);
@@ -368,7 +371,6 @@
   max-height: 3000px; opacity: 1; padding: 12px 14px; margin-bottom: 10px; border: none;
 }
 
-/* ★ 气泡底部操作栏 */
 .ol-msg-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; opacity:0.5; transition:opacity 0.2s; align-items:center; justify-content:flex-start; padding-left:4px; max-width:var(--ol-c-bubble-width); }
 .ol-block.is-char .ol-msg-actions { max-width:var(--ol-c-bubble-width); align-self:flex-start; }
 .ol-block.is-user .ol-msg-actions { max-width:var(--ol-u-bubble-width); align-self:flex-end; }
@@ -380,26 +382,29 @@
 .ol-swipe-btn:active { transform:scale(0.85); }
 .ol-swipe-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
 
-/* ★ 悬浮导航电梯 */
 .ol-nav-fab { position:fixed; right:-60px; bottom:160px; z-index: 100 !important; pointer-events: auto !important; display:flex; flex-direction:column; gap:10px; transition:right 0.3s cubic-bezier(0.34,1.56,0.64,1); }
 .ol-nav-fab.show { right:12px; }
 .ol-nav-btn { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.85); border:1.5px solid rgba(173,205,234,0.5); box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#7ea3c9; backdrop-filter:blur(4px); -webkit-tap-highlight-color:transparent; }
 .ol-nav-btn:active { background:#e9f6ff; transform:scale(0.92); }
 .ol-nav-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* ★ 编辑面板放大 */
 .pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
 .pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
 
-/* ★ 顶部渐变遮罩 */
+/* ★ 加固纯色拦截：彻底切断气泡和名字在背部的叠加现象，然后下缘丝滑羽化散开 */
 .ol-root::after {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: linear-gradient(to bottom, var(--ol-top-fade, var(--ol-bg-color)) 60%, rgba(255,255,255,0) 100%);
+  height: calc(85px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(
+    to bottom, 
+    var(--ol-top-fade, var(--ol-bg-color)) 0%, 
+    var(--ol-top-fade, var(--ol-bg-color)) 65%, 
+    rgba(255,255,255,0) 100%
+  );
   z-index: 6;
   pointer-events: none;
 }
