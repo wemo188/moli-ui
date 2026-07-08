@@ -1,4 +1,3 @@
-
 .ol-panel{position:fixed;inset:0;z-index:9990;pointer-events:none;transition:transform .35s cubic-bezier(.32,.72,0,1),opacity .3s;transform:translateX(100%);opacity:0;}
 .ol-panel.show{pointer-events:none;transform:translateX(0);opacity:1;}
 #olSettingsPanel{z-index:9995;}
@@ -57,19 +56,19 @@
 
 .ol-area-label{font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.06);}
 
-/* ★ 你的顶部名字容器：保持在 z-index: 10 最上层！ */
+/* ★ 重归原生透底效果：最顶部的无染指绝对定位层，放名字 */
 .ol-hd-top {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 10;
+  height: calc(70px + env(safe-area-inset-top, 0px)); /* 为上面这部分精准划分结界高 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: calc(14px + env(safe-area-inset-top, 0px));
-  padding-bottom: 8px;
+  padding-top: env(safe-area-inset-top, 0px);
   pointer-events: none;
 }
 
@@ -80,6 +79,7 @@
   letter-spacing: 0.5px;
   text-align: center;
   pointer-events: auto;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.4); 
 }
 
 .ol-hd-top .ol-hd-typing {
@@ -110,6 +110,7 @@
   --ol-u-bubble-radius:14px;--ol-u-bubble-width:95%;--ol-u-bubble-border-w:0px;--ol-u-bubble-border-color:rgba(255,255,255,0.9);
   --ol-u-text-size:17px;--ol-u-text-weight:400;--ol-u-text-lh:1.85;--ol-u-text-color:#2e4258;
   --ol-hd-bg:rgba(255,255,255,0.7);--ol-hd-fade:rgba(255,255,255,0.5);
+  --ol-top-bg-color:transparent;--ol-top-bg-img:none;
   pointer-events: auto;
   position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;
   background:var(--ol-bg-color);color:var(--ol-text-color);font-size:var(--ol-text-size);line-height:var(--ol-text-line-height);
@@ -118,13 +119,27 @@
 }
 
 .ol-bg{position:absolute;top:-1px;bottom:-1px;left:-1px;right:-1px;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;}
+.ol-top-bg{
+  position:absolute;
+  top:-1px; left:-1px; right:-1px;
+  height:90px;
+  z-index:7;
+  background-color:var(--ol-top-bg-color);
+  background-image:var(--ol-top-bg-img);
+  background-size:cover; background-position:center;
+  pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom, black 85%, transparent 100%);
+  mask-image:linear-gradient(to bottom, black 85%, transparent 100%);
+}
 
-/* ★ 配合原来的底层，把顶部预留的空间腾出来 */
+/* ★ 消失在这里实现！ 强制压低滚动气泡箱的高度，从名字下方才起手算屏幕面积，滑动自然超纲硬切隐藏。 彻底保留任何透明图片纯净背景！*/
 .ol-msgs{
   position:relative;z-index:5;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  margin-top:0;margin-bottom:106px;
-  /* 填补消失卡册的厚度，改为90px（加上刘海），正好配合底部的::after羽化框！ */
-  padding: calc(90px + env(safe-area-inset-top, 0px)) 16px 20px;
+  /* 原来用 padding 去撑开假顶部从而导致盖白底纱，我们现在干脆把聊天盒子的边沿用 margin 退回名字下方，它就像一个下方的水缸 */
+  margin-top: calc(75px + env(safe-area-inset-top, 0px));
+  margin-bottom: 106px;
+  /* 取代原来的140px巨大头空，直接内部开始承接文字段 */
+  padding: 5px 16px 20px; 
   min-height:0;overscroll-behavior:contain;scrollbar-width:none;
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
@@ -373,19 +388,6 @@
 
 .pc-edit-panel.is-expanded { width:100% !important; max-width:100% !important; height:100% !important; max-height:none !important; border-radius:0 !important; top:0 !important; left:0 !important; transform:none !important; }
 .pc-edit-panel { transition:all 0.3s cubic-bezier(0.2,0.85,0.2,1); }
-
-/* ★★★ 原汁原味的顶部消失特效层：终于被我找回来了！ */
-.ol-root::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: calc(100px + env(safe-area-inset-top, 0px));
-  background: linear-gradient(to bottom, var(--ol-top-fade, var(--ol-bg-color)) 55%, rgba(255,255,255,0) 100%);
-  z-index: 6; /* 正好压在聊天气泡(z-index:5)上面，但是被名字(z-index:10)踩在脚下！ */
-  pointer-events: none;
-}
 
 #olEdTA {
   caret-color: #1a1a1a;
