@@ -43,7 +43,7 @@ con.innerHTML=
 '<div class="ol-root" id="olRoot"><div class="ol-bg" id="olBg"></div>' +
 '<div class="ol-top-bg"></div>' +
 
-/* ★ 你的结界穹顶：只剩最纯粹的角色名和书写状态 */
+/* ★ 回收老机制里的绝妙布局，填入名字和书写状态 */
 '<div class="ol-hd-top" id="olHdTop"><div class="ol-hd-name" id="olName">'+App.esc(dn)+'</div><div class="ol-hd-typing" id="olTyping"></div></div>' +
 
 '<div class="ol-msgs" id="olMsgs"></div><div class="ol-plus-panel" id="olPlusPanel"><div class="ol-plus-item" id="olPiPhoto"><div class="ol-plus-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ol-plus-label">图片</div></div></div>' +
