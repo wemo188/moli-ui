@@ -78,8 +78,8 @@
 .cat-whisker-l, .cat-whisker-r {
   width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
-.cat-whisker-l { left: -30px; }
-.cat-whisker-r { right: -30px; }
+.cat-whisker-l { left: -15px; }
+.cat-whisker-r { right: -15px; }
 
 .tk17.tk17-cat-mode .tk17-bgimg::after {
   background: rgba(255, 255, 255, 0.001);
