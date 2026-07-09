@@ -181,25 +181,25 @@ var Cal={
           '</div>'+
         '</div>'+
 
-        // ★ 第二行：天气城市 + 天气特效开关 + 动态/静态
-        '<div style="display:flex; gap:8px;">'+
-          '<div class="pc-group" style="flex:1;">'+
-            '<span class="pc-label">天气城市</span>'+
-            '<div class="pc-av-row">'+
-              '<input type="text" class="pc-input" id="wtCityInput" placeholder="城市名..." value="'+App.esc(Cal.city||'')+'">'+
-              '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
-            '</div>'+
-          '</div>'+
-          '<div class="pc-group" style="flex-shrink:0; width:auto;">'+
-            '<span class="pc-label">天气特效 <span class="pc-icon-btn" id="wtWeatherSwitch" style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;vertical-align:middle;margin-left:4px;'+(isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">'+(isWeatherOn?'开':'关')+'</span></span>'+
-            '<div class="pc-av-row" id="wtAnimRow" style="gap:4px;margin-top:6px;'+(isWeatherOn?'':'opacity:0.4;pointer-events:none;')+'">'+
-              '<div class="pc-icon-btn" id="wtAnimBtn" style="flex:1;font-size:10px;font-weight:700;'+(isAnimated?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">动态</div>'+
-              '<div class="pc-icon-btn" id="wtStaticBtn" style="flex:1;font-size:10px;font-weight:700;'+(!isAnimated&&isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">静态</div>'+
-            '</div>'+
+        // ★ 第二行：天气城市
+        '<div class="pc-group">'+
+          '<span class="pc-label">天气城市</span>'+
+          '<div class="pc-av-row">'+
+            '<input type="text" class="pc-input" id="wtCityInput" placeholder="城市名..." value="'+App.esc(Cal.city||'')+'">'+
+            '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
           '</div>'+
         '</div>'+
 
-        // ★ 第三行：字体颜色 + 猫咪配色（同一行）
+        // ★ 第三行：天气特效开关 + 动态/静态
+        '<div class="pc-group">'+
+          '<span class="pc-label">天气特效 <span class="pc-icon-btn" id="wtWeatherSwitch" style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;vertical-align:middle;margin-left:6px;'+(isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">'+(isWeatherOn?'开':'关')+'</span></span>'+
+          '<div class="pc-av-row" id="wtAnimRow" style="gap:6px;margin-top:6px;'+(isWeatherOn?'':'opacity:0.4;pointer-events:none;')+'">'+
+            '<div class="pc-icon-btn" id="wtAnimBtn" style="flex:1;font-size:11px;font-weight:700;'+(isAnimated?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">动态</div>'+
+            '<div class="pc-icon-btn" id="wtStaticBtn" style="flex:1;font-size:11px;font-weight:700;'+(!isAnimated&&isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">静态</div>'+
+          '</div>'+
+        '</div>'+
+
+        // ★ 第四行：字体颜色 + 猫咪配色
         '<div style="display:flex; gap:12px;">'+
           '<div class="pc-group" style="flex:1;">'+
             '<span class="pc-label">字体颜色</span>'+
