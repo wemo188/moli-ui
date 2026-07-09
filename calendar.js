@@ -10,10 +10,8 @@ var Cal={
   _clockTimer:null,
   _refreshTimer:null,
   
-  /* 🌟 全新三挡状态：'animated'(动态), 'static'(静态), 'none'(彻底关闭) */
   _weatherMode: 'animated', 
-  /* 🌟 双生排版状态：'outside'(头像分离独立), 'inside'(头卡内嵌卡片) */
-  _layoutMode: 'outside',
+  _layoutMode: 'outside', /* 现在的双生已经进化为 'outside' 'inside' 'cat' 三生模式 */
   
   _dragX:0,
   _dragY:0,
@@ -53,9 +51,8 @@ var Cal={
   load:function(){
     Cal.city=App.LS.get('calCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
-    Cal._layoutMode = App.LS.get('tkLayoutMode') || 'outside'; // 读取排版模式
+    Cal._layoutMode = App.LS.get('tkLayoutMode') || 'outside';
     
-    // 🌟 获取存档里的模式
     var savedMode = App.LS.get('calWeatherMode');
     if (savedMode === undefined || savedMode === null) {
        var legacy = App.LS.get('calWeatherAnimate');
@@ -70,14 +67,46 @@ var Cal={
     App.LS.set('calWeather',Cal.weather);
   },
 
-  // 魔法切开：给大外壳加盖章控制内部CSS变化
+  /* 🔥 拆分绘制与形态接管的核心逻辑！这部分完美实现无畸变的胶囊融合猫咪耳朵形态！ */
   applyLayout: function() {
     var card = App.$('#wtCard');
     if(!card) return;
-    if(Cal._layoutMode === 'inside') {
-       card.classList.add('tk17-inside-mode');
-    } else {
-       card.classList.remove('tk17-inside-mode');
+
+    // 无感植入那组墨墨小笨蛋自己徒手写的最牛纯白色猫耳朵 + 胡须组件！
+    if(!App.$('#tkCatEarL')) {
+      var catHTML = [
+        '<svg id="tkCatEarL" class="cat-part cat-ear-l" viewBox="-5 -5 75 90">',
+        '  <path d="M 0 80 Q 32.5 0, 65 80" stroke="#ffffff" stroke-width="11" stroke-linecap="round" fill="none"/>',
+        '  <polygon points="33,57 36,63 42,64 38,68 39,74 33,71 27,74 28,68 24,64 30,63" fill="#ffffff" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>',
+        '</svg>',
+        '<svg id="tkCatEarR" class="cat-part cat-ear-r" viewBox="-5 -5 75 90">',
+        '  <path d="M 0 80 Q 40 0, 65 80" stroke="#ffffff" stroke-width="11" stroke-linecap="round" fill="none"/>',
+        '  <polygon points="33,57 36,63 42,64 38,68 39,74 33,71 27,74 28,68 24,64 30,63" fill="#ffffff" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>',
+        '</svg>',
+        '<svg id="tkCatWhiskerL" class="cat-part cat-whisker-l" viewBox="-5 -5 60 50">',
+        '  <path d="M 50 8 Q 25 4, 0 0" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 50 24 Q 25 28, 0 39" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '</svg>',
+        '<svg id="tkCatWhiskerR" class="cat-part cat-whisker-r" viewBox="-5 -5 60 50">',
+        '  <path d="M 0 8 Q 25 4, 50 0" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 0 24 Q 25 28, 50 39" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '</svg>'
+      ].join('');
+      // 让部件贴近外层布局避免溢出拉扯！
+      card.insertAdjacentHTML('beforeend', catHTML);
+    }
+
+    // 默认情况卸下一切魔法伪装与标签！
+    card.classList.remove('tk17-inside-mode', 'tk17-cat-mode');
+    card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display = 'none'; });
+
+    // 重构分配！如果是哪种特定模式便启动针对特供
+    if (Cal._layoutMode === 'inside') {
+        card.classList.add('tk17-inside-mode');
+    } else if (Cal._layoutMode === 'cat') {
+        card.classList.add('tk17-cat-mode');
+        // 解放全特效显示零件！
+        card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display = 'block'; });
     }
   },
 
@@ -114,7 +143,6 @@ var Cal={
     Cal.applyWeatherText();
     var card=App.$('#wtCard');
     
-    // 处理冻结特效的逻辑
     if(card) {
        card.classList.remove('wt-static');
        if(Cal._weatherMode === 'static') card.classList.add('wt-static');
@@ -247,10 +275,13 @@ var Cal={
 
     var currentColor = App.LS.get('tkColor') || '#111111';
 
-    // 🌟 读取模式名字准备渲染
     var modeName = '动态';
     if(Cal._weatherMode === 'static') modeName = '静态';
     else if(Cal._weatherMode === 'none') modeName = '关闭';
+
+    var layoutModeTxt = '分离';
+    if(Cal._layoutMode === 'inside') layoutModeTxt = '内嵌';
+    else if(Cal._layoutMode === 'cat') layoutModeTxt = '猫咪';
 
     var overlay=document.createElement('div');
     overlay.className='pc-edit-overlay';
@@ -292,7 +323,7 @@ var Cal={
           '</div>'+
           '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
             '<span class="pc-label">排版模式</span>'+
-            '<div class="pc-icon-btn" id="wtLayoutToggle" style="width:100%;font-size:11px;font-weight:700;">'+ (Cal._layoutMode==='inside'?'内嵌':'分离') +'</div>'+
+            '<div class="pc-icon-btn" id="wtLayoutToggle" style="width:100%;font-size:11px;font-weight:700;">'+ layoutModeTxt +'</div>'+
           '</div>'+
           '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
             '<span class="pc-label">视觉特效</span>'+
@@ -449,12 +480,24 @@ var Cal={
       });
     });
 
-    /* 🌟 新增的排版切换：内嵌与分离的魔法开关 */
+    /* 🔥 无死角的按键切换逻辑：一秒顺滑变更排版模式循环 */
     panel.querySelector('#wtLayoutToggle').addEventListener('click',function(){
-      Cal._layoutMode = (Cal._layoutMode === 'inside') ? 'outside' : 'inside';
+      if(Cal._layoutMode === 'outside') {
+         Cal._layoutMode = 'inside';
+      } else if (Cal._layoutMode === 'inside') {
+         Cal._layoutMode = 'cat';
+      } else {
+         Cal._layoutMode = 'outside';
+      }
+
       App.LS.set('tkLayoutMode', Cal._layoutMode);
-      this.textContent = (Cal._layoutMode === 'inside') ? '内嵌' : '分离';
-      Cal.applyLayout(); // 立刻预览
+      
+      var mt = '分离';
+      if(Cal._layoutMode === 'inside') mt = '内嵌';
+      if(Cal._layoutMode === 'cat') mt = '猫咪';
+      this.textContent = mt;
+
+      Cal.applyLayout(); // 让排版立马就地现形
     });
 
     panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
@@ -597,7 +640,7 @@ var Cal={
 
   init:function(){
     Cal.load();
-    Cal.applyLayout(); // 初始化时自动挂载上次记录的排版！
+    Cal.applyLayout(); // ✅ 现在只要初始化就能直接渲染出猫咪形状！
     Cal.startClock();
     Cal.renderWeatherEffect();
     Cal.applyBgImg();
