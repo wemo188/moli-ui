@@ -60,7 +60,7 @@
 
 /* 右框的三大底层（背景图、玻璃遮罩、天气图层），填满这个画框 */
 .tk17-bgimg {
-  position: absolute; inset: 0; z-index: 10;
+  position: absolute; inset: 0; z-index: 1;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 .tk17-bgimg::after {
@@ -70,7 +70,7 @@
   pointer-events: none;
 }
 .tk17-glass {
-  position: absolute; inset: 0; z-index: 10;
+  position: absolute; inset: 0; z-index: 1;
   background: rgba(255, 255, 255, 0.01);
   transition: opacity .3s;
 }
@@ -164,14 +164,14 @@
 .cat-ear-l, .cat-ear-r {
   width: 60px; height: auto;
   top: auto; 
-  bottom: calc(100% + 15px); /* 基于卡片顶端的完美浮空距 */
+  bottom: calc(100% + 13px); /* 基于卡片顶端的完美浮空距 */
   z-index: 20;
 }
 .cat-ear-l { left: 16%; }
 .cat-ear-r { right: 16%; }
 
 .cat-whisker-l, .cat-whisker-r {
-  width: 44px; top: 50%; transform: translateY(-50%); z-index: 5;
+  width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
 .cat-whisker-l { left: -16px; margin-top:-6px; }
 .cat-whisker-r { right: -16px; margin-top:-6px; }
