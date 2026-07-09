@@ -360,7 +360,7 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  opacity: 0.8;
+  opacity: 0.7;
   letter-spacing: 1px;
 }
 
@@ -368,7 +368,7 @@
   font-size: 30px;
   font-weight: 900;
   color: var(--text-primary);
-  opacity: 0.8;
+  opacity: 0.7;
   line-height: 1;
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
@@ -379,17 +379,17 @@
   position: relative;
   width: 80px;
   height: 100px;
-  margin-left: -3px;
+  margin-left: -5px;
   transition: transform 0.3s ease;
   flex-shrink: 0;
   cursor: pointer;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.1)) drop-shadow(0 3px 3px rgba(0,0,0,0.08));
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.2)) drop-shadow(0 3px 3px rgba(0,0,0,0.18));
 }
 .pola-card:first-child { margin-left: 0; }
 
 .pola-body {
   position: absolute;
-  top: 6px; left: 6px; right: 6px; bottom: 16px;
+  top: 8px; left: 8px; right: 8px; bottom: 12px;
   display: flex;
   flex-direction: column;
   z-index: 2;
@@ -404,7 +404,7 @@
 
 .pola-photo {
   flex: 1;
-  background: linear-gradient(145deg, #e8e6e4, #dddbd9);
+  background: linear-gradient(323deg,#ffffff,#9ca3b0);
   border-radius: 2px;
   overflow: hidden;
   display: flex;
@@ -427,10 +427,9 @@
 .pola-text {
   height: 12px;
   margin-top: 2px;
-  font-size: 6px;
+  font-size: 8px;
   font-weight: 600;
   color: var(--pola-text-color, #666);
-  text-align: center;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
