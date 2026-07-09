@@ -101,40 +101,65 @@
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
 
 /* ================================================
-   ✨ 排版双生魔法 (内嵌模式 / 分离模式切换)
+   ✨ 排版三生魔法 (分离 / 内嵌 / 猫咪)
    ================================================ */
 
-/* 分离模式保持你原有的完美空气感，不做改变 */
-
-/* 切换为内嵌模式时激活的样式：绝对包裹感 */
-.tk17.tk17-inside-mode {
-  display: block; /* 取消弹性布局拉扯，让绝对定位全权接管 */
+/* 核心触发：一旦开启 内嵌模式 或 猫咪胶囊，执行绝对包容排版 */
+.tk17.tk17-inside-mode, .tk17.tk17-cat-mode {
+  display: block; position: relative;
 }
 
-.tk17.tk17-inside-mode .tk17-right-card {
+.tk17.tk17-inside-mode .tk17-right-card, 
+.tk17.tk17-cat-mode .tk17-right-card {
   width: 100%;
 }
 
-.tk17.tk17-inside-mode .tk17-avatar-wrapper {
-  position: absolute;
-  left: 12px; /* 卡片内边缘留白 */
-  top: 50%;
-  transform: translateY(-50%); /* 无论信息多高，永远垂直居中 */
-  z-index: 10; /* 悬浮在任何天气与背景特效之上！ */
+.tk17.tk17-inside-mode .tk17-avatar-wrapper, 
+.tk17.tk17-cat-mode .tk17-avatar-wrapper {
+  position: absolute; left: 12px; top: 50%; 
+  transform: translateY(-50%); z-index: 10; 
 }
 
-.tk17.tk17-inside-mode .tk17-info-inner {
-  padding-left: 92px; /* 文字乖乖给头像让开位置 */
-  min-height: 84px;
+.tk17.tk17-inside-mode .tk17-info-inner, 
+.tk17.tk17-cat-mode .tk17-info-inner {
+  padding-left: 92px; min-height: 84px;
 }
 
-.tk17.tk17-inside-mode .tk17-avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%; /* 内嵌时裁成饱满圆润的形状，更温柔 */
-  border: 2px solid #d1d5db; /* 琉璃白质感边 */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* 悬浮发光感 */
-  background-color: rgba(255, 255, 255, 0.1);
+.tk17.tk17-inside-mode .tk17-avatar, 
+.tk17.tk17-cat-mode .tk17-avatar {
+  width: 60px; height: 60px; border-radius: 50%; 
+  border: 2px solid rgba(255,255,255,0.5);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); 
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* ================== 猫咪独占特殊装饰体系 ================== */
+.tk17.tk17-cat-mode .tk17-right-card {
+  border-radius: 999px; /* 超圆润胶囊本囊 */
+}
+
+.cat-part {
+  position: absolute; pointer-events: none; overflow: visible; display: none;
+}
+
+/* 猫耳朵！贴心地缩到卡片背部最下方发白光 */
+.cat-ear-l, .cat-ear-r {
+  width: 48px; top: -45px; z-index: -1;
+  filter: drop-shadow(0 -4px 6px rgba(255,255,255,0.4));
+}
+.cat-ear-l { left: 18%; }
+.cat-ear-r { right: 18%; }
+
+/* 猫胡须！最高层级浮夸突破次元壁 */
+.cat-whisker-l, .cat-whisker-r {
+  width: 42px; top: 50%; transform: translateY(-50%); z-index: 20;
+}
+.cat-whisker-l { left: -14px; margin-top:-8px;}
+.cat-whisker-r { right: -14px; margin-top:-8px;}
+
+/* 白色光罩效果强化（仅针对昨天改的背景特效叠加）*/
+.tk17.tk17-cat-mode .tk17-bgimg::after {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 /* ================================================
