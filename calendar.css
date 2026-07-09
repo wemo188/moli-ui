@@ -37,13 +37,20 @@
   padding: 12px 22px; box-sizing: border-box;
 }
 
-/* 时间文本强制色彩跟随 */
-.tk17-clock, .tk17-date, .tk17-wt-temp, .tk17-wt-desc {
+/* 时间文本强制色彩跟随与极简排布 */
+.tk17-clock, .tk17-wt-temp, .tk17-wt-desc {
   color: var(--tk-color) !important; opacity: 1 !important; 
 }
-.tk17-time-col { display: flex; flex-direction: column; justify-content: center; gap: 0px; }
-.tk17-clock { font-weight: 900; font-size: 32px; letter-spacing: 1px; line-height: 1; margin-bottom: 2px;}
-.tk17-date { font-weight: 700; font-size: 12px; opacity: 0.85; letter-spacing: 0.5px;}
+.tk17-time-col { display: flex; flex-direction: column; justify-content: center; }
+
+/* font-variant-numeric: tabular-nums 防止秒针跳动时宽度改变引起胶囊狂抖 */
+.tk17-clock { 
+  font-weight: 900; 
+  font-size: 32px; 
+  letter-spacing: 1px; 
+  line-height: 1; 
+  font-variant-numeric: tabular-nums; 
+}
 
 .tk17-wt-col {
   display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px;
