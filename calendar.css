@@ -60,7 +60,7 @@
 .tk17.tk17-cat-mode { margin-top: 50px !important; }
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px;
-  width: 78%;
+  width: 85%;
   margin: 0 auto; /* 保证猫咪胶囊永远居中 */
 }
 
@@ -78,8 +78,8 @@
 .cat-whisker-l, .cat-whisker-r {
   width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
-.cat-whisker-l { left: -50px; }
-.cat-whisker-r { right: -50px; }
+.cat-whisker-l { left: -30px; }
+.cat-whisker-r { right: -30px; }
 
 .tk17.tk17-cat-mode .tk17-bgimg::after {
   background: rgba(255, 255, 255, 0.001);
