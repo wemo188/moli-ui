@@ -68,7 +68,7 @@ var Cal={
     }
     
     // 猫耳和星星变色同步
-    var catColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#d1d5db', star:'#ffffff'};
+    var catColors = App.LS.get('tkCatColors') || {ear:'#d1d5db', whisker:'#d1d5db', star:'#d1d5db'};
     card.style.setProperty('--cat-ear-color', catColors.ear);
     card.style.setProperty('--cat-whisker-color', catColors.whisker);
     card.style.setProperty('--cat-star-color', catColors.star);
