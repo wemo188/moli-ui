@@ -20,7 +20,7 @@
 /* 猫咪部件颜色变量 */
 .tk17 {
   --cat-ear-color: #ffffff;
-  --cat-whisker-color: #d1d5db;
+  --cat-whisker-color: #fff;
   --cat-star-color: #ffffff;
 }
 
@@ -111,7 +111,6 @@
    ✨ 排版三生魔法 (分离 / 内嵌 / 猫咪)
    ================================================ */
 
-/* 核心触发：一旦开启 内嵌模式 或 猫咪胶囊，执行绝对包容排版 */
 .tk17.tk17-inside-mode, .tk17.tk17-cat-mode {
   display: block; position: relative;
 }
@@ -141,35 +140,36 @@
 }
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
+
+/* 打破原本边框隐形约束 */
+.tk17 { overflow: visible !important; }
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px;
-  overflow: visible; /* 必须加这句，否则悬浮出去的耳朵会被裁掉！ */
 }
 
 .cat-part {
   position: absolute; pointer-events: none; overflow: visible; display: none;
 }
 
-/* 调大上方的悬空距离，完美悬浮，远离卡片顶端 */
+/* 完美位移悬空感 */
 .cat-ear-l, .cat-ear-r {
-  width: 70px; top: -55px; z-index: 5;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+  width: 65px; top: -46px; z-index: 5;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
 }
-.cat-ear-l { left: 15%; }
-.cat-ear-r { right: 15%; }
+.cat-ear-l { left: 16%; }
+.cat-ear-r { right: 16%; }
 
-/* 胡须拉升至10倍粗度！ */
+/* 胡子彻底悬在两侧！ */
 .cat-whisker-l, .cat-whisker-r {
-  width: 42px; top: 50%; transform: translateY(-50%); z-index: 20;
+  width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
-.cat-whisker-l path, .cat-whisker-r path { stroke-width: 10 !important; }
-.cat-whisker-l { left: -14px; margin-top:-8px;}
-.cat-whisker-r { right: -14px; margin-top:-8px;}
+.cat-whisker-l { left: -16px; margin-top:-6px; }
+.cat-whisker-r { right: -16px; margin-top:-6px; }
 
-/* 白色光罩效果强化 */
+/* 开启朦胧泛白叠加罩 */
 .tk17.tk17-cat-mode .tk17-bgimg::after {
-  content: ''; position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.45); pointer-events: none;
+  content:''; position: absolute; inset: 0; pointer-events: none;
+  background: rgba(255, 255, 255, 0.45);
 }
 
 /* ================================================
