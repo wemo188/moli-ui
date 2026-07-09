@@ -728,7 +728,7 @@
         if(svg.querySelector('path')) return;
         var path = document.createElementNS('http://www.w3.org/2000/svg','path');
         path.setAttribute('d', pathData);
-        path.setAttribute('fill','white');
+        path.setAttribute('fill','eceef0');
         svg.appendChild(path);
       });
       Polaroid.data.imgs.forEach(function(src, idx) {
