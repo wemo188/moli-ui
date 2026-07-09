@@ -72,6 +72,12 @@ body {
   background-repeat: no-repeat;
 }
 
+/* 魔法拼缝消除术！让第二页向左“吃”掉一丝丝，并且向右延伸霸占视口 */
+.bg-page:nth-child(2) {
+  margin-left: -1px; 
+  width: calc(100vw + 2px); 
+}
+
 /* =========================
    主内容区
 ========================= */
