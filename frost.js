@@ -695,6 +695,8 @@
   ========================================================== */
   var Polaroid = {
     data: { imgs: [null,null,null,null] },
+    posX: 0,
+    posY: 0,
 
     load: function() {
       var saved = App.LS.get('polaroidData');
@@ -758,10 +760,9 @@
           });
         });
       });
-    }
-  };
-  
-      bindDrag: function() {
+    },
+
+    bindDrag: function() {
       var container = document.getElementById('polaroidRow');
       if(!container || container._polaDragBound) return;
       container._polaDragBound = true;
@@ -773,8 +774,6 @@
         var tf = 'translate('+Polaroid.posX+'px,'+Polaroid.posY+'px)';
         container.style.setProperty('--t', tf);
         container.style.transform = tf;
-      } else {
-        Polaroid.posX = 0; Polaroid.posY = 0;
       }
 
       container.addEventListener('touchstart', function(e) {
@@ -816,6 +815,7 @@
         longPressed=false; moved=false;
       });
     }
+  };
 
   /* ==========================================================
      倒计时 (Countdown)
