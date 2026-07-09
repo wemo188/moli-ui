@@ -132,8 +132,8 @@
   min-height:0;overscroll-behavior:contain;scrollbar-width:none;
   
   /* 就是这个魔法：让内容往上滑到顶时自然渐变消失（非实色白膜） */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent calc(30px + env(safe-area-inset-top, 0px)), black calc(85px + env(safe-area-inset-top, 0px)), black 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, transparent calc(30px + env(safe-area-inset-top, 0px)), black calc(85px + env(safe-area-inset-top, 0px)), black 100%);
+ -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent calc(60px + env(safe-area-inset-top, 0px)), black calc(105px + env(safe-area-inset-top, 0px)), black 100%);
+mask-image: linear-gradient(to bottom, transparent 0, transparent calc(60px + env(safe-area-inset-top, 0px)), black calc(105px + env(safe-area-inset-top, 0px)), black 100%);
 }
 .ol-msgs::-webkit-scrollbar{display:none;}
 
