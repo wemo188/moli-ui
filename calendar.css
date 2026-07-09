@@ -149,12 +149,14 @@
   position: absolute; pointer-events: none; overflow: visible; display: none;
 }
 
-/* 🚀 彻底悬浮魔法！高度大幅拉升至 -75px，完全脱离胶囊表面！ */
+/* 🚀 物理级强行阻断：以父体天花板为地基，强行让SVG最低处浮空15像素！ */
 .cat-ear-l, .cat-ear-r {
-  width: 58px;          /* 比例缩润，让它有种轻盈的小巧悬浮感 */
-  top: -75px;           /* 把距离猛猛拉高，这下绝对悬在空气里了！ */
+  width: 60px;          
+  height: auto;         /* 严格自适应以锁定SVG画板底部 */
+  top: auto;            /* 抛弃顶部拉扯法 */
+  bottom: calc(100% + 15px); /* 以胶囊顶端再往上强行隔空 15px */
   z-index: 5;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18)); /* 增加下方投影更显浮空感 */
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)); 
 }
 .cat-ear-l { left: 16%; }
 .cat-ear-r { right: 16%; }
