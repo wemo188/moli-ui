@@ -51,26 +51,23 @@ body {
 ========================= */
 .bg-slider {
   position: fixed;
-  top: 0; left: 0;
-  width: 200vw;
-  height: 100vh;
-  z-index: 0;
-  display: flex;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 200vw; height: 100vh;
+  z-index: 0; display: flex;
+  margin: 0; padding: 0; gap: 0; /* 绝对杀死多余空隙 */
   pointer-events: none;
   will-change: transform;
 }
 
 .bg-page {
-  width: 100vw;
-  height: 100%;
-  flex-shrink: 0;
-  background-color: transparent;
+  width: 100vw; height: 100%;
+  flex: 0 0 100vw; /* 强行锁死，精准等于1个屏幕宽度 */
+  margin: 0; padding: 0; border: none;
+  transform: translateZ(0); /* 开启防渗色渲染，从物理上杜绝第二页溢出 */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  margin: 0; 
-  /* 魔法绝杀：横向原地拉伸0.4%，完全掩盖系统白缝，且绝不跑去隔壁！ */
-  transform: scaleX(1.004); 
+  background-color: var(--bg-primary); 
 }
 
 .bg-page:nth-child(2) {
