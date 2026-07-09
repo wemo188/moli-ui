@@ -52,26 +52,34 @@ body {
 .bg-slider {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  width: 200vw; height: 100vh;
-  z-index: 0; display: flex;
-  margin: 0; padding: 0; gap: 0; /* 绝对杀死多余空隙 */
+  width: 200vw;
+  height: 100vh;
+  z-index: 0;
+  display: flex;
   pointer-events: none;
   will-change: transform;
+  background-color: #000; /* 死黑打底，把高光白缝源头光反杀 */
+  contain: paint; /* 父级约束涂层容器 */
 }
 
 .bg-page {
-  width: 100vw; height: 100%;
-  flex: 0 0 100vw; /* 强行锁死，精准等于1个屏幕宽度 */
-  margin: 0; padding: 0; border: none;
-  transform: translateZ(0); /* 开启防渗色渲染，从物理上杜绝第二页溢出 */
+  position: relative; 
+  width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+  background-color: transparent;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: var(--bg-primary); 
-}
+  margin: 0; /* 统统取消所有的瞎偏移距离纠正！保持100%零接缝平稳站队！ */
+  
+  /* 🔥天雷绝杀第一式：设立虚影裁决所结界！ 
+   所有本页面高斯模糊往周围四散外溢想要串门到隔壁去的恶心发散鬼影，当空齐根切除！无处逃遁！*/
+  clip-path: inset(0 0 0 0); 
 
-.bg-page:nth-child(2) {
-  margin-left: -2vw; /* 魔法交叠：第二张强制后退插入第一张底部，直接封死拼缝！ */
+  /* 🔥天雷绝杀第二式：反制滤镜自身虚化收缩引起的缩水和漏洞泛透白！ 
+   将该图元素利用无伤的 3D scale 加力膨胀到原来的 1.05倍；膨胀的身体正好可以完美撑去因自身半透明造成的死角裂口中充填填满！然后把那些不合格的多余的散边也由上面切掉。 */
+  transform: scale(1.05) translateZ(0) !important;
 }
 
 /* =========================
