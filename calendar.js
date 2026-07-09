@@ -80,14 +80,12 @@ var Cal={
   },
 
   /* 时刻跳动的精美时间之心！取代了毫无波澜的网名 */
-  startClock:function(){
-    var tEl=App.$('#tkLargeTime'), dEl=App.$('#tkSmallDate');
+    startClock:function(){
+    var tEl=App.$('#tkLargeTime');
     if(!tEl)return;
-    var WEEKDAYS_CN=['周日','周一','周二','周三','周四','周五','周六'];
     function tick(){
       var d=new Date();
-      if(tEl) tEl.textContent=pad(d.getHours())+':'+pad(d.getMinutes());
-      if(dEl) dEl.textContent=pad(d.getMonth()+1)+'/'+pad(d.getDate())+'  '+WEEKDAYS_CN[d.getDay()];
+      if(tEl) tEl.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
     }
     tick();
     if(Cal._clockTimer)clearInterval(Cal._clockTimer);
