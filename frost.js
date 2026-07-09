@@ -709,24 +709,50 @@
     },
     save: function() { App.LS.set('polaroidData', Polaroid.data); },
 
+    createScallopedPath: function(w, h, r, spacing) {
+      var step = r*2+spacing, cr=4;
+      var topAvail=w-cr*2, sideAvail=h-cr*2;
+      var topNum=Math.floor(topAvail/step), sideNum=Math.floor(sideAvail/step);
+      var topUsed=topNum*step-spacing, topStart=(w-topUsed)/2;
+      var sideUsed=sideNum*step-spacing, sideStart=(h-sideUsed)/2;
+      var d='M 0,'+cr+' A '+cr+' '+cr+' 0 0 0 '+cr+',0';
+      for(var i=0;i<topNum;i++){var x=topStart+i*step;d+=' L '+x+',0 A '+r+' '+r+' 0 0 0 '+(x+r*2)+',0';}
+      d+=' L '+(w-cr)+',0 A '+cr+' '+cr+' 0 0 0 '+w+','+cr;
+      for(var i=0;i<sideNum;i++){var y=sideStart+i*step;d+=' L '+w+','+y+' A '+r+' '+r+' 0 0 0 '+w+','+(y+r*2);}
+      d+=' L '+w+','+(h-cr)+' A '+cr+' '+cr+' 0 0 0 '+(w-cr)+','+h;
+      for(var i=topNum-1;i>=0;i--){var x=topStart+i*step;d+=' L '+(x+r*2)+','+h+' A '+r+' '+r+' 0 0 0 '+x+','+h;}
+      d+=' L '+cr+','+h+' A '+cr+' '+cr+' 0 0 0 0,'+(h-cr);
+      for(var i=sideNum-1;i>=0;i--){var y=sideStart+i*step;d+=' L 0,'+(y+r*2)+' A '+r+' '+r+' 0 0 0 0,'+y;}
+      d+=' L 0,'+cr+' Z';
+      return d;
+    },
+
     apply: function() {
+      var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
+      document.querySelectorAll('.pola-svg').forEach(function(svg) {
+        var existing = svg.querySelector('path');
+        if(!existing) {
+          existing = document.createElementNS('http://www.w3.org/2000/svg','path');
+          existing.setAttribute('d', pathData);
+          svg.appendChild(existing);
+        }
+        existing.setAttribute('fill', Polaroid.data.cardColor || '#f0eeec');
+      });
+
       var cards = document.querySelectorAll('.pola-card');
       cards.forEach(function(card, idx) {
-        var body = card.querySelector('.pola-body');
         var photo = card.querySelector('.pola-photo');
         var text = card.querySelector('.pola-text');
-        if(body) body.style.setProperty('--pola-card-color', Polaroid.data.cardColor);
-        if(text) {
-          text.style.setProperty('--pola-text-color', Polaroid.data.textColor);
-          text.style.color = Polaroid.data.textColor;
-          text.textContent = Polaroid.data.texts[idx] || '';
-        }
         if(photo) {
           if(Polaroid.data.imgs[idx]) {
             photo.innerHTML = '<img src="'+Polaroid.data.imgs[idx]+'">';
           } else {
             photo.innerHTML = '';
           }
+        }
+        if(text) {
+          text.textContent = Polaroid.data.texts[idx] || '';
+          text.style.color = Polaroid.data.textColor;
         }
       });
     },
@@ -738,7 +764,6 @@
           Polaroid.openEdit();
         });
       });
-      // 右侧倒计时也能点开
       var right = document.querySelector('.polaroid-right');
       if(right) right.addEventListener('click', function(e) { e.stopPropagation(); Polaroid.openEdit(); });
     },
@@ -789,7 +814,6 @@
 
       overlay.appendChild(panel); document.body.appendChild(overlay);
 
-      // 定位
       var pRect = panel.getBoundingClientRect();
       var startLeft = (window.innerWidth - pRect.width)/2;
       var startTop = window.innerHeight - pRect.height - 40; if(startTop<10) startTop=10;
@@ -797,7 +821,6 @@
 
       if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
 
-      // 上传图片
       panel.querySelectorAll('.pz-edit-thumb').forEach(function(thumb) {
         thumb.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -825,7 +848,6 @@
         });
       });
 
-      // 卡纸颜色
       panel.querySelector('#polaCardColorBtn').addEventListener('click', function(e){
         e.stopPropagation();
         App.openColorPicker(d.cardColor, function(color){
@@ -839,7 +861,6 @@
         });
       });
 
-      // 文字颜色
       panel.querySelector('#polaTextColorBtn').addEventListener('click', function(e){
         e.stopPropagation();
         App.openColorPicker(d.textColor, function(color){
@@ -853,7 +874,6 @@
         });
       });
 
-      // 关闭保存
       function saveAndClose(showToast) {
         panel.querySelectorAll('input[data-tidx]').forEach(function(inp){
           d.texts[parseInt(inp.dataset.tidx)] = inp.value;
@@ -958,7 +978,7 @@
 
       // 拍立得
       Polaroid.load();
-      Polaroid.render();
+      Polaroid.apply();
       Polaroid.bindClicks();
       Polaroid.bindDrag();
 
