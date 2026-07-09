@@ -60,33 +60,33 @@
 
 /* 右框的三大底层（背景图、玻璃遮罩、天气图层），填满这个画框 */
 .tk17-bgimg {
-  position: absolute; inset: 0; z-index: 0;
+  position: absolute; inset: 0; z-index: 10;
   background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 .tk17-bgimg::after {
   content: '';
   position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   pointer-events: none;
 }
 .tk17-glass {
-  position: absolute; inset: 0; z-index: 1;
+  position: absolute; inset: 0; z-index: 10;
   background: rgba(255, 255, 255, 0.01);
   transition: opacity .3s;
 }
 .tk17-glass.hide { opacity: 0; }
 .tk17-weather-layer {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  position: absolute; inset: 0; z-index: 10; pointer-events: none;
 }
 
 /* 画框最上层的文字区包裹 */
 .tk17-info-inner {
-  position: relative; z-index: 3;
+  position: relative; z-index: 10;
   display: flex; justify-content: space-between;
   align-items: flex-start;
-  padding: 14px 18px;
+  padding: 20px 18px;
   box-sizing: border-box;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 .tk17-text-col {
