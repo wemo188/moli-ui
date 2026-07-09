@@ -140,7 +140,18 @@
 }
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
-.tk17 { overflow: visible !important; }
+
+/* 1. 让卡片学会移动魔法，带有柔和缓冲动画！ */
+.tk17 { 
+  overflow: visible !important; 
+  transition: margin-top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 2. 最强绝杀：一进猫咪模式，整个胶囊带着信息往下沉，主动给小猫耳朵让座！ */
+.tk17.tk17-cat-mode {
+  margin-top: 75px !important; 
+}
+
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px;
 }
@@ -149,12 +160,11 @@
   position: absolute; pointer-events: none; overflow: visible; display: none;
 }
 
-/* 🚀 物理级强行阻断：以父体天花板为地基，强行让SVG最低处浮空15像素！ */
+/* 3. 在下沉出的“天空”里，稳坐胶囊上方15px！ */
 .cat-ear-l, .cat-ear-r {
-  width: 60px;          
-  height: auto;         /* 严格自适应以锁定SVG画板底部 */
-  top: auto;            /* 抛弃顶部拉扯法 */
-  bottom: calc(100% + 15px); /* 以胶囊顶端再往上强行隔空 15px */
+  width: 60px; height: auto;
+  top: auto; 
+  bottom: calc(100% + 15px); /* 基于卡片顶端的完美浮空距 */
   z-index: 5;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)); 
 }
