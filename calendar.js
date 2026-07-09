@@ -64,12 +64,17 @@ var Cal={
     card.style.setProperty('--cat-star-color',catColors.star);
   },
 
-  startClock:function(){
+    startClock:function(){
     var tEl=App.$('#tkLargeTime');
+    var dayEl=App.$('#tkDateDay');
+    var weekEl=App.$('#tkDateWeek');
     if(!tEl) return;
+    var WEEKDAYS_CN=['周日','周一','周二','周三','周四','周五','周六'];
     function tick(){
       var d=new Date();
       tEl.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+      if(dayEl) dayEl.textContent=pad(d.getMonth()+1)+'/'+pad(d.getDate());
+      if(weekEl) weekEl.textContent=WEEKDAYS_CN[d.getDay()];
     }
     tick();
     if(Cal._clockTimer)clearInterval(Cal._clockTimer);
