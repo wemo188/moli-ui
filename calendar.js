@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 var App=window.App;if(!App)return;
@@ -52,7 +51,6 @@ var Cal={
     Cal.city=App.LS.get('calCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
     Cal._layoutMode = App.LS.get('tkLayoutMode') || 'outside';
-    
     var savedMode = App.LS.get('calWeatherMode');
     if (savedMode === undefined || savedMode === null) {
        var legacy = App.LS.get('calWeatherAnimate');
@@ -67,32 +65,10 @@ var Cal={
     App.LS.set('calWeather',Cal.weather);
   },
 
-  /* 🔥 处理猫咪绘制与 CSS 控制！ */
+  /* 🔥 新的干净且迅捷的排版更替 */
   applyLayout: function() {
     var card = App.$('#wtCard');
     if(!card) return;
-
-    if(!App.$('#tkCatEarL')) {
-      var catHTML = [
-        '<svg id="tkCatEarL" class="cat-part cat-ear-l" viewBox="-5 -5 75 90">',
-        '  <path class="cat-svg-ear" d="M 0 80 Q 32.5 0, 65 80" stroke="var(--cat-ear-color)" stroke-width="11" stroke-linecap="round" fill="none"/>',
-        '  <polygon class="cat-svg-star" points="33,57 36,63 42,64 38,68 39,74 33,71 27,74 28,68 24,64 30,63" fill="var(--cat-star-color)" stroke="var(--cat-star-color)" stroke-width="8" stroke-linejoin="round"/>',
-        '</svg>',
-        '<svg id="tkCatEarR" class="cat-part cat-ear-r" viewBox="-5 -5 75 90">',
-        '  <path class="cat-svg-ear" d="M 0 80 Q 40 0, 65 80" stroke="var(--cat-ear-color)" stroke-width="11" stroke-linecap="round" fill="none"/>',
-        '  <polygon class="cat-svg-star" points="33,57 36,63 42,64 38,68 39,74 33,71 27,74 28,68 24,64 30,63" fill="var(--cat-star-color)" stroke="var(--cat-star-color)" stroke-width="8" stroke-linejoin="round"/>',
-        '</svg>',
-        '<svg id="tkCatWhiskerL" class="cat-part cat-whisker-l" viewBox="-5 -5 60 50">',
-        '  <path class="cat-svg-whisker" d="M 50 8 Q 25 4, 0 0" stroke="var(--cat-whisker-color)" stroke-linecap="round" fill="none"/>',
-        '  <path class="cat-svg-whisker" d="M 50 24 Q 25 28, 0 39" stroke="var(--cat-whisker-color)" stroke-linecap="round" fill="none"/>',
-        '</svg>',
-        '<svg id="tkCatWhiskerR" class="cat-part cat-whisker-r" viewBox="-5 -5 60 50">',
-        '  <path class="cat-svg-whisker" d="M 0 8 Q 25 4, 50 0" stroke="var(--cat-whisker-color)" stroke-linecap="round" fill="none"/>',
-        '  <path class="cat-svg-whisker" d="M 0 24 Q 25 28, 50 39" stroke="var(--cat-whisker-color)" stroke-linecap="round" fill="none"/>',
-        '</svg>'
-      ].join('');
-      card.insertAdjacentHTML('beforeend', catHTML);
-    }
 
     card.classList.remove('tk17-inside-mode', 'tk17-cat-mode');
     card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display = 'none'; });
@@ -101,10 +77,10 @@ var Cal={
         card.classList.add('tk17-inside-mode');
     } else if (Cal._layoutMode === 'cat') {
         card.classList.add('tk17-cat-mode');
+        // 当开启胶囊模式，原先隐藏在代码中的部件即可破茧重获天日
         card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display = 'block'; });
     }
     
-    // 初始化同步所有的猫咪部件颜色
     var catColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#d1d5db', star:'#ffffff'};
     card.style.setProperty('--cat-ear-color', catColors.ear);
     card.style.setProperty('--cat-whisker-color', catColors.whisker);
@@ -219,20 +195,14 @@ var Cal={
 
     var card = App.$('#wtCard');
     if (card) {
-      if(color) {
-        card.style.setProperty('--tk-color', color);
-      } else {
-        card.style.removeProperty('--tk-color');
-      }
+      if(color) card.style.setProperty('--tk-color', color);
+      else card.style.removeProperty('--tk-color');
     }
 
     var avEl = App.$('#tkAvatarBg');
     if(avEl) {
-       if (avatar) {
-          avEl.style.backgroundImage = 'url('+avatar+')';
-       } else {
-          avEl.style.backgroundImage = '';
-       }
+       if (avatar) avEl.style.backgroundImage = 'url('+avatar+')';
+       else avEl.style.backgroundImage = '';
     }
   },
 
@@ -275,7 +245,6 @@ var Cal={
     }
 
     var currentColor = App.LS.get('tkColor') || '#111111';
-
     var modeName = '动态';
     if(Cal._weatherMode === 'static') modeName = '静态';
     else if(Cal._weatherMode === 'none') modeName = '关闭';
@@ -284,7 +253,6 @@ var Cal={
     if(Cal._layoutMode === 'inside') layoutModeTxt = '内嵌';
     else if(Cal._layoutMode === 'cat') layoutModeTxt = '猫咪';
     
-    // 初始化一键变色的预览图颜色（以耳朵颜色为准）
     var catBaseColor = (App.LS.get('tkCatColors') || {}).ear || '#ffffff';
 
     var overlay=document.createElement('div');
@@ -351,10 +319,9 @@ var Cal={
           '</div>'+
         '</div>'+
         
-        // 🌟 🔥 猫咪一键染色专区，仅猫咪模式展示
         '<div class="pc-group" id="wtCatColorGroup" style="'+(Cal._layoutMode==='cat'?'':'display:none;')+'">'+
           '<span class="pc-label">一键修改猫咪配色</span>'+
-          '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; border-radius:10px; font-weight:900; background:'+ catBaseColor +'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
+          '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; border-radius:10px; background:'+ catBaseColor +'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
         '</div>'+
 
       '</div>'+
@@ -375,37 +342,30 @@ var Cal={
     panel.style.margin = '0';
 
     var header = panel.querySelector('.pc-header');
-    var isDragging = false;
-    var dragStartX = 0, dragStartY = 0;
-    var panelStartLeft = 0, panelStartTop = 0;
+    var isDragging = false, dragStartX = 0, dragStartY = 0, panelStartLeft = 0, panelStartTop = 0;
 
     function onDragStart(e) {
       if (e.target.closest('.pc-close-btn')) return;
-      isDragging = true;
-      var t = e.touches ? e.touches[0] : e;
+      isDragging = true; var t = e.touches ? e.touches[0] : e;
       dragStartX = t.clientX; dragStartY = t.clientY;
-      var rect = panel.getBoundingClientRect();
-      panelStartLeft = rect.left; panelStartTop = rect.top;
+      var rect = panel.getBoundingClientRect(); panelStartLeft = rect.left; panelStartTop = rect.top;
       panel.style.transform = 'none'; panel.style.bottom = 'auto'; panel.style.right = 'auto';
     }
 
     function onDragMove(e) {
-      if (!isDragging) return;
-      e.preventDefault();
+      if (!isDragging) return; e.preventDefault();
       var t = e.touches ? e.touches[0] : e;
-      var dx = t.clientX - dragStartX; var dy = t.clientY - dragStartY;
-      panel.style.left = (panelStartLeft + dx) + 'px'; panel.style.top = (panelStartTop + dy) + 'px';
+      panel.style.left = (panelStartLeft + (t.clientX - dragStartX)) + 'px';
+      panel.style.top = (panelStartTop + (t.clientY - dragStartY)) + 'px';
     }
 
     function onDragEnd() { isDragging = false; }
-
     header.addEventListener('touchstart', onDragStart, {passive: true});
     document.addEventListener('touchmove', onDragMove, {passive: false});
     document.addEventListener('touchend', onDragEnd);
 
     var closePanel = function() {
-      document.removeEventListener('touchmove', onDragMove);
-      document.removeEventListener('touchend', onDragEnd);
+      document.removeEventListener('touchmove', onDragMove); document.removeEventListener('touchend', onDragEnd);
       Cal._editPanel.remove(); Cal._editPanel = null; Cal._closePanelFn = null;
     };
     Cal._closePanelFn = closePanel;
@@ -414,15 +374,12 @@ var Cal={
     overlay.addEventListener('click',function(e){if(e.target===overlay) closePanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
-    // 绑定各大原本设置项
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){ panel.querySelector('#wtBgFileInput').click(); });
     panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
       var reader=new FileReader();
       reader.onload=function(ev){
-        var process=function(src){
-          App.LS.set('calBgImg',src); Cal.applyBgImg(); App.showToast('背景已设置');
-        };
+        var process=function(src){ App.LS.set('calBgImg',src); Cal.applyBgImg(); App.showToast('背景已设置'); };
         if(App.cropImage)App.cropImage(ev.target.result,process); else process(ev.target.result);
       };
       reader.readAsDataURL(file); e.target.value='';
@@ -430,17 +387,10 @@ var Cal={
     panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){ App.LS.remove('calBgImg'); Cal.applyBgImg(); App.showToast('背景已清除'); });
 
     panel.querySelector('#wtAvUploadBtn').addEventListener('click',function(){
-      if(App.showImagePicker) {
-         App.showImagePicker({
-            title: '选择新头像', callback: function(src){
-               if(src) { App.LS.set('tkAvatar', src); Cal.applyTexts(); App.showToast('头像已更换'); }
-            }
-         });
-      }
+      if(App.showImagePicker) App.showImagePicker({title: '选择新头像', callback: function(src){ if(src) { App.LS.set('tkAvatar', src); Cal.applyTexts(); App.showToast('头像更换成功'); } } });
     });
-    panel.querySelector('#wtAvClearBtn').addEventListener('click',function(){ App.LS.remove('tkAvatar'); Cal.applyTexts(); App.showToast('已恢复默认头像'); });
+    panel.querySelector('#wtAvClearBtn').addEventListener('click',function(){ App.LS.remove('tkAvatar'); Cal.applyTexts(); App.showToast('已恢复头像'); });
 
-    // 文字颜色盘
     panel.querySelector('#wtColorBtn').addEventListener('click', function(){
       var cur = panel.dataset.pickedColor || App.LS.get('tkColor') || '#111111';
       App.openColorPicker(cur, function(color){
@@ -448,37 +398,28 @@ var Cal={
          panel.dataset.pickedColor = color;
          var card = App.$('#wtCard');
          if(card) card.style.setProperty('--tk-color', color);
-      }, function(color){
-         var card = App.$('#wtCard');
-         if(card) card.style.setProperty('--tk-color', color);
-      });
+      }, function(color){ var card = App.$('#wtCard'); if(card) card.style.setProperty('--tk-color', color); });
     });
 
-    // 天气拉取
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
       var name=panel.querySelector('#wtCityInput').value.trim();
-      if(!name){App.showToast('请输入城市名');return;}
-      App.showToast('获取天气中...');
+      if(!name){App.showToast('请输入城市');return;}
+      App.showToast('查询天气中...');
       Cal.city=name;Cal.save();
       Cal.fetchWeather(name,function(w){
         if(w){ closePanel(); Cal.openEditPanel(); App.showToast(w.desc+' '+w.temp+'°C');}
-        else App.showToast('获取失败');
+        else App.showToast('查询失败');
       });
     });
 
-    /* 🔥 猫咪全套一键调色指令执行 */
     panel.querySelector('#wtCatAllColorBtn').addEventListener('click', function(){
-      var curColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#ffffff', star:'#ffffff'};
+      var curColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#d1d5db', star:'#ffffff'};
       App.openColorPicker(curColors.ear, function(color){
-         // 选定一个颜色，三个部件全换
          var newColors = {ear:color, whisker:color, star:color};
          App.LS.set('tkCatColors', newColors);
-         
          panel.querySelector('#wtCatAllColorBtn').style.background = color;
-         Cal.applyLayout(); // 瞬间同步刷新到画面
-         App.showToast('一键染色成功');
+         Cal.applyLayout(); App.showToast('魔法已释放');
       }, function(color){
-         // 滑动过程的即时预览效果
          var card = App.$('#wtCard');
          if(card) {
             card.style.setProperty('--cat-ear-color', color);
@@ -499,7 +440,6 @@ var Cal={
       if(Cal._layoutMode === 'cat') mt = '猫咪';
       this.textContent = mt;
 
-      // 如果切到猫咪模式，顺势打开染色板块
       var catGroup = panel.querySelector('#wtCatColorGroup');
       if(catGroup) catGroup.style.display = (Cal._layoutMode === 'cat') ? '' : 'none';
 
@@ -527,7 +467,7 @@ var Cal={
       App.LS.set('tkMsgSign',panel.querySelector('#wtSignInput').value.trim());
       App.LS.set('tkFontFamily',panel.querySelector('#wtFontSelect').value);
       if(panel.dataset.pickedColor) App.LS.set('tkColor', panel.dataset.pickedColor);
-      Cal.applyTexts(); Cal.applyFont(); closePanel(); App.showToast('已保存');
+      Cal.applyTexts(); Cal.applyFont(); closePanel(); App.showToast('已保存设定');
     });
   },
 
