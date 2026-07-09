@@ -84,12 +84,12 @@ var Cal={
         '  <polygon points="33,57 36,63 42,64 38,68 39,74 33,71 27,74 28,68 24,64 30,63" fill="#ffffff" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>',
         '</svg>',
         '<svg id="tkCatWhiskerL" class="cat-part cat-whisker-l" viewBox="-5 -5 60 50">',
-        '  <path d="M 50 8 Q 25 4, 0 0" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
-        '  <path d="M 50 24 Q 25 28, 0 39" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 50 8 Q 25 4, 0 0" stroke="#ffffff" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 50 24 Q 25 28, 0 39" stroke="#ffffff" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
         '</svg>',
         '<svg id="tkCatWhiskerR" class="cat-part cat-whisker-r" viewBox="-5 -5 60 50">',
-        '  <path d="M 0 8 Q 25 4, 50 0" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
-        '  <path d="M 0 24 Q 25 28, 50 39" stroke="#d1d5db" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 0 8 Q 25 4, 50 0" stroke="#ffffff" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
+        '  <path d="M 0 24 Q 25 28, 50 39" stroke="#ffffff" stroke-width="8.5" stroke-linecap="round" fill="none"/>',
         '</svg>'
       ].join('');
       // 让部件贴近外层布局避免溢出拉扯！
