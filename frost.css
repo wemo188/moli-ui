@@ -351,24 +351,33 @@
   flex: 3;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   background: transparent;
+  padding-right: 5px;
 }
 
-.countdown-label {
+.countdown-year {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
   opacity: 0.7;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+}
+
+.countdown-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0.6;
+  margin-top: 2px;
 }
 
 .countdown-days {
   font-size: 30px;
   font-weight: 900;
   color: var(--text-primary);
-  opacity: 0.7;
+  opacity: 0.8;
   line-height: 1;
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
@@ -383,13 +392,13 @@
   transition: transform 0.3s ease;
   flex-shrink: 0;
   cursor: pointer;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.2)) drop-shadow(0 3px 3px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.25)) drop-shadow(0 2px 2px rgba(0,0,0,0.3));
 }
 .pola-card:first-child { margin-left: 0; }
 
 .pola-body {
   position: absolute;
-  top: 8px; left: 8px; right: 8px; bottom: 12px;
+  top: 8px; left: 8px; right: 8px; bottom: 10px;
   display: flex;
   flex-direction: column;
   z-index: 2;
@@ -404,7 +413,7 @@
 
 .pola-photo {
   flex: 1;
-  background: linear-gradient(323deg,#ffffff,#9ca3b0);
+  background: #ffffff;
   border-radius: 2px;
   overflow: hidden;
   display: flex;
@@ -425,9 +434,9 @@
 .pola-photo:not(:empty)::after { display: none; }
 
 .pola-text {
-  height: 12px;
+  height: 10px;
   margin-top: 2px;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--pola-text-color, #666);
   overflow: hidden;
