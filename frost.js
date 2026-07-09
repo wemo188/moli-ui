@@ -694,71 +694,182 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs: [null,null,null,null] },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#f0eeec', textColor:'#666666' },
     posX: 0,
     posY: 0,
 
     load: function() {
       var saved = App.LS.get('polaroidData');
-      if(saved && saved.imgs) Polaroid.data = saved;
+      if(saved) {
+        Polaroid.data.imgs = saved.imgs || [null,null,null,null];
+        Polaroid.data.texts = saved.texts || ['','','',''];
+        Polaroid.data.cardColor = saved.cardColor || '#f0eeec';
+        Polaroid.data.textColor = saved.textColor || '#666666';
+      }
     },
     save: function() { App.LS.set('polaroidData', Polaroid.data); },
 
-    createScallopedPath: function(w, h, r, spacing) {
-      var step = r*2+spacing, cr=4;
-      var topAvail=w-cr*2, sideAvail=h-cr*2;
-      var topNum=Math.floor(topAvail/step), sideNum=Math.floor(sideAvail/step);
-      var topUsed=topNum*step-spacing, topStart=(w-topUsed)/2;
-      var sideUsed=sideNum*step-spacing, sideStart=(h-sideUsed)/2;
-      var d='M 0,'+cr+' A '+cr+' '+cr+' 0 0 0 '+cr+',0';
-      for(var i=0;i<topNum;i++){var x=topStart+i*step;d+=' L '+x+',0 A '+r+' '+r+' 0 0 0 '+(x+r*2)+',0';}
-      d+=' L '+(w-cr)+',0 A '+cr+' '+cr+' 0 0 0 '+w+','+cr;
-      for(var i=0;i<sideNum;i++){var y=sideStart+i*step;d+=' L '+w+','+y+' A '+r+' '+r+' 0 0 0 '+w+','+(y+r*2);}
-      d+=' L '+w+','+(h-cr)+' A '+cr+' '+cr+' 0 0 0 '+(w-cr)+','+h;
-      for(var i=topNum-1;i>=0;i--){var x=topStart+i*step;d+=' L '+(x+r*2)+','+h+' A '+r+' '+r+' 0 0 0 '+x+','+h;}
-      d+=' L '+cr+','+h+' A '+cr+' '+cr+' 0 0 0 0,'+(h-cr);
-      for(var i=sideNum-1;i>=0;i--){var y=sideStart+i*step;d+=' L 0,'+(y+r*2)+' A '+r+' '+r+' 0 0 0 0,'+y;}
-      d+=' L 0,'+cr+' Z';
-      return d;
-    },
-
-    render: function() {
-      var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
-      document.querySelectorAll('.pola-svg').forEach(function(svg) {
-        if(svg.querySelector('path')) return;
-        var path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        path.setAttribute('d', pathData);
-        path.setAttribute('fill','eceef0');
-        svg.appendChild(path);
-      });
-      Polaroid.data.imgs.forEach(function(src, idx) {
-        if(src) {
-          var photo = document.querySelector('.pola-photo[data-idx="'+idx+'"]');
-          if(photo) {
-            photo.innerHTML = '<img src="'+src+'">';
-            photo.classList.add('has-photo');
+    apply: function() {
+      var cards = document.querySelectorAll('.pola-card');
+      cards.forEach(function(card, idx) {
+        var body = card.querySelector('.pola-body');
+        var photo = card.querySelector('.pola-photo');
+        var text = card.querySelector('.pola-text');
+        if(body) body.style.setProperty('--pola-card-color', Polaroid.data.cardColor);
+        if(text) {
+          text.style.setProperty('--pola-text-color', Polaroid.data.textColor);
+          text.style.color = Polaroid.data.textColor;
+          text.textContent = Polaroid.data.texts[idx] || '';
+        }
+        if(photo) {
+          if(Polaroid.data.imgs[idx]) {
+            photo.innerHTML = '<img src="'+Polaroid.data.imgs[idx]+'">';
+          } else {
+            photo.innerHTML = '';
           }
         }
       });
     },
 
     bindClicks: function() {
-      document.querySelectorAll('.pola-photo').forEach(function(photo) {
-        photo.addEventListener('click', function(e) {
+      document.querySelectorAll('.pola-card').forEach(function(card) {
+        card.addEventListener('click', function(e) {
           e.stopPropagation();
-          var idx = parseInt(photo.dataset.idx);
+          Polaroid.openEdit();
+        });
+      });
+      // 右侧倒计时也能点开
+      var right = document.querySelector('.polaroid-right');
+      if(right) right.addEventListener('click', function(e) { e.stopPropagation(); Polaroid.openEdit(); });
+    },
+
+    openEdit: function() {
+      var old = App.$('#polaEditOverlay'); if(old) old.remove();
+      var d = Polaroid.data;
+
+      var overlay = document.createElement('div');
+      overlay.id = 'polaEditOverlay'; overlay.className = 'pc-edit-overlay';
+      var panel = document.createElement('div'); panel.className = 'pc-edit-panel';
+
+      var slotsHtml = '';
+      for(var i=0; i<4; i++) {
+        var thumbBg = d.imgs[i] ? 'background-image:url('+App.escAttr(d.imgs[i])+');background-size:cover;background-position:center;' : '';
+        slotsHtml +=
+          '<div class="pz-edit-slot">'+
+            '<div class="pz-edit-thumb" data-idx="'+i+'" style="'+thumbBg+'">'+(d.imgs[i]?'<div class="pz-edit-thumb-del" data-idx="'+i+'">×</div>':'<span class="pz-edit-thumb-placeholder">+</span>')+'</div>'+
+            '<input type="text" class="pc-input" data-tidx="'+i+'" placeholder="文字..." value="'+App.escAttr(d.texts[i]||'')+'" style="font-size:11px;margin-top:4px;text-align:center;">'+
+          '</div>';
+      }
+
+      panel.innerHTML =
+        '<div class="pc-header">编辑拍立得<div class="pc-close-btn" id="polaCloseBtn">'+
+          '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>'+
+        '</div></div>'+
+        '<div class="pc-body">'+
+          '<div class="pc-group"><span class="pc-label">点击上传照片 & 输入文字</span></div>'+
+          '<div class="pz-edit-slots">'+slotsHtml+'</div>'+
+          '<div class="pc-group">'+
+            '<span class="pc-label">卡纸颜色 & 文字颜色</span>'+
+            '<div class="pc-av-row" style="gap:12px;">'+
+              '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+                '<div class="pc-icon-btn" id="polaCardColorBtn" style="width:36px;height:28px;border-radius:8px;background:'+App.escAttr(d.cardColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
+                '<span style="font-size:10px;color:#999;">卡纸</span>'+
+              '</div>'+
+              '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+                '<div class="pc-icon-btn" id="polaTextColorBtn" style="width:36px;height:28px;border-radius:8px;background:'+App.escAttr(d.textColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
+                '<span style="font-size:10px;color:#999;">文字</span>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="pc-footer">'+
+          '<button class="pc-btn pc-btn-save" id="polaSaveBtn" type="button">保 存</button>'+
+          '<button class="pc-btn pc-btn-cancel" id="polaResetBtn" type="button">重 置</button>'+
+        '</div>';
+
+      overlay.appendChild(panel); document.body.appendChild(overlay);
+
+      // 定位
+      var pRect = panel.getBoundingClientRect();
+      var startLeft = (window.innerWidth - pRect.width)/2;
+      var startTop = window.innerHeight - pRect.height - 40; if(startTop<10) startTop=10;
+      panel.style.left = startLeft+'px'; panel.style.top = startTop+'px'; panel.style.margin='0';
+
+      if(App.modules.cards && App.modules.cards._bindPanelDrag) App.modules.cards._bindPanelDrag(panel);
+
+      // 上传图片
+      panel.querySelectorAll('.pz-edit-thumb').forEach(function(thumb) {
+        thumb.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var idx = parseInt(thumb.dataset.idx);
+          if(e.target.classList.contains('pz-edit-thumb-del')) {
+            d.imgs[idx]=null;
+            thumb.style.backgroundImage='';
+            thumb.innerHTML='<span class="pz-edit-thumb-placeholder">+</span>';
+            Polaroid.apply();
+            return;
+          }
           App.showImagePicker({
-            title: '第'+(idx+1)+'张拍立得',
-            callback: function(src) {
-              if(src === '') { Polaroid.data.imgs[idx]=null; photo.innerHTML='<span class="pola-plus">+</span>'; photo.classList.remove('has-photo'); Polaroid.save(); return; }
-              if(!src) return;
-              photo.innerHTML='<img src="'+src+'">';
-              photo.classList.add('has-photo');
-              Polaroid.data.imgs[idx]=src;
-              Polaroid.save();
+            title:'第'+(idx+1)+'张照片',
+            callback:function(src){
+              if(src===''){d.imgs[idx]=null;thumb.style.backgroundImage='';thumb.innerHTML='<span class="pz-edit-thumb-placeholder">+</span>';Polaroid.apply();return;}
+              if(!src)return;
+              d.imgs[idx]=src;
+              thumb.style.backgroundImage='url('+src+')';
+              thumb.style.backgroundSize='cover';
+              thumb.style.backgroundPosition='center';
+              thumb.innerHTML='<div class="pz-edit-thumb-del" data-idx="'+idx+'">×</div>';
+              Polaroid.apply();
             }
           });
         });
+      });
+
+      // 卡纸颜色
+      panel.querySelector('#polaCardColorBtn').addEventListener('click', function(e){
+        e.stopPropagation();
+        App.openColorPicker(d.cardColor, function(color){
+          d.cardColor=color;
+          panel.querySelector('#polaCardColorBtn').style.background=color;
+          Polaroid.apply();
+        }, function(color){
+          d.cardColor=color;
+          panel.querySelector('#polaCardColorBtn').style.background=color;
+          Polaroid.apply();
+        });
+      });
+
+      // 文字颜色
+      panel.querySelector('#polaTextColorBtn').addEventListener('click', function(e){
+        e.stopPropagation();
+        App.openColorPicker(d.textColor, function(color){
+          d.textColor=color;
+          panel.querySelector('#polaTextColorBtn').style.background=color;
+          Polaroid.apply();
+        }, function(color){
+          d.textColor=color;
+          panel.querySelector('#polaTextColorBtn').style.background=color;
+          Polaroid.apply();
+        });
+      });
+
+      // 关闭保存
+      function saveAndClose(showToast) {
+        panel.querySelectorAll('input[data-tidx]').forEach(function(inp){
+          d.texts[parseInt(inp.dataset.tidx)] = inp.value;
+        });
+        Polaroid.save(); Polaroid.apply(); overlay.remove();
+        if(showToast) App.showToast('已保存');
+      }
+
+      panel.querySelector('#polaSaveBtn').addEventListener('click', function(e){e.stopPropagation();saveAndClose(true);});
+      panel.querySelector('#polaCloseBtn').addEventListener('click', function(e){e.stopPropagation();saveAndClose(false);});
+      overlay.addEventListener('click', function(e){if(e.target===overlay && !document.querySelector('#cpOverlay') && !document.querySelector('.gip-overlay'))saveAndClose(false);});
+
+      panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
+        e.stopPropagation();
+        Polaroid.data={imgs:[null,null,null,null],texts:['','','',''],cardColor:'#f0eeec',textColor:'#666666'};
+        Polaroid.save(); Polaroid.apply(); overlay.remove(); App.showToast('已重置');
       });
     },
 
@@ -770,16 +881,15 @@
       var startX, startY, origX, origY, longPressed=false, timer, moved=false;
       var saved = App.LS.get('polaroidPos');
       if(saved) {
-        Polaroid.posX = saved.x||0; Polaroid.posY = saved.y||0;
-        var tf = 'translate('+Polaroid.posX+'px,'+Polaroid.posY+'px)';
-        container.style.setProperty('--t', tf);
-        container.style.transform = tf;
+        Polaroid.posX=saved.x||0; Polaroid.posY=saved.y||0;
+        var tf='translate('+Polaroid.posX+'px,'+Polaroid.posY+'px)';
+        container.style.setProperty('--t',tf); container.style.transform=tf;
       }
 
       container.addEventListener('touchstart', function(e) {
-        var t = e.touches[0]; startX=t.clientX; startY=t.clientY;
+        var t=e.touches[0]; startX=t.clientX; startY=t.clientY;
         longPressed=false; moved=false;
-        timer = setTimeout(function() {
+        timer=setTimeout(function(){
           longPressed=true; origX=Polaroid.posX; origY=Polaroid.posY;
           container.classList.add('is-grabbed');
           container.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -793,7 +903,7 @@
       container.addEventListener('touchmove', function(e) {
         var t=e.touches[0];
         if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
-        if(!longPressed) return;
+        if(!longPressed)return;
         moved=true; e.preventDefault(); e.stopPropagation();
         Polaroid.posX=origX+(t.clientX-startX); Polaroid.posY=origY+(t.clientY-startY);
         container.style.transition='none';
@@ -801,10 +911,10 @@
         container.style.setProperty('--t',tf); container.style.transform=tf;
       }, {passive:false});
 
-      container.addEventListener('touchend', function() {
+      container.addEventListener('touchend', function(){
         clearTimeout(timer); timer=null;
         container.classList.remove('is-grabbed');
-        if(longPressed) {
+        if(longPressed){
           if(moved) App.LS.set('polaroidPos',{x:Polaroid.posX,y:Polaroid.posY});
           container.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
           var tf='translate('+Polaroid.posX+'px,'+Polaroid.posY+'px) scale(1)';
@@ -816,7 +926,7 @@
       });
     }
   };
-
+  
   /* ==========================================================
      倒计时 (Countdown)
   ========================================================== */
