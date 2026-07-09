@@ -53,29 +53,27 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 205vw; /* 给总宽度多留一点容错空间，防止边缘漏底 */
+  width: 202vw; /* 给足充裕宽度 */
   height: 100vh;
   z-index: 0;
   display: flex;
   pointer-events: none;
   will-change: transform;
-  background-color: #000; /* 把滑动大底色铺深，吃掉高光白线 */
+  background-color: #000; /* 打上黑底作为最后的保护色 */
 }
 
 .bg-page {
-  width: 100vw;
+  width: 101vw; /* 每页故意比屏幕宽1%，抹杀所有裂缝边缘 */
   height: 100%;
   flex-shrink: 0;
-  background-color: transparent; /* 去掉突兀的白色块 */
+  background-color: transparent;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* 魔法拼缝消除术！让第二页向左“吃”掉一丝丝，并且向右延伸霸占视口 */
 .bg-page:nth-child(2) {
-  margin-left: -1px; 
-  width: calc(100vw + 2px); 
+  margin-left: -2vw; /* 魔法交叠：第二张强制后退插入第一张底部，直接封死拼缝！ */
 }
 
 /* =========================
