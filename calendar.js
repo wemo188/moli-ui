@@ -38,7 +38,7 @@ var Cal={
   load:function(){
     Cal.city=App.LS.get('calCity')||'';
     Cal.weather=App.LS.get('calWeather')||null;
-    Cal._layoutMode=App.LS.get('tkLayoutMode')==='cat'?'cat':'default';
+    Cal._layoutMode=App.LS.get('tkLayoutMode')==='default'?'default':'cat';
     var savedMode=App.LS.get('calWeatherMode');
     if(savedMode===undefined||savedMode===null){
       var legacy=App.LS.get('calWeatherAnimate');
@@ -289,6 +289,7 @@ var Cal={
     });
     panel.querySelector('#wtModeCat').addEventListener('click',function(){
       Cal._layoutMode='cat'; App.LS.set('tkLayoutMode','cat'); updateModeUI(); Cal.applyLayout();
+            App.showToast('喵~猫咪降临');
     });
 
     // ★ 天气特效开关 + 动态/静态
@@ -351,6 +352,7 @@ var Cal={
         App.LS.set('tkCatColors',newColors);
         panel.querySelector('#wtCatAllColorBtn').style.background=color;
         Cal.applyLayout();
+        App.showToast('黑魔法浸染好啦~');
       },function(color){
         var card=App.$('#wtCard');
         if(card){card.style.setProperty('--cat-ear-color',color);card.style.setProperty('--cat-whisker-color',color);card.style.setProperty('--cat-star-color',color);}
