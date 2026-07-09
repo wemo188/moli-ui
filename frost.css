@@ -326,3 +326,88 @@
   color: var(--pixel-font-c, #2a2a2a);
   opacity: 0.3;
 }
+
+/* =========================
+   拍立得 + 倒计时行
+========================= */
+.polaroid-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 35px;
+  padding: 0 5px;
+}
+
+.polaroid-left {
+  flex: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.polaroid-right {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.countdown-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+.countdown-days {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 拍立得单张卡片 */
+.pola-card {
+  position: relative;
+  width: 80px;
+  height: 100px;
+  margin-left: -3px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.pola-card:first-child { margin-left: 0; }
+
+.pola-card svg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.12));
+}
+
+.pola-content {
+  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 18px;
+  display: flex; align-items: center; justify-content: center; z-index: 2;
+}
+
+.pola-photo {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #f2f2f2, #e6e6e6);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; cursor: pointer; position: relative;
+}
+
+.pola-photo img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+.pola-plus {
+  color: #ccc; font-size: 16px;
+}
+
+.pola-photo.has-photo .pola-plus { display: none; }
