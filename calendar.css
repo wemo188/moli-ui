@@ -140,8 +140,6 @@
 }
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
-
-/* 打破原本边框隐形约束 */
 .tk17 { overflow: visible !important; }
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px;
@@ -151,22 +149,22 @@
   position: absolute; pointer-events: none; overflow: visible; display: none;
 }
 
-/* 完美位移悬空感 */
+/* 🚀 彻底悬浮魔法！高度大幅拉升至 -75px，完全脱离胶囊表面！ */
 .cat-ear-l, .cat-ear-r {
-  width: 65px; top: -46px; z-index: 5;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+  width: 58px;          /* 比例缩润，让它有种轻盈的小巧悬浮感 */
+  top: -75px;           /* 把距离猛猛拉高，这下绝对悬在空气里了！ */
+  z-index: 5;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18)); /* 增加下方投影更显浮空感 */
 }
 .cat-ear-l { left: 16%; }
 .cat-ear-r { right: 16%; }
 
-/* 胡子彻底悬在两侧！ */
 .cat-whisker-l, .cat-whisker-r {
   width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
 .cat-whisker-l { left: -16px; margin-top:-6px; }
 .cat-whisker-r { right: -16px; margin-top:-6px; }
 
-/* 开启朦胧泛白叠加罩 */
 .tk17.tk17-cat-mode .tk17-bgimg::after {
   content:''; position: absolute; inset: 0; pointer-events: none;
   background: rgba(255, 255, 255, 0.45);
