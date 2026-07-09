@@ -950,14 +950,17 @@
   /* ==========================================================
      倒计时 (Countdown)
   ========================================================== */
-  var Countdown = {
+    var Countdown = {
     update: function() {
-      var el = document.getElementById('countdownDays');
-      if(!el) return;
+      var dayEl = document.getElementById('countdownDays');
+      var yearEl = document.getElementById('countdownYear');
+      if(!dayEl) return;
       var now = new Date();
-      var endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      var year = now.getFullYear();
+      var endOfYear = new Date(year, 11, 31, 23, 59, 59);
       var diff = Math.ceil((endOfYear - now) / (1000*60*60*24));
-      el.textContent = diff + '天';
+      if(yearEl) yearEl.textContent = year + '年';
+      dayEl.textContent = diff + '天';
     }
   };
   
