@@ -316,8 +316,8 @@ img.img-fill { transform: none !important; }
   margin-top: 5px;
   margin-bottom: 25px;
   width: auto;           /* 第一步：解开 100% 的死板限制 */
-  margin-left: 10px;     /* 头像离左屏幕的距离（往左冲） */
-  margin-right: 10px;    /* 长卡离右屏幕的距离（往右冲） */
+  margin-left: 20px;     /* 头像离左屏幕的距离（往左冲） */
+  margin-right: 20px;    /* 长卡离右屏幕的距离（往右冲） */
 }
 
 /* 第一行：左组 + 右组 */
