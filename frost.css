@@ -398,7 +398,7 @@
 
 .pola-body {
   position: absolute;
-  top: 8px; left: 8px; right: 8px; bottom: 10px;
+  top: 8px; left: 8px; right: 8px; bottom: 6px;
   display: flex;
   flex-direction: column;
   z-index: 2;
@@ -440,7 +440,6 @@
   font-weight: 600;
   color: var(--pola-text-color, #666);
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: pre-wrap;  /* 保留空格，且自动换行 */
   line-height: 12px;
 }
