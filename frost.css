@@ -387,14 +387,18 @@
 .pola-card:first-child { margin-left: 0; }
 
 .pola-body {
-  width: 100%; height: 100%;
-  background: var(--pola-card-color, #f0eeec);
-  border-radius: 3px;
-  padding: 5px 5px 14px;
-  box-sizing: border-box;
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.1), 0 3px 3px rgba(0,0,0,0.08);
+  z-index: 2;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pola-card svg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  overflow: visible;
 }
 
 .pola-photo {
