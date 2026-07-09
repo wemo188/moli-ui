@@ -191,13 +191,10 @@ var Cal={
             '</div>'+
           '</div>'+
           '<div class="pc-group" style="flex-shrink:0; width:auto;">'+
-            '<span class="pc-label">天气特效</span>'+
-            '<div style="display:flex; flex-direction:column; gap:6px;">'+
-              '<div class="pc-icon-btn" id="wtWeatherSwitch" style="font-size:11px;font-weight:700;'+(isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">'+(isWeatherOn?'开':'关')+'</div>'+
-              '<div class="pc-av-row" id="wtAnimRow" style="gap:4px;'+(isWeatherOn?'':'opacity:0.4;pointer-events:none;')+'">'+
-                '<div class="pc-icon-btn" id="wtAnimBtn" style="flex:1;font-size:10px;font-weight:700;'+(isAnimated?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">动态</div>'+
-                '<div class="pc-icon-btn" id="wtStaticBtn" style="flex:1;font-size:10px;font-weight:700;'+(!isAnimated&&isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">静态</div>'+
-              '</div>'+
+            '<span class="pc-label">天气特效 <span class="pc-icon-btn" id="wtWeatherSwitch" style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;vertical-align:middle;margin-left:4px;'+(isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">'+(isWeatherOn?'开':'关')+'</span></span>'+
+            '<div class="pc-av-row" id="wtAnimRow" style="gap:4px;margin-top:6px;'+(isWeatherOn?'':'opacity:0.4;pointer-events:none;')+'">'+
+              '<div class="pc-icon-btn" id="wtAnimBtn" style="flex:1;font-size:10px;font-weight:700;'+(isAnimated?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">动态</div>'+
+              '<div class="pc-icon-btn" id="wtStaticBtn" style="flex:1;font-size:10px;font-weight:700;'+(!isAnimated&&isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">静态</div>'+
             '</div>'+
           '</div>'+
         '</div>'+
