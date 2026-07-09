@@ -388,3 +388,26 @@ mask-image: linear-gradient(to bottom, transparent 0, transparent calc(60px + en
   line-height: 1.6;
   padding: 8px;
 }
+
+/* ★ PWA (保存到桌面) 端专属调整 */
+@media (display-mode: standalone) {
+  /* 1. 底部输入栏往上移（原本是20px，这里改成40px，你可以自己增减） */
+  .ol-input-wrap {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  
+  /* 2. 气泡滚动底部的留空也要对应加上去（原本是106px，增加了20px变126px） */
+  .ol-msgs {
+    margin-bottom: calc(126px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  
+  /* 3. 点开(+)号的附加面板也要往上走（原本是110px，增加20px变130px） */
+  .ol-plus-panel {
+    bottom: calc(130px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  
+  /* 4. 右下角的电梯按钮同理（原本是160px，这里变180px） */
+  .ol-nav-fab {
+    bottom: calc(180px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
