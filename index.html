@@ -45,18 +45,17 @@
     <section class="screen-page screen-page-1">
       <div class="screen-page-inner">
 
-          <!-- ★ 时间极简胶囊 (默认 / 猫咪 切换模式) -->
-<div id="row0" style="margin: 0; padding: 0; width: 100vw; display: flex; justify-content: center; overflow: hidden; box-sizing: border-box;">
+          <!-- ★ 时间胶囊 -->
+<div id="row0">
   <div class="tk17" id="wtCard">
     
-    <!-- 🐱 猫咪挂件 (星星下沉改位完毕，胡须贴边10px待发) -->
+    <!-- 猫咪挂件 -->
     <svg id="tkCatEarL" class="cat-part cat-ear-l" viewBox="-5 -5 75 90">
-      <path d="M 0 80 Q 32.5 0, 65 80" stroke="var(--cat-ear-color, #d1d5db)" stroke-width="11" stroke-linecap="round" fill="none"/>
-      <!-- 星星大幅向下贴底 5个刻度 -->
+      <path d="M 0 80 Q 32.5 0, 65 80" stroke="var(--cat-ear-color, #ffffff)" stroke-width="11" stroke-linecap="round" fill="none"/>
       <polygon points="33,62 36,68 42,69 38,73 39,79 33,76 27,79 28,73 24,69 30,68" fill="var(--cat-star-color, #ffffff)" stroke="var(--cat-star-color, #ffffff)" stroke-width="8" stroke-linejoin="round"/>
     </svg>
     <svg id="tkCatEarR" class="cat-part cat-ear-r" viewBox="-5 -5 75 90">
-      <path d="M 0 80 Q 40 0, 65 80" stroke="var(--cat-ear-color, #d1d5db)" stroke-width="11" stroke-linecap="round" fill="none"/>
+      <path d="M 0 80 Q 40 0, 65 80" stroke="var(--cat-ear-color, #ffffff)" stroke-width="11" stroke-linecap="round" fill="none"/>
       <polygon points="33,62 36,68 42,69 38,73 39,79 33,76 27,79 28,73 24,69 30,68" fill="var(--cat-star-color, #ffffff)" stroke="var(--cat-star-color, #ffffff)" stroke-width="8" stroke-linejoin="round"/>
     </svg>
     <svg id="tkCatWhiskerL" class="cat-part cat-whisker-l" viewBox="-5 -5 60 50">
@@ -68,24 +67,22 @@
       <path d="M 0 24 Q 25 28, 50 39" stroke="var(--cat-whisker-color, #d1d5db)" stroke-width="10" stroke-linecap="round" fill="none"/>
     </svg>
 
-    <!-- 删去头像废墟，极简胶囊降临 -->
+    <!-- 胶囊主体 -->
     <div class="tk17-right-card">
       <div class="tk17-bgimg" id="tkBgArea"></div>
       <div class="tk17-glass" id="tkGlass"></div>
       <div id="wtWeatherBg" class="tk17-weather-layer"></div>
-
       <div class="tk17-info-inner">
-        <!-- 诞生：优雅高对比的时间区域 -->
-                <div class="tk17-time-col">
+        <div class="tk17-time-col">
           <div class="tk17-clock" id="tkLargeTime">00:00:00</div>
         </div>
-        
         <div class="tk17-wt-col">
           <div class="tk17-wt-temp" id="calTemp">--°C</div>
           <div class="tk17-wt-desc" id="calWeatherDesc">未知</div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
