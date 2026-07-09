@@ -146,48 +146,31 @@
           </div>
         </div>
         
-        <!-- ★ 第三行：圆头像错层排版 -->
-        <div id="hlAvatarsRow" class="hl-avatars-row">
-          <div id="hlAvatarWrapLeft" class="hl-avatar-unit">
-            <div class="hl-bubble hl-bubble-right">
-              <div class="hl-bubble-arrow-outer"></div>
-              <div class="hl-bubble-arrow-inner"></div>
-              <span class="hl-bubble-display" id="hlInputLeft"></span>
-            </div>
-             <div class="hl-avatar" id="hlAvatarLeft" data-side="hlLeft">
-              <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
-                <div class="hl-avatar-bg" id="hlImgLeft"></div>
-              </div>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bot">
-              <span class="hl-chatbar-display" id="hlChatLeft" data-placeholder="说点什么..."></span>
-            </div>
-          </div>
-
-          <div id="hlAvatarWrapRight" class="hl-avatar-unit">
-            <div class="hl-bubble hl-bubble-left">
-              <div class="hl-bubble-arrow-outer"></div>
-              <div class="hl-bubble-arrow-inner"></div>
-              <span class="hl-bubble-display" id="hlInputRight"></span>
-            </div>
-                 <div class="hl-avatar" id="hlAvatarRight" data-side="hlRight">
-              <div class="hl-avatar-inner">
-                <svg class="hl-avatar-placeholder" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="15" r="6" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-                  <path d="M8 34C8 28 13 24 20 24C27 24 32 28 32 34" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" fill="none"/>
-                </svg>
-                <div class="hl-avatar-bg" id="hlImgRight"></div>
-              </div>
-            </div>
-            <div class="hl-chatbar hl-chatbar-bl">
-              <span class="hl-chatbar-display" id="hlChatRight" data-placeholder="说点什么..."></span>
-            </div>
-          </div>
-        </div>
+        <!-- ★ 第三行：拍立得 + 倒计时 -->
+<div id="polaroidRow" class="polaroid-row">
+  <div class="polaroid-left" id="polaroidCards">
+    <div class="pola-card" data-idx="0" style="transform:rotate(-10deg);z-index:1;">
+      <svg viewBox="0 0 80 100" class="pola-svg"></svg>
+      <div class="pola-content"><div class="pola-photo" data-idx="0"><span class="pola-plus">+</span></div></div>
+    </div>
+    <div class="pola-card" data-idx="1" style="transform:rotate(6deg);z-index:2;">
+      <svg viewBox="0 0 80 100" class="pola-svg"></svg>
+      <div class="pola-content"><div class="pola-photo" data-idx="1"><span class="pola-plus">+</span></div></div>
+    </div>
+    <div class="pola-card" data-idx="2" style="transform:rotate(-10deg);z-index:3;">
+      <svg viewBox="0 0 80 100" class="pola-svg"></svg>
+      <div class="pola-content"><div class="pola-photo" data-idx="2"><span class="pola-plus">+</span></div></div>
+    </div>
+    <div class="pola-card" data-idx="3" style="transform:rotate(7deg);z-index:4;">
+      <svg viewBox="0 0 80 100" class="pola-svg"></svg>
+      <div class="pola-content"><div class="pola-photo" data-idx="3"><span class="pola-plus">+</span></div></div>
+    </div>
+  </div>
+  <div class="polaroid-right">
+    <div class="countdown-label" id="countdownLabel">今年剩余</div>
+    <div class="countdown-days" id="countdownDays">--</div>
+  </div>
+</div>
 
         <!-- ★ 第四行：底部长长宽宽的文字填写区域 -->
         <div id="edenCard">
