@@ -46,7 +46,7 @@
     borderColor: '#d1d5db'
   };
 
-  var DRAG_DELAY = 380;
+  var DRAG_DELAY = 250;
 
   var Cards = {
     data: {}, _dragOffsets: {}, hlConfig: {},
@@ -309,7 +309,7 @@
     // 🌟 头像与气泡的悬浮拖拽
        _bindHlDrag: function(id) {
       var el = document.getElementById(id); if (!el) return;
-      var DELAY = 380;
+      var DELAY = 250;
       var startX, startY, origX, origY, longPressed = false, timer, moved = false;
 
       el.addEventListener('touchstart', function(e) {
