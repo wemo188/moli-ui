@@ -694,7 +694,7 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#f0eeec', textColor:'#666666' },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666' },
     posX: 0,
     posY: 0,
 
@@ -703,7 +703,7 @@
       if(saved) {
         Polaroid.data.imgs = saved.imgs || [null,null,null,null];
         Polaroid.data.texts = saved.texts || ['','','',''];
-        Polaroid.data.cardColor = saved.cardColor || '#f0eeec';
+        Polaroid.data.cardColor = saved.cardColor || '#eeeff1';
         Polaroid.data.textColor = saved.textColor || '#666666';
       }
     },
@@ -736,7 +736,7 @@
           existing.setAttribute('d', pathData);
           svg.appendChild(existing);
         }
-        existing.setAttribute('fill', Polaroid.data.cardColor || '#f0eeec');
+        existing.setAttribute('fill', Polaroid.data.cardColor || '#eeeff1');
       });
 
       var cards = document.querySelectorAll('.pola-card');
@@ -888,7 +888,7 @@
 
       panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
         e.stopPropagation();
-        Polaroid.data={imgs:[null,null,null,null],texts:['','','',''],cardColor:'#f0eeec',textColor:'#666666'};
+        Polaroid.data={imgs:[null,null,null,null],texts:['','','',''],cardColor:'#eeeff1',textColor:'#666666'};
         Polaroid.save(); Polaroid.apply(); overlay.remove(); App.showToast('已重置');
       });
     },
