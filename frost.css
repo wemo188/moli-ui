@@ -375,12 +375,6 @@
 }
 
 /* 拍立得单张卡片 */
-.pola-card svg {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  overflow: visible;
-  fill: none; /* 空SVG不会渲染黑块 */
-}
-
 .pola-card {
   position: relative;
   width: 80px;
@@ -388,29 +382,52 @@
   margin-left: -3px;
   transition: transform 0.3s ease;
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.1)) drop-shadow(0 3px 2px rgba(0,0,0,0.06));
+  cursor: pointer;
 }
 .pola-card:first-child { margin-left: 0; }
 
-.pola-content {
-  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 18px;
-  display: flex; align-items: center; justify-content: center; z-index: 2;
+.pola-body {
+  width: 100%; height: 100%;
+  background: var(--pola-card-color, #f0eeec);
+  border-radius: 3px;
+  padding: 5px 5px 14px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.1), 0 3px 3px rgba(0,0,0,0.08);
 }
 
 .pola-photo {
-  width: 100%; height: 100%;
-  background: linear-gradient(145deg, #f2f2f2, #e6e6e6);
+  flex: 1;
+  background: linear-gradient(145deg, #e8e6e4, #dddbd9);
   border-radius: 2px;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; cursor: pointer; position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pola-photo img {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
 
-.pola-plus {
-  color: #ccc; font-size: 16px;
+.pola-photo:empty::after {
+  content: '+';
+  color: rgba(0,0,0,0.15);
+  font-size: 16px;
 }
 
-.pola-photo.has-photo .pola-plus { display: none; }
+.pola-photo:not(:empty)::after { display: none; }
+
+.pola-text {
+  height: 12px;
+  margin-top: 2px;
+  font-size: 6px;
+  font-weight: 600;
+  color: var(--pola-text-color, #666);
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 12px;
+}
