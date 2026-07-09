@@ -691,6 +691,91 @@
   };
 
   /* ==========================================================
+     拍立得 (Polaroid)
+  ========================================================== */
+  var Polaroid = {
+    data: { imgs: [null,null,null,null] },
+
+    load: function() {
+      var saved = App.LS.get('polaroidData');
+      if(saved && saved.imgs) Polaroid.data = saved;
+    },
+    save: function() { App.LS.set('polaroidData', Polaroid.data); },
+
+    createScallopedPath: function(w, h, r, spacing) {
+      var step = r*2+spacing, cr=4;
+      var topAvail=w-cr*2, sideAvail=h-cr*2;
+      var topNum=Math.floor(topAvail/step), sideNum=Math.floor(sideAvail/step);
+      var topUsed=topNum*step-spacing, topStart=(w-topUsed)/2;
+      var sideUsed=sideNum*step-spacing, sideStart=(h-sideUsed)/2;
+      var d='M 0,'+cr+' A '+cr+' '+cr+' 0 0 0 '+cr+',0';
+      for(var i=0;i<topNum;i++){var x=topStart+i*step;d+=' L '+x+',0 A '+r+' '+r+' 0 0 0 '+(x+r*2)+',0';}
+      d+=' L '+(w-cr)+',0 A '+cr+' '+cr+' 0 0 0 '+w+','+cr;
+      for(var i=0;i<sideNum;i++){var y=sideStart+i*step;d+=' L '+w+','+y+' A '+r+' '+r+' 0 0 0 '+w+','+(y+r*2);}
+      d+=' L '+w+','+(h-cr)+' A '+cr+' '+cr+' 0 0 0 '+(w-cr)+','+h;
+      for(var i=topNum-1;i>=0;i--){var x=topStart+i*step;d+=' L '+(x+r*2)+','+h+' A '+r+' '+r+' 0 0 0 '+x+','+h;}
+      d+=' L '+cr+','+h+' A '+cr+' '+cr+' 0 0 0 0,'+(h-cr);
+      for(var i=sideNum-1;i>=0;i--){var y=sideStart+i*step;d+=' L 0,'+(y+r*2)+' A '+r+' '+r+' 0 0 0 0,'+y;}
+      d+=' L 0,'+cr+' Z';
+      return d;
+    },
+
+    render: function() {
+      var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
+      document.querySelectorAll('.pola-svg').forEach(function(svg) {
+        if(svg.querySelector('path')) return;
+        var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill','white');
+        svg.appendChild(path);
+      });
+      Polaroid.data.imgs.forEach(function(src, idx) {
+        if(src) {
+          var photo = document.querySelector('.pola-photo[data-idx="'+idx+'"]');
+          if(photo) {
+            photo.innerHTML = '<img src="'+src+'">';
+            photo.classList.add('has-photo');
+          }
+        }
+      });
+    },
+
+    bindClicks: function() {
+      document.querySelectorAll('.pola-photo').forEach(function(photo) {
+        photo.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var idx = parseInt(photo.dataset.idx);
+          App.showImagePicker({
+            title: '第'+(idx+1)+'张拍立得',
+            callback: function(src) {
+              if(src === '') { Polaroid.data.imgs[idx]=null; photo.innerHTML='<span class="pola-plus">+</span>'; photo.classList.remove('has-photo'); Polaroid.save(); return; }
+              if(!src) return;
+              photo.innerHTML='<img src="'+src+'">';
+              photo.classList.add('has-photo');
+              Polaroid.data.imgs[idx]=src;
+              Polaroid.save();
+            }
+          });
+        });
+      });
+    }
+  };
+
+  /* ==========================================================
+     倒计时 (Countdown)
+  ========================================================== */
+  var Countdown = {
+    update: function() {
+      var el = document.getElementById('countdownDays');
+      if(!el) return;
+      var now = new Date();
+      var endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      var diff = Math.ceil((endOfYear - now) / (1000*60*60*24));
+      el.textContent = diff + '天';
+    }
+  };
+  
+  /* ==========================================================
      Frost 主模块 - 统一初始化
   ========================================================== */
   var Frost = {
@@ -705,6 +790,14 @@
       Puzzle.load();
       Puzzle.render();
 
+      // 拍立得
+      Polaroid.load();
+      Polaroid.render();
+      Polaroid.bindClicks();
+
+      // 倒计时
+      Countdown.update();
+      
       // 文字卡片
       Eden.load(); Eden.apply(); Eden.bindDrag();
       var edenEl = App.$('#edenCard');
@@ -723,5 +816,7 @@
   App.pixel = Pixel;
   App.puzzle = Puzzle;
   App.eden = Eden;
+  App.polaroid = Polaroid;
+  App.countdown = Countdown;
   App.register('frost', Frost);
 })();
