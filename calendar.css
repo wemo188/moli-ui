@@ -48,7 +48,7 @@
   flex: 1;
 }
 .tk17-clock { 
-  font-weight: 900; font-size: 32px; letter-spacing: 1px; line-height: 1; 
+  font-weight: 900; font-size: 33px; letter-spacing: 1px; line-height: 1; 
   font-variant-numeric: tabular-nums; 
   color: var(--tk-color) !important;
 }
