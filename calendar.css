@@ -149,7 +149,7 @@
 
 /* 2. 最强绝杀：一进猫咪模式，整个胶囊带着信息往下沉，主动给小猫耳朵让座！ */
 .tk17.tk17-cat-mode {
-  margin-top: 75px !important; 
+  margin-top: 50px !important; 
 }
 
 .tk17.tk17-cat-mode .tk17-right-card {
@@ -165,14 +165,13 @@
   width: 60px; height: auto;
   top: auto; 
   bottom: calc(100% + 15px); /* 基于卡片顶端的完美浮空距 */
-  z-index: 5;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)); 
+  z-index: 20;
 }
 .cat-ear-l { left: 16%; }
 .cat-ear-r { right: 16%; }
 
 .cat-whisker-l, .cat-whisker-r {
-  width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
+  width: 44px; top: 50%; transform: translateY(-50%); z-index: 5;
 }
 .cat-whisker-l { left: -16px; margin-top:-6px; }
 .cat-whisker-r { right: -16px; margin-top:-6px; }
