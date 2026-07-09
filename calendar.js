@@ -370,7 +370,7 @@ var Cal={
   initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
-    var DELAY=380;
+    var DELAY=250;
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
     var saved=App.LS.get('wtCardPos');
 
