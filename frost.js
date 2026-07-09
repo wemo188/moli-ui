@@ -694,7 +694,7 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666' },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666', fontFamily:'' },
     posX: 0,
     posY: 0,
 
@@ -705,6 +705,7 @@
         Polaroid.data.texts = saved.texts || ['','','',''];
         Polaroid.data.cardColor = saved.cardColor || '#eeeff1';
         Polaroid.data.textColor = saved.textColor || '#666666';
+        Polaroid.data.fontFamily = saved.fontFamily || '';
       }
     },
     save: function() { App.LS.set('polaroidData', Polaroid.data); },
@@ -755,6 +756,11 @@
           text.style.color = Polaroid.data.textColor;
         }
       });
+      // 🌟 新增：字体设置（放在最后）
+  var polaFont = Polaroid.data.fontFamily || '';
+  document.querySelectorAll('.pola-text').forEach(function(el){
+    el.style.fontFamily = polaFont;
+  });
     },
 
     bindClicks: function() {
@@ -787,13 +793,16 @@
       }
 
       panel.innerHTML =
-        '<div class="pc-header">编辑拍立得<div class="pc-close-btn" id="polaCloseBtn">'+
+        '<div class="pc-header">编辑集邮卡册<div class="pc-close-btn" id="polaCloseBtn">'+
           '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>'+
         '</div></div>'+
         '<div class="pc-body">'+
           '<div class="pc-group"><span class="pc-label">点击上传照片 & 输入文字</span></div>'+
           '<div class="pz-edit-slots">'+slotsHtml+'</div>'+
-          '<div class="pc-group">'+
+                   '<div class="pc-group">'+
+            '<span class="pc-label">文字字体</span>'+
+            '<select class="pc-input" id="polaFontSelect">'+Pixel._buildFontOptions(d.fontFamily)+'</select>'+
+          '</div>'+
             '<span class="pc-label">卡纸颜色 & 文字颜色</span>'+
             '<div class="pc-av-row" style="gap:12px;">'+
               '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
@@ -873,6 +882,12 @@
           Polaroid.apply();
         });
       });
+
+// 🌟🌟🌟 新加：字体选择（放在这后面）🌟🌟🌟
+panel.querySelector('#polaFontSelect').addEventListener('change', function(){
+  d.fontFamily = this.value;
+  Polaroid.apply();
+});
 
       function saveAndClose(showToast) {
         panel.querySelectorAll('input[data-tidx]').forEach(function(inp){
