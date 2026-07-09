@@ -2,7 +2,7 @@
   'use strict';
   var App = window.App; if(!App) return;
 
-  var DRAG_DELAY = 500;
+  var DRAG_DELAY = 380;
   
   // 🌟 高级 SVG 关闭图标，替代简陋的文本 "×"
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>';
@@ -760,6 +760,62 @@
       });
     }
   };
+  
+      bindDrag: function() {
+      var container = document.getElementById('polaroidRow');
+      if(!container || container._polaDragBound) return;
+      container._polaDragBound = true;
+
+      var startX, startY, origX, origY, longPressed=false, timer, moved=false;
+      var saved = App.LS.get('polaroidPos');
+      if(saved) {
+        Polaroid.posX = saved.x||0; Polaroid.posY = saved.y||0;
+        var tf = 'translate('+Polaroid.posX+'px,'+Polaroid.posY+'px)';
+        container.style.setProperty('--t', tf);
+        container.style.transform = tf;
+      } else {
+        Polaroid.posX = 0; Polaroid.posY = 0;
+      }
+
+      container.addEventListener('touchstart', function(e) {
+        var t = e.touches[0]; startX=t.clientX; startY=t.clientY;
+        longPressed=false; moved=false;
+        timer = setTimeout(function() {
+          longPressed=true; origX=Polaroid.posX; origY=Polaroid.posY;
+          container.classList.add('is-grabbed');
+          container.style.transition='transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          var tf='translate('+origX+'px,'+origY+'px) scale(1.03)';
+          container.style.setProperty('--t',tf); container.style.transform=tf;
+          container.style.zIndex='999';
+          if(navigator.vibrate) navigator.vibrate(15);
+        }, DRAG_DELAY);
+      }, {passive:true});
+
+      container.addEventListener('touchmove', function(e) {
+        var t=e.touches[0];
+        if(timer&&!longPressed){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8){clearTimeout(timer);timer=null;}return;}
+        if(!longPressed) return;
+        moved=true; e.preventDefault(); e.stopPropagation();
+        Polaroid.posX=origX+(t.clientX-startX); Polaroid.posY=origY+(t.clientY-startY);
+        container.style.transition='none';
+        var tf='translate('+Polaroid.posX+'px,'+Polaroid.posY+'px) scale(1.03)';
+        container.style.setProperty('--t',tf); container.style.transform=tf;
+      }, {passive:false});
+
+      container.addEventListener('touchend', function() {
+        clearTimeout(timer); timer=null;
+        container.classList.remove('is-grabbed');
+        if(longPressed) {
+          if(moved) App.LS.set('polaroidPos',{x:Polaroid.posX,y:Polaroid.posY});
+          container.style.transition='transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          var tf='translate('+Polaroid.posX+'px,'+Polaroid.posY+'px) scale(1)';
+          container.style.setProperty('--t',tf); container.style.transform=tf;
+          container.style.zIndex='';
+          setTimeout(function(){container.style.transition='';},350);
+        } else { container.style.zIndex=''; }
+        longPressed=false; moved=false;
+      });
+    }
 
   /* ==========================================================
      倒计时 (Countdown)
@@ -794,6 +850,7 @@
       Polaroid.load();
       Polaroid.render();
       Polaroid.bindClicks();
+      Polaroid.bindDrag();
 
       // 倒计时
       Countdown.update();
