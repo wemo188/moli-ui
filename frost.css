@@ -383,6 +383,7 @@
   transition: transform 0.3s ease;
   flex-shrink: 0;
   cursor: pointer;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.1)) drop-shadow(0 3px 3px rgba(0,0,0,0.08));
 }
 .pola-card:first-child { margin-left: 0; }
 
