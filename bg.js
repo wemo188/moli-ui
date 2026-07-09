@@ -947,7 +947,7 @@ var Bg = {
   },
 
       bindIconDrag: function() {
-    var DELAY = 380;
+    var DELAY = 250;
     var SNAP = 12;
     var ALL_ICONS = ['iconUser','iconChar','iconTheme','iconSettings'];
 
