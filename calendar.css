@@ -135,7 +135,8 @@
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
 .tk17.tk17-cat-mode .tk17-right-card {
-  border-radius: 999px; /* 超圆润胶囊本囊 */
+  border-radius: 999px;
+  overflow: visible;
 }
 
 .cat-part {
@@ -144,11 +145,11 @@
 
 /* 猫耳朵！贴心地缩到卡片背部最下方发白光 */
 .cat-ear-l, .cat-ear-r {
-  width: 48px; top: -45px; z-index: -1;
-  filter: drop-shadow(0 -4px 6px rgba(255,255,255,0.4));
+  width: 70px; top: -50px; z-index: 5;
+  filter: drop-shadow(0 2px 8px rgba(200,200,200,0.5));
 }
-.cat-ear-l { left: 18%; }
-.cat-ear-r { right: 18%; }
+.cat-ear-l { left: 15%; }
+.cat-ear-r { right: 15%; }
 
 /* 猫胡须！最高层级浮夸突破次元壁 */
 .cat-whisker-l, .cat-whisker-r {
