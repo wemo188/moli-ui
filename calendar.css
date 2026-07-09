@@ -56,7 +56,7 @@
 .tk17-wt-desc { font-size: 13px; font-weight: 700; line-height: 1; }
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
-.tk17.tk17-cat-mode { margin-top: 75px !important; }
+.tk17.tk17-cat-mode { margin-top: 50px !important; }
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px; /* 超级润润 */
   width: 78%;           /* 【核心诉求：猫咪胶囊在此疯狂独立变窄！】 */
