@@ -40,8 +40,7 @@
 }
 .tk17-time-col { 
   display: flex; flex-direction: column; justify-content: center;
-  flex: 7; /* 70% */
-  align-items: center; /* 让时间文字在自己的70%空间里居中 */
+  flex: 1;
 }
 .tk17-clock { 
   font-weight: 900; font-size: 32px; letter-spacing: 1px; line-height: 1; 
@@ -49,13 +48,27 @@
 }
 
 .tk17-wt-col {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  flex: 3;
+  display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px;
+  flex-shrink: 0;
   padding-left: 14px; 
   border-left: 1.5px dashed rgba(0,0,0,0.15); 
 }
 .tk17-wt-temp { font-size: 22px; font-weight: 800; line-height: 1; }
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
+
+/* 猫咪模式：时间绝对居中，天气固定右侧 */
+.tk17.tk17-cat-mode .tk17-info-inner {
+  position: relative;
+}
+.tk17.tk17-cat-mode .tk17-time-col {
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%);
+  align-items: center;
+}
+.tk17.tk17-cat-mode .tk17-wt-col {
+  margin-left: auto; /* 推到最右 */
+}
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
 .tk17.tk17-cat-mode { margin-top: 40px !important; }
