@@ -146,16 +146,13 @@ var Cal={
 
   _editPanel:null,
 
-  openEditPanel:function(){
+    openEditPanel:function(){
     if(Cal._editPanel){ if(Cal._closePanelFn) Cal._closePanelFn(); return; }
 
     var currentColor=App.LS.get('tkColor')||'#111111';
-    var modeName='动态';
-    if(Cal._weatherMode==='static') modeName='静态';
-    else if(Cal._weatherMode==='none') modeName='关闭';
-
-    var layoutModeTxt=Cal._layoutMode==='cat'?'猫咪':'默认';
     var catBaseColor=(App.LS.get('tkCatColors')||{}).ear||'#ffffff';
+    var isWeatherOn=(Cal._weatherMode!=='none');
+    var isAnimated=(Cal._weatherMode==='animated');
 
     var overlay=document.createElement('div');
     overlay.className='pc-edit-overlay'; overlay.style.zIndex='100020'; Cal._editPanel=overlay;
@@ -164,15 +161,27 @@ var Cal={
     panel.innerHTML=
       '<div class="pc-header">时间胶囊设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
-        '<div class="pc-group">'+
-          '<span class="pc-label">内部壁纸</span>'+
-          '<div class="pc-av-row">'+
-            '<div class="pc-icon-btn" id="wtBgUploadBtn" title="上传背景"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
-            '<div class="pc-icon-btn danger" id="wtBgClearBtn" title="清除背景"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+
+        // ★ 第一行：内部壁纸 + 外观切换
+        '<div style="display:flex; gap:12px;">'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">内部壁纸</span>'+
+            '<div class="pc-av-row">'+
+              '<div class="pc-icon-btn" id="wtBgUploadBtn"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>'+
+              '<div class="pc-icon-btn danger" id="wtBgClearBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6"/></svg></div>'+
+            '</div>'+
+            '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
           '</div>'+
-          '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">外观</span>'+
+            '<div class="pc-av-row" style="gap:6px;">'+
+              '<div class="pc-icon-btn" id="wtModeDefault" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='default'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">普通</div>'+
+              '<div class="pc-icon-btn" id="wtModeCat" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='cat'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">猫咪</div>'+
+            '</div>'+
+          '</div>'+
         '</div>'+
 
+        // ★ 第二行：天气城市 + 天气特效开关 + 动态/静态
         '<div style="display:flex; gap:8px;">'+
           '<div class="pc-group" style="flex:1;">'+
             '<span class="pc-label">天气城市</span>'+
@@ -181,27 +190,31 @@ var Cal={
               '<div class="pc-icon-btn" id="wtCitySearchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>'+
             '</div>'+
           '</div>'+
-          '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
-            '<span class="pc-label">外观</span>'+
-            '<div class="pc-icon-btn" id="wtLayoutToggle" style="width:100%;font-size:11px;font-weight:700;">'+layoutModeTxt+'</div>'+
-          '</div>'+
-          '<div class="pc-group" style="width:65px; flex-shrink:0;">'+
-            '<span class="pc-label">动效</span>'+
-            '<div class="pc-icon-btn" id="wtAnimToggle" style="width:100%;font-size:11px;font-weight:700;">'+modeName+'</div>'+
-          '</div>'+
-        '</div>'+
-
-        '<div class="pc-group">'+
-          '<span class="pc-label">字体 & 文字颜色</span>'+
-          '<div class="pc-av-row">'+
-            '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
-            '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
+          '<div class="pc-group" style="flex-shrink:0; width:auto;">'+
+            '<span class="pc-label">天气特效</span>'+
+            '<div style="display:flex; flex-direction:column; gap:6px;">'+
+              '<div class="pc-icon-btn" id="wtWeatherSwitch" style="font-size:11px;font-weight:700;'+(isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">'+(isWeatherOn?'开':'关')+'</div>'+
+              '<div class="pc-av-row" id="wtAnimRow" style="gap:4px;'+(isWeatherOn?'':'opacity:0.4;pointer-events:none;')+'">'+
+                '<div class="pc-icon-btn" id="wtAnimBtn" style="flex:1;font-size:10px;font-weight:700;'+(isAnimated?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">动态</div>'+
+                '<div class="pc-icon-btn" id="wtStaticBtn" style="flex:1;font-size:10px;font-weight:700;'+(!isAnimated&&isWeatherOn?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">静态</div>'+
+              '</div>'+
+            '</div>'+
           '</div>'+
         '</div>'+
 
-        '<div class="pc-group" id="wtCatColorGroup" style="'+(Cal._layoutMode==='cat'?'':'display:none;')+'">'+
-          '<span class="pc-label">猫咪一键配色</span>'+
-          '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; height:32px; border-radius:8px; background:'+catBaseColor+'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
+        // ★ 第三行：字体颜色 + 猫咪配色（同一行）
+        '<div style="display:flex; gap:12px;">'+
+          '<div class="pc-group" style="flex:1;">'+
+            '<span class="pc-label">字体颜色</span>'+
+            '<div class="pc-av-row">'+
+              '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
+              '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="pc-group" id="wtCatColorGroup" style="flex-shrink:0; width:80px;'+(Cal._layoutMode==='cat'?'':'display:none;')+'">'+
+            '<span class="pc-label">猫咪配色</span>'+
+            '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; height:32px; border-radius:8px; background:'+catBaseColor+'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
+          '</div>'+
         '</div>'+
 
       '</div>'+
@@ -248,6 +261,7 @@ var Cal={
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
+    // ★ 壁纸绑定
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){panel.querySelector('#wtBgFileInput').click();});
     panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
@@ -260,17 +274,49 @@ var Cal={
     });
     panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){App.LS.remove('calBgImg');Cal.applyBgImg();App.showToast('背景已清除');});
 
-    panel.querySelector('#wtColorBtn').addEventListener('click',function(){
-      var cur=panel.dataset.pickedColor||App.LS.get('tkColor')||'#111111';
-      App.openColorPicker(cur,function(color){
-        panel.querySelector('#wtColorBtn').style.background=color;
-        panel.dataset.pickedColor=color;
-        var card=App.$('#wtCard'); if(card) card.style.setProperty('--tk-color',color);
-      },function(color){
-        var card=App.$('#wtCard'); if(card) card.style.setProperty('--tk-color',color);
-      });
+    // ★ 外观双键绑定
+    function updateModeUI(){
+      var d=panel.querySelector('#wtModeDefault'), c=panel.querySelector('#wtModeCat');
+      d.style.background=Cal._layoutMode==='default'?'#1a1a1a':''; d.style.color=Cal._layoutMode==='default'?'#fff':''; d.style.borderColor=Cal._layoutMode==='default'?'#1a1a1a':'';
+      c.style.background=Cal._layoutMode==='cat'?'#1a1a1a':''; c.style.color=Cal._layoutMode==='cat'?'#fff':''; c.style.borderColor=Cal._layoutMode==='cat'?'#1a1a1a':'';
+      var catGroup=panel.querySelector('#wtCatColorGroup');
+      if(catGroup) catGroup.style.display=(Cal._layoutMode==='cat')?'':'none';
+    }
+    panel.querySelector('#wtModeDefault').addEventListener('click',function(){
+      Cal._layoutMode='default'; App.LS.set('tkLayoutMode','default'); updateModeUI(); Cal.applyLayout();
+    });
+    panel.querySelector('#wtModeCat').addEventListener('click',function(){
+      Cal._layoutMode='cat'; App.LS.set('tkLayoutMode','cat'); updateModeUI(); Cal.applyLayout();
     });
 
+    // ★ 天气特效开关 + 动态/静态
+    function updateWeatherUI(){
+      var on=(Cal._weatherMode!=='none');
+      var sw=panel.querySelector('#wtWeatherSwitch');
+      sw.textContent=on?'开':'关';
+      sw.style.background=on?'#1a1a1a':''; sw.style.color=on?'#fff':''; sw.style.borderColor=on?'#1a1a1a':'';
+
+      var row=panel.querySelector('#wtAnimRow');
+      row.style.opacity=on?'1':'0.4'; row.style.pointerEvents=on?'':'none';
+
+      var ab=panel.querySelector('#wtAnimBtn'), sb=panel.querySelector('#wtStaticBtn');
+      var isAnim=(Cal._weatherMode==='animated');
+      ab.style.background=isAnim?'#1a1a1a':''; ab.style.color=isAnim?'#fff':''; ab.style.borderColor=isAnim?'#1a1a1a':'';
+      sb.style.background=(!isAnim&&on)?'#1a1a1a':''; sb.style.color=(!isAnim&&on)?'#fff':''; sb.style.borderColor=(!isAnim&&on)?'#1a1a1a':'';
+    }
+    panel.querySelector('#wtWeatherSwitch').addEventListener('click',function(){
+      if(Cal._weatherMode==='none') Cal._weatherMode='animated';
+      else Cal._weatherMode='none';
+      App.LS.set('calWeatherMode',Cal._weatherMode); updateWeatherUI(); Cal.renderWeatherEffect();
+    });
+    panel.querySelector('#wtAnimBtn').addEventListener('click',function(){
+      Cal._weatherMode='animated'; App.LS.set('calWeatherMode','animated'); updateWeatherUI(); Cal.renderWeatherEffect();
+    });
+    panel.querySelector('#wtStaticBtn').addEventListener('click',function(){
+      Cal._weatherMode='static'; App.LS.set('calWeatherMode','static'); updateWeatherUI(); Cal.renderWeatherEffect();
+    });
+
+    // ★ 天气城市
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
       var name=panel.querySelector('#wtCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
@@ -282,6 +328,20 @@ var Cal={
       });
     });
 
+    // ★ 字体颜色
+    panel.querySelector('#wtColorBtn').addEventListener('click',function(){
+      var cur=panel.dataset.pickedColor||App.LS.get('tkColor')||'#111111';
+      App.openColorPicker(cur,function(color){
+        panel.querySelector('#wtColorBtn').style.background=color;
+        panel.dataset.pickedColor=color;
+        var card=App.$('#wtCard'); if(card) card.style.setProperty('--tk-color',color);
+      },function(color){
+        var card=App.$('#wtCard'); if(card) card.style.setProperty('--tk-color',color);
+      });
+    });
+    panel.querySelector('#wtFontSelect').addEventListener('change',function(){App.LS.set('tkFontFamily',this.value);Cal.applyFont();});
+
+    // ★ 猫咪配色
     panel.querySelector('#wtCatAllColorBtn').addEventListener('click',function(){
       var curColors=App.LS.get('tkCatColors')||{ear:'#ffffff',whisker:'#d1d5db',star:'#ffffff'};
       App.openColorPicker(curColors.ear,function(color){
@@ -291,49 +351,18 @@ var Cal={
         Cal.applyLayout();
       },function(color){
         var card=App.$('#wtCard');
-        if(card){
-          card.style.setProperty('--cat-ear-color',color);
-          card.style.setProperty('--cat-whisker-color',color);
-          card.style.setProperty('--cat-star-color',color);
-        }
+        if(card){card.style.setProperty('--cat-ear-color',color);card.style.setProperty('--cat-whisker-color',color);card.style.setProperty('--cat-star-color',color);}
       });
     });
 
-    panel.querySelector('#wtLayoutToggle').addEventListener('click',function(){
-      if(Cal._layoutMode==='default') Cal._layoutMode='cat';
-      else Cal._layoutMode='default';
-
-      App.LS.set('tkLayoutMode',Cal._layoutMode);
-      this.textContent=Cal._layoutMode==='cat'?'猫咪':'默认';
-
-      var catGroup=panel.querySelector('#wtCatColorGroup');
-      if(catGroup) catGroup.style.display=(Cal._layoutMode==='cat')?'':'none';
-
-      Cal.applyLayout();
-    });
-
-    panel.querySelector('#wtAnimToggle').addEventListener('click',function(){
-      if(Cal._weatherMode==='animated') Cal._weatherMode='static';
-      else if(Cal._weatherMode==='static') Cal._weatherMode='none';
-      else Cal._weatherMode='animated';
-
-      App.LS.set('calWeatherMode',Cal._weatherMode);
-      var txt='关闭';
-      if(Cal._weatherMode==='animated') txt='动态';
-      else if(Cal._weatherMode==='static') txt='静态';
-      this.textContent=txt;
-      Cal.renderWeatherEffect();
-    });
-
-    panel.querySelector('#wtFontSelect').addEventListener('change',function(){App.LS.set('tkFontFamily',this.value);Cal.applyFont();});
-
+    // ★ 保存
     panel.querySelector('#wtEditSave').addEventListener('click',function(){
       App.LS.set('tkFontFamily',panel.querySelector('#wtFontSelect').value);
       if(panel.dataset.pickedColor) App.LS.set('tkColor',panel.dataset.pickedColor);
       Cal.applyTexts(); Cal.applyFont(); closePanel(); App.showToast('已保存');
     });
   },
-
+  
   initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
