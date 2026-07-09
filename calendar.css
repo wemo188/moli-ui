@@ -42,6 +42,7 @@
 .tk17-time-col { 
   display: flex; flex-direction: column; justify-content: center;
   flex: 7; /* 70% */
+  align-items: center; /* 让时间文字在自己的70%空间里居中 */
 }
 .tk17-clock { 
   font-weight: 900; font-size: 32px; letter-spacing: 1px; line-height: 1; 
@@ -57,7 +58,7 @@
 .tk17-wt-desc { font-size: 12px; font-weight: 700; line-height: 1; }
 
 /* ================== 猫咪独占特殊装饰体系 ================== */
-.tk17.tk17-cat-mode { margin-top: 50px !important; }
+.tk17.tk17-cat-mode { margin-top: 40px !important; }
 .tk17.tk17-cat-mode .tk17-right-card {
   border-radius: 999px;
   width: 85%;
@@ -69,7 +70,7 @@
 .cat-ear-l, .cat-ear-r {
   width: 60px; height: auto; top: auto;
   bottom: calc(100% + 12px);
-  z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)); 
+  z-index: 5; 
 }
 .cat-ear-l { left: 24%; }
 .cat-ear-r { right: 24%; }
@@ -78,8 +79,8 @@
 .cat-whisker-l, .cat-whisker-r {
   width: 44px; top: 50%; transform: translateY(-50%); z-index: 20;
 }
-.cat-whisker-l { left: -10px; }
-.cat-whisker-r { right: -10px; }
+.cat-whisker-l { left: -8px; margin-top:-6px; }
+.cat-whisker-r { right: -8px; margin-top:-6px; }
 
 .tk17.tk17-cat-mode .tk17-bgimg::after {
   background: rgba(255, 255, 255, 0.001);
