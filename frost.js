@@ -2,7 +2,7 @@
   'use strict';
   var App = window.App; if(!App) return;
 
-  var DRAG_DELAY = 380;
+  var DRAG_DELAY = 250;
   
   // 🌟 高级 SVG 关闭图标，替代简陋的文本 "×"
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>';
