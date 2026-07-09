@@ -81,7 +81,7 @@ var Cal={
         card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display = 'block'; });
     }
     
-    var catColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#d1d5db', star:'#ffffff'};
+    var catColors = App.LS.get('tkCatColors') || {ear:'#ffffff', whisker:'#ffffff', star:'#ffffff'};
     card.style.setProperty('--cat-ear-color', catColors.ear);
     card.style.setProperty('--cat-whisker-color', catColors.whisker);
     card.style.setProperty('--cat-star-color', catColors.star);
