@@ -737,13 +737,17 @@
           existing.setAttribute('d', pathData);
           svg.appendChild(existing);
         }
-        existing.setAttribute('fill', Polaroid.data.cardColor || '#eeeff1');
+        existing.setAttribute('fill', '#ffffff');
       });
 
       var cards = document.querySelectorAll('.pola-card');
       cards.forEach(function(card, idx) {
+        var body = card.querySelector('.pola-body');
         var photo = card.querySelector('.pola-photo');
         var text = card.querySelector('.pola-text');
+        
+        // 卡纸颜色（支持渐变）
+        if(body) body.style.background = Polaroid.data.cardColor || '#eeeff1';
         if(photo) {
           if(Polaroid.data.imgs[idx]) {
             photo.innerHTML = '<img src="'+Polaroid.data.imgs[idx]+'">';
