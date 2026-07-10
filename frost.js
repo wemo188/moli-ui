@@ -688,7 +688,7 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666', countdownColor:'#666666', fontFamily:'' },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)', textColor:'#666666', countdownColor:'#666666', fontFamily:'' },
     posX: 0,
     posY: 0,
 
@@ -697,7 +697,7 @@
       if(saved) {
         Polaroid.data.imgs = saved.imgs || [null,null,null,null];
         Polaroid.data.texts = saved.texts || ['','','',''];
-        Polaroid.data.cardColor = saved.cardColor || '#eeeff1';
+        Polaroid.data.cardColor = saved.cardColor || 'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)';
         Polaroid.data.textColor = saved.textColor || '#666666';
         Polaroid.data.countdownColor = saved.countdownColor || '#666666';
         Polaroid.data.fontFamily = saved.fontFamily || '';
@@ -725,7 +725,7 @@
 
     apply: function() {
       var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
-      var color = Polaroid.data.cardColor || '#eeeff1';
+      var color = Polaroid.data.cardColor || 'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)';
       var isGradient = color.indexOf('linear-gradient') >= 0;
 
       document.querySelectorAll('.pola-svg').forEach(function(svg) {
@@ -741,7 +741,7 @@
 
         if(isGradient) {
           var m = color.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
-          var angle = 180, stops = ['#eeeff1','#ffffff'];
+          var angle = 180, stops = ['#ffffff','#d1d5db','#ffffff']; // ✅ 改成3个色值
           if(m) {
             angle = parseInt(m[1]) || 180;
             stops = m[2].split(/,(?![^(]*\))/).map(function(s){return s.trim();});
@@ -962,7 +962,7 @@
       panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
         e.stopPropagation();
         Polaroid.data.texts = ['','','',''];
-        Polaroid.data.cardColor = '#eeeff1';
+        Polaroid.data.cardColor = 'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)';
         Polaroid.data.textColor = '#666666';
         Polaroid.data.countdownColor = '#666666';
         Polaroid.data.fontFamily = '';
