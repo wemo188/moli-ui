@@ -799,8 +799,11 @@
       document.querySelectorAll('.pola-text').forEach(function(el){
         el.style.fontFamily = polaFont;
       });
-      var rightCol = document.querySelector('.polaroid-right');
-      if(rightCol) rightCol.style.fontFamily = polaFont;
+            var rightCol = document.querySelector('.polaroid-right');
+      if(rightCol) {
+        rightCol.style.fontFamily = polaFont;
+        rightCol.style.color = Polaroid.data.textColor;
+      }
     },
 
     bindClicks: function() {
