@@ -73,7 +73,7 @@
   inset: 0;
   border-radius: inherit;
   background: var(--profileCard-L-bg, linear-gradient(187deg, #ffffff, #d1d5db));
-  opacity: var(--profileCard-L-bg-opacity, 1);
+  opacity: var(--pc-L-opacity, 1);
   z-index: -1;
   pointer-events: none;
 }
@@ -221,7 +221,7 @@
   inset: 0;
   border-radius: inherit;
   background: var(--profileCard-R-bg, linear-gradient(323deg, #ffffff, #9ca3b0));
-  opacity: var(--profileCard-R-bg-opacity, 1);
+  opacity: var(--pc-R-opacity, 1);
   z-index: -1;
   pointer-events: none;
 }
