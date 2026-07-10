@@ -369,7 +369,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  opacity: 0.6;
+  opacity: 0.7;
   margin-top: 2px;
 }
 
@@ -379,7 +379,7 @@
   color: var(--text-primary);
   opacity: 0.8;
   line-height: 1;
-  margin-top: 4px;
+  margin-top: 6px;
   font-variant-numeric: tabular-nums;
 }
 
