@@ -57,14 +57,12 @@
       }).join('');
     },
 
-    bindEdit: function() {
+        bindEdit: function() {
       if(Pixel._bound) return; Pixel._bound = true;
       var body = App.$('#hlTextCard .pixel-body'); if(!body) return;
-      var tapCount = 0, tapTimer = null;
       body.addEventListener('click', function(e) {
-        e.stopPropagation(); tapCount++; clearTimeout(tapTimer);
-        tapTimer = setTimeout(function(){ tapCount=0; }, 350);
-        if(tapCount >= 2){ tapCount=0; clearTimeout(tapTimer); Pixel.openEdit(); }
+        e.stopPropagation();
+        Pixel.openEdit();
       });
     },
 
@@ -200,17 +198,13 @@
       Puzzle.bindDoubleTap(container);
     },
 
-    bindDoubleTap: function(container) {
+        bindDoubleTap: function(container) {
       var cardEl = container.querySelector('#pzCardInner');
       if(!cardEl || cardEl._pzTapBound) return;
       cardEl._pzTapBound = true;
-      var tapCount = 0, tapTimer = null;
       cardEl.addEventListener('click', function(e) {
         e.stopPropagation();
-        tapCount++;
-        clearTimeout(tapTimer);
-        tapTimer = setTimeout(function() { tapCount = 0; }, 350);
-        if(tapCount >= 2) { tapCount = 0; clearTimeout(tapTimer); Puzzle.openEdit(); }
+        Puzzle.openEdit();
       });
     },
 
@@ -1073,13 +1067,11 @@
       
       // 文字卡片
       Eden.load(); Eden.apply(); Eden.bindDrag();
-      var edenEl = App.$('#edenCard');
+            var edenEl = App.$('#edenCard');
       if(edenEl) {
-        var _tapCount=0, _tapTimer=null;
         edenEl.addEventListener('click', function(e){
-          e.stopPropagation(); _tapCount++;
-          if(_tapCount===1){ _tapTimer=setTimeout(function(){_tapCount=0;},350); }
-          else if(_tapCount>=2){ clearTimeout(_tapTimer); _tapCount=0; Eden.openEdit(); }
+          e.stopPropagation();
+          Eden.openEdit();
         });
       }
     }
