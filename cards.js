@@ -405,10 +405,9 @@
         bindDrag: function() {
       ['profileCard-R', 'profileCard-L'].forEach(function(id) {
         var el = App.$('#' + id); if (!el) return;
-        var avBox = el.querySelector('.bx-av-box'); if (!avBox) return;
         var startX, startY, startOX, startOY, longPressed = false, timer, moved = false;
         
-        avBox.addEventListener('touchstart', function(e) {
+        el.addEventListener('touchstart', function(e) {
           if (e.target.closest('.bx-av-placeholder')) return;
           var t = e.touches[0]; startX = t.clientX; startY = t.clientY; longPressed = false; moved = false;
           timer = setTimeout(function() {
@@ -426,7 +425,7 @@
           }, DRAG_DELAY);
         }, {passive: true});
 
-        avBox.addEventListener('touchmove', function(e) {
+        el.addEventListener('touchmove', function(e) {
           var t = e.touches[0];
           if (timer && !longPressed) { if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { clearTimeout(timer); timer = null; } return; }
           if (!longPressed) return; moved = true; e.preventDefault(); e.stopPropagation();
@@ -439,7 +438,7 @@
           Cards._dragOffsets[id] = {x: nx, y: ny};
         }, {passive: false});
 
-        avBox.addEventListener('touchend', function(e) {
+        el.addEventListener('touchend', function(e) {
           clearTimeout(timer); timer = null;
           el.classList.remove('is-grabbed');
           el.style.opacity = '';
