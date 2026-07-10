@@ -58,16 +58,14 @@ var Cal={
       card.querySelectorAll('.cat-part').forEach(function(el){ el.style.display='block'; });
     }
 
-    var catColors=App.LS.get('tkCatColors')||{ear:'#d1d5db',whisker:'#d1d5db',star:'#d1d5db'};
+    var catColors=App.LS.get('tkCatColors')||{ear:'#ffffff',whisker:'#d1d5db',star:'#ffffff'};
     card.style.setProperty('--cat-ear-color',catColors.ear);
     card.style.setProperty('--cat-whisker-color',catColors.whisker);
     card.style.setProperty('--cat-star-color',catColors.star);
   },
 
-    startClock:function(){
-    var tEl=App.$('#tkLargeTime');
-    var dayEl=App.$('#tkDateDay');
-    var weekEl=App.$('#tkDateWeek');
+  startClock:function(){
+    var tEl=App.$('#tkLargeTime'), dayEl=App.$('#tkDateDay'), weekEl=App.$('#tkDateWeek');
     if(!tEl) return;
     var WEEKDAYS_CN=['周日','周一','周二','周三','周四','周五','周六'];
     function tick(){
@@ -87,32 +85,46 @@ var Cal={
     else{ if(tEl) tEl.textContent='--°C'; if(dEl) dEl.textContent='未知'; }
   },
 
+  /* 极致洗炼的逻辑枢纽：零样式，全数据绑定与干架构生成 */
   renderWeatherEffect:function(){
-    var bg=App.$('#wtWeatherBg');if(!bg)return;
+    var bg=App.$('#wtWeatherBg'); if(!bg)return;
     bg.innerHTML=''; Cal.applyWeatherText();
     var card=App.$('#wtCard');
-    if(card){ card.classList.remove('wt-static'); if(Cal._weatherMode==='static') card.classList.add('wt-static'); }
+    
+    if(card){
+      card.classList.remove('wt-static');
+      card.removeAttribute('data-weather'); // 清空天象标识
+      if(Cal._weatherMode==='static') card.classList.add('wt-static');
+    }
+
     if(Cal._weatherMode==='none') return;
-    if(!Cal.weather||!Cal.weather.code){ var h=new Date().getHours(); if(h>=19||h<6)Cal._renderNight(bg); return; }
+    
+    if(!Cal.weather||!Cal.weather.code){
+      var h=new Date().getHours();
+      if(h>=19||h<6){
+        if(card) card.setAttribute('data-weather','night');
+        bg.innerHTML='<div class="wt-moon"></div><div class="wt-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+      }
+      return;
+    }
+
     var effect=Cal._codeToEffect(Cal.weather.code);
+    if(card) card.setAttribute('data-weather', effect); // 一指引流给 CSS 控制全场
+    
+    // 生成极端干净的颗粒骨架（CSS 将捕获标签并自行涂色驱动）
     switch(effect){
-      case'sunny':Cal._renderSunny(bg);break; case'night':Cal._renderNight(bg);break;
-      case'cloudy':Cal._renderCloudy(bg);break; case'overcast':Cal._renderOvercast(bg);break;
-      case'lightrain':Cal._renderRain(bg,5,1.5,2.2,8,12);break; case'heavyrain':Cal._renderRain(bg,12,0.8,1.3,10,16);break;
-      case'thunder':Cal._renderThunder(bg);break; case'lightsnow':Cal._renderSnow(bg,6,4,6,3,5);break;
-      case'heavysnow':Cal._renderSnow(bg,14,2.5,4,4,7);break; case'fog':Cal._renderFog(bg);break;
+      case 'sunny': bg.innerHTML='<div class="wt-sun"></div>'; break;
+      case 'night': bg.innerHTML='<div class="wt-moon"></div><div class="wt-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'; break;
+      case 'cloudy': bg.innerHTML='<div class="wt-clouds"><i></i><i></i><i></i></div>'; break;
+      case 'overcast': bg.innerHTML='<div class="wt-overcasts"><i></i><i></i><i></i></div>'; break;
+      case 'lightrain':
+      case 'heavyrain': bg.innerHTML='<div class="wt-rains"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'; break;
+      case 'thunder': bg.innerHTML='<div class="wt-flash"></div><div class="wt-lightnings"><i></i><i></i></div><div class="wt-rains"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'; break;
+      case 'lightsnow':
+      case 'heavysnow': bg.innerHTML='<div class="wt-snows"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'; break;
+      case 'fog': bg.innerHTML='<div class="wt-fogs"><i></i><i></i></div>'; break;
     }
   },
-
-  _renderSunny:function(bg){bg.innerHTML='<svg class="wt-sun-svg" viewBox="0 0 120 120" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"><circle cx="60" cy="60" r="20"/><line x1="60" y1="8" x2="60" y2="22"/><line x1="60" y1="98" x2="60" y2="112"/><line x1="8" y1="60" x2="22" y2="60"/><line x1="98" y1="60" x2="112" y2="60"/><line x1="23" y1="23" x2="33" y2="33"/><line x1="87" y1="87" x2="97" y2="97"/><line x1="23" y1="97" x2="33" y2="87"/><line x1="87" y1="33" x2="97" y2="23"/></svg>';},
-  _renderNight:function(bg){bg.innerHTML='<svg class="wt-moon" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><defs><mask id="wtMoonMask"><rect width="50" height="50" fill="white"/><circle cx="18" cy="22" r="15" fill="black"/></mask></defs><circle cx="25" cy="25" r="20" fill="rgba(30,30,30,0.9)" mask="url(#wtMoonMask)"/></svg><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div><div class="wt-star"></div>';},
-  _cloudPath:'M14 44C9 44 6 40.5 6 37C6 33.5 9 30 14 30C14 30 15 24 21 21C27 18 33 20 36 24C38 20 42 18 46 20C50 22 52 26 51 30C55 30 58 33.5 58 37C58 40.5 55 44 50 44H14Z',
-  _renderCloudy:function(bg){var p=Cal._cloudPath;bg.innerHTML='<svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-cloud-item" viewBox="0 0 64 64" fill="rgba(50,50,50,0.9)" stroke="none"><path d="'+p+'"/></svg>';},
-  _renderOvercast:function(bg){var p=Cal._cloudPath;bg.innerHTML='<svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg><svg class="wt-overcast-item" viewBox="0 0 64 64" fill="rgba(40,40,40,0.9)" stroke="none"><path d="'+p+'"/></svg>';},
-  _renderRain:function(bg,count,minDur,maxDur,minH,maxH){for(var i=0;i<count;i++){var drop=document.createElement('div');drop.className='wt-raindrop';drop.style.left=(5+Math.random()*90)+'%';drop.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';drop.style.animationDelay=(-Math.random()*3)+'s';drop.style.height=(minH+Math.random()*(maxH-minH))+'px';bg.appendChild(drop);}},
-  _renderThunder:function(bg){bg.innerHTML='<div class="wt-flash-overlay"></div><svg class="wt-lightning" width="16" height="30" viewBox="0 0 24 45" fill="none" stroke="rgba(30,30,30,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,2 6,20 13,20 8,43"/></svg><svg class="wt-lightning" width="12" height="22" viewBox="0 0 20 35" fill="none" stroke="rgba(30,30,30,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,2 5,16 11,16 7,33"/></svg>';Cal._renderRain(bg,8,0.7,1.2,8,14);},
-  _renderSnow:function(bg,count,minDur,maxDur,minSize,maxSize){for(var i=0;i<count;i++){var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('class','wt-snow-item');var size=minSize+Math.random()*(maxSize-minSize);svg.style.left=(5+Math.random()*90)+'%';svg.style.width=size+'px';svg.style.height=size+'px';svg.style.animationDuration=(minDur+Math.random()*(maxDur-minDur))+'s';svg.style.animationDelay=(-Math.random()*6)+'s';var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M10 2L10 18 M3.5 6L16.5 14 M16.5 6L3.5 14 M10 5L8 3 M10 5L12 3 M10 15L8 17 M10 15L12 17');path.setAttribute('stroke','rgba(50,50,50,0.7)');path.setAttribute('stroke-width','1.2');path.setAttribute('stroke-linecap','round');path.setAttribute('fill','none');svg.appendChild(path);bg.appendChild(svg);}},
-  _renderFog:function(bg){bg.innerHTML='<div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(60,60,60,0.5),rgba(60,60,60,0.3),transparent);"></div><div class="wt-fog-layer" style="background:linear-gradient(90deg,transparent,rgba(50,50,50,0.4),rgba(50,50,50,0.25),transparent);"></div>';},
 
   _buildFontOptions:function(currentFamily){
     var BUILTIN=[{name:'跟随全局',family:''},{name:'系统默认',family:'-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif'},{name:'霞鹜文楷',family:'"LXGW WenKai",cursive'},{name:'思源宋体',family:'"Noto Serif SC",serif'},{name:'思源黑体',family:'"Noto Sans SC",sans-serif'},{name:'站酷小薇',family:'"ZCOOL XiaoWei",serif'},{name:'马善政楷',family:'"Ma Shan Zheng",cursive'}];
@@ -146,12 +158,9 @@ var Cal={
     }).catch(function(){if(callback)callback(null);});
   },
 
-  getWeatherSummary:function(){if(!Cal.weather)return'';return'当前天气: '+Cal.weather.desc+', '+Cal.weather.temp+'°C, 湿度'+Cal.weather.humidity+'%';},
-  getLocationForAI:function(){return Cal.city||'';},
-
   _editPanel:null,
 
-    openEditPanel:function(){
+  openEditPanel:function(){
     if(Cal._editPanel){ if(Cal._closePanelFn) Cal._closePanelFn(); return; }
 
     var currentColor=App.LS.get('tkColor')||'#111111';
@@ -164,7 +173,7 @@ var Cal={
     var panel=document.createElement('div'); panel.className='pc-edit-panel';
 
     panel.innerHTML=
-      '<div class="pc-header">时间设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
+      '<div class="pc-header">时间胶囊设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
 
         // ★ 第一行：内部壁纸 + 外观切换
@@ -178,7 +187,7 @@ var Cal={
             '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
           '</div>'+
           '<div class="pc-group" style="flex:1;">'+
-            '<span class="pc-label">外观模式</span>'+
+            '<span class="pc-label">外观</span>'+
             '<div class="pc-av-row" style="gap:6px;">'+
               '<div class="pc-icon-btn" id="wtModeDefault" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='default'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">普通</div>'+
               '<div class="pc-icon-btn" id="wtModeCat" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='cat'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">猫咪</div>'+
@@ -207,14 +216,14 @@ var Cal={
         // ★ 第四行：字体颜色 + 猫咪配色
         '<div style="display:flex; gap:12px;">'+
           '<div class="pc-group" style="flex:1;">'+
-            '<span class="pc-label">字体选择与颜色</span>'+
+            '<span class="pc-label">字体颜色</span>'+
             '<div class="pc-av-row">'+
               '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
               '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
             '</div>'+
           '</div>'+
           '<div class="pc-group" id="wtCatColorGroup" style="flex-shrink:0; width:80px;'+(Cal._layoutMode==='cat'?'':'display:none;')+'">'+
-            '<span class="pc-label">猫的配色</span>'+
+            '<span class="pc-label">猫咪配色</span>'+
             '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; height:32px; border-radius:8px; background:'+catBaseColor+'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
           '</div>'+
         '</div>'+
@@ -263,7 +272,7 @@ var Cal={
     overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
     panel.addEventListener('click',function(e){e.stopPropagation();});
 
-    // ★ 壁纸绑定
+    // ★ 基础功能绑定
     panel.querySelector('#wtBgUploadBtn').addEventListener('click',function(){panel.querySelector('#wtBgFileInput').click();});
     panel.querySelector('#wtBgFileInput').addEventListener('change',function(e){
       var file=e.target.files[0];if(!file)return;
@@ -276,7 +285,6 @@ var Cal={
     });
     panel.querySelector('#wtBgClearBtn').addEventListener('click',function(){App.LS.remove('calBgImg');Cal.applyBgImg();App.showToast('背景已清除');});
 
-    // ★ 外观双键绑定
     function updateModeUI(){
       var d=panel.querySelector('#wtModeDefault'), c=panel.querySelector('#wtModeCat');
       d.style.background=Cal._layoutMode==='default'?'#1a1a1a':''; d.style.color=Cal._layoutMode==='default'?'#fff':''; d.style.borderColor=Cal._layoutMode==='default'?'#1a1a1a':'';
@@ -286,13 +294,13 @@ var Cal={
     }
     panel.querySelector('#wtModeDefault').addEventListener('click',function(){
       Cal._layoutMode='default'; App.LS.set('tkLayoutMode','default'); updateModeUI(); Cal.applyLayout();
+      App.showToast('回归素雅本色');
     });
     panel.querySelector('#wtModeCat').addEventListener('click',function(){
       Cal._layoutMode='cat'; App.LS.set('tkLayoutMode','cat'); updateModeUI(); Cal.applyLayout();
-            App.showToast('喵~猫咪降临');
+      App.showToast('喵~猫咪降临');
     });
 
-    // ★ 天气特效开关 + 动态/静态
     function updateWeatherUI(){
       var on=(Cal._weatherMode!=='none');
       var sw=panel.querySelector('#wtWeatherSwitch');
@@ -308,30 +316,29 @@ var Cal={
       sb.style.background=(!isAnim&&on)?'#1a1a1a':''; sb.style.color=(!isAnim&&on)?'#fff':''; sb.style.borderColor=(!isAnim&&on)?'#1a1a1a':'';
     }
     panel.querySelector('#wtWeatherSwitch').addEventListener('click',function(){
-      if(Cal._weatherMode==='none') Cal._weatherMode='animated';
-      else Cal._weatherMode='none';
+      if(Cal._weatherMode==='none') Cal._weatherMode='animated'; else Cal._weatherMode='none';
       App.LS.set('calWeatherMode',Cal._weatherMode); updateWeatherUI(); Cal.renderWeatherEffect();
+      App.showToast(Cal._weatherMode==='none'?'天象已封印':'天象重新解封');
     });
     panel.querySelector('#wtAnimBtn').addEventListener('click',function(){
       Cal._weatherMode='animated'; App.LS.set('calWeatherMode','animated'); updateWeatherUI(); Cal.renderWeatherEffect();
+      App.showToast('灵气涌动中...');
     });
     panel.querySelector('#wtStaticBtn').addEventListener('click',function(){
       Cal._weatherMode='static'; App.LS.set('calWeatherMode','static'); updateWeatherUI(); Cal.renderWeatherEffect();
+      App.showToast('时间凝固了');
     });
 
-    // ★ 天气城市
     panel.querySelector('#wtCitySearchBtn').addEventListener('click',function(){
       var name=panel.querySelector('#wtCityInput').value.trim();
       if(!name){App.showToast('请输入城市名');return;}
-      App.showToast('获取天气中...');
-      Cal.city=name; Cal.save();
+      App.showToast('获取天气中...'); Cal.city=name; Cal.save();
       Cal.fetchWeather(name,function(w){
         if(w){closePanel();Cal.openEditPanel();App.showToast(w.desc+' '+w.temp+'°C');}
         else App.showToast('获取失败');
       });
     });
 
-    // ★ 字体颜色
     panel.querySelector('#wtColorBtn').addEventListener('click',function(){
       var cur=panel.dataset.pickedColor||App.LS.get('tkColor')||'#111111';
       App.openColorPicker(cur,function(color){
@@ -344,7 +351,6 @@ var Cal={
     });
     panel.querySelector('#wtFontSelect').addEventListener('change',function(){App.LS.set('tkFontFamily',this.value);Cal.applyFont();});
 
-    // ★ 猫咪配色
     panel.querySelector('#wtCatAllColorBtn').addEventListener('click',function(){
       var curColors=App.LS.get('tkCatColors')||{ear:'#ffffff',whisker:'#d1d5db',star:'#ffffff'};
       App.openColorPicker(curColors.ear,function(color){
@@ -352,25 +358,24 @@ var Cal={
         App.LS.set('tkCatColors',newColors);
         panel.querySelector('#wtCatAllColorBtn').style.background=color;
         Cal.applyLayout();
-        App.showToast('黑魔法浸染好啦~');
+        App.showToast('黑魔法一键浸染完毕');
       },function(color){
         var card=App.$('#wtCard');
         if(card){card.style.setProperty('--cat-ear-color',color);card.style.setProperty('--cat-whisker-color',color);card.style.setProperty('--cat-star-color',color);}
       });
     });
 
-    // ★ 保存
     panel.querySelector('#wtEditSave').addEventListener('click',function(){
       App.LS.set('tkFontFamily',panel.querySelector('#wtFontSelect').value);
       if(panel.dataset.pickedColor) App.LS.set('tkColor',panel.dataset.pickedColor);
       Cal.applyTexts(); Cal.applyFont(); closePanel(); App.showToast('已保存');
     });
   },
-  
+
   initDrag:function(){
     var card=App.$('#wtCard');if(!card||card._wtDragBound)return;
     card._wtDragBound=true;
-    var DELAY=250;
+    var DELAY=500;
     var startX,startY,origX,origY,longPressed=false,timer,moved=false;
     var saved=App.LS.get('wtCardPos');
 
@@ -424,11 +429,14 @@ var Cal={
     });
   },
 
-    bindClicks: function() {
-    var cardEl = App.$('.tk17-right-card');
-    if(cardEl) cardEl.addEventListener('click', function(e){
+  bindClicks:function(){
+    var cardEl=App.$('.tk17-right-card');
+    var lastTap=0;
+    if(cardEl) cardEl.addEventListener('click',function(e){
       e.stopPropagation();
-      Cal.openEditPanel();
+      var now=Date.now();
+      if(now-lastTap<350) Cal.openEditPanel();
+      lastTap=now;
     });
   },
 
@@ -450,5 +458,15 @@ var Cal={
   }
 };
 
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){
+    if(Cal._clockTimer){ clearInterval(Cal._clockTimer); Cal._clockTimer=null; }
+  } else {
+    Cal.startClock();
+  }
+});
+
 App.register('calendar',Cal);
 })();
+
+
