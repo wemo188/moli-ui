@@ -941,9 +941,12 @@ panel.querySelector('#polaFontSelect').addEventListener('change', function(){
       panel.querySelector('#polaCloseBtn').addEventListener('click', function(e){e.stopPropagation();saveAndClose(false);});
       overlay.addEventListener('click', function(e){if(e.target===overlay && !document.querySelector('#cpOverlay') && !document.querySelector('.gip-overlay'))saveAndClose(false);});
 
-      panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
+            panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
         e.stopPropagation();
-        Polaroid.data={imgs:[null,null,null,null],texts:['','','',''],cardColor:'#eeeff1',textColor:'#666666'};
+        Polaroid.data.texts = ['','','',''];
+        Polaroid.data.cardColor = '#eeeff1';
+        Polaroid.data.textColor = '#666666';
+        Polaroid.data.fontFamily = '';
         Polaroid.save(); Polaroid.apply(); overlay.remove(); App.showToast('已重置');
       });
     },
