@@ -728,8 +728,11 @@
       return d;
     },
 
-    apply: function() {
+        apply: function() {
       var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
+      var color = Polaroid.data.cardColor || '#eeeff1';
+      var isGradient = color.indexOf('linear-gradient') >= 0;
+
       document.querySelectorAll('.pola-svg').forEach(function(svg) {
         var existing = svg.querySelector('path');
         if(!existing) {
@@ -737,17 +740,48 @@
           existing.setAttribute('d', pathData);
           svg.appendChild(existing);
         }
-        existing.setAttribute('fill', '#ffffff');
+
+        // 清除旧渐变
+        var oldDef = svg.querySelector('defs');
+        if(oldDef) oldDef.remove();
+
+        if(isGradient) {
+          // 解析 linear-gradient(xxxdeg, #aaa, #bbb, ...)
+          var m = color.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
+          var angle = 180, stops = ['#eeeff1','#ffffff'];
+          if(m) {
+            angle = parseInt(m[1]) || 180;
+            stops = m[2].split(/,(?![^(]*\))/).map(function(s){return s.trim();});
+          }
+          // 角度转SVG坐标
+          var rad = (angle - 90) * Math.PI / 180;
+          var x1 = 50 - 50*Math.cos(rad), y1 = 50 - 50*Math.sin(rad);
+          var x2 = 50 + 50*Math.cos(rad), y2 = 50 + 50*Math.sin(rad);
+
+          var defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+          var grad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+          grad.setAttribute('id','polaGrad');
+          grad.setAttribute('x1', x1+'%'); grad.setAttribute('y1', y1+'%');
+          grad.setAttribute('x2', x2+'%'); grad.setAttribute('y2', y2+'%');
+
+          stops.forEach(function(s, i){
+            var stop = document.createElementNS('http://www.w3.org/2000/svg','stop');
+            stop.setAttribute('offset', (i/(stops.length-1)*100)+'%');
+            stop.setAttribute('stop-color', s);
+            grad.appendChild(stop);
+          });
+          defs.appendChild(grad);
+          svg.insertBefore(defs, svg.firstChild);
+          existing.setAttribute('fill', 'url(#polaGrad)');
+        } else {
+          existing.setAttribute('fill', color);
+        }
       });
 
       var cards = document.querySelectorAll('.pola-card');
       cards.forEach(function(card, idx) {
-        var body = card.querySelector('.pola-body');
         var photo = card.querySelector('.pola-photo');
         var text = card.querySelector('.pola-text');
-        
-        // 卡纸颜色（支持渐变）
-        if(body) body.style.background = Polaroid.data.cardColor || '#eeeff1';
         if(photo) {
           if(Polaroid.data.imgs[idx]) {
             photo.innerHTML = '<img src="'+Polaroid.data.imgs[idx]+'">';
@@ -760,8 +794,8 @@
           text.style.color = Polaroid.data.textColor;
         }
       });
-      // 🌟 新增：字体设置（放在最后）
-        var polaFont = Polaroid.data.fontFamily || '';
+
+      var polaFont = Polaroid.data.fontFamily || '';
       document.querySelectorAll('.pola-text').forEach(function(el){
         el.style.fontFamily = polaFont;
       });
