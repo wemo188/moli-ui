@@ -368,11 +368,12 @@
     },
 
     // 🌟 扩大双击范围：绑在整张卡片（.bx-w）上
-        bindEdit: function() {
+            bindEdit: function() {
       document.querySelectorAll('.bx-w').forEach(function(card) {
         if (!card._dblBound) {
           card._dblBound = true;
           card.addEventListener('click', function(e) {
+            if (card._justDragged) return;
             e.stopPropagation();
             Cards.openEdit(card.dataset.side, card);
           });
@@ -444,6 +445,8 @@
           el.style.opacity = '';
           el.style.boxShadow = ''; 
           if (longPressed) {
+                        el._justDragged = true;  // ← 加这一行
+            setTimeout(function() { el._justDragged = false; }, 300);
             if (moved) { Cards._dragOffsets._topCard = id; Cards.saveDrag(); e.stopPropagation(); }
             el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
             var curOff = Cards._dragOffsets[id] || {x: 0, y: 0};
