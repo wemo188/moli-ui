@@ -424,14 +424,11 @@ var Cal={
     });
   },
 
-  bindClicks:function(){
-    var cardEl=App.$('.tk17-right-card');
-    var lastTap=0;
-    if(cardEl) cardEl.addEventListener('click',function(e){
+    bindClicks: function() {
+    var cardEl = App.$('.tk17-right-card');
+    if(cardEl) cardEl.addEventListener('click', function(e){
       e.stopPropagation();
-      var now=Date.now();
-      if(now-lastTap<350) Cal.openEditPanel();
-      lastTap=now;
+      Cal.openEditPanel();
     });
   },
 
