@@ -85,8 +85,9 @@
         pcL.style.setProperty('--profileCard-L-tag2-bg', lc.tag2Bg);
         pcL.style.setProperty('--profileCard-L-tag2-c', lc.tag2C);
         pcL.style.setProperty('--profileCard-L-sub-c', lc.subC);
-        pcL.style.setProperty('--profileCard-L-bg-opacity', lc.bgOpacity != null ? lc.bgOpacity : 1);
         pcL.style.setProperty('--profileCard-L-bg-blur', (lc.bgBlur || 0) + 'px');
+        var cdL = pcL.querySelector('.bx-cd');
+        if (cdL) cdL.style.setProperty('--pc-L-opacity', lc.bgOpacity != null ? lc.bgOpacity : 1);
         if (lc.fontFamily) { pcL.style.fontFamily = lc.fontFamily; pcL.classList.add('font-custom'); } else { pcL.style.fontFamily = ''; pcL.classList.remove('font-custom'); }
       }
       if (pcR) {
@@ -98,8 +99,9 @@
         pcR.style.setProperty('--profileCard-R-tag2-bg', rc.tag2Bg);
         pcR.style.setProperty('--profileCard-R-tag2-c', rc.tag2C);
         pcR.style.setProperty('--profileCard-R-sub-c', rc.subC);
-        pcR.style.setProperty('--profileCard-R-bg-opacity', rc.bgOpacity != null ? rc.bgOpacity : 1);
         pcR.style.setProperty('--profileCard-R-bg-blur', (rc.bgBlur || 0) + 'px');
+        var cdR = pcR.querySelector('.bx-cd');
+        if (cdR) cdR.style.setProperty('--pc-R-opacity', rc.bgOpacity != null ? rc.bgOpacity : 1);
         if (rc.fontFamily) { pcR.style.fontFamily = rc.fontFamily; pcR.classList.add('font-custom'); } else { pcR.style.fontFamily = ''; pcR.classList.remove('font-custom'); }
       }
     },
@@ -369,21 +371,13 @@
     },
 
     // 🌟 扩大双击范围：绑在整张卡片（.bx-w）上
-    bindEdit: function() {
+        bindEdit: function() {
       document.querySelectorAll('.bx-w').forEach(function(card) {
         if (!card._dblBound) {
           card._dblBound = true;
-          var tapCount = 0, tapTimer = null;
           card.addEventListener('click', function(e) {
             e.stopPropagation();
-            tapCount++;
-            clearTimeout(tapTimer);
-            tapTimer = setTimeout(function() { tapCount = 0; }, 350);
-            if (tapCount >= 2) {
-              tapCount = 0;
-              clearTimeout(tapTimer);
-              Cards.openEdit(card.dataset.side, card);
-            }
+            Cards.openEdit(card.dataset.side, card);
           });
         }
       });
