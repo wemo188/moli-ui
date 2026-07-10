@@ -626,7 +626,7 @@
         '<div class="pc-header" id="ccDragHandle">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
         '<div class="pc-body">' +
           '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">' +
-            '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">设置头像</button>' +
+            '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">图片上传</button>' +
             '<div class="pc-icon-btn danger" id="pcDelAvatar" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>' +
           '</div></div>' +
           '<div class="pc-group"><span class="pc-label">签名</span><input type="text" class="pc-input" id="pcSub" value="' + App.escAttr(d.sub || defSub) + '"></div>' +
