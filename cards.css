@@ -46,6 +46,7 @@
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--THEME) 50%, #ced4da 100%);
+  opacity: var(--pc-L-opacity, 1);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.15),
               0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
@@ -73,7 +74,7 @@
   inset: 0;
   border-radius: inherit;
   background: var(--profileCard-L-bg, linear-gradient(187deg, #ffffff, #d1d5db));
-  opacity: var(--pc-L-opacity, 1);
+  opacity: 1;
   z-index: -1;
   pointer-events: none;
 }
@@ -194,6 +195,7 @@
   padding: var(--bx-border-w);
   border-radius: calc(14px * var(--S));
   background: linear-gradient(135deg, #ced4da 0%, var(--BLUE) 50%, #ced4da 100%);
+  opacity: var(--pc-R-opacity, 1);
   box-shadow: 0 calc(6px * var(--S)) calc(16px * var(--S)) rgba(74,90,117,.18),
               0 calc(2px * var(--S)) calc(4px * var(--S)) rgba(0,0,0,.06);
   overflow: visible;
@@ -221,7 +223,7 @@
   inset: 0;
   border-radius: inherit;
   background: var(--profileCard-R-bg, linear-gradient(323deg, #ffffff, #9ca3b0));
-  opacity: var(--pc-R-opacity, 1);
+  opacity: 1;
   z-index: -1;
   pointer-events: none;
 }
