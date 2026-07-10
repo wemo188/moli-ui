@@ -95,7 +95,7 @@
    天气动效（只在右边框框内蔓延）
    ================================================ */
 .wt-sun-svg {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  position: absolute; top: 50%; left: 78%; transform: translate(-50%, -50%);
   width: 50px; height: 50px; opacity: 0.12; animation: wtSunSpin 25s linear infinite;
 }
 .wt-static .wt-sun-svg { animation: none; }
