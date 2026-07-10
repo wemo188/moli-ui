@@ -763,7 +763,6 @@
       });
       var rightCol = document.querySelector('.polaroid-right');
       if(rightCol) rightCol.style.fontFamily = polaFont;
-  });
     },
 
     bindClicks: function() {
