@@ -368,21 +368,13 @@
     },
 
     // 🌟 扩大双击范围：绑在整张卡片（.bx-w）上
-    bindEdit: function() {
+        bindEdit: function() {
       document.querySelectorAll('.bx-w').forEach(function(card) {
         if (!card._dblBound) {
           card._dblBound = true;
-          var tapCount = 0, tapTimer = null;
           card.addEventListener('click', function(e) {
             e.stopPropagation();
-            tapCount++;
-            clearTimeout(tapTimer);
-            tapTimer = setTimeout(function() { tapCount = 0; }, 350);
-            if (tapCount >= 2) {
-              tapCount = 0;
-              clearTimeout(tapTimer);
-              Cards.openEdit(card.dataset.side, card);
-            }
+            Cards.openEdit(card.dataset.side, card);
           });
         }
       });
