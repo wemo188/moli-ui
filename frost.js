@@ -688,7 +688,7 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)', textColor:'#666666', countdownColor:'#666666', fontFamily:'' },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)', textColor:'#666666', countdownColor:'#121212', fontFamily:'' },
     posX: 0,
     posY: 0,
 
@@ -699,7 +699,7 @@
         Polaroid.data.texts = saved.texts || ['','','',''];
         Polaroid.data.cardColor = saved.cardColor || 'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)';
         Polaroid.data.textColor = saved.textColor || '#666666';
-        Polaroid.data.countdownColor = saved.countdownColor || '#666666';
+        Polaroid.data.countdownColor = saved.countdownColor || '#121212';
         Polaroid.data.fontFamily = saved.fontFamily || '';
       }
     },
@@ -964,7 +964,7 @@
         Polaroid.data.texts = ['','','',''];
         Polaroid.data.cardColor = 'linear-gradient(136deg,#ffffff,#d1d5db,#ffffff)';
         Polaroid.data.textColor = '#666666';
-        Polaroid.data.countdownColor = '#666666';
+        Polaroid.data.countdownColor = '#121212';
         Polaroid.data.fontFamily = '';
         Polaroid.save(); Polaroid.apply(); overlay.remove(); App.showToast('已重置');
       });
