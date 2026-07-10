@@ -402,8 +402,8 @@
   display: flex;
   flex-direction: column;
   z-index: 2;
-  background: transparent;
-  box-shadow: none;
+  background: eeeff1;
+  border-radius: 1px;
 }
 
 .pola-card svg {
