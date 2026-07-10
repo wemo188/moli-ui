@@ -164,7 +164,7 @@ var Cal={
     var panel=document.createElement('div'); panel.className='pc-edit-panel';
 
     panel.innerHTML=
-      '<div class="pc-header">时间胶囊设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
+      '<div class="pc-header">时间设置<div class="pc-close-btn" id="wtEditClose">×</div></div>'+
       '<div class="pc-body">'+
 
         // ★ 第一行：内部壁纸 + 外观切换
@@ -178,7 +178,7 @@ var Cal={
             '<input type="file" id="wtBgFileInput" accept="image/*" style="display:none;">'+
           '</div>'+
           '<div class="pc-group" style="flex:1;">'+
-            '<span class="pc-label">外观</span>'+
+            '<span class="pc-label">外观模式</span>'+
             '<div class="pc-av-row" style="gap:6px;">'+
               '<div class="pc-icon-btn" id="wtModeDefault" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='default'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">普通</div>'+
               '<div class="pc-icon-btn" id="wtModeCat" style="flex:1;font-size:11px;font-weight:700;'+(Cal._layoutMode==='cat'?'background:#1a1a1a;color:#fff;border-color:#1a1a1a;':'')+'">猫咪</div>'+
@@ -207,14 +207,14 @@ var Cal={
         // ★ 第四行：字体颜色 + 猫咪配色
         '<div style="display:flex; gap:12px;">'+
           '<div class="pc-group" style="flex:1;">'+
-            '<span class="pc-label">字体颜色</span>'+
+            '<span class="pc-label">字体选择与颜色</span>'+
             '<div class="pc-av-row">'+
               '<select class="pc-input" id="wtFontSelect">'+Cal._buildFontOptions(App.LS.get('tkFontFamily')||'')+'</select>'+
               '<div class="pc-icon-btn" id="wtColorBtn" style="background:'+App.escAttr(currentColor)+'; cursor:pointer; flex-shrink:0;"></div>'+
             '</div>'+
           '</div>'+
           '<div class="pc-group" id="wtCatColorGroup" style="flex-shrink:0; width:80px;'+(Cal._layoutMode==='cat'?'':'display:none;')+'">'+
-            '<span class="pc-label">猫咪配色</span>'+
+            '<span class="pc-label">猫的配色</span>'+
             '<div class="pc-icon-btn" id="wtCatAllColorBtn" style="width:100%; height:32px; border-radius:8px; background:'+catBaseColor+'; border:1px solid rgba(0,0,0,0.1); cursor:pointer;"></div>'+
           '</div>'+
         '</div>'+
