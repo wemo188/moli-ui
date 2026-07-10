@@ -694,7 +694,7 @@
      拍立得 (Polaroid)
   ========================================================== */
   var Polaroid = {
-    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666', fontFamily:'' },
+    data: { imgs:[null,null,null,null], texts:['','','',''], cardColor:'#eeeff1', textColor:'#666666', countdownColor:'#666666', fontFamily:'' },
     posX: 0,
     posY: 0,
 
@@ -705,6 +705,7 @@
         Polaroid.data.texts = saved.texts || ['','','',''];
         Polaroid.data.cardColor = saved.cardColor || '#eeeff1';
         Polaroid.data.textColor = saved.textColor || '#666666';
+        Polaroid.data.countdownColor = saved.countdownColor || '#666666';
         Polaroid.data.fontFamily = saved.fontFamily || '';
       }
     },
@@ -728,7 +729,7 @@
       return d;
     },
 
-        apply: function() {
+    apply: function() {
       var pathData = Polaroid.createScallopedPath(80, 100, 3, 5);
       var color = Polaroid.data.cardColor || '#eeeff1';
       var isGradient = color.indexOf('linear-gradient') >= 0;
@@ -741,19 +742,16 @@
           svg.appendChild(existing);
         }
 
-        // 清除旧渐变
         var oldDef = svg.querySelector('defs');
         if(oldDef) oldDef.remove();
 
         if(isGradient) {
-          // 解析 linear-gradient(xxxdeg, #aaa, #bbb, ...)
           var m = color.match(/linear-gradient\(\s*(\d+)deg\s*,\s*(.+)\s*\)/);
           var angle = 180, stops = ['#eeeff1','#ffffff'];
           if(m) {
             angle = parseInt(m[1]) || 180;
             stops = m[2].split(/,(?![^(]*\))/).map(function(s){return s.trim();});
           }
-          // 角度转SVG坐标
           var rad = (angle - 90) * Math.PI / 180;
           var x1 = 50 - 50*Math.cos(rad), y1 = 50 - 50*Math.sin(rad);
           var x2 = 50 + 50*Math.cos(rad), y2 = 50 + 50*Math.sin(rad);
@@ -799,10 +797,16 @@
       document.querySelectorAll('.pola-text').forEach(function(el){
         el.style.fontFamily = polaFont;
       });
-            var rightCol = document.querySelector('.polaroid-right');
+      
+      var rightCol = document.querySelector('.polaroid-right');
       if(rightCol) {
         rightCol.style.fontFamily = polaFont;
-        rightCol.style.color = Polaroid.data.textColor;
+        var yearEl = rightCol.querySelector('.countdown-year');
+        var labelEl = rightCol.querySelector('.countdown-label');
+        var daysEl = rightCol.querySelector('.countdown-days');
+        if(yearEl) yearEl.style.color = Polaroid.data.countdownColor;
+        if(labelEl) labelEl.style.color = Polaroid.data.countdownColor;
+        if(daysEl) daysEl.style.color = Polaroid.data.countdownColor;
       }
     },
 
@@ -842,11 +846,12 @@
         '<div class="pc-body">'+
           '<div class="pc-group"><span class="pc-label">点击上传照片 & 输入文字</span></div>'+
           '<div class="pz-edit-slots">'+slotsHtml+'</div>'+
-                   '<div class="pc-group">'+
+          '<div class="pc-group">'+
             '<span class="pc-label">文字字体</span>'+
             '<select class="pc-input" id="polaFontSelect">'+Pixel._buildFontOptions(d.fontFamily)+'</select>'+
           '</div>'+
-            '<span class="pc-label">卡纸颜色 & 文字颜色</span>'+
+          '<div class="pc-group">'+
+            '<span class="pc-label">卡纸 & 卡册文字 & 日期文字</span>'+
             '<div class="pc-av-row" style="gap:12px;">'+
               '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
                 '<div class="pc-icon-btn" id="polaCardColorBtn" style="width:36px;height:28px;border-radius:8px;background:'+App.escAttr(d.cardColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
@@ -854,7 +859,11 @@
               '</div>'+
               '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
                 '<div class="pc-icon-btn" id="polaTextColorBtn" style="width:36px;height:28px;border-radius:8px;background:'+App.escAttr(d.textColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
-                '<span style="font-size:10px;color:#999;">文字</span>'+
+                '<span style="font-size:10px;color:#999;">卡册</span>'+
+              '</div>'+
+              '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">'+
+                '<div class="pc-icon-btn" id="polaCountdownColorBtn" style="width:36px;height:28px;border-radius:8px;background:'+App.escAttr(d.countdownColor)+';cursor:pointer;border:1px solid rgba(0,0,0,0.1);"></div>'+
+                '<span style="font-size:10px;color:#999;">日期</span>'+
               '</div>'+
             '</div>'+
           '</div>'+
@@ -926,11 +935,23 @@
         });
       });
 
-// 🌟🌟🌟 新加：字体选择（放在这后面）🌟🌟🌟
-panel.querySelector('#polaFontSelect').addEventListener('change', function(){
-  d.fontFamily = this.value;
-  Polaroid.apply();
-});
+      panel.querySelector('#polaCountdownColorBtn').addEventListener('click', function(e){
+        e.stopPropagation();
+        App.openColorPicker(d.countdownColor, function(color){
+          d.countdownColor=color;
+          panel.querySelector('#polaCountdownColorBtn').style.background=color;
+          Polaroid.apply();
+        }, function(color){
+          d.countdownColor=color;
+          panel.querySelector('#polaCountdownColorBtn').style.background=color;
+          Polaroid.apply();
+        });
+      });
+
+      panel.querySelector('#polaFontSelect').addEventListener('change', function(){
+        d.fontFamily = this.value;
+        Polaroid.apply();
+      });
 
       function saveAndClose(showToast) {
         panel.querySelectorAll('input[data-tidx]').forEach(function(inp){
@@ -944,11 +965,12 @@ panel.querySelector('#polaFontSelect').addEventListener('change', function(){
       panel.querySelector('#polaCloseBtn').addEventListener('click', function(e){e.stopPropagation();saveAndClose(false);});
       overlay.addEventListener('click', function(e){if(e.target===overlay && !document.querySelector('#cpOverlay') && !document.querySelector('.gip-overlay'))saveAndClose(false);});
 
-            panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
+      panel.querySelector('#polaResetBtn').addEventListener('click', function(e){
         e.stopPropagation();
         Polaroid.data.texts = ['','','',''];
         Polaroid.data.cardColor = '#eeeff1';
         Polaroid.data.textColor = '#666666';
+        Polaroid.data.countdownColor = '#666666';
         Polaroid.data.fontFamily = '';
         Polaroid.save(); Polaroid.apply(); overlay.remove(); App.showToast('已重置');
       });
