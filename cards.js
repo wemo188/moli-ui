@@ -86,8 +86,8 @@
         pcL.style.setProperty('--profileCard-L-tag2-c', lc.tag2C);
         pcL.style.setProperty('--profileCard-L-sub-c', lc.subC);
         pcL.style.setProperty('--profileCard-L-bg-blur', (lc.bgBlur || 0) + 'px');
-        var cdL = pcL.querySelector('.bx-cd');
-        if (cdL) cdL.style.setProperty('--pc-L-opacity', lc.bgOpacity != null ? lc.bgOpacity : 1);
+        var cdR = pcR.querySelector('.bx-cd');
+        if (cdR) cdR.style.setProperty('--pc-R-opacity', rc.bgOpacity != null ? rc.bgOpacity : 1);
         if (lc.fontFamily) { pcL.style.fontFamily = lc.fontFamily; pcL.classList.add('font-custom'); } else { pcL.style.fontFamily = ''; pcL.classList.remove('font-custom'); }
       }
       if (pcR) {
@@ -100,8 +100,8 @@
         pcR.style.setProperty('--profileCard-R-tag2-c', rc.tag2C);
         pcR.style.setProperty('--profileCard-R-sub-c', rc.subC);
         pcR.style.setProperty('--profileCard-R-bg-blur', (rc.bgBlur || 0) + 'px');
-        var cdR = pcR.querySelector('.bx-cd');
-        if (cdR) cdR.style.setProperty('--pc-R-opacity', rc.bgOpacity != null ? rc.bgOpacity : 1);
+        var cwR = pcR.querySelector('.bx-cw');
+        if (cwR) cwR.style.setProperty('--pc-R-opacity', rc.bgOpacity != null ? rc.bgOpacity : 1);
         if (rc.fontFamily) { pcR.style.fontFamily = rc.fontFamily; pcR.classList.add('font-custom'); } else { pcR.style.fontFamily = ''; pcR.classList.remove('font-custom'); }
       }
     },
@@ -180,7 +180,7 @@
     _uploadHlAvatar: function(bgId, storageKey, cb) {
       if (App.showImagePicker) {
         App.showImagePicker({
-          title: '设置头像',
+          title: '图片上传',
           deleteText: '删除头像',
           callback: function(src) {
             if (src) {
@@ -579,7 +579,7 @@
       panel.querySelector('#hlFontSelect').addEventListener('change', function() { cfg.fontFamily = this.value; Cards.hlConfig[side] = cfg; Cards.applyHlColors(side); });
 
       panel.querySelector('#hlUploadBtn').addEventListener('click', function(e) { e.stopPropagation(); Cards._uploadHlAvatar(bgId, storageKey); });
-      panel.querySelector('#hlDelAvatar').addEventListener('click', function(e) { e.stopPropagation(); Cards._clearHlAvatar(bgId, storageKey); App.showToast('头像已清除'); });
+      panel.querySelector('#hlDelAvatar').addEventListener('click', function(e) { e.stopPropagation(); Cards._clearHlAvatar(bgId, storageKey); App.showToast('图片已清除'); });
 
       panel.querySelector('#hlSaveBtn').addEventListener('click', function(e) {
         e.stopPropagation();
@@ -626,20 +626,20 @@
       }).join('');
 
       panel.innerHTML =
-        '<div class="pc-header" id="ccDragHandle">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
+        '<div class="pc-header" id="ccDragHandle">右侧卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
         '<div class="pc-body">' +
           '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">' +
-            '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">设置头像</button>' +
+            '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">图片上传</button>' +
             '<div class="pc-icon-btn danger" id="pcDelAvatar" title="删除"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/></svg></div>' +
           '</div></div>' +
           '<div class="pc-group"><span class="pc-label">签名</span><input type="text" class="pc-input" id="pcSub" value="' + App.escAttr(d.sub || defSub) + '"></div>' +
           '<div class="pc-group"><span class="pc-label">标签 1</span><input type="text" class="pc-input" id="pcTag1" value="' + App.escAttr(d.tag1 || '') + '"></div>' +
           '<div class="pc-group"><span class="pc-label">标签 2</span><input type="text" class="pc-input" id="pcTag2" value="' + App.escAttr(d.tag2 || '') + '"></div>' +
           '<div class="pc-group"><span class="pc-label">调色板</span><div class="pc-palette-grid">' + dotsHtml + '</div></div>' +
-          '<div class="pc-group"><span class="pc-label">透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgOpacity" min="0" max="1" step="0.05" value="' + (col.bgOpacity != null ? col.bgOpacity : 1) + '"><span class="pc-slider-val" id="pcBgOpacityVal">' + Math.round((col.bgOpacity != null ? col.bgOpacity : 1) * 100) + '%</span></div></div>' +
-          '<div class="pc-group"><span class="pc-label">毛玻璃</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgBlur" min="0" max="30" step="1" value="' + (col.bgBlur || 0) + '"><span class="pc-slider-val" id="pcBgBlurVal">' + (col.bgBlur || 0) + 'px</span></div></div>' +
+          '<div class="pc-group"><span class="pc-label">底色透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgOpacity" min="0" max="1" step="0.05" value="' + (col.bgOpacity != null ? col.bgOpacity : 1) + '"><span class="pc-slider-val" id="pcBgOpacityVal">' + Math.round((col.bgOpacity != null ? col.bgOpacity : 1) * 100) + '%</span></div></div>' +
+          '<div class="pc-group"><span class="pc-label">底色毛玻璃</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgBlur" min="0" max="30" step="1" value="' + (col.bgBlur || 0) + '"><span class="pc-slider-val" id="pcBgBlurVal">' + (col.bgBlur || 0) + 'px</span></div></div>' +
           '<div class="pc-group"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="0" max="8" step="0.5" value="' + col.borderW + '"><span class="pc-slider-val" id="pcBorderWVal">' + col.borderW + 'px</span></div></div>' +
-          '<div class="pc-group"><span class="pc-label">字体</span><select class="pc-input" id="pcFontSelect">' + Cards._buildFontOptions(col.fontFamily || '') + '</select></div>' +
+          '<div class="pc-group"><span class="pc-label">字体选择</span><select class="pc-input" id="pcFontSelect">' + Cards._buildFontOptions(col.fontFamily || '') + '</select></div>' +
         '</div>' +
         '<div class="pc-footer">' +
           '<button class="pc-btn pc-btn-save" id="pcSaveBtn" type="button">保 存</button>' +
