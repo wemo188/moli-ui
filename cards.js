@@ -623,7 +623,7 @@
       }).join('');
 
       panel.innerHTML =
-        '<div class="pc-header" id="ccDragHandle">编辑卡片<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
+               '<div class="pc-header" id="ccDragHandle">' + (side === 'left' ? '左侧卡片' : '右侧卡片') + '<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
         '<div class="pc-body">' +
           '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">' +
             '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">图片上传</button>' +
@@ -634,7 +634,6 @@
           '<div class="pc-group"><span class="pc-label">标签 2</span><input type="text" class="pc-input" id="pcTag2" value="' + App.escAttr(d.tag2 || '') + '"></div>' +
           '<div class="pc-group"><span class="pc-label">调色板</span><div class="pc-palette-grid">' + dotsHtml + '</div></div>' +
           '<div class="pc-group"><span class="pc-label">卡底透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgOpacity" min="0" max="1" step="0.05" value="' + (col.bgOpacity != null ? col.bgOpacity : 1) + '"><span class="pc-slider-val" id="pcBgOpacityVal">' + Math.round((col.bgOpacity != null ? col.bgOpacity : 1) * 100) + '%</span></div></div>' +
-          '<div class="pc-group"><span class="pc-label">毛玻璃</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgBlur" min="0" max="30" step="1" value="' + (col.bgBlur || 0) + '"><span class="pc-slider-val" id="pcBgBlurVal">' + (col.bgBlur || 0) + 'px</span></div></div>' +
           '<div class="pc-group"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="0" max="8" step="0.5" value="' + col.borderW + '"><span class="pc-slider-val" id="pcBorderWVal">' + col.borderW + 'px</span></div></div>' +
           '<div class="pc-group"><span class="pc-label">字体选择</span><select class="pc-input" id="pcFontSelect">' + Cards._buildFontOptions(col.fontFamily || '') + '</select></div>' +
         '</div>' +
@@ -668,9 +667,6 @@
 
       var opSlider = panel.querySelector('#pcBgOpacity'); var opVal = panel.querySelector('#pcBgOpacityVal');
       if (opSlider) opSlider.addEventListener('input', function() { col.bgOpacity = parseFloat(this.value); opVal.textContent = Math.round(col.bgOpacity * 100) + '%'; Cards.data[side].colors = col; Cards.applyColors(); });
-
-      var blurSlider = panel.querySelector('#pcBgBlur'); var blurVal = panel.querySelector('#pcBgBlurVal');
-      if (blurSlider) blurSlider.addEventListener('input', function() { col.bgBlur = parseInt(this.value); blurVal.textContent = col.bgBlur + 'px'; Cards.data[side].colors = col; Cards.applyColors(); });
 
       panel.querySelector('#pcFontSelect').addEventListener('change', function() { col.fontFamily = this.value; Cards.data[side].colors = col; Cards.applyColors(); });
 
