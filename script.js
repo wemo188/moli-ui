@@ -835,6 +835,14 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
     function setFromColor(colorStr){var parsed=parseColor(colorStr);currentHue=parsed.h;currentSat=parsed.s;currentLight=parsed.l;drawSpectrum();updateUI();}
 
     setFromColor(currentColor||'#111111');
+    hexInput.addEventListener('input',function(){
+      var v=this.value.trim();
+      if(v.indexOf('linear-gradient')>=0){overlay._setColor(v);return;}
+      if(/^[0-9a-fA-F]{6}$/.test(v)) v='#'+v;
+      if(/^[0-9a-fA-F]{3}$/.test(v)) v='#'+v[0]+v[0]+v[1]+v[1]+v[2]+v[2];
+      if(/^#[0-9a-fA-F]{3}$/.test(v)) v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];
+      if(/^#[0-9a-fA-F]{6}$/.test(v)) setFromColor(v);
+    });
     if(initGrad)updateGradPreview();
 
     overlay._setColor=function(c){
@@ -911,7 +919,7 @@ App.openColorPicker = function(currentColor, onConfirm, onChange, callerId) {
       });
     });
 
-    if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=parseInt(this.value);if(gradAngleValEl)gradAngleValEl.textContent=gradAngle+'°';updateGradPreview();selectedHex=getOutput();var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);});}
+if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=parseInt(this.value);if(gradAngleValEl)gradAngleValEl.textContent=gradAngle+'°';updateGradPreview();selectedHex=getOutput();hexInput.value=selectedHex;var changeFn=overlay._onChange;if(changeFn)changeFn(selectedHex);});}
 
     function rebindPresets(){
       presetsEl.innerHTML=buildPresetsHtml();
