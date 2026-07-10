@@ -757,9 +757,12 @@
         }
       });
       // 🌟 新增：字体设置（放在最后）
-  var polaFont = Polaroid.data.fontFamily || '';
-  document.querySelectorAll('.pola-text').forEach(function(el){
-    el.style.fontFamily = polaFont;
+        var polaFont = Polaroid.data.fontFamily || '';
+      document.querySelectorAll('.pola-text').forEach(function(el){
+        el.style.fontFamily = polaFont;
+      });
+      var rightCol = document.querySelector('.polaroid-right');
+      if(rightCol) rightCol.style.fontFamily = polaFont;
   });
     },
 
