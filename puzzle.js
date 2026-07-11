@@ -1,50 +1,78 @@
 
 /* ================================================
-   🌟 墨墨独立督造级高规 · 逻辑与锯齿双核拼图系统
-   （极致防变形切割守护版）
+   🌟 逻辑与锯齿双核拼图系统
    ================================================ */
 (function(){
   'use strict';
   var App = window.App; if(!App) return;
 
-  var Puz = {
+    var Puz = {
+    imgSrc: App.LS.get('pzCustomImg') || '',
+    currentScene: 'menu', // 新增：监控玩家当前所在的场景层级
+    panelEl: null,
+
     init: function() { App.safeOn('#iconPuzzle', 'click', function(){ Puz.openGame(); }); },
+
     openGame: function() {
       var old = document.getElementById('pzGamePanel'); if(old) { old.remove(); return; }
       var panel = document.createElement('div');
+      Puz.panelEl = panel;
+      Puz.currentScene = 'menu'; // 进门初始化为大厅
+
       panel.id = 'pzGamePanel'; panel.className = 'bf-sub-panel';
       panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">心算推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
+      
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
-      if(App.bindSwipeBack) App.bindSwipeBack(panel, function(){ panel.remove(); });
-      panel.querySelector('#pzBack').addEventListener('click', function(){ panel.classList.remove('show'); panel.classList.add('hidden'); setTimeout(function(){ panel.remove(); }, 350); });
+
+      // 【最高机密：接管全盘的返回层级算法】
+      function goBack() {
+        if(Puz.currentScene !== 'menu') {
+          // 在游戏房间里：不准退系统，滚回大厅！
+          Puz.showModeSelect(panel.querySelector('#pzGameContent'));
+        } else {
+          // 在大厅里：允许关灯走人，返回手机屏幕
+          panel.classList.remove('show'); panel.classList.add('hidden'); 
+          setTimeout(function(){ panel.remove(); }, 350);
+        }
+      }
+
+      // 接管系统原生的右滑动操作
+      if(App.bindSwipeBack) App.bindSwipeBack(panel, goBack);
+      
+      // 接管左上角真·返回键
+      panel.querySelector('#pzBack').addEventListener('click', goBack);
+      
       Puz.showModeSelect(panel.querySelector('#pzGameContent'));
     },
+
     showModeSelect: function(container) {
+      Puz.currentScene = 'menu'; // 锁定雷达
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
         '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div><div class="pz-mode-desc">滑块流转</div></div>' +
         '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">真拼图</div><div class="pz-mode-desc">硬核复苏记忆边缘</div></div>' +
       '</div></div>';
-      container.querySelector('#pzModeSlide').addEventListener('click', function(){ Slide.buildInto(container); });
-      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Jigsaw.buildInto(container); });
+      
+      container.querySelector('#pzModeSlide').addEventListener('click', function(){ 
+        Puz.currentScene = 'slide'; Slide.buildInto(container); 
+      });
+      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ 
+        Puz.currentScene = 'jigsaw'; Jigsaw.buildInto(container); 
+      });
     },
-    
-    // 【究极神核】在这里彻底杜绝任何形式的拉升、拉扁和扭曲！强制进行底照中心点 1:1 切割防卫！
+
     pickImage: function(title, callback) {
       if(!App.showImagePicker) return App.showToast('底座相册未开启');
       App.showImagePicker({ title: title, callback: function(src) { 
         if(src) { 
           var img = new Image(); img.crossOrigin = "anonymous";
           img.onload = function() {
-            var minSize = Math.min(img.width, img.height); // 寻找最短命门，确定最终不留痕迹的正方形裁面！
-            var sx = (img.width - minSize) / 2; // 只取灵魂中心
-            var sy = (img.height - minSize) / 2;
-            var cvs = document.createElement('canvas');
-            var maxSize = Math.min(minSize, 1200); // 防暴压制：不糊底但也别撑爆存盘阵
+            var minSize = Math.min(img.width, img.height); 
+            var sx = (img.width - minSize) / 2; var sy = (img.height - minSize) / 2;
+            var cvs = document.createElement('canvas'); var maxSize = Math.min(minSize, 1200); 
             cvs.width = maxSize; cvs.height = maxSize;
             cvs.getContext('2d').drawImage(img, sx, sy, minSize, minSize, 0, 0, maxSize, maxSize);
-            var safeSrc = cvs.toDataURL('image/jpeg', 0.95);
-            if(callback) callback(safeSrc);
+            if(callback) callback(cvs.toDataURL('image/jpeg', 0.95));
           };
           img.src = src;
         } 
