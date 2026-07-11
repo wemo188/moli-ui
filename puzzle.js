@@ -28,11 +28,14 @@
     showModeSelect: function(container) {
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
         '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div></div>' +
-        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div></div>' +
+        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">锯齿拼图</div></div>' +
+        // ★ 这里是加上的新卡片
+        '<div class="pz-mode-card" id="pzModeDiff"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><circle cx="20" cy="32" r="14" stroke="#9ca3b0" stroke-width="2.5"/><circle cx="44" cy="32" r="14" stroke="#9ca3b0" stroke-width="2.5"/><path d="M16 32h8m20-4l-8 8m8 0l-8-8" stroke="#9ca3b0" stroke-width="2.5" stroke-linecap="round"/></svg></div><div class="pz-mode-name">找不同</div></div>' +
       '</div></div>';
       
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); }); });
       container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('拼图', function(body){ Jigsaw.buildInto(body); }); });
+      container.querySelector('#pzModeDiff').addEventListener('click', function(){ Puz.openSubPanel('找不同', function(body){ Diff.buildInto(body); }); });
     },
 
     openSubPanel: function(title, buildFn) {
@@ -405,5 +408,186 @@
     delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('存档已清空'); }
   };
 
+  /* ============================
+     自动篡改型 - 找不同系统 (黑魔法运算)
+  ============================ */
+  var Diff = {
+    imgSrc: App.LS.get('pzDiffImg') || '',
+    canvas: null, ctx: null, img: null, imgW: 0, imgH: 0,
+    playing: false, spots: [], diffCount: 5, winMsg: null,
+    srcX: 0, srcY: 0, srcW: 0, srcH: 0, foundCount: 0,
+
+    buildInto: function(container) {
+      container.innerHTML = '';
+      var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
+      var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
+      
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '更换图片'; 
+      uploadBtn.onclick = function(){ Puz.pickImage('上传图片', function(src){ Diff.imgSrc = src; App.LS.set('pzDiffImg', src); Diff.initDraw(); }); };
+
+      var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
+      sizeSelect.innerHTML = '<option value="3">3处不同 </option><option value="5">5处不同 </option><option value="8">8处不同 </option>';
+      sizeSelect.value = String(Diff.diffCount);
+      sizeSelect.onchange = function(){ Diff.diffCount = parseInt(this.value); Diff.initDraw(); };
+
+      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '生成'; startBtn.onclick = function(){ Diff.scatter(); };
+      toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
+
+      var canvasWrap = document.createElement('div'); canvasWrap.className = 'pz-jigsaw-wrap';
+      var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
+      Diff.canvas = canvas; Diff.ctx = canvas.getContext('2d');
+
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win pz-hidden'; winMsg.innerHTML = '<div class="pz-win-box"><h3>金睛火眼</h3><span class="pz-win-text">所有幻象已被击破 ✨</span></div>'; Diff.winMsg = winMsg;
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzDiffEmpty'; emptyState.innerHTML = '<span>请先更换图案</span>';
+
+      canvasWrap.appendChild(canvas); canvasWrap.appendChild(winMsg); canvasWrap.appendChild(emptyState);
+
+      var statsWrap = document.createElement('div'); statsWrap.className = 'pz-stats-wrap';
+      var stepsDiv = document.createElement('div'); stepsDiv.className = 'pz-footer-stats'; stepsDiv.id = 'pzDiffStats'; stepsDiv.textContent = '已找出: 0 / 5'; 
+      statsWrap.appendChild(stepsDiv);
+
+      wrap.appendChild(toolbar); wrap.appendChild(canvasWrap); wrap.appendChild(statsWrap); container.appendChild(wrap);
+      Diff.bindTouch(); Diff.initDraw(); 
+    },
+
+    initDraw: function() {
+      if(Diff.winMsg) { Diff.winMsg.classList.remove('show'); Diff.winMsg.classList.add('pz-hidden'); }
+      var empty = document.getElementById('pzDiffEmpty');
+      
+      if(!Diff.imgSrc) { 
+        if(empty) empty.classList.remove('pz-hidden'); 
+        if(Diff.ctx && Diff.canvas) Diff.ctx.clearRect(0, 0, Diff.canvas.width, Diff.canvas.height);
+        document.getElementById('pzDiffStats').textContent = '待启动...'; return; 
+      }
+      if(empty) empty.classList.add('pz-hidden');
+
+      var cssW = document.querySelector('.pz-jigsaw-wrap').clientWidth - 12; 
+      // ★ 最优雅的裁剪魔法！手机很竖长，所以我们将照片压成稍微扁一点的 4:3 以免超出屏幕
+      var cssH_img = cssW * 0.75; 
+      var gapSpace = 10; 
+      var cssH_total = cssH_img * 2 + gapSpace; // 总体画布为：上半图 + 空隙 + 下半图
+
+      Diff.canvasCssW = cssW; Diff.canvasCssH = cssH_total;
+      var dpr = window.devicePixelRatio || 1; 
+      Diff.canvas.style.width = cssW + 'px'; Diff.canvas.style.height = cssH_total + 'px';
+      Diff.canvas.width = cssW * dpr; Diff.canvas.height = cssH_total * dpr;
+      Diff.ctx.scale(dpr, dpr);
+
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        Diff.img = img; Diff.imgW = cssW; Diff.imgH = cssH_img; 
+
+        // 智能计算裁剪位，保证照片完美贴满！
+        var targetRatio = Diff.imgW / Diff.imgH; var srcRatio = img.width / img.height;
+        var sW = img.width, sH = img.height, sX = 0, sY = 0;
+        if(srcRatio > targetRatio) { sW = img.height * targetRatio; sX = (img.width - sW) / 2; } 
+        else { sH = img.width / targetRatio; sY = (img.height - sH) / 2; }
+        
+        Diff.srcX = sX; Diff.srcY = sY; Diff.srcW = sW; Diff.srcH = sH;
+
+        Diff.playing = false; Diff.spots = []; Diff.foundCount = 0;
+        document.getElementById('pzDiffStats').textContent = '点击生成幻像开始！';
+        Diff.draw(); 
+      };
+      img.src = Diff.imgSrc;
+    },
+
+    scatter: function() {
+      if(!Diff.imgSrc) return App.showToast('要先上传原图哦');
+      Diff.playing = true; Diff.foundCount = 0;
+      if(Diff.winMsg) { Diff.winMsg.classList.remove('show'); Diff.winMsg.classList.add('pz-hidden'); }
+      document.getElementById('pzDiffStats').textContent = '已找出: 0 / ' + Diff.diffCount;
+
+      var filters = ['hue-rotate(90deg)', 'hue-rotate(-120deg)', 'invert(0.9)', 'saturate(4)', 'grayscale(1)'];
+      var r = Diff.imgW * 0.12; // 篡改圈的魔法大小
+      Diff.spots = [];
+      
+      // 不管怎样硬生生揪出对应个数的位置！
+      for(var i=0; i<Diff.diffCount; i++) {
+        var safety = 100, valid = false;
+        while(safety-- > 0 && !valid) {
+          var px = r + Math.random() * (Diff.imgW - r * 2);
+          var py = r + Math.random() * (Diff.imgH - r * 2);
+          var ok = true;
+          for(var j=0; j<Diff.spots.length; j++) { if(Math.hypot(px-Diff.spots[j].x, py-Diff.spots[j].y) < r*2.2) ok = false; }
+          if(ok) {
+            Diff.spots.push({ x: px, y: py, r: r, effect: filters[Math.floor(Math.random() * filters.length)], found: false });
+            valid = true;
+          }
+        }
+      }
+      Diff.draw();
+    },
+
+    draw: function() {
+      if(!Diff.img) return;
+      var ctx = Diff.ctx; var gap = 10;
+      ctx.clearRect(0, 0, Diff.canvasCssW, Diff.canvasCssH);
+
+      // 画出极其正常的顶图
+      ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, 0, Diff.imgW, Diff.imgH);
+      
+      // 画出看起来也很正常的底图
+      var bottomY = Diff.imgH + gap;
+      ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, bottomY, Diff.imgW, Diff.imgH);
+
+      // 给两兄弟之间拉一条极其帅气的防线
+      ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0, Diff.imgH, Diff.imgW, gap);
+
+      // 黑魔法显灵！对生成的随机圈进行恐怖篡改！
+      if(Diff.playing || Diff.foundCount > 0) {
+        for(var i=0; i<Diff.spots.length; i++) {
+          var sp = Diff.spots[i];
+          if(!sp.found) {
+            ctx.save();
+            ctx.beginPath(); ctx.arc(sp.x, bottomY + sp.y, sp.r, 0, Math.PI * 2); ctx.clip();
+            ctx.filter = sp.effect; 
+            ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, bottomY, Diff.imgW, Diff.imgH);
+            ctx.restore();
+          } else {
+            // 被抓住了，原形毕露！（原有的伪装被上面的基础画给吃掉，此处只勾勒审判圆）
+            ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2);
+            ctx.lineWidth = 3; ctx.strokeStyle = '#c9706b'; ctx.stroke();
+            
+            ctx.beginPath(); ctx.arc(sp.x, bottomY + sp.y, sp.r, 0, Math.PI*2);
+            ctx.lineWidth = 3; ctx.strokeStyle = '#c9706b'; ctx.stroke();
+          }
+        }
+      }
+    },
+
+    bindTouch: function() {
+      function getP(e) { var r = Diff.canvas.getBoundingClientRect(); var t = e.touches ? e.touches[0] : e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
+      
+      var ck = function(e){
+        if(!Diff.playing) return;
+        var p = getP(e); e.preventDefault();
+        
+        // 算出这下点到哪里了
+        var tapY = p.y;
+        var normY = tapY;
+        if(tapY > Diff.imgH) normY = tapY - Diff.imgH - 10; // 从底层强行反推出表层的高度逻辑
+        
+        var hit = false;
+        for(var i=0; i<Diff.spots.length; i++){
+          var sp = Diff.spots[i];
+          if(!sp.found && Math.hypot(p.x - sp.x, normY - sp.y) < sp.r + 15) { // 稍微扩大一点点捕捉圈的命中率
+            sp.found = true; hit = true; Diff.foundCount++;
+            if(navigator.vibrate) navigator.vibrate(10);
+          }
+        }
+        if(hit) {
+          Diff.draw(); document.getElementById('pzDiffStats').textContent = '已找出: ' + Diff.foundCount + ' / ' + Diff.diffCount;
+          if(Diff.foundCount >= Diff.diffCount) {
+            Diff.playing = false; Diff.winMsg.classList.remove('pz-hidden');
+            setTimeout(function(){ if(Diff.winMsg){ Diff.winMsg.classList.add('show'); setTimeout(function(){Diff.winMsg.classList.remove('show'); Diff.winMsg.classList.add('pz-hidden');}, 3500); }}, 300);
+          }
+        }
+      };
+      Diff.canvas.addEventListener('touchstart', ck, {passive:false});
+      Diff.canvas.addEventListener('mousedown', ck);
+    }
+  };
+  
   App.register('puzzle', Puz);
 })();
