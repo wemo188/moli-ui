@@ -245,13 +245,12 @@
       Jigsaw.bindTouch(); Jigsaw.loadGameOrInit(); 
     },
 
-    initDraw: function(loadCallback) {
+        initDraw: function(loadCallback) {
       if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
       var empty = document.getElementById('pzJigsawEmpty');
       
       if(!Jigsaw.imgSrc) { 
         if(empty) empty.classList.remove('pz-hidden'); 
-        // ★ 核心修复：如果是空状态，不仅要展示文字，还必须拿“黑板擦”把 Canvas 画板物理擦除！
         if(Jigsaw.ctx && Jigsaw.canvas) Jigsaw.ctx.clearRect(0, 0, Jigsaw.canvas.width, Jigsaw.canvas.height);
         return; 
       }
@@ -259,49 +258,39 @@
 
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
-      var gapSpace = 12; var trayH = cssW * 0.35; 
-      var cssH = cssW + gapSpace + trayH; 
-      Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH;
 
+      // ★★★ 在这里！拼图画布到底拉多长，你说了算！★★★
+      // 1.0 是正方形，1.35 就是高级长方形，随意改！
+      var puzzleRatio = 1.35; 
+      var cssH_img = cssW * puzzleRatio; 
+      
+      // 下方的托盘高度
+      var gapSpace = 12; var trayH = cssW * 0.35; 
+      var cssH_total = cssH_img + gapSpace + trayH; 
+      
+      Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH_total;
       var dpr = window.devicePixelRatio || 1; 
-      Jigsaw.canvas.style.width = cssW + 'px'; Jigsaw.canvas.style.height = cssH + 'px';
-      Jigsaw.canvas.width = cssW * dpr; Jigsaw.canvas.height = cssH * dpr;
+      Jigsaw.canvas.style.width = cssW + 'px'; Jigsaw.canvas.style.height = cssH_total + 'px';
+      Jigsaw.canvas.width = cssW * dpr; Jigsaw.canvas.height = cssH_total * dpr;
       Jigsaw.ctx.scale(dpr, dpr);
 
       var img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = function() {
-        Jigsaw.img = img; Jigsaw.imgW = cssW; Jigsaw.imgH = cssW; 
+        Jigsaw.img = img; Jigsaw.imgW = cssW; Jigsaw.imgH = cssH_img; 
         Jigsaw.pieceW = Jigsaw.imgW / Jigsaw.cols; Jigsaw.pieceH = Jigsaw.imgH / Jigsaw.rows;
+
+        // 【居中放大计算区：保证图片绝不被拉伸压扁】
+        var targetRatio = Jigsaw.imgW / Jigsaw.imgH;
+        var srcRatio = img.width / img.height;
+        var sW = img.width, sH = img.height, sX = 0, sY = 0;
+        if(srcRatio > targetRatio) { sW = img.height * targetRatio; sX = (img.width - sW) / 2; } 
+        else { sH = img.width / targetRatio; sY = (img.height - sH) / 2; }
+        
+        Jigsaw.srcX = sX; Jigsaw.srcY = sY; Jigsaw.srcW = sW; Jigsaw.srcH = sH;
+
         if(loadCallback) loadCallback(); else { Jigsaw.playing = false; Jigsaw.generatePieces(); Jigsaw.draw(); }
       };
       img.src = Jigsaw.imgSrc;
-    },
-    
-    generatePieces: function() {
-      Jigsaw.pieces = [];
-      for(var r = 0; r < Jigsaw.rows; r++){
-        for(var c = 0; c < Jigsaw.cols; c++){
-          Jigsaw.pieces.push({ col: c, row: r, targetX: c * Jigsaw.pieceW, targetY: r * Jigsaw.pieceH, x: c * Jigsaw.pieceW, y: r * Jigsaw.pieceH, placed: false, flashAnim: 0 });
-        }
-      }
-    },
-
-    scatter: function() {
-      if(!Jigsaw.imgSrc) return App.showToast('请先加载图案再打乱');
-      Jigsaw.playing = true; 
-      if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
-      
-      var gap = 12; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
-      var pW = Jigsaw.pieceW, pH = Jigsaw.pieceH;
-      var padX = pW * 0.35; var padY = pH * 0.35;
-
-      for(var i = 0; i < Jigsaw.pieces.length; i++){
-        var p = Jigsaw.pieces[i];
-        p.x = padX + Math.random() * Math.max(1, (Jigsaw.canvasCssW - pW - padX * 2));
-        p.y = boxTopY + padY + Math.random() * Math.max(1, (trayH - pH - padY * 2)); 
-        p.placed = false; p.flashAnim = 0;
-      }
-      Jigsaw.draw();
     },
 
     draw: function() {
@@ -311,7 +300,12 @@
       ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
       ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.strokeRect(0.5, 0.5, Jigsaw.imgW - 1, Jigsaw.imgH - 1);
 
-      if(Jigsaw.img && !Jigsaw.playing) { ctx.globalAlpha = winFinished ? 1.0 : 0.4; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1; }
+      if(Jigsaw.img && !Jigsaw.playing) { 
+        ctx.globalAlpha = winFinished ? 1.0 : 0.4; 
+        // 关键放大绘画法
+        ctx.drawImage(Jigsaw.img, Jigsaw.srcX, Jigsaw.srcY, Jigsaw.srcW, Jigsaw.srcH, 0, 0, Jigsaw.imgW, Jigsaw.imgH); 
+        ctx.globalAlpha = 1; 
+      }
 
       var gap = 12; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
       if(!winFinished) {
@@ -320,7 +314,6 @@
       }
 
       if (winFinished) return;
-
       for(var i = 0; i < Jigsaw.pieces.length; i++){ var p = Jigsaw.pieces[i]; if(p === Jigsaw.dragging) continue; Jigsaw.drawPiece(p); }
       if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging); 
     },
@@ -333,7 +326,10 @@
       ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      ctx.clip(); ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); ctx.restore();
+      ctx.clip(); 
+      // 关键放大绘画法
+      ctx.drawImage(Jigsaw.img, Jigsaw.srcX, Jigsaw.srcY, Jigsaw.srcW, Jigsaw.srcH, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); 
+      ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
       if(!p.placed) { ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 0.8; ctx.stroke(); } else { ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.6; ctx.stroke(); }
