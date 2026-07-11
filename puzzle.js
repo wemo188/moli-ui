@@ -187,9 +187,19 @@
         Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty });
         Slide.core.appendChild(t);
 
-        (function(idx){
-          t.addEventListener('click', function(){ Slide.moveTile(idx); });
-        })(i);
+              (function(idx, el){
+          var sx = 0, sy = 0;
+          el.addEventListener('touchstart', function(e){
+            var touch = e.touches[0];
+            sx = touch.clientX; sy = touch.clientY;
+          }, {passive: true});
+          el.addEventListener('touchend', function(e){
+            var touch = e.changedTouches[0];
+            var dx = Math.abs(touch.clientX - sx);
+            var dy = Math.abs(touch.clientY - sy);
+            if(dx < 15 && dy < 15) Slide.moveTile(idx);
+          }, {passive: true});
+        })(i, t);
       }
     },
 
@@ -215,7 +225,7 @@
       Slide.playing = true;
       if(Slide.winMsg) Slide.winMsg.classList.remove('show');
 
-      var steps = Slide.size * Slide.size * 30;
+      var steps = Slide.size * Slide.size * 8;
       for(var i = 0; i < steps; i++){
         var movable = [];
         for(var j = 0; j < Slide.tiles.length; j++){
