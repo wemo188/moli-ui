@@ -43,7 +43,10 @@
 }
 
 .pz-slide-core {
-  position: relative; width: 390px; height: 390px; 
+  margin: 0 auto;  /* 水平居中 */
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);  /* 垂直居中 */
   border-radius: 14px; background: rgba(0,0,0,0.05); 
   overflow: hidden; 
 }
@@ -95,7 +98,13 @@
 
 /* 模式选项卡 */
 .pz-mode-select { display: flex; gap: 16px; justify-content: center; padding: 40px 20px; }
-.pz-mode-card { flex: 1; max-width: 140px; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 16px; border-radius: 16px; background: #f5f5f5; border: 1.5px solid rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s; }
+.pz-mode-card { 
+  flex: 1; 
+  max-width: 140px;      
+  min-height: 140px;      /* ← 新增：强制最小高度，让卡片变方 */
+  padding: 24px 16px;     
+  justify-content: center; /* ← 新增：让内容垂直居中 */
+}
 .pz-mode-card:active { transform: scale(0.95); background: #eee; }
 .pz-mode-icon { width: 48px; height: 48px; }
 .pz-mode-icon svg { width: 100%; height: 100%; }
