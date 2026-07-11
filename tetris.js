@@ -1,4 +1,3 @@
-
 /* ================================================
    🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js)
    ================================================ */
@@ -14,7 +13,6 @@
     dropStart: 0, gameOver: false, paused: false, reqId: null,
     scoreEl: null, overlayEl: null,
 
-    // 冰透马卡龙配色
     COLORS: [ null, '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF', '#D4A5A5', '#E2F0CB' ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
@@ -44,19 +42,10 @@
         '<div class="tt-wrap">' +
           '<div class="tt-card">' +
             '<div class="tt-card-top"><div class="tt-led tt-led-on"></div><div class="tt-led"></div><div class="tt-led"></div></div>' +
+            
             '<div class="tt-card-body">' +
               
-              '<!-- 左侧旋转区 -->' +
-              '<div class="tt-left">' +
-                '<div class="tt-paw-btn" id="ttBtnRotate">' +
-                  '<div class="tt-paw-inner">' +
-                    '<div class="tt-pp tt-pp-t1"></div><div class="tt-pp tt-pp-t2"></div><div class="tt-pp tt-pp-t3"></div><div class="tt-pp tt-pp-t4"></div><div class="tt-pp tt-pp-main"></div>' +
-                  '</div>' +
-                '</div>' +
-                '<div class="tt-btn-label">旋转</div>' +
-              '</div>' +
-
-              '<!-- 中间主屏幕 -->' +
+              '<!-- 上半部分：主屏幕 -->' +
               '<div class="tt-screen-wrap">' +
                 '<div class="tt-screen">' +
                   '<div class="tt-screen-badge">' +
@@ -73,17 +62,35 @@
                 '</div>' +
               '</div>' +
 
-              '<!-- 右侧方向区 -->' +
-              '<div class="tt-right">' +
-                '<div class="tt-act-btn" id="ttBtnReset">重置</div>' +
-                '<div class="tt-dpad">' +
-                  '<div class="tt-dpad-btn tt-dpad-up" id="ttBtnPause" title="暂停/继续"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></div>' +
-                  '<div class="tt-dpad-btn tt-dpad-left" id="ttBtnLeft"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-                  '<div class="tt-dpad-btn tt-dpad-right" id="ttBtnRight"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-                  '<div class="tt-dpad-btn tt-dpad-down" id="ttBtnDown"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>' +
+              '<!-- 下半部分：操控区 -->' +
+              '<div class="tt-controls-row">' +
+                
+                '<!-- 左侧旋转 -->' +
+                '<div class="tt-left">' +
+                  '<div class="tt-paw-btn" id="ttBtnRotate">' +
+                    '<div class="tt-paw-inner">' +
+                      '<div class="tt-pp tt-pp-t1"></div><div class="tt-pp tt-pp-t2"></div><div class="tt-pp tt-pp-t3"></div><div class="tt-pp tt-pp-t4"></div><div class="tt-pp tt-pp-main"></div>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div class="tt-btn-label">旋转</div>' +
                 '</div>' +
-              '</div>' +
 
+                '<!-- 中间重置 -->' +
+                '<div class="tt-center">' +
+                  '<div class="tt-act-btn" id="ttBtnReset">重置</div>' +
+                '</div>' +
+
+                '<!-- 右侧十字键 -->' +
+                '<div class="tt-right">' +
+                  '<div class="tt-dpad">' +
+                    '<div class="tt-dpad-btn tt-dpad-up" id="ttBtnPause" title="暂停/继续"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-left" id="ttBtnLeft"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-right" id="ttBtnRight"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-down" id="ttBtnDown"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>' +
+                  '</div>' +
+                '</div>' +
+
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>';
@@ -93,9 +100,15 @@
       TT.canvas = container.querySelector('#ttCanvas');
       TT.ctx = TT.canvas.getContext('2d');
 
-      // 动态计算屏幕画布大小，严丝合缝填满！
-      var containerW = container.querySelector('.tt-canvas-container').clientWidth;
-      TT.BLOCK_SIZE = Math.floor(containerW / TT.COLS);
+      // ★ 智能高度防超屏计算：以屏幕高度的52%为极限基准去画竖屏，保证下面按钮不会被挤掉
+      var wrapW = container.querySelector('.tt-canvas-container').clientWidth || 240;
+      var maxCvsHeight = window.innerHeight * 0.52; 
+      var blockSizeW = Math.floor(wrapW / TT.COLS);
+      var blockSizeH = Math.floor(maxCvsHeight / TT.ROWS);
+      
+      TT.BLOCK_SIZE = Math.min(blockSizeW, blockSizeH); 
+      if (TT.BLOCK_SIZE < 10) TT.BLOCK_SIZE = 10; // 保底限制
+      
       var cvsW = TT.BLOCK_SIZE * TT.COLS;
       var cvsH = TT.BLOCK_SIZE * TT.ROWS;
 
