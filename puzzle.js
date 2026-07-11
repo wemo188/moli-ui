@@ -492,17 +492,17 @@
       img.src = Diff.imgSrc;
     },
 
-    scatter: function() {
-      if(!Diff.imgSrc) return App.showToast('要先上传原图哦');
+        scatter: function() {
+      if(!Diff.imgSrc) return App.showToast('得先上传原片啊宝贝');
       Diff.playing = true; Diff.foundCount = 0;
       if(Diff.winMsg) { Diff.winMsg.classList.remove('show'); Diff.winMsg.classList.add('pz-hidden'); }
       document.getElementById('pzDiffStats').textContent = '已找出: 0 / ' + Diff.diffCount;
 
-      var filters = ['hue-rotate(90deg)', 'hue-rotate(-120deg)', 'invert(0.9)', 'saturate(4)', 'grayscale(1)'];
-      var r = Diff.imgW * 0.12; // 篡改圈的魔法大小
+      // ★ 新法术：不用会失效的滤镜了！直接物理倒置：水平翻转、垂直翻转、倒立、局部放大！
+      var transTypes = ['flipH', 'flipV', 'rot180', 'zoom'];
+      var r = Diff.imgW * 0.12; 
       Diff.spots = [];
       
-      // 不管怎样硬生生揪出对应个数的位置！
       for(var i=0; i<Diff.diffCount; i++) {
         var safety = 100, valid = false;
         while(safety-- > 0 && !valid) {
@@ -511,7 +511,7 @@
           var ok = true;
           for(var j=0; j<Diff.spots.length; j++) { if(Math.hypot(px-Diff.spots[j].x, py-Diff.spots[j].y) < r*2.2) ok = false; }
           if(ok) {
-            Diff.spots.push({ x: px, y: py, r: r, effect: filters[Math.floor(Math.random() * filters.length)], found: false });
+            Diff.spots.push({ x: px, y: py, r: r, type: transTypes[Math.floor(Math.random() * transTypes.length)], found: false });
             valid = true;
           }
         }
@@ -524,28 +524,31 @@
       var ctx = Diff.ctx; var gap = 10;
       ctx.clearRect(0, 0, Diff.canvasCssW, Diff.canvasCssH);
 
-      // 画出极其正常的顶图
+      // 上层完美原图
       ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, 0, Diff.imgW, Diff.imgH);
       
-      // 画出看起来也很正常的底图
       var bottomY = Diff.imgH + gap;
       ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, bottomY, Diff.imgW, Diff.imgH);
-
-      // 给两兄弟之间拉一条极其帅气的防线
       ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0, Diff.imgH, Diff.imgW, gap);
 
-      // 黑魔法显灵！对生成的随机圈进行恐怖篡改！
       if(Diff.playing || Diff.foundCount > 0) {
         for(var i=0; i<Diff.spots.length; i++) {
           var sp = Diff.spots[i];
           if(!sp.found) {
             ctx.save();
             ctx.beginPath(); ctx.arc(sp.x, bottomY + sp.y, sp.r, 0, Math.PI * 2); ctx.clip();
-            ctx.filter = sp.effect; 
+            
+            // ★ 新版物理篡改术，苹果浏览器再也没法假装看不见了！
+            ctx.translate(sp.x, bottomY + sp.y);
+            if(sp.type === 'flipH') ctx.scale(-1, 1);
+            else if(sp.type === 'flipV') ctx.scale(1, -1);
+            else if(sp.type === 'rot180') ctx.rotate(Math.PI);
+            else if(sp.type === 'zoom') ctx.scale(1.4, 1.4);
+            ctx.translate(-sp.x, -(bottomY + sp.y));
+
             ctx.drawImage(Diff.img, Diff.srcX, Diff.srcY, Diff.srcW, Diff.srcH, 0, bottomY, Diff.imgW, Diff.imgH);
             ctx.restore();
           } else {
-            // 被抓住了，原形毕露！（原有的伪装被上面的基础画给吃掉，此处只勾勒审判圆）
             ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2);
             ctx.lineWidth = 3; ctx.strokeStyle = '#c9706b'; ctx.stroke();
             
@@ -563,25 +566,35 @@
         if(!Diff.playing) return;
         var p = getP(e); e.preventDefault();
         
-        // 算出这下点到哪里了
         var tapY = p.y;
         var normY = tapY;
-        if(tapY > Diff.imgH) normY = tapY - Diff.imgH - 10; // 从底层强行反推出表层的高度逻辑
+        if(tapY > Diff.imgH) normY = tapY - Diff.imgH - 10; 
         
         var hit = false;
         for(var i=0; i<Diff.spots.length; i++){
           var sp = Diff.spots[i];
-          if(!sp.found && Math.hypot(p.x - sp.x, normY - sp.y) < sp.r + 15) { // 稍微扩大一点点捕捉圈的命中率
+          if(!sp.found && Math.hypot(p.x - sp.x, normY - sp.y) < sp.r) { 
             sp.found = true; hit = true; Diff.foundCount++;
             if(navigator.vibrate) navigator.vibrate(10);
           }
         }
+
         if(hit) {
           Diff.draw(); document.getElementById('pzDiffStats').textContent = '已找出: ' + Diff.foundCount + ' / ' + Diff.diffCount;
           if(Diff.foundCount >= Diff.diffCount) {
             Diff.playing = false; Diff.winMsg.classList.remove('pz-hidden');
             setTimeout(function(){ if(Diff.winMsg){ Diff.winMsg.classList.add('show'); setTimeout(function(){Diff.winMsg.classList.remove('show'); Diff.winMsg.classList.add('pz-hidden');}, 3500); }}, 300);
           }
+        } else {
+          // ★ 防瞎点惩罚魔法发动！点错了就会狠狠震动，然后送你个刺眼的漂浮红叉叉！
+          if(navigator.vibrate) navigator.vibrate([20,30,50]);
+          var err = document.createElement('div');
+          err.innerHTML = '❌';
+          err.style.cssText = 'position:absolute; color:#c9706b; font-size:24px; left:'+p.x+'px; top:'+p.y+'px; transform:translate(-50%,-50%); z-index:100; pointer-events:none; transition:all 0.5s ease; text-shadow:0 0 5px white;';
+          Diff.canvas.parentNode.appendChild(err);
+          // 用JS模拟极速消散特效，不写CSS脏代码
+          setTimeout(function(){ err.style.opacity = '0'; err.style.transform = 'translate(-50%, -100%) scale(1.5)'; }, 10);
+          setTimeout(function(){ err.remove(); }, 500);
         }
       };
       Diff.canvas.addEventListener('touchstart', ck, {passive:false});
