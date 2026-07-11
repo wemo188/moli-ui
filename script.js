@@ -1608,7 +1608,7 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
     if (!slider) return;
 
     var currentPage = 0;
-    var totalPages = 2;
+    var totalPages = 3;
     var startX = 0;
     var startY = 0;
     var currentX = 0;
