@@ -187,7 +187,7 @@
   ============================ */
   var Jigsaw = {
     imgSrc: App.LS.get('pzJigsawImg') || '',
-    canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
+    canvas: null, ctx: null, pieces: [], cols: 6, rows: 6, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
     dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
 
     buildInto: function(container) {
