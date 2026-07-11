@@ -13,7 +13,7 @@
       var old = document.getElementById('pzGamePanel'); if(old) { old.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'pzGamePanel'; panel.className = 'bf-sub-panel';
-      panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">益智推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
+      panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">心算推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
       if(App.bindSwipeBack) App.bindSwipeBack(panel, function(){ panel.remove(); });
@@ -46,13 +46,13 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
 
       var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
-      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重置'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Slide.resetAndBuild(); }); };
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重录印迹'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Slide.resetAndBuild(); }); };
       
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
       sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option>';
       sizeSelect.value = String(Slide.size); sizeSelect.onchange = function(){ Slide.size = parseInt(this.value); Slide.resetAndBuild(); };
 
-      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Slide.shuffle(); };
+      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱出阵'; startBtn.onclick = function(){ Slide.shuffle(); };
       toolbar.appendChild(backBtn); toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var board = document.createElement('div'); board.className = 'pz-slide-board';
@@ -127,7 +127,7 @@
       for(var i=0; i<Slide.tiles.length; i++) { if(Slide.tiles[i].x !== Slide.tiles[i].targetX || Slide.tiles[i].y !== Slide.tiles[i].targetY) return; } 
       Slide.playing = false; 
       var baseSteps = Slide.size * Slide.size * 5; var msg = '';
-      if(Slide.steps <= baseSteps * 1.5) msg = "你太厉害了吧"; else if (Slide.steps <= baseSteps * 3.5) msg = "哎哟，不错哦"; else msg = "宝宝棒棒哒";
+      if(Slide.steps <= baseSteps * 1.5) msg = "神乎其技，完美推演 ✨"; else if (Slide.steps <= baseSteps * 3.5) msg = "思路清晰，顺利破局 🌸"; else msg = "百折不挠，终解残局 💦";
       Slide.winMsg.innerHTML = '<div class="pz-win-box"><h3>阵法已破</h3><span style="margin-top:6px;display:block;">耗时：<b style="color:#7ea3c9;font-size:16px;">'+Slide.steps+'</b> 步<br><span style="opacity:0.8;font-size:12px;margin-top:4px;display:block;">' + msg + '</span></span></div>';
       setTimeout(function(){ if(Slide.winMsg) { Slide.winMsg.classList.add('show'); setTimeout(function(){Slide.winMsg.classList.remove('show');},3500); } }, 300); 
     },
@@ -137,7 +137,7 @@
   };
 
   /* ============================
-     锯齿物理真画引擎 (厚实质感描边+全防糊处理+卡位白光震颤闪效)
+     锯齿真拼图引擎 (完美避界缩进收纳 + 半限缩切边保护防吃纹理)
   ============================ */
   var Jigsaw = {
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
@@ -214,11 +214,18 @@
     scatter: function() {
       if(!Puz.imgSrc) return App.showToast('底照干涸，拼盘崩解');
       Jigsaw.playing = true; if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show');
+      
       var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
+      
+      // 🌟【重点：向内圈缩聚散落缓冲保护区！！！杜绝靠边隐匿死角的产生！】
+      var pW = Jigsaw.pieceW, pH = Jigsaw.pieceH;
+      var padX = pW * 0.35; // 保护厚度
+      var padY = pH * 0.35;
+
       for(var i = 0; i < Jigsaw.pieces.length; i++){
         var p = Jigsaw.pieces[i];
-        p.x = 2 + Math.random() * Math.max(1, (Jigsaw.canvasCssW - Jigsaw.pieceW - 4));
-        p.y = boxTopY + 2 + Math.random() * Math.max(1, (trayH - Jigsaw.pieceH - 4)); 
+        p.x = padX + Math.random() * Math.max(1, (Jigsaw.canvasCssW - pW - padX * 2));
+        p.y = boxTopY + padY + Math.random() * Math.max(1, (trayH - pH - padY * 2)); 
         p.placed = false; p.flashAnim = 0;
       }
       Jigsaw.draw();
@@ -228,20 +235,19 @@
       var ctx = Jigsaw.ctx; ctx.clearRect(0, 0, Jigsaw.canvasCssW, Jigsaw.canvasCssH);
       var winFinished = !Jigsaw.playing && Jigsaw.pieces.length>0 && Jigsaw.pieces.every(function(pi){ return pi.placed; });
       
-      // ===== 天堂区放置台（绝无图透的盲操作体验）=====
+      // ===== 绝杀：画布框架内收0.5！强防边框啃没像素黑边 =====
       ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
-      ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.strokeRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
+      ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.strokeRect(0.5, 0.5, Jigsaw.imgW - 1, Jigsaw.imgH - 1);
+
       if(Jigsaw.img && !Jigsaw.playing) { ctx.globalAlpha = winFinished ? 1.0 : 0.4; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1; }
 
-      // ===== 地狱深坑存储箱 =====
       var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
       if(!winFinished) {
          ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
-         ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 1.5; ctx.strokeRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
+         ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 1.5; ctx.strokeRect(0.5, boxTopY + 0.5, Jigsaw.canvasCssW - 1, trayH - 1);
       }
 
-      // ===== 判断通关消融效果：赢了之后一切缝隙灰飞烟灭！ =====
-      if (winFinished) return; // 让线条就此人间蒸发！不画碎片图元了，已经全铺底了。
+      if (winFinished) return;
 
       for(var i = 0; i < Jigsaw.pieces.length; i++){ var p = Jigsaw.pieces[i]; if(p === Jigsaw.dragging) continue; Jigsaw.drawPiece(p); }
       if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging); 
@@ -250,25 +256,22 @@
     drawPiece: function(p) {
       var ctx = Jigsaw.ctx; var pw = Jigsaw.pieceW, ph = Jigsaw.pieceH; var tab = pw * 0.18; 
       
-      // 实体超长黑影（创造高度差脱离感）
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      if(!p.placed) { ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 6; ctx.fillStyle = '#000'; ctx.fill(); }
+      if(!p.placed) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 4; ctx.fillStyle = '#000'; ctx.fill(); }
       ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
       ctx.clip(); ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); ctx.restore();
 
+      // 这里给你留住了最细腻冰冷的单纯黑线
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
       if(!p.placed) {
-        ctx.strokeStyle = 'rgba(0,0,0,0.9)'; ctx.lineWidth = 1.8; ctx.stroke(); // 黑重围线
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 0.5; ctx.stroke(); // 厚玻璃感反光侧高光边
+        ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 0.8; ctx.stroke(); 
       } else {
-        ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 0.6; ctx.stroke(); // 已嵌入：深深微淡痕边！
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 0.4; ctx.stroke(); // 双重细压边
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.6; ctx.stroke(); 
       }
       ctx.restore();
 
-      // 吸附落入槽位那一瞬间引发的光影聚爆反馈机制！(核心打击爽点！！！)
       if(p.flashAnim > 0) {
         ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
         ctx.fillStyle = 'rgba(255,255,255,'+p.flashAnim+')'; ctx.fill(); ctx.restore();
@@ -295,16 +298,14 @@
 
       var ce = function(e){ 
         if(!Jigsaw.dragging) return; var p = Jigsaw.dragging; Jigsaw.dragging = null; var dx = Math.abs(p.x - p.targetX), dy = Math.abs(p.y - p.targetY);
-        // 【绝对致命打击感的吸附闪效反馈机制】
         if(dx < Jigsaw.snapDist && dy < Jigsaw.snapDist) { 
            p.x = p.targetX; p.y = p.targetY; p.placed = true; 
            if(navigator.vibrate) navigator.vibrate(20); 
-           // 让这块放准的版高爆射一帧强光白！！再极速随时间缩减
            p.flashAnim = 0.9;
            var fT = setInterval(function(){
               p.flashAnim -= 0.08; 
               if(p.flashAnim <= 0) { p.flashAnim = 0; clearInterval(fT); }
-              Jigsaw.draw(); // 不断高刷
+              Jigsaw.draw(); 
            }, 1000/60);
         } else { Jigsaw.draw(); }
         Jigsaw.checkWin();
@@ -314,17 +315,13 @@
 
     checkWin: function() { 
       for(var i=0; i<Jigsaw.pieces.length; i++){ if(!Jigsaw.pieces[i].placed) return; } 
-      Jigsaw.playing = false; 
-      Jigsaw.draw(); // 会触发我的究极胜利神之抹线判断：消除全裂纹回归成壁纸图！
-      setTimeout(function(){ 
-        if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); 
-        setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show'); }, 2800); // 你要求的：绝不霸屏碍眼看大图，看两眼自己优雅滚走！
-      }, 500); 
+      Jigsaw.playing = false; Jigsaw.draw(); 
+      setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show'); }, 2800); }, 500); 
     },
     
-    saveGame: function() { if(!Puz.imgSrc) return App.showToast('毫无羁绊无法储影'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('落回凝核云存储！'); },
+    saveGame: function() { if(!Puz.imgSrc) return App.showToast('画像还未赋予画纸！'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
     loadGameOrInit: function() { var snap = App.LS.get('mmPzJigsawSave'); if(!snap || !Puz.imgSrc) { Jigsaw.initDraw(); return; } Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols); Jigsaw.initDraw(function() { Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; } Jigsaw.draw(); }); },
-    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('一切尘封已归尽空谷'); }
+    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消灭于虚无'); }
   };
   App.register('puzzle', Puz);
 })();
