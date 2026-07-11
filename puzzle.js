@@ -28,11 +28,11 @@
     showModeSelect: function(container) {
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
         '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div></div>' +
-        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">锯齿拼图</div></div>' +
+        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div></div>' +
       '</div></div>';
       
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); }); });
-      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('锯齿拼图', function(body){ Jigsaw.buildInto(body); }); });
+      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('拼图', function(body){ Jigsaw.buildInto(body); }); });
     },
 
     openSubPanel: function(title, buildFn) {
@@ -215,7 +215,7 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
       
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
-      uploadBtn.onclick = function(){ Puz.pickImage('上传锯齿图案', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); };
+      uploadBtn.onclick = function(){ Puz.pickImage('上传拼图图案', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); };
 
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
       // 锯齿这里保留你要的 6到10 高强度盲盒区
