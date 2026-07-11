@@ -20,7 +20,7 @@
       Puz.currentScene = 'menu'; // 进门初始化为大厅
 
       panel.id = 'pzGamePanel'; panel.className = 'bf-sub-panel';
-      panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">心算推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
+      panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">益智推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
       
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
@@ -47,10 +47,11 @@
     },
 
     showModeSelect: function(container) {
-      Puz.currentScene = 'menu'; // 锁定雷达
+      Puz.currentScene = 'menu';
+      // 删除了 .pz-mode-desc 这段赘述文字，只保留纯正的主名字
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
-        '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div><div class="pz-mode-desc">滑块流转</div></div>' +
-        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">真拼图</div><div class="pz-mode-desc">硬核复苏记忆边缘</div></div>' +
+        '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div></div>' +
+        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div></div>' +
       '</div></div>';
       
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ 
@@ -84,6 +85,7 @@
      滑动推算版 (华容道)
   ============================ */
   var Slide = {
+    Puz.currentScene = 'game';
     imgSrc: App.LS.get('pzSlideImg') || '',
     core: null, winMsg: null, emptyState: null,
     size: 4, coreSize: 0, tileSize: 0, tiles: [], emptyPos: {x:0, y:0}, playing: false, steps: 0, stepsText: null,
@@ -92,10 +94,8 @@
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
-
-      var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
       
-      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重录印迹'; 
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
       uploadBtn.onclick = function(){ 
         Puz.pickImage('载入华容道画景', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); 
       };
@@ -104,8 +104,8 @@
       sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option>';
       sizeSelect.value = String(Slide.size); sizeSelect.onchange = function(){ Slide.size = parseInt(this.value); Slide.resetAndBuild(); };
 
-      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱出阵'; startBtn.onclick = function(){ Slide.shuffle(); };
-      toolbar.appendChild(backBtn); toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
+      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Slide.shuffle(); };
+       toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var board = document.createElement('div'); board.className = 'pz-slide-board';
       var core = document.createElement('div'); core.className = 'pz-slide-core'; Slide.core = core;
@@ -169,7 +169,7 @@
       }
     },
     shuffle: function() {
-      if(!Slide.imgSrc) return App.showToast('赋予灵魂后方可乱阵'); Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
+      if(!Slide.imgSrc) return App.showToast('加载图片后可打乱'); Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
       var steps = Slide.size * Slide.size * 5; 
       for(var i=0; i<steps; i++){
         var movable = [];
@@ -182,8 +182,8 @@
       for(var i=0; i<Slide.tiles.length; i++) { if(Slide.tiles[i].x !== Slide.tiles[i].targetX || Slide.tiles[i].y !== Slide.tiles[i].targetY) return; } 
       Slide.playing = false; 
       var baseSteps = Slide.size * Slide.size * 5; var msg = '';
-      if(Slide.steps <= baseSteps * 1.5) msg = "神乎其技，完美推演 ✨"; else if (Slide.steps <= baseSteps * 3.5) msg = "思路清晰，顺利破局 🌸"; else msg = "百折不挠，终解残局 💦";
-      Slide.winMsg.innerHTML = '<div class="pz-win-box"><h3>阵法已破</h3><span style="margin-top:6px;display:block;">耗时：<b style="color:#7ea3c9;font-size:16px;">'+Slide.steps+'</b> 步<br><span style="opacity:0.8;font-size:12px;margin-top:4px;display:block;">' + msg + '</span></span></div>';
+      if(Slide.steps <= baseSteps * 1.5) msg = "好厉害，大佬求带"; else if (Slide.steps <= baseSteps * 3.5) msg = "哎哟，不错哦"; else msg = "宝宝很棒啦";
+      Slide.winMsg.innerHTML = '<div class="pz-win-box"><h3>锵锵，完成啦</h3><span style="margin-top:6px;display:block;">耗时：<b style="color:#7ea3c9;font-size:16px;">'+Slide.steps+'</b> 步<br><span style="opacity:0.8;font-size:12px;margin-top:4px;display:block;">' + msg + '</span></span></div>';
       setTimeout(function(){ if(Slide.winMsg) { Slide.winMsg.classList.add('show'); setTimeout(function(){Slide.winMsg.classList.remove('show');},3500); } }, 300); 
     },
     saveGame: function() { if(!Slide.imgSrc) return App.showToast('虚空无法印证'); var snap = { size: Slide.size, steps: Slide.steps, emptyPos: Slide.emptyPos, tiles: Slide.tiles.map(function(t){ return {x: t.x, y: t.y}; }) }; App.LS.set('mmPzSlideSave', snap); App.showToast('棋局已刻印！'); },
@@ -195,6 +195,7 @@
      真·锯齿无拉扯切割引擎
   ============================ */
   var Jigsaw = {
+    Puz.currentScene = 'game';
     imgSrc: App.LS.get('pzJigsawImg') || '',
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
     dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
@@ -203,10 +204,8 @@
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
-
-      var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
       
-      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '赋予画像'; 
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
       uploadBtn.onclick = function(){ 
         Puz.pickImage('赋魂散落记忆', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); 
       };
@@ -216,8 +215,8 @@
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
 
-      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打入收纳槽'; startBtn.onclick = function(){ Jigsaw.scatter(); };
-      toolbar.appendChild(backBtn); toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
+      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Jigsaw.scatter(); };
+       toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var canvasWrap = document.createElement('div'); canvasWrap.className = 'pz-jigsaw-wrap';
       var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
@@ -229,8 +228,8 @@
       canvasWrap.appendChild(canvas); canvasWrap.appendChild(winMsg); canvasWrap.appendChild(emptyState);
 
       var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions';
-      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='定格封盘'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
-      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='燃尽删档'; delBtn.onclick=function(){ Jigsaw.delGame(); };
+      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='存档'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
+      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='删档'; delBtn.onclick=function(){ Jigsaw.delGame(); };
       actionRow.appendChild(saveBtn); actionRow.appendChild(delBtn);
 
       wrap.appendChild(toolbar); wrap.appendChild(canvasWrap); wrap.appendChild(actionRow); container.appendChild(wrap);
@@ -377,9 +376,9 @@
       setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show'); }, 2800); }, 500); 
     },
     
-    saveGame: function() { if(!Jigsaw.imgSrc) return App.showToast('画像还未赋予画纸！'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
+    saveGame: function() { if(!Jigsaw.imgSrc) return App.showToast('还未加载图片'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
     loadGameOrInit: function() { var snap = App.LS.get('mmPzJigsawSave'); if(!snap || !Jigsaw.imgSrc) { Jigsaw.initDraw(); return; } Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols); Jigsaw.initDraw(function() { Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; } Jigsaw.draw(); }); },
-    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消灭于虚无'); }
+    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消'); }
   };
   App.register('puzzle', Puz);
 })();
