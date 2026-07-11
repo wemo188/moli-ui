@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 逻辑与锯齿双核拼图系统 (脱油无杂版)
+   🌟 逻辑与锯齿双核拼图系统 (解封不死图·完美算例版)
    ================================================ */
 (function(){
   'use strict';
@@ -32,7 +32,7 @@
       '</div></div>';
       
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); }); });
-      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('拼图', function(body){ Jigsaw.buildInto(body); }); });
+      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('锯齿拼图', function(body){ Jigsaw.buildInto(body); }); });
     },
 
     openSubPanel: function(title, buildFn) {
@@ -49,29 +49,17 @@
       buildFn(sub.querySelector('.pz-sub-body'));
     },
 
+    // ★ 关键安全修复：只当一个负责传递 src 链接的使者！不准动用防线转换压死图！
     pickImage: function(title, callback) {
       if(!App.showImagePicker) return App.showToast('底座相册未开启');
       App.showImagePicker({ title: title, callback: function(src) { 
-        if(src) { 
-          var img = new Image(); img.crossOrigin = "anonymous";
-          img.onload = function() {
-            var minSize = Math.min(img.width, img.height); 
-            var sx = (img.width - minSize) / 2; var sy = (img.height - minSize) / 2;
-            var cvs = document.createElement('canvas'); var maxSize = Math.min(minSize, 1200); 
-            cvs.width = maxSize; cvs.height = maxSize;
-            cvs.getContext('2d').drawImage(img, sx, sy, minSize, minSize, 0, 0, maxSize, maxSize);
-            if(callback) callback(cvs.toDataURL('image/jpeg', 0.95));
-          };
-          img.src = src;
-        } else {
-          if(callback) callback('');
-        }
+        if(callback) callback(src || '');
       }});
     }
   };
 
   /* ============================
-     华容道 (3x3 至 6x6 正常人类等级)
+     华容道 
   ============================ */
   var Slide = {
     imgSrc: App.LS.get('pzSlideImg') || '',
@@ -84,10 +72,9 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
       
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
-      uploadBtn.onclick = function(){ Puz.pickImage('上传华容道图案', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); };
+      uploadBtn.onclick = function(){ Puz.pickImage('加载华容道图案', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); };
       
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
-      // ★ 最优雅的修改：直接把步数提示写入等级下拉框！连界面空间都不占！
       sizeSelect.innerHTML = '<option value="3">3x3 (参考:45步)</option><option value="4">4x4 (参考:100步)</option><option value="5">5x5 (参考:350步)</option><option value="6">6x6 (参考:500步)</option>';
       sizeSelect.value = String(Slide.size); sizeSelect.onchange = function(){ Slide.size = parseInt(this.value); Slide.resetAndBuild(); };
 
@@ -138,23 +125,39 @@
       Slide.tileSize = Slide.coreSize / Slide.size; Slide.tiles = [];
       var total = Slide.size * Slide.size; Slide.emptyPos = { x: Slide.size - 1, y: Slide.size - 1 };
 
-      for(var i=0; i<total-1; i++){
-        var t = document.createElement('div'); t.className = 'pz-slide-tile';
-        var tx = i % Slide.size, ty = Math.floor(i / Slide.size);
-        
-        t.style.width = Slide.tileSize + 'px'; t.style.height = Slide.tileSize + 'px';
-        t.style.backgroundImage = 'url(' + Slide.imgSrc + ')'; t.style.backgroundSize = Slide.coreSize + 'px ' + Slide.coreSize + 'px';
-        t.style.backgroundPosition = '-' + (tx*Slide.tileSize) + 'px -' + (ty*Slide.tileSize) + 'px';
-        t.style.transform = 'translate(' + (tx*Slide.tileSize) + 'px, ' + (ty*Slide.tileSize) + 'px)';
-        t.dataset.idx = i;
-        Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty }); Slide.core.appendChild(t);
-        
-        (function(idx, el){
-          var sx=0, sy=0;
-          el.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
-          el.addEventListener('touchend', function(e){ var dx = Math.abs(e.changedTouches[0].clientX - sx), dy = Math.abs(e.changedTouches[0].clientY - sy); if(dx < 20 && dy < 20) Slide.moveTile(idx); }, {passive:true});
-        })(i, t);
-      }
+      var img = new Image(); 
+      img.onload = function() {
+         var imgR = img.height / img.width;
+         var bgW, bgH, offX = 0, offY = 0;
+         
+         // 原理魔法：根据原本比例放大至沾满正方框，并且上下或左右完美计算隐藏区居中！绝对不会死板压缩！
+         if (imgR > 1) { 
+            bgW = Slide.coreSize; bgH = Slide.coreSize * imgR; offY = (bgH - Slide.coreSize) / 2;
+         } else {
+            bgH = Slide.coreSize; bgW = Slide.coreSize / imgR; offX = (bgW - Slide.coreSize) / 2;
+         }
+
+         for(var i=0; i<total-1; i++){
+            var t = document.createElement('div'); t.className = 'pz-slide-tile';
+            var tx = i % Slide.size, ty = Math.floor(i / Slide.size);
+            
+            t.style.width = Slide.tileSize + 'px'; t.style.height = Slide.tileSize + 'px';
+            t.style.backgroundImage = 'url(' + Slide.imgSrc + ')'; 
+            t.style.backgroundSize = bgW + 'px ' + bgH + 'px';
+            t.style.backgroundPosition = '-' + (tx*Slide.tileSize + offX) + 'px -' + (ty*Slide.tileSize + offY) + 'px';
+            t.style.transform = 'translate(' + (tx*Slide.tileSize) + 'px, ' + (ty*Slide.tileSize) + 'px)';
+            t.dataset.idx = i;
+            Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty }); Slide.core.appendChild(t);
+            
+            (function(idx, el){
+              var sx=0, sy=0;
+              el.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+              el.addEventListener('touchend', function(e){ var dx = Math.abs(e.changedTouches[0].clientX - sx), dy = Math.abs(e.changedTouches[0].clientY - sy); if(dx < 20 && dy < 20) Slide.moveTile(idx); }, {passive:true});
+            })(i, t);
+         }
+      };
+      img.onerror = function() { App.showToast("图片可能加载出错了"); }
+      img.src = Slide.imgSrc;
     },
     moveTile: function(idx) {
       if(!Slide.playing) return; var t = Slide.tiles[idx]; var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y);
@@ -189,7 +192,6 @@
       if(Slide.playing && Slide.steps > 0) { Slide.addRecord(Slide.size, Slide.steps); }
       Slide.playing = false; 
 
-      // ★ 啰嗦的彩虹屁去掉了，极其干脆的高级展示！
       var winTxt = Slide.winMsg.querySelector('.pz-win-text');
       if(winTxt) winTxt.innerHTML = '共用 <b class="pz-win-num">'+Slide.steps+'</b> 步完成！';
       
@@ -202,7 +204,7 @@
   };
 
   /* ============================
-     锯齿拼图 (6x6 盲盒高阶级)
+     锯齿拼图 (可自由长宽拉扯极爽版)
   ============================ */
   var Jigsaw = {
     imgSrc: App.LS.get('pzJigsawImg') || '',
@@ -215,10 +217,9 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
       
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
-      uploadBtn.onclick = function(){ Puz.pickImage('上传拼图图案', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); };
+      uploadBtn.onclick = function(){ Puz.pickImage('上传锯齿图案', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); };
 
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
-      // 锯齿这里保留你要的 6到10 高强度盲盒区
       sizeSelect.innerHTML = '<option value="6">6x6</option><option value="7">7x7</option><option value="8">8x8</option><option value="9">9x9</option><option value="10">10x10</option>';
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
@@ -245,7 +246,7 @@
       Jigsaw.bindTouch(); Jigsaw.loadGameOrInit(); 
     },
 
-        initDraw: function(loadCallback) {
+    initDraw: function(loadCallback) {
       if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
       var empty = document.getElementById('pzJigsawEmpty');
       
@@ -259,13 +260,12 @@
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
 
-      // ★★★ 在这里！拼图画布到底拉多长，你说了算！★★★
-      // 1.0 是正方形，1.35 就是高级长方形，随意改！
+      // 💥【终极改命的地方】：想让画布本体拉多长，改这个！ 1.0是正方形。1.35 已经是苗条小仙女高度了。
       var puzzleRatio = 1.35; 
       var cssH_img = cssW * puzzleRatio; 
       
-      // 下方的托盘高度
-      var gapSpace = 12; var trayH = cssW * 0.35; 
+      // 控制碎片的家空间 (按她的指使砍下来的适度大)
+      var gapSpace = 12; var trayH = cssW * 0.45; 
       var cssH_total = cssH_img + gapSpace + trayH; 
       
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH_total;
@@ -274,12 +274,12 @@
       Jigsaw.canvas.width = cssW * dpr; Jigsaw.canvas.height = cssH_total * dpr;
       Jigsaw.ctx.scale(dpr, dpr);
 
-      var img = new Image(); img.crossOrigin = 'anonymous';
+      var img = new Image();
       img.onload = function() {
         Jigsaw.img = img; Jigsaw.imgW = cssW; Jigsaw.imgH = cssH_img; 
         Jigsaw.pieceW = Jigsaw.imgW / Jigsaw.cols; Jigsaw.pieceH = Jigsaw.imgH / Jigsaw.rows;
 
-        // 【居中放大计算区：保证图片绝不被拉伸压扁】
+        // 神奇的算法：完美截取照片中最好看的一部分放到你要求的拉长拼图中，丝毫不拽压画面的四肢。
         var targetRatio = Jigsaw.imgW / Jigsaw.imgH;
         var srcRatio = img.width / img.height;
         var sW = img.width, sH = img.height, sX = 0, sY = 0;
@@ -290,7 +290,35 @@
 
         if(loadCallback) loadCallback(); else { Jigsaw.playing = false; Jigsaw.generatePieces(); Jigsaw.draw(); }
       };
+      img.onerror = function() { App.showToast("此图受到了系统的天罚没切动.."); }
       img.src = Jigsaw.imgSrc;
+    },
+
+    generatePieces: function() {
+      Jigsaw.pieces = [];
+      for(var r = 0; r < Jigsaw.rows; r++){
+        for(var c = 0; c < Jigsaw.cols; c++){
+          Jigsaw.pieces.push({ col: c, row: r, targetX: c * Jigsaw.pieceW, targetY: r * Jigsaw.pieceH, x: c * Jigsaw.pieceW, y: r * Jigsaw.pieceH, placed: false, flashAnim: 0 });
+        }
+      }
+    },
+
+    scatter: function() {
+      if(!Jigsaw.imgSrc) return App.showToast('请先加载图片再打乱哦');
+      Jigsaw.playing = true; 
+      if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
+      
+      var gap = 12; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
+      var pW = Jigsaw.pieceW, pH = Jigsaw.pieceH;
+      var padX = pW * 0.35; var padY = pH * 0.35;
+
+      for(var i = 0; i < Jigsaw.pieces.length; i++){
+        var p = Jigsaw.pieces[i];
+        p.x = padX + Math.random() * Math.max(1, (Jigsaw.canvasCssW - pW - padX * 2));
+        p.y = boxTopY + padY + Math.random() * Math.max(1, (trayH - pH - padY * 2)); 
+        p.placed = false; p.flashAnim = 0;
+      }
+      Jigsaw.draw();
     },
 
     draw: function() {
@@ -302,7 +330,6 @@
 
       if(Jigsaw.img && !Jigsaw.playing) { 
         ctx.globalAlpha = winFinished ? 1.0 : 0.4; 
-        // 关键放大绘画法
         ctx.drawImage(Jigsaw.img, Jigsaw.srcX, Jigsaw.srcY, Jigsaw.srcW, Jigsaw.srcH, 0, 0, Jigsaw.imgW, Jigsaw.imgH); 
         ctx.globalAlpha = 1; 
       }
@@ -327,7 +354,6 @@
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
       ctx.clip(); 
-      // 关键放大绘画法
       ctx.drawImage(Jigsaw.img, Jigsaw.srcX, Jigsaw.srcY, Jigsaw.srcW, Jigsaw.srcH, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); 
       ctx.restore();
 
@@ -404,6 +430,6 @@
     },
     delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('存档已清空'); }
   };
-  
+
   App.register('puzzle', Puz);
 })();
