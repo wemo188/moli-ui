@@ -34,7 +34,7 @@
 /* ================= 华容道专属：致敬初恋版的完美质感 ================= */
 .pz-slide-board {
   position: relative; 
-  width: 350px; height: 350px; /* 听你的：雷打不动的完美原始规格 */
+  width: 392px; height: 392px; /* 听你的：雷打不动的完美原始规格 */
   border-radius: 18px; padding: 6px; margin: 0 auto;
   background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(245,250,255,0.2));
   border: 1.5px solid rgba(255,255,255,0.8);
@@ -43,7 +43,7 @@
 }
 
 .pz-slide-core {
-  position: relative; width: 280px; height: 280px; 
+  position: relative; width: 380px; height: 380px; 
   border-radius: 14px; background: rgba(0,0,0,0.05); 
   overflow: hidden; 
 }
