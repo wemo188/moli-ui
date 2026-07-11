@@ -1,5 +1,5 @@
 /* ================================================
-   🌟 墨墨限定版大满贯 · 云存档解密拼图 (puzzle.js)
+   🌟 墨墨独立督造级高规 · 逻辑拼图引擎 (puzzle.js)
    ================================================ */
 (function(){
   'use strict';
@@ -26,16 +26,16 @@
 
     showModeSelect: function(container) {
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
-        '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div><div class="pz-mode-desc">逻辑滑块，步数极限</div></div>' +
-        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">骨董拼图</div><div class="pz-mode-desc">散件组合，咬合记忆</div></div>' +
+        '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div><div class="pz-mode-desc">空块接龙</div></div>' +
+        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div><div class="pz-mode-desc">还原散落遗篇</div></div>' +
       '</div></div>';
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Slide.buildInto(container); });
       container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Jigsaw.buildInto(container); });
     },
 
     pickImage: function(callback) {
-      if(!App.showImagePicker) { App.showToast('未能挂载系统图库组件'); return; }
-      App.showImagePicker({ title: '上载主视轴记忆碎片', callback: function(src) {
+      if(!App.showImagePicker) { App.showToast('无法调出底相册，请等待唤醒'); return; }
+      App.showImagePicker({ title: '加载要复原的高清图迹', callback: function(src) {
           if(src) { Puz.imgSrc = src; App.LS.set('pzCustomImg', src); if(callback) callback(); }
       }});
     }
@@ -54,9 +54,9 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
 
       var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
-      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '更换图片'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Slide.resetAndBuild(); }); };
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重录印迹'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Slide.resetAndBuild(); }); };
       
-      // 添加6x6绝顶难度！
+      // 添加极至6x6！
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
       sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option>';
       sizeSelect.value = String(Slide.size);
@@ -69,29 +69,29 @@
       var board = document.createElement('div'); board.className = 'pz-board';
       var core = document.createElement('div'); core.className = 'pz-core'; Slide.core = core;
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>记忆缝合</h3><span>惊叹算力，恭喜你解局</span>'; Slide.winMsg = winMsg;
-      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>上载原画图轴，始生结阵</span>'; Slide.emptyState = emptyState;
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>推演完毕</h3><span>惊叹心算能力 ✨</span>'; Slide.winMsg = winMsg;
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>上载图景结阵</span>'; Slide.emptyState = emptyState;
 
       core.appendChild(emptyState); core.appendChild(winMsg); board.appendChild(core);
 
-      // 下半部数据台：重置、存档、读档操作全包
-      var stepsDiv = document.createElement('div'); stepsDiv.className = 'pz-footer-stats'; stepsDiv.textContent = '移动步数: 0'; Slide.stepsText = stepsDiv;
+      // 你要求增加的专属数据摆设层
+      var statsWrap = document.createElement('div'); statsWrap.style.width = "100%";
+      var stepsDiv = document.createElement('div'); stepsDiv.className = 'pz-footer-stats'; stepsDiv.textContent = '推演步数: 0'; Slide.stepsText = stepsDiv;
+      
       var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions';
-      
-      var resBtn = document.createElement('div'); resBtn.className='pz-btn'; resBtn.textContent='回归重置'; resBtn.onclick=function(){ Slide.resetAndBuild(); };
-      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='储存命格'; saveBtn.onclick=function(){ Slide.saveGame(); };
-      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='碎弃遗留'; delBtn.onclick=function(){ Slide.delGame(); };
-      
+      var resBtn = document.createElement('div'); resBtn.className='pz-btn'; resBtn.textContent='重置'; resBtn.onclick=function(){ Slide.resetAndBuild(); };
+      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='存档'; saveBtn.onclick=function(){ Slide.saveGame(); };
+      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='删除'; delBtn.onclick=function(){ Slide.delGame(); };
       actionRow.appendChild(resBtn); actionRow.appendChild(saveBtn); actionRow.appendChild(delBtn);
 
-      wrap.appendChild(toolbar); wrap.appendChild(board); wrap.appendChild(stepsDiv); wrap.appendChild(actionRow);
+      statsWrap.appendChild(stepsDiv); statsWrap.appendChild(actionRow);
+      wrap.appendChild(toolbar); wrap.appendChild(board); wrap.appendChild(statsWrap);
       container.appendChild(wrap);
 
-      // 利用读取逻辑起步（如果有本地存档自动读，否则重新创建）
       Slide.loadGame();
     },
 
-    updateSteps: function(val) { Slide.steps = val; Slide.stepsText.textContent = '移动步数: ' + val; },
+    updateSteps: function(val) { Slide.steps = val; Slide.stepsText.textContent = '推演步数: ' + val; },
 
     resetAndBuild: function() {
       Slide.playing = false; Slide.updateSteps(0);
@@ -101,13 +101,14 @@
       if(!Puz.imgSrc) { if(Slide.emptyState) Slide.emptyState.style.display = 'flex'; return; }
       if(Slide.emptyState) Slide.emptyState.style.display = 'none';
 
-      Slide.coreSize = Slide.core.clientWidth; // 读取绝美真·放大自适应数据
+      Slide.coreSize = Slide.core.clientWidth; 
       Slide.tileSize = Slide.coreSize / Slide.size; Slide.tiles = [];
       var total = Slide.size * Slide.size; Slide.emptyPos = { x: Slide.size - 1, y: Slide.size - 1 };
 
       for(var i=0; i<total-1; i++){
         var t = document.createElement('div'); t.className = 'pz-tile';
         var tx = i % Slide.size, ty = Math.floor(i / Slide.size);
+        
         t.style.width = Slide.tileSize + 'px'; t.style.height = Slide.tileSize + 'px';
         t.style.backgroundImage = 'url(' + Puz.imgSrc + ')'; t.style.backgroundSize = Slide.coreSize + 'px ' + Slide.coreSize + 'px';
         t.style.backgroundPosition = '-' + (tx*Slide.tileSize) + 'px -' + (ty*Slide.tileSize) + 'px';
@@ -116,7 +117,6 @@
         
         Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty }); Slide.core.appendChild(t);
         
-        // 防抖手机精准触控，绝不死按滑不掉！
         (function(idx, el){
           var sx=0, sy=0;
           el.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
@@ -140,7 +140,7 @@
     },
 
     shuffle: function() {
-      if(!Puz.imgSrc) { App.showToast('需要赋神画影后方可打断阵法'); return; }
+      if(!Puz.imgSrc) { App.showToast('赋予灵魂之相后才可乱图'); return; }
       Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
       var steps = Slide.size * Slide.size * 5; 
       for(var i=0; i<steps; i++){
@@ -161,35 +161,30 @@
       for(var i=0; i<Slide.tiles.length; i++) { if(Slide.tiles[i].x !== Slide.tiles[i].targetX || Slide.tiles[i].y !== Slide.tiles[i].targetY) return; }
       Slide.playing = false; setTimeout(function(){ if(Slide.winMsg) Slide.winMsg.classList.add('show'); }, 300);
     },
-
     saveGame: function() {
-      if(!Puz.imgSrc) return App.showToast('暂无画卷，无法归档');
+      if(!Puz.imgSrc) return App.showToast('虚空无法印证');
       var snap = { size: Slide.size, steps: Slide.steps, emptyPos: Slide.emptyPos, tiles: Slide.tiles.map(function(t){ return {x: t.x, y: t.y}; }) };
-      App.LS.set('mmPzSlideSave', snap); App.showToast('已录下棋局脉络！');
+      App.LS.set('mmPzSlideSave', snap); App.showToast('星格脉络写入卷藏！');
     },
-
     loadGame: function() {
       var snap = App.LS.get('mmPzSlideSave');
       if(!snap || !Puz.imgSrc) { Slide.resetAndBuild(); return; }
-      Slide.size = snap.size; Slide.resetAndBuild();
-      document.querySelector('.pz-select').value = String(snap.size); // 更新面板拉杆
-
+      Slide.size = snap.size; Slide.resetAndBuild(); document.querySelector('.pz-select').value = String(snap.size); 
       Slide.emptyPos = snap.emptyPos; Slide.updateSteps(snap.steps); Slide.playing = true;
       for(var i=0; i<snap.tiles.length; i++) {
         Slide.tiles[i].x = snap.tiles[i].x; Slide.tiles[i].y = snap.tiles[i].y;
         Slide.tiles[i].el.style.transform = 'translate(' + (Slide.tiles[i].x * Slide.tileSize) + 'px, ' + (Slide.tiles[i].y * Slide.tileSize) + 'px)';
       }
     },
-    
-    delGame: function() { App.LS.remove('mmPzSlideSave'); Slide.resetAndBuild(); App.showToast('旧历已成灰迹'); }
+    delGame: function() { App.LS.remove('mmPzSlideSave'); Slide.resetAndBuild(); App.showToast('过往印记随风消亡'); }
   };
 
   /* ============================
-     锯齿物理引擎 (骨董拼图) - 超级视网膜画板 (1:1.25上界分离式布局)
+     锯齿物理真画引擎 (真拼图)
   ============================ */
   var Jigsaw = {
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
-    dragging: null, offsetX: 0, offsetY: 0, snapDist: 18, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
+    dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
 
     buildInto: function(container) {
       container.innerHTML = '';
@@ -197,33 +192,32 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
 
       var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
-      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重画核心'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Jigsaw.initDraw(); }); };
+      var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '赋予画像'; uploadBtn.onclick = function(){ Puz.pickImage(function(){ Jigsaw.initDraw(); }); };
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
       sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option>';
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
 
-      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '碎为沙灰'; startBtn.onclick = function(){ Jigsaw.scatter(); };
+      var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打入收纳槽'; startBtn.onclick = function(){ Jigsaw.scatter(); };
       toolbar.appendChild(backBtn); toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var canvasWrap = document.createElement('div'); canvasWrap.className = 'pz-jigsaw-wrap';
       var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
       Jigsaw.canvas = canvas; Jigsaw.ctx = canvas.getContext('2d');
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>记忆拼接</h3><span>齿印完美复位，通关 ✨</span>'; Jigsaw.winMsg = winMsg;
-      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>上载命核图形结缘</span>';
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>刻印重叠</h3><span>四维拼接完成 ✨</span>'; Jigsaw.winMsg = winMsg;
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>需铺展记忆纸片方能切割</span>';
 
       canvasWrap.appendChild(canvas); canvasWrap.appendChild(winMsg); canvasWrap.appendChild(emptyState);
 
-      // 下置操作面板存档层
-      var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions'; actionRow.style.marginTop = "20px";
-      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='落入琥珀存档'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
-      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='彻底扫灰删档'; delBtn.onclick=function(){ Jigsaw.delGame(); };
+      // 你要求增加的专门下脚储存层
+      var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions';
+      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='凝结归档'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
+      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='彻底扫平删图'; delBtn.onclick=function(){ Jigsaw.delGame(); };
       actionRow.appendChild(saveBtn); actionRow.appendChild(delBtn);
 
       wrap.appendChild(toolbar); wrap.appendChild(canvasWrap); wrap.appendChild(actionRow); container.appendChild(wrap);
-
-      Jigsaw.bindTouch(); Jigsaw.loadGameOrInit(); // 入口检查是否有琥珀印记！
+      Jigsaw.bindTouch(); Jigsaw.loadGameOrInit(); 
     },
 
     initDraw: function(loadCallback) {
@@ -232,13 +226,17 @@
       if(!Puz.imgSrc) { if(empty) empty.style.display = 'flex'; return; }
       if(empty) empty.style.display = 'none';
 
-      // 绝世高清计算架构法（完美视网膜DPI支持，彻底剥除低像素感！）
+      // ================= 这里彻底实现了完美的比例分流技术 =================
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
-      var cssW = wrapperW - 12; // 除去内部的留缝
-      var cssH = cssW * 1.25;   // 【上板正方区 80%，下方碎片库 20%的精密神算法！】
+      var cssW = wrapperW - 12; // 图片核心绘制面！
+      
+      // 算力革命：拼板在上(宽高等长)。为解决碎皮出框重叠，专门为收容碎片留出了下面额外的海量深坑！
+      var gapSpace = 16; 
+      var trayH = cssW * 0.45; // 最底层超大存图坑（自动扩展不堆叠）
+      var cssH = cssW + gapSpace + trayH; 
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH;
 
-      var dpr = window.devicePixelRatio || 1;
+      var dpr = window.devicePixelRatio || 1; // Retina级别全幅画重拾，不泛滥糊化
       Jigsaw.canvas.style.width = cssW + 'px'; Jigsaw.canvas.style.height = cssH + 'px';
       Jigsaw.canvas.width = cssW * dpr; Jigsaw.canvas.height = cssH * dpr;
       Jigsaw.ctx.scale(dpr, dpr);
@@ -246,7 +244,7 @@
       var img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = function() {
         Jigsaw.img = img;
-        Jigsaw.imgW = cssW; Jigsaw.imgH = cssW; // 图永远占据顶部等身大正方形的80%！
+        Jigsaw.imgW = cssW; Jigsaw.imgH = cssW; 
         Jigsaw.pieceW = Jigsaw.imgW / Jigsaw.cols; Jigsaw.pieceH = Jigsaw.imgH / Jigsaw.rows;
         if(loadCallback) loadCallback(); else { Jigsaw.playing = false; Jigsaw.generatePieces(); Jigsaw.draw(); }
       };
@@ -263,17 +261,17 @@
     },
 
     scatter: function() {
-      if(!Puz.imgSrc) return App.showToast('画像缺失，难以落笔生辉');
+      if(!Puz.imgSrc) return App.showToast('无法于虚无生烟花');
       Jigsaw.playing = true; if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show');
       
-      // 所有粉身碎骨自动集中倾泄落在下半20%的空间收纳池里
-      var boxTopY = Jigsaw.imgH; 
-      var trayH = Jigsaw.canvasCssH - Jigsaw.imgH;
+      var gap = 16; var boxTopY = Jigsaw.imgH + gap;
+      var trayH = Jigsaw.canvasCssH - boxTopY;
 
+      // 让散装元件严格随机打入刚刚划分完毕的专供坑池
       for(var i = 0; i < Jigsaw.pieces.length; i++){
         var p = Jigsaw.pieces[i];
-        p.x = Math.random() * (Jigsaw.canvasCssW - Jigsaw.pieceW);
-        p.y = boxTopY + Math.random() * (trayH - Jigsaw.pieceH); // 只坠落在底层留白的垃圾盘内！
+        p.x = 2 + Math.random() * Math.max(1, (Jigsaw.canvasCssW - Jigsaw.pieceW - 4));
+        p.y = boxTopY + 2 + Math.random() * Math.max(1, (trayH - Jigsaw.pieceH - 4)); 
         p.placed = false;
       }
       Jigsaw.draw();
@@ -282,36 +280,32 @@
     draw: function() {
       var ctx = Jigsaw.ctx; ctx.clearRect(0, 0, Jigsaw.canvasCssW, Jigsaw.canvasCssH);
       
-      // 先刻绘背景主体的拼图留位指引淡图痕迹
-      if(Jigsaw.img && Jigsaw.playing) {
-        ctx.globalAlpha = 0.15; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1;
-      }
+      // -- 上方：高级画卷放置处区
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fillRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
+      ctx.strokeStyle = "rgba(0,0,0,0.1)"; ctx.strokeRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
+      if(Jigsaw.img && Jigsaw.playing) { ctx.globalAlpha = 0.15; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1; }
 
-      // 底部分界暗纹分隔界线
-      ctx.beginPath(); ctx.moveTo(0, Jigsaw.imgH); ctx.lineTo(Jigsaw.canvasCssW, Jigsaw.imgH); 
-      ctx.strokeStyle = "rgba(0,0,0,0.06)"; ctx.lineWidth = 2; ctx.stroke();
+      // -- 下方：独立的专款灰暗隔离收纳深坑！不抢不盖绝对绝缘！
+      var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
+      ctx.fillStyle = 'rgba(0,0,0,0.04)'; ctx.fillRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
+      ctx.strokeStyle = "rgba(0,0,0,0.06)"; ctx.lineWidth = 1; ctx.strokeRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
 
-      for(var i = 0; i < Jigsaw.pieces.length; i++){
-        var p = Jigsaw.pieces[i]; if(p === Jigsaw.dragging) continue;
-        Jigsaw.drawPiece(p);
-      }
-      if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging); // 手中的悬挂件永远处在云上之层！
+      // 上碎片阵：被卡对点的人先进栈！避免浮雕遮挡后生晚辈！
+      for(var i = 0; i < Jigsaw.pieces.length; i++){ var p = Jigsaw.pieces[i]; if(p === Jigsaw.dragging) continue; Jigsaw.drawPiece(p); }
+      if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging); // 手柄神物高人一头！
     },
 
     drawPiece: function(p) {
       var ctx = Jigsaw.ctx; var pw = Jigsaw.pieceW, ph = Jigsaw.pieceH; var tab = pw * 0.18; 
       
-      ctx.save(); ctx.beginPath();
-      Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      ctx.clip(); 
-      // 灵魂平移抵消法，图像边缘自覆盖
+      ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath(); ctx.clip(); 
       ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); 
       ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      // 这里换成了你命令要求的极细的黑边风格了！已安上的齿呈现虚弱消解！
-      ctx.strokeStyle = p.placed ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.6)';
-      ctx.lineWidth = p.placed ? 0 : 0.8;
+      // 根据您的指令！极细！锐黑！刺进眼球的高级色拉网边界！
+      ctx.strokeStyle = p.placed ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.85)';
+      ctx.lineWidth = p.placed ? 0 : 0.6;
       ctx.stroke(); ctx.restore();
     },
 
@@ -339,32 +333,11 @@
       Jigsaw.canvas.addEventListener('touchend', ce, {passive: true}); document.addEventListener('mouseup', ce);
     },
 
-    checkWin: function() {
-      for(var i=0; i<Jigsaw.pieces.length; i++){ if(!Jigsaw.pieces[i].placed) return; }
-      Jigsaw.playing = false; setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); }, 300);
-    },
+    checkWin: function() { for(var i=0; i<Jigsaw.pieces.length; i++){ if(!Jigsaw.pieces[i].placed) return; } Jigsaw.playing = false; setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); }, 300); },
     
-    // 【全局琥珀云端技术存储阵列】
-    saveGame: function() {
-      if(!Puz.imgSrc) return App.showToast('无神可镇图');
-      var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) };
-      App.LS.set('mmPzJigsawSave', snap); App.showToast('图阵档案刻写圆满');
-    },
-
-    loadGameOrInit: function() {
-      var snap = App.LS.get('mmPzJigsawSave');
-      if(!snap || !Puz.imgSrc) { Jigsaw.initDraw(); return; }
-      
-      Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols);
-      
-      Jigsaw.initDraw(function() {
-         Jigsaw.generatePieces(); Jigsaw.playing = snap.playing;
-         for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; }
-         Jigsaw.draw();
-      });
-    },
-
-    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消灭于虚无'); }
+    saveGame: function() { if(!Puz.imgSrc) return App.showToast('画像还未赋予画纸！'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
+    loadGameOrInit: function() { var snap = App.LS.get('mmPzJigsawSave'); if(!snap || !Puz.imgSrc) { Jigsaw.initDraw(); return; } Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols); Jigsaw.initDraw(function() { Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; } Jigsaw.draw(); }); },
+    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('一切归无'); }
   };
 
   App.register('puzzle', Puz);
