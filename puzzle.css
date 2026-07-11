@@ -1,70 +1,79 @@
-
 /* ================================================
    🌟 琉璃拼图魔法系统专属样式 (puzzle.css)
    ================================================ */
 
+/* 距顶部的距离调这里！ */
 .pz-wrap { 
   display: flex; flex-direction: column; align-items: center; 
-  gap: 1px; margin: 10px 0; width: 100%;  /* gap从16改10，margin从20改10 */
+  gap: 10px; 
+  /* 想要往下降，就把这里的 24px 改成 30px 或者 40px */
+  margin: 10px 0 10px; 
+  width: 100%;  
 }
 
 .pz-toolbar {
   display: flex; align-items: center; justify-content: center; gap: 12px;
   background: rgba(255, 255, 255, 0.4);
-  padding: 6px 10px; border-radius: 16px;  /* padding从8改成6，更紧凑 */
+  padding: 6px 10px; border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  margin-top: -6px; /* 往上顶 */
+  margin-top: 0; /* 之前让你加的负数我给拔了，不再乱挤了 */
+}
+
+/* ================= 解决等高的绝对法则 ================= */
+.pz-btn, .pz-select {
+  height: 32px;            /* 绝对定高 */
+  box-sizing: border-box;  /* 统一盒子物理规则 */
+  margin: 0; 
 }
 
 .pz-btn {
   padding: 0 14px; border-radius: 12px;
-  height: 32px; /* 固定高度，彻底杜绝高矮不齐 */
   background: #f5f5f5; color: #111; font-size: 12px; font-weight: 700;
   cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); transition: all 0.2s;
   border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center;
-  white-space: nowrap; /* 防止文字换行把高度撑开 */
+  white-space: nowrap; line-height: normal;
 }
 .pz-btn.primary { background: #1a1a1a; color: #fff; border-color:#1a1a1a; }
 .pz-btn.danger { background: #ffffff; color: #c9706b; border: 1.5px solid #c9706b; box-shadow: none; }
 .pz-btn:active { transform: scale(0.92); opacity: 0.8; }
 
 .pz-select {
-  padding: 6px 8px; border-radius: 10px; font-size: 12px; font-weight: 700;
-  border: 1px solid rgba(0,0,0,0.1); background: #fff; color: #333; outline: none;
+  padding: 0 8px; border-radius: 10px; font-size: 12px; font-weight: 700;
+  border: 1px solid rgba(0,0,0,0.1); background: #fff; color: #333; outline: none; line-height: normal;
 }
 
-/* ================= 华容道专属：致敬初恋版的完美质感 ================= */
+/* ================= 华容道专属：完美质感 ================= */
 .pz-slide-board {
   position: relative; 
-  /* ✨ 究极保护屏障：大手机下最大为 413x413，小手机下自适应屏幕 94%！绝不溢出屏幕！ */
-  width: 94vw; max-width: 413px; 
-  height: 94vw; max-height: 413px; 
-
-  border-radius: 18px; padding: 10px; margin: 0 auto;
-  box-sizing: border-box; /* 强行锁死内边距计算，阻止边框篡改体积 */
-  display: flex; justify-content: center; align-items: center; /* 强迫内部操作盘不管多大都必须死死待在物理绝对中心！ */
+  width: 94vw; max-width: 413px; height: 94vw; max-height: 413px; 
+  border-radius: 18px; padding: 10px; margin: 0 auto; box-sizing: border-box; 
+  display: flex; justify-content: center; align-items: center; 
   background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(245,250,255,0.2));
   border: 1.5px solid rgba(255,255,255,0.8);
   box-shadow: 0 12px 32px rgba(20,35,55,0.12);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 
-.pz-slide-core {
-  position: relative; 
-  /* ✨ 核心放权术：让操作盘去撑满框里剩下的任何空间，不硬填数字，它会永远呈现极致平等的对称！ */
-  width: 100%; height: 100%; 
-  border-radius: 14px; background: rgba(0,0,0,0.05); 
-  overflow: hidden; 
-}
+.pz-slide-core { position: relative; width: 100%; height: 100%; border-radius: 14px; background: rgba(0,0,0,0.05); overflow: hidden; }
 
 .pz-slide-tile {
   position: absolute; cursor: pointer; background-repeat: no-repeat;
-  /* 恢复你要的质感！不再瞎切粗透明边了，只有内嵌莹白发光边！ */
   box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.5), 0 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   touch-action: none; border-radius: 8px;
 }
+
+/* ================== 历史记录展示盘 (华容道专属下面挂着) ================== */
+.pz-record-wrap {
+  width: 94vw; max-width: 413px; margin: 0 auto;
+  background: rgba(255,255,255,0.5); border-radius: 16px; padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 6px 16px rgba(20,35,55,0.06);
+}
+.pz-record-title { font-size: 13px; font-weight: 800; color: #1a1a1a; text-align: center; margin-bottom: 10px; letter-spacing: 1px; }
+.pz-record-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; max-height: 120px; overflow-y: auto; }
+.pz-record-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #666; background: rgba(255,255,255,0.7); padding: 8px 12px; border-radius: 10px; }
+.pz-record-empty { font-size: 12px; font-weight: 700; color: #999; text-align: center; padding: 16px 0; }
 
 /* ================== 锯齿拼图界面 (依旧保持宽大场地方便抛洒碎片) ================== */
 .pz-jigsaw-wrap {
@@ -76,44 +85,23 @@
 }
 .pz-jigsaw-canvas { display: block; width: 100%; background: transparent; touch-action: none; }
 
-/* 共有下摆层与提示框 */
 .pz-footer-stats { font-size: 15px; font-weight: 900; color: #1a1a1a; text-align: center; margin: 12px 0 10px; letter-spacing: 1px; }
 .pz-footer-actions { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 5px; }
 
-/* ================== 通关极致高贵提示板 (绝不遮挡原画) ================== */
-.pz-win { 
-  position: absolute; inset: 0; background: transparent; z-index: 10; 
-  display: flex; flex-direction: column; justify-content: center; align-items: center; 
-  opacity: 0; pointer-events: none; transition: opacity 0.5s ease; border-radius: 14px; 
-}
+/* 通关界面、空状态、菜单选项保持原样不动 */
+.pz-win { position: absolute; inset: 0; background: transparent; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; border-radius: 14px; }
 .pz-win.show { opacity: 1; pointer-events: all; }
-
-.pz-win-box {
-  background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  padding: 24px 32px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,1);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; 
-  justify-content: center; align-items: center; gap: 8px; transform: scale(0.9);
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+.pz-win-box { background: rgba(255,255,255,1); padding: 24px 32px; border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .pz-win.show .pz-win-box { transform: scale(1); }
-
 .pz-win h3 { font-size: 24px; font-weight: 900; color: #7ea3c9; margin: 0; letter-spacing: 2px; }
 .pz-win span { font-size: 13px; font-weight: 700; color: #666; }
 
 .pz-empty { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; color: #7ea3c9; font-size: 14px; font-weight: 800; letter-spacing: 1px; background: rgba(255,255,255,0.4); border-radius: inherit; }
 .pz-empty svg { width: 48px; height: 48px; stroke: #7ea3c9; opacity: 0.8; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-/* 模式选项卡 */
 .pz-mode-select { display: flex; gap: 20px; justify-content: center; padding: 40px 20px; }
-
-.pz-mode-card { 
-  width: 140px; height: 140px; /* 强行固定宽和高为 1:1 的绝对正方形 */
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; 
-  border-radius: 24px; /* 因为变成大方框了，外圆角加大一圈显得更柔和高级 */
-  background: #f5f5f5; border: 1.5px solid rgba(0,0,0,0.06); 
-  cursor: pointer; transition: all 0.2s; 
-}
+.pz-mode-card { width: 140px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border-radius: 24px; background: #f5f5f5; border: 1.5px solid rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s; }
 .pz-mode-card:active { transform: scale(0.95); background: #eee; }
-.pz-mode-icon { width: 56px; height: 56px; } /* SVG 图标稍微放大约10%压场子 */
+.pz-mode-icon { width: 56px; height: 56px; } 
 .pz-mode-icon svg { width: 100%; height: 100%; }
 .pz-mode-name { font-size: 16px; font-weight: 800; color: #1a1a1a; letter-spacing: 1px; margin-top: 2px;}
