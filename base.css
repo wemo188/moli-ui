@@ -53,7 +53,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 200vw;
+  width: 300vw;
   height: 100vh;
   z-index: 0;
   display: flex;
@@ -237,7 +237,7 @@ img.img-fill { transform: none !important; }
 
 .page-slider {
   display: flex;
-  width: 200vw;
+  width: 300vw;
   height: 100vh;
   min-height: 100vh;
   will-change: transform;
