@@ -85,12 +85,13 @@
      滑动推算版 (华容道)
   ============================ */
   var Slide = {
-    Puz.currentScene = 'game';
     imgSrc: App.LS.get('pzSlideImg') || '',
     core: null, winMsg: null, emptyState: null,
     size: 4, coreSize: 0, tileSize: 0, tiles: [], emptyPos: {x:0, y:0}, playing: false, steps: 0, stepsText: null,
 
     buildInto: function(container) {
+      Puz.currentScene = 'game'; // 👈 必须塞在函数（function）大括号里面！！
+
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
@@ -105,7 +106,7 @@
       sizeSelect.value = String(Slide.size); sizeSelect.onchange = function(){ Slide.size = parseInt(this.value); Slide.resetAndBuild(); };
 
       var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Slide.shuffle(); };
-       toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
+      toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var board = document.createElement('div'); board.className = 'pz-slide-board';
       var core = document.createElement('div'); core.className = 'pz-slide-core'; Slide.core = core;
@@ -195,12 +196,13 @@
      真·锯齿无拉扯切割引擎
   ============================ */
   var Jigsaw = {
-    Puz.currentScene = 'game';
     imgSrc: App.LS.get('pzJigsawImg') || '',
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
     dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
 
     buildInto: function(container) {
+      Puz.currentScene = 'game'; // 👈 同样，老老实实呆在函数里面！
+
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
@@ -216,7 +218,7 @@
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
 
       var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Jigsaw.scatter(); };
-       toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
+      toolbar.appendChild(uploadBtn); toolbar.appendChild(sizeSelect); toolbar.appendChild(startBtn);
 
       var canvasWrap = document.createElement('div'); canvasWrap.className = 'pz-jigsaw-wrap';
       var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
