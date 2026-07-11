@@ -1,6 +1,5 @@
-
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 冰晶清透版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 高定版
    ================================================ */
 (function(){
   'use strict';
@@ -14,17 +13,7 @@
     dropStart: 0, gameOver: false, paused: false, reqId: null,
     scoreEl: null, overlayEl: null,
 
-    // ★ 哥哥特调：半透明的冰晶玉髓配色 (带 0.7 的透明度透出底层网格)
-    COLORS: [ 
-      null, 
-      'rgba(168, 216, 234, 0.75)', // 1 冰蓝
-      'rgba(170, 224, 202, 0.75)', // 2 薄荷
-      'rgba(255, 183, 178, 0.75)', // 3 樱花粉
-      'rgba(255, 226, 169, 0.75)', // 4 奶黄
-      'rgba(203, 186, 237, 0.75)', // 5 浅芋紫
-      'rgba(255, 202, 175, 0.75)', // 6 蜜桃
-      'rgba(235, 244, 250, 0.85)'  // 7 透白
-    ],
+    COLORS: [ null, 'rgba(168, 216, 234, 0.75)', 'rgba(170, 224, 202, 0.75)', 'rgba(255, 183, 178, 0.75)', 'rgba(255, 226, 169, 0.75)', 'rgba(203, 186, 237, 0.75)', 'rgba(255, 202, 175, 0.75)', 'rgba(235, 244, 250, 0.85)' ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
     init: function() { App.safeOn('#iconTetris', 'click', function(){ TT.openGame(); }); },
@@ -52,9 +41,16 @@
       container.innerHTML = 
         '<div class="tt-wrap">' +
           '<div class="tt-card">' +
-            '<div class="tt-card-top"><div class="tt-led tt-led-on"></div><div class="tt-led"></div><div class="tt-led"></div></div>' +
+            
+            '<!-- 顶部指示灯与扬声器列 -->' +
+            '<div class="tt-card-top">' +
+              '<div class="tt-leds"><div class="tt-led tt-led-on"></div><div class="tt-led"></div><div class="tt-led"></div></div>' +
+              '<div class="tt-speakers"><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div></div>' +
+            '</div>' +
             
             '<div class="tt-card-body">' +
+              
+              '<!-- 上半部分：主屏幕 -->' +
               '<div class="tt-screen-wrap">' +
                 '<div class="tt-screen">' +
                   '<div class="tt-screen-badge">' +
@@ -71,7 +67,13 @@
                 '</div>' +
               '</div>' +
 
+              '<!-- 隔离凹槽线 -->' +
+              '<div class="tt-divider-groove"></div>' +
+
+              '<!-- 下半部分：操控区 -->' +
               '<div class="tt-controls-row">' +
+                
+                '<!-- 左侧旋转 -->' +
                 '<div class="tt-left">' +
                   '<div class="tt-paw-btn" id="ttBtnRotate">' +
                     '<div class="tt-paw-inner">' +
@@ -81,16 +83,18 @@
                   '<div class="tt-btn-label">旋转</div>' +
                 '</div>' +
 
+                '<!-- 中间重置 -->' +
                 '<div class="tt-center">' +
                   '<div class="tt-act-btn" id="ttBtnReset">重置</div>' +
                 '</div>' +
 
+                '<!-- 右侧十字键：换成了纯线段 SVG -->' +
                 '<div class="tt-right">' +
                   '<div class="tt-dpad">' +
-                    '<div class="tt-dpad-btn tt-dpad-up" id="ttBtnPause" title="暂停/继续"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></div>' +
-                    '<div class="tt-dpad-btn tt-dpad-left" id="ttBtnLeft"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>' +
-                    '<div class="tt-dpad-btn tt-dpad-right" id="ttBtnRight"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>' +
-                    '<div class="tt-dpad-btn tt-dpad-down" id="ttBtnDown"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-up" id="ttBtnPause" title="暂停/继续"><svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="18"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-left" id="ttBtnLeft"><svg viewBox="0 0 24 24"><polyline points="14 7 8 12 14 17"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-right" id="ttBtnRight"><svg viewBox="0 0 24 24"><polyline points="10 7 16 12 10 17"/></svg></div>' +
+                    '<div class="tt-dpad-btn tt-dpad-down" id="ttBtnDown"><svg viewBox="0 0 24 24"><polyline points="7 10 12 16 17 10"/></svg></div>' +
                   '</div>' +
                 '</div>' +
 
@@ -104,8 +108,9 @@
       TT.canvas = container.querySelector('#ttCanvas');
       TT.ctx = TT.canvas.getContext('2d');
 
+      // ★ 高度压缩算法：降到 0.45，逼迫屏幕变短，整机也会随之变短！
       var wrapW = container.querySelector('.tt-canvas-container').clientWidth || 240;
-      var maxCvsHeight = window.innerHeight * 0.52; 
+      var maxCvsHeight = window.innerHeight * 0.45; 
       var blockSizeW = Math.floor(wrapW / TT.COLS);
       var blockSizeH = Math.floor(maxCvsHeight / TT.ROWS);
       
@@ -245,48 +250,35 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
-    // ★ 魔法发生地：绘制清透冰块
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
       var px = x * bs; var py = y * bs;
       var s = bs;
 
-      // 1. 半透明基础底色
-      TT.ctx.fillStyle = color;
-      TT.ctx.fillRect(px, py, s, s);
+      TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
 
-      // 2. 玻璃折射高光（从上到下的渐变反光）
       var grad = TT.ctx.createLinearGradient(px, py, px, py + s);
       grad.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
       grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.15)');
       grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      TT.ctx.fillStyle = grad;
-      TT.ctx.fillRect(px, py, s, s);
+      TT.ctx.fillStyle = grad; TT.ctx.fillRect(px, py, s, s);
 
-      // 3. 底部和右侧暗角（制造玻璃的厚度感）
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-      TT.ctx.fillRect(px, py + s - 3, s, 3);
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
-      TT.ctx.fillRect(px + s - 3, py, 3, s);
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; TT.ctx.fillRect(px, py + s - 3, s, 3);
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'; TT.ctx.fillRect(px + s - 3, py, 3, s);
 
-      // 4. 晶莹剔透的细白描边
-      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-      TT.ctx.lineWidth = 1.5;
+      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; TT.ctx.lineWidth = 1.5;
       TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
     },
 
     draw: function() {
       TT.ctx.clearRect(0, 0, TT.canvas.width, TT.canvas.height);
       
-      // 绘制底层细细的网格线，透明冰块会把它们透出来
       TT.ctx.strokeStyle = 'rgba(0,0,0,0.03)'; TT.ctx.lineWidth = 1;
       for(var i=0; i<=TT.COLS; i++) { TT.ctx.beginPath(); TT.ctx.moveTo(i*TT.BLOCK_SIZE, 0); TT.ctx.lineTo(i*TT.BLOCK_SIZE, TT.ROWS*TT.BLOCK_SIZE); TT.ctx.stroke(); }
       for(var j=0; j<=TT.ROWS; j++) { TT.ctx.beginPath(); TT.ctx.moveTo(0, j*TT.BLOCK_SIZE); TT.ctx.lineTo(TT.COLS*TT.BLOCK_SIZE, j*TT.BLOCK_SIZE); TT.ctx.stroke(); }
       
-      // 渲染静止冰块
       for (var r = 0; r < TT.ROWS; r++) { for (var c = 0; c < TT.COLS; c++) { if (TT.board[r][c] !== 0) TT.drawBlock(c, r, TT.COLORS[TT.board[r][c]]); } }
       
-      // 渲染下落冰块
       var m = TT.activePiece.matrix, px = TT.activePiece.x, py = TT.activePiece.y;
       for (var ar = 0; ar < m.length; ar++) { for (var ac = 0; ac < m[ar].length; ac++) { if (m[ar][ac] !== 0) TT.drawBlock(px + ac, py + ar, TT.activePiece.color); } }
     },
