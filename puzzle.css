@@ -5,7 +5,7 @@
 /* 距顶部的距离调这里！ */
 .pz-wrap { 
   display: flex; flex-direction: column; align-items: center; 
-  gap: 10px; 
+  gap: 30px; 
   /* 想要往下降，就把这里的 24px 改成 30px 或者 40px */
   margin: 10px 0 10px; 
   width: 100%;  
