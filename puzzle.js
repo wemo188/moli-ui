@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 逻辑与锯齿双核拼图系统 (洁癖高光特装版)
+   🌟 逻辑与锯齿双核拼图系统 (脱油无杂版)
    ================================================ */
 (function(){
   'use strict';
@@ -13,7 +13,6 @@
       var old = document.getElementById('pzGamePanel'); if(old) { old.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'pzGamePanel'; panel.className = 'bf-sub-panel';
-      // 这里的 SVG 是按钮固有形状，不需要放外置
       panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">益智推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
       
       document.body.appendChild(panel);
@@ -32,12 +31,8 @@
         '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">锯齿拼图</div></div>' +
       '</div></div>';
       
-      container.querySelector('#pzModeSlide').addEventListener('click', function(){ 
-        Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); });
-      });
-      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ 
-        Puz.openSubPanel('锯齿拼图', function(body){ Jigsaw.buildInto(body); });
-      });
+      container.querySelector('#pzModeSlide').addEventListener('click', function(){ Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); }); });
+      container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Puz.openSubPanel('锯齿拼图', function(body){ Jigsaw.buildInto(body); }); });
     },
 
     openSubPanel: function(title, buildFn) {
@@ -68,13 +63,15 @@
             if(callback) callback(cvs.toDataURL('image/jpeg', 0.95));
           };
           img.src = src;
-        } 
+        } else {
+          if(callback) callback('');
+        }
       }});
     }
   };
 
   /* ============================
-     滑动推算版 (华容道) - 无死角极净版
+     华容道 (3x3 至 6x6 正常人类等级)
   ============================ */
   var Slide = {
     imgSrc: App.LS.get('pzSlideImg') || '',
@@ -87,10 +84,11 @@
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
       
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '更换图片'; 
-      uploadBtn.onclick = function(){ Puz.pickImage('上传拼图图案', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); };
+      uploadBtn.onclick = function(){ Puz.pickImage('上传华容道图案', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); };
       
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
-      sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option><option value="7">7x7</option><option value="8">8x8</option><option value="9">9x9</option><option value="10">10x10</option>';
+      // ★ 最优雅的修改：直接把步数提示写入等级下拉框！连界面空间都不占！
+      sizeSelect.innerHTML = '<option value="3">3x3 (参考:45步)</option><option value="4">4x4 (参考:80步)</option><option value="5">5x5 (参考:125步)</option><option value="6">6x6 (参考:180步)</option>';
       sizeSelect.value = String(Slide.size); sizeSelect.onchange = function(){ Slide.size = parseInt(this.value); Slide.resetAndBuild(); };
 
       var startBtn = document.createElement('div'); startBtn.className = 'pz-btn primary'; startBtn.textContent = '打乱'; startBtn.onclick = function(){ Slide.shuffle(); };
@@ -99,8 +97,9 @@
       var board = document.createElement('div'); board.className = 'pz-slide-board';
       var core = document.createElement('div'); core.className = 'pz-slide-core'; Slide.core = core;
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win pz-hidden'; winMsg.innerHTML = '<div class="pz-win-box"><h3>完成啦！</h3><span class="pz-win-text"></span></div>'; Slide.winMsg = winMsg;
-      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>请先选择图案</span>'; Slide.emptyState = emptyState;
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win pz-hidden'; winMsg.innerHTML = '<div class="pz-win-box"><h3>拼好啦！</h3><span class="pz-win-text"></span></div>'; Slide.winMsg = winMsg;
+      
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.innerHTML = '<span>请先更换图案</span>'; Slide.emptyState = emptyState;
       core.appendChild(emptyState); core.appendChild(winMsg); board.appendChild(core);
 
       var statsWrap = document.createElement('div'); statsWrap.className = 'pz-stats-wrap';
@@ -132,7 +131,6 @@
       if(Slide.winMsg) { Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden'); }
       var oldTiles = Slide.core.querySelectorAll('.pz-slide-tile'); oldTiles.forEach(function(el){ el.remove(); });
 
-      // ★ 只通过 className 开关空状态，不操作 style！
       if(!Slide.imgSrc) { if(Slide.emptyState) Slide.emptyState.classList.remove('pz-hidden'); return; }
       if(Slide.emptyState) Slide.emptyState.classList.add('pz-hidden');
 
@@ -167,7 +165,7 @@
       }
     },
     shuffle: function() {
-      if(!Slide.imgSrc) return App.showToast('请先选择图片再打乱哦'); Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
+      if(!Slide.imgSrc) return App.showToast('请先更换图案再打乱哦'); Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
       var steps = Slide.size * Slide.size * 5; 
       for(var i=0; i<steps; i++){
         var movable = [];
@@ -191,11 +189,9 @@
       if(Slide.playing && Slide.steps > 0) { Slide.addRecord(Slide.size, Slide.steps); }
       Slide.playing = false; 
 
-      var baseSteps = Slide.size * Slide.size * 5; var msg = '';
-      if(Slide.steps <= baseSteps * 1.5) msg = "厉害！膜拜大佬"; else if (Slide.steps <= baseSteps * 3.5) msg = "哎哟，不错哦"; else msg = "完成啦，棒棒哒";
-      
+      // ★ 啰嗦的彩虹屁去掉了，极其干脆的高级展示！
       var winTxt = Slide.winMsg.querySelector('.pz-win-text');
-      if(winTxt) winTxt.innerHTML = '共用 <b class="pz-win-num">'+Slide.steps+'</b> 步<br><span class="pz-win-sub">' + msg + '</span>';
+      if(winTxt) winTxt.innerHTML = '共用 <b class="pz-win-num">'+Slide.steps+'</b> 步完成！';
       
       Slide.winMsg.classList.remove('pz-hidden');
       setTimeout(function(){ if(Slide.winMsg) { Slide.winMsg.classList.add('show'); setTimeout(function(){Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden');},3500); } }, 300); 
@@ -206,7 +202,7 @@
   };
 
   /* ============================
-     真·锯齿拼图
+     锯齿拼图 (6x6 盲盒高阶级)
   ============================ */
   var Jigsaw = {
     imgSrc: App.LS.get('pzJigsawImg') || '',
@@ -222,6 +218,7 @@
       uploadBtn.onclick = function(){ Puz.pickImage('上传锯齿图案', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); };
 
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
+      // 锯齿这里保留你要的 6到10 高强度盲盒区
       sizeSelect.innerHTML = '<option value="6">6x6</option><option value="7">7x7</option><option value="8">8x8</option><option value="9">9x9</option><option value="10">10x10</option>';
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
@@ -233,8 +230,9 @@
       var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
       Jigsaw.canvas = canvas; Jigsaw.ctx = canvas.getContext('2d');
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win pz-hidden'; winMsg.innerHTML = '<div class="pz-win-box"><h3>完成啦！</h3><span class="pz-win-text">恭喜通关 ✨</span></div>'; Jigsaw.winMsg = winMsg;
-      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>请先选择图案</span>';
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win pz-hidden'; winMsg.innerHTML = '<div class="pz-win-box"><h3>完成啦！</h3><span class="pz-win-text">拼装成功 ✨</span></div>'; Jigsaw.winMsg = winMsg;
+      
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<span>请先更换图案</span>';
 
       canvasWrap.appendChild(canvas); canvasWrap.appendChild(winMsg); canvasWrap.appendChild(emptyState);
 
@@ -251,13 +249,12 @@
       if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
       var empty = document.getElementById('pzJigsawEmpty');
       
-      // ★ 绝对禁止污染 inline style
       if(!Jigsaw.imgSrc) { if(empty) empty.classList.remove('pz-hidden'); return; }
       if(empty) empty.classList.add('pz-hidden');
 
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
-      var gapSpace = 12; var trayH = cssW * 0.35; // 控制碎片底部操作盘大小
+      var gapSpace = 12; var trayH = cssW * 0.35; 
       var cssH = cssW + gapSpace + trayH; 
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH;
 
@@ -285,7 +282,7 @@
     },
 
     scatter: function() {
-      if(!Jigsaw.imgSrc) return App.showToast('请先选择图案再打乱');
+      if(!Jigsaw.imgSrc) return App.showToast('请先更换图案再打乱');
       Jigsaw.playing = true; 
       if(Jigsaw.winMsg) { Jigsaw.winMsg.classList.remove('show'); Jigsaw.winMsg.classList.add('pz-hidden'); }
       
@@ -387,7 +384,7 @@
     },
     
     saveGame: function() { 
-      if(!Jigsaw.imgSrc) return App.showToast('没有图片不能存档哦'); 
+      if(!Jigsaw.imgSrc) return App.showToast('请先选择图案哦'); 
       var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; 
       App.LS.set('mmPzJigsawSave', snap); App.showToast('进度保存好啦'); 
     },
@@ -409,4 +406,3 @@
 
   App.register('puzzle', Puz);
 })();
-
