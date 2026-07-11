@@ -6,60 +6,52 @@
   'use strict';
   var App = window.App; if(!App) return;
 
-    var Puz = {
-    imgSrc: App.LS.get('pzCustomImg') || '',
-    currentScene: 'menu', // 新增：监控玩家当前所在的场景层级
-    panelEl: null,
-
+  var Puz = {
     init: function() { App.safeOn('#iconPuzzle', 'click', function(){ Puz.openGame(); }); },
 
     openGame: function() {
       var old = document.getElementById('pzGamePanel'); if(old) { old.remove(); return; }
       var panel = document.createElement('div');
-      Puz.panelEl = panel;
-      Puz.currentScene = 'menu'; // 进门初始化为大厅
-
       panel.id = 'pzGamePanel'; panel.className = 'bf-sub-panel';
       panel.innerHTML = '<div class="bf-nav"><button class="bf-back" id="pzBack" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">益智推演</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div id="pzGameContent"></div></div>';
       
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
 
-      // 【最高机密：接管全盘的返回层级算法】
-      function goBack() {
-        if(Puz.currentScene !== 'menu') {
-          // 在游戏房间里：不准退系统，滚回大厅！
-          Puz.showModeSelect(panel.querySelector('#pzGameContent'));
-        } else {
-          // 在大厅里：允许关灯走人，返回手机屏幕
-          panel.classList.remove('show'); panel.classList.add('hidden'); 
-          setTimeout(function(){ panel.remove(); }, 350);
-        }
-      }
-
-      // 接管系统原生的右滑动操作
-      if(App.bindSwipeBack) App.bindSwipeBack(panel, goBack);
-      
-      // 接管左上角真·返回键
-      panel.querySelector('#pzBack').addEventListener('click', goBack);
+      var closePanel = function(){ panel.classList.remove('show'); panel.classList.add('hidden'); setTimeout(function(){ panel.remove(); }, 350); };
+      if(App.bindSwipeBack) App.bindSwipeBack(panel, function(){ panel.remove(); });
+      panel.querySelector('#pzBack').addEventListener('click', closePanel);
       
       Puz.showModeSelect(panel.querySelector('#pzGameContent'));
     },
 
     showModeSelect: function(container) {
-      Puz.currentScene = 'menu';
-      // 删除了 .pz-mode-desc 这段赘述文字，只保留纯正的主名字
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
         '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div></div>' +
         '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div></div>' +
       '</div></div>';
       
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ 
-        Puz.currentScene = 'slide'; Slide.buildInto(container); 
+        Puz.openSubPanel('华容道', function(body){ Slide.buildInto(body); });
       });
       container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ 
-        Puz.currentScene = 'jigsaw'; Jigsaw.buildInto(container); 
+        Puz.openSubPanel('拼图', function(body){ Jigsaw.buildInto(body); });
       });
+    },
+
+    openSubPanel: function(title, buildFn) {
+      var sub = document.createElement('div');
+      sub.className = 'bf-sub-panel';
+      sub.innerHTML = '<div class="bf-nav"><button class="bf-back pz-sub-back" type="button"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="3.5"/><path d="M36 20L24 32L36 44" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="bf-nav-title">' + title + '</span><div class="bf-nav-right"></div></div><div class="bf-scroll-body"><div class="pz-sub-body"></div></div>';
+      
+      document.body.appendChild(sub);
+      requestAnimationFrame(function(){ sub.classList.add('show'); });
+
+      var closeThis = function(){ sub.classList.remove('show'); sub.classList.add('hidden'); setTimeout(function(){ sub.remove(); }, 350); };
+      if(App.bindSwipeBack) App.bindSwipeBack(sub, closeThis);
+      sub.querySelector('.pz-sub-back').addEventListener('click', closeThis);
+
+      buildFn(sub.querySelector('.pz-sub-body'));
     },
 
     pickImage: function(title, callback) {
@@ -90,8 +82,6 @@
     size: 4, coreSize: 0, tileSize: 0, tiles: [], emptyPos: {x:0, y:0}, playing: false, steps: 0, stepsText: null,
 
     buildInto: function(container) {
-      Puz.currentScene = 'game'; // 👈 必须塞在函数（function）大括号里面！！
-
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
@@ -201,8 +191,6 @@
     dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
 
     buildInto: function(container) {
-      Puz.currentScene = 'game'; // 👈 同样，老老实实呆在函数里面！
-
       container.innerHTML = '';
       var wrap = document.createElement('div'); wrap.className = 'pz-wrap';
       var toolbar = document.createElement('div'); toolbar.className = 'pz-toolbar';
@@ -213,7 +201,7 @@
       };
 
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
-      sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6 盲盒</option><option value="7">7x7 地狱</option>';
+      sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option><option value="7">7x7</option>';
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
 
@@ -279,7 +267,6 @@
       Jigsaw.playing = true; if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show');
       
       var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
-      
       var pW = Jigsaw.pieceW, pH = Jigsaw.pieceH;
       var padX = pW * 0.35; var padY = pH * 0.35;
 
@@ -324,11 +311,7 @@
       ctx.clip(); ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      if(!p.placed) {
-        ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 0.8; ctx.stroke(); 
-      } else {
-        ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.6; ctx.stroke(); 
-      }
+      if(!p.placed) { ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 0.8; ctx.stroke(); } else { ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.6; ctx.stroke(); }
       ctx.restore();
 
       if(p.flashAnim > 0) {
@@ -356,16 +339,17 @@
       Jigsaw.canvas.addEventListener('touchmove', cm, {passive: false}); document.addEventListener('mousemove', cm);
 
       var ce = function(e){ 
-        if(!Jigsaw.dragging) return; var p = Jigsaw.dragging; Jigsaw.dragging = null; var dx = Math.abs(p.x - p.targetX), dy = Math.abs(p.y - p.targetY);
+        if(!Jigsaw.dragging) return; var p = Jigsaw.dragging; Jigsaw.dragging = null;
+        var dx = Math.abs(p.x - p.targetX), dy = Math.abs(p.y - p.targetY);
         if(dx < Jigsaw.snapDist && dy < Jigsaw.snapDist) { 
-           p.x = p.targetX; p.y = p.targetY; p.placed = true; 
-           if(navigator.vibrate) navigator.vibrate(20); 
-           p.flashAnim = 0.9;
-           var fT = setInterval(function(){
-              p.flashAnim -= 0.08; 
-              if(p.flashAnim <= 0) { p.flashAnim = 0; clearInterval(fT); }
-              Jigsaw.draw(); 
-           }, 1000/60);
+          p.x = p.targetX; p.y = p.targetY; p.placed = true; 
+          if(navigator.vibrate) navigator.vibrate(20); 
+          p.flashAnim = 0.9;
+          var fT = setInterval(function(){
+            p.flashAnim -= 0.08; 
+            if(p.flashAnim <= 0) { p.flashAnim = 0; clearInterval(fT); }
+            Jigsaw.draw(); 
+          }, 1000/60);
         } else { Jigsaw.draw(); }
         Jigsaw.checkWin();
       };
@@ -378,10 +362,26 @@
       setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show'); }, 2800); }, 500); 
     },
     
-    saveGame: function() { if(!Jigsaw.imgSrc) return App.showToast('还未加载图片'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
-    loadGameOrInit: function() { var snap = App.LS.get('mmPzJigsawSave'); if(!snap || !Jigsaw.imgSrc) { Jigsaw.initDraw(); return; } Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols); Jigsaw.initDraw(function() { Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; } Jigsaw.draw(); }); },
+    saveGame: function() { 
+      if(!Jigsaw.imgSrc) return App.showToast('还未加载图片'); 
+      var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; 
+      App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); 
+    },
+    loadGameOrInit: function() { 
+      var snap = App.LS.get('mmPzJigsawSave'); 
+      if(!snap || !Jigsaw.imgSrc) { Jigsaw.initDraw(); return; } 
+      Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; 
+      document.querySelector('.pz-select').value = String(snap.cols); 
+      Jigsaw.initDraw(function() { 
+        Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; 
+        for(var i=0; i<Jigsaw.pieces.length; i++) { 
+          Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; 
+        } 
+        Jigsaw.draw(); 
+      }); 
+    },
     delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消'); }
   };
+
   App.register('puzzle', Puz);
 })();
-
