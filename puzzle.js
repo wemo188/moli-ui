@@ -418,24 +418,25 @@
       if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging);
     },
 
-    drawPiece: function(p) {
+        drawPiece: function(p) {
       var ctx = Jigsaw.ctx;
       var pw = Jigsaw.pieceW, ph = Jigsaw.pieceH;
-      var sx = p.col * (Jigsaw.img.width / Jigsaw.cols);
-      var sy = p.row * (Jigsaw.img.height / Jigsaw.rows);
-      var sw = Jigsaw.img.width / Jigsaw.cols;
-      var sh = Jigsaw.img.height / Jigsaw.rows;
-      var tab = pw * 0.18; // 凹凸突出大小
+      var tab = pw * 0.18; // 凹凸边的大小
 
       ctx.save();
       ctx.beginPath();
       Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab);
       ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(Jigsaw.img, sx, sy, sw, sh, p.x, p.y, pw, ph);
+      
+      // 1. 切割出碎片的外形！
+      ctx.clip(); 
+      
+      // 2. 致命错误修正：不在画板内生搬硬套了！
+      // 强行把完整的高清背景图通过平移拉扯到准确的坐标点（包含一切凸出的角落），保证哪怕边角突出去半米长都有完整的图片花纹。
+      ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.canvas.width, Jigsaw.canvas.height);
       ctx.restore();
 
-      // 描边
+      // 3. 画上精美的立体描边
       ctx.save();
       ctx.beginPath();
       Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab);
@@ -446,49 +447,55 @@
       ctx.restore();
     },
 
+    // 最核心：你凹我凸的锯齿联动算法
     drawPiecePath: function(ctx, x, y, w, h, col, row, tab) {
       var cols = Jigsaw.cols, rows = Jigsaw.rows;
-      // 简易凹凸：每条边中点画一个半圆（凸或凹）
-      // 用 seed 决定方向：偶数凸，奇数凹
       ctx.moveTo(x, y);
 
-      // 上边
-      if(row === 0) { ctx.lineTo(x + w, y); }
-      else {
-        var topOut = ((col + row) % 2 === 0) ? -1 : 1;
+      // 上边 (完全契合上方模块的【底边】)
+      if(row === 0) { 
+        ctx.lineTo(x + w, y); 
+      } else {
+        // (col + row - 1) 就是上面那个块的公式规律，强制保证“他突我就凹”
+        var sgnY = (col + row - 1) % 2 === 0 ? 1 : -1;
         ctx.lineTo(x + w * 0.35, y);
-        ctx.bezierCurveTo(x + w * 0.35, y + topOut * tab, x + w * 0.65, y + topOut * tab, x + w * 0.65, y);
+        ctx.bezierCurveTo(x + w * 0.35, y + sgnY * tab, x + w * 0.65, y + sgnY * tab, x + w * 0.65, y);
         ctx.lineTo(x + w, y);
       }
 
-      // 右边
-      if(col === cols - 1) { ctx.lineTo(x + w, y + h); }
-      else {
-        var rightOut = ((col + row + 1) % 2 === 0) ? 1 : -1;
+      // 右边 (自我决定，由自己这一格和排判定)
+      if(col === cols - 1) { 
+        ctx.lineTo(x + w, y + h); 
+      } else {
+        var sgnX = (col + row) % 2 === 0 ? 1 : -1; 
         ctx.lineTo(x + w, y + h * 0.35);
-        ctx.bezierCurveTo(x + w + rightOut * tab, y + h * 0.35, x + w + rightOut * tab, y + h * 0.65, x + w, y + h * 0.65);
+        ctx.bezierCurveTo(x + w + sgnX * tab, y + h * 0.35, x + w + sgnX * tab, y + h * 0.65, x + w, y + h * 0.65);
         ctx.lineTo(x + w, y + h);
       }
 
-      // 下边
-      if(row === rows - 1) { ctx.lineTo(x, y + h); }
-      else {
-        var botOut = ((col + row + 1) % 2 === 0) ? 1 : -1;
+      // 下边 (也是由自己排决定)
+      // (注意绘画路径是从右往左！)
+      if(row === rows - 1) { 
+        ctx.lineTo(x, y + h); 
+      } else {
+        var sgnY2 = (col + row) % 2 === 0 ? 1 : -1; 
         ctx.lineTo(x + w * 0.65, y + h);
-        ctx.bezierCurveTo(x + w * 0.65, y + h + botOut * tab, x + w * 0.35, y + h + botOut * tab, x + w * 0.35, y + h);
+        ctx.bezierCurveTo(x + w * 0.65, y + h + sgnY2 * tab, x + w * 0.35, y + h + sgnY2 * tab, x + w * 0.35, y + h);
         ctx.lineTo(x, y + h);
       }
 
-      // 左边
-      if(col === 0) { ctx.lineTo(x, y); }
-      else {
-        var leftOut = ((col + row) % 2 === 0) ? -1 : 1;
+      // 左边 (完全契合左方模块的【右边】)
+      // (注意路径是从下往上！)
+      if(col === 0) { 
+        ctx.lineTo(x, y); 
+      } else {
+        var sgnX2 = (col - 1 + row) % 2 === 0 ? 1 : -1; 
         ctx.lineTo(x, y + h * 0.65);
-        ctx.bezierCurveTo(x + leftOut * tab, y + h * 0.65, x + leftOut * tab, y + h * 0.35, x, y + h * 0.35);
+        ctx.bezierCurveTo(x + sgnX2 * tab, y + h * 0.65, x + sgnX2 * tab, y + h * 0.35, x, y + h * 0.35);
         ctx.lineTo(x, y);
       }
     },
-
+    
     bindTouch: function() {
       var canvas = Jigsaw.canvas;
 
