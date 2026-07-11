@@ -261,11 +261,11 @@
       var cssW = wrapperW - 12; 
 
       // 💥【终极改命的地方】：想让画布本体拉多长，改这个！ 1.0是正方形。1.35 已经是苗条小仙女高度了。
-      var puzzleRatio = 1.35; 
+      var puzzleRatio = 1.25; 
       var cssH_img = cssW * puzzleRatio; 
       
       // 控制碎片的家空间 (按她的指使砍下来的适度大)
-      var gapSpace = 12; var trayH = cssW * 0.45; 
+      var gapSpace = 12; var trayH = cssW * 0.35; 
       var cssH_total = cssH_img + gapSpace + trayH; 
       
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH_total;
