@@ -71,6 +71,8 @@
 }
 
 .cat-part { position: absolute; pointer-events: none; overflow: visible; display: none; }
+/* 追加这句终极开关：只要上了 cat-mode，内部件自动亮起！ */
+.tk17.tk17-cat-mode .cat-part { display: block; } 
 
 .cat-ear-l, .cat-ear-r {
   width: 70px; height: auto; top: auto;
@@ -89,6 +91,40 @@
 
 .tk17.tk17-cat-mode .tk17-bgimg::after {
   background: rgba(255, 255, 255, 0.001);
+}
+
+/* ================================================
+   从 JS 解救出的专属极简布局原子类
+   ================================================ */
+.pc-row-split { display: flex; gap: 12px; }
+.pc-row-gap6 { gap: 6px; }
+.pc-row-mt6 { gap: 6px; margin-top: 6px; }
+.pc-group-flex { flex: 1; }
+.pc-group-w80 { flex-shrink: 0; width: 80px; }
+
+/* 共用的按钮文字骨架排版 */
+.pc-btn-mode { flex: 1; font-size: 11px; font-weight: 700; }
+.pc-btn-switch {
+  display: inline-block; font-size: 10px; font-weight: 700; 
+  padding: 2px 8px; vertical-align: middle; margin-left: 6px;
+}
+
+/* 颜色选择小方块 */
+.pc-color-preview { cursor: pointer; flex-shrink: 0; }
+.pc-color-block { 
+  width: 100%; height: 32px; border-radius: 8px; 
+  border: 1px solid rgba(0,0,0,0.1); cursor: pointer; 
+}
+
+/* 被逼出来的纯净状态切换法则 */
+.pc-icon-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+.pc-row-disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* ================================================
@@ -159,8 +195,14 @@
 .wt-fog-layer {
   position: absolute; width: 250%; height: 100%; top: 0; left: -50%;
   opacity: 0.15; animation: wtFogBreath 6s ease-in-out infinite alternate;
+  /* 搬回 CSS 里的深色大雾渲染 */
+  background: linear-gradient(90deg, transparent, rgba(60,60,60,0.5), rgba(60,60,60,0.3), transparent);
 }
-.wt-fog-layer:nth-child(2) { animation-delay: -3s; opacity: 0.12; top: 20%; }
+.wt-fog-layer:nth-child(2) { 
+  animation-delay: -3s; opacity: 0.12; top: 20%; 
+  /* 搬回 CSS 里的浅色大雾渲染 */
+  background: linear-gradient(90deg, transparent, rgba(50,50,50,0.4), rgba(50,50,50,0.25), transparent);
+}
 .wt-static .wt-fog-layer { animation: none; opacity: 0.15; }
 @keyframes wtFogBreath { 0%{transform:translateX(-5%);opacity:0.12;} 100%{transform:translateX(5%);opacity:0.2;} }
 
