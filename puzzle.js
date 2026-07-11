@@ -197,11 +197,11 @@
       
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '加载图片'; 
       uploadBtn.onclick = function(){ 
-        Puz.pickImage('赋魂散落记忆', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); 
+        Puz.pickImage('散落', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); 
       };
 
       var sizeSelect = document.createElement('select'); sizeSelect.className = 'pz-select';
-      sizeSelect.innerHTML = '<option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6">6x6</option><option value="7">7x7</option>';
+      sizeSelect.innerHTML = '<option value="6">6x6</option><option value="7">7x7</option><option value="8">8x8</option><option value="9">9x9</option><option value="10">10x10</option>';
       sizeSelect.value = String(Jigsaw.cols);
       sizeSelect.onchange = function(){ var v=parseInt(this.value); Jigsaw.cols=v; Jigsaw.rows=v; Jigsaw.initDraw(); };
 
