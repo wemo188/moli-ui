@@ -70,8 +70,23 @@
 .pz-footer-stats { font-size: 15px; font-weight: 900; color: #1a1a1a; text-align: center; margin: 12px 0 10px; letter-spacing: 1px; }
 .pz-footer-actions { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 5px; }
 
-.pz-win { position: absolute; inset: 0; background: rgba(255,255,255,0.85); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; border-radius: 14px; }
+/* ================== 通关极致高贵提示板 (绝不遮挡原画) ================== */
+.pz-win { 
+  position: absolute; inset: 0; background: transparent; z-index: 10; 
+  display: flex; flex-direction: column; justify-content: center; align-items: center; 
+  opacity: 0; pointer-events: none; transition: opacity 0.5s ease; border-radius: 14px; 
+}
 .pz-win.show { opacity: 1; pointer-events: all; }
+
+.pz-win-box {
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  padding: 24px 32px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,1);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; 
+  justify-content: center; align-items: center; gap: 8px; transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pz-win.show .pz-win-box { transform: scale(1); }
+
 .pz-win h3 { font-size: 24px; font-weight: 900; color: #7ea3c9; margin: 0; letter-spacing: 2px; }
 .pz-win span { font-size: 13px; font-weight: 700; color: #666; }
 
