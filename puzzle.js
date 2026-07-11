@@ -235,7 +235,7 @@
 
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
-      var gapSpace = 16; var trayH = cssW * 0.55; 
+      var gapSpace = 16; var trayH = cssW * 0.75; 
       var cssH = cssW + gapSpace + trayH; 
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH;
 
