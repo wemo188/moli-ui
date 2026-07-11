@@ -1,6 +1,7 @@
 
 /* ================================================
-   🌟 墨墨独立督造级高规 · 逻辑与锯齿双核拼图系统 (双重空间隔离版)
+   🌟 墨墨独立督造级高规 · 逻辑与锯齿双核拼图系统
+   （极致防变形切割守护版）
    ================================================ */
 (function(){
   'use strict';
@@ -27,10 +28,27 @@
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Slide.buildInto(container); });
       container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Jigsaw.buildInto(container); });
     },
-    // 把专属图片赋值权限放走，只负责通用呼叫本地相机
+    
+    // 【究极神核】在这里彻底杜绝任何形式的拉升、拉扁和扭曲！强制进行底照中心点 1:1 切割防卫！
     pickImage: function(title, callback) {
       if(!App.showImagePicker) return App.showToast('底座相册未开启');
-      App.showImagePicker({ title: title, callback: function(src) { if(src && callback) callback(src); }});
+      App.showImagePicker({ title: title, callback: function(src) { 
+        if(src) { 
+          var img = new Image(); img.crossOrigin = "anonymous";
+          img.onload = function() {
+            var minSize = Math.min(img.width, img.height); // 寻找最短命门，确定最终不留痕迹的正方形裁面！
+            var sx = (img.width - minSize) / 2; // 只取灵魂中心
+            var sy = (img.height - minSize) / 2;
+            var cvs = document.createElement('canvas');
+            var maxSize = Math.min(minSize, 1200); // 防暴压制：不糊底但也别撑爆存盘阵
+            cvs.width = maxSize; cvs.height = maxSize;
+            cvs.getContext('2d').drawImage(img, sx, sy, minSize, minSize, 0, 0, maxSize, maxSize);
+            var safeSrc = cvs.toDataURL('image/jpeg', 0.95);
+            if(callback) callback(safeSrc);
+          };
+          img.src = src;
+        } 
+      }});
     }
   };
 
@@ -38,7 +56,6 @@
      滑动推算版 (华容道)
   ============================ */
   var Slide = {
-    // 🔪 为华容道斩出自己专属的图片储物间
     imgSrc: App.LS.get('pzSlideImg') || '',
     core: null, winMsg: null, emptyState: null,
     size: 4, coreSize: 0, tileSize: 0, tiles: [], emptyPos: {x:0, y:0}, playing: false, steps: 0, stepsText: null,
@@ -50,7 +67,6 @@
 
       var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
       
-      // 🔪 这里接管了它自己的存库法
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '重录印迹'; 
       uploadBtn.onclick = function(){ 
         Puz.pickImage('载入华容道画景', function(src){ Slide.imgSrc = src; App.LS.set('pzSlideImg', src); Slide.resetAndBuild(); }); 
@@ -91,7 +107,6 @@
       if(Slide.winMsg) Slide.winMsg.classList.remove('show');
       var oldTiles = Slide.core.querySelectorAll('.pz-slide-tile'); oldTiles.forEach(function(el){ el.remove(); });
 
-      // 使用独立图像判断
       if(!Slide.imgSrc) { if(Slide.emptyState) Slide.emptyState.style.display = 'flex'; return; }
       if(Slide.emptyState) Slide.emptyState.style.display = 'none';
 
@@ -149,10 +164,9 @@
   };
 
   /* ============================
-     锯齿物理真画引擎 (真拼图)
+     真·锯齿无拉扯切割引擎
   ============================ */
   var Jigsaw = {
-    // 🔪 为碎片拼图斩出他单独的山头！
     imgSrc: App.LS.get('pzJigsawImg') || '',
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
     dragging: null, offsetX: 0, offsetY: 0, snapDist: 20, playing: false, canvasCssW: 0, canvasCssH: 0, winMsg: null,
@@ -164,7 +178,6 @@
 
       var backBtn = document.createElement('div'); backBtn.className = 'pz-btn'; backBtn.textContent = '返回'; backBtn.onclick = function(){ Puz.showModeSelect(container); };
       
-      // 🔪 这里接管了独立的拼图相框
       var uploadBtn = document.createElement('div'); uploadBtn.className = 'pz-btn'; uploadBtn.textContent = '赋予画像'; 
       uploadBtn.onclick = function(){ 
         Puz.pickImage('赋魂散落记忆', function(src){ Jigsaw.imgSrc = src; App.LS.set('pzJigsawImg', src); Jigsaw.initDraw(); }); 
@@ -200,7 +213,6 @@
       if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show');
       var empty = document.getElementById('pzJigsawEmpty');
       
-      // 使用自己名下的图像鉴定
       if(!Jigsaw.imgSrc) { if(empty) empty.style.display = 'flex'; return; }
       if(empty) empty.style.display = 'none';
 
@@ -221,7 +233,6 @@
         Jigsaw.pieceW = Jigsaw.imgW / Jigsaw.cols; Jigsaw.pieceH = Jigsaw.imgH / Jigsaw.rows;
         if(loadCallback) loadCallback(); else { Jigsaw.playing = false; Jigsaw.generatePieces(); Jigsaw.draw(); }
       };
-      // 图源只用自己的
       img.src = Jigsaw.imgSrc;
     },
 
@@ -344,3 +355,4 @@
   };
   App.register('puzzle', Puz);
 })();
+
