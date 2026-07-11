@@ -23,7 +23,7 @@
     showModeSelect: function(container) {
       container.innerHTML = '<div class="pz-wrap"><div class="pz-mode-select">' +
         '<div class="pz-mode-card" id="pzModeSlide"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="34" y="12" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><rect x="12" y="34" width="18" height="18" rx="2" stroke="#9ca3b0" stroke-width="2.5"/><path d="M38 38L48 48M48 38L38 48" stroke="#9ca3b0" stroke-width="2" stroke-linecap="round"/></svg></div><div class="pz-mode-name">华容道</div><div class="pz-mode-desc">滑块流转</div></div>' +
-        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">拼图</div><div class="pz-mode-desc">盲猜嵌合极限挑战</div></div>' +
+        '<div class="pz-mode-card" id="pzModeJigsaw"><div class="pz-mode-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M12 28V12h16v4a4 4 0 108 0v-4h16v16h-4a4 4 0 100 8h4v16H36v-4a4 4 0 10-8 0v4H12V36h4a4 4 0 100-8h-4z" stroke="#9ca3b0" stroke-width="2.5" stroke-linejoin="round"/></svg></div><div class="pz-mode-name">真拼图</div><div class="pz-mode-desc">硬核复苏记忆边缘</div></div>' +
       '</div></div>';
       container.querySelector('#pzModeSlide').addEventListener('click', function(){ Slide.buildInto(container); });
       container.querySelector('#pzModeJigsaw').addEventListener('click', function(){ Jigsaw.buildInto(container); });
@@ -58,13 +58,12 @@
       var board = document.createElement('div'); board.className = 'pz-slide-board';
       var core = document.createElement('div'); core.className = 'pz-slide-core'; Slide.core = core;
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>推演完毕</h3><span>载入中...</span>'; Slide.winMsg = winMsg;
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<div class="pz-win-box"><h3>推演完毕</h3><span>载入中...</span></div>'; Slide.winMsg = winMsg;
       var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>上载图景结阵</span>'; Slide.emptyState = emptyState;
       core.appendChild(emptyState); core.appendChild(winMsg); board.appendChild(core);
 
       var statsWrap = document.createElement('div'); statsWrap.style.width = "100%";
       var stepsDiv = document.createElement('div'); stepsDiv.className = 'pz-footer-stats'; stepsDiv.textContent = '推演步数: 0'; Slide.stepsText = stepsDiv;
-      
       var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions';
       var resBtn = document.createElement('div'); resBtn.className='pz-btn'; resBtn.textContent='重置'; resBtn.onclick=function(){ Slide.resetAndBuild(); };
       var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='存档'; saveBtn.onclick=function(){ Slide.saveGame(); };
@@ -72,8 +71,7 @@
       actionRow.appendChild(resBtn); actionRow.appendChild(saveBtn); actionRow.appendChild(delBtn);
 
       statsWrap.appendChild(stepsDiv); statsWrap.appendChild(actionRow);
-      wrap.appendChild(toolbar); wrap.appendChild(board); wrap.appendChild(statsWrap);
-      container.appendChild(wrap);
+      wrap.appendChild(toolbar); wrap.appendChild(board); wrap.appendChild(statsWrap); container.appendChild(wrap);
 
       Slide.loadGame();
     },
@@ -83,7 +81,6 @@
       Slide.playing = false; Slide.updateSteps(0);
       if(Slide.winMsg) Slide.winMsg.classList.remove('show');
       var oldTiles = Slide.core.querySelectorAll('.pz-slide-tile'); oldTiles.forEach(function(el){ el.remove(); });
-
       if(!Puz.imgSrc) { if(Slide.emptyState) Slide.emptyState.style.display = 'flex'; return; }
       if(Slide.emptyState) Slide.emptyState.style.display = 'none';
 
@@ -94,13 +91,11 @@
       for(var i=0; i<total-1; i++){
         var t = document.createElement('div'); t.className = 'pz-slide-tile';
         var tx = i % Slide.size, ty = Math.floor(i / Slide.size);
-        
         t.style.width = Slide.tileSize + 'px'; t.style.height = Slide.tileSize + 'px';
         t.style.backgroundImage = 'url(' + Puz.imgSrc + ')'; t.style.backgroundSize = Slide.coreSize + 'px ' + Slide.coreSize + 'px';
         t.style.backgroundPosition = '-' + (tx*Slide.tileSize) + 'px -' + (ty*Slide.tileSize) + 'px';
         t.style.transform = 'translate(' + (tx*Slide.tileSize) + 'px, ' + (ty*Slide.tileSize) + 'px)';
         t.dataset.idx = i;
-        
         Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty }); Slide.core.appendChild(t);
         
         (function(idx, el){
@@ -128,32 +123,21 @@
       }
       for(var k=0; k<Slide.tiles.length; k++){ var t2 = Slide.tiles[k]; t2.el.style.transform = 'translate(' + (t2.x*Slide.tileSize) + 'px, ' + (t2.y*Slide.tileSize) + 'px)'; }
     },
-    
-    // 【在这里加入了评测级别的动态结算反馈！】
     checkWin: function() { 
-      for(var i=0; i<Slide.tiles.length; i++) { 
-        if(Slide.tiles[i].x !== Slide.tiles[i].targetX || Slide.tiles[i].y !== Slide.tiles[i].targetY) return; 
-      } 
+      for(var i=0; i<Slide.tiles.length; i++) { if(Slide.tiles[i].x !== Slide.tiles[i].targetX || Slide.tiles[i].y !== Slide.tiles[i].targetY) return; } 
       Slide.playing = false; 
-
-      var baseSteps = Slide.size * Slide.size * 5; 
-      var msg = '';
-      if(Slide.steps <= baseSteps * 1.5) msg = "神乎其技，完美推演 ✨";
-      else if (Slide.steps <= baseSteps * 3.5) msg = "思路清晰，顺利破局 🌸";
-      else msg = "百折不挠，终解残局 💦";
-
-      Slide.winMsg.innerHTML = '<h3>阵法已破</h3><span style="margin-top:6px;display:block;">耗时：<b style="color:#7ea3c9;font-size:16px;">'+Slide.steps+'</b> 步<br><span style="opacity:0.8;font-size:12px;margin-top:4px;display:block;">' + msg + '</span></span>';
-
-      setTimeout(function(){ if(Slide.winMsg) Slide.winMsg.classList.add('show'); }, 300); 
+      var baseSteps = Slide.size * Slide.size * 5; var msg = '';
+      if(Slide.steps <= baseSteps * 1.5) msg = "你太厉害了吧"; else if (Slide.steps <= baseSteps * 3.5) msg = "哎哟，不错哦"; else msg = "宝宝棒棒哒";
+      Slide.winMsg.innerHTML = '<div class="pz-win-box"><h3>阵法已破</h3><span style="margin-top:6px;display:block;">耗时：<b style="color:#7ea3c9;font-size:16px;">'+Slide.steps+'</b> 步<br><span style="opacity:0.8;font-size:12px;margin-top:4px;display:block;">' + msg + '</span></span></div>';
+      setTimeout(function(){ if(Slide.winMsg) { Slide.winMsg.classList.add('show'); setTimeout(function(){Slide.winMsg.classList.remove('show');},3500); } }, 300); 
     },
-    
     saveGame: function() { if(!Puz.imgSrc) return App.showToast('虚空无法印证'); var snap = { size: Slide.size, steps: Slide.steps, emptyPos: Slide.emptyPos, tiles: Slide.tiles.map(function(t){ return {x: t.x, y: t.y}; }) }; App.LS.set('mmPzSlideSave', snap); App.showToast('棋局已刻印！'); },
     loadGame: function() { var snap = App.LS.get('mmPzSlideSave'); if(!snap || !Puz.imgSrc) { Slide.resetAndBuild(); return; } Slide.size = snap.size; Slide.resetAndBuild(); document.querySelector('.pz-select').value = String(snap.size); Slide.emptyPos = snap.emptyPos; Slide.updateSteps(snap.steps); Slide.playing = true; for(var i=0; i<snap.tiles.length; i++) { Slide.tiles[i].x = snap.tiles[i].x; Slide.tiles[i].y = snap.tiles[i].y; Slide.tiles[i].el.style.transform = 'translate(' + (Slide.tiles[i].x * Slide.tileSize) + 'px, ' + (Slide.tiles[i].y * Slide.tileSize) + 'px)'; } },
     delGame: function() { App.LS.remove('mmPzSlideSave'); Slide.resetAndBuild(); App.showToast('旧历抹除'); }
   };
 
   /* ============================
-     锯齿物理真画引擎 (真拼图)
+     锯齿物理真画引擎 (厚实质感描边+全防糊处理+卡位白光震颤闪效)
   ============================ */
   var Jigsaw = {
     canvas: null, ctx: null, pieces: [], cols: 4, rows: 4, img: null, imgW: 0, imgH: 0, pieceW: 0, pieceH: 0,
@@ -178,14 +162,14 @@
       var canvas = document.createElement('canvas'); canvas.className = 'pz-jigsaw-canvas';
       Jigsaw.canvas = canvas; Jigsaw.ctx = canvas.getContext('2d');
 
-      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<h3>刻印重叠</h3><span>四维拼接完成 ✨</span>'; Jigsaw.winMsg = winMsg;
-      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>需铺展记忆纸片方能切割</span>';
+      var winMsg = document.createElement('div'); winMsg.className = 'pz-win'; winMsg.innerHTML = '<div class="pz-win-box"><h3>重组完美</h3><span>封印痕迹已瓦解 ✨</span></div>'; Jigsaw.winMsg = winMsg;
+      var emptyState = document.createElement('div'); emptyState.className = 'pz-empty'; emptyState.id = 'pzJigsawEmpty'; emptyState.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>需铺展底本纸张才能切割</span>';
 
       canvasWrap.appendChild(canvas); canvasWrap.appendChild(winMsg); canvasWrap.appendChild(emptyState);
 
       var actionRow = document.createElement('div'); actionRow.className = 'pz-footer-actions';
-      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='凝结归档'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
-      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='彻底扫平删图'; delBtn.onclick=function(){ Jigsaw.delGame(); };
+      var saveBtn = document.createElement('div'); saveBtn.className='pz-btn primary'; saveBtn.textContent='定格封盘'; saveBtn.onclick=function(){ Jigsaw.saveGame(); };
+      var delBtn = document.createElement('div'); delBtn.className='pz-btn danger'; delBtn.textContent='燃尽删档'; delBtn.onclick=function(){ Jigsaw.delGame(); };
       actionRow.appendChild(saveBtn); actionRow.appendChild(delBtn);
 
       wrap.appendChild(toolbar); wrap.appendChild(canvasWrap); wrap.appendChild(actionRow); container.appendChild(wrap);
@@ -200,7 +184,7 @@
 
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
-      var gapSpace = 16; var trayH = cssW * 0.50; 
+      var gapSpace = 16; var trayH = cssW * 0.55; 
       var cssH = cssW + gapSpace + trayH; 
       Jigsaw.canvasCssW = cssW; Jigsaw.canvasCssH = cssH;
 
@@ -222,34 +206,42 @@
       Jigsaw.pieces = [];
       for(var r = 0; r < Jigsaw.rows; r++){
         for(var c = 0; c < Jigsaw.cols; c++){
-          Jigsaw.pieces.push({ col: c, row: r, targetX: c * Jigsaw.pieceW, targetY: r * Jigsaw.pieceH, x: c * Jigsaw.pieceW, y: r * Jigsaw.pieceH, placed: false });
+          Jigsaw.pieces.push({ col: c, row: r, targetX: c * Jigsaw.pieceW, targetY: r * Jigsaw.pieceH, x: c * Jigsaw.pieceW, y: r * Jigsaw.pieceH, placed: false, flashAnim: 0 });
         }
       }
     },
 
     scatter: function() {
-      if(!Puz.imgSrc) return App.showToast('无法于虚无生烟花');
+      if(!Puz.imgSrc) return App.showToast('底照干涸，拼盘崩解');
       Jigsaw.playing = true; if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show');
       var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
       for(var i = 0; i < Jigsaw.pieces.length; i++){
         var p = Jigsaw.pieces[i];
         p.x = 2 + Math.random() * Math.max(1, (Jigsaw.canvasCssW - Jigsaw.pieceW - 4));
         p.y = boxTopY + 2 + Math.random() * Math.max(1, (trayH - Jigsaw.pieceH - 4)); 
-        p.placed = false;
+        p.placed = false; p.flashAnim = 0;
       }
       Jigsaw.draw();
     },
 
     draw: function() {
       var ctx = Jigsaw.ctx; ctx.clearRect(0, 0, Jigsaw.canvasCssW, Jigsaw.canvasCssH);
+      var winFinished = !Jigsaw.playing && Jigsaw.pieces.length>0 && Jigsaw.pieces.every(function(pi){ return pi.placed; });
       
+      // ===== 天堂区放置台（绝无图透的盲操作体验）=====
       ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
       ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.strokeRect(0, 0, Jigsaw.imgW, Jigsaw.imgH);
-      if(Jigsaw.img && !Jigsaw.playing) { ctx.globalAlpha = 0.5; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1; }
+      if(Jigsaw.img && !Jigsaw.playing) { ctx.globalAlpha = winFinished ? 1.0 : 0.4; ctx.drawImage(Jigsaw.img, 0, 0, Jigsaw.imgW, Jigsaw.imgH); ctx.globalAlpha = 1; }
 
+      // ===== 地狱深坑存储箱 =====
       var gap = 16; var boxTopY = Jigsaw.imgH + gap; var trayH = Jigsaw.canvasCssH - boxTopY;
-      ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
-      ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 1.5; ctx.strokeRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
+      if(!winFinished) {
+         ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
+         ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 1.5; ctx.strokeRect(0, boxTopY, Jigsaw.canvasCssW, trayH);
+      }
+
+      // ===== 判断通关消融效果：赢了之后一切缝隙灰飞烟灭！ =====
+      if (winFinished) return; // 让线条就此人间蒸发！不画碎片图元了，已经全铺底了。
 
       for(var i = 0; i < Jigsaw.pieces.length; i++){ var p = Jigsaw.pieces[i]; if(p === Jigsaw.dragging) continue; Jigsaw.drawPiece(p); }
       if(Jigsaw.dragging) Jigsaw.drawPiece(Jigsaw.dragging); 
@@ -258,18 +250,29 @@
     drawPiece: function(p) {
       var ctx = Jigsaw.ctx; var pw = Jigsaw.pieceW, ph = Jigsaw.pieceH; var tab = pw * 0.18; 
       
+      // 实体超长黑影（创造高度差脱离感）
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      if(!p.placed) { 
-        ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 5;
-        ctx.fillStyle = '#fff'; ctx.fill(); 
-      }
+      if(!p.placed) { ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 6; ctx.fillStyle = '#000'; ctx.fill(); }
       ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
       ctx.clip(); ctx.drawImage(Jigsaw.img, p.x - p.targetX, p.y - p.targetY, Jigsaw.imgW, Jigsaw.imgH); ctx.restore();
 
       ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
-      ctx.strokeStyle = p.placed ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.85)'; ctx.lineWidth = p.placed ? 0 : 0.6; ctx.stroke(); ctx.restore();
+      if(!p.placed) {
+        ctx.strokeStyle = 'rgba(0,0,0,0.9)'; ctx.lineWidth = 1.8; ctx.stroke(); // 黑重围线
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 0.5; ctx.stroke(); // 厚玻璃感反光侧高光边
+      } else {
+        ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 0.6; ctx.stroke(); // 已嵌入：深深微淡痕边！
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 0.4; ctx.stroke(); // 双重细压边
+      }
+      ctx.restore();
+
+      // 吸附落入槽位那一瞬间引发的光影聚爆反馈机制！(核心打击爽点！！！)
+      if(p.flashAnim > 0) {
+        ctx.save(); ctx.beginPath(); Jigsaw.drawPiecePath(ctx, p.x, p.y, pw, ph, p.col, p.row, tab); ctx.closePath();
+        ctx.fillStyle = 'rgba(255,255,255,'+p.flashAnim+')'; ctx.fill(); ctx.restore();
+      }
     },
 
     drawPiecePath: function(ctx, x, y, w, h, col, row, tab) {
@@ -292,15 +295,36 @@
 
       var ce = function(e){ 
         if(!Jigsaw.dragging) return; var p = Jigsaw.dragging; Jigsaw.dragging = null; var dx = Math.abs(p.x - p.targetX), dy = Math.abs(p.y - p.targetY);
-        if(dx < Jigsaw.snapDist && dy < Jigsaw.snapDist) { p.x = p.targetX; p.y = p.targetY; p.placed = true; if(navigator.vibrate) navigator.vibrate(20); } Jigsaw.draw(); Jigsaw.checkWin();
+        // 【绝对致命打击感的吸附闪效反馈机制】
+        if(dx < Jigsaw.snapDist && dy < Jigsaw.snapDist) { 
+           p.x = p.targetX; p.y = p.targetY; p.placed = true; 
+           if(navigator.vibrate) navigator.vibrate(20); 
+           // 让这块放准的版高爆射一帧强光白！！再极速随时间缩减
+           p.flashAnim = 0.9;
+           var fT = setInterval(function(){
+              p.flashAnim -= 0.08; 
+              if(p.flashAnim <= 0) { p.flashAnim = 0; clearInterval(fT); }
+              Jigsaw.draw(); // 不断高刷
+           }, 1000/60);
+        } else { Jigsaw.draw(); }
+        Jigsaw.checkWin();
       };
       Jigsaw.canvas.addEventListener('touchend', ce, {passive: true}); document.addEventListener('mouseup', ce);
     },
 
-    checkWin: function() { for(var i=0; i<Jigsaw.pieces.length; i++){ if(!Jigsaw.pieces[i].placed) return; } Jigsaw.playing = false; setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); }, 300); },
-    saveGame: function() { if(!Puz.imgSrc) return App.showToast('画像还未赋予画纸！'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('光晕已被永远锁在此间琥珀中'); },
+    checkWin: function() { 
+      for(var i=0; i<Jigsaw.pieces.length; i++){ if(!Jigsaw.pieces[i].placed) return; } 
+      Jigsaw.playing = false; 
+      Jigsaw.draw(); // 会触发我的究极胜利神之抹线判断：消除全裂纹回归成壁纸图！
+      setTimeout(function(){ 
+        if(Jigsaw.winMsg) Jigsaw.winMsg.classList.add('show'); 
+        setTimeout(function(){ if(Jigsaw.winMsg) Jigsaw.winMsg.classList.remove('show'); }, 2800); // 你要求的：绝不霸屏碍眼看大图，看两眼自己优雅滚走！
+      }, 500); 
+    },
+    
+    saveGame: function() { if(!Puz.imgSrc) return App.showToast('毫无羁绊无法储影'); var snap = { cols: Jigsaw.cols, playing: Jigsaw.playing, pz: Jigsaw.pieces.map(function(p){ return {x: p.x, y: p.y, pld: p.placed}; }) }; App.LS.set('mmPzJigsawSave', snap); App.showToast('落回凝核云存储！'); },
     loadGameOrInit: function() { var snap = App.LS.get('mmPzJigsawSave'); if(!snap || !Puz.imgSrc) { Jigsaw.initDraw(); return; } Jigsaw.cols = snap.cols; Jigsaw.rows = snap.cols; document.querySelector('.pz-select').value = String(snap.cols); Jigsaw.initDraw(function() { Jigsaw.generatePieces(); Jigsaw.playing = snap.playing; for(var i=0; i<Jigsaw.pieces.length; i++) { Jigsaw.pieces[i].x = snap.pz[i].x; Jigsaw.pieces[i].y = snap.pz[i].y; Jigsaw.pieces[i].placed = snap.pz[i].pld; } Jigsaw.draw(); }); },
-    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('痕迹已消灭于虚无'); }
+    delGame: function() { App.LS.remove('mmPzJigsawSave'); Jigsaw.initDraw(); App.showToast('一切尘封已归尽空谷'); }
   };
   App.register('puzzle', Puz);
 })();
