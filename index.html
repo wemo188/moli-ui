@@ -18,7 +18,7 @@
     'base.css','panels.css','frost.css','character.css','worldbook.css',
     'chat.css','preset.css','calendar.css','dock.css',
     'cards.css','workshop.css','user.css','memory.css',
-    'wechat.css','char-mgr.css','api.css','offline.css','bg.css'
+    'wechat.css','char-mgr.css','api.css','offline.css','bg.css','puzzle.css'
   ];
   css.forEach(function(href){
     var link = document.createElement('link');
@@ -225,11 +225,24 @@
 
       </div>
    </section>
+  
+      <!-- 🌟 第三页 🌟 -->
+    <section class="screen-page screen-page-3">
+      <div class="screen-page-inner">
+        <div class="card-group-icons" style="padding:20px 16px 0;">
+          <div id="iconPuzzle" class="app-icon-item">
+            <div id="iconPuzzleImg" class="app-icon-glass"></div>
+            <div id="iconPuzzleLabel" class="app-icon-label">拼图</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
   </div>
   <div class="screen-indicators">
     <button class="screen-dot active" type="button" data-screen="0"></button>
     <button class="screen-dot" type="button" data-screen="1"></button>
+    <button class="screen-dot" type="button" data-screen="2"></button>
   </div>
 </main>
 
@@ -298,7 +311,7 @@
     'script.js','theme.js','font.js','api.js','bg.js',
     'character.js','user.js','worldbook.js','preset.js',
     'chat.js','chatui.js','calendar.js','cards.js','frost.js','char-mgr.js',
-    'workshop.js','wechat.js','dock.js','memory.js','offlineui.js','offline.js'
+    'workshop.js','wechat.js','dock.js','memory.js','offlineui.js','offline.js','puzzle.js'
   ];
   var idx = 0;
   function loadNext(){
