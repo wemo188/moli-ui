@@ -47,7 +47,7 @@
 .tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 12px 14px; gap: 10px; }
 
 /* 主屏幕 - 贴紧边框 */
-.tt-screen-wrap { width: 100%; max-width: 310px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
+.tt-screen-wrap { width: 100%; max-width: 290px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
 .tt-screen { position: relative; border-radius: 8px; background: rgba(255,255,255,0.96); padding: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(220,225,232,0.8); display: flex; flex-direction: column; align-items: center; }
 .tt-screen-badge { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .tt-badge-left { display: flex; align-items: center; gap: 4px; }
@@ -64,7 +64,7 @@
 .tt-controls-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; max-width: 310px; padding: 0 2px; }
 
 /* 左侧：猫爪旋转 */
-.tt-left { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 4px; }
+.tt-left { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 4px; }
 .tt-paw-btn {
   width: 66px; height: 66px; border-radius: 50%; cursor: pointer; touch-action: manipulation;
   background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(234,238,243,0.88));
@@ -83,7 +83,7 @@
 .tt-btn-label { font-size: 11px; color: rgba(120,128,138,0.8); font-weight: 800; letter-spacing: 1px; }
 
 /* 右侧：十字键 - 物理分离感更强 */
-.tt-right { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.tt-right { display: flex; flex-direction: column; align-items: center; gap: 10; }
 .tt-dpad {
   display: grid; gap: 0; align-items: center; justify-items: center;
   grid-template-areas: ". up ." "left . right" ". down .";
