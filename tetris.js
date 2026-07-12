@@ -1,5 +1,5 @@
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 高定版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 终极护眼大键版
    ================================================ */
 (function(){
   'use strict';
@@ -11,9 +11,20 @@
     board: [], score: 0,
     activePiece: null, nextPiece: null,
     dropStart: 0, gameOver: false, paused: false, reqId: null,
-    scoreEl: null, overlayEl: null,
+    scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
+    gameSeconds: 0, lastSecondTick: 0,
 
-    COLORS: [ null, 'rgba(168, 216, 234, 0.75)', 'rgba(170, 224, 202, 0.75)', 'rgba(255, 183, 178, 0.75)', 'rgba(255, 226, 169, 0.75)', 'rgba(203, 186, 237, 0.75)', 'rgba(255, 202, 175, 0.75)', 'rgba(235, 244, 250, 0.85)' ],
+    // ★ 颜色加深，透度调到0.95，绝对不刺眼，晶莹饱满！
+    COLORS: [ 
+      null, 
+      'rgba(110, 180, 210, 0.95)', // 1 冰蓝
+      'rgba(110, 195, 160, 0.95)', // 2 薄荷
+      'rgba(235, 130, 130, 0.95)', // 3 樱红
+      'rgba(235, 190, 110, 0.95)', // 4 奶黄
+      'rgba(160, 140, 210, 0.95)', // 5 芋紫
+      'rgba(235, 150, 120, 0.95)', // 6 蜜桃
+      'rgba(180, 200, 215, 0.95)'  // 7 灰白
+    ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
     init: function() { App.safeOn('#iconTetris', 'click', function(){ TT.openGame(); }); },
@@ -41,21 +52,16 @@
       container.innerHTML = 
         '<div class="tt-wrap">' +
           '<div class="tt-card">' +
-            
-            '<!-- 顶部指示灯与扬声器列 -->' +
-            '<div class="tt-card-top">' +
-              '<div class="tt-leds"><div class="tt-led tt-led-on"></div><div class="tt-led"></div><div class="tt-led"></div></div>' +
-              '<div class="tt-speakers"><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div><div class="tt-speaker-hole"></div></div>' +
-            '</div>' +
+            '<!-- 顶部指示灯 (只要三个点) -->' +
+            '<div class="tt-card-top"><div class="tt-led tt-led-on"></div><div class="tt-led"></div><div class="tt-led"></div></div>' +
             
             '<div class="tt-card-body">' +
-              
               '<!-- 上半部分：主屏幕 -->' +
               '<div class="tt-screen-wrap">' +
                 '<div class="tt-screen">' +
                   '<div class="tt-screen-badge">' +
                     '<div class="tt-badge-left"><div class="tt-badge-dot"></div><div class="tt-badge-text">SCORE: <span id="ttScore">0</span></div></div>' +
-                    '<div class="tt-screen-no">TETRIS</div>' +
+                    '<div class="tt-screen-time">TIME: <span id="ttTime">00:00</span></div>' +
                   '</div>' +
                   '<div class="tt-canvas-container">' +
                     '<canvas class="tt-canvas" id="ttCanvas"></canvas>' +
@@ -67,13 +73,11 @@
                 '</div>' +
               '</div>' +
 
-              '<!-- 隔离凹槽线 -->' +
               '<div class="tt-divider-groove"></div>' +
 
               '<!-- 下半部分：操控区 -->' +
               '<div class="tt-controls-row">' +
                 
-                '<!-- 左侧旋转 -->' +
                 '<div class="tt-left">' +
                   '<div class="tt-paw-btn" id="ttBtnRotate">' +
                     '<div class="tt-paw-inner">' +
@@ -83,12 +87,6 @@
                   '<div class="tt-btn-label">旋转</div>' +
                 '</div>' +
 
-                '<!-- 中间重置 -->' +
-                '<div class="tt-center">' +
-                  '<div class="tt-act-btn" id="ttBtnReset">重置</div>' +
-                '</div>' +
-
-                '<!-- 右侧十字键：换成了纯线段 SVG -->' +
                 '<div class="tt-right">' +
                   '<div class="tt-dpad">' +
                     '<div class="tt-dpad-btn tt-dpad-up" id="ttBtnPause" title="暂停/继续"><svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="18"/></svg></div>' +
@@ -101,16 +99,33 @@
               '</div>' +
             '</div>' +
           '</div>' +
+
+          '<!-- 机身外部：重置与记录按钮 -->' +
+          '<div class="tt-out-actions">' +
+             '<div class="tt-out-btn" id="ttBtnOutReset">重新开始</div>' +
+             '<div class="tt-out-btn" id="ttBtnOutRecord">分数记录</div>' +
+          '</div>' +
+
+          '<!-- 弹窗：历史分数 -->' +
+          '<div class="tt-record-modal tt-hidden" id="ttRecordModal">' +
+             '<div class="tt-rm-close" id="ttRmClose">×</div>' +
+             '<div class="tt-rm-title">历史分数</div>' +
+             '<div class="tt-rm-best">最高记录: <span id="ttRmBestVal">0</span></div>' +
+             '<ul class="tt-rm-list" id="ttRmList"></ul>' +
+          '</div>' +
+
         '</div>';
 
       TT.scoreEl = container.querySelector('#ttScore');
+      TT.timeEl = container.querySelector('#ttTime');
       TT.overlayEl = container.querySelector('#ttOverlay');
+      TT.recordModal = container.querySelector('#ttRecordModal');
       TT.canvas = container.querySelector('#ttCanvas');
       TT.ctx = TT.canvas.getContext('2d');
 
-      // ★ 高度压缩算法：降到 0.45，逼迫屏幕变短，整机也会随之变短！
+      // ★ 为了给外部底座按键留出足够的空间，将最大高度系数压到 0.4 左右！
       var wrapW = container.querySelector('.tt-canvas-container').clientWidth || 240;
-      var maxCvsHeight = window.innerHeight * 0.45; 
+      var maxCvsHeight = window.innerHeight * 0.40; 
       var blockSizeW = Math.floor(wrapW / TT.COLS);
       var blockSizeH = Math.floor(maxCvsHeight / TT.ROWS);
       
@@ -125,10 +140,15 @@
       TT.canvas.width = cvsW * dpr; TT.canvas.height = cvsH * dpr;
       TT.ctx.scale(dpr, dpr);
 
-      container.querySelector('#ttBtnReset').addEventListener('click', function(){ TT.reset(); });
+      // 绑定游戏内覆盖弹窗按钮
       container.querySelector('#ttOverlayBtn').addEventListener('click', function(){ 
         if(TT.paused) TT.togglePause(); else TT.reset(); 
       });
+
+      // 绑定机身外的控制按钮
+      container.querySelector('#ttBtnOutReset').addEventListener('click', function(){ TT.reset(); });
+      container.querySelector('#ttBtnOutRecord').addEventListener('click', function(){ TT.showRecords(); });
+      container.querySelector('#ttRmClose').addEventListener('click', function(){ TT.recordModal.classList.add('tt-hidden'); });
 
       TT.bindControls(container);
       TT.reset();
@@ -176,16 +196,47 @@
         cancelAnimationFrame(TT.reqId);
       } else {
         TT.overlayEl.classList.add('tt-hidden');
-        TT.dropStart = Date.now(); TT.loop();
+        TT.lastSecondTick = Date.now(); // 恢复时重置秒级心跳，防止突变
+        TT.dropStart = Date.now(); 
+        TT.loop();
       }
     },
 
     reset: function() {
+      if(TT.score > 0 && !TT.gameOver) { TT.saveRecord(TT.score); } // 强行重置时保存一次分数
       TT.board = Array.from({length: TT.ROWS}, function() { return Array(TT.COLS).fill(0); });
       TT.score = 0; TT.scoreEl.textContent = '0';
+      TT.gameSeconds = 0; TT.timeEl.textContent = '00:00';
       TT.gameOver = false; TT.paused = false; TT.overlayEl.classList.add('tt-hidden');
-      TT.spawn(); TT.dropStart = Date.now();
+      TT.spawn(); TT.dropStart = Date.now(); TT.lastSecondTick = Date.now();
       cancelAnimationFrame(TT.reqId); TT.loop();
+    },
+
+    saveRecord: function(score) {
+      if (score === 0) return;
+      var recs = App.LS.get('ttRecords') || [];
+      var d = new Date(); var ts = (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      recs.unshift({ score: score, time: ts });
+      if (recs.length > 10) recs.pop();
+      App.LS.set('ttRecords', recs);
+    },
+
+    showRecords: function() {
+      if(!TT.paused && !TT.gameOver) { TT.togglePause(); } // 看记录前自动帮她暂停
+      var recs = App.LS.get('ttRecords') || [];
+      var maxScore = 0;
+      recs.forEach(function(r){ if(r.score > maxScore) maxScore = r.score; });
+      
+      TT.recordModal.querySelector('#ttRmBestVal').textContent = maxScore;
+      var listEl = TT.recordModal.querySelector('#ttRmList');
+      if(recs.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;padding:20px;">还没有记录，快去拿个高分吧~</div>';
+      } else {
+        listEl.innerHTML = recs.map(function(r){
+          return '<li class="tt-rm-item"><span class="tt-rm-score">' + r.score + '</span><span class="tt-rm-time">' + r.time + '</span></li>';
+        }).join('');
+      }
+      TT.recordModal.classList.remove('tt-hidden');
     },
 
     spawn: function() {
@@ -194,6 +245,7 @@
       TT.activePiece = { x: Math.floor(TT.COLS/2) - Math.floor(shape[0].length/2), y: 0, matrix: shape, color: TT.COLORS[typeId] };
       if (TT.collide()) { 
         TT.gameOver = true; 
+        TT.saveRecord(TT.score);
         var title = TT.overlayEl.querySelector('#ttOverlayTitle');
         var btn = TT.overlayEl.querySelector('#ttOverlayBtn');
         title.textContent = 'GAME OVER'; btn.textContent = '再来一局';
@@ -252,8 +304,7 @@
 
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
-      var px = x * bs; var py = y * bs;
-      var s = bs;
+      var px = x * bs; var py = y * bs; var s = bs;
 
       TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
 
@@ -286,7 +337,18 @@
     loop: function() {
       if(TT.gameOver || TT.paused) return;
       var now = Date.now();
+      
+      // ★ 时间算法：每过 1000 毫秒增加一秒
+      if (now - TT.lastSecondTick >= 1000) {
+         TT.gameSeconds++;
+         TT.lastSecondTick = now;
+         var min = Math.floor(TT.gameSeconds / 60); var sec = TT.gameSeconds % 60;
+         TT.timeEl.textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+      }
+
+      // 下落算法
       if (now - TT.dropStart > 700) TT.drop();
+      
       TT.reqId = requestAnimationFrame(TT.loop);
     }
   };
