@@ -1,4 +1,50 @@
 
+/* =========================================================
+   微信专属：Me 页面 PSP 卡片容器 (1:1 完美还原)
+========================================================= */
+.c6-me-psp-wrap {
+  /* 去掉左右 padding，让卡片自己的 margin 生效 */
+  padding: 16px 0 12px;
+  background: #fff;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.c6-me-psp-card {
+  pointer-events: auto !important; 
+  /* 🌟 核心：还原系统原本的间距，不再限制 max-width，不再强行居中 */
+  margin: 5px 5% 26px !important; 
+  max-width: none !important;
+  transition: transform 0.2s ease !important;
+  /* 🌟 核心：移除被压扁的缩放，彻底 1:1 */
+  transform: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c6-me-psp-card:active {
+  /* 点击时给一点微小的下压反馈即可 */
+  transform: scale(0.96) !important;
+}
+
+/* 退出登录按钮特调 */
+#wxMeLogout {
+  justify-content: center;
+}
+
+.c6-me-logout-text {
+  color: #c9706b;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+```
+
+---
+
+### 第二步：修复闪屏串台，替换 `user.js`
+直接全选你的 `user.js`，覆盖为下面这版。
+（哥哥已经把关闭档案的逻辑改成了：**如果系统原本的用户列表没打开，就绝对不要拉起它！乖乖留在当前层！**）
+
+```javascript
 (function() {
   'use strict';
   var App = window.App;
@@ -453,11 +499,10 @@
         }); });
       }
 
-      /* 🌟 完美的退出机制：防误触空卡片拦截 */
+      /* 🌟 核心修复：彻底解决关闭档案时的闪屏和串台 */
       var closeProfileFn = function() {
         var saved = User.saveProfile(pp, true);
         
-        // 如果是新建状态，且返回了 false（代表名字为空），则直接抛弃，不生成垃圾数据
         if (saved === false && !editId) {
           App.showToast('未填写姓名，取消创建');
         }
@@ -467,25 +512,20 @@
 
         User.load();
         var panel = App.$('#userPanel');
-        if (!User.list.length) {
-          setTimeout(function() { User.close(); }, 100);
-        } else if (panel && panel.style.display !== 'none') {
-          User.renderList();
-        } else {
-          // 如果是从别处（比如微信Me页）点进来的，正常退出即可
-          if (panel) {
-            panel.style.display = 'flex';
+        
+        // 如果是从底层【用户管理列表】点进去的，列表目前就是打开状态，那就要刷新它
+        var isUserPanelOpen = panel && panel.style.display !== 'none' && panel.classList.contains('show');
+        
+        if (isUserPanelOpen) {
+          if (!User.list.length) {
+            setTimeout(function() { User.close(); }, 100);
+          } else {
             User.renderList();
-            requestAnimationFrame(function() { requestAnimationFrame(function() {
-              panel.style.transform = 'translateX(0)';
-              panel.style.opacity = '1';
-            }); });
-            App.bindSwipeBack(panel, function() { User.close(); });
           }
         }
+        // 如果是从【微信 Me 页】或者别的地方点进去的，就乖乖待着，什么列表也别拉出来！
       };
 
-      // 绑定右滑退出和左上角返回按钮
       App.bindSwipeBack(pp, closeProfileFn);
       var backBtn = pp.querySelector('#upProfileBack');
       if (backBtn) backBtn.addEventListener('click', closeProfileFn);
@@ -573,8 +613,6 @@
       
       editor.querySelector('#upExpBack').addEventListener('click', closeEditor);
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
-      
-      /* 🌟 核心：扩展面板完美接入右滑退出 */
       App.bindSwipeBack(editor, closeEditor);
     },
 
@@ -583,12 +621,11 @@
       if (!card) return true;
       var editId = card.dataset.editId || '';
       
-      /* 🌟 核心拦截逻辑：检查名字是否为空 */
       var realNameInput = card.querySelector('.up-field-input[data-key="realName"]');
       var realNameVal = realNameInput ? realNameInput.value.trim() : '';
 
       if (!editId && !realNameVal) {
-        return false; // 新建但没填名字，拒绝保存
+        return false; 
       }
 
       var data = {};
