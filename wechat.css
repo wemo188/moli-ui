@@ -92,7 +92,7 @@
 .c6-header-btn svg { width: 22px; height: 22px; fill: none; stroke: #000000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .c6-back-icon { width: 20px !important; height: 20px !important; }
 
-.c6-header-title { font-size: 16px; font-weight: 700; letter-spacing: 1px; color: rgba(0,0,0,0.8); }
+.c6-header-title { font-size: 20px; font-weight: 700; letter-spacing: 1px; color: rgba(0,0,0,0.8); }
 .c6-header-right { position: relative; }
 
 /* ====== 加号下拉菜单 ====== */
