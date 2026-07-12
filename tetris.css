@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.css) - 终极物理缩短版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.css) - 终极手感微调版
    ================================================ */
 
 .tt-hidden { display: none !important; }
@@ -17,9 +17,9 @@
   padding: 6px 0 20px; width: 100%; position: relative;
 }
 
-/* 机身整体放宽以容纳更大的屏幕 */
+/* ★ 机身往中间收缩，从 380px 压紧到 340px，更加修长精致 */
 .tt-card {
-  position: relative; width: 96vw; max-width: 380px;
+  position: relative; width: 92vw; max-width: 340px;
   background: linear-gradient(155deg, rgba(233,236,241,0.95), rgba(245,247,250,0.88) 30%, rgba(255,255,255,0.98) 52%, rgba(238,241,246,0.9) 74%, rgba(229,233,238,0.95));
   border: 1.5px solid rgba(214,220,228,0.95); border-radius: 26px; overflow: hidden;
   box-shadow: 0 10px 30px rgba(160,168,178,0.18), inset 0 1px 0 rgba(255,255,255,0.88), inset 0 -1px 0 rgba(210,216,224,0.42);
@@ -37,17 +37,17 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent); pointer-events: none; z-index: 1;
 }
 
-/* 顶部信号灯 - 压减上下间距 */
+/* 顶部信号灯 */
 .tt-card-top { position: relative; z-index: 2; display: flex; justify-content: center; padding: 10px 0 8px; gap: 12px; }
 .tt-led { width: 5px; height: 5px; border-radius: 50%; background: rgba(185,193,203,0.5); box-shadow: inset 0 0.5px 1px rgba(255,255,255,0.45); }
 .tt-led-on { background: #b7cff1; animation: ttGlow 2s ease-in-out infinite; }
 @keyframes ttGlow { 0%,100% { box-shadow: 0 0 4px rgba(176,206,242,0.35); } 50% { box-shadow: 0 0 10px rgba(176,206,242,0.6); } }
 
-/* 机器主体 - 压减底部留白和组件间距 */
-.tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 14px 14px; gap: 10px; }
+/* 机器主体 */
+.tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 12px 14px; gap: 10px; }
 
-/* 主屏幕 - 保持你要求的宽度和拉长 */
-.tt-screen-wrap { width: 100%; max-width: 330px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
+/* 主屏幕 - 贴紧边框 */
+.tt-screen-wrap { width: 100%; max-width: 310px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
 .tt-screen { position: relative; border-radius: 8px; background: rgba(255,255,255,0.96); padding: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(220,225,232,0.8); display: flex; flex-direction: column; align-items: center; }
 .tt-screen-badge { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .tt-badge-left { display: flex; align-items: center; gap: 4px; }
@@ -60,8 +60,8 @@
 
 .tt-divider-groove { width: 85%; height: 2px; background: linear-gradient(90deg, transparent, rgba(214,220,228,0.7), transparent); box-shadow: 0 1px 0 rgba(255,255,255,0.9); border-radius: 2px; margin: 2px 0; }
 
-/* 按键操控区 - 取消多余 margin */
-.tt-controls-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; max-width: 320px; padding: 0 4px; }
+/* 按键操控区 */
+.tt-controls-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; max-width: 310px; padding: 0 2px; }
 
 /* 左侧：猫爪旋转 */
 .tt-left { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 4px; }
@@ -82,12 +82,11 @@
 .tt-pp-t3 { left: 0; } .tt-pp-t4 { right: 0; }
 .tt-btn-label { font-size: 11px; color: rgba(120,128,138,0.8); font-weight: 800; letter-spacing: 1px; }
 
-/* 右侧：十字键 - 核心物理压缩术！ */
+/* 右侧：十字键 - 物理分离感更强 */
 .tt-right { display: flex; flex-direction: column; align-items: center; gap: 0; }
 .tt-dpad {
   display: grid; gap: 0; align-items: center; justify-items: center;
   grid-template-areas: ". up ." "left . right" ". down .";
-  /* 魔法在此：把左右按键所占的“中间行”高度直接抽干到 20px，整个底盘瞬间缩短 22个像素！ */
   grid-template-columns: 42px 32px 42px; 
   grid-template-rows: 42px 20px 42px; 
 }
@@ -103,14 +102,15 @@
 
 .tt-dpad-btn svg { width: 18px; height: 18px; fill: none; stroke: #697380; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-/* 因为中间行被抽干了，上键自然就紧紧贴下来了，再加上 6px 微调，完美复刻掌机手感！下键雷打不动。 */
-.tt-dpad-up { grid-area: up; top: 6px; } .tt-dpad-up svg { stroke: #8e98a6; } 
-.tt-dpad-left { grid-area: left; }
-.tt-dpad-right { grid-area: right; }
-.tt-dpad-down { grid-area: down; }
+/* ★ 墨总极致要求：上键上提、左右外拉、下键不动！ */
+.tt-dpad-up { grid-area: up; top: -2px; } .tt-dpad-up svg { stroke: #8e98a6; } 
+.tt-dpad-left { grid-area: left; left: -8px; }
+.tt-dpad-right { grid-area: right; left: 8px; }
+.tt-dpad-down { grid-area: down; top: 0; left: 0; }
 
 /* ================= 外部按钮与记录卡片 ================= */
-.tt-out-actions { display: flex; justify-content: center; gap: 10px; margin-top: 16px; width: 100%; flex-wrap: wrap; }
+/* ★ 加大 margin-top，让按钮远离机身，防止误触 */
+.tt-out-actions { display: flex; justify-content: center; gap: 10px; margin-top: 32px; width: 100%; flex-wrap: wrap; }
 .tt-out-btn {
   font-size: 13px; font-weight: 800; letter-spacing: 1px; padding: 10px 18px; border-radius: 999px; cursor: pointer; touch-action: manipulation;
   border: 1.5px solid transparent; transition: transform 0.1s;
