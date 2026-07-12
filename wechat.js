@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -9,7 +10,6 @@
     panelEl: null,
     _savedInner: '',
 
-    /* 🌟 全新干净的登录模块，纯靠 class 控制样式和动画 */
     showLoginModal: function(callback) {
       var users = App.user ? App.user.list : [];
       var old = document.querySelector('.wx-login-overlay');
@@ -168,9 +168,9 @@
       '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-side-key wx-side-right"></div><div class="wx-inner" id="wxInner">' +
 
         '<div class="c6-header">' +
-          '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+          '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" class="c6-back-icon" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
           '<div class="c6-header-title">Chat</div>' +
-          '<div style="position:relative;">' +
+          '<div class="c6-header-right">' +
             '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
             '<div class="c6-add-menu" id="wxAddMenu">' +
               '<div class="c6-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
@@ -250,7 +250,7 @@
       visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text" style="line-height:1.6;">列表空空如也...<br>请在角色设置里，将角色绑定为当前账号</div></div>';
+        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text">列表空空如也...<br>请在角色设置里，将角色绑定为当前账号</div></div>';
         return;
       }
 
@@ -403,7 +403,6 @@
       });
     },
 
-    /* 🌟 核心修改：Me 页面展示完美的 PSP 卡片，支持点击修改 */
     renderMeTab: function(body) {
       var activeUid = App.LS.get('wxActiveUid');
       var u = App.user ? App.user.getById(activeUid) : null;
@@ -425,19 +424,19 @@
 
       var pspCardHtml = 
         '<div class="c6-me-psp-wrap">' +
-          '<div class="p14-card c6-me-psp-card" id="wxMePspCard" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;cursor:pointer;">' +
+          '<div class="p14-card c6-me-psp-card" id="wxMePspCard" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;">' +
             bgImgHtml +
             '<div class="p14-top">' +
               '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
             '</div>' +
-            '<div class="p14-body" style="padding-bottom:18px;">' + 
+            '<div class="p14-body c6-psp-body-pad">' + 
               '<div class="p14-left">' +
-                '<div class="p14-paw-btn" style="pointer-events:none;"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+                '<div class="p14-paw-btn c6-psp-readonly"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
               '</div>' +
-              '<div class="p14-screen-wrap"><div class="p14-screen" style="min-height:76px;">' +
+              '<div class="p14-screen-wrap"><div class="p14-screen c6-psp-screen-fix">' +
                 '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
                 '<div class="p14-screen-content">' +
-                  '<div class="p14-avatar-wrap" style="pointer-events:none;"><div class="p14-avatar">' + avatarHtml + '</div></div>' +
+                  '<div class="p14-avatar-wrap c6-psp-readonly"><div class="p14-avatar">' + avatarHtml + '</div></div>' +
                   '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
                     (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
                     (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
@@ -454,7 +453,7 @@
               '</div>' +
             '</div>' +
           '</div>' +
-          '<div style="text-align:center;font-size:10px;color:rgba(0,0,0,0.3);margin-top:10px;letter-spacing:1px;font-weight:700;">点击掌机即可修改档案</div>' +
+          '<div class="c6-me-psp-hint">点击掌机即可修改档案</div>' +
         '</div>';
 
       body.innerHTML =
@@ -464,7 +463,7 @@
           '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
           '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
         '</div>' +
-        '<div class="c6-me-list" style="margin-top:12px;">' +
+        '<div class="c6-me-list c6-me-list-mt">' +
           '<div class="c6-me-item" id="wxMeLogout"><span class="c6-me-item-text c6-me-logout-text">切换身份 / 退出账号</span></div>' +
         '</div>';
 
@@ -479,7 +478,6 @@
         setTimeout(function(){ Wechat.open(); }, 400);
       });
 
-      /* 🌟 核心拦截刷新机制：点开档案，关掉时自动刷新名片 */
       App.safeOn('#wxMePspCard', 'click', function() {
         if(App.user) {
           App.user.renderProfile(activeUid);
@@ -510,20 +508,20 @@
             var cacheKey = 'stickerCache_' + desc.replace(/\s+/g, '_').slice(0, 30);
             var stickerUrl = App.LS.get(cacheKey);
             if (stickerUrl) {
-              displayHtml = '<img src="' + App.escAttr(stickerUrl) + '" style="width:80px;height:80px;border-radius:8px;object-fit:cover;display:block;margin-top:4px;">';
+              displayHtml = '<img class="c6-fav-img" src="' + App.escAttr(stickerUrl) + '">';
             } else {
-              displayHtml = '<div style="font-size:13px;color:#333;line-height:1.5;">[表情包: ' + App.esc(desc) + ']</div>';
+              displayHtml = '<div class="c6-fav-text no-mt">[表情包: ' + App.esc(desc) + ']</div>';
             }
             var textPart = content.replace(stickerMatch[0], '').trim();
-            if (textPart) displayHtml += '<div style="font-size:13px;color:#333;line-height:1.5;margin-top:4px;">' + App.esc(textPart.slice(0, 100)) + '</div>';
+            if (textPart) displayHtml += '<div class="c6-fav-text">' + App.esc(textPart.slice(0, 100)) + '</div>';
           } else {
-            displayHtml = '<div style="font-size:13px;color:#333;line-height:1.5;">' + App.esc(content.slice(0, 100)) + '</div>';
+            displayHtml = '<div class="c6-fav-text no-mt">' + App.esc(content.slice(0, 100)) + '</div>';
           }
 
-          return '<div style="padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.04);">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-              '<span style="font-size:11px;color:rgba(0,0,0,0.4);">' + App.esc(f.charName || '') + '</span>' +
-              '<button class="fav-del" data-fav-idx="' + i + '" type="button" style="background:none;border:1px solid rgba(0,0,0,0.12);border-radius:6px;color:rgba(0,0,0,0.4);font-size:10px;padding:2px 8px;cursor:pointer;font-family:inherit;">删除</button>' +
+          return '<div class="c6-fav-item">' +
+            '<div class="c6-fav-head">' +
+              '<span class="c6-fav-char">' + App.esc(f.charName || '') + '</span>' +
+              '<button class="c6-fav-del" data-fav-idx="' + i + '" type="button">删除</button>' +
             '</div>' +
             displayHtml +
           '</div>';
@@ -536,7 +534,7 @@
         Wechat.renderMeTab(body);
       });
 
-      body.querySelectorAll('.fav-del').forEach(function(btn) {
+      body.querySelectorAll('.c6-fav-del').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           var idx = parseInt(btn.dataset.favIdx);
@@ -621,6 +619,8 @@
         var _wxSwipe = { active: false, sx: 0, sy: 0, locked: false, dir: '' };
 
         wxInner.addEventListener('touchstart', function(e) {
+          if (document.getElementById('userProfilePanel')) return;
+
           var t = e.touches[0];
           var rect = wxInner.getBoundingClientRect();
           var relX = t.clientX - rect.left;
