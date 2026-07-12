@@ -603,7 +603,7 @@
       
       if (!data.realName) data.realName = '未命名'; 
 
-      if (editId) {
+            if (editId) {
         var existing = User.getById(editId);
         if (existing) { Object.keys(data).forEach(function(k) { existing[k] = data[k]; }); User.save(); }
       } else {
@@ -611,6 +611,8 @@
         data.cardHue = DEFAULT_CARD.hue; data.cardSat = DEFAULT_CARD.sat; data.cardLit = DEFAULT_CARD.lit; data.cardRadius = DEFAULT_CARD.radius;
         User.list.unshift(data);
         User.save();
+        /* 🌟 核心修复：保存后立刻锁住 editId，防止重复创建 */
+        card.dataset.editId = data.id;
       }
 
       pp.classList.add('up-sealed');
