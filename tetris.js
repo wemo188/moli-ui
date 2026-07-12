@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 极致哑光锐利版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 终极清透冰块版
    ================================================ */
 (function(){
   'use strict';
@@ -15,16 +15,16 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    // ★ 墨总的高级哑光色盘
+    // ★ 墨总的神仙配色 (转成带 85% 冰透感的 RGBA 格式)
     COLORS: [ 
       null, 
-      '#86aada', // 1
-      '#da8686', // 2
-      '#fbced9', // 3
-      '#e0b5fb', // 4
-      '#bbc5d5', // 5
-      '#cdeac1', // 6
-      '#b3deed'  // 7
+      'rgba(134, 170, 218, 0.85)', // 1: #86aada
+      'rgba(218, 134, 134, 0.85)', // 2: #da8686
+      'rgba(251, 206, 217, 0.85)', // 3: #fbced9
+      'rgba(224, 181, 251, 0.85)', // 4: #e0b5fb
+      'rgba(187, 197, 213, 0.85)', // 5: #bbc5d5
+      'rgba(205, 234, 193, 0.85)', // 6: #cdeac1
+      'rgba(179, 222, 237, 0.85)'  // 7: #b3deed
     ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
@@ -335,31 +335,26 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
-    /* =======================================
-       ★ 终极护眼哑光算法 (告别糊色，极致锐利)
-       ======================================= */
+    // ★ 恢复清透算法，同时保持墨总的神仙色系
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
-      var px = x * bs; var py = y * bs;
-      
-      // 1. 画最底层的锐利边框底色 (深灰)，防止像素级抗锯齿导致块与块糊在一起
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-      TT.ctx.fillRect(px, py, bs, bs);
+      var px = x * bs; var py = y * bs; var s = bs;
 
-      // 2. 往里收缩 1 像素，填入墨总的高级哑光纯色
-      TT.ctx.fillStyle = color;
-      TT.ctx.fillRect(px + 1, py + 1, bs - 2, bs - 2);
+      TT.ctx.fillStyle = color; 
+      TT.ctx.fillRect(px, py, s, s);
 
-      // 3. 画哑光高光与阴影 (只用纯矩形，绝对不瞎搞线性渐变！)
-      // 左上顶边微白
-      TT.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      TT.ctx.fillRect(px + 1, py + 1, bs - 2, 2); // 顶
-      TT.ctx.fillRect(px + 1, py + 1, 2, bs - 2); // 左
+      var grad = TT.ctx.createLinearGradient(px, py, px, py + s);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
+      grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.15)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      TT.ctx.fillStyle = grad; 
+      TT.ctx.fillRect(px, py, s, s);
 
-      // 右下底边微暗
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-      TT.ctx.fillRect(px + 1, py + bs - 3, bs - 2, 2); // 底
-      TT.ctx.fillRect(px + bs - 3, py + 1, 2, bs - 2); // 右
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; TT.ctx.fillRect(px, py + s - 3, s, 3);
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'; TT.ctx.fillRect(px + s - 3, py, 3, s);
+
+      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; TT.ctx.lineWidth = 1.5;
+      TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
     },
 
     draw: function() {
