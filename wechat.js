@@ -9,7 +9,86 @@
     panelEl: null,
     _savedInner: '',
 
+    /* 🌟 全新干净的登录模块，纯靠 class 控制样式和动画 */
+    showLoginModal: function(callback) {
+      var users = App.user ? App.user.list : [];
+      var old = document.querySelector('.wx-login-overlay');
+      if(old) old.remove();
+
+      var overlay = document.createElement('div');
+      overlay.className = 'wx-login-overlay';
+      
+      if(!users.length) {
+        overlay.innerHTML = 
+          '<div class="wx-login-box">' +
+            '<div class="wx-login-title">微信未登录</div>' +
+            '<div class="wx-login-desc">你还没有创建任何用户身份</div>' +
+            '<button id="wxGoCreateUser" class="wx-login-btn">去创建身份</button>' +
+            '<div class="wx-login-cancel-wrap">' +
+              '<button id="wxLoginCancel" class="wx-login-cancel">取消</button>' +
+            '</div>' +
+          '</div>';
+        
+        document.body.appendChild(overlay);
+        requestAnimationFrame(function(){ overlay.classList.add('show'); });
+        
+        overlay.querySelector('#wxGoCreateUser').onclick = function() {
+          overlay.classList.remove('show');
+          setTimeout(function(){ overlay.remove(); if(App.user) App.user.open(); }, 200);
+        };
+        overlay.querySelector('#wxLoginCancel').onclick = function() { 
+          overlay.classList.remove('show'); 
+          setTimeout(function(){ overlay.remove(); }, 200); 
+        };
+        return;
+      }
+
+      var listHtml = users.map(function(u) {
+        var av = u.avatar ? '<img class="wx-login-avatar" src="'+App.escAttr(u.avatar)+'">' : '<div class="wx-login-avatar empty">无图</div>';
+        return '<div class="wx-login-item" data-uid="'+u.id+'">' + av + '<div class="wx-login-name">'+App.esc(u.realName||'未命名')+'</div></div>';
+      }).join('');
+
+      overlay.innerHTML = 
+        '<div class="wx-login-box wx-login-box-list">' +
+          '<div class="wx-login-title">选择登录身份</div>' +
+          '<div class="wx-login-list">' + listHtml + '</div>' +
+          '<div class="wx-login-cancel-wrap">' +
+            '<button id="wxLoginCancel" class="wx-login-cancel">取消</button>' +
+          '</div>' +
+        '</div>';
+        
+      document.body.appendChild(overlay);
+      requestAnimationFrame(function(){ overlay.classList.add('show'); });
+
+      overlay.querySelector('#wxLoginCancel').onclick = function() { 
+        overlay.classList.remove('show'); 
+        setTimeout(function(){ overlay.remove(); }, 200); 
+      };
+      
+      overlay.querySelectorAll('.wx-login-item').forEach(function(item) {
+        item.onclick = function() {
+          App.LS.set('wxActiveUid', this.dataset.uid);
+          overlay.classList.remove('show');
+          setTimeout(function(){ overlay.remove(); if(callback) callback(); }, 200);
+        };
+      });
+    },
+
     open: function() {
+      if (App.user) App.user.load();
+      var activeUid = App.LS.get('wxActiveUid');
+      var users = App.user ? App.user.list : [];
+      var valid = users.some(function(u){ return u.id === activeUid; });
+      
+      if(!valid) {
+        App.LS.remove('wxActiveUid');
+        Wechat.showLoginModal(function(){ Wechat._doOpen(); });
+        return;
+      }
+      Wechat._doOpen();
+    },
+
+    _doOpen: function() {
       var panel = App.$('#wechatPanel');
       if (!panel) return;
       Wechat.panelEl = panel;
@@ -28,6 +107,10 @@
     },
 
     isCharVisible: function(c) {
+      var activeUid = App.LS.get('wxActiveUid');
+      var bindings = App.LS.get('charUserBindings') || {};
+      if(bindings[c.id] !== activeUid) return false;
+
       if (!c.contactMode || c.contactMode === 'direct') return true;
       if (c.contactAccepted === true) return true;
       return false;
@@ -74,10 +157,10 @@
       var panel = Wechat.panelEl;
       if (!panel) return;
       var isFS = App.LS.get('wxFullScreen');
-if (isFS === null) isFS = true;
-var wxTheme = App.LS.get('wxTheme') || '';
-var themeClass = wxTheme ? ' wx-theme-' + wxTheme : '';
-var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
+      if (isFS === null) isFS = true;
+      var wxTheme = App.LS.get('wxTheme') || '';
+      var themeClass = wxTheme ? ' wx-theme-' + wxTheme : '';
+      var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
 
       var showTab = Wechat.currentPage === 'chats';
 
@@ -85,23 +168,23 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       '<div class="' + wrapClass + '" id="wxWrap"><div class="wx-phone"><div class="wx-side-key wx-side-right"></div><div class="wx-inner" id="wxInner">' +
 
         '<div class="c6-header">' +
-  '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
-  '<div class="c6-header-title">Chat</div>' +
-  '<div style="position:relative;">' +
-    '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
-    '<div class="c6-add-menu" id="wxAddMenu">' +
-      '<div class="c6-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
-      '<div class="c6-add-menu-item" data-action="toggleFrame"><span>' + (isFS ? '手机框模式' : '全屏模式') + '</span></div>' +
-      '<div class="c6-add-menu-item c6-has-sub" data-action="changeTheme"><span>更换主题</span><span class="c6-sub-arrow">›</span>' +
-        '<div class="c6-sub-menu" id="wxThemeSub">' +
-          '<div class="c6-add-menu-item" data-action="themeBlue"><span>蓝色主题</span></div>' +
-          '<div class="c6-add-menu-item" data-action="themePink"><span>粉色主题</span></div>' +
-          '<div class="c6-add-menu-item" data-action="themeDefault"><span>默认主题</span></div>' +
+          '<div class="c6-header-btn" id="wxBackBtn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;" stroke="#000000"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+          '<div class="c6-header-title">Chat</div>' +
+          '<div style="position:relative;">' +
+            '<div class="c6-header-btn" id="wxAddBtn"><svg viewBox="0 0 24 24" stroke="#000000"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
+            '<div class="c6-add-menu" id="wxAddMenu">' +
+              '<div class="c6-add-menu-item" data-action="addFriend"><span>加好友</span></div>' +
+              '<div class="c6-add-menu-item" data-action="toggleFrame"><span>' + (isFS ? '手机框模式' : '全屏模式') + '</span></div>' +
+              '<div class="c6-add-menu-item c6-has-sub" data-action="changeTheme"><span>更换主题</span><span class="c6-sub-arrow">›</span>' +
+                '<div class="c6-sub-menu" id="wxThemeSub">' +
+                  '<div class="c6-add-menu-item" data-action="themeBlue"><span>蓝色主题</span></div>' +
+                  '<div class="c6-add-menu-item" data-action="themePink"><span>粉色主题</span></div>' +
+                  '<div class="c6-add-menu-item" data-action="themeDefault"><span>默认主题</span></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
-      '</div>' +
-    '</div>' +
-  '</div>' +
-'</div>' +
 
           '<div class="c6-main">' +
 
@@ -117,8 +200,8 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
                   '<div class="c6-tab' + (Wechat.currentTab === 'groups' ? ' c6-active' : '') + '" data-tab="groups">groups</div>' +
                 '</div>' +
                 '<div class="c6-tab-icons">' +
-  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24" stroke="#000000"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>' +
-'</div>' +
+                  '<div class="c6-tab-icon"><svg viewBox="0 0 24 24" stroke="#000000"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>' +
+                '</div>' +
               '</div>' +
             '</div>'
             ) : '') +
@@ -167,7 +250,7 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text">暂无聊天<br>请先在「角色」中添加角色</div></div>';
+        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text" style="line-height:1.6;">列表空空如也...<br>请在角色设置里，将角色绑定为当前账号</div></div>';
         return;
       }
 
@@ -294,7 +377,7 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       var visibleChars = chars.filter(function(c) { return Wechat.isCharVisible(c); });
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="c6-empty-text">暂无角色<br>请在底部栏「角色」中添加</div></div>';
+        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><div class="c6-empty-text">通讯录为空<br>请在角色设置里，将角色绑定为当前账号</div></div>';
         return;
       }
 
@@ -320,28 +403,98 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
       });
     },
 
-        renderMeTab: function(body) {
-  body.innerHTML =
-    '<div class="c6-me-list-header">' +
-      '<div class="c6-me-list-title">我的</div>' +
-    '</div>' +
-    '<div class="c6-me-list">' +
-      '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
-      '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
-      '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
-    '</div>';
+    /* 🌟 核心修改：Me 页面展示完美的 PSP 卡片，支持点击修改 */
+    renderMeTab: function(body) {
+      var activeUid = App.LS.get('wxActiveUid');
+      var u = App.user ? App.user.getById(activeUid) : null;
+      if (!u) return;
 
-  App.safeOn('#wxMeFavs', 'click', function() {
-    Wechat.renderFavsPage(body);
-  });
+      var hue = u.cardHue != null ? u.cardHue : 215,
+          sat = u.cardSat != null ? u.cardSat : 35,
+          lit = u.cardLit != null ? u.cardLit : 90,
+          radius = u.cardRadius != null ? u.cardRadius : 50;
 
-  App.safeOn('#wxMeAssets', 'click', function() { App.showToast('资产功能开发中'); });
-  App.safeOn('#wxMeStickers', 'click', function() { App.showToast('表情包功能开发中'); });
-},
+      var bs = Math.max(0, Math.min(70, +sat));
+      var bl = Math.max(30, Math.min(70, +lit));
+      var vars = '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
+      
+      var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.94),hsla(' + hue + ',' + sat + '%,' + (+lit+4) + '%,0.84) 30%,rgba(255,255,255,0.98) 52%,hsla(' + hue + ',' + sat + '%,' + (+lit+2) + '%,0.88) 74%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.92))';
+      var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
+      var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.escAttr(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
+      var avatarHtml = u.avatar ? '<img src="' + App.escAttr(u.avatar) + '">' : '';
+
+      var pspCardHtml = 
+        '<div class="c6-me-psp-wrap">' +
+          '<div class="p14-card c6-me-psp-card" id="wxMePspCard" style="' + vars + 'background:' + cardBg + ';border-color:' + borderC + ';border-radius:' + radius + 'px;cursor:pointer;">' +
+            bgImgHtml +
+            '<div class="p14-top">' +
+              '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
+            '</div>' +
+            '<div class="p14-body" style="padding-bottom:18px;">' + 
+              '<div class="p14-left">' +
+                '<div class="p14-paw-btn" style="pointer-events:none;"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+              '</div>' +
+              '<div class="p14-screen-wrap"><div class="p14-screen" style="min-height:76px;">' +
+                '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
+                '<div class="p14-screen-content">' +
+                  '<div class="p14-avatar-wrap" style="pointer-events:none;"><div class="p14-avatar">' + avatarHtml + '</div></div>' +
+                  '<div class="p14-info"><div class="p14-name">' + App.esc(u.realName || '未命名') + '</div>' +
+                    (u.sign1 ? '<div class="p14-sign">' + App.esc(u.sign1) + '</div>' : '') +
+                    (u.sign2 ? '<div class="p14-sign-italic">' + App.esc(u.sign2) + '</div>' : '') +
+                  '</div>' +
+                '</div>' +
+              '</div></div>' +
+              '<div class="p14-right">' +
+                '<div class="p14-dpad">' +
+                  '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
+                  '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:center;font-size:10px;color:rgba(0,0,0,0.3);margin-top:10px;letter-spacing:1px;font-weight:700;">点击掌机即可修改档案</div>' +
+        '</div>';
+
+      body.innerHTML =
+        pspCardHtml +
+        '<div class="c6-me-list">' +
+          '<div class="c6-me-item" id="wxMeFavs"><span class="c6-me-item-text">收藏</span><span class="c6-me-item-arrow">›</span></div>' +
+          '<div class="c6-me-item" id="wxMeAssets"><span class="c6-me-item-text">资产</span><span class="c6-me-item-arrow">›</span></div>' +
+          '<div class="c6-me-item" id="wxMeStickers"><span class="c6-me-item-text">表情包</span><span class="c6-me-item-arrow">›</span></div>' +
+        '</div>' +
+        '<div class="c6-me-list" style="margin-top:12px;">' +
+          '<div class="c6-me-item" id="wxMeLogout"><span class="c6-me-item-text c6-me-logout-text">切换身份 / 退出账号</span></div>' +
+        '</div>';
+
+      App.safeOn('#wxMeFavs', 'click', function() { Wechat.renderFavsPage(body); });
+      App.safeOn('#wxMeAssets', 'click', function() { App.showToast('资产功能开发中'); });
+      App.safeOn('#wxMeStickers', 'click', function() { App.showToast('表情包功能开发中'); });
+      
+      App.safeOn('#wxMeLogout', 'click', function() {
+        App.LS.remove('wxActiveUid');
+        Wechat.close();
+        App.showToast('已退出当前微信');
+        setTimeout(function(){ Wechat.open(); }, 400);
+      });
+
+      /* 🌟 核心拦截刷新机制：点开档案，关掉时自动刷新名片 */
+      App.safeOn('#wxMePspCard', 'click', function() {
+        if(App.user) {
+          App.user.renderProfile(activeUid);
+          var checker = setInterval(function() {
+            if (!document.getElementById('userProfilePanel')) {
+              clearInterval(checker);
+              if (Wechat.currentPage === 'me') Wechat.renderPage();
+            }
+          }, 300);
+        }
+      });
+    },
 
     renderFavsPage: function(body) {
       var favs = App.LS.get('chatFavorites') || [];
-
       var html = '<div class="c6-me-item" id="wxFavsBack"><span class="c6-me-item-text" style="color:rgba(0,0,0,0.4);">← 返回</span></div>';
 
       if (!favs.length) {
@@ -406,38 +559,37 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
 
       if (Wechat.panelEl) {
         Wechat.panelEl.querySelectorAll('.c6-add-menu-item').forEach(function(item) {
-  item.addEventListener('click', function(e) {
-    e.stopPropagation();
+          item.addEventListener('click', function(e) {
+            e.stopPropagation();
 
-    // 二级菜单的父项：只展开子菜单，不关闭一级
-    if (item.dataset.action === 'changeTheme') {
-      var sub = item.querySelector('.c6-sub-menu');
-      if (sub) sub.classList.toggle('show');
-      return;
-    }
+            if (item.dataset.action === 'changeTheme') {
+              var sub = item.querySelector('.c6-sub-menu');
+              if (sub) sub.classList.toggle('show');
+              return;
+            }
 
-    var menu = App.$('#wxAddMenu');
-    if (menu) menu.classList.remove('show');
+            var menu = App.$('#wxAddMenu');
+            if (menu) menu.classList.remove('show');
 
-    if (item.dataset.action === 'addFriend') {
+            if (item.dataset.action === 'addFriend') {
               App.showToast('加好友 · 开发中');
             } else if (item.dataset.action === 'toggleFrame') {
               var cur = App.LS.get('wxFullScreen') || false;
               App.LS.set('wxFullScreen', !cur);
               Wechat.render();
-          } else if (item.dataset.action === 'themeBlue') {
-  App.LS.set('wxTheme', 'blue');
-  Wechat.render();
-  App.showToast('已切换蓝色主题');
-} else if (item.dataset.action === 'themePink') {
-  App.LS.set('wxTheme', 'pink');
-  Wechat.render();
-  App.showToast('已切换粉色主题');
-} else if (item.dataset.action === 'themeDefault') {
-  App.LS.set('wxTheme', '');
-  Wechat.render();
-  App.showToast('已恢复默认主题');
-}
+            } else if (item.dataset.action === 'themeBlue') {
+              App.LS.set('wxTheme', 'blue');
+              Wechat.render();
+              App.showToast('已切换蓝色主题');
+            } else if (item.dataset.action === 'themePink') {
+              App.LS.set('wxTheme', 'pink');
+              Wechat.render();
+              App.showToast('已切换粉色主题');
+            } else if (item.dataset.action === 'themeDefault') {
+              App.LS.set('wxTheme', '');
+              Wechat.render();
+              App.showToast('已恢复默认主题');
+            }
           });
         });
 
@@ -551,4 +703,3 @@ var wrapClass = (isFS ? 'wx-fullscreen' : '') + themeClass;
 
   App.register('wechat', Wechat);
 })();
-
