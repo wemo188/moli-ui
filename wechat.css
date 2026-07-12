@@ -219,7 +219,6 @@
 
 /* 防止 PSP 卡片在 Me 页面产生编辑交互副作用 */
 .c6-psp-readonly { pointer-events: none; }
-.c6-psp-body-pad { padding-bottom: 18px; }
 .c6-psp-screen-fix { min-height: 76px; }
 
 .c6-me-psp-hint {
