@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 逻辑与锯齿双核拼图系统 (解封不死图·完美算例版)
+   🌟 逻辑与锯齿双核拼图系统 (解封不死图·完美存档修复版)
    ================================================ */
 (function(){
   'use strict';
@@ -49,7 +49,6 @@
       buildFn(sub.querySelector('.pz-sub-body'));
     },
 
-    // ★ 关键安全修复：只当一个负责传递 src 链接的使者！不准动用防线转换压死图！
     pickImage: function(title, callback) {
       if(!App.showImagePicker) return App.showToast('底座相册未开启');
       App.showImagePicker({ title: title, callback: function(src) { 
@@ -59,7 +58,7 @@
   };
 
   /* ============================
-     华容道 
+     华容道 (已修复时差接力漏洞)
   ============================ */
   var Slide = {
     imgSrc: App.LS.get('pzSlideImg') || '',
@@ -101,7 +100,7 @@
       statsWrap.appendChild(stepsDiv); statsWrap.appendChild(actionRow);
 
       var recordWrap = document.createElement('div'); recordWrap.className = 'pz-record-wrap';
-      recordWrap.innerHTML = '<div class="pz-record-title">近期通关记录（tip：是点击，不是滑动哦））</div>';
+      recordWrap.innerHTML = '<div class="pz-record-title">近期通关记录</div>';
       var ul = document.createElement('ul'); ul.className = 'pz-record-list'; Slide.recordsList = ul;
       recordWrap.appendChild(ul);
 
@@ -113,7 +112,9 @@
     },
 
     updateSteps: function(val) { Slide.steps = val; Slide.stepsText.textContent = '当前步数: ' + val; },
-    resetAndBuild: function() {
+    
+    // ★ 加入了接力棒 savedSnap！如果传了存档，就会在图片加载完毕后顺手摆放存档阵型！
+    resetAndBuild: function(savedSnap) {
       Slide.playing = false; Slide.updateSteps(0);
       if(Slide.winMsg) { Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden'); }
       var oldTiles = Slide.core.querySelectorAll('.pz-slide-tile'); oldTiles.forEach(function(el){ el.remove(); });
@@ -130,24 +131,27 @@
          var imgR = img.height / img.width;
          var bgW, bgH, offX = 0, offY = 0;
          
-         // 原理魔法：根据原本比例放大至沾满正方框，并且上下或左右完美计算隐藏区居中！绝对不会死板压缩！
-         if (imgR > 1) { 
-            bgW = Slide.coreSize; bgH = Slide.coreSize * imgR; offY = (bgH - Slide.coreSize) / 2;
-         } else {
-            bgH = Slide.coreSize; bgW = Slide.coreSize / imgR; offX = (bgW - Slide.coreSize) / 2;
-         }
+         if (imgR > 1) { bgW = Slide.coreSize; bgH = Slide.coreSize * imgR; offY = (bgH - Slide.coreSize) / 2; } 
+         else { bgH = Slide.coreSize; bgW = Slide.coreSize / imgR; offX = (bgW - Slide.coreSize) / 2; }
 
          for(var i=0; i<total-1; i++){
             var t = document.createElement('div'); t.className = 'pz-slide-tile';
             var tx = i % Slide.size, ty = Math.floor(i / Slide.size);
             
+            // 魔法在此：如果你带了存档来，这块砖的位置直接采用存档的位置！
+            var curX = tx, curY = ty;
+            if (savedSnap && savedSnap.tiles && savedSnap.tiles[i]) {
+                curX = savedSnap.tiles[i].x;
+                curY = savedSnap.tiles[i].y;
+            }
+
             t.style.width = Slide.tileSize + 'px'; t.style.height = Slide.tileSize + 'px';
             t.style.backgroundImage = 'url(' + Slide.imgSrc + ')'; 
             t.style.backgroundSize = bgW + 'px ' + bgH + 'px';
             t.style.backgroundPosition = '-' + (tx*Slide.tileSize + offX) + 'px -' + (ty*Slide.tileSize + offY) + 'px';
-            t.style.transform = 'translate(' + (tx*Slide.tileSize) + 'px, ' + (ty*Slide.tileSize) + 'px)';
+            t.style.transform = 'translate(' + (curX*Slide.tileSize) + 'px, ' + (curY*Slide.tileSize) + 'px)';
             t.dataset.idx = i;
-            Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: tx, y: ty }); Slide.core.appendChild(t);
+            Slide.tiles.push({ el: t, targetX: tx, targetY: ty, x: curX, y: curY }); Slide.core.appendChild(t);
             
             (function(idx, el){
               var sx=0, sy=0;
@@ -155,10 +159,20 @@
               el.addEventListener('touchend', function(e){ var dx = Math.abs(e.changedTouches[0].clientX - sx), dy = Math.abs(e.changedTouches[0].clientY - sy); if(dx < 20 && dy < 20) Slide.moveTile(idx); }, {passive:true});
             })(i, t);
          }
+
+         // 图片加载完、砖块铺完之后，正式恢复存档参数！
+         if (savedSnap) {
+             Slide.emptyPos = savedSnap.emptyPos;
+             Slide.updateSteps(savedSnap.steps);
+             Slide.playing = true;
+             var sel = document.querySelector('.pz-select');
+             if (sel) sel.value = String(Slide.size);
+         }
       };
       img.onerror = function() { App.showToast("图片可能加载出错了"); }
       img.src = Slide.imgSrc;
     },
+
     moveTile: function(idx) {
       if(!Slide.playing) return; var t = Slide.tiles[idx]; var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y);
       if((dx===1 && dy===0) || (dx===0 && dy===1)) {
@@ -167,39 +181,21 @@
         Slide.updateSteps(Slide.steps + 1); Slide.checkWin();
       }
     },
-        shuffle: function() {
-      // 防呆：必须等碎片真正生成了才能打乱
+    shuffle: function() {
       if(!Slide.imgSrc || Slide.tiles.length === 0) return App.showToast('请等待图片加载完成哦'); 
       Slide.playing = true; Slide.updateSteps(0);
       if(Slide.winMsg) { Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden'); }
       
-      // 瞬间将所有碎片归位
-      for(var i=0; i<Slide.tiles.length; i++){
-         Slide.tiles[i].x = Slide.tiles[i].targetX;
-         Slide.tiles[i].y = Slide.tiles[i].targetY;
-      }
+      for(var i=0; i<Slide.tiles.length; i++){ Slide.tiles[i].x = Slide.tiles[i].targetX; Slide.tiles[i].y = Slide.tiles[i].targetY; }
       Slide.emptyPos = { x: Slide.size - 1, y: Slide.size - 1 };
 
-      // 🎀 听墨墨的，恢复佛系养生难度！系数改回 5
       var steps = Slide.size * Slide.size * 5; 
       for(var i=0; i<steps; i++){
         var movable = [];
-        for(var j=0; j<Slide.tiles.length; j++){ 
-           var t = Slide.tiles[j]; 
-           var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y); 
-           if((dx===1 && dy===0) || (dx===0 && dy===1)) movable.push(t); 
-        }
-        var pick = movable[Math.floor(Math.random()*movable.length)]; 
-        var tx = pick.x, ty = pick.y; 
-        pick.x = Slide.emptyPos.x; pick.y = Slide.emptyPos.y; 
-        Slide.emptyPos.x = tx; Slide.emptyPos.y = ty;
+        for(var j=0; j<Slide.tiles.length; j++){ var t = Slide.tiles[j]; var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y); if((dx===1 && dy===0) || (dx===0 && dy===1)) movable.push(t); }
+        var pick = movable[Math.floor(Math.random()*movable.length)]; var tx = pick.x, ty = pick.y; pick.x = Slide.emptyPos.x; pick.y = Slide.emptyPos.y; Slide.emptyPos.x = tx; Slide.emptyPos.y = ty;
       }
-      
-      // 渲染最终的乱序位置
-      for(var k=0; k<Slide.tiles.length; k++){ 
-         var t2 = Slide.tiles[k]; 
-         t2.el.style.transform = 'translate(' + (t2.x*Slide.tileSize) + 'px, ' + (t2.y*Slide.tileSize) + 'px)'; 
-      }
+      for(var k=0; k<Slide.tiles.length; k++){ var t2 = Slide.tiles[k]; t2.el.style.transform = 'translate(' + (t2.x*Slide.tileSize) + 'px, ' + (t2.y*Slide.tileSize) + 'px)'; }
     },
     addRecord: function(size, steps) {
       var recs = App.LS.get('mmPzRecords') || []; var d = new Date(); var timeStr = (d.getMonth()+1) + '月' + d.getDate() + '日 ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
@@ -222,8 +218,19 @@
       Slide.winMsg.classList.remove('pz-hidden');
       setTimeout(function(){ if(Slide.winMsg) { Slide.winMsg.classList.add('show'); setTimeout(function(){Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden');},3500); } }, 300); 
     },
-    saveGame: function() { if(!Slide.imgSrc) return App.showToast('请选择图案'); var snap = { size: Slide.size, steps: Slide.steps, emptyPos: Slide.emptyPos, tiles: Slide.tiles.map(function(t){ return {x: t.x, y: t.y}; }) }; App.LS.set('mmPzSlideSave', snap); App.showToast('游戏进度已保存'); },
-    loadGame: function() { var snap = App.LS.get('mmPzSlideSave'); if(!snap || !Slide.imgSrc) { Slide.resetAndBuild(); return; } Slide.size = snap.size; Slide.resetAndBuild(); document.querySelector('.pz-select').value = String(snap.size); Slide.emptyPos = snap.emptyPos; Slide.updateSteps(snap.steps); Slide.playing = true; for(var i=0; i<snap.tiles.length; i++) { Slide.tiles[i].x = snap.tiles[i].x; Slide.tiles[i].y = snap.tiles[i].y; Slide.tiles[i].el.style.transform = 'translate(' + (Slide.tiles[i].x * Slide.tileSize) + 'px, ' + (Slide.tiles[i].y * Slide.tileSize) + 'px)'; } },
+    saveGame: function() { 
+      if(!Slide.imgSrc) return App.showToast('请选择图案'); 
+      var snap = { size: Slide.size, steps: Slide.steps, emptyPos: Slide.emptyPos, tiles: Slide.tiles.map(function(t){ return {x: t.x, y: t.y}; }) }; 
+      App.LS.set('mmPzSlideSave', snap); App.showToast('游戏进度已保存'); 
+    },
+    
+    // ★ 加载逻辑：把存档打包成“接力棒”，传给重置算法，让它在生出新砖块时直接摆好！
+    loadGame: function() { 
+      var snap = App.LS.get('mmPzSlideSave'); 
+      if(!snap || !Slide.imgSrc) { Slide.resetAndBuild(); return; } 
+      Slide.size = snap.size; 
+      Slide.resetAndBuild(snap); 
+    },
     delGame: function() { App.LS.remove('mmPzSlideSave'); Slide.resetAndBuild(); App.showToast('存档已清空'); }
   };
 
@@ -284,11 +291,9 @@
       var wrapperW = document.querySelector('.pz-jigsaw-wrap').clientWidth; 
       var cssW = wrapperW - 12; 
 
-      // 💥【终极改命的地方】：想让画布本体拉多长，改这个！ 1.0是正方形。1.35 已经是苗条小仙女高度了。
       var puzzleRatio = 1.25; 
       var cssH_img = cssW * puzzleRatio; 
       
-      // 控制碎片的家空间 (按她的指使砍下来的适度大)
       var gapSpace = 12; var trayH = cssW * 0.35; 
       var cssH_total = cssH_img + gapSpace + trayH; 
       
@@ -303,7 +308,6 @@
         Jigsaw.img = img; Jigsaw.imgW = cssW; Jigsaw.imgH = cssH_img; 
         Jigsaw.pieceW = Jigsaw.imgW / Jigsaw.cols; Jigsaw.pieceH = Jigsaw.imgH / Jigsaw.rows;
 
-        // 神奇的算法：完美截取照片中最好看的一部分放到你要求的拉长拼图中，丝毫不拽压画面的四肢。
         var targetRatio = Jigsaw.imgW / Jigsaw.imgH;
         var srcRatio = img.width / img.height;
         var sW = img.width, sH = img.height, sX = 0, sY = 0;
