@@ -1,5 +1,5 @@
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.css) - 按键聚拢版
+   琉璃玉透猫爪掌机
    ================================================ */
 
 .tt-hidden { display: none !important; }
@@ -46,7 +46,7 @@
 .tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 12px 14px; gap: 10px; }
 
 /* 主屏幕 */
-.tt-screen-wrap { width: 100%; max-width: 310px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
+.tt-screen-wrap { width: 100%; max-width: 290px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
 .tt-screen { position: relative; border-radius: 8px; background: rgba(255,255,255,0.96); padding: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(220,225,232,0.8); display: flex; flex-direction: column; align-items: center; }
 .tt-screen-badge { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .tt-badge-left { display: flex; align-items: center; gap: 4px; }
@@ -104,8 +104,8 @@
 
 /* 十字键物理微调：上键上提，下键不动，左右微向外拉伸 */
 .tt-dpad-up { grid-area: up; top: -2px; } .tt-dpad-up svg { stroke: #8e98a6; } 
-.tt-dpad-left { grid-area: left; left: -8px; }
-.tt-dpad-right { grid-area: right; left: 8px; }
+.tt-dpad-left { grid-area: left; left: -10px; }
+.tt-dpad-right { grid-area: right; left: 6px; }
 .tt-dpad-down { grid-area: down; top: 0; left: 0; }
 
 /* ================= 外部按钮与记录卡片 ================= */
