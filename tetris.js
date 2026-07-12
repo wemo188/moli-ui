@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 纯色扁平高定版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 莫兰迪纯色版
    ================================================ */
 (function(){
   'use strict';
@@ -15,16 +15,16 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    // ★ 全部换成了不带透明度的实心纯色，颜色稍微加深，护眼又清晰
+    // ★ 墨墨亲选莫兰迪色，绝对纯实心！无任何透明度！
     COLORS: [ 
       null, 
-      '#7ebfe6', // 1 冰蓝
-      '#7bcca8', // 2 薄荷
-      '#ec8c8c', // 3 樱红
-      '#f2cc81', // 4 奶黄
-      '#b1a1dd', // 5 芋紫
-      '#f0a486', // 6 蜜桃
-      '#b4c8d7'  // 7 灰白
+      '#86aada', // 1 
+      '#da8686', // 2 
+      '#fbced9', // 3 
+      '#e0b5fb', // 4 
+      '#bbc5d5', // 5 
+      '#cdeac1', // 6 
+      '#b3deed'  // 7 
     ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
@@ -327,16 +327,12 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
-    // ★ 关键重构：绝对纯色！没有任何渐变玻璃高光。
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
       var px = x * bs; var py = y * bs; var s = bs;
 
-      // 纯色填充
-      TT.ctx.fillStyle = color; 
-      TT.ctx.fillRect(px, py, s, s);
+      TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
 
-      // 加一圈极其微弱的暗线，区分同色方块接壤
       TT.ctx.strokeStyle = 'rgba(0,0,0,0.06)'; 
       TT.ctx.lineWidth = 1;
       TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
