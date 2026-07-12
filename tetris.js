@@ -14,7 +14,7 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    COLORS: [ null, 'rgba(110, 180, 210, 0.95)', 'rgba(110, 195, 160, 0.95)', 'rgba(235, 130, 130, 0.95)', 'rgba(235, 190, 110, 0.95)', 'rgba(160, 140, 210, 0.95)', 'rgba(235, 150, 120, 0.95)', 'rgba(180, 200, 215, 0.95)' ],
+    COLORS: [ null, '#86aada', '#da8686', '#fbced9', '#e0b5fb', '#bbc5d5', '#121212', '#cdeac1' ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
     init: function() { App.safeOn('#iconTetris', 'click', function(){ TT.openGame(); }); },
