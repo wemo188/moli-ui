@@ -447,7 +447,7 @@
          '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn c6-psp-hidden-btn">重置</div>' + 
-                '<div class="p14-paw-btn c6-psp-readonly"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+                '<div class="p14-paw-btn c6-psp-readonly c6-psp-enlarge"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
                 '<div class="p14-side-btn c6-psp-hidden-btn">删除</div>' + 
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen c6-psp-screen-fix">' +
@@ -462,7 +462,7 @@
               '</div></div>' +
               '<div class="p14-right">' +
                 '<div class="p14-side-btn c6-psp-hidden-btn">编辑</div>' + 
-                '<div class="p14-dpad c6-psp-readonly">' +
+             '<div class="p14-dpad c6-psp-readonly c6-psp-enlarge">' +
                   '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
                   '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
                   '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
@@ -472,7 +472,6 @@
               '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="c6-me-psp-hint">点击掌机即可修改档案</div>' +
         '</div>';
 
       body.innerHTML =
