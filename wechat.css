@@ -1,3 +1,184 @@
+/*====== 微信登录身份弹窗 ====== */
+.wx-login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 200000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.wx-login-box {
+  width: 85%;
+  max-width: 320px;
+}
+
+.wx-login-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.wx-login-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.wx-login-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #fff;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  cursor: pointer;
+  border: 1.5px solid rgba(0,0,0,0.03);
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wx-login-item:active {
+  transform: scale(0.96);
+}
+
+.wx-login-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.wx-login-avatar-empty {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.wx-login-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #2e4258;
+}
+
+.wx-login-cancel-row {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.wx-login-cancel {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px;
+  font-family: inherit;
+}
+
+.wx-login-empty-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 12px;
+  letter-spacing: 1px;text-align: center;
+}
+
+.wx-login-empty-desc {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.wx-login-go-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 32px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ====== Me页面头部 ====== */
+.c6-me-profile-header {
+  padding: 24px 20px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #fff;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.c6-me-profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+
+.c6-me-profile-avatar-empty {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.c6-me-profile-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+.c6-me-logout-row {
+  margin-top: 12px;
+}
+
+.c6-me-logout-text {
+  color: #c9706b !important;
+  font-weight: 800!important;
+  letter-spacing: 1px;
+}
 
 /* ====== 微信面板 ====== */
 #wechatPanel {
