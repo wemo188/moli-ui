@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   var App = window.App;
@@ -51,7 +50,18 @@
     load: function() { User.list = App.LS.get('userList') || []; },
     save: function() { App.LS.set('userList', User.list); },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
-    getActiveUser: function() { User.load(); return User.list[0] || null; },
+    
+    /* 🌟 核心修改：让系统随时认准当前微信登录的号 */
+    getActiveUser: function() { 
+      User.load(); 
+      var wxUid = App.LS.get('wxActiveUid');
+      if(wxUid) {
+        for(var i=0; i<User.list.length; i++) {
+          if(User.list[i].id === wxUid) return User.list[i];
+        }
+      }
+      return User.list[0] || null; 
+    },
 
     open: function() {
       User.load();
@@ -336,6 +346,12 @@
           e.stopPropagation();
           if (!confirm('确定删除？')) return;
           User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
+          
+          /* 🌟 如果删除的是当前微信登录账号，则清空登录状态 */
+          if (App.LS.get('wxActiveUid') === btn.dataset.uid) {
+             App.LS.remove('wxActiveUid');
+          }
+
           User.save();
           User.renderList();
           App.showToast('已删除');
@@ -390,7 +406,6 @@
       pp.id = 'userProfilePanel';
       pp.className = 'up-panel' + sealedClass;
 
-      // 🌟 这里帮你换成了极致干净的折角返回符号
       pp.innerHTML =
         '<div class="profile-header app-header-safe">' +
          '<div id="upProfileBack" class="up-header-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
@@ -429,7 +444,7 @@
 
       document.body.appendChild(pp);
       
-            if (User._skipAnimation) {
+      if (User._skipAnimation) {
         pp.classList.add('up-panel-no-anim');
         pp.classList.add('up-panel-in');
         User._skipAnimation = false;
@@ -439,12 +454,11 @@
         }); });
       }
 
-            App.bindSwipeBack(pp, function() {
+      App.bindSwipeBack(pp, function() {
         User.saveProfile(pp, true); 
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
         
-        // 🌟 同样的修复逻辑
         User.load();
         var panel = App.$('#userPanel');
         if (!User.list.length) {
@@ -504,7 +518,6 @@
       var editor = document.createElement('div');
       editor.id = 'upExpandEditor';
       editor.className = 'up-expand-panel';
-      // 🌟 这里也帮你统一了折角返回符号
       editor.innerHTML =
         '<div class="expand-header app-header-safe">' +
           '<button id="upExpBack" class="up-expand-header-btn" type="button">' +
