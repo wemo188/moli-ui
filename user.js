@@ -454,57 +454,25 @@
       }
 
       /* 🌟 核心修复：彻底解决关闭档案时的闪屏和串台 */
-      var closeProfileFn = function() {
-        var saved = User.saveProfile(pp, true);
-        
-        if (saved === false && !editId) {
-          App.showToast('未填写姓名，取消创建');
-        }
-
-        pp.classList.add('up-panel-out');
-        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-
-        User.load();
-        var panel = App.$('#userPanel');
-        
-        // 如果是从底层【用户管理列表】点进去的，列表目前就是打开状态，那就要刷新它
-        var isUserPanelOpen = panel && panel.style.display !== 'none' && panel.classList.contains('show');
-        
-        if (isUserPanelOpen) {
-          if (!User.list.length) {
-            setTimeout(function() { User.close(); }, 100);
-          } else {
-            User.renderList();
-          }
-        }
-        // 如果是从【微信 Me 页】或者别的地方点进去的，就乖乖待着，什么列表也别拉出来！
-      };
-
-      App.bindSwipeBack(pp, closeProfileFn);
-      var backBtn = pp.querySelector('#upProfileBack');
-      if (backBtn) backBtn.addEventListener('click', closeProfileFn);
-
-      pp.querySelector('#upProfileBack').addEventListener('click', function() {
+            var closeProfileFn = function() {
         User.saveProfile(pp, true);
+
         pp.classList.remove('up-panel-in');
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+
         User.load();
         var panel = App.$('#userPanel');
         if (!User.list.length) {
           setTimeout(function() { User.close(); }, 100);
         } else if (panel && panel.style.display !== 'none') {
           User.renderList();
-        } else if (panel) {
-          panel.style.display = 'flex';
-          User.renderList();
-          requestAnimationFrame(function() { requestAnimationFrame(function() {
-            panel.style.transform = 'translateX(0)';
-            panel.style.opacity = '1';
-          }); });
-          App.bindSwipeBack(panel, function() { User.close(); });
         }
-      });
+      };
+
+      App.bindSwipeBack(pp, closeProfileFn);
+      var backBtn = pp.querySelector('#upProfileBack');
+      if (backBtn) backBtn.addEventListener('click', closeProfileFn);
       
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
