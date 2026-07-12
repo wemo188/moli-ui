@@ -1,22 +1,22 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.css) - 高定版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.css) - 终极护眼大键版
    ================================================ */
 
 .tt-hidden { display: none !important; }
 
 .tt-wrap {
-  display: flex; justify-content: center; padding: 20px 0; width: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 0 20px; width: 100%; position: relative;
 }
 
 .tt-card {
-  position: relative; width: 92vw; max-width: 360px;
+  position: relative; width: 94vw; max-width: 360px;
   background: linear-gradient(155deg, rgba(233,236,241,0.95), rgba(245,247,250,0.88) 30%, rgba(255,255,255,0.98) 52%, rgba(238,241,246,0.9) 74%, rgba(229,233,238,0.95));
   border: 1.5px solid rgba(214,220,228,0.95); border-radius: 26px; overflow: hidden;
   box-shadow: 0 10px 30px rgba(160,168,178,0.18), inset 0 1px 0 rgba(255,255,255,0.88), inset 0 -1px 0 rgba(210,216,224,0.42);
 }
 
-/* 硬件机身的面板拼接缝隙（精致感来源） */
 .tt-card::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
   background: 
@@ -29,37 +29,33 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent); pointer-events: none; z-index: 1;
 }
 
-/* 顶部信号灯与散热阵列 */
-.tt-card-top { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 14px 0 8px; gap: 8px; }
-.tt-leds { display: flex; gap: 12px; }
+/* 顶部信号灯 (只留三个圆点) */
+.tt-card-top { position: relative; z-index: 2; display: flex; justify-content: center; padding: 14px 0 10px; gap: 12px; }
 .tt-led { width: 5px; height: 5px; border-radius: 50%; background: rgba(185,193,203,0.5); box-shadow: inset 0 0.5px 1px rgba(255,255,255,0.45); }
 .tt-led-on { background: #b7cff1; animation: ttGlow 2s ease-in-out infinite; }
 @keyframes ttGlow { 0%,100% { box-shadow: 0 0 4px rgba(176,206,242,0.35); } 50% { box-shadow: 0 0 10px rgba(176,206,242,0.6); } }
-.tt-speakers { display: flex; gap: 5px; }
-.tt-speaker-hole { width: 4px; height: 4px; border-radius: 50%; background: rgba(185,193,203,0.4); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 1px 1px rgba(255,255,255,0.8); }
 
-/* 机器主体：缩紧间距，整体不再显得过长 */
-.tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 16px 20px; gap: 14px; }
+/* 机器主体 */
+.tt-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 14px 20px; gap: 14px; }
 
-/* 上半部：主屏幕 */
-.tt-screen-wrap { width: 100%; max-width: 300px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
+/* 主屏幕 */
+.tt-screen-wrap { width: 100%; max-width: 290px; background: rgba(226,231,237,0.72); border-radius: 12px; padding: 6px; box-shadow: inset 0 1px 6px rgba(178,186,196,0.18), 0 1px 1px rgba(255,255,255,0.9); }
 .tt-screen { position: relative; border-radius: 8px; background: rgba(255,255,255,0.96); padding: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(220,225,232,0.8); display: flex; flex-direction: column; align-items: center; }
 .tt-screen-badge { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .tt-badge-left { display: flex; align-items: center; gap: 4px; }
 .tt-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #b7cff1; animation: ttGlow 2s infinite; }
 .tt-badge-text { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: rgba(142,169,204,0.9); font-variant-numeric: tabular-nums; }
-.tt-screen-no { font-size: 10px; color: rgba(191,198,207,0.9); letter-spacing: 1.5px; font-family: monospace; font-weight: 700; }
+.tt-screen-time { font-size: 11px; color: rgba(162,171,182,0.9); letter-spacing: 1.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
 
 .tt-canvas-container { position: relative; display: flex; justify-content: center; }
 .tt-canvas { background: rgba(0,0,0,0.02); border-radius: 4px; box-shadow: inset 0 0 6px rgba(0,0,0,0.04); display: block; }
 
-/* 机身金属切割线 */
 .tt-divider-groove { width: 85%; height: 2px; background: linear-gradient(90deg, transparent, rgba(214,220,228,0.7), transparent); box-shadow: 0 1px 0 rgba(255,255,255,0.9); border-radius: 2px; }
 
-/* 下半部：按键操控区 */
-.tt-controls-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; max-width: 290px; padding: 0 6px; margin-top: 4px; }
+/* 按键操控区 */
+.tt-controls-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; max-width: 300px; padding: 0 4px; margin-top: 4px; }
 
-/* 左侧：猫爪旋转 (加大) */
+/* 左侧：猫爪旋转 */
 .tt-left { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .tt-paw-btn {
   width: 66px; height: 66px; border-radius: 50%; cursor: pointer; touch-action: manipulation;
@@ -69,7 +65,7 @@
   display: flex; align-items: center; justify-content: center; transition: transform 0.1s, box-shadow 0.1s;
 }
 .tt-paw-btn:active, .tt-paw-btn.pressed { transform: scale(0.92); box-shadow: 0 2px 6px rgba(170,176,186,0.1); background: rgba(226,231,237,0.8); }
-.tt-paw-inner { width: 36px; height: 34px; position: relative; transform: scale(1.15); /* 内部等比例放大 */ }
+.tt-paw-inner { width: 36px; height: 34px; position: relative; transform: scale(1.15); }
 .tt-pp { position: absolute; border-radius: 50%; }
 .tt-pp-main { width: 18px; height: 16px; bottom: 0; left: 50%; transform: translateX(-50%); background: rgba(196,203,212,0.9); border: 1px solid rgba(178,186,196,0.95); }
 .tt-pp-t1, .tt-pp-t2 { width: 10px; height: 10px; top: 1px; background: rgba(196,203,212,0.85); border: 1px solid rgba(178,186,196,0.9); }
@@ -78,25 +74,15 @@
 .tt-pp-t3 { left: 0; } .tt-pp-t4 { right: 0; }
 .tt-btn-label { font-size: 11px; color: rgba(120,128,138,0.8); font-weight: 800; letter-spacing: 1px; margin-top: 4px; }
 
-/* 中间：小重置键 */
-.tt-center { display: flex; align-items: center; justify-content: center; padding-bottom: 24px; }
-.tt-act-btn {
-  font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 7px 14px; border-radius: 12px; cursor: pointer; touch-action: manipulation;
-  background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(234,238,243,0.88));
-  border: 1.5px solid rgba(214,220,228,0.95);
-  box-shadow: 0 3px 8px rgba(170,176,186,0.12), inset 0 1px 1px rgba(255,255,255,0.82); color: #b17f7b;
-}
-.tt-act-btn:active { transform: scale(0.92); }
-
-/* 右侧：十字键 (加大网格和按键，SVG 换成折线) */
+/* 右侧：十字键 (极限加大版！) */
 .tt-right { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .tt-dpad {
   display: grid; gap: 4px; align-items: center; justify-items: center;
   grid-template-areas: ". up ." "left . right" ". down .";
-  grid-template-columns: 36px 36px 36px; grid-template-rows: 36px 36px 36px;
+  grid-template-columns: 42px 42px 42px; grid-template-rows: 42px 42px 42px;
 }
 .tt-dpad-btn {
-  width: 34px; height: 34px; border-radius: 50%; cursor: pointer; touch-action: manipulation;
+  width: 40px; height: 40px; border-radius: 50%; cursor: pointer; touch-action: manipulation;
   background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(234,238,243,0.88));
   border: 1.5px solid rgba(214,220,228,0.95);
   box-shadow: 0 4px 8px rgba(170,176,186,0.14), inset 0 1px 1px rgba(255,255,255,0.82);
@@ -104,12 +90,34 @@
 }
 .tt-dpad-btn:active, .tt-dpad-btn.pressed { transform: scale(0.9); background: rgba(226,231,237,0.8); }
 
-/* 折线三角样式 */
-.tt-dpad-btn svg { width: 16px; height: 16px; fill: none; stroke: #697380; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.tt-dpad-btn svg { width: 18px; height: 18px; fill: none; stroke: #697380; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .tt-dpad-up { grid-area: up; } .tt-dpad-up svg { stroke: #8e98a6; } /* 暂停键 */
 .tt-dpad-left { grid-area: left; }
 .tt-dpad-right { grid-area: right; }
 .tt-dpad-down { grid-area: down; }
+
+/* ================= 外部按钮与记录卡片 ================= */
+.tt-out-actions { display: flex; justify-content: center; gap: 16px; margin-top: 20px; width: 100%; }
+.tt-out-btn {
+  font-size: 13px; font-weight: 800; letter-spacing: 1px; padding: 10px 24px; border-radius: 999px; cursor: pointer; touch-action: manipulation;
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(245,247,250,0.7));
+  border: 1.5px solid rgba(255,255,255,0.8); box-shadow: 0 6px 16px rgba(0,0,0,0.06); color: #636d7a; transition: transform 0.1s;
+}
+.tt-out-btn:active { transform: scale(0.94); }
+
+.tt-record-modal {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; flex-direction: column; align-items: center; padding: 30px 20px;
+  background: rgba(255,255,255,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.tt-rm-close { position: absolute; top: 16px; right: 20px; width: 32px; height: 32px; border-radius: 50%; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #666; cursor: pointer; font-weight: 900; }
+.tt-rm-close:active { background: #eee; }
+.tt-rm-title { font-size: 20px; font-weight: 900; color: #636d7a; margin-bottom: 8px; letter-spacing: 2px; }
+.tt-rm-best { font-size: 14px; font-weight: 800; color: #b17f7b; margin-bottom: 20px; background: rgba(177,127,123,0.1); padding: 6px 16px; border-radius: 8px; }
+.tt-rm-list { width: 100%; max-width: 280px; list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 50vh; }
+.tt-rm-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.tt-rm-score { font-size: 16px; font-weight: 900; color: #1a1a1a; font-variant-numeric: tabular-nums; }
+.tt-rm-time { font-size: 11px; font-weight: 700; color: #999; }
 
 /* 屏幕蒙层 */
 .tt-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.85); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: inherit; }
