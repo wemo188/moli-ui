@@ -219,11 +219,8 @@
 
 /* 防止 PSP 卡片在 Me 页面产生编辑交互副作用 */
 .c6-psp-readonly { pointer-events: none; }
+.c6-psp-enlarge { transform: scale(1.25); }
 .c6-psp-screen-fix { min-height: 76px; }
-
-.c6-me-psp-hint {
-  text-align: center; font-size: 10px; color: rgba(0,0,0,0.3); margin-top: 10px; letter-spacing: 1px; font-weight: 700;
-}
 
 /* Me 页面下方的列表 */
 .c6-me-list { padding: 0; }
