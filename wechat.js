@@ -34,11 +34,18 @@
         
         overlay.querySelector('#wxGoCreateUser').onclick = function() {
           overlay.classList.remove('show');
-          setTimeout(function(){ overlay.remove(); if(App.user) App.user.open(); }, 200);
+          setTimeout(function(){ 
+            overlay.remove(); 
+            if(App.user) App.user.open(); 
+            if (!App.LS.get('wxActiveUid')) Wechat.close();
+          }, 200);
         };
         overlay.querySelector('#wxLoginCancel').onclick = function() { 
           overlay.classList.remove('show'); 
-          setTimeout(function(){ overlay.remove(); }, 200); 
+          setTimeout(function(){ 
+            overlay.remove(); 
+            if (!App.LS.get('wxActiveUid')) Wechat.close();
+          }, 200); 
         };
         return;
       }
@@ -62,7 +69,12 @@
 
       overlay.querySelector('#wxLoginCancel').onclick = function() { 
         overlay.classList.remove('show'); 
-        setTimeout(function(){ overlay.remove(); }, 200); 
+        setTimeout(function(){ 
+          overlay.remove(); 
+          if (!App.LS.get('wxActiveUid')) {
+            Wechat.close();
+          }
+        }, 200); 
       };
       
       overlay.querySelectorAll('.wx-login-item').forEach(function(item) {
@@ -250,7 +262,7 @@
       visibleChars = Wechat.sortChars(visibleChars);
 
       if (!visibleChars.length) {
-        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text">列表空空如也...<br>请在角色设置里，将角色绑定为当前账号</div></div>';
+        body.innerHTML = '<div class="c6-empty"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="c6-empty-text" style="line-height:1.6;">列表空空如也...<br>请在角色设置里，将角色绑定为当前账号</div></div>';
         return;
       }
 
@@ -403,6 +415,7 @@
       });
     },
 
+    /* 🌟 核心修改：真正的 CSS 变量应用，不再有任何静态 style 排版 */
     renderMeTab: function(body) {
       var activeUid = App.LS.get('wxActiveUid');
       var u = App.user ? App.user.getById(activeUid) : null;
@@ -415,10 +428,12 @@
 
       var bs = Math.max(0, Math.min(70, +sat));
       var bl = Math.max(30, Math.min(70, +lit));
-      var vars = '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
       
+      /* 这里的变量只是用来控制动态颜色，绝对没有 padding/margin */
+      var vars = '--pc5:hsla('+hue+','+bs+'%,'+bl+'%,0.5);--pc25:hsla('+hue+','+bs+'%,'+bl+'%,0.25);--pc45:hsla('+hue+','+bs+'%,'+bl+'%,0.45);--pc35:hsla('+hue+','+bs+'%,'+bl+'%,0.35);--pc18:hsla('+hue+','+bs+'%,'+bl+'%,0.18);--pc1:hsla('+hue+','+bs+'%,'+bl+'%,0.1);';
       var cardBg = 'linear-gradient(155deg,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.94),hsla(' + hue + ',' + sat + '%,' + (+lit+4) + '%,0.84) 30%,rgba(255,255,255,0.98) 52%,hsla(' + hue + ',' + sat + '%,' + (+lit+2) + '%,0.88) 74%,hsla(' + hue + ',' + sat + '%,' + lit + '%,0.92))';
       var borderC = 'hsla(' + hue + ',' + sat + '%,' + lit + '%,0.5)';
+      
       var bgImgHtml = u.cardBg ? '<div class="p14-bg"><img src="' + App.escAttr(u.cardBg) + '"></div>' : '<div class="p14-bg"></div>';
       var avatarHtml = u.avatar ? '<img src="' + App.escAttr(u.avatar) + '">' : '';
 
@@ -431,7 +446,9 @@
             '</div>' +
             '<div class="p14-body c6-psp-body-pad">' + 
               '<div class="p14-left">' +
+                '<div class="p14-side-btn c6-psp-hidden-btn">重置</div>' + 
                 '<div class="p14-paw-btn c6-psp-readonly"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
+                '<div class="p14-side-btn c6-psp-hidden-btn">删除</div>' + 
               '</div>' +
               '<div class="p14-screen-wrap"><div class="p14-screen c6-psp-screen-fix">' +
                 '<div class="p14-screen-badge"><div class="p14-badge-dot"></div><div class="p14-badge-text">ACTIVE</div></div>' +
@@ -444,12 +461,14 @@
                 '</div>' +
               '</div></div>' +
               '<div class="p14-right">' +
-                '<div class="p14-dpad">' +
+                '<div class="p14-side-btn c6-psp-hidden-btn">编辑</div>' + 
+                '<div class="p14-dpad c6-psp-readonly">' +
                   '<div class="p14-dpad-btn p14-dpad-up p14-dk">♠</div>' +
                   '<div class="p14-dpad-btn p14-dpad-left p14-dk">♣</div>' +
                   '<div class="p14-dpad-btn p14-dpad-right p14-rd">♦</div>' +
                   '<div class="p14-dpad-btn p14-dpad-down p14-rd">♥</div>' +
                 '</div>' +
+                '<div class="p14-side-btn c6-psp-hidden-btn">保存</div>' + 
               '</div>' +
             '</div>' +
           '</div>' +
@@ -473,9 +492,8 @@
       
       App.safeOn('#wxMeLogout', 'click', function() {
         App.LS.remove('wxActiveUid');
-        Wechat.close();
         App.showToast('已退出当前微信');
-        setTimeout(function(){ Wechat.open(); }, 400);
+        Wechat.showLoginModal(function(){ Wechat.renderPage(); });
       });
 
       App.safeOn('#wxMePspCard', 'click', function() {
@@ -493,7 +511,7 @@
 
     renderFavsPage: function(body) {
       var favs = App.LS.get('chatFavorites') || [];
-      var html = '<div class="c6-me-item" id="wxFavsBack"><span class="c6-me-item-text" style="color:rgba(0,0,0,0.4);">← 返回</span></div>';
+      var html = '<div class="c6-me-item" id="wxFavsBack"><span class="c6-me-item-text c6-fav-back-text">← 返回</span></div>';
 
       if (!favs.length) {
         html += '<div class="c6-empty"><div class="c6-empty-text">暂无收藏</div></div>';
