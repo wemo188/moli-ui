@@ -101,7 +101,7 @@
       statsWrap.appendChild(stepsDiv); statsWrap.appendChild(actionRow);
 
       var recordWrap = document.createElement('div'); recordWrap.className = 'pz-record-wrap';
-      recordWrap.innerHTML = '<div class="pz-record-title">近期通关记录</div>';
+      recordWrap.innerHTML = '<div class="pz-record-title">近期通关记录（tip：是点击，不是滑动哦））</div>';
       var ul = document.createElement('ul'); ul.className = 'pz-record-list'; Slide.recordsList = ul;
       recordWrap.appendChild(ul);
 
