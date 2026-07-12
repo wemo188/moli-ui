@@ -167,15 +167,39 @@
         Slide.updateSteps(Slide.steps + 1); Slide.checkWin();
       }
     },
-    shuffle: function() {
-      if(!Slide.imgSrc) return App.showToast('请先加载图片再打乱哦'); Slide.resetAndBuild(); Slide.playing = true; Slide.updateSteps(0);
+        shuffle: function() {
+      // 防呆：必须等碎片真正生成了才能打乱
+      if(!Slide.imgSrc || Slide.tiles.length === 0) return App.showToast('请等待图片加载完成哦'); 
+      Slide.playing = true; Slide.updateSteps(0);
+      if(Slide.winMsg) { Slide.winMsg.classList.remove('show'); Slide.winMsg.classList.add('pz-hidden'); }
+      
+      // 瞬间将所有碎片归位
+      for(var i=0; i<Slide.tiles.length; i++){
+         Slide.tiles[i].x = Slide.tiles[i].targetX;
+         Slide.tiles[i].y = Slide.tiles[i].targetY;
+      }
+      Slide.emptyPos = { x: Slide.size - 1, y: Slide.size - 1 };
+
+      // 🎀 听墨墨的，恢复佛系养生难度！系数改回 5
       var steps = Slide.size * Slide.size * 5; 
       for(var i=0; i<steps; i++){
         var movable = [];
-        for(var j=0; j<Slide.tiles.length; j++){ var t = Slide.tiles[j]; var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y); if((dx===1 && dy===0) || (dx===0 && dy===1)) movable.push(t); }
-        var pick = movable[Math.floor(Math.random()*movable.length)]; var tx = pick.x, ty = pick.y; pick.x = Slide.emptyPos.x; pick.y = Slide.emptyPos.y; Slide.emptyPos.x = tx; Slide.emptyPos.y = ty;
+        for(var j=0; j<Slide.tiles.length; j++){ 
+           var t = Slide.tiles[j]; 
+           var dx = Math.abs(t.x - Slide.emptyPos.x), dy = Math.abs(t.y - Slide.emptyPos.y); 
+           if((dx===1 && dy===0) || (dx===0 && dy===1)) movable.push(t); 
+        }
+        var pick = movable[Math.floor(Math.random()*movable.length)]; 
+        var tx = pick.x, ty = pick.y; 
+        pick.x = Slide.emptyPos.x; pick.y = Slide.emptyPos.y; 
+        Slide.emptyPos.x = tx; Slide.emptyPos.y = ty;
       }
-      for(var k=0; k<Slide.tiles.length; k++){ var t2 = Slide.tiles[k]; t2.el.style.transform = 'translate(' + (t2.x*Slide.tileSize) + 'px, ' + (t2.y*Slide.tileSize) + 'px)'; }
+      
+      // 渲染最终的乱序位置
+      for(var k=0; k<Slide.tiles.length; k++){ 
+         var t2 = Slide.tiles[k]; 
+         t2.el.style.transform = 'translate(' + (t2.x*Slide.tileSize) + 'px, ' + (t2.y*Slide.tileSize) + 'px)'; 
+      }
     },
     addRecord: function(size, steps) {
       var recs = App.LS.get('mmPzRecords') || []; var d = new Date(); var timeStr = (d.getMonth()+1) + '月' + d.getDate() + '日 ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
