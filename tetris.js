@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 莫兰迪纯色版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 莫兰迪哑光版
    ================================================ */
 (function(){
   'use strict';
@@ -15,16 +15,16 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    // ★ 墨墨亲选莫兰迪色，绝对纯实心！无任何透明度！
+    // ★ 墨墨专属配色：哑光莫兰迪色系，无高光，护眼高级！
     COLORS: [ 
       null, 
-      '#86aada', // 1 
-      '#da8686', // 2 
-      '#fbced9', // 3 
-      '#e0b5fb', // 4 
-      '#bbc5d5', // 5 
-      '#cdeac1', // 6 
-      '#b3deed'  // 7 
+      '#86aada', // 1
+      '#da8686', // 2
+      '#fbced9', // 3
+      '#e0b5fb', // 4
+      '#bbc5d5', // 5
+      '#cdeac1', // 6
+      '#b3deed'  // 7
     ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
@@ -133,7 +133,9 @@
       TT.canvas.width = cvsW * dpr; TT.canvas.height = cvsH * dpr;
       TT.ctx.scale(dpr, dpr);
 
-      container.querySelector('#ttOverlayBtn').addEventListener('click', function(){ TT.overlayEl.classList.add('tt-hidden'); });
+      container.querySelector('#ttOverlayBtn').addEventListener('click', function(){ 
+        TT.overlayEl.classList.add('tt-hidden');
+      });
 
       container.querySelector('#ttBtnOutReset').addEventListener('click', function(){ 
         if(TT.score > 0 && !TT.gameOver) TT.saveRecord(TT.score);
@@ -158,10 +160,8 @@
       clearTimeout(TT.hideOverlayTimer);
       TT.overlayEl.className = 'tt-overlay'; 
       if (extraClass) TT.overlayEl.classList.add(extraClass);
-      
       TT.overlayEl.querySelector('#ttOverlayTitle').textContent = titleText;
       TT.overlayEl.querySelector('#ttOverlayBtn').textContent = btnText;
-      
       TT.overlayEl.classList.remove('tt-hidden');
 
       if (durationMs) {
@@ -207,7 +207,7 @@
       
       if (TT.paused) {
         cancelAnimationFrame(TT.reqId);
-        TT.showOverlay('PAUSED', '休息中', '', 2000); 
+        TT.showOverlay('PAUSED', '隐藏遮罩', '', 2000); 
       } else {
         clearTimeout(TT.hideOverlayTimer);
         TT.overlayEl.classList.add('tt-hidden');
@@ -226,13 +226,11 @@
     loadGame: function() {
       var snap = App.LS.get('ttSaveData');
       if (!snap) { TT.reset(); return; }
-      
       TT.board = snap.board;
       TT.score = snap.score; TT.scoreEl.textContent = TT.score;
       TT.gameSeconds = snap.time;
       var min = Math.floor(TT.gameSeconds / 60); var sec = TT.gameSeconds % 60;
       TT.timeEl.textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-      
       TT.activePiece = snap.piece;
       TT.gameOver = false;
       TT.paused = true;
@@ -269,7 +267,9 @@
       if(recs.length === 0) {
         listEl.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;padding:20px;">还没有记录，快去拿个高分吧~</div>';
       } else {
-        listEl.innerHTML = recs.map(function(r){ return '<li class="tt-rm-item"><span class="tt-rm-score">' + r.score + '</span><span class="tt-rm-time">' + r.time + '</span></li>'; }).join('');
+        listEl.innerHTML = recs.map(function(r){
+          return '<li class="tt-rm-item"><span class="tt-rm-score">' + r.score + '</span><span class="tt-rm-time">' + r.time + '</span></li>';
+        }).join('');
       }
       TT.recordModal.classList.remove('tt-hidden');
     },
@@ -288,13 +288,21 @@
 
     collide: function() {
       var m = TT.activePiece.matrix, px = TT.activePiece.x, py = TT.activePiece.y;
-      for (var r = 0; r < m.length; r++) { for (var c = 0; c < m[r].length; c++) { if (m[r][c] !== 0 && (TT.board[py + r] && TT.board[py + r][px + c]) !== 0) return true; } }
+      for (var r = 0; r < m.length; r++) {
+        for (var c = 0; c < m[r].length; c++) {
+          if (m[r][c] !== 0 && (TT.board[py + r] && TT.board[py + r][px + c]) !== 0) return true;
+        }
+      }
       return false;
     },
 
     merge: function() {
       var m = TT.activePiece.matrix, px = TT.activePiece.x, py = TT.activePiece.y;
-      for (var r = 0; r < m.length; r++) { for (var c = 0; c < m[r].length; c++) { if (m[r][c] !== 0) TT.board[py + r][px + c] = m[r][c]; } }
+      for (var r = 0; r < m.length; r++) {
+        for (var c = 0; c < m[r].length; c++) {
+          if (m[r][c] !== 0) TT.board[py + r][px + c] = m[r][c];
+        }
+      }
     },
 
     rotate: function() {
@@ -327,14 +335,18 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
+    // ★ 取消了玻璃反光算法，变成扁平哑光，略带一点厚度阴影
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
       var px = x * bs; var py = y * bs; var s = bs;
 
       TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
 
-      TT.ctx.strokeStyle = 'rgba(0,0,0,0.06)'; 
-      TT.ctx.lineWidth = 1;
+      // 仅保留底部和右侧极淡的暗部边缘，体现积木的实物感，绝不刺眼
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; TT.ctx.fillRect(px, py + s - 3, s, 3);
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'; TT.ctx.fillRect(px + s - 3, py, 3, s);
+
+      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; TT.ctx.lineWidth = 1;
       TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
     },
 
