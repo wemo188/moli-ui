@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -51,7 +52,6 @@
     save: function() { App.LS.set('userList', User.list); },
     getById: function(id) { for (var i = 0; i < User.list.length; i++) { if (User.list[i].id === id) return User.list[i]; } return null; },
     
-    /* 🌟 核心修改：让系统随时认准当前微信登录的号 */
     getActiveUser: function() { 
       User.load(); 
       var wxUid = App.LS.get('wxActiveUid');
@@ -347,7 +347,6 @@
           if (!confirm('确定删除？')) return;
           User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
           
-          /* 🌟 如果删除的是当前微信登录账号，则清空登录状态 */
           if (App.LS.get('wxActiveUid') === btn.dataset.uid) {
              App.LS.remove('wxActiveUid');
           }
@@ -454,11 +453,18 @@
         }); });
       }
 
-      App.bindSwipeBack(pp, function() {
-        User.saveProfile(pp, true); 
+      /* 🌟 完美的退出机制：防误触空卡片拦截 */
+      var closeProfileFn = function() {
+        var saved = User.saveProfile(pp, true);
+        
+        // 如果是新建状态，且返回了 false（代表名字为空），则直接抛弃，不生成垃圾数据
+        if (saved === false && !editId) {
+          App.showToast('未填写姓名，取消创建');
+        }
+
         pp.classList.add('up-panel-out');
         setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
-        
+
         User.load();
         var panel = App.$('#userPanel');
         if (!User.list.length) {
@@ -466,6 +472,7 @@
         } else if (panel && panel.style.display !== 'none') {
           User.renderList();
         } else {
+          // 如果是从别处（比如微信Me页）点进来的，正常退出即可
           if (panel) {
             panel.style.display = 'flex';
             User.renderList();
@@ -476,7 +483,12 @@
             App.bindSwipeBack(panel, function() { User.close(); });
           }
         }
-      });
+      };
+
+      // 绑定右滑退出和左上角返回按钮
+      App.bindSwipeBack(pp, closeProfileFn);
+      var backBtn = pp.querySelector('#upProfileBack');
+      if (backBtn) backBtn.addEventListener('click', closeProfileFn);
 
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
@@ -499,7 +511,14 @@
       });
 
       var quill = pp.querySelector('#upQuill');
-      if (quill) quill.addEventListener('click', function() { User.saveProfile(pp); });
+      if (quill) {
+        quill.addEventListener('click', function() { 
+          var saved = User.saveProfile(pp); 
+          if(saved === false && !editId) {
+             App.showToast('请至少填写一个姓名');
+          }
+        });
+      }
 
       var avatarBox = pp.querySelector('#upAvatarBox');
       if (avatarBox) {
@@ -541,22 +560,37 @@
       requestAnimationFrame(function() { requestAnimationFrame(function() {
         editor.classList.add('up-expand-in');
       }); });
+      
       var expTA = editor.querySelector('#upExpTA');
       if (expTA) expTA.focus();
+
       function closeEditor() {
         textarea.value = editor.querySelector('#upExpTA').value;
         editor.classList.remove('up-expand-in');
         editor.classList.add('up-expand-out');
         setTimeout(function() { if (editor.parentNode) editor.remove(); }, 350);
       }
+      
       editor.querySelector('#upExpBack').addEventListener('click', closeEditor);
       editor.querySelector('#upExpDone').addEventListener('click', closeEditor);
+      
+      /* 🌟 核心：扩展面板完美接入右滑退出 */
+      App.bindSwipeBack(editor, closeEditor);
     },
 
     saveProfile: function(pp, isSilent) {
       var card = pp.querySelector('#upCard');
-      if (!card) return;
+      if (!card) return true;
       var editId = card.dataset.editId || '';
+      
+      /* 🌟 核心拦截逻辑：检查名字是否为空 */
+      var realNameInput = card.querySelector('.up-field-input[data-key="realName"]');
+      var realNameVal = realNameInput ? realNameInput.value.trim() : '';
+
+      if (!editId && !realNameVal) {
+        return false; // 新建但没填名字，拒绝保存
+      }
+
       var data = {};
       data.avatar = User.tempAvatar;
       data._sealed = true;
@@ -611,6 +645,7 @@
       if (!isSilent) {
         App.showToast('档案已封存');
       }
+      return true;
     },
 
     showImgMenu: function(uid, field, callback) {
