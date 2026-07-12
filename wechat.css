@@ -333,3 +333,9 @@
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone .wx-side-key {
   background: linear-gradient(180deg, #ffffff, rgba(245,180,190,0.1)); border: 1px solid rgba(245,180,190,.3); box-shadow: 0 2px 6px rgba(120,40,70,.08), inset 0 1px 0 rgba(255,255,255,.95);
 }
+
+
+/* 补充的纯净类名 */
+.c6-psp-hidden-btn { visibility: hidden; }
+.c6-fav-back-text { color: rgba(0,0,0,0.4); }
+#wxMePspCard { cursor: pointer; }
