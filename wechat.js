@@ -444,7 +444,7 @@
             '<div class="p14-top">' +
               '<div class="p14-led p14-led-on"></div><div class="p14-led"></div><div class="p14-led"></div>' +
             '</div>' +
-            '<div class="p14-body c6-psp-body-pad">' + 
+         '<div class="p14-body">' +
               '<div class="p14-left">' +
                 '<div class="p14-side-btn c6-psp-hidden-btn">重置</div>' + 
                 '<div class="p14-paw-btn c6-psp-readonly"><div class="p14-paw-inner"><div class="p14-pp p14-pp-t1"></div><div class="p14-pp p14-pp-t2"></div><div class="p14-pp p14-pp-t3"></div><div class="p14-pp p14-pp-t4"></div><div class="p14-pp p14-pp-main"></div></div></div>' +
