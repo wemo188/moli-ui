@@ -1029,9 +1029,12 @@
   font-weight: 300;
 }
 
-/* Me 页面 PSP 卡片容器 */
+/* =========================================================
+   微信专属：Me 页面 PSP 卡片容器 (1:1 完美还原)
+========================================================= */
 .c6-me-psp-wrap {
-  padding: 24px 16px 12px;
+  /* 去掉左右 padding，让卡片自己的 margin 生效 */
+  padding: 16px 0 12px;
   background: #fff;
   margin-bottom: 8px;
   border-bottom: 1px solid rgba(0,0,0,0.04);
@@ -1039,15 +1042,18 @@
 
 .c6-me-psp-card {
   pointer-events: auto !important; 
-  margin: 0 auto !important; 
-  max-width: 100%;
+  /* 🌟 核心：还原系统原本的间距，不再限制 max-width，不再强行居中 */
+  margin: 5px 5% 26px !important; 
+  max-width: none !important;
   transition: transform 0.2s ease !important;
-  transform: scale(0.95);
+  /* 🌟 核心：移除被压扁的缩放，彻底 1:1 */
+  transform: none !important;
   -webkit-tap-highlight-color: transparent;
 }
 
 .c6-me-psp-card:active {
-  transform: scale(0.92);
+  /* 点击时给一点微小的下压反馈即可 */
+  transform: scale(0.96) !important;
 }
 
 /* 退出登录按钮特调 */
