@@ -1,5 +1,6 @@
+
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 终极存读档版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 纯色扁平高定版
    ================================================ */
 (function(){
   'use strict';
@@ -14,7 +15,17 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    COLORS: [ null, '#86aada', '#da8686', '#fbced9', '#e0b5fb', '#bbc5d5', '#121212', '#cdeac1' ],
+    // ★ 全部换成了不带透明度的实心纯色，颜色稍微加深，护眼又清晰
+    COLORS: [ 
+      null, 
+      '#7ebfe6', // 1 冰蓝
+      '#7bcca8', // 2 薄荷
+      '#ec8c8c', // 3 樱红
+      '#f2cc81', // 4 奶黄
+      '#b1a1dd', // 5 芋紫
+      '#f0a486', // 6 蜜桃
+      '#b4c8d7'  // 7 灰白
+    ],
     SHAPES: [ [], [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], [[2,0,0],[2,2,2],[0,0,0]], [[0,0,3],[3,3,3],[0,0,0]], [[4,4],[4,4]], [[0,5,5],[5,5,0],[0,0,0]], [[0,6,0],[6,6,6],[0,0,0]], [[7,7,0],[0,7,7],[0,0,0]] ],
 
     init: function() { App.safeOn('#iconTetris', 'click', function(){ TT.openGame(); }); },
@@ -28,7 +39,6 @@
       document.body.appendChild(panel);
       requestAnimationFrame(function(){ panel.classList.add('show'); });
 
-      // 退出时：自动存档并彻底清理内存
       var closePanel = function(){ 
         TT.saveGame(); 
         TT.gameOver = true; TT.paused = false; cancelAnimationFrame(TT.reqId);
@@ -86,7 +96,6 @@
             '</div>' +
           '</div>' +
 
-          '<!-- 黑白相间的外部按钮组 -->' +
           '<div class="tt-out-actions">' +
              '<div class="tt-out-btn primary" id="ttBtnOutReset">重新开始</div>' +
              '<div class="tt-out-btn primary" id="ttBtnOutRecord">分数记录</div>' +
@@ -108,7 +117,6 @@
       TT.canvas = container.querySelector('#ttCanvas');
       TT.ctx = TT.canvas.getContext('2d');
 
-      // ★ 魔法在此：计算画布高度，压向 0.48 系数，纵向拉长，格子自然变大
       var wrapW = container.querySelector('.tt-canvas-container').clientWidth || 260;
       var maxCvsHeight = window.innerHeight * 0.48; 
       var blockSizeW = Math.floor(wrapW / TT.COLS);
@@ -125,12 +133,8 @@
       TT.canvas.width = cvsW * dpr; TT.canvas.height = cvsH * dpr;
       TT.ctx.scale(dpr, dpr);
 
-      // 绑定游戏内覆盖弹窗按钮
-      container.querySelector('#ttOverlayBtn').addEventListener('click', function(){ 
-        TT.overlayEl.classList.add('tt-hidden');
-      });
+      container.querySelector('#ttOverlayBtn').addEventListener('click', function(){ TT.overlayEl.classList.add('tt-hidden'); });
 
-      // 外部三个按钮
       container.querySelector('#ttBtnOutReset').addEventListener('click', function(){ 
         if(TT.score > 0 && !TT.gameOver) TT.saveRecord(TT.score);
         App.LS.remove('ttSaveData');
@@ -147,12 +151,12 @@
       container.querySelector('#ttRmClose').addEventListener('click', function(){ TT.recordModal.classList.add('tt-hidden'); });
 
       TT.bindControls(container);
-      TT.loadGame(); // 进来时优先尝试读档
+      TT.loadGame(); 
     },
 
     showOverlay: function(titleText, btnText, extraClass, durationMs) {
       clearTimeout(TT.hideOverlayTimer);
-      TT.overlayEl.className = 'tt-overlay'; // clear old classes
+      TT.overlayEl.className = 'tt-overlay'; 
       if (extraClass) TT.overlayEl.classList.add(extraClass);
       
       TT.overlayEl.querySelector('#ttOverlayTitle').textContent = titleText;
@@ -160,7 +164,6 @@
       
       TT.overlayEl.classList.remove('tt-hidden');
 
-      // 定时让它像风一样消散
       if (durationMs) {
         TT.hideOverlayTimer = setTimeout(function(){
           TT.overlayEl.classList.add('tt-hidden');
@@ -204,7 +207,7 @@
       
       if (TT.paused) {
         cancelAnimationFrame(TT.reqId);
-        TT.showOverlay('PAUSED', '隐藏遮罩', '', 2000); // 暂停提示2秒后消失
+        TT.showOverlay('PAUSED', '休息中', '', 2000); 
       } else {
         clearTimeout(TT.hideOverlayTimer);
         TT.overlayEl.classList.add('tt-hidden');
@@ -214,13 +217,9 @@
       }
     },
 
-    // ★ 存读档机制
     saveGame: function() {
       if (TT.gameOver || TT.score === 0 && !TT.activePiece) { App.LS.remove('ttSaveData'); return; }
-      var snap = {
-        board: TT.board, score: TT.score, time: TT.gameSeconds,
-        piece: TT.activePiece, paused: TT.paused
-      };
+      var snap = { board: TT.board, score: TT.score, time: TT.gameSeconds, piece: TT.activePiece, paused: TT.paused };
       App.LS.set('ttSaveData', snap);
     },
 
@@ -236,7 +235,6 @@
       
       TT.activePiece = snap.piece;
       TT.gameOver = false;
-      // 强行暂停状态，等待她自己点继续
       TT.paused = true;
       TT.showOverlay('PAUSED', '休息中', '', 2000);
       TT.draw();
@@ -271,9 +269,7 @@
       if(recs.length === 0) {
         listEl.innerHTML = '<div style="text-align:center;color:#999;font-size:12px;padding:20px;">还没有记录，快去拿个高分吧~</div>';
       } else {
-        listEl.innerHTML = recs.map(function(r){
-          return '<li class="tt-rm-item"><span class="tt-rm-score">' + r.score + '</span><span class="tt-rm-time">' + r.time + '</span></li>';
-        }).join('');
+        listEl.innerHTML = recs.map(function(r){ return '<li class="tt-rm-item"><span class="tt-rm-score">' + r.score + '</span><span class="tt-rm-time">' + r.time + '</span></li>'; }).join('');
       }
       TT.recordModal.classList.remove('tt-hidden');
     },
@@ -285,28 +281,20 @@
       if (TT.collide()) { 
         TT.gameOver = true; 
         TT.saveRecord(TT.score);
-        App.LS.remove('ttSaveData'); // 死了就销毁残局
-        TT.showOverlay('GAME OVER', '点击退出', 'danger', 3000); // 死了留3秒就撤退，让你复盘
+        App.LS.remove('ttSaveData'); 
+        TT.showOverlay('GAME OVER', '点击退出', 'danger', 3000); 
       }
     },
 
     collide: function() {
       var m = TT.activePiece.matrix, px = TT.activePiece.x, py = TT.activePiece.y;
-      for (var r = 0; r < m.length; r++) {
-        for (var c = 0; c < m[r].length; c++) {
-          if (m[r][c] !== 0 && (TT.board[py + r] && TT.board[py + r][px + c]) !== 0) return true;
-        }
-      }
+      for (var r = 0; r < m.length; r++) { for (var c = 0; c < m[r].length; c++) { if (m[r][c] !== 0 && (TT.board[py + r] && TT.board[py + r][px + c]) !== 0) return true; } }
       return false;
     },
 
     merge: function() {
       var m = TT.activePiece.matrix, px = TT.activePiece.x, py = TT.activePiece.y;
-      for (var r = 0; r < m.length; r++) {
-        for (var c = 0; c < m[r].length; c++) {
-          if (m[r][c] !== 0) TT.board[py + r][px + c] = m[r][c];
-        }
-      }
+      for (var r = 0; r < m.length; r++) { for (var c = 0; c < m[r].length; c++) { if (m[r][c] !== 0) TT.board[py + r][px + c] = m[r][c]; } }
     },
 
     rotate: function() {
@@ -339,22 +327,18 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
+    // ★ 关键重构：绝对纯色！没有任何渐变玻璃高光。
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
       var px = x * bs; var py = y * bs; var s = bs;
 
-      TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
+      // 纯色填充
+      TT.ctx.fillStyle = color; 
+      TT.ctx.fillRect(px, py, s, s);
 
-      var grad = TT.ctx.createLinearGradient(px, py, px, py + s);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
-      grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.15)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      TT.ctx.fillStyle = grad; TT.ctx.fillRect(px, py, s, s);
-
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; TT.ctx.fillRect(px, py + s - 3, s, 3);
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'; TT.ctx.fillRect(px + s - 3, py, 3, s);
-
-      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; TT.ctx.lineWidth = 1.5;
+      // 加一圈极其微弱的暗线，区分同色方块接壤
+      TT.ctx.strokeStyle = 'rgba(0,0,0,0.06)'; 
+      TT.ctx.lineWidth = 1;
       TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
     },
 
