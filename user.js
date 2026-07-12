@@ -484,6 +484,28 @@
       var backBtn = pp.querySelector('#upProfileBack');
       if (backBtn) backBtn.addEventListener('click', closeProfileFn);
 
+      pp.querySelector('#upProfileBack').addEventListener('click', function() {
+        User.saveProfile(pp, true);
+        pp.classList.remove('up-panel-in');
+        pp.classList.add('up-panel-out');
+        setTimeout(function() { if (pp.parentNode) pp.remove(); }, 350);
+        User.load();
+        var panel = App.$('#userPanel');
+        if (!User.list.length) {
+          setTimeout(function() { User.close(); }, 100);
+        } else if (panel && panel.style.display !== 'none') {
+          User.renderList();
+        } else if (panel) {
+          panel.style.display = 'flex';
+          User.renderList();
+          requestAnimationFrame(function() { requestAnimationFrame(function() {
+            panel.style.transform = 'translateX(0)';
+            panel.style.opacity = '1';
+          }); });
+          App.bindSwipeBack(panel, function() { User.close(); });
+        }
+      });
+      
       pp.querySelector('#upRebuild').addEventListener('click', function() {
         var eid = this.dataset.editId;
         if (eid) { var u = User.getById(eid); if (u) { u._sealed = false; User.save(); } }
