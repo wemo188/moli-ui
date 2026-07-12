@@ -1,6 +1,6 @@
 
 /* ================================================
-   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 莫兰迪哑光版
+   🌟 墨墨专属 · 琉璃玉透猫爪掌机 (tetris.js) - 极致哑光锐利版
    ================================================ */
 (function(){
   'use strict';
@@ -15,7 +15,7 @@
     scoreEl: null, timeEl: null, overlayEl: null, recordModal: null,
     gameSeconds: 0, lastSecondTick: 0, hideOverlayTimer: null,
 
-    // ★ 墨墨专属配色：哑光莫兰迪色系，无高光，护眼高级！
+    // ★ 墨总的高级哑光色盘
     COLORS: [ 
       null, 
       '#86aada', // 1
@@ -335,19 +335,31 @@
       if (linesCleared > 0) { TT.score += [0, 100, 300, 500, 800][linesCleared]; TT.scoreEl.textContent = TT.score; }
     },
 
-    // ★ 取消了玻璃反光算法，变成扁平哑光，略带一点厚度阴影
+    /* =======================================
+       ★ 终极护眼哑光算法 (告别糊色，极致锐利)
+       ======================================= */
     drawBlock: function(x, y, color) {
       var bs = TT.BLOCK_SIZE;
-      var px = x * bs; var py = y * bs; var s = bs;
+      var px = x * bs; var py = y * bs;
+      
+      // 1. 画最底层的锐利边框底色 (深灰)，防止像素级抗锯齿导致块与块糊在一起
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      TT.ctx.fillRect(px, py, bs, bs);
 
-      TT.ctx.fillStyle = color; TT.ctx.fillRect(px, py, s, s);
+      // 2. 往里收缩 1 像素，填入墨总的高级哑光纯色
+      TT.ctx.fillStyle = color;
+      TT.ctx.fillRect(px + 1, py + 1, bs - 2, bs - 2);
 
-      // 仅保留底部和右侧极淡的暗部边缘，体现积木的实物感，绝不刺眼
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; TT.ctx.fillRect(px, py + s - 3, s, 3);
-      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'; TT.ctx.fillRect(px + s - 3, py, 3, s);
+      // 3. 画哑光高光与阴影 (只用纯矩形，绝对不瞎搞线性渐变！)
+      // 左上顶边微白
+      TT.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      TT.ctx.fillRect(px + 1, py + 1, bs - 2, 2); // 顶
+      TT.ctx.fillRect(px + 1, py + 1, 2, bs - 2); // 左
 
-      TT.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; TT.ctx.lineWidth = 1;
-      TT.ctx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
+      // 右下底边微暗
+      TT.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      TT.ctx.fillRect(px + 1, py + bs - 3, bs - 2, 2); // 底
+      TT.ctx.fillRect(px + bs - 3, py + 1, 2, bs - 2); // 右
     },
 
     draw: function() {
