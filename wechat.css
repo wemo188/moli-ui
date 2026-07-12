@@ -219,7 +219,7 @@
 
 /* 防止 PSP 卡片在 Me 页面产生编辑交互副作用 */
 .c6-psp-readonly { pointer-events: none; }
-.c6-psp-enlarge { transform: scale(1.25); }
+.c6-psp-enlarge { transform: scale(1.2); }
 .c6-psp-screen-fix { min-height: 76px; }
 
 /* Me 页面下方的列表 */
@@ -329,7 +329,6 @@
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone .wx-side-key {
   background: linear-gradient(180deg, #ffffff, rgba(245,180,190,0.1)); border: 1px solid rgba(245,180,190,.3); box-shadow: 0 2px 6px rgba(120,40,70,.08), inset 0 1px 0 rgba(255,255,255,.95);
 }
-
 
 /* 补充的纯净类名 */
 .c6-psp-hidden-btn { visibility: hidden; }
