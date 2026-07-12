@@ -344,7 +344,7 @@
       panel.querySelectorAll('.p14-del-text').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
-          if (!confirm('确定删除？')) return;
+          if (!confirm('确定删除用户身份？不可找回哦')) return;
           User.list = User.list.filter(function(u) { return u.id !== btn.dataset.uid; });
           
           if (App.LS.get('wxActiveUid') === btn.dataset.uid) {
