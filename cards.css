@@ -107,6 +107,9 @@
   pointer-events: none;
 }
 
+/* =========================
+   左侧标签毛玻璃透明化改造
+========================= */
 #profileCard-L .bx-tag {
   --arrow: calc(10px * var(--S));
   position: absolute;
@@ -117,24 +120,44 @@
   padding: calc(2px * var(--S)) calc(10px * var(--S)) calc(2px * var(--S)) calc(12px * var(--S));
   box-shadow: 0 calc(2px * var(--S)) calc(5px * var(--S)) rgba(0,0,0,.12);
   clip-path: polygon(var(--arrow) 0%, 100% 0%, 100% 100%, var(--arrow) 100%, 0% 50%);
+  
+  /* 掏空背景，接管毛玻璃属性 */
+  background: transparent;
+  backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
+  z-index: 1;
+}
+
+/* 用假后景来接管各自的颜色和整体的透明度 */
+#profileCard-L .bx-tag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: var(--profileCard-L-bg-opacity, 1);
+  pointer-events: none;
 }
 
 #profileCard-L .bx-tag1 {
   top: 0;
   right: 0;
-  background: var(--profileCard-L-tag-bg, linear-gradient(132deg, #ffffff, #d0d2d6));
   color: var(--profileCard-L-tag-c, #000000);
   transform: rotate(-6deg);
   text-shadow: none;
+}
+#profileCard-L .bx-tag1::before {
+  background: var(--profileCard-L-tag-bg, linear-gradient(132deg, #ffffff, #d0d2d6));
 }
 
 #profileCard-L .bx-tag2 {
   top: calc(22px * var(--S));
   right: calc(-6px * var(--S));
-  background: var(--profileCard-L-tag2-bg, linear-gradient(180deg, #ffffff, #a8b0bb));
   color: var(--profileCard-L-tag2-c, #000000);
   transform: rotate(2deg);
   text-shadow: none;
+}
+#profileCard-L .bx-tag2::before {
+  background: var(--profileCard-L-tag2-bg, linear-gradient(180deg, #ffffff, #a8b0bb));
 }
 
 #profileCard-L .bx-av-box {
@@ -269,6 +292,9 @@
   pointer-events: none;
 }
 
+/* =========================
+   右侧侧带毛玻璃透明化改造
+========================= */
 #profileCard-R .bx-ribbon-tab {
   writing-mode: vertical-rl;
   text-orientation: mixed;
@@ -279,17 +305,39 @@
   border-radius: calc(6px * var(--S)) 0 0 calc(6px * var(--S));
   box-shadow: calc(-2px * var(--S)) calc(2px * var(--S)) calc(6px * var(--S)) rgba(0,0,0,.1);
   line-height: 1;
+
+  /* 掏空背景，接管毛玻璃属性 */
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
+}
+
+/* 用假后景来接管各自的颜色和整体的透明度 */
+#profileCard-R .bx-ribbon-tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: var(--profileCard-R-bg-opacity, 1);
+  pointer-events: none;
 }
 
 #profileCard-R .bx-ribbon-tab.r1 {
-  background: var(--profileCard-R-tag-bg, linear-gradient(143deg, #ffffff, #d1d5db));
   color: var(--profileCard-R-tag-c, #000000);
   text-shadow: none;
 }
+#profileCard-R .bx-ribbon-tab.r1::before {
+  background: var(--profileCard-R-tag-bg, linear-gradient(143deg, #ffffff, #d1d5db));
+}
 
 #profileCard-R .bx-ribbon-tab.r2 {
-  background: var(--profileCard-R-tag2-bg, linear-gradient(113deg, #ffffff, #d1d5db));
   color: var(--profileCard-R-tag2-c, #000000);
+}
+#profileCard-R .bx-ribbon-tab.r2::before {
+  background: var(--profileCard-R-tag2-bg, linear-gradient(113deg, #ffffff, #d1d5db));
 }
 
 #profileCard-R .bx-av-box {
