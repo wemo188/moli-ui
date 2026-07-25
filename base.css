@@ -53,7 +53,7 @@ body {
   position: fixed;
   top: 0;
   left: -1px;
-  width: calc(300vw + 2px);
+  width: calc(300vw + 3px);
   height: 100dvh;
   height: -webkit-fill-available;
   z-index: 0;
