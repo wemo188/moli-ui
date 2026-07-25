@@ -54,7 +54,9 @@ body {
   top: 0;
   left: 0;
   width: 300vw;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   z-index: 0;
   display: flex;
   pointer-events: none;
