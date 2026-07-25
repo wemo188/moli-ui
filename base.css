@@ -255,7 +255,6 @@ img.img-fill { transform: none !important; }
   justify-content: center;
   padding: calc(20px + env(safe-area-inset-top, 20px)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
-  background-color: var(--bg-primary);
 }
 
 /* 手机端 */
