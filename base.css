@@ -228,7 +228,7 @@ img.img-fill { transform: none !important; }
 ========================= */
 .page-slider-main {
   position: relative;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   min-height: 100vh;
   padding: 0 !important;
@@ -237,7 +237,7 @@ img.img-fill { transform: none !important; }
 
 .page-slider {
   display: flex;
-  width: 300%;
+  width: 300vw;
   height: 100vh;
   min-height: 100vh;
   will-change: transform;
@@ -255,6 +255,7 @@ img.img-fill { transform: none !important; }
   justify-content: center;
   padding: calc(20px + env(safe-area-inset-top, 20px)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
+  background-color: var(--bg-primary);
 }
 
 /* 手机端 */
