@@ -68,14 +68,13 @@
   position: relative;
   z-index: 2;
   border-radius: calc(11px * var(--S));
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px 10px 0 10px;
   box-sizing: border-box;
   background: transparent;
-  isolation: isolate;
 }
 
 #profileCard-L .bx-cd::before {
@@ -85,9 +84,18 @@
   border-radius: inherit;
   background: var(--profileCard-L-bg, linear-gradient(187deg, #ffffff, #d1d5db));
   opacity: var(--profileCard-L-bg-opacity, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+#profileCard-L .bx-cd::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
   -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
 }
 
@@ -99,9 +107,6 @@
   pointer-events: none;
 }
 
-/* =========================
-   左侧标签毛玻璃透明化改造
-========================= */
 #profileCard-L .bx-tag {
   --arrow: calc(10px * var(--S));
   position: absolute;
@@ -112,15 +117,12 @@
   padding: calc(2px * var(--S)) calc(10px * var(--S)) calc(2px * var(--S)) calc(12px * var(--S));
   box-shadow: 0 calc(2px * var(--S)) calc(5px * var(--S)) rgba(0,0,0,.12);
   clip-path: polygon(var(--arrow) 0%, 100% 0%, 100% 100%, var(--arrow) 100%, 0% 50%);
-  
-  /* 掏空背景，接管毛玻璃属性 */
   background: transparent;
   backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
   -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
   z-index: 1;
 }
 
-/* 用假后景来接管各自的颜色和整体的透明度 */
 #profileCard-L .bx-tag::before {
   content: "";
   position: absolute;
@@ -242,14 +244,13 @@
   position: relative;
   z-index: 2;
   border-radius: calc(11px * var(--S));
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px 10px 0 10px;
   box-sizing: border-box;
   background: transparent;
-  isolation: isolate;
 }
 
 #profileCard-R .bx-cd::before {
@@ -259,9 +260,18 @@
   border-radius: inherit;
   background: var(--profileCard-R-bg, linear-gradient(323deg, #ffffff, #9ca3b0));
   opacity: var(--profileCard-R-bg-opacity, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+#profileCard-R .bx-cd::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
   -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
 }
 
@@ -276,9 +286,6 @@
   pointer-events: none;
 }
 
-/* =========================
-   右侧侧带毛玻璃透明化改造
-========================= */
 #profileCard-R .bx-ribbon-tab {
   writing-mode: vertical-rl;
   text-orientation: mixed;
@@ -289,8 +296,6 @@
   border-radius: calc(6px * var(--S)) 0 0 calc(6px * var(--S));
   box-shadow: calc(-2px * var(--S)) calc(2px * var(--S)) calc(6px * var(--S)) rgba(0,0,0,.1);
   line-height: 1;
-
-  /* 掏空背景，接管毛玻璃属性 */
   position: relative;
   z-index: 1;
   background: transparent;
@@ -298,7 +303,6 @@
   -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
 }
 
-/* 用假后景来接管各自的颜色和整体的透明度 */
 #profileCard-R .bx-ribbon-tab::before {
   content: "";
   position: absolute;
@@ -665,4 +669,3 @@
 .card-group-icons > div {
   pointer-events: auto;
 }
-
