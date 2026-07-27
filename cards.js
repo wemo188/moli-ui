@@ -1,3 +1,4 @@
+
 (function() {
   'use strict';
   var App = window.App;
@@ -235,7 +236,6 @@
       if (pcL) {
         var lt1C = L.tag1 ? '' : ' bx-tag-placeholder', lt2C = L.tag2 ? '' : ' bx-tag-placeholder';
         
-        // 🌟 透明占位符魔法
         var lt1 = L.tag1 ? App.esc(L.tag1) : '<span style="opacity:0">标签</span>';
         var lt2 = L.tag2 ? App.esc(L.tag2) : '<span style="opacity:0">标签</span>';
         var lSub = L.sub ? App.esc(L.sub) : '<span style="opacity:0">一句话签名</span>';
@@ -254,7 +254,6 @@
       if (pcR) {
         var rt1C = R.tag1 ? '' : ' bx-ribbon-placeholder', rt2C = R.tag2 ? '' : ' bx-ribbon-placeholder';
         
-        // 🌟 透明占位符魔法
         var rt1 = R.tag1 ? App.esc(R.tag1) : '<span style="opacity:0">标签</span>';
         var rt2 = R.tag2 ? App.esc(R.tag2) : '<span style="opacity:0">标签</span>';
         var rSub = R.sub ? App.esc(R.sub) : '<span style="opacity:0">一句话签名</span>';
@@ -305,8 +304,7 @@
       Cards._restoreHlPos('hlAvatarWrapRight');
     },
 
-    // 🌟 头像与气泡的悬浮拖拽
-       _bindHlDrag: function(id) {
+    _bindHlDrag: function(id) {
       var el = document.getElementById(id); if (!el) return;
       var DELAY = 250;
       var startX, startY, origX, origY, longPressed = false, timer, moved = false;
@@ -321,7 +319,6 @@
           el.classList.add('hl-dragging');
           el.classList.add('is-grabbed'); 
           el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          // 🌟 核心：注入变量 --t
           var tf = 'translate(' + origX + 'px,' + origY + 'px) scale(1.05)';
           el.style.setProperty('--t', tf);
           el.style.transform = tf;
@@ -335,7 +332,6 @@
         if (!longPressed) return; moved = true; e.preventDefault(); e.stopPropagation();
         var nx = origX + (t.clientX - startX); var ny = origY + (t.clientY - startY);
         el.style.transition = 'none'; 
-        // 🌟 核心：注入变量 --t
         var tf = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
         el.style.setProperty('--t', tf);
         el.style.transform = tf;
@@ -351,7 +347,6 @@
           if (moved) { Cards.saveDrag(); e.stopPropagation(); }
           el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
           var curOff = Cards._dragOffsets[id] || {x: 0, y: 0};
-          // 🌟 核心：注入变量 --t
           var tf = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)';
           el.style.setProperty('--t', tf);
           el.style.transform = tf;
@@ -367,8 +362,7 @@
       if (off) el.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
     },
 
-    // 🌟 扩大双击范围：绑在整张卡片（.bx-w）上
-            bindEdit: function() {
+    bindEdit: function() {
       document.querySelectorAll('.bx-w').forEach(function(card) {
         if (!card._dblBound) {
           card._dblBound = true;
@@ -381,12 +375,11 @@
       });
     },
 
-        applyDragOffsets: function() {
+    applyDragOffsets: function() {
       ['profileCard-R', 'profileCard-L', 'hlTextCard', 'hlAvatarWrapLeft', 'hlAvatarWrapRight'].forEach(function(id) {
         var el = App.$('#' + id); if (!el) return;
         var off = Cards._dragOffsets[id];
         if (off) {
-          // 🌟 把初始坐标注入到 --t 变量里
           var tf = 'translate(' + off.x + 'px,' + off.y + 'px)';
           el.style.setProperty('--t', tf);
           el.style.transform = tf;
@@ -401,8 +394,7 @@
       }
     },
 
-    // 🌟 名片的悬浮拖拽
-        bindDrag: function() {
+    bindDrag: function() {
       ['profileCard-R', 'profileCard-L'].forEach(function(id) {
         var el = App.$('#' + id); if (!el) return;
         var startX, startY, startOX, startOY, longPressed = false, timer, moved = false;
@@ -414,7 +406,6 @@
             longPressed = true; var off = Cards._dragOffsets[id] || {x: 0, y: 0}; startOX = off.x; startOY = off.y;
             el.classList.add('is-grabbed'); 
             el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease';
-            // 🌟 核心：注入变量 --t
             var tf = 'translate(' + startOX + 'px,' + startOY + 'px) scale(1.05)';
             el.style.setProperty('--t', tf);
             el.style.transform = tf;
@@ -431,7 +422,6 @@
           if (!longPressed) return; moved = true; e.preventDefault(); e.stopPropagation();
           var nx = startOX + t.clientX - startX, ny = startOY + t.clientY - startY;
           el.style.transition = 'none'; 
-          // 🌟 核心：注入变量 --t
           var tf = 'translate(' + nx + 'px,' + ny + 'px) scale(1.05)';
           el.style.setProperty('--t', tf);
           el.style.transform = tf;
@@ -444,12 +434,11 @@
           el.style.opacity = '';
           el.style.boxShadow = ''; 
           if (longPressed) {
-                        el._justDragged = true;  // ← 加这一行
+            el._justDragged = true;
             setTimeout(function() { el._justDragged = false; }, 300);
             if (moved) { Cards._dragOffsets._topCard = id; Cards.saveDrag(); e.stopPropagation(); }
             el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
             var curOff = Cards._dragOffsets[id] || {x: 0, y: 0};
-            // 🌟 核心：注入变量 --t
             var tf = 'translate(' + curOff.x + 'px,' + curOff.y + 'px) scale(1)';
             el.style.setProperty('--t', tf);
             el.style.transform = tf;
@@ -475,7 +464,6 @@
 
     bindIconsDragAndUpload: function() {},
 
-    /* ====== 圆头像编辑 ====== */
     bindHlEdit: function() {
       if (this._hlEditBound) return; this._hlEditBound = true;
       ['hlAvatarLeft', 'hlAvatarRight'].forEach(function(avatarId) {
@@ -599,7 +587,6 @@
       overlay.addEventListener('click', function(e) { if (e.target === overlay) closeHlOverlay(); });
     },
 
-    /* ====== 角色卡编辑面板 ====== */
     openEdit: function(side, cardEl) {
       var old = App.$('#pcEditOverlay'); if (old) old.remove();
 
@@ -625,7 +612,7 @@
       }).join('');
 
       panel.innerHTML =
-               '<div class="pc-header" id="ccDragHandle">' + (side === 'left' ? '左侧卡片' : '右侧卡片') + '<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
+        '<div class="pc-header" id="ccDragHandle">' + (side === 'left' ? '左侧卡片' : '右侧卡片') + '<div class="pc-close-btn" id="pcCloseBtn">×</div></div>' +
         '<div class="pc-body">' +
           '<div class="pc-group"><span class="pc-label">头像</span><div class="pc-av-row">' +
             '<button class="pc-btn pc-btn-save" id="pcUploadBtn" type="button" style="padding:8px;font-size:12px;">图片上传</button>' +
@@ -635,10 +622,10 @@
           '<div class="pc-group"><span class="pc-label">标签 1</span><input type="text" class="pc-input" id="pcTag1" value="' + App.escAttr(d.tag1 || '') + '"></div>' +
           '<div class="pc-group"><span class="pc-label">标签 2</span><input type="text" class="pc-input" id="pcTag2" value="' + App.escAttr(d.tag2 || '') + '"></div>' +
           '<div class="pc-group"><span class="pc-label">调色板</span><div class="pc-palette-grid">' + dotsHtml + '</div></div>' +
-         '<div class="pc-group"><span class="pc-label">卡底透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgOpacity" min="0" max="1" step="0.05" value="' + (col.bgOpacity != null ? col.bgOpacity : 1) + '"><span class="pc-slider-val" id="pcBgOpacityVal">' + Math.round((col.bgOpacity != null ? col.bgOpacity : 1) * 100) + '%</span></div></div>' +
-'<div class="pc-group"><span class="pc-label">毛玻璃</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgBlur" min="0" max="30" step="1" value="' + (col.bgBlur || 0) + '"><span class="pc-slider-val" id="pcBgBlurVal">' + (col.bgBlur || 0) + 'px</span></div></div>' +
-'<div class="pc-group"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="0" max="8" step="0.5" value="' + col.borderW + '"><span class="pc-slider-val" id="pcBorderWVal">' + col.borderW + 'px</span></div></div>' +
-         '<div class="pc-group"><span class="pc-label">字体选择</span><select class="pc-input" id="pcFontSelect">' + Cards._buildFontOptions(col.fontFamily || '') + '</select></div>' +
+          '<div class="pc-group"><span class="pc-label">卡底透明度</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgOpacity" min="0" max="1" step="0.05" value="' + (col.bgOpacity != null ? col.bgOpacity : 1) + '"><span class="pc-slider-val" id="pcBgOpacityVal">' + Math.round((col.bgOpacity != null ? col.bgOpacity : 1) * 100) + '%</span></div></div>' +
+          '<div class="pc-group"><span class="pc-label">毛玻璃</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBgBlur" min="0" max="30" step="1" value="' + (col.bgBlur || 0) + '"><span class="pc-slider-val" id="pcBgBlurVal">' + (col.bgBlur || 0) + 'px</span></div></div>' +
+          '<div class="pc-group"><span class="pc-label">边框粗细</span><div class="pc-slider-row"><input type="range" class="pc-slider" id="pcBorderW" min="0" max="8" step="0.5" value="' + col.borderW + '"><span class="pc-slider-val" id="pcBorderWVal">' + col.borderW + 'px</span></div></div>' +
+          '<div class="pc-group"><span class="pc-label">字体选择</span><select class="pc-input" id="pcFontSelect">' + Cards._buildFontOptions(col.fontFamily || '') + '</select></div>' +
         '</div>' +
         '<div class="pc-footer">' +
           '<button class="pc-btn pc-btn-save" id="pcSaveBtn" type="button">保 存</button>' +
@@ -670,8 +657,9 @@
 
       var opSlider = panel.querySelector('#pcBgOpacity'); var opVal = panel.querySelector('#pcBgOpacityVal');
       if (opSlider) opSlider.addEventListener('input', function() { col.bgOpacity = parseFloat(this.value); opVal.textContent = Math.round(col.bgOpacity * 100) + '%'; Cards.data[side].colors = col; Cards.applyColors(); });
+
       var blurSlider = panel.querySelector('#pcBgBlur'); var blurVal = panel.querySelector('#pcBgBlurVal');
-if (blurSlider) blurSlider.addEventListener('input', function() { col.bgBlur = parseInt(this.value); blurVal.textContent = col.bgBlur + 'px'; Cards.data[side].colors = col; Cards.applyColors(); });
+      if (blurSlider) blurSlider.addEventListener('input', function() { col.bgBlur = parseInt(this.value); blurVal.textContent = col.bgBlur + 'px'; Cards.data[side].colors = col; Cards.applyColors(); });
 
       panel.querySelector('#pcFontSelect').addEventListener('change', function() { col.fontFamily = this.value; Cards.data[side].colors = col; Cards.applyColors(); });
 
