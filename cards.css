@@ -84,18 +84,9 @@
   border-radius: inherit;
   background: var(--profileCard-L-bg, linear-gradient(187deg, #ffffff, #d1d5db));
   opacity: var(--profileCard-L-bg-opacity, 1);
-  z-index: -1;
-  pointer-events: none;
-}
-
-#profileCard-L .bx-cd::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
   backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
   -webkit-backdrop-filter: blur(var(--profileCard-L-bg-blur, 0px));
-  z-index: -2;
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -266,18 +257,9 @@
   border-radius: inherit;
   background: var(--profileCard-R-bg, linear-gradient(323deg, #ffffff, #9ca3b0));
   opacity: var(--profileCard-R-bg-opacity, 1);
-  z-index: -1;
-  pointer-events: none;
-}
-
-#profileCard-R .bx-cd::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
   backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
   -webkit-backdrop-filter: blur(var(--profileCard-R-bg-blur, 0px));
-  z-index: -2;
+  z-index: -1;
   pointer-events: none;
 }
 
