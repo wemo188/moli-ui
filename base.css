@@ -51,10 +51,10 @@ body {
 ========================= */
 .bg-slider {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 300vw;
-  height: 100vh;
+  top: -1px;
+  left: -1px;
+  width: calc(300vw + 2px);
+  height: calc(100vh + 2px);
   z-index: 0;
   display: flex;
   pointer-events: none;
@@ -62,7 +62,7 @@ body {
 }
 
 .bg-page {
-  width: 100vw;
+  width: calc(100vw + 1px);
   height: 100%;
   flex-shrink: 0;
   background-color: var(--bg-primary);
