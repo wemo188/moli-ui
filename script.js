@@ -1601,7 +1601,7 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
     });
   };
 
-  App.initMainPages = function() {
+    App.initMainPages = function() {
     var slider = App.$('#pageSlider');
     var dots = App.$$('.screen-dot');
 
@@ -1609,13 +1609,8 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
 
     var currentPage = 0;
     var totalPages = 3;
-    var startX = 0;
-    var startY = 0;
-    var currentX = 0;
-    var baseX = 0;
-    var dragging = false;
-    var directionLocked = false;
-    var isHorizontal = false;
+    var startX = 0, startY = 0, currentX = 0, baseX = 0;
+    var dragging = false, directionLocked = false, isHorizontal = false;
     var pageWidth = window.innerWidth;
 
     function updateDots() {
@@ -1624,21 +1619,17 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
       });
     }
 
-            function snapToPage(animate) {
-  pageWidth = window.innerWidth;
-  var targetX = -currentPage * pageWidth;
-  var bgSlider = document.getElementById('bgSlider');
-  if (animate) {
-    slider.style.transition = 'transform 0.42s cubic-bezier(0.22, 0.8, 0.2, 1)';
-    if (bgSlider) bgSlider.style.transition = 'transform 0.42s cubic-bezier(0.22, 0.8, 0.2, 1)';
-  } else {
-    slider.style.transition = 'none';
-    if (bgSlider) bgSlider.style.transition = 'none';
-  }
-  slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
-  if (bgSlider) bgSlider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
-  updateDots();
-}
+    function snapToPage(animate) {
+      pageWidth = window.innerWidth;
+      var targetX = -currentPage * pageWidth;
+      if (animate) {
+        slider.style.transition = 'transform 0.42s cubic-bezier(0.22, 0.8, 0.2, 1)';
+      } else {
+        slider.style.transition = 'none';
+      }
+      slider.style.transform = 'translate3d(' + targetX + 'px,0,0)';
+      updateDots();
+    }
     
     dots.forEach(function(dot) {
       dot.addEventListener('click', function() {
@@ -1655,9 +1646,7 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
       currentX = startX;
       pageWidth = window.innerWidth;
       baseX = -currentPage * pageWidth;
-      dragging = true;
-      directionLocked = false;
-      isHorizontal = false;
+      dragging = true; directionLocked = false; isHorizontal = false;
       slider.style.transition = 'none';
     }, { passive: true });
 
@@ -1665,11 +1654,9 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
       if (!dragging || !e.touches || !e.touches.length) return;
       currentX = e.touches[0].clientX;
       var currentY = e.touches[0].clientY;
-      var dx = Math.abs(currentX - startX);
-      var dy = Math.abs(currentY - startY);
+      var dx = Math.abs(currentX - startX), dy = Math.abs(currentY - startY);
       if (!directionLocked && (dx > 12 || dy > 12)) {
-        directionLocked = true;
-        isHorizontal = dx > dy;
+        directionLocked = true; isHorizontal = dx > dy;
       }
       if (!directionLocked || !isHorizontal) return;
       e.preventDefault();
@@ -1678,11 +1665,7 @@ if(gradAngleInput){gradAngleInput.addEventListener('input',function(){gradAngle=
       var maxLeft = -(totalPages - 1) * pageWidth;
       if (nextX > 0) nextX = nextX * 0.28;
       if (nextX < maxLeft) nextX = maxLeft + (nextX - maxLeft) * 0.28;
-            slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
-var bgSlider = document.getElementById('bgSlider');
-if (bgSlider) { bgSlider.style.transition = 'none'; bgSlider.style.transform = 'translate3d(' + nextX + 'px,0,0)'; }
-      var bgSlider = document.getElementById('bgSlider');
-      if(bgSlider) bgSlider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
+      slider.style.transform = 'translate3d(' + nextX + 'px,0,0)';
     }, { passive: false });
 
     slider.addEventListener('touchend', function() {
@@ -1698,10 +1681,7 @@ if (bgSlider) { bgSlider.style.transition = 'none'; bgSlider.style.transform = '
       snapToPage(true);
     }, { passive: true });
 
-    window.addEventListener('resize', function() {
-      snapToPage(false);
-    });
-
+    window.addEventListener('resize', function() { snapToPage(false); });
     snapToPage(false);
   };
 
