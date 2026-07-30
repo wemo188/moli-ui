@@ -1055,12 +1055,24 @@ var Bg = {
     var layer = document.getElementById(id); if(!layer) return;
     if(data && data.src) {
       layer.style.backgroundImage = 'url(' + data.src + ')';
-      layer.style.filter = 'blur(' + (data.blur||0) + 'px) brightness(' + (100-(data.dark||0)) + '%)';
+      var blur = data.blur || 0;
+      var dark = data.dark || 0;
+      if(blur === 0 && dark === 0) {
+        layer.style.filter = '';
+      } else {
+        layer.style.filter = 'blur(' + blur + 'px) brightness(' + (100 - dark) + '%)';
+      }
     } else if(pageIdx === 1) {
       var page0 = App.LS.get('bgData') || {};
       if(page0.src) {
         layer.style.backgroundImage = 'url(' + page0.src + ')';
-        layer.style.filter = 'blur(' + (page0.blur||0) + 'px) brightness(' + (100-(page0.dark||0)) + '%)';
+        var blur0 = page0.blur || 0;
+        var dark0 = page0.dark || 0;
+        if(blur0 === 0 && dark0 === 0) {
+          layer.style.filter = '';
+        } else {
+          layer.style.filter = 'blur(' + blur0 + 'px) brightness(' + (100 - dark0) + '%)';
+        }
       } else {
         layer.style.backgroundImage = '';
         layer.style.filter = '';
