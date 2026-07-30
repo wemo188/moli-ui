@@ -80,7 +80,7 @@
 .c6-header {
   flex-shrink: 0; background: #fff; padding: 10px 16px;
   display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid rgba(0,0,0,0.06); position: relative; z-index: 10;
+  position: relative; z-index: 10;
 }
 .wx-fullscreen .c6-header { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
 
@@ -286,7 +286,7 @@
 /* ====== 主题特调 ====== */
 /* 蓝色主题 */
 .wx-theme-blue .wx-inner { background: rgba(248,248,248,0.95); }
-.wx-theme-blue .c6-header { background: #fff; border-bottom: 1.5px solid rgba(126,163,201,.15); }
+.wx-theme-blue .c6-header { background: #fff; }
 .wx-theme-blue .c6-main { background: rgba(248,248,248,0.95); }
 .wx-theme-blue .c6-body { background: rgba(248,248,248,0.95); }
 .wx-theme-blue .c6-tab-wrap { background: #fff; border: 1.5px solid rgba(126,163,201,.15); }
@@ -309,7 +309,7 @@
 
 /* 粉色主题 */
 .wx-theme-pink .wx-inner { background: rgba(248,248,248,0.95); }
-.wx-theme-pink .c6-header { background: #fff; border-bottom: 1.5px solid rgba(245,180,190,.15); }
+.wx-theme-pink .c6-header { background: #fff;}
 .wx-theme-pink .c6-main { background: rgba(248,248,248,0.95); }
 .wx-theme-pink .c6-body { background: rgba(248,248,248,0.95); }
 .wx-theme-pink .c6-tab-wrap { background: #fff; border: 1.5px solid rgba(245,180,190,.15); }
