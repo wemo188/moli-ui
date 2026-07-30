@@ -56,21 +56,31 @@ body {
   width: 300vw;
   height: 100vh;
   z-index: 0;
-  display: flex;
   pointer-events: none;
   will-change: transform;
 }
 
 .bg-page {
-  width: calc(100vw + 2px);
+  position: absolute;
+  top: -1px;
   height: calc(100% + 2px);
-  margin-top: -1px;
-  margin-right: -2px;
-  flex-shrink: 0;
+  width: calc(100vw + 2px);
   background-color: var(--bg-primary);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.bg-page:nth-child(1) {
+  left: -1px;
+}
+
+.bg-page:nth-child(2) {
+  left: calc(100vw - 1px);
+}
+
+.bg-page:nth-child(3) {
+  left: calc(200vw - 1px);
 }
 
 /* =========================
