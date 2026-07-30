@@ -51,10 +51,10 @@ body {
 ========================= */
 .bg-slider {
   position: fixed;
-  top: -1px;
-  left: -1px;
-  width: calc(300vw + 2px);
-  height: calc(100vh + 2px);
+  top: -2px;
+  left: -2px;
+  width: calc(300vw + 4px);
+  height: calc(100vh + 4px);
   z-index: 0;
   display: flex;
   pointer-events: none;
@@ -62,13 +62,14 @@ body {
 }
 
 .bg-page {
-  width: calc(100vw + 1px);
+  width: calc(100vw + 2px);
   height: 100%;
   flex-shrink: 0;
   background-color: var(--bg-primary);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  margin-right: -2px;
 }
 
 /* =========================
@@ -244,7 +245,6 @@ img.img-fill { transform: none !important; }
   touch-action: none;
 }
 
-/* 电脑端 */
 .screen-page {
   width: 100vw;
   height: 100vh;
@@ -255,6 +255,10 @@ img.img-fill { transform: none !important; }
   justify-content: center;
   padding: calc(20px + env(safe-area-inset-top, 20px)) 18px calc(34px + env(safe-area-inset-bottom, 20px));
   overflow: visible;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  outline: 2px solid var(--bg-primary);
+  outline-offset: -1px;
 }
 
 /* 手机端 */
