@@ -56,31 +56,21 @@ body {
   width: 300vw;
   height: 100vh;
   z-index: 0;
+  display: flex;
   pointer-events: none;
   will-change: transform;
+  overflow: hidden;
 }
 
 .bg-page {
-  position: absolute;
-  top: -1px;
-  height: calc(100% + 2px);
   width: calc(100vw + 2px);
+  height: 100%;
+  flex-shrink: 0;
+  margin-right: -2px;
   background-color: var(--bg-primary);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-.bg-page:nth-child(1) {
-  left: -1px;
-}
-
-.bg-page:nth-child(2) {
-  left: calc(100vw - 1px);
-}
-
-.bg-page:nth-child(3) {
-  left: calc(200vw - 1px);
 }
 
 /* =========================
@@ -256,9 +246,9 @@ img.img-fill { transform: none !important; }
   touch-action: none;
 }
 
+/* 电脑端 */
 .screen-page {
-  width: calc(100vw + 2px);
-  margin-right: -2px;
+  width: 100vw;
   height: 100vh;
   min-height: 100vh;
   flex-shrink: 0;
@@ -905,5 +895,3 @@ input[type="range"] {
 .is-grabbed {
   animation: dragWiggle 0.4s ease-out;
 }
-
-
