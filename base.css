@@ -198,7 +198,7 @@ img.img-fill { transform: none !important; }
   z-index: 99999;
   white-space: nowrap;
   box-shadow: 0 6px 16px rgba(126, 163, 201, 0.15);
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .toast.hidden {
