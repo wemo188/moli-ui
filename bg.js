@@ -119,7 +119,11 @@ var Bg = {
         '<div class="bf-nav-right"></div>' +
       '</div>' +
       '<div class="bf-scroll-body">' +
-        '<div class="bf-controls" id="bfBgControls" style="padding-top: 15px;">' +
+        // 🌟 重新加上你的微缩全局预览框，单页专用版！
+        '<div class="bf-preview-area" id="bfPreviewArea" style="margin-bottom: 20px;">' +
+          '<div class="bf-preview-page" id="bfPreviewPage"></div>' +
+        '</div>' +
+        '<div class="bf-controls" id="bfBgControls">' +
           '<div class="bf-upload-area" id="bfBgUpload">选择或上传背景</div>' +
           '<input type="file" id="bfBgFile" accept="image/*" hidden>' +
           '<div class="bf-ctrl-row"><span class="bf-ctrl-label">虚化</span><input type="range" id="bfBlur" min="0" max="30" value="'+(tempBg.blur||0)+'"><span class="bf-ctrl-val" id="bfBlurVal">'+(tempBg.blur||0)+'px</span></div>' +
@@ -165,6 +169,56 @@ var Bg = {
     panel.querySelector('#bfIconBgDot').style.background = iconConfig.iconBg;
     panel.querySelector('#bfColorDot').style.background = iconConfig.borderColor;
 
+    function renderPreview() {
+      var area = panel.querySelector('#bfPreviewArea');
+      if(!area) return;
+      var areaW = area.offsetWidth;
+      var scale = areaW / window.innerWidth;
+      var scaledHeight = window.innerHeight * scale;
+      area.style.height = scaledHeight + 'px';
+      
+      var page = panel.querySelector('#bfPreviewPage');
+      page.innerHTML = '';
+      
+      var frame = document.createElement('div');
+      frame.className = 'bf-preview-frame';
+      frame.style.transform = 'scale(' + scale + ')';
+      frame.style.width = window.innerWidth + 'px';
+      frame.style.height = window.innerHeight + 'px';
+      
+      var srcPage = document.querySelector('.screen-page-1');
+      if(srcPage) {
+        var clone = srcPage.cloneNode(true);
+        clone.style.cssText = 'width:100vw;height:100vh;position:absolute;top:0;left:0;';
+        frame.appendChild(clone);
+      }
+      
+      var fixedEls = ['#dockBar', '.screen-indicators'];
+      fixedEls.forEach(function(sel) {
+        var src = document.querySelector(sel);
+        if(src) {
+          var fc = src.cloneNode(true);
+          var rect = src.getBoundingClientRect();
+          fc.style.cssText = 'position:absolute;z-index:100;left:'+rect.left+'px;top:'+rect.top+'px;width:'+rect.width+'px;bottom:auto;right:auto;transform:none;';
+          frame.appendChild(fc);
+        }
+      });
+      
+      var bd = tempBg;
+      if(bd && bd.src) {
+        var bgDiv = document.createElement('div');
+        bgDiv.className = 'bf-preview-bg';
+        bgDiv.style.backgroundImage = 'url(' + bd.src + ')';
+        var b = bd.blur||0, d = bd.dark||0;
+        if(b!==0||d!==0) bgDiv.style.filter = 'blur(' + b + 'px) brightness(' + (100-d) + '%)';
+        frame.insertBefore(bgDiv, frame.firstChild);
+      }
+      page.appendChild(frame);
+    }
+    
+    // 初始化时也调用一下
+    setTimeout(renderPreview, 100);
+
     function renderIconPreview() {
       var prev = panel.querySelector('#bfIconPreview');
       if(!prev) return;
@@ -194,6 +248,7 @@ var Bg = {
       reader.onload = function(ev) {
         var process = function(src) {
           tempBg.src = src;
+          renderPreview();        // 🌟 更新大预览图
           renderIconPreview();
           App.showToast('预览中，点"应用背景"全局生效');
         };
@@ -207,12 +262,14 @@ var Bg = {
       var v = parseInt(this.value);
       panel.querySelector('#bfBlurVal').textContent = v + 'px';
       tempBg.blur = v;
+      renderPreview();          // 🌟 更新大预览图
       renderIconPreview();
     });
     panel.querySelector('#bfDark').addEventListener('input', function() {
       var v = parseInt(this.value);
       panel.querySelector('#bfDarkVal').textContent = v + '%';
       tempBg.dark = v;
+      renderPreview();          // 🌟 更新大预览图
       renderIconPreview();
     });
     
@@ -234,6 +291,7 @@ var Bg = {
       panel.querySelector('#bfDark').value = 0;
       panel.querySelector('#bfBlurVal').textContent = '0px';
       panel.querySelector('#bfDarkVal').textContent = '0%';
+      renderPreview();          // 🌟 更新大预览图
       renderIconPreview();
       App.showToast('全局背景已清除');
     });
