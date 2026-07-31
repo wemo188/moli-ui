@@ -73,7 +73,7 @@
 .wx-fullscreen .wx-phone > .wx-inner::after { display: none; }
 .wx-fullscreen #wxWrap, .wx-fullscreen#wxWrap { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; overflow: visible; }
 
-.wx-inner { position: relative; display: flex; flex-direction: column; height: 100%; }
+.wx-inner { position: relative; display: flex; flex-direction: column; height: 100%; background: #fff; }
 
 /* ====== 顶部导航 ====== */
 .c6-header {
