@@ -69,11 +69,11 @@
 /* 全屏模式 */
 .wx-fullscreen .wx-phone { width: 100%; max-width: none; height: 100vh; max-height: none; margin: 0; border-radius: 0; padding: 0; background: none; box-shadow: none; position: fixed; inset: 0; }
 .wx-fullscreen .wx-phone::before, .wx-fullscreen .wx-phone::after, .wx-fullscreen .wx-side-key { display: none; }
-.wx-fullscreen .wx-phone > .wx-inner { border-radius: 0; border: none; background: #fff; box-shadow: none; height: 100%; }
+.wx-fullscreen .wx-phone > .wx-inner { border-radius: 0; border: none; box-shadow: none; height: 100%; }
 .wx-fullscreen .wx-phone > .wx-inner::after { display: none; }
 .wx-fullscreen #wxWrap, .wx-fullscreen#wxWrap { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; overflow: visible; }
 
-.wx-inner { position: relative; display: flex; flex-direction: column; height: 100%; background: #fff; }
+.wx-inner { position: relative; display: flex; flex-direction: column; height: 100%; }
 
 /* ====== 顶部导航 ====== */
 .c6-header {
