@@ -69,7 +69,7 @@
 /* 全屏模式 */
 .wx-fullscreen .wx-phone { width: 100%; max-width: none; height: 100vh; max-height: none; margin: 0; border-radius: 0; padding: 0; background: none; box-shadow: none; position: fixed; inset: 0; }
 .wx-fullscreen .wx-phone::before, .wx-fullscreen .wx-phone::after, .wx-fullscreen .wx-side-key { display: none; }
-.wx-fullscreen .wx-phone > .wx-inner { border-radius: 0; border: none; box-shadow: none; height: 100%; }
+.wx-fullscreen .wx-phone > .wx-inner { border-radius: 0; border: none; background: #fff; box-shadow: none; height: 100%; }
 .wx-fullscreen .wx-phone > .wx-inner::after { display: none; }
 .wx-fullscreen #wxWrap, .wx-fullscreen#wxWrap { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; overflow: visible; }
 
@@ -79,7 +79,7 @@
 .c6-header {
   flex-shrink: 0; background: #fff; padding: 10px 16px;
   display: flex; align-items: center; justify-content: space-between;
-  position: relative; z-index: 10;
+  border-bottom: 1px solid rgba(0,0,0,0.06); position: relative; z-index: 10;
 }
 .wx-fullscreen .c6-header { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
 
@@ -148,7 +148,11 @@
 .c6-tab-icons { display: flex; gap: 2px; margin: 0 4px 0 0; }
 .c6-tab-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.15s; }
 .c6-tab-icon:active { transform: scale(0.88); }
-.c6-tab-icon svg { width: 16px; height: 16px; fill: none; stroke: #4a4a4a; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.c6-tab-icon svg {
+  width: 16px; height: 16px;
+  fill: none; stroke: rgba(209,213,219,1); /* 和星星一样 */
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
 
 /* 滚动区 */
 .c6-body { flex: 1; background: transparent; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 0 12px 0; }
@@ -285,7 +289,7 @@
 /* ====== 主题特调 ====== */
 /* 蓝色主题 */
 .wx-theme-blue .wx-inner { background: rgba(248,248,248,0.95); }
-.wx-theme-blue .c6-header { background: rgba(248,248,248,0.95); }
+.wx-theme-blue .c6-header { background: #fff; border-bottom: 1.5px solid rgba(126,163,201,.15); }
 .wx-theme-blue .c6-main { background: rgba(248,248,248,0.95); }
 .wx-theme-blue .c6-body { background: rgba(248,248,248,0.95); }
 .wx-theme-blue .c6-tab-wrap { background: #fff; border: 1.5px solid rgba(126,163,201,.15); }
@@ -297,6 +301,7 @@
 .wx-theme-blue .c6-footer-item.c6-f-active .c6-footer-label { color: rgba(126,163,201,0.85); }
 .wx-theme-blue .c6-star-main svg { fill: rgba(126,163,201,0.6); stroke: rgba(126,163,201,0.5); }
 .wx-theme-blue .c6-star-sm svg { fill: rgba(126,163,201,0.5); }
+.wx-theme-blue .c6-tab-icon svg { stroke: rgba(126,163,201,0.6); }
 #wxWrap.wx-theme-blue:not(.wx-fullscreen) .wx-phone > .wx-inner {
   border: 13px solid #f4f7fc; box-shadow: 0 0 0 1px rgba(200,210,225,.3), 0 14px 40px rgba(20,50,100,.12), 0 2px 8px rgba(20,50,100,.06);
 }
@@ -308,7 +313,7 @@
 
 /* 粉色主题 */
 .wx-theme-pink .wx-inner { background: rgba(248,248,248,0.95); }
-.wx-theme-pink .c6-header { background: rgba(248,248,248,0.95); }
+.wx-theme-pink .c6-header { background: #fff; border-bottom: 1.5px solid rgba(245,180,190,.15); }
 .wx-theme-pink .c6-main { background: rgba(248,248,248,0.95); }
 .wx-theme-pink .c6-body { background: rgba(248,248,248,0.95); }
 .wx-theme-pink .c6-tab-wrap { background: #fff; border: 1.5px solid rgba(245,180,190,.15); }
@@ -320,6 +325,7 @@
 .wx-theme-pink .c6-footer-item.c6-f-active .c6-footer-label { color: rgba(245,160,175,0.75); }
 .wx-theme-pink .c6-star-main svg { fill: rgba(245,180,190,0.6); stroke: rgba(245,180,190,0.5); }
 .wx-theme-pink .c6-star-sm svg { fill: rgba(245,180,190,0.5); }
+.wx-theme-pink .c6-tab-icon svg { stroke: rgba(245,180,190,0.6); }
 #wxWrap.wx-theme-pink:not(.wx-fullscreen) .wx-phone > .wx-inner {
   border: 13px solid rgba(245,180,190,0.1); box-shadow: 0 0 0 1px rgba(245,180,190,.2), 0 14px 40px rgba(120,40,70,.10), 0 2px 8px rgba(120,40,70,.05);
 }
@@ -333,4 +339,3 @@
 .c6-psp-hidden-btn { visibility: hidden; }
 .c6-fav-back-text { color: rgba(0,0,0,0.4); }
 #wxMePspCard { cursor: pointer; }
-
